@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "splunk-connect-for-snmp"
+version = "0.1.0"
+description = ""
+authors = ["rfaircloth-splunk <rfaircloth@splunk.com>"]
+license = "Apache-2.0"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+sphinx = "^3.4.3"
+sphinx-material = "^0.0.32"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
