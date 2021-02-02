@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mib-server
+  labels:
+    app: sc4-snmp-mib-server
+    environment: production
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sc4-snmp-mib-server
+      environment: production
+  template:
+    metadata:
+      labels:
+        app: sc4-snmp-mib-server
+        environment: production
+        tier: backend
+    spec:
+      containers:
+        - name: mib-server
+          image: ghcr.io/splunk/splunk-connect-for-snmp-mib-server:1.0.0
+          ports:
+            - containerPort: 9000
+---

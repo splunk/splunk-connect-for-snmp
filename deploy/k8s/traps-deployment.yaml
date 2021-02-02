@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traps
+  labels:
+    app: sc4-snmp-traps
+    environment: production
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sc4-snmp-traps
+      environment: production
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: sc4-snmp-traps
+        environment: production
+        tier: frontend
+    spec:
+      containers:
+        - name: traps
+          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:0.1.10
+          args: ["--log=DEBUG"]
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1"
+            limits:
+              memory: "8Gi"
+              cpu: "4"
+          ports:
+            - containerPort: 2162
+          env:
+            - name: SPLUNK_HEC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: remote-splunk
+                  key: SPLUNK_HEC_URL
+            - name: SPLUNK_HEC_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: remote-splunk
+                  key: SPLUNK_HEC_TOKEN
+            - name: SPLUNK_HEC_TLS_VERIFY
+              valueFrom:
+                secretKeyRef:
+                  name: remote-splunk
+                  key: SPLUNK_HEC_TLS_VERIFY
+---
+
