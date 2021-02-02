@@ -3,7 +3,7 @@
 Splunk Connect for SNMP
 ===================================================
 
-Splunk Connect for SNMP is an edge deployied containerized and highly available solution for
+Splunk Connect for SNMP is an edge deployed containerized and highly available solution for
 collection of SNMP data for Splunk Enterprise, Splunk Enterprise Cloud and Splunk Infrastructure Monitoring.
 
 

@@ -48,7 +48,7 @@ html_theme = 'sphinx_material'
 ##333
 html_theme_options = {
     #'base_url': 'http://bashtage.github.io/sphinx-material/',
-    'repo_url': 'https://https://github.com/splunk/splunk-connect-for-snmp/',
+    'repo_url': 'https://github.com/splunk/splunk-connect-for-snmp/',
     'repo_name': 'Splunk Connect for SNMP',
     #'google_analytics_account': 'UA-XXXXX',
     'html_minify': True,
