@@ -1,0 +1,59 @@
+#global settings
+global:
+  logLevel: info
+  splunk:
+    hec:
+      protocol: https
+      insecureSSL: ${global_hec_insecure_ssl}
+      host: ${monitoring_machine}
+      token: ${hec_token}
+      port: ${hec_port}
+
+#local config for logging chart
+splunk-kubernetes-logging:
+  kubernetes:
+    clusterName: ${cluster_name}
+  journalLogPath: ${journal_log_path}
+  splunk:
+    hec:
+      indexName: ${log_index}
+      # SII-4845: Contradictory workaround invokes side-effects
+      indexRouting: false
+      indexRoutingDefaultIndex: "default"
+
+#local config for objects chart
+splunk-kubernetes-objects:
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+    name: splunk-kubernetes-objects
+  kubernetes:
+    insecureSSL: ${objects_insecure_ssl}
+    clusterName: ${cluster_name}
+  objects:
+    core:
+      v1:
+        ${kubernetes_core_objects}
+    ${kubernetes_apps_objects_clause}
+  splunk:
+    hec:
+      indexName: ${meta_index}
+
+#local config for metrics chart
+splunk-kubernetes-metrics:
+  metricsInterval: 60s
+  kubernetes:
+    kubeletAddress: "\"#{ENV['KUBERNETES_NODE_IP']}\""
+    kubeletPort: ${kubelet_port}
+    useRestClientSSL: ${use_https}
+    insecureSSL: ${metrics_insecure_ssl}
+    clusterName: ${cluster_name}
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+    name: splunk-kubernetes-metrics
+  splunk:
+    hec:
+      indexName: ${metrics_index}

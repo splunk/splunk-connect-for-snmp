@@ -23,6 +23,38 @@ The following setup instructions are validated for release 1.20x but are subject
 3. Install optional modules ``sudo microk8s enable dashboard dns registry metallb``
 4. Alias kubectl ``alias kubectl="microk8s kubectl"``
 
+Monitor Micro8s
+---------------------------------------------------
+
+Note HEC TLS is required for SCK
+
+* Install the following app on the designated search head https://splunkbase.splunk.com/app/4217/ (version 2.23 or newer) *NOTE Do not complete the add data process for k8s
+* Install the following app on the designated search head  and indexers https://splunkbase.splunk.com/app/3975/ (version 2.23 or newer)
+* Create the additional index em_logs
+* Get the code
+
+.. code-block:: bash
+
+   git clone https://github.com/splunk/splunk-connect-for-snmp.git
+   cd splunk-connect-for-snmp
+
+* Install Splunk Connect for k8s on the cluster. 
+
+.. code-block:: bash
+
+    pushd deploy/sck
+    MONITORING_MACHINE='server.domain.com' \
+    GLOBAL_HEC_INSECURE_SSL=true
+    OBJECTS_INSECURE_SSL=true
+    METRICS_INSECURE_SSL=true
+    HEC_TOKEN='token' \
+    HEC_PORT='8088' \
+    CLUSTER_NAME='sc4s' \
+    bash deploy_sck_mk8s.sh \
+    ; popd
+
+* Verify by navigation to to the "Splunk App for Infrastructure" app click investigate and filter for the cluster name used.
+
 Setup Secrets
 ---------------------------------------------------
 
@@ -38,17 +70,11 @@ Execute the following commands, use the correct values for your env:
    --from-literal=SPLUNK_HEC_TOKEN=sometoken
    
 
-* Get the manifests
-
-.. code-block:: bash
-
-   git clone https://github.com/splunk/splunk-connect-for-snmp.git
-
 * Apply the manifests, replace the ip ``10.0.101.22`` with the shared IP noted above
 
 .. code-block:: bash
 
-    cat splunk-connect-for-snmp/deploy/k8s/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
+    cat splunk-connect-for-snmp/deploy/sc4snmp/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
 
 * Confirm deployment using ``kubectl get pods`` two(2) instances of mib-server and one (1) instance of traps example
 
