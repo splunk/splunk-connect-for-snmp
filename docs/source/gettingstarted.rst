@@ -20,7 +20,7 @@ The following setup instructions are validated for release 1.20x but are subject
 
 1. Install MicroK8s ``sudo snap install microk8s --classic``
 2. Check completion status ``sudo microk8s status --wait-ready``
-3. Install optional modules ``sudo microk8s enable dashboard dns registry metallb``
+3. Install optional modules ``sudo microk8s enable dashboard dns registry metallb helm3``
 4. Alias kubectl ``alias kubectl="microk8s kubectl"``
 
 Monitor Micro8s
@@ -43,10 +43,10 @@ Note HEC TLS is required for SCK
 .. code-block:: bash
 
     pushd deploy/sck
-    MONITORING_MACHINE='server.domain.com' \
-    GLOBAL_HEC_INSECURE_SSL=true
-    OBJECTS_INSECURE_SSL=true
-    METRICS_INSECURE_SSL=true
+    MONITORING_MACHINE='hec-input.fqdn.com' \
+    GLOBAL_HEC_INSECURE_SSL=true \
+    OBJECTS_INSECURE_SSL=true \
+    METRICS_INSECURE_SSL=true \
     HEC_TOKEN='token' \
     HEC_PORT='8088' \
     CLUSTER_NAME='sc4s' \
@@ -65,7 +65,7 @@ Execute the following commands, use the correct values for your env:
 .. code-block:: bash
 
    kubectl create secret generic remote-splunk \
-   --from-literal=SPLUNK_HEC_URL=https://fqdn:8088/services/collector \
+   --from-literal=SPLUNK_HEC_URL=https://hec-input.fqdn.com:8088/services/collector \
    --from-literal=SPLUNK_HEC_TLS_VERIFY=yes \
    --from-literal=SPLUNK_HEC_TOKEN=sometoken
    
