@@ -6,14 +6,12 @@ Getting Started
 Requirements (Splunk Enterprise/Enterprise Cloud)
 ---------------------------------------------------
 
-1. Splunk index for events "netops"
-2. Splunk index for metrics "net_metrics"
-3. Splunk hec token with no index restriction *OR* Splunk hec token with access to _internal, netops and net_metrics
-4. Known Splunk URL with trusted certificate (must be trusted by standard red hat trusted chain)
-5. Physical or virtual linux host (Prefer Ubuntu or RHEL 8.1) RHEL hosts must have snap support enabled see https://snapcraft.io/docs/installing-snapd
-6. One IP allocation in addition to the ip allocated to the host. *Note: In the future clustering (scale out) will use this IP as a shared resource
+1. Splunk hec token with no index restriction *OR* Splunk hec token with access to _internal, netops and net_metrics
+2. Known Splunk URL with trusted certificate (must be trusted by standard red hat trusted chain)
+3. Physical or virtual linux host (Prefer Ubuntu or RHEL 8.1) RHEL hosts must have snap support enabled see https://snapcraft.io/docs/installing-snapd
+4. One IP allocation in addition to the ip allocated to the host. *Note: In the future clustering (scale out) will use this IP as a shared resource
 
-Setup Micro K8s
+Setup MicroK8s
 ---------------------------------------------------
 
 The following setup instructions are validated for release 1.20x but are subject to change.
@@ -23,7 +21,7 @@ The following setup instructions are validated for release 1.20x but are subject
 3. Install optional modules ``sudo microk8s enable dashboard dns registry metallb``
 4. Alias kubectl ``alias kubectl="microk8s kubectl"``
 
-Monitor Micro8s
+Monitor MicroK8s
 ---------------------------------------------------
 
 Note HEC TLS is required for SCK
