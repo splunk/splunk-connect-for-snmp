@@ -23,8 +23,8 @@ spec:
     spec:
       containers:
         - name: traps
-          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:0.1.10
-          args: ["--log=DEBUG"]
+          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:0.1.18
+          args: ["--log=DEBUG", "--config=/work/config/config.yaml"]
           resources:
             requests:
               memory: "2Gi"
@@ -50,5 +50,19 @@ spec:
                 secretKeyRef:
                   name: remote-splunk
                   key: SPLUNK_HEC_TLS_VERIFY
+          volumeMounts:
+            - name: config
+              mountPath: "/work/config"
+              readOnly: true
+      volumes:
+        # You set volumes at the Pod level, then mount them into containers inside that Pod
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: sc4snmp
+            # An array of keys from the ConfigMap to create as files
+            items:
+              - key: "config.yaml"
+                path: "config.yaml"
 ---
 
