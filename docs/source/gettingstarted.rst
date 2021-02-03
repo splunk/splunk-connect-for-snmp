@@ -18,7 +18,7 @@ The following setup instructions are validated for release 1.20x but are subject
 
 1. Install MicroK8s ``sudo snap install microk8s --classic``
 2. Check completion status ``sudo microk8s status --wait-ready``
-3. Install optional modules ``sudo microk8s enable dns:127.0.0.1 metallb helm3`` *Note dnsmasq should be installed by default an upstream server can be used
+3. Install optional modules ``sudo microk8s enable dns:<privatedns_ip> metallb helm3``
 4. Alias kubectl ``alias kubectl="microk8s kubectl"``
 
 Monitor MicroK8s
