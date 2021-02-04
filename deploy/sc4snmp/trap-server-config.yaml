@@ -7,9 +7,6 @@ data:
     # Splunk Connect for SNMP Traps
     # Sample Configuration file
     snmp:
-      port: 2162
-      ipv4: True
-      ipv6: True
       communities:
         v1:
           - public
@@ -24,7 +21,5 @@ data:
           # - "A10-COMMON-MIB"
           # - "A3COM-HUAWEI-BLG-MIB"
           # - "NET-SNMP-EXAMPLES-MIB"
-    thread-pool:
-      max-suggested-working-threads: 10
 ---
 
