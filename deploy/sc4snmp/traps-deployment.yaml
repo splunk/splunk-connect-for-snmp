@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: traps
-          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:0.1.18
+          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:0.2.3
           args: ["--log=DEBUG", "--config=/work/config/config.yaml"]
           resources:
             requests:
