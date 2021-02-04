@@ -72,7 +72,7 @@ Execute the following commands, use the correct values for your env:
 
 .. code-block:: bash
 
-    cat splunk-connect-for-snmp/deploy/sc4snmp/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
+    cat deploy/sc4snmp/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
 
 * Confirm deployment using ``kubectl get pods`` two(2) instances of mib-server and one (1) instance of traps example
 
