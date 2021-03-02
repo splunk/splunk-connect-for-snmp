@@ -23,6 +23,12 @@ kubernetes_poller_deploy_or_update_config() {
   kubectl get configmap "${kubernetes_configmap_name}" -o yaml
 }
 
+clean_up() {
+  for temporary_file in "$@"; do
+    rm -rf "${temporary_file}"
+  done
+}
+
 # -----------------------------------------------------------------------------
 # MAIN
 # -----------------------------------------------------------------------------
@@ -31,4 +37,4 @@ read -r token
 poller_config_file=$(download_poller_config_file "${token}")
 kubernetes_poller_deploy_or_update_config "${poller_config_file}" "${KUBERNETES_POLLER_CONFIG_MAP_NAME}"
 
-rm -rf "${poller_config_file}"
+clean_up "${poller_config_file}"
