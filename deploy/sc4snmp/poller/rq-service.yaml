@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+spec:
+  type: NodePort
+  ports:
+    - port: 15672
+      name: http
+    - port: 5672
+      name: amqp
+    - port: 15692
+      name: prometheus
+  selector:
+    app: rabbitmq
