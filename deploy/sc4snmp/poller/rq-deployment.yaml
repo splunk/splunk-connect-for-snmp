@@ -16,9 +16,4 @@ spec:
         - name: rabbitmq
           image: rabbitmq:latest
           ports:
-            - containerPort: 15672
-              name: http
             - containerPort: 5672
-              name: amqp
-            - containerPort: 15692
-              name: prometheus
