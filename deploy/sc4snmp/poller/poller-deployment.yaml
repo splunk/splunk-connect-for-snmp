@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: traps
+  name: sc4-snmp-poller
   labels:
     app: sc4-snmp-poller
 spec:
@@ -16,7 +16,7 @@ spec:
         app: sc4-snmp-poller
     spec:
       containers:
-        - name: poller
+        - name: sc4-snmp-poller
           # image: luca/test-poller-3
           # TODO: not sure what image I should put it for now.
           image: ghcr.io/splunk/splunk-connect-for-snmp-poller
@@ -26,6 +26,8 @@ spec:
           env:
             - name: CELERY_BROKER_URL
               value: amqp://guest@$(RABBITMQ_SERVICE_SERVICE_HOST):$(RABBITMQ_SERVICE_SERVICE_PORT)//
+            - name: POLLER_EXECUTION_MODE
+              value: poller
 
 
 
