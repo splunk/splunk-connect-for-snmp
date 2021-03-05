@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traps
+  labels:
+    app: sc4-snmp-poller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sc4-snmp-poller
+  template:
+    metadata:
+      labels:
+        app: sc4-snmp-poller
+    spec:
+      containers:
+        - name: poller
+          # image: luca/test-poller-3
+          # TODO: not sure what image I should put it for now.
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 2162
+          env:
+            - name: CELERY_BROKER_URL
+              value: amqp://guest@$(RABBITMQ_SERVICE_SERVICE_HOST):$(RABBITMQ_SERVICE_SERVICE_PORT)//
+
+
+

@@ -6,5 +6,6 @@ spec:
   type: LoadBalancer
   ports:
     - port: 5672
+      targetPort: 5672
   selector:
     app: rabbitmq
