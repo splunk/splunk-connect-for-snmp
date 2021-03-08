@@ -68,7 +68,7 @@ echo "Please type your person access github token:"
 read -r token
 poller_config_file=$(download_poller_config_file "${token}")
 kubernetes_poller_deploy_or_update_config "${poller_config_file}" "${KUBERNETES_POLLER_CONFIG_MAP_NAME}"
-# TODO: try to get the secret name with yq directly from poller-deployment.yaml. For now I am
+# TODO: try to get the secret name with yq directly from scheduler-deployment.yaml. For now I am
 # getting a syntax error when trying to access a list, not sure why.
 kubernetes_create_or_replace_docker_secret "https://ghcr.io/v2/splunk" ${github_username} ${token} ${github_email} "regcred"
 kubernetes_deploy_rabbitmq

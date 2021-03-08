@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sc4-snmp-poller
+  name: sc4-snmp-scheduler
   labels:
-    app: sc4-snmp-poller
+    app: sc4-snmp-scheduler
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sc4-snmp-poller
+      app: sc4-snmp-scheduler
   template:
     metadata:
       labels:
-        app: sc4-snmp-poller
+        app: sc4-snmp-scheduler
     spec:
       containers:
-        - name: sc4-snmp-poller
-          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:dc83d5bb397653765bed53b031e8f7ca06f5cb1b
+        - name: sc4-snmp-scheduler
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:3c19bf7d32cfe4efde3c7b43ff2a8e509693f4b0
           ports:
             - containerPort: 2162
           env:

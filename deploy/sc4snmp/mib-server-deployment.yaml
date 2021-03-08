@@ -21,7 +21,10 @@ spec:
     spec:
       containers:
         - name: mib-server
-          image: ghcr.io/splunk/splunk-connect-for-snmp-mib-server:1.0.0
+          image: ghcr.io/splunk/splunk-connect-for-snmp-mib-server:41871098f40607f6d035d42b26db9f241e81e2df
           ports:
-            - containerPort: 9000
+            - containerPort: 5000
+          env:
+            - name: MIBS_SERVER_URL
+              value: "http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)/files/asn1/@mib@"
 ---
