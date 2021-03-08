@@ -17,10 +17,7 @@ spec:
     spec:
       containers:
         - name: sc4-snmp-worker
-          # image: luca/test-worker-3
-          # TODO: not sure what image I should put it for now.
           image: ghcr.io/splunk/splunk-connect-for-snmp-poller:dc83d5bb397653765bed53b031e8f7ca06f5cb1b
-          #imagePullPolicy: Never
           ports:
             - containerPort: 2162
           env:
@@ -28,6 +25,21 @@ spec:
               value: amqp://guest@$(RABBITMQ_SERVICE_SERVICE_HOST):$(RABBITMQ_SERVICE_SERVICE_PORT)//
             - name: POLLER_EXECUTION_MODE
               value: worker
+            - name: SPLUNK_HEC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: remote-splunk
+                  key: SPLUNK_HEC_URL
+            - name: SPLUNK_HEC_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: remote-splunk
+                  key: SPLUNK_HEC_TOKEN
+            - name: SPLUNK_HEC_TLS_VERIFY
+              valueFrom:
+                secretKeyRef:
+                  name: remote-splunk
+                  key: SPLUNK_HEC_TLS_VERIFY
       imagePullSecrets:
         - name: regcred
 
