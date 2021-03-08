@@ -19,8 +19,8 @@ spec:
         - name: sc4-snmp-poller
           # image: luca/test-poller-3
           # TODO: not sure what image I should put it for now.
-          image: ghcr.io/splunk/splunk-connect-for-snmp-poller
-          imagePullPolicy: Never
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:a6d7d755e23c1674f28de9a6a3e263fec1648632
+          #imagePullPolicy: Never
           ports:
             - containerPort: 2162
           env:
@@ -28,6 +28,9 @@ spec:
               value: amqp://guest@$(RABBITMQ_SERVICE_SERVICE_HOST):$(RABBITMQ_SERVICE_SERVICE_PORT)//
             - name: POLLER_EXECUTION_MODE
               value: poller
+      imagePullSecrets:
+        - name: regcred
+
 
 
 

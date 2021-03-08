@@ -9,3 +9,5 @@ For testing we simply need to go to the sc4snmp/poller and run:
 ./create_deployment.sh
 
 You'll be asked to provide your personal auth token from github and that's all. 
+
+
