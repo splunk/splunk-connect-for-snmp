@@ -9,7 +9,7 @@ license = "Apache-2.0"
 python = "^3.8"
 
 [tool.poetry.dev-dependencies]
-sphinx = "^3.4.3"
+sphinx = "^3.5.2"
 sphinx-material = "^0.0.32"
 
 [build-system]
