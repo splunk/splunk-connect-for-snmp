@@ -19,7 +19,7 @@ spec:
         - name: sc4-snmp-poller
           # image: luca/test-poller-3
           # TODO: not sure what image I should put it for now.
-          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:589bf49e73b997b99c371f1d260a120dc2e365ce
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:dc83d5bb397653765bed53b031e8f7ca06f5cb1b
           #imagePullPolicy: Never
           ports:
             - containerPort: 2162
