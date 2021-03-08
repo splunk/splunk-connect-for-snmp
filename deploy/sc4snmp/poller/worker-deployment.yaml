@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sc4-snmp-poller
+  name: sc4-snmp-worker
   labels:
-    app: sc4-snmp-poller
+    app: sc4-snmp-worker
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: sc4-snmp-poller
+      app: sc4-snmp-worker
   template:
     metadata:
       labels:
-        app: sc4-snmp-poller
+        app: sc4-snmp-worker
     spec:
       containers:
-        - name: sc4-snmp-poller
-          # image: luca/test-poller-3
+        - name: sc4-snmp-worker
+          # image: luca/test-worker-3
           # TODO: not sure what image I should put it for now.
           image: ghcr.io/splunk/splunk-connect-for-snmp-poller:589bf49e73b997b99c371f1d260a120dc2e365ce
           #imagePullPolicy: Never
@@ -27,7 +27,7 @@ spec:
             - name: CELERY_BROKER_URL
               value: amqp://guest@$(RABBITMQ_SERVICE_SERVICE_HOST):$(RABBITMQ_SERVICE_SERVICE_PORT)//
             - name: POLLER_EXECUTION_MODE
-              value: scheduler
+              value: worker
       imagePullSecrets:
         - name: regcred
 
