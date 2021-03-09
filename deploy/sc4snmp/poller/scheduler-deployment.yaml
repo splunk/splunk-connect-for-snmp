@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: sc4-snmp-scheduler
-          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:3c19bf7d32cfe4efde3c7b43ff2a8e509693f4b0
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:60efab6110373ebb4ffde927c97447a6c0879901
           ports:
             - containerPort: 2162
           env:

@@ -7,7 +7,7 @@ metadata:
     environment: production
     tier: backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: sc4-snmp-mib-server
