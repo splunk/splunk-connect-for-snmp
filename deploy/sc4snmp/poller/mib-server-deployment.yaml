@@ -2,22 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mib-server
-  labels:
-    app: sc4-snmp-mib-server
-    environment: production
-    tier: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: sc4-snmp-mib-server
-      environment: production
   template:
     metadata:
       labels:
         app: sc4-snmp-mib-server
-        environment: production
-        tier: backend
     spec:
       containers:
         - name: mib-server
