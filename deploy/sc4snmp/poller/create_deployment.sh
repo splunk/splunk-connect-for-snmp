@@ -118,7 +118,7 @@ kubernetes_poller_deploy_or_update_config "${poller_config_file}" "${KUBERNETES_
 # TODO: try to get the secret name with yq directly from scheduler-deployment.yaml. For now I am
 # getting a syntax error when trying to access a list, not sure why.
 kubernetes_create_or_replace_docker_secret "https://ghcr.io/v2/splunk" ${github_username} ${token} ${github_email} "regcred"
-kubernetes_create_or_replace_hec_secret "https://localhost:8000/services/collector" "12345678" "remote-splunk"
+kubernetes_create_or_replace_hec_secret "https://host.docker.internal:8088/services/collector" "6b5dcda2-6ead-46bf-a03e-6a9f24c8bd30" "remote-splunk"
 kubernetes_deploy_rabbitmq
 kubernetes_deploy_mongo
 kubernetes_deploy_mibserver
