@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: sc4-snmp-worker
-          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:adbfa78d0e7f50d5a10d25c9d03e4d46db0d23fc
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:8be631efbe9b0f0feaff9673303244f8ce82556c
           ports:
             - containerPort: 2162
           env:
