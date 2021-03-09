@@ -87,6 +87,11 @@ kubernetes_deploy_poller() {
   kubectl create -f worker-deployment.yaml
 }
 
+kubernetes_deploy_mibserver() {
+  kubectl create -f mib-server-deployment.yaml
+  kubectl create -f mib-server-service.yaml
+}
+
 health_check() {
   kubectl get pods
   kubectl get service
@@ -99,7 +104,8 @@ health_check() {
 
 kubernetes_undeploy_all worker-deployment.yaml scheduler-deployment.yaml \
   mongo-deployment.yaml mongo-service.yaml \
-  rq-deployment.yaml rq-service.yaml
+  rq-deployment.yaml rq-service.yaml \
+  mib-server-deployment.yaml mib-server-service.yaml
 health_check
 
 github_username="${USER}"
@@ -107,6 +113,7 @@ github_email="${github_username}@splunk.com"
 echo "Please type your person access github token:"
 read -r token
 poller_config_file=$(download_poller_config_file "${token}")
+
 kubernetes_poller_deploy_or_update_config "${poller_config_file}" "${KUBERNETES_POLLER_CONFIG_MAP_NAME}"
 # TODO: try to get the secret name with yq directly from scheduler-deployment.yaml. For now I am
 # getting a syntax error when trying to access a list, not sure why.
@@ -114,6 +121,7 @@ kubernetes_create_or_replace_docker_secret "https://ghcr.io/v2/splunk" ${github_
 kubernetes_create_or_replace_hec_secret "https://localhost:8000/services/collector" "12345678" "remote-splunk"
 kubernetes_deploy_rabbitmq
 kubernetes_deploy_mongo
+kubernetes_deploy_mibserver
 kubernetes_deploy_poller
 
 clean_up "${poller_config_file}"

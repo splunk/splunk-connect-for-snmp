@@ -17,14 +17,16 @@ spec:
     spec:
       containers:
         - name: sc4-snmp-worker
-          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:3c19bf7d32cfe4efde3c7b43ff2a8e509693f4b0
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:adbfa78d0e7f50d5a10d25c9d03e4d46db0d23fc
           ports:
             - containerPort: 2162
           env:
             - name: CELERY_BROKER_URL
               value: amqp://guest@$(RABBITMQ_SERVICE_SERVICE_HOST):$(RABBITMQ_SERVICE_SERVICE_PORT)//
             - name: MIBS_SERVER_URL
-              value: http://$(MIB-SERVER_SERVICE_HOST):$(MIB-SERVER_SERVICE_PORT)
+              value: http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)
+            - name: MIBS_FILES_URL
+              value: $(MIBS_SERVER_URL)/files/asn1/@mib@
             - name: POLLER_EXECUTION_MODE
               value: worker
             - name: SPLUNK_HEC_URL
