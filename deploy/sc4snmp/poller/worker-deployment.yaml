@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sc4-snmp-worker
+  labels:
+    app: sc4-snmp-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sc4-snmp-worker
+  template:
+    metadata:
+      labels:
+        app: sc4-snmp-worker
+    spec:
+      containers:
+        - name: sc4-snmp-worker
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:d47dd9df430c51d3d35b9120e96f26cd6b30e73c
+          ports:
+            - containerPort: 2162
+          env:
+            - name: CELERY_BROKER_URL
+              value: amqp://guest@$(RABBITMQ_SERVICE_SERVICE_HOST):$(RABBITMQ_SERVICE_SERVICE_PORT)//
+            - name: MIBS_SERVER_URL
+              value: http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)
+            - name: MIBS_FILES_URL
+              value: $(MIBS_SERVER_URL)/files/asn1/@mib@
+            - name: POLLER_EXECUTION_MODE
+              value: worker
+            - name: SPLUNK_HEC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: remote-splunk
+                  key: SPLUNK_HEC_URL
+            - name: SPLUNK_HEC_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: remote-splunk
+                  key: SPLUNK_HEC_TOKEN
+            - name: SPLUNK_HEC_TLS_VERIFY
+              valueFrom:
+                secretKeyRef:
+                  name: remote-splunk
+                  key: SPLUNK_HEC_TLS_VERIFY
+      imagePullSecrets:
+        - name: regcred
+
+
+
+
