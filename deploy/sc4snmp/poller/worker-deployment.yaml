@@ -17,9 +17,8 @@ spec:
     spec:
       containers:
         - name: sc4-snmp-worker
-          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:d47dd9df430c51d3d35b9120e96f26cd6b30e73c
-          ports:
-            - containerPort: 2162
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:10b7eb8d0c3dc3be6b6d9506ebf789bec6c94589
+          args: ["--log=DEBUG", "--config=/work/config/config.yaml"]
           env:
             - name: CELERY_BROKER_URL
               value: amqp://guest@$(RABBITMQ_SERVICE_SERVICE_HOST):$(RABBITMQ_SERVICE_SERVICE_PORT)//
@@ -44,8 +43,22 @@ spec:
                 secretKeyRef:
                   name: remote-splunk
                   key: SPLUNK_HEC_TLS_VERIFY
+          volumeMounts:
+            - name: config
+              mountPath: "/work/config"
+              readOnly: true
       imagePullSecrets:
         - name: regcred
+      volumes:
+        # You set volumes at the Pod level, then mount them into containers inside that Pod
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: sc4snmp-scheduler
+            # An array of keys from the ConfigMap to create as files
+            items:
+              - key: "config.yaml"
+                path: "config.yaml"
 
 
 
