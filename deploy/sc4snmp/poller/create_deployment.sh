@@ -92,6 +92,11 @@ kubernetes_deploy_mibserver() {
   kubectl create -f mib-server-service.yaml
 }
 
+kubernetes_deploy_traps() {
+  kubectl create -f traps-deployment.yaml
+  kubectl create -f traps-service.yaml
+}
+
 health_check() {
   kubectl get pods
   kubectl get service
@@ -118,11 +123,12 @@ kubernetes_poller_deploy_or_update_config "${poller_config_file}" "${KUBERNETES_
 # TODO: try to get the secret name with yq directly from scheduler-deployment.yaml. For now I am
 # getting a syntax error when trying to access a list, not sure why.
 kubernetes_create_or_replace_docker_secret "https://ghcr.io/v2/splunk" ${github_username} ${token} ${github_email} "regcred"
-kubernetes_create_or_replace_hec_secret "https://host.docker.internal:8088/services/collector" "6b5dcda2-6ead-46bf-a03e-6a9f24c8bd30" "remote-splunk"
+kubernetes_create_or_replace_hec_secret "https://1f78a5f1f32b.ngrok.io/services/collector" "3bcc581f-d45b-4422-8880-2fa21a009742" "remote-splunk"
 kubernetes_deploy_rabbitmq
 kubernetes_deploy_mongo
 kubernetes_deploy_mibserver
 kubernetes_deploy_poller
+kubernetes_deploy_traps
 
 clean_up "${poller_config_file}"
 health_check
