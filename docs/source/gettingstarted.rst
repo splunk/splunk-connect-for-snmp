@@ -68,6 +68,8 @@ Execute the following commands, use the correct values for your env:
    --from-literal=SPLUNK_HEC_TOKEN=sometoken
    
 
+Setup Trap
+---------------------------------------------------
 * Apply the manifests, replace the ip ``10.0.101.22`` with the shared IP noted above
 
 .. code-block:: bash
@@ -88,3 +90,31 @@ Execute the following commands, use the correct values for your env:
 .. code-block:: bash
 
     snmptrap -v2c -c public 10.0.101.22 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s test
+
+Setup Poller
+---------------------------------------------------
+
+* Apply the manifests
+
+.. code-block:: bash
+
+    kubectl apply -f .
+
+* Confirm deployment using ``kubectl get pods``
+
+.. code-block:: bash
+
+    NAME                                  READY   STATUS    RESTARTS   AGE
+    mib-server-75c64468d4-nxfhw           1/1     Running   0          1m
+    mongo-65484dd8b4-49dfj                1/1     Running   0          1m
+    rabbitmq-65bc7457dd-xzdq7             1/1     Running   0          1m
+    sc4-snmp-scheduler-5c9f69784d-pfmgq   1/1     Running   0          1m
+    sc4-snmp-worker-5dff6b8c49-q7n2t      1/1     Running   0          1m
+
+* Test the poller by logging to Splunk and confirm presence of events in snmp index and metrics in snmp_metric index.
+
+* You can change the inventory contents in scheduler-config.yaml and use following command to apply the changes to Kubernetes cluster.
+
+.. code-block:: bash
+
+    kubectl apply -f scheduler-config.yaml
