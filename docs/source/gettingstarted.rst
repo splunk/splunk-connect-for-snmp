@@ -74,7 +74,7 @@ Setup Trap
 
 .. code-block:: bash
 
-    cat deploy/sc4snmp/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
+    cat deploy/sc4snmp/trap/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
 
 * Confirm deployment using ``kubectl get pods`` two(2) instances of mib-server and one (1) instance of traps example
 
@@ -98,7 +98,7 @@ Setup Poller
 
 .. code-block:: bash
 
-    kubectl apply -f .
+    cat deploy/sc4snmp/poller/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
 
 * Confirm deployment using ``kubectl get pods``
 
