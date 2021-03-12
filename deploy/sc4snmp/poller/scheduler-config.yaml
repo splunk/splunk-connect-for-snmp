@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sc4snmp-scheduler
+data:
+  config.yaml: |
+    celery:
+      broker:
+        type: "rabbitmq"
+
+    # Sample Configuration file
+    ipv4: True
+    ipv6: False
+    communities:
+      v1:
+        - public
+        - "my-area"
+
+    profiles:
+      router:
+        varBinds:
+          # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+          - ['SNMPv2-MIB', 'sysDescr']
+          - ['SNMPv2-MIB', 'sysUpTime',0]
+          - ['SNMPv2-MIB', 'sysName']
+          - ['CISCO-FC-MGMT-MIB', 'cfcmPortLcStatsEntry']
+          - ['EFM-CU-MIB', 'efmCuPort']
+      atm:
+        varBinds: ['sysDescr', 'cashLeft', 'transactionCount', '1.2.2.2.2.2...2']
+    splunk:
+      index:
+        event: "snmp"
+        metric: "snmp_metric"
+  inventory.csv: |
+    host,version,community,profile,freqinseconds
+    #10.202.12.56,2c,public,1.3.6.1.2.1.1.9.1.4.*,100
+    #127.0.0.1:1161,2c,public,1.3.6.1.2.1.1.9.1.2.*,1
+    host.docker.internal:161,2c,public,router,120
+    #192.168.0.3,3,secretstring1,atm,2
+    #192.168.0.4,3,secretstring2,atm,3
+---

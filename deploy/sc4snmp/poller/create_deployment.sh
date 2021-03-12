@@ -83,6 +83,7 @@ kubernetes_deploy_mongo() {
 }
 
 kubernetes_deploy_poller() {
+  kubectl create -f scheduler-config.yaml
   kubectl create -f scheduler-deployment.yaml
   kubectl create -f worker-deployment.yaml
 }
@@ -107,7 +108,7 @@ health_check() {
 # MAIN
 # -----------------------------------------------------------------------------
 
-kubernetes_undeploy_all worker-deployment.yaml scheduler-deployment.yaml \
+kubernetes_undeploy_all worker-deployment.yaml scheduler-config.yaml scheduler-deployment.yaml \
   mongo-deployment.yaml mongo-service.yaml \
   rq-deployment.yaml rq-service.yaml \
   mib-server-deployment.yaml mib-server-service.yaml
@@ -123,7 +124,7 @@ kubernetes_poller_deploy_or_update_config "${poller_config_file}" "${KUBERNETES_
 # TODO: try to get the secret name with yq directly from scheduler-deployment.yaml. For now I am
 # getting a syntax error when trying to access a list, not sure why.
 kubernetes_create_or_replace_docker_secret "https://ghcr.io/v2/splunk" ${github_username} ${token} ${github_email} "regcred"
-kubernetes_create_or_replace_hec_secret "https://1f78a5f1f32b.ngrok.io/services/collector" "3bcc581f-d45b-4422-8880-2fa21a009742" "remote-splunk"
+kubernetes_create_or_replace_hec_secret "https://host.docker.internal:8088/services/collector" "1f1a82b3-8bfd-43d4-9a20-98fdee4c95b9" "remote-splunk"
 kubernetes_deploy_rabbitmq
 kubernetes_deploy_mongo
 kubernetes_deploy_mibserver
