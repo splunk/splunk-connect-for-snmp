@@ -2,29 +2,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mib-server
-  labels:
-    app: sc4-snmp-mib-server
-    environment: production
-    tier: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: sc4-snmp-mib-server
-      environment: production
   template:
     metadata:
       labels:
         app: sc4-snmp-mib-server
-        environment: production
-        tier: backend
     spec:
       containers:
         - name: mib-server
-          image: ghcr.io/splunk/splunk-connect-for-snmp-mib-server:41871098f40607f6d035d42b26db9f241e81e2df
+          image: ghcr.io/splunk/splunk-connect-for-snmp-mib-server:latest
           ports:
             - containerPort: 5000
           env:
-            - name: MIBS_SERVER_URL
+            - name: MIBS_FILES_URL
               value: "http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)/files/asn1/@mib@"
 ---

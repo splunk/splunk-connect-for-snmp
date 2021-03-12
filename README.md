@@ -11,3 +11,26 @@ For testing we simply need to go to the sc4snmp/poller and run:
 You'll be asked to provide your personal auth token from github and that's all. 
 
 
+# Trap Deployment
+
+install k3s
+
+```
+cd deploy/sc4snmp/trap
+./create_deployment.sh
+```
+
+
+# Complete Deployment
+
+install k3s
+
+```
+cd deploy
+./deploy.sh
+```
+
+# Components used for testing
+
+- snmpsim  (to have a poller query OIDs from snmpsim server)
+- snmptrap (to send trap over to trap receiver)
