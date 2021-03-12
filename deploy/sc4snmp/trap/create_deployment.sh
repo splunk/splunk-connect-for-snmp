@@ -125,7 +125,6 @@ github_username="${USER}"
 github_email="${github_username}@splunk.com"
 echo "Please type your person access github token:"
 # read -r token
-token=6b4885ba7c27556a7d3d30e06c1ac76843f7cc30
 trap_config_file=$(download_trap_config_file "${token}")
 
 kubernetes_trap_deploy_or_update_config "${trap_config_file}" "${KUBERNETES_TRAP_CONFIG_MAP_NAME}"
