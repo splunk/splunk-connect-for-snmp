@@ -9,12 +9,12 @@ echo "    [..    [.. [..   [..[.... [. [..[..    [..[..    [. ..[..       [..[..
 echo "      [.. ..     [....        [..     [.. ..  [..      [..[..       [..[..        "
                                                                              
 
-exit
+
 KUBERNETES_POLLER_CONFIG_MAP_NAME="poller-config"
 SC4SNMP_POLLER_DIR="./sc4snmp/poller/"
 SC4SNMP_TRAP_DIR="./sc4snmp/trap/"
 
-# Change this as needed to adjust with your flavor of k8s wrapper!
+# Change this as needed to adjust with your flavor of k8s wrapper! i.e. kubectl k3s minikube
 alias k='k3s kubectl'
 # alias k='minikube kubectl'
 
