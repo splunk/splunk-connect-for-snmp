@@ -93,6 +93,11 @@ kubernetes_deploy_mibserver() {
   kubectl create -f mib-server-service.yaml
 }
 
+kubernetes_deploy_traps() {
+  kubectl create -f traps-deployment.yaml
+  kubectl create -f traps-service.yaml
+}
+
 health_check() {
   kubectl get pods
   kubectl get service
@@ -124,6 +129,7 @@ kubernetes_deploy_rabbitmq
 kubernetes_deploy_mongo
 kubernetes_deploy_mibserver
 kubernetes_deploy_poller
+kubernetes_deploy_traps
 
 clean_up "${poller_config_file}"
 health_check
