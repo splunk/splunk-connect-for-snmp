@@ -76,7 +76,7 @@ Setup Trap
 
 .. code-block:: bash
 
-    cat deploy/sc4snmp/trap/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
+    cat deploy/sc4snmp/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
 
 * Confirm deployment using ``kubectl get pods``
 
@@ -101,7 +101,7 @@ Setup Poller
 
 .. code-block:: bash
 
-    kubectl apply -f deploy/sc4snmp/poller/
+    kubectl apply -f deploy/sc4snmp/
 
 * Confirm deployment using ``kubectl get pods``
 
@@ -129,4 +129,4 @@ with following columns:
 
 .. code-block:: bash
 
-    kubectl apply -f deploy/sc4snmp/poller/scheduler-config.yaml
+    kubectl apply -f deploy/sc4snmp/scheduler-config.yaml
