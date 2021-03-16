@@ -101,7 +101,7 @@ Setup Poller
 
 .. code-block:: bash
 
-    kubectl apply -f .
+    kubectl apply -f deploy/sc4snmp/poller/
 
 * Confirm deployment using ``kubectl get pods``
 
@@ -129,4 +129,4 @@ with following columns:
 
 .. code-block:: bash
 
-    kubectl apply -f scheduler-config.yaml
+    kubectl apply -f deploy/sc4snmp/poller/scheduler-config.yaml
