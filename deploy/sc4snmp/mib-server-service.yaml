@@ -9,3 +9,4 @@ spec:
       targetPort: 5000
   selector:
     app: sc4-snmp-mib-server
+---

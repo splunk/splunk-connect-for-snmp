@@ -1,33 +1,39 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sc4-snmp-worker
+  name: traps
   labels:
-    app: sc4-snmp-worker
+    app: sc4-snmp-traps
+    environment: production
+    tier: frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sc4-snmp-worker
+      app: sc4-snmp-traps
+      environment: production
+      tier: frontend
   template:
     metadata:
       labels:
-        app: sc4-snmp-worker
+        app: sc4-snmp-traps
+        environment: production
+        tier: frontend
     spec:
       containers:
-        - name: sc4-snmp-worker
-          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:10b7eb8d0c3dc3be6b6d9506ebf789bec6c94589
+        - name: traps
+          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:0.2.3
           args: ["--log=DEBUG", "--config=/work/config/config.yaml"]
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1"
+            limits:
+              memory: "8Gi"
+              cpu: "4"
+          ports:
+            - containerPort: 2162
           env:
-            - name: CELERY_BROKER_URL
-              value: amqp://guest@$(RABBITMQ_SERVICE_SERVICE_HOST):$(RABBITMQ_SERVICE_SERVICE_PORT)//
-            - name: MIBS_SERVER_URL
-              value: http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)
-            - name: MIBS_FILES_URL
-              value: $(MIBS_SERVER_URL)/files/asn1/@mib@
-            - name: POLLER_EXECUTION_MODE
-              value: worker
             - name: SPLUNK_HEC_URL
               valueFrom:
                 secretKeyRef:
@@ -47,19 +53,15 @@ spec:
             - name: config
               mountPath: "/work/config"
               readOnly: true
-      imagePullSecrets:
-        - name: regcred
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config
           configMap:
             # Provide the name of the ConfigMap you want to mount.
-            name: sc4snmp-scheduler
+            name: sc4snmp
             # An array of keys from the ConfigMap to create as files
             items:
               - key: "config.yaml"
                 path: "config.yaml"
-
-
-
+---
 

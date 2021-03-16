@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: rabbitmq-service
+  name: mongo-service
 spec:
   type: LoadBalancer
   ports:
-    - port: 5672
-      targetPort: 5672
+    - port: 27017
   selector:
-    app: rabbitmq
+    app: mongo
+---
