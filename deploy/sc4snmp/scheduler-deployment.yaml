@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,8 +41,4 @@ spec:
                 path: "config.yaml"
               - key: "inventory.csv"
                 path: "inventory.csv"
-
-
-
-
-
+---

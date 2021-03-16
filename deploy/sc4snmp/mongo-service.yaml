@@ -8,3 +8,4 @@ spec:
     - port: 27017
   selector:
     app: mongo
+---
