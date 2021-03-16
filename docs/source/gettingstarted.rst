@@ -99,7 +99,7 @@ Setup Poller
 
 .. code-block:: bash
 
-    cat deploy/sc4snmp/poller/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
+    kubectl apply -f .
 
 * Confirm deployment using ``kubectl get pods``
 
