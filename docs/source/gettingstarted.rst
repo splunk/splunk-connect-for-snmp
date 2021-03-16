@@ -119,8 +119,9 @@ Setup Poller
 * You can change the inventory contents in scheduler-config.yaml and use following command to apply the changes to Kubernetes cluster.
 Agents configuration is placed in scheduler-config.yaml under section inventory.csv, content below is interpreted as csv file
 with following columns:
-1. host (Ip or name)
-2. version of protocol
+
+1. host (IP or name)
+2. version of SNMP protocol
 3. community string authorisation phrase
 4. profile of device (varBinds of profiles can be found in convig.yaml section of scheduler-config.yaml file)
 5. frequency in seconds (how often SNMP connector should ask agent for data)
