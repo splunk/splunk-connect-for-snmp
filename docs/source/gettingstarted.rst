@@ -6,7 +6,9 @@ Getting Started
 Requirements (Splunk Enterprise/Enterprise Cloud)
 ---------------------------------------------------
 
-1. Splunk hec token with no index restriction *OR* Splunk hec token with access to _internal, netops and net_metrics
+1. Splunk hec token with no index restriction **or** Splunk hec token with access to _internal, netops and net_metrics
+
+    1.1 Poller-specific indexes: we need an **event type** index called **snmp**, and **metrics type** index called **snmp_metric**
 2. Known Splunk URL with trusted certificate (must be trusted by standard red hat trusted chain)
 3. Physical or virtual linux host (Prefer Ubuntu or RHEL 8.1) RHEL hosts must have snap support enabled see https://snapcraft.io/docs/installing-snapd
 4. One IP allocation in addition to the ip allocated to the host. *Note: In the future clustering (scale out) will use this IP as a shared resource
