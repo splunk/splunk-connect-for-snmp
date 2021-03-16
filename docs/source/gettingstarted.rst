@@ -76,13 +76,14 @@ Setup Trap
 
     cat deploy/sc4snmp/trap/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
 
-* Confirm deployment using ``kubectl get pods`` two(2) instances of mib-server and one (1) instance of traps example
+* Confirm deployment using ``kubectl get pods``
 
 .. code-block:: bash
 
     NAME                          READY   STATUS    RESTARTS   AGE
     mib-server-54557f5846-rzg9q   1/1     Running   0          1m
     mib-server-54557f5846-pbt2h   1/1     Running   0          1m
+    mongo-65484dd8b4-49dfj        1/1     Running   0          1m
     traps-676859cb8d-tnc7v        1/1     Running   0          1m
 
 * Test the trap from a linux system with snmp installed replace the ip ``10.0.101.22`` with the shared ip above

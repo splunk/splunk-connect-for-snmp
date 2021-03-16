@@ -4,7 +4,6 @@ metadata:
   name: mongo-service
 spec:
   type: LoadBalancer
-  loadBalancerIP: replace-me
   ports:
     - port: 27017
   selector:

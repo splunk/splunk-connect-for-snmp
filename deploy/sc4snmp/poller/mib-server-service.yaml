@@ -4,7 +4,6 @@ metadata:
   name: mib-server-service
 spec:
   type: LoadBalancer
-  loadBalancerIP: replace-me
   ports:
     - port: 5000
       targetPort: 5000
