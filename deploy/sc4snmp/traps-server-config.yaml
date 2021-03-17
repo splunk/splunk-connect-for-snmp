@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sc4snmp-trap
+data:
+  config.yaml: |
+    # Splunk Connect for SNMP Traps
+    # Sample Configuration file
+    snmp:
+      communities:
+        v1:
+          - public
+          - "my-area"
+    thread-pool:
+      max-suggested-working-threads: 10
+---
+
