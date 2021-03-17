@@ -8,7 +8,7 @@ spec:
   ports:
     - port: 2162
       targetPort: 2162
+      protocol: UDP
   selector:
     app: sc4-snmp-traps
-
 ---
