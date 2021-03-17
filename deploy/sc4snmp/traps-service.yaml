@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sc4-snmp-traps
+spec:
+  type: LoadBalancer
+  loadBalancerIP: replace-me
+  ports:
+    - port: 2162
+      targetPort: 2162
+  selector:
+    app: sc4-snmp-traps
+
+---
