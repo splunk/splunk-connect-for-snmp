@@ -6,7 +6,7 @@ spec:
   type: LoadBalancer
   loadBalancerIP: replace-me
   ports:
-    - port: 2162
+    - port: 162
       targetPort: 2162
       protocol: UDP
   selector:
