@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: sc4-snmp-worker
-          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:10b7eb8d0c3dc3be6b6d9506ebf789bec6c94589
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:abf4aad9c71c66773c9d980a2ecd96728c60faed
           args: ["--log=DEBUG", "--config=/work/config/config.yaml"]
           env:
             - name: CELERY_BROKER_URL
