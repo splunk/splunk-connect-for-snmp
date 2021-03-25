@@ -16,13 +16,16 @@ spec:
     spec:
       containers:
         - name: traps
-          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:v0.4.0
+          image: eliaszw/trap:latest
           args: ["--loglevel=DEBUG", "--config=/work/config/config.yaml", "--index=snmp"]
+          imagePullPolicy: Never
           ports:
             - containerPort: 2162
           env:
             - name: MIBS_SERVER_URL
               value: http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)
+            - name: OTEL_SERVER_URL
+              value: http://$(OTEL_SERVICE_SERVICE_HOST):$(OTEL_SERVICE_SERVICE_PORT_LOGS)
             - name: SPLUNK_HEC_URL
               valueFrom:
                 secretKeyRef:

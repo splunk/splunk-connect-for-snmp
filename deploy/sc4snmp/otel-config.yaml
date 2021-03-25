@@ -11,19 +11,17 @@ data:
         endpoint: 0.0.0.0:8882
     exporters:
       splunk_hec:
-        #TODO https://github.com/kubernetes/kubernetes/issues/79224
-        #     https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/316
         token: "796bb611-0189-47dc-a5f8-25fe7be42c00"
         endpoint: "https://10.127.60.27:8088/services/collector"
         insecure_skip_verify: true
-      signalfx:
-        access_token: SBmpkOm8Vquqspus58TrnQ
-        realm: us0
+      #signalfx:
+        #access_token: <signalfx_token>
+        #realm: <signal_fx_realm>
     service:
       pipelines:
         metrics:
           receivers: [splunk_hec/metrics]
-          exporters: [splunk_hec, signalfx]
+          exporters: [splunk_hec]
         logs:
           receivers: [splunk_hec/logs]
           exporters: [splunk_hec]
