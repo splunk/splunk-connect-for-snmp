@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: traps
-          image: eliaszw/trap:latest
+          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:6d7f55448a80120c27d1a7ee438d3cc5652322ec
           args: ["--loglevel=DEBUG", "--config=/work/config/config.yaml", "--index=snmp"]
           imagePullPolicy: Never
           ports:
