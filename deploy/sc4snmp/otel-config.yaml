@@ -11,12 +11,12 @@ data:
         endpoint: 0.0.0.0:8882
     exporters:
       splunk_hec:
-        token: "$SPLUNK_HEC_TOKEN"
-        endpoint: "$SPLUNK_HEC_URL"
+        token: $SPLUNK_HEC_TOKEN
+        endpoint: $SPLUNK_HEC_URL
         insecure_skip_verify: $SPLUNK_HEC_TLS_VERIFY
       #signalfx:
-        #access_token: <signalfx_token>
-        #realm: <signal_fx_realm>
+        #access_token: $SIGNALFX_TOKEN
+        #realm: $SIGNALFX_REALM
     service:
       pipelines:
         logs:
