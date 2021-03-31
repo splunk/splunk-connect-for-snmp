@@ -17,4 +17,3 @@ spec:
           image: rabbitmq:latest
           ports:
             - containerPort: 5672
----
