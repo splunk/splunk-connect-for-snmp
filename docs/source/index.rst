@@ -3,7 +3,7 @@
 Splunk Connect for SNMP
 ===================================================
 
-*THIS IS ALPHA SOFTWARE* 
+*THIS IS BETA SOFTWARE* 
 
 Splunk welcomes your experimentation and feedback please let your account team know you are experimenting with our new solution.
 
