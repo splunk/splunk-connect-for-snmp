@@ -1,7 +1,11 @@
 from kubernetes.client import V1ConfigMap
 import pytest
 
-from test.kubetest_utils import create_service, create_deployment
+from test.kubetest_utils import (
+    create_service,
+    create_deployment,
+    create_kubernetes_secret,
+)
 
 import logging
 
@@ -66,3 +70,8 @@ def test_poller_integration(
     assert len(mongo_deployment_service) == 1
     assert scheduler_config.obj.data["inventory.csv"] is not None
     assert scheduler_config.obj.data["config.yaml"] is not None
+
+    secret_create, secret_yaml = create_kubernetes_secret(
+        "remote-splunk", "http://localhost:8088", "12345"
+    )
+    assert secret_create
