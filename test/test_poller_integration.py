@@ -1,5 +1,10 @@
 import pytest
 
+from test.kubetest_utils import create_service, create_deployment
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 # even if this should be the default behavior (the documentation claims
 # the default value of the "kubeconfig" fixture is "~/.kube/config" in my
@@ -15,25 +20,16 @@ def kubeconfig():
 
 @pytest.fixture
 def rabbitmq_deployment(kube):
-    rabbitmq_deployment_yaml = "../deploy/sc4snmp/rq-deployment.yaml"
-    rq_deployment = kube.load_deployment(rabbitmq_deployment_yaml)
-    rq_deployment.create()
-    rq_deployment.wait_until_ready()
-    rq_deployment.refresh()
-    return rq_deployment
+    return create_deployment(kube, "../deploy/sc4snmp/rq-deployment.yaml")
 
 
 @pytest.fixture
 def rabbitmq_service(kube):
-    rabbitmq_service_yaml = "../deploy/sc4snmp/rq-service.yaml"
-    rq_service = kube.load_service(rabbitmq_service_yaml)
-    rq_service.create()
-    rq_service.wait_until_ready()
-    rq_service.refresh()
-    return rq_service
+    return create_service(kube, "../deploy/sc4snmp/rq-service.yaml")
 
 
 def test_poller_integration(rabbitmq_deployment, rabbitmq_service):
+    logger.info("Poller integration started Kubernetes's deployment")
     rq_deployment_pods = rabbitmq_deployment.get_pods()
     assert len(rq_deployment_pods) == 1
     rq_deployment_service = rabbitmq_service.get_endpoints()
