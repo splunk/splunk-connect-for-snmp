@@ -1,3 +1,4 @@
+from kubernetes.client import V1ConfigMap
 import pytest
 
 from test.kubetest_utils import create_service, create_deployment
@@ -28,9 +29,40 @@ def rabbitmq_service(kube):
     return create_service(kube, "../deploy/sc4snmp/rq-service.yaml")
 
 
-def test_poller_integration(rabbitmq_deployment, rabbitmq_service):
+@pytest.fixture
+def mongo_deployment(kube):
+    return create_deployment(kube, "../deploy/sc4snmp/mongo-deployment.yaml")
+
+
+@pytest.fixture
+def mongo_service(kube):
+    return create_service(kube, "../deploy/sc4snmp/mongo-service.yaml")
+
+
+@pytest.fixture
+def scheduler_config(kube):
+    cm = kube.load_configmap("../deploy/sc4snmp/scheduler-config.yaml")
+    cm.create()
+    cm.wait_until_ready()
+    cm.refresh()
+    return cm
+
+
+def test_poller_integration(
+    rabbitmq_deployment,
+    rabbitmq_service,
+    mongo_deployment,
+    mongo_service,
+    scheduler_config,
+):
     logger.info("Poller integration started Kubernetes's deployment")
     rq_deployment_pods = rabbitmq_deployment.get_pods()
     assert len(rq_deployment_pods) == 1
     rq_deployment_service = rabbitmq_service.get_endpoints()
     assert len(rq_deployment_service) == 1
+    mongo_deployment_pods = mongo_deployment.get_pods()
+    assert len(mongo_deployment_pods) == 1
+    mongo_deployment_service = mongo_service.get_endpoints()
+    assert len(mongo_deployment_service) == 1
+    assert scheduler_config.obj.data["inventory.csv"] is not None
+    assert scheduler_config.obj.data["config.yaml"] is not None
