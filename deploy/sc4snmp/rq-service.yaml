@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: rabbitmq-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 5672
       targetPort: 5672
