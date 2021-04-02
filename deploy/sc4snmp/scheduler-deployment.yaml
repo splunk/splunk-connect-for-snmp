@@ -17,7 +17,6 @@ spec:
       containers:
         - name: sc4-snmp-scheduler
           image: ghcr.io/splunk/splunk-connect-for-snmp-poller:f9626489294685f1afb488e63b28a1c7cda6806b
-          imagePullPolicy: Never
           args: ["--log=DEBUG", "--config=/work/config/config.yaml", "--inventory=/work/config/inventory.csv"]
           env:
             - name: CELERY_BROKER_URL
@@ -42,4 +41,4 @@ spec:
                 path: "config.yaml"
               - key: "inventory.csv"
                 path: "inventory.csv"
----
+
