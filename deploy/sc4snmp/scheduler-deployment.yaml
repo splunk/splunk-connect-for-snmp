@@ -16,9 +16,7 @@ spec:
     spec:
       containers:
         - name: sc4-snmp-scheduler
-          # image: ghcr.io/splunk/splunk-connect-for-snmp-poller:2ac26b1bb229642d694eba4d4f12a3a58315d4ea
-          # image: ghcr.io/splunk/splunk-connect-for-snmp-poller:bd03c0438d65a42eb3777b9e537fddf31163d5ed
-          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:c4da0d1ed7cc7f19b53babb0a5648724a71bb410
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:v1.2.0-develop.4
           args: ["--log=DEBUG", "--config=/work/config/config.yaml", "--inventory=/work/config/inventory.csv"]
           env:
             - name: CELERY_BROKER_URL
