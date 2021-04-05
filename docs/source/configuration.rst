@@ -8,17 +8,17 @@ Traps Configuration
   * config.yaml
 
 Splunk Connect for SNMP supports receiving SNMPv1 traps, SNMPv2 traps, and SNMPv3 traps.
-To make it work, please configure with authorized SNMPv1/v2c community strings and/or SNMPv3 users in **traps-server-config.yaml**. Non-authorized traps/informs will be dropped.
+To make it work, please configure with authorized SNMPv1/SNMPv2c community strings and/or SNMPv3 users in **traps-server-config.yaml**. Non-authorized traps/informs will be dropped.
 
 Configure SNMPv1/v2c community strings
 ---------------------------------------------------
 
 
-Add SNMPv1/v2c community strings under **v1/v2** section, respectively. 
+Add SNMPv1/SNMPv2c community strings under **v1/v2** section, respectively. 
 
 **Params**:
 
-* **community string** (required) - SNMP v1/v2c community string.
+* **community string** (required) - SNMPv1/SNMPv2c community string.
 
 
 Configure SNMPv3 users
@@ -111,7 +111,7 @@ Scheduler Configuration
   * config.yaml
 
 Splunk Connect for SNMP supports polling from  SNMPv1 agents, SNMPv2 agents, and SNMPv3 agents.
-To make it work, please configure with authorized SNMPv1/v2c community strings and/or SNMPv3 users in **scheduler-config.yaml**. 
+To make it work, please configure with authorized SNMPv1/SNMPv2c community strings and/or SNMPv3 users in **scheduler-config.yaml**. 
 
 **inventory.csv**
 ---------------------------------------------------
@@ -126,7 +126,7 @@ Inventory.csv acts as a lookup table where the poller application will read the 
 
    "IP:Port of SNMP agents, where port is optional with default is 161","An indication of SNMP versions", "community string for SNMPv1/v2 OR userNanme for SNMPv3", "query info", "query frequency in seconds"
 
-    "e.g. 174.62.79.72 (IP only) | 174.62.79.72:161 (IP+port)","e.g. 1 | 2c | 3", "e.g. public (SNMPv1/2 community string) | testUser (SNMPv3 username, setup other params in config.yaml)","e.g 1.3.6.1.2.1.1.9.1.3.1 (single oid for snmp get) | 1.3.6.1.2.1.1.9.1.3.* (oid for snmp walk to get subtree) | router (profile used to setup detials in config.yaml", "e.g. 30"
+    "e.g. 174.62.79.72 (IP only) | 174.62.79.72:161 (IP+port)","e.g. 1 | 2c | 3", "e.g. public (SNMPv1/SNMPv2c community string) | testUser (SNMPv3 username, setup other params in config.yaml)","e.g 1.3.6.1.2.1.1.9.1.3.1 (single oid for snmp get) | 1.3.6.1.2.1.1.9.1.3.* (oid for snmp walk to get subtree) | router (profile used to setup detials in config.yaml", "e.g. 30"
 
 e.g.
 
@@ -143,10 +143,31 @@ e.g.
 ---------------------------------------------------
 
 
-config.yaml acts as an extension for inventory.csv for these two situations.
+config.yaml acts as an extension for inventory.csv for these three situations.
 
 
-1. Configure SNMPv3 users
+1. Configure optional parameters for SNMPv1/SNMPv2c community data
+-----------------------------------------------------------------------
+
+
+Community-Based Security Model of SNMPv1/SNMPv2c may require more params, which can be set up in config.yaml.
+
+ 1. Add SNMPv1/SNMPv2c community string as Key under **communities** section.
+
+ 2. Add necessary parameters.
+
+  Here are supported optional parameters:
+
+* **communityIndex** (optional) - Unique index value of a row in snmpCommunityTable. If it is the only positional parameter, it is treated as a communityName.
+
+* **contextEngineId** (optional) - Indicates the location of the context in which management information is accessed when using the community string specified by the communityName.
+
+* **contextName** (optional) - The context in which management information is accessed when using the above communityName.
+
+* **tag** (optional) - Arbitrary string that specifies a set of transport endpoints from which a command responder application will accept management requests with given communityName or to which notification originator application will send notifications when targets are specified by a tag value(s).
+
+
+2. Configure optional parameters SNMPv3 users
 ---------------------------------------------------
 
 
@@ -231,7 +252,7 @@ e.g.
         contextName: "4c9184f37cff01bcdc32dc486ec36961"  
         
 
-2. Configure more detailed query information 
+3. Configure more detailed query information 
 ---------------------------------------------------
 User can provide more detailed query information under **profiles** section to achieve two purposes: 1) query by mib string; 2) query multiple oids/mib string for one agent.
 
@@ -263,4 +284,4 @@ User can provide more detailed query information under **profiles** section to a
 
 
     
-    
+   
