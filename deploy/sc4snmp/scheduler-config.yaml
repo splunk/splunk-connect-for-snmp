@@ -11,9 +11,6 @@ data:
     ipv4: True
     ipv6: False
     communities:
-      # v1:
-      #   - public
-      #   - "my-area"
       public:
         communityIndex:
         contextEngineId:
