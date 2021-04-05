@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: traps-nginx
+          image: nginx
+          # args: ["--loglevel=DEBUG", "--config=/work/config/config.yaml", "--index=snmp"]
+          volumeMounts:
+            - name: config
+              mountPath: "/work/config"
+              readOnly: true
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+         - name: config
+           configMap:
+             name: sc4snmp-trap
+             items:
+               - key: "config.yaml"
+                 path: "config.yaml"
+---
+

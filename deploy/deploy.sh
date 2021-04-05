@@ -7,12 +7,12 @@ echo "       [..    [..          [. [..      [..    [..  [.. [..[..  [..  [..[..
 echo "          [.. [..        [..  [..         [.. [..   [. [..[..   [.  [..[..        "
 echo "    [..    [.. [..   [..[.... [. [..[..    [..[..    [. ..[..       [..[..        "
 echo "      [.. ..     [....        [..     [.. ..  [..      [..[..       [..[..        "
-                                                                             
+
 
 
 KUBERNETES_POLLER_CONFIG_MAP_NAME="poller-config"
-SC4SNMP_POLLER_DIR="./sc4snmp/poller/"
-SC4SNMP_TRAP_DIR="./sc4snmp/trap/"
+SC4SNMP_POLLER_DIR="./sc4snmp/"
+SC4SNMP_TRAP_DIR="./sc4snmp/"
 
 # Change this as needed to adjust with your flavor of k8s wrapper! i.e. kubectl k3s minikube
 alias k='k3s kubectl'
@@ -20,7 +20,7 @@ alias k='k3s kubectl'
 
 
 kubernetes_undeploy_all() {
-  
+
   for conf in "$@"; do
     k delete -f "${conf}"
 
@@ -53,7 +53,7 @@ download_poller_config_file() {
 kubernetes_poller_deploy_or_update_config() {
   poller_config_file=$1
   kubernetes_configmap_name=$2
-  k create configmap "${kubernetes_configmap_name}" --from-file="${poller_config_file}" --dry-run=client -o yaml \
+  k apply configmap "${kubernetes_configmap_name}" --from-file="${poller_config_file}" --dry-run=client -o yaml \
     | k apply -f -
   k get configmap "${kubernetes_configmap_name}" -o yaml
 }
@@ -74,6 +74,7 @@ kubernetes_create_or_replace_docker_secret() {
 }
 
 kubernetes_create_or_replace_hec_secret() {
+  echo "== kubernetes_create_or_replace_hec_secret =="
   url=$1
   hec_token=$2
   secret_name=$3
@@ -83,9 +84,11 @@ kubernetes_create_or_replace_hec_secret() {
     --from-literal=SPLUNK_HEC_URL="${url}" \
     --from-literal=SPLUNK_HEC_TLS_VERIFY=no \
     --from-literal=SPLUNK_HEC_TOKEN="${hec_token}"
+  k get secret
 }
 
 clean_up() {
+  echo "== clean_up =="
   for temporary_file in "$@"; do
     rm -rf "${temporary_file}"
   done
@@ -102,38 +105,41 @@ undeploy_poller() {
 }
 
 kubernetes_deploy_rabbitmq() {
-  k create -f $SC4SNMP_POLLER_DIR/rq-deployment.yaml
-  k create -f $SC4SNMP_POLLER_DIR/rq-service.yaml
+  k apply -f $SC4SNMP_POLLER_DIR/rq-deployment.yaml
+  k apply -f $SC4SNMP_POLLER_DIR/rq-service.yaml
 }
 
 kubernetes_deploy_mongo() {
-  k create -f $SC4SNMP_POLLER_DIR/mongo-deployment.yaml
-  k create -f $SC4SNMP_POLLER_DIR/mongo-service.yaml
+  k apply -f $SC4SNMP_POLLER_DIR/mongo-deployment.yaml
+  k apply -f $SC4SNMP_POLLER_DIR/mongo-service.yaml
 }
 
 kubernetes_deploy_poller() {
-  k create -f $SC4SNMP_POLLER_DIR/scheduler-deployment.yaml
-  k create -f $SC4SNMP_POLLER_DIR/worker-deployment.yaml
+  k apply -f $SC4SNMP_POLLER_DIR/scheduler-config.yaml
+  k apply -f $SC4SNMP_POLLER_DIR/scheduler-deployment.yaml
+  k apply -f $SC4SNMP_POLLER_DIR/worker-deployment.yaml
 }
 
 kubernetes_deploy_mibserver() {
-  k create -f $SC4SNMP_POLLER_DIR/mib-server-deployment.yaml
-  k create -f $SC4SNMP_POLLER_DIR/mib-server-service.yaml
+  k apply -f $SC4SNMP_POLLER_DIR/mib-server-deployment.yaml
+  k apply -f $SC4SNMP_POLLER_DIR/mib-server-service.yaml
 }
 
 kubernetes_deploy_snmpsim() {
-  k create -f $SC4SNMP_POLLER_DIR/sim-deployment.yaml
+  k apply -f $SC4SNMP_POLLER_DIR/sim-deployment.yaml
 }
 
 kubernetes_deploy_traps() {
-  k create -f $SC4SNMP_TRAP_DIR/traps-deployment.yaml
-  k create -f $SC4SNMP_TRAP_DIR/traps-service.yaml
+  k apply -f $SC4SNMP_TRAP_DIR/traps-server-config.yaml
+  k apply -f $SC4SNMP_TRAP_DIR/traps-deployment.yaml
+  k apply -f $SC4SNMP_TRAP_DIR/traps-service.yaml
 }
 
 
 
 
 health_check() {
+  echo "== health_check =="
   k get pods
   k get service
   k get deployment
@@ -168,8 +174,12 @@ kubernetes_poller_deploy_or_update_config "${poller_config_file}" "${KUBERNETES_
 kubernetes_create_or_replace_docker_secret "https://ghcr.io/v2/splunk" ${github_username} ${token} ${github_email} "regcred"
 kubernetes_create_or_replace_hec_secret "https://54.145.16.74:8088/services/collector" "a43a5b69-1813-44a8-b9df-3b05ca84883d" "remote-splunk"
 
+
+  echo "== kubernetes_deploy_snmpsim =="
+
 kubernetes_deploy_snmpsim
 
+  echo "== deploy remaining services =="
 kubernetes_deploy_rabbitmq
 kubernetes_deploy_mongo
 kubernetes_deploy_mibserver
@@ -178,4 +188,5 @@ kubernetes_deploy_poller
 
 
 clean_up "${poller_config_file}"
+sleep 5
 health_check

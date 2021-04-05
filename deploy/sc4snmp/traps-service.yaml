@@ -4,7 +4,7 @@ metadata:
   name: sc4-snmp-traps
 spec:
   type: LoadBalancer
-  loadBalancerIP: replace-me
+  # loadBalancerIP: replace-me
   ports:
     - port: 162
       targetPort: 2162
