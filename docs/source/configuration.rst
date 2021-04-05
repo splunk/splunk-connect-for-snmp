@@ -271,17 +271,5 @@ User can provide more detailed query information under **profiles** section to a
           - ['CISCO-FC-MGMT-MIB', 'cfcmPortLcStatsEntry']
           - ['EFM-CU-MIB', 'efmCuPort']
           - '1.3.6.1.2.1.1.6.0'
-          - '1.3.6.1.2.1.1.9.1.4.*'
-
-
-   
-
-
-
-
-
-
-
-
-    
+          - '1.3.6.1.2.1.1.9.1.4.*'  
    
