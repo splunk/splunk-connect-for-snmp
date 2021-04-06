@@ -131,19 +131,19 @@ For example,
 
 The corresponding test command for these SNMPv3 users above are:
 
-**userNanme: snmpv3test**
+**userName: snmpv3test**
 
 .. code-block:: bash
 
     snmptrap -v 3 -e 0x8000000004030201 -l authPriv -u snmpv3test -A AuthPass1 -X PrivPass2 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test"
 
-**userNanme: snmpv3test2**
+**userName: snmpv3test2**
 
 .. code-block:: bash
 
     snmptrap -v 3 -e 0x8000000004030202 -l authPriv -u snmpv3test2 -a SHA -A AuthPass11 -x AES -X PrivPass22 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test2"
 
-**userNanme: snmpv3test3**
+**userName: snmpv3test3**
 
 .. code-block:: bash
 
