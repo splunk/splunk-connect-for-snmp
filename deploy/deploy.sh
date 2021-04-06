@@ -82,7 +82,7 @@ kubernetes_create_or_replace_hec_secret() {
   k delete secret "${secret_name}"
   k create secret generic remote-splunk \
     --from-literal=SPLUNK_HEC_URL="${url}" \
-    --from-literal=SPLUNK_HEC_TLS_VERIFY=no \
+    --from-literal=SPLUNK_HEC_TLS_VERIFY=true \
     --from-literal=SPLUNK_HEC_TOKEN="${hec_token}"
   k get secret
 }
@@ -135,6 +135,12 @@ kubernetes_deploy_traps() {
   k apply -f $SC4SNMP_TRAP_DIR/traps-service.yaml
 }
 
+kubernetes_deploy_otel() {
+  k apply -f $SC4SNMP_TRAP_DIR/otel-config.yaml
+  k apply -f $SC4SNMP_TRAP_DIR/otel-deployment.yaml
+  k apply -f $SC4SNMP_TRAP_DIR/otel-service.yaml
+}
+
 
 
 
@@ -155,7 +161,8 @@ kubernetes_undeploy_all $SC4SNMP_POLLER_DIR/worker-deployment.yaml $SC4SNMP_POLL
   $SC4SNMP_POLLER_DIR/mongo-deployment.yaml $SC4SNMP_POLLER_DIR/mongo-service.yaml \
   $SC4SNMP_POLLER_DIR/rq-deployment.yaml $SC4SNMP_POLLER_DIR/rq-service.yaml \
   $SC4SNMP_POLLER_DIR/mib-server-deployment.yaml $SC4SNMP_POLLER_DIR/mib-server-service.yaml \
-  $SC4SNMP_TRAP_DIR/traps-deployment.yaml $SC4SNMP_TRAP_DIR/traps-service.yaml
+  $SC4SNMP_TRAP_DIR/traps-deployment.yaml $SC4SNMP_TRAP_DIR/traps-service.yaml \
+  $SC4SNMP_TRAP_DIR/otel-deployment.yaml $SC4SNMP_TRAP_DIR/otel-deployment.yaml
 
 
 health_check
@@ -183,6 +190,8 @@ kubernetes_deploy_snmpsim
 kubernetes_deploy_rabbitmq
 kubernetes_deploy_mongo
 kubernetes_deploy_mibserver
+kubernetes_deploy_otel
+sleep 3
 kubernetes_deploy_traps
 kubernetes_deploy_poller
 
