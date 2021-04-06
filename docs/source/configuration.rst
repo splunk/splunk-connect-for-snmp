@@ -120,7 +120,7 @@ Test the  traps
 
 **SNMPv3 traps**
 
-You can setup the SNMPv3 the **config.yaml** contents in **traps-server-config.yaml** and use following command to test SNMPv3 traps
+You can set up the SNMPv3 users under the section **config.yaml** in **traps-server-config.yaml** and use the following command to test SNMPv3 traps.
 
 .. code-block:: bash
 
@@ -137,13 +137,13 @@ The corresponding test command for these SNMPv3 users above are:
 
     snmptrap -v 3 -e 0x8000000004030201 -l authPriv -u snmpv3test -A AuthPass1 -X PrivPass2 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test"
 
-**userNanme: snmpv3test3**
+**userNanme: snmpv3test2**
 
 .. code-block:: bash
 
     snmptrap -v 3 -e 0x8000000004030202 -l authPriv -u snmpv3test2 -a SHA -A AuthPass11 -x AES -X PrivPass22 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test2"
 
-**userNanme: snmpv3test**
+**userNanme: snmpv3test3**
 
 .. code-block:: bash
 
@@ -348,9 +348,9 @@ Test the poller
 
 **SNMPv3**
 
-* Besides change the inventory contents under section **inventory.csv**. You may need to setup security passphrases for the SNMPv3 under section **config.yaml > usernames**.
+* Besides changing the inventory contents under section **inventory.csv**, you may need to set up security passphrases for the SNMPv3 under section **config.yaml > usernames**.
 
-Here are the steps to configue to these two SNMPv3 Users.
+Here are the steps to configure these two SNMPv3 Users.
 
 .. list-table:: 
    :widths: 15 15 15 15 15 15
@@ -367,7 +367,7 @@ Here are the steps to configue to these two SNMPv3 Users.
      - MD5
      - DES
      - auctoritas
-     - Auth Protocol
+     - privatus
    * - testUser2
      - Auth,Priv
      - SHA
