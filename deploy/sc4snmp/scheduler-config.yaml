@@ -25,9 +25,7 @@ data:
       testUser:
         authKey: authpass
         privKey: privacypass
-        contextName: "4c9184f37cff01bcdc32dc486ec36961"  #public
-        # contextName: "b00e7c4780fffc4ca0a74e262dd116bc"  #1.3.6.1.6.1.1.0/127.0.0.1 (1st)
-        # contextName: "ec50a8f4d28bcb39103379379ddc5185" #bgp
+        contextName: "4c9184f37cff01bcdc32dc486ec36961"
         authProtocol: SHA
         privProtocol: AES
         securityEngineId: 8000000004030201
