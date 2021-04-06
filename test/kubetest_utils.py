@@ -49,3 +49,10 @@ def create_kubernetes_secret(secret_name, splunk_url, token):
         secret_yaml_file.write(out)
 
     return process.returncode == 0, secret_yaml
+
+
+def extract_splunk_password_from_deployment(local_splunk_deployment):
+    # we assume a deployment with at least one pod. Only the first pod
+    # will be considered.
+    env_variables = local_splunk_deployment.get_pods()[0].get_containers()[0].obj.env
+    return next(e.value for e in env_variables if e.name == "SPLUNK_PASSWORD")

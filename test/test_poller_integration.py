@@ -4,6 +4,7 @@ from test.kubetest_utils import (
     create_service,
     create_deployment,
     create_kubernetes_secret,
+    extract_splunk_password_from_deployment,
 )
 
 import logging
@@ -80,6 +81,12 @@ def snmp_simulator_deployment(kube):
 @pytest.fixture
 def snmp_simulator_service(kube):
     return create_service(kube, "./snmp-sim-service.yaml")
+
+
+def test_deploy_splunk(kube):
+    splunk_deployment = create_deployment(kube, "./splunk-deployment.yaml")
+    password = extract_splunk_password_from_deployment(splunk_deployment)
+    logger.info(f"Using the following password = {password}")
 
 
 def test_poller_integration(
