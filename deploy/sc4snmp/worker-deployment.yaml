@@ -27,21 +27,10 @@ spec:
               value: $(MIBS_SERVER_URL)/files/asn1/@mib@
             - name: POLLER_EXECUTION_MODE
               value: worker
-            - name: SPLUNK_HEC_URL
-              valueFrom:
-                secretKeyRef:
-                  name: remote-splunk
-                  key: SPLUNK_HEC_URL
-            - name: SPLUNK_HEC_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: remote-splunk
-                  key: SPLUNK_HEC_TOKEN
-            - name: SPLUNK_HEC_TLS_VERIFY
-              valueFrom:
-                secretKeyRef:
-                  name: remote-splunk
-                  key: SPLUNK_HEC_TLS_VERIFY
+            - name: OTEL_SERVER_LOGS_URL
+              value: http://$(OTEL_SERVICE_SERVICE_HOST):$(OTEL_SERVICE_SERVICE_PORT_LOGS)
+            - name: OTEL_SERVER_METRICS_URL
+              value: http://$(OTEL_SERVICE_SERVICE_HOST):$(OTEL_SERVICE_SERVICE_PORT_METRICS)
           volumeMounts:
             - name: config
               mountPath: "/work/config"
