@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 #       your current Kubernetes instance.
 @pytest.fixture
 def kubeconfig():
-    return "~/.kube/config"
+    return "~/.microk8s/config"
 
 
 @pytest.fixture
