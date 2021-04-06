@@ -72,6 +72,16 @@ def scheduler_config(kube):
     return cm
 
 
+@pytest.fixture
+def snmp_simulator_deployment(kube):
+    return create_deployment(kube, "./snmp-sim-deployment.yaml")
+
+
+@pytest.fixture
+def snmp_simulator_service(kube):
+    return create_service(kube, "./snmp-sim-service.yaml")
+
+
 def test_poller_integration(
     rabbitmq_deployment,
     rabbitmq_service,
@@ -82,9 +92,9 @@ def test_poller_integration(
     mib_deployment,
     mib_service,
     worker_deployment,
+    snmp_simulator_deployment,
+    snmp_simulator_service,
 ):
-    pass
-
     # In case you need to check what kubetest returns, you can see the documentation
     # of all the kubernetes python classes in here:
     # https://github.com/kubernetes-client/python/tree/master/kubernetes/docs
@@ -106,6 +116,11 @@ def test_poller_integration(
     mib_server_port = mib_server_service[0].subsets[0].ports[0].port
     assert mib_server_port == 5000
     logger.info(f"MIB-server ports: {mib_server_ip}:{mib_server_port}")
+
+    simulator_deployment_pods = snmp_simulator_deployment.get_pods()
+    assert len(simulator_deployment_pods) == 1
+    simulator_service_endpoints = snmp_simulator_service.get_endpoints()
+    assert len(simulator_service_endpoints) == 1
 
     # import time
     # time.sleep(60)
