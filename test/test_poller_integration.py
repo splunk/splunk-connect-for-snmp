@@ -5,6 +5,7 @@ from test.kubetest_utils import (
     create_deployment,
     create_kubernetes_secret,
     extract_splunk_password_from_deployment,
+    setup_splunk,
 )
 
 import logging
@@ -85,8 +86,21 @@ def snmp_simulator_service(kube):
 
 def test_deploy_splunk(kube):
     splunk_deployment = create_deployment(kube, "./splunk-deployment.yaml")
+    splunk_service = create_service(kube, "./splunk-service.yaml")
+    ip = splunk_service.get_endpoints()[0].subsets[0].addresses[0].ip
+    logger.info(f"{ip}")
     password = extract_splunk_password_from_deployment(splunk_deployment)
     logger.info(f"Using the following password = {password}")
+    setup_splunk(ip, password)
+
+    # import time
+    # time.sleep(60)
+    # env = worker_deployment.get_pods()[0].get_containers()[0].get_logs()
+    # logger.info(f"Worker = {env}")
+    secret_create, secret_yaml = create_kubernetes_secret(
+        "remote-splunk", "http://localhost:8088", "12345"
+    )
+    assert secret_create
 
 
 def test_poller_integration(
@@ -128,12 +142,3 @@ def test_poller_integration(
     assert len(simulator_deployment_pods) == 1
     simulator_service_endpoints = snmp_simulator_service.get_endpoints()
     assert len(simulator_service_endpoints) == 1
-
-    # import time
-    # time.sleep(60)
-    # env = worker_deployment.get_pods()[0].get_containers()[0].get_logs()
-    # logger.info(f"Worker = {env}")
-    secret_create, secret_yaml = create_kubernetes_secret(
-        "remote-splunk", "http://localhost:8088", "12345"
-    )
-    assert secret_create
