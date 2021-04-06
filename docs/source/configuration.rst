@@ -100,8 +100,57 @@ e.g.
             securityEngineId: 8000000004030202
           - userName: snmpv3test3
             securityEngineId: 8000000004030203
-    
 
+Test the  traps
+---------------------------------------------------
+
+* Test the trap from a linux system with snmp installed.
+
+**SNMPv1 traps**
+
+.. code-block:: bash
+
+    snmptrap -v 1 -c public <host> '1.2.3.4.5.6' '192.193.194.195' 6 99 123 1.3.6.1.2.1.1.5.0 s "test snmp v1"
+
+**SNMPv2 traps**
+
+.. code-block:: bash
+
+    snmptrap -v 2c -c public <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v2"
+
+**SNMPv3 traps**
+
+You can setup the SNMPv3 the **config.yaml** contents in **traps-server-config.yaml** and use following command to test SNMPv3 traps
+
+.. code-block:: bash
+
+    snmptrap -v 3 -e <engine_id> -l authPriv -u snmpv3test -a MD5 -A <auth_passphrase> -x DES -X <priv_passphrase> <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3"
+
+
+For example, 
+
+The corresponding test command for these SNMPv3 users above are:
+
+**userNanme: snmpv3test**
+
+.. code-block:: bash
+
+    snmptrap -v 3 -e 0x8000000004030201 -l authPriv -u snmpv3test -A AuthPass1 -X PrivPass2 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test"
+
+**userNanme: snmpv3test3**
+
+.. code-block:: bash
+
+    snmptrap -v 3 -e 0x8000000004030202 -l authPriv -u snmpv3test2 -a SHA -A AuthPass11 -x AES -X PrivPass22 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test2"
+
+**userNanme: snmpv3test**
+
+.. code-block:: bash
+
+    snmptrap -v 3 -e 0x8000000004030203 -l noAuthNoPriv -u snmpv3test3 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test3"
+
+
+    
 Scheduler Configuration
 ===================================================
 * scheduler-config.yaml
@@ -271,5 +320,86 @@ User can provide more detailed query information under **profiles** section to a
           - ['CISCO-FC-MGMT-MIB', 'cfcmPortLcStatsEntry']
           - ['EFM-CU-MIB', 'efmCuPort']
           - '1.3.6.1.2.1.1.6.0'
-          - '1.3.6.1.2.1.1.9.1.4.*'  
+          - '1.3.6.1.2.1.1.9.1.4.*'
+
+Test the poller
+---------------------------------------------------
+**SNMPv1/SNMPv2**
+
+* You can change the inventory contents in scheduler-config.yaml and use following command to apply the changes to Kubernetes cluster. Agents configuration is placed in scheduler-config.yaml under section **inventory.csv**, content below is interpreted as csv file with following columns:
+
+1. host (IP or name)
+2. version of SNMP protocol
+3. community string authorisation phrase
+4. profile of device (varBinds of profiles can be found in config.yaml section of scheduler-config.yaml file)
+5. frequency in seconds (how often SNMP connector should ask agent for data)
+
+
+.. csv-table:: inventory.csv
+   :header: "host", "version", "community", "profile", "freqinseconds"
    
+   10.42.0.58,1,public,1.3.6.1.2.1.1.9.1.3.1,30
+   host.docker.internal,2c,public,1.3.6.1.2.1.1.9.1.3.*,60
+
+
+.. code-block:: bash
+
+    kubectl apply -f deploy/sc4snmp/scheduler-config.yaml
+
+**SNMPv3**
+
+* Besides change the inventory contents under section **inventory.csv**. You may need to setup security passphrases for the SNMPv3 under section **config.yaml > usernames**.
+
+Here are the steps to configue to these two SNMPv3 Users.
+
+.. list-table:: 
+   :widths: 15 15 15 15 15 15
+   :header-rows: 1
+
+   * - User Name
+     - Security Level
+     - Auth Protocol
+     - Priv Protocol
+     - Auth Passphrase
+     - Priv Passphrase
+   * - testUser1
+     - Auth,Priv
+     - MD5
+     - DES
+     - auctoritas
+     - Auth Protocol
+   * - testUser2
+     - Auth,Priv
+     - SHA
+     - AES
+     - authpass
+     - privacypass
+
+
+1. Specify User Name under **community** filed in section **inventory.csv**. 
+
+.. csv-table:: inventory.csv
+   :header: "host", "version", "community", "profile", "freqinseconds"
+    
+   host.docker.internal1,3,testUser1,1.3.6.1.2.1.1.9.1.3.1,30
+   host.docker.internal2,3,testUser2,1.3.6.1.2.1.1.9.1.3.*,30
+
+2. Specify other security params under section **config.yaml > usernames**.
+
+.. code-block:: language
+
+   usernames:
+      testUser1:
+        authKey: auctoritas
+        privKey: privatus        
+      testUser2:
+        authKey: authpass
+        privKey: privacypass
+        authProtocol: SHA
+        privProtocol: AES
+
+3. Apply the changes.
+
+.. code-block:: bash
+
+    kubectl apply -f deploy/sc4snmp/scheduler-config.yaml
