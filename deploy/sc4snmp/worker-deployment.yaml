@@ -18,7 +18,6 @@ spec:
         - name: sc4-snmp-worker
           image: ghcr.io/splunk/splunk-connect-for-snmp-poller:f9626489294685f1afb488e63b28a1c7cda6806b
           args: ["--log=DEBUG", "--config=/work/config/config.yaml"]
-          imagePullPolicy: Never
           env:
             - name: CELERY_BROKER_URL
               value: amqp://guest@$(RABBITMQ_SERVICE_SERVICE_HOST):$(RABBITMQ_SERVICE_SERVICE_PORT)//
