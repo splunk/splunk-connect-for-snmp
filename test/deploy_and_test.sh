@@ -36,16 +36,16 @@ create_splunk_secret() {
    --from-literal=SPLUNK_HEC_URL=https://"${splunk_ip}":8088/services/collector \
    --from-literal=SPLUNK_HEC_TLS_VERIFY=false \
    --from-literal=SPLUNK_HEC_TOKEN=00000000-0000-0000-0000-000000000000 2>&1)
-  if ! $? ; then
-      echo "Error when creating Splunk secret"
-      exit 3
-  fi
+  echo "Secret created: ${secret_created}"
 }
 
 deploy_kubernetes() {
   splunk_ip=$1
 
   create_splunk_secret "$splunk_ip"
+  scheduler_config=$(echo "    127.0.0.1:161,2c,public,1.3.6.1.2.1.1.1.0,1" | cat ../deploy/sc4snmp/scheduler-config.yaml - \
+    | sudo microk8s kubectl apply -f -)
+  echo "${scheduler_config}"
 }
 
 stop_simulator() {
