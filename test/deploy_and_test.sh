@@ -42,7 +42,7 @@ create_splunk_secret() {
 deploy_kubernetes() {
   splunk_ip=$1
 
-  valid_snmp_get_ip=$(ip --brief address show | grep docker0 | \
+  valid_snmp_get_ip=$(ip --brief address show | grep "^docker0" | \
     sed -e 's/[[:space:]]\+/|/g' | cut -d\| -f3 | cut -d/ -f)
   if [ "${valid_snmp_get_ip}" == "" ] ; then
     echo "Error, cannot get a valid IP that will be used for querying the SNMP simulator"
