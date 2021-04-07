@@ -29,4 +29,5 @@ deploy_kubernetes() {
 }
 
 install_basic_software
+install_simulator
 deploy_kubernetes
