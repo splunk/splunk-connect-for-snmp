@@ -29,14 +29,14 @@ install_simulator() {
 create_splunk_secret() {
   splunk_ip=$1
 
-  delete_secret=$(microk8s kubectl delete secret "${SPLUNK_SECRET_NAME}")
+  delete_secret=$(sudo microk8s kubectl delete secret "${SPLUNK_SECRET_NAME}" 2>&1)
   echo "I have tried to remove ${SPLUNK_SECRET_NAME} and I got ${delete_secret}"
 
   secret_created=$(sudo microk8s kubectl create secret generic "${SPLUNK_SECRET_NAME}" \
    --from-literal=SPLUNK_HEC_URL=https://"${splunk_ip}":8088/services/collector \
    --from-literal=SPLUNK_HEC_TLS_VERIFY=false \
-   --from-literal=SPLUNK_HEC_TOKEN=00000000-0000-0000-0000-000000000000)
-  if ! $secret_created ; then
+   --from-literal=SPLUNK_HEC_TOKEN=00000000-0000-0000-0000-000000000000 2>&1)
+  if ! $? ; then
       echo "Error when creating Splunk secret"
       exit 3
   fi
