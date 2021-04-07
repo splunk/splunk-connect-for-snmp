@@ -46,6 +46,13 @@ deploy_kubernetes() {
   scheduler_config=$(echo "    127.0.0.1:161,2c,public,1.3.6.1.2.1.1.1.0,1" | cat ../deploy/sc4snmp/scheduler-config.yaml - \
     | sudo microk8s kubectl apply -f -)
   echo "${scheduler_config}"
+
+  for f in $(ls ../deploy/sc4snmp/*.yaml | grep -v scheduler-config); do
+    echo "Deploying $f"
+    if ! sudo microk8s kubectl apply -f "$f" ; then
+      echo "Error when deploying $f"
+    fi
+  done
 }
 
 stop_simulator() {
