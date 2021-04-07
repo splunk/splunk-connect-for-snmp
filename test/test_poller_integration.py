@@ -84,26 +84,17 @@ def snmp_simulator_service(kube):
     return create_service(kube, "./snmp-sim-service.yaml")
 
 
-def test_deploy_splunk(kube):
+def unused_test_deploy_splunk(kube):
     splunk_deployment = create_deployment(kube, "./splunk-deployment.yaml")
     splunk_service = create_service(kube, "./splunk-service.yaml")
     ip = splunk_service.get_endpoints()[0].subsets[0].addresses[0].ip
     logger.info(f"{ip}")
     password = extract_splunk_password_from_deployment(splunk_deployment)
     logger.info(f"Using the following password = {password}")
-    setup_splunk(ip, password)
-
-    # import time
-    # time.sleep(60)
-    # env = worker_deployment.get_pods()[0].get_containers()[0].get_logs()
-    # logger.info(f"Worker = {env}")
-    secret_create, secret_yaml = create_kubernetes_secret(
-        "remote-splunk", "http://localhost:8088", "12345"
-    )
-    assert secret_create
+    setup_splunk(splunk_service, ip, password)
 
 
-def test_poller_integration(
+def unused_test_poller_integration(
     rabbitmq_deployment,
     rabbitmq_service,
     mongo_deployment,

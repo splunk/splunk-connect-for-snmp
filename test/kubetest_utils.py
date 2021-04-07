@@ -59,10 +59,14 @@ def extract_splunk_password_from_deployment(local_splunk_deployment):
     return next(e.value for e in env_variables if e.name == "SPLUNK_PASSWORD")
 
 
-def setup_splunk(ip, password):
+def setup_splunk(proxy, ip, password):
+    url = f"https://{ip}:8089/services/data/indexes"
+    data = {"datatype": "event", "name": "netops", "auth_settings": []}
+
+    logger.info(f"{url}")
     try:
-        url = f"https://{ip}:8089/services/data/indexes"
-        data = {"datatype": "event", "name": "netops"}
+        #url = f"https://{ip}:8089/services/data/indexes"
+        #data = {"datatype": "event", "name": "netops"}
         r = requests.post(url=url, json=data, auth=("admin", password))
         logger.info(f"{r.status_code}")
     except requests.ConnectionError as e:
