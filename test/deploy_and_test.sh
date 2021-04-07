@@ -51,7 +51,7 @@ deploy_kubernetes() {
 
   create_splunk_secret "$splunk_ip"
   scheduler_config=$(echo "    ${valid_snmp_get_ip}:161,2c,public,1.3.6.1.2.1.1.1.0,1" | \
-    cat ../deploy/sc4snmp/scheduler-config.yaml - | sudo microk8s kubectl apply -f1 -)
+    cat ../deploy/sc4snmp/scheduler-config.yaml - | sudo microk8s kubectl apply -f -)
   echo "${scheduler_config}"
 
   for f in $(ls ../deploy/sc4snmp/*.yaml | grep -v scheduler-config); do
