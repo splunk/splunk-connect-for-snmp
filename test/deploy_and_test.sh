@@ -42,9 +42,16 @@ create_splunk_secret() {
 deploy_kubernetes() {
   splunk_ip=$1
 
+  valid_snmp_get_ip=$(ip --brief address show | grep docker0 | \
+    sed -e 's/[[:space:]]\+/|/g' | cut -d\| -f3 | cut -d/ -f)
+  if [ "${valid_snmp_get_ip}" == "" ] ; then
+    echo "Error, cannot get a valid IP that will be used for querying the SNMP simulator"
+    exit 4
+  fi
+
   create_splunk_secret "$splunk_ip"
-  scheduler_config=$(echo "    127.0.0.1:161,2c,public,1.3.6.1.2.1.1.1.0,1" | cat ../deploy/sc4snmp/scheduler-config.yaml - \
-    | sudo microk8s kubectl apply -f -)
+  scheduler_config=$(echo "    ${valid_snmp_get_ip}:161,2c,public,1.3.6.1.2.1.1.1.0,1" | \
+    cat ../deploy/sc4snmp/scheduler-config.yaml - | sudo microk8s kubectl apply -f -)
   echo "${scheduler_config}"
 
   for f in $(ls ../deploy/sc4snmp/*.yaml | grep -v scheduler-config); do
