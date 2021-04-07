@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SPLUNK_SECRET_NAME=remote-splunk
+
 install_basic_software() {
   commands=("sudo snap install microk8s --classic" \
     "sudo microk8s status --wait-ready"  \
@@ -14,7 +16,7 @@ install_basic_software() {
 }
 
 install_simulator() {
-  simulator=nohup sudo docker run -p161:161/udp tandrup/snmpsim > /dev/null 2>&1 &
+  simulator=$(nohup sudo docker run -p161:161/udp tandrup/snmpsim > /dev/null 2>&1 &)
   if ! $simulator ; then
     echo "Cannot start SNMP simulator"
     exit 2
@@ -24,11 +26,29 @@ install_simulator() {
   snmpget -v1 -c public 127.0.0.1 1.3.6.1.2.1.1.1.0
 }
 
-deploy_kubernetes() {
-  echo "For now I don't do anything"
+create_splunk_secret() {
+  splunk_ip=$1
+
+  delete_secret=$(microk8s kubectl delete secret "${SPLUNK_SECRET_NAME}")
+  echo "I have tried to remove ${SPLUNK_SECRET_NAME} and I got ${delete_secret}"
+
+  secret_created=$(sudo microk8s kubectl create secret generic "${SPLUNK_SECRET_NAME}" \
+   --from-literal=SPLUNK_HEC_URL=https://"${splunk_ip}":8088/services/collector \
+   --from-literal=SPLUNK_HEC_TLS_VERIFY=false \
+   --from-literal=SPLUNK_HEC_TOKEN=00000000-0000-0000-0000-000000000000)
+  if ! $secret_created ; then
+      echo "Error when creating Splunk secret"
+      exit 3
+  fi
 }
 
-stop_everything() {
+deploy_kubernetes() {
+  splunk_ip=$1
+
+  create_splunk_secret "$splunk_ip"
+}
+
+stop_simulator() {
   id=$(sudo docker ps --filter ancestor=tandrup/snmpsim --format "{{.ID}}")
   echo "Trying to stop docker container $id"
 
@@ -40,7 +60,18 @@ stop_everything() {
   done
 }
 
+stop_everything() {
+  stop_simulator
+  #microk8s kubectl delete secret "${SPLUNK_SECRET_NAME}"
+}
+
+echo "Provide splunk URL"
+if ! read -r splunk_url ; then
+  echo "Error when getting splunk URL"
+  exit 3
+fi
+
 install_basic_software
 install_simulator
-deploy_kubernetes
+deploy_kubernetes "$splunk_url"
 stop_everything
