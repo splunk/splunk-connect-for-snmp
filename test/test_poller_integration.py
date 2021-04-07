@@ -4,6 +4,8 @@ from test.kubetest_utils import (
     create_service,
     create_deployment,
     create_kubernetes_secret,
+    extract_splunk_password_from_deployment,
+    setup_splunk,
 )
 
 import logging
@@ -20,7 +22,7 @@ logger = logging.getLogger(__name__)
 #       your current Kubernetes instance.
 @pytest.fixture
 def kubeconfig():
-    return "~/.kube/config"
+    return "~/.microk8s/config"
 
 
 @pytest.fixture
@@ -72,7 +74,27 @@ def scheduler_config(kube):
     return cm
 
 
-def test_poller_integration(
+@pytest.fixture
+def snmp_simulator_deployment(kube):
+    return create_deployment(kube, "./snmp-sim-deployment.yaml")
+
+
+@pytest.fixture
+def snmp_simulator_service(kube):
+    return create_service(kube, "./snmp-sim-service.yaml")
+
+
+def unused_test_deploy_splunk(kube):
+    splunk_deployment = create_deployment(kube, "./splunk-deployment.yaml")
+    splunk_service = create_service(kube, "./splunk-service.yaml")
+    ip = splunk_service.get_endpoints()[0].subsets[0].addresses[0].ip
+    logger.info(f"{ip}")
+    password = extract_splunk_password_from_deployment(splunk_deployment)
+    logger.info(f"Using the following password = {password}")
+    setup_splunk(splunk_service, ip, password)
+
+
+def unused_test_poller_integration(
     rabbitmq_deployment,
     rabbitmq_service,
     mongo_deployment,
@@ -82,9 +104,9 @@ def test_poller_integration(
     mib_deployment,
     mib_service,
     worker_deployment,
+    snmp_simulator_deployment,
+    snmp_simulator_service,
 ):
-    pass
-
     # In case you need to check what kubetest returns, you can see the documentation
     # of all the kubernetes python classes in here:
     # https://github.com/kubernetes-client/python/tree/master/kubernetes/docs
@@ -107,11 +129,7 @@ def test_poller_integration(
     assert mib_server_port == 5000
     logger.info(f"MIB-server ports: {mib_server_ip}:{mib_server_port}")
 
-    # import time
-    # time.sleep(60)
-    # env = worker_deployment.get_pods()[0].get_containers()[0].get_logs()
-    # logger.info(f"Worker = {env}")
-    secret_create, secret_yaml = create_kubernetes_secret(
-        "remote-splunk", "http://localhost:8088", "12345"
-    )
-    assert secret_create
+    simulator_deployment_pods = snmp_simulator_deployment.get_pods()
+    assert len(simulator_deployment_pods) == 1
+    simulator_service_endpoints = snmp_simulator_service.get_endpoints()
+    assert len(simulator_service_endpoints) == 1

@@ -1,7 +1,7 @@
-import requests
 from kubetest.client import TestClient
 import logging
 import subprocess
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +51,26 @@ def create_kubernetes_secret(secret_name, splunk_url, token):
 
     return process.returncode == 0, secret_yaml
 
+
+def extract_splunk_password_from_deployment(local_splunk_deployment):
+    # we assume a deployment with at least one pod. Only the first pod
+    # will be considered.
+    env_variables = local_splunk_deployment.get_pods()[0].get_containers()[0].obj.env
+    return next(e.value for e in env_variables if e.name == "SPLUNK_PASSWORD")
+
+
+def setup_splunk(proxy, ip, password):
+    url = f"https://{ip}:8089/services/data/indexes"
+    data = {"datatype": "event", "name": "netops", "auth_settings": []}
+
+    logger.info(f"{url}")
+    try:
+        #url = f"https://{ip}:8089/services/data/indexes"
+        #data = {"datatype": "event", "name": "netops"}
+        r = requests.post(url=url, json=data, auth=("admin", password))
+        logger.info(f"{r.status_code}")
+    except requests.ConnectionError as e:
+        logger.error(f"Connection error: {e}")
 
 # index_type: 'event' or 'metric'
 # splunk_url: e.g. https://192.168.0.1:8089

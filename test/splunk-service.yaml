@@ -4,6 +4,7 @@ metadata:
   name: splunk-service
 spec:
   type: LoadBalancer
+  loadBalancerIP: 192.168.1.151
   ports:
     - port: 8000
       name: web
