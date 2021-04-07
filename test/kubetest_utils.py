@@ -1,3 +1,4 @@
+import requests
 from kubetest.client import TestClient
 import logging
 import subprocess
@@ -49,3 +50,18 @@ def create_kubernetes_secret(secret_name, splunk_url, token):
         secret_yaml_file.write(out)
 
     return process.returncode == 0, secret_yaml
+
+
+# index_type: 'event' or 'metric'
+# splunk_url: e.g. https://192.168.0.1:8089
+def create_splunk_index(splunk_url, index_name, index_type):
+    data = {
+        "name": index_name,
+        "datatype": index_type
+    }
+
+    indexes_endpoint = splunk_url + '/services/data/indexes'
+
+    response = requests.post(url=indexes_endpoint, data=data, auth=('admin', 'changedpassword'), verify=False)
+
+    return response.status_code
