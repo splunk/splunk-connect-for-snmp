@@ -109,8 +109,11 @@ deploy_poetry() {
 }
 
 run_integration_tests() {
+  splunk_ip=$1
+  splunk_password=$2
+
   deploy_poetry
-  poetry run pytest
+  poetry run pytest --splunk_host="$splunk_ip" --splunk_password="$splunk_password"
   echo "Press ENTER to undeploy everything" && read -r dummy
 }
 # ------------------------------------------------------------------------------------------
@@ -134,5 +137,5 @@ fi
 install_basic_software
 install_simulator
 deploy_kubernetes "$splunk_url" "$splunk_password"
-run_integration_tests
+run_integration_tests "$splunk_url" "$splunk_password"
 stop_everything
