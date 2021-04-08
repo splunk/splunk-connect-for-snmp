@@ -35,11 +35,11 @@ spec:
                 secretKeyRef:
                   name: remote-splunk
                   key: SPLUNK_HEC_TOKEN
-            - name: SPLUNK_HEC_TLS_VERIFY
+            - name: SPLUNK_HEC_TLS_SKIP_VERIFY
               valueFrom:
                 secretKeyRef:
                   name: remote-splunk
-                  key: SPLUNK_HEC_TLS_VERIFY
+                  key: SPLUNK_HEC_TLS_SKIP_VERIFY
           volumeMounts:
             - name: config
               mountPath: "/work/config"

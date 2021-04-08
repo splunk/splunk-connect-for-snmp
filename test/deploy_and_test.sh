@@ -34,7 +34,7 @@ create_splunk_secret() {
 
   secret_created=$(sudo microk8s kubectl create secret generic "${SPLUNK_SECRET_NAME}" \
    --from-literal=SPLUNK_HEC_URL=https://"${splunk_ip}":8088/services/collector \
-   --from-literal=SPLUNK_HEC_TLS_VERIFY=true \
+   --from-literal=SPLUNK_HEC_TLS_SKIP_VERIFY=true \
    --from-literal=SPLUNK_HEC_TOKEN=00000000-0000-0000-0000-000000000000 2>&1)
   echo "Secret created: ${secret_created}"
 }

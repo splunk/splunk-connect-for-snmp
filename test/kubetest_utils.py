@@ -33,7 +33,7 @@ def create_kubernetes_secret(secret_name, splunk_url, token):
         "generic",
         secret_name,
         f"--from-literal=SPLUNK_HEC_URL={splunk_url}",
-        "--from-literal=SPLUNK_HEC_TLS_VERIFY=true",
+        "--from-literal=SPLUNK_HEC_TLS_SKIP_VERIFY=true",
         f"--from-literal=SPLUNK_HEC_TOKEN={token}",
         "-o",
         "yaml",

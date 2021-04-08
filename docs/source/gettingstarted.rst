@@ -66,7 +66,7 @@ Execute the following commands, use the correct values for your env:
 
    kubectl create secret generic remote-splunk \
    --from-literal=SPLUNK_HEC_URL=https://hec-input.fqdn.com:8088/services/collector \
-   --from-literal=SPLUNK_HEC_TLS_VERIFY=true \
+   --from-literal=SPLUNK_HEC_TLS_SKIP_VERIFY=true \
    --from-literal=SPLUNK_HEC_TOKEN=sometoken
    
 
