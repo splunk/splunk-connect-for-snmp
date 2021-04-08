@@ -41,12 +41,12 @@ create_splunk_secret() {
 
 create_splunk_indexes() {
   splunk_ip=$1
-  splunk_pwd=$2
+  splunk_password=$2
   index_names=("netops" "snmp" "snmp_metric")
   for index_name in "${index_names[@]}" ; do
-    if ! curl -k -u admin:"$splunk_pwd" "https://localhost:8089/services/data/indexes" \
-      -d datatype=event -d name="$index_name" ; then
-      echo "Error when creating $index_name"
+    if ! curl -k -u admin:"${splunk_password}" "https://${splunk_ip}:8089/services/data/indexes" \
+      -d datatype=event -d name="${index_name}" ; then
+      echo "Error when creating ${index_name}"
     fi
   done
 }
@@ -111,13 +111,13 @@ run_integration_tests() {
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 
-echo "Provide splunk URL"
+echo "Provide splunk IP from NOVA"
 if ! read -r splunk_url ; then
   echo "Error when getting splunk URL"
   exit 3
 fi
 
-echo "Provide splunk URL"
+echo "Provide splunk password from NOVA"
 if ! read -r splunk_password ; then
   echo "Error when getting splunk URL"
   exit 3
