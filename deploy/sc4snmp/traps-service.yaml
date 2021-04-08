@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: sc4-snmp-traps
 spec:
+  externalTrafficPolicy: Local
   type: LoadBalancer
   # loadBalancerIP: replace-me
   ports:
