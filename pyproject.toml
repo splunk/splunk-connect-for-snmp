@@ -18,8 +18,6 @@ python = "^3.8"
 sphinx = "^3.4.3"
 sphinx-material = "^0.0.32"
 pytest = "^6.2.2"
-kubetest = "^0.9.5"
-
 
 [build-system]
 requires = ["poetry>=0.12"]
