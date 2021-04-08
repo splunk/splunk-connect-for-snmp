@@ -34,13 +34,26 @@ create_splunk_secret() {
 
   secret_created=$(sudo microk8s kubectl create secret generic "${SPLUNK_SECRET_NAME}" \
    --from-literal=SPLUNK_HEC_URL=https://"${splunk_ip}":8088/services/collector \
-   --from-literal=SPLUNK_HEC_TLS_VERIFY=false \
+   --from-literal=SPLUNK_HEC_TLS_VERIFY=true \
    --from-literal=SPLUNK_HEC_TOKEN=00000000-0000-0000-0000-000000000000 2>&1)
   echo "Secret created: ${secret_created}"
 }
 
+create_splunk_indexes() {
+  splunk_ip=$1
+  splunk_pwd=$2
+  index_names=("netops" "snmp" "snmp_metric")
+  for index_name in "${index_names[@]}" ; do
+    if ! curl -k -u admin:"$splunk_pwd" "https://localhost:8089/services/data/indexes" \
+      -d datatype=event -d name="$index_name" ; then
+      echo "Error when creating $index_name"
+    fi
+  done
+}
+
 deploy_kubernetes() {
   splunk_ip=$1
+  splunk_password=$2
 
   valid_snmp_get_ip=$(ip --brief address show | grep "^docker0" | \
     sed -e 's/[[:space:]]\+/|/g' | cut -d\| -f3 | cut -d/ -f1)
@@ -50,6 +63,8 @@ deploy_kubernetes() {
   fi
 
   create_splunk_secret "$splunk_ip"
+  create_splunk_indexes "$splunk_ip" "$splunk_password"
+  # These extra spaces are required to fit the structure in scheduler-config.yaml
   scheduler_config=$(echo "    ${valid_snmp_get_ip}:161,2c,public,1.3.6.1.2.1.1.1.0,1" | \
     cat ../deploy/sc4snmp/scheduler-config.yaml - | sudo microk8s kubectl apply -f -)
   echo "${scheduler_config}"
@@ -76,8 +91,25 @@ stop_simulator() {
 
 stop_everything() {
   stop_simulator
-  #microk8s kubectl delete secret "${SPLUNK_SECRET_NAME}"
+  if ! sudo microk8s kubectl delete secret "${SPLUNK_SECRET_NAME}" ; then
+    echo "Error when deleting ${SPLUNK_SECRET_NAME}"
+  fi
+  for f in ../deploy/sc4snmp/*.yaml ; do
+    echo "Undeploying $f"
+    if ! sudo microk8s kubectl delete -f "$f" ; then
+      echo "Error when deploying $f"
+    fi
+  done
 }
+
+run_integration_tests() {
+  echo "Press ENTER to undeploy everything" && read -r dummy
+}
+# ------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
+# MAIN
+# ------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
 
 echo "Provide splunk URL"
 if ! read -r splunk_url ; then
@@ -85,7 +117,14 @@ if ! read -r splunk_url ; then
   exit 3
 fi
 
+echo "Provide splunk URL"
+if ! read -r splunk_password ; then
+  echo "Error when getting splunk URL"
+  exit 3
+fi
+
 install_basic_software
 install_simulator
-deploy_kubernetes "$splunk_url"
+deploy_kubernetes "$splunk_url" "$splunk_password"
+run_integration_tests
 stop_everything
