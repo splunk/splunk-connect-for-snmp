@@ -6,7 +6,7 @@ install_basic_software() {
   commands=("sudo snap install microk8s --classic" \
     "sudo microk8s status --wait-ready"  \
     "sudo microk8s enable dns helm3" \
-    "sudo snap install docker" "sudo apt-get install snmp -y")
+    "sudo snap install docker" "sudo apt-get install snmp -y" "sudo apt install python3.8 -y" )
   for command in "${commands[@]}" ; do
     if ! ${command} ; then
       echo "Error when executing ${command}"
@@ -102,7 +102,15 @@ stop_everything() {
   done
 }
 
+deploy_poetry() {
+  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+  source "$HOME"/.poetry/env
+  poetry add -D pytest
+  poetry add -D kubetest
+}
+
 run_integration_tests() {
+  deploy_poetry
   echo "Press ENTER to undeploy everything" && read -r dummy
 }
 # ------------------------------------------------------------------------------------------
