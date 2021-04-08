@@ -84,6 +84,10 @@ def snmp_simulator_service(kube):
     return create_service(kube, "./snmp-sim-service.yaml")
 
 
+def test_sample_useless_test():
+    logger.info(f"I am a test")
+
+
 def unused_test_deploy_splunk(kube):
     splunk_deployment = create_deployment(kube, "./splunk-deployment.yaml")
     splunk_service = create_service(kube, "./splunk-service.yaml")
