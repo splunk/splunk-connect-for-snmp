@@ -111,6 +111,7 @@ deploy_poetry() {
 
 run_integration_tests() {
   deploy_poetry
+  poetry run pytest
   echo "Press ENTER to undeploy everything" && read -r dummy
 }
 # ------------------------------------------------------------------------------------------
