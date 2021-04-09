@@ -5,7 +5,7 @@ SPLUNK_SECRET_NAME=remote-splunk
 install_basic_software() {
   commands=("sudo snap install microk8s --classic" \
     "sudo microk8s status --wait-ready"  \
-    "sudo microk8s enable dns helm3" \
+    "sudo microk8s enable dns helm3 metallb:10.1.1.1-196.255.255.255" \
     "sudo snap install docker" "sudo apt-get install snmp -y" "sudo apt install python3.8 -y" )
   for command in "${commands[@]}" ; do
     if ! ${command} ; then
@@ -69,7 +69,11 @@ deploy_kubernetes() {
     cat ../deploy/sc4snmp/scheduler-config.yaml - | sudo microk8s kubectl apply -f -)
   echo "${scheduler_config}"
 
-  for f in $(ls ../deploy/sc4snmp/*.yaml | grep -v scheduler-config); do
+  result=$(cat deploy/sc4snmp/traps-service.yaml  | \
+    sed "s/loadBalancerIP: replace-me/loadBalancerIP: ${valid_snmp_get_ip}/" | kubectl apply -f -)
+  echo "${result}"
+
+  for f in $(ls ../deploy/sc4snmp/*.yaml | grep -v "scheduler-config\|traps-service"); do
     echo "Deploying $f"
     if ! sudo microk8s kubectl apply -f "$f" ; then
       echo "Error when deploying $f"
