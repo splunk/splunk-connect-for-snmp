@@ -70,7 +70,7 @@ deploy_kubernetes() {
   echo "${scheduler_config}"
 
   result=$(cat deploy/sc4snmp/traps-service.yaml  | \
-    sed "s/loadBalancerIP: replace-me/loadBalancerIP: ${valid_snmp_get_ip}/" | kubectl apply -f -)
+    sed "s/loadBalancerIP: replace-me/loadBalancerIP: ${valid_snmp_get_ip}/" | sudo microk8s kubectl apply -f -)
   echo "${result}"
 
   for f in $(ls ../deploy/sc4snmp/*.yaml | grep -v "scheduler-config\|traps-service"); do
