@@ -40,10 +40,6 @@ def test_integration(request, setup_splunk):
     time.sleep(2)
 
     search_query = """search index="snmp" sourcetype="sc4snmp:traps"
-                     "SNMPv2-MIB::sysUpTime.0=0" "SNMPv2-MIB::snmpTrapOID.0=SNMPv2-MIB::warmStart" 
-                     "SNMP-COMMUNITY-MIB::snmpTrapAddress.0=0.0.0.0" 
-                     "SNMP-COMMUNITY-MIB::snmpTrapCommunity.0=public" 
-                     "SNMPv2-MIB::snmpTrapEnterprise.0=SNMPv2-SMI::enterprises.20408.4.1.1.2"
                      | head 1"""
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
