@@ -50,5 +50,5 @@ spec:
              items:
                - key: "otel-collector-config.yaml"
                  path: "otel-collector-config.yaml"
----
+
 

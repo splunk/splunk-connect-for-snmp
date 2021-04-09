@@ -11,4 +11,3 @@ spec:
       name: metrics
   selector:
     app: sc4-snmp-otel
----

@@ -12,4 +12,4 @@ spec:
       protocol: UDP
   selector:
     app: sc4-snmp-traps
----
+

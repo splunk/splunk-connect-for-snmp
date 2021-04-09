@@ -90,7 +90,7 @@ Setup Trap
 
 .. code-block:: bash
 
-    cat deploy/sc4snmp/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
+    for f in deploy/sc4snmp/*.yaml ; do cat $f | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f - ; done
 
 * Confirm deployment using ``kubectl get pods``
 
