@@ -13,7 +13,7 @@ data:
       splunk_hec:
         token: $SPLUNK_HEC_TOKEN
         endpoint: $SPLUNK_HEC_URL
-        insecure_skip_verify: $SPLUNK_HEC_TLS_VERIFY
+        insecure_skip_verify: $SPLUNK_HEC_TLS_SKIP_VERIFY
       #signalfx:
         #access_token: $SIGNALFX_TOKEN
         #realm: $SIGNALFX_REALM

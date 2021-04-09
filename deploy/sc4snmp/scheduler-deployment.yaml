@@ -41,4 +41,5 @@ spec:
                 path: "config.yaml"
               - key: "inventory.csv"
                 path: "inventory.csv"
+
 ---

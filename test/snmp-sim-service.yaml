@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongo-service
+  name: snmp-sim-service
 spec:
   type: ClusterIP
   ports:
-    - port: 27017
+    - port: 161
+      protocol: UDP
   selector:
-    app: mongo
+    app: snmp-sim
 
----

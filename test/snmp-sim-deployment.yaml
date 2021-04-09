@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snmp-sim
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: snmp-sim
+  template:
+    metadata:
+      labels:
+        app: snmp-sim
+    spec:
+      containers:
+        - name: snmp-sim
+          image: tandrup/snmpsim
+          ports:
+            - containerPort: 161

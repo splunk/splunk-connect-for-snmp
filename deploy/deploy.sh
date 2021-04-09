@@ -82,7 +82,7 @@ kubernetes_create_or_replace_hec_secret() {
   k delete secret "${secret_name}"
   k create secret generic remote-splunk \
     --from-literal=SPLUNK_HEC_URL="${url}" \
-    --from-literal=SPLUNK_HEC_TLS_VERIFY=true \
+    --from-literal=SPLUNK_HEC_TLS_SKIP_VERIFY=true \
     --from-literal=SPLUNK_HEC_TOKEN="${hec_token}"
   k get secret
 }
