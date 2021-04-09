@@ -4,7 +4,7 @@ from test.splunk_test_utils import splunk_single_search
 logger = logging.getLogger(__name__)
 
 
-def test_sample_useless_test(setup_splunk):
+def test_poller_integration(setup_splunk):
     logger.info(f"Integration test for poller")
     search_string = 'search index="snmp" earliest=-1m'
     result_count, events_count = splunk_single_search(setup_splunk, search_string)
