@@ -96,7 +96,7 @@ jobs:
             # docker tag release ghcr.io/splunk/splunk-connect-for-snmp-traps:${CIRCLE_SHA1:0:7}
             # docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:${CIRCLE_SHA1:0:7}
 
-            if [[ $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            # if [[ $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
               #latest
               # docker tag release ghcr.io/splunk/splunk-connect-for-snmp-traps:latest
               # docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:latest
@@ -109,7 +109,7 @@ jobs:
               # #M
               # docker tag release ghcr.io/splunk/splunk-connect-for-snmp-traps:$VERSION_DOCKER_M
               # docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:$VERSION_DOCKER_M
-            else
+            # else
               #edge
             #   docker tag release ghcr.io/splunk/splunk-connect-for-snmp-traps:edge
             #   docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:edge
