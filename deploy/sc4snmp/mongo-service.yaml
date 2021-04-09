@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: mongo-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 27017
   selector:
