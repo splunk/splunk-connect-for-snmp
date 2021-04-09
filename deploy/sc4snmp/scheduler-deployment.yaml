@@ -42,3 +42,4 @@ spec:
               - key: "inventory.csv"
                 path: "inventory.csv"
 
+---
