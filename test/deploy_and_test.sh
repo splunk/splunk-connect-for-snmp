@@ -59,7 +59,7 @@ docker0_ip() {
     exit 4
   fi
 
-  return "${valid_snmp_get_ip}"
+  echo "${valid_snmp_get_ip}"
 }
 
 deploy_kubernetes() {

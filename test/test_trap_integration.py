@@ -39,7 +39,7 @@ def test_integration(request, setup_splunk):
     # wait for the message to be processed
     time.sleep(2)
 
-    search_query = """search index="main" sourcetype="sc4snmp:traps"
+    search_query = """search index="snmp" sourcetype="sc4snmp:traps"
                      "SNMPv2-MIB::sysUpTime.0=0" "SNMPv2-MIB::snmpTrapOID.0=SNMPv2-MIB::warmStart" 
                      "SNMP-COMMUNITY-MIB::snmpTrapAddress.0=0.0.0.0" 
                      "SNMP-COMMUNITY-MIB::snmpTrapCommunity.0=public" 
