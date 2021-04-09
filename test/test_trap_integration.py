@@ -28,6 +28,7 @@ def send_trap(host, port, object_identity, *var_binds):
 
 def test_integration(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
+    logger.info(f"I have: {trap_external_ip}")
 
     time.sleep(2)
     # send trap

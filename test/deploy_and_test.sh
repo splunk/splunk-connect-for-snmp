@@ -113,6 +113,7 @@ deploy_poetry() {
   source "$HOME"/.poetry/env
   poetry install
   poetry add -D splunk-add-on-ucc-framework
+  poetry add -D pysnmp
 }
 
 run_integration_tests() {
