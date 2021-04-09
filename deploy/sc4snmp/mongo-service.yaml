@@ -9,4 +9,3 @@ spec:
   selector:
     app: mongo
 
----

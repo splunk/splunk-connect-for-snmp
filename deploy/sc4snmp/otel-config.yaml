@@ -25,4 +25,4 @@ data:
         metrics:
           receivers: [splunk_hec/metrics]
           exporters: [splunk_hec]
----
+
