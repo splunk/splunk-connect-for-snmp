@@ -51,16 +51,28 @@ create_splunk_indexes() {
   done
 }
 
-deploy_kubernetes() {
-  splunk_ip=$1
-  splunk_password=$2
-
+docker0_ip() {
   valid_snmp_get_ip=$(ip --brief address show | grep "^docker0" | \
     sed -e 's/[[:space:]]\+/|/g' | cut -d\| -f3 | cut -d/ -f1)
   if [ "${valid_snmp_get_ip}" == "" ] ; then
     echo "Error, cannot get a valid IP that will be used for querying the SNMP simulator"
     exit 4
   fi
+
+  return "${valid_snmp_get_ip}"
+}
+
+deploy_kubernetes() {
+  splunk_ip=$1
+  splunk_password=$2
+  valid_snmp_get_ip=$3
+
+  #valid_snmp_get_ip=$(ip --brief address show | grep "^docker0" | \
+  #  sed -e 's/[[:space:]]\+/|/g' | cut -d\| -f3 | cut -d/ -f1)
+  #if [ "${valid_snmp_get_ip}" == "" ] ; then
+  #  echo "Error, cannot get a valid IP that will be used for querying the SNMP simulator"
+  #  exit 4
+  #fi
 
   create_splunk_secret "$splunk_ip"
   create_splunk_indexes "$splunk_ip" "$splunk_password"
@@ -79,8 +91,6 @@ deploy_kubernetes() {
       echo "Error when deploying $f"
     fi
   done
-
-  echo "${valid_snmp_get_ip}"
 }
 
 stop_simulator() {
@@ -146,6 +156,7 @@ fi
 
 install_basic_software
 install_simulator
-trap_external_ip=$(deploy_kubernetes "$splunk_url" "$splunk_password")
+trap_external_ip=$(docker0_ip)
+deploy_kubernetes "$splunk_url" "$splunk_password"
 run_integration_tests "$splunk_url" "$splunk_password" "$trap_external_ip"
 stop_everything
