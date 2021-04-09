@@ -46,8 +46,6 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope="session")
 def setup_splunk(request):
-    trap_external_ip=request.config.getoption("trap_external_ip")
-    logger.info(f"We have {trap_external_ip}")
     tried = 0
     while True:
         try:
