@@ -15,6 +15,13 @@ def pytest_addoption(parser):
         help="Address of the Splunk Server",
     )
     parser.addoption(
+        "--trap_external_ip",
+        action="store",
+        dest="trap_external_ip",
+        default="127.0.0.1",
+        help="Trap Kubernets external IP",
+    )
+    parser.addoption(
         "--splunk_port",
         action="store",
         dest="splunk_port",
@@ -39,6 +46,8 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope="session")
 def setup_splunk(request):
+    trap_external_ip=request.config.getoption("trap_external_ip")
+    logger.info(f"We have {trap_external_ip}")
     tried = 0
     while True:
         try:

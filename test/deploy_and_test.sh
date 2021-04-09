@@ -79,6 +79,8 @@ deploy_kubernetes() {
       echo "Error when deploying $f"
     fi
   done
+
+  echo "${valid_snmp_get_ip}"
 }
 
 stop_simulator() {
@@ -116,9 +118,11 @@ deploy_poetry() {
 run_integration_tests() {
   splunk_ip=$1
   splunk_password=$2
+  trap_external_ip=$3
 
   deploy_poetry
-  poetry run pytest --splunk_host="$splunk_ip" --splunk_password="$splunk_password"
+  poetry run pytest --splunk_host="$splunk_ip" --splunk_password="$splunk_password" \
+    --trap_external_ip="${trap_external_ip}"
   echo "Press ENTER to undeploy everything" && read -r dummy
 }
 # ------------------------------------------------------------------------------------------
@@ -141,6 +145,6 @@ fi
 
 install_basic_software
 install_simulator
-deploy_kubernetes "$splunk_url" "$splunk_password"
-run_integration_tests "$splunk_url" "$splunk_password"
+trap_external_ip=$(deploy_kubernetes "$splunk_url" "$splunk_password")
+run_integration_tests "$splunk_url" "$splunk_password" "$trap_external_ip"
 stop_everything
