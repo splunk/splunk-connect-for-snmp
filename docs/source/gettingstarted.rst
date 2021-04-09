@@ -60,15 +60,29 @@ Setup Secrets
 
 Execute the following commands, use the correct values for your env:
 
-* Setup URL and token secret
+* Setup URL and token secrets (you can remove SignalFX secrets when SignalFX exporter is not configured)
 
 .. code-block:: bash
 
    kubectl create secret generic remote-splunk \
    --from-literal=SPLUNK_HEC_URL=https://hec-input.fqdn.com:8088/services/collector \
-   --from-literal=SPLUNK_HEC_TLS_VERIFY=yes \
-   --from-literal=SPLUNK_HEC_TOKEN=sometoken
-   
+   --from-literal=SPLUNK_HEC_TLS_SKIP_VERIFY=true \
+   --from-literal=SPLUNK_HEC_TOKEN=splunkhectoken \
+   --from-literal=SIGNALFX_TOKEN=signalfxtoken \
+   --from-literal=SIGNALFX_REALM=signalfxrealm
+
+
+Configure Open Telemetry Collector
+---------------------------------------------------
+
+One can find description of Splunk and SIM exporters under below links:
+https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/splunkhecexporter
+https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/signalfxexporter
+
+One can find description of filter processor below:
+https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/filterprocessor
+
+OTEL configuration is placed in deploy/sc4snmp/otel-config.yaml
 
 Setup Trap
 ---------------------------------------------------
@@ -76,7 +90,7 @@ Setup Trap
 
 .. code-block:: bash
 
-    cat deploy/sc4snmp/*.yaml  | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f -
+    for f in deploy/sc4snmp/*.yaml ; do cat $f | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f - ; done
 
 * Confirm deployment using ``kubectl get pods``
 

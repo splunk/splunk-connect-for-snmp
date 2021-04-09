@@ -1,30 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sc4-snmp-traps
+  name: sc4-snmp-otel
   labels:
-    app: sc4-snmp-traps
+    app: sc4-snmp-otel
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sc4-snmp-traps
+      app: sc4-snmp-otel
   template:
     metadata:
       labels:
-        app: sc4-snmp-traps
+        app: sc4-snmp-otel
     spec:
       containers:
-        - name: traps
-          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:50a01ab7e27ab1ce4ac8690322f50e8339cfc911
-          args: ["--loglevel=DEBUG", "--config=/work/config/config.yaml", "--index=snmp"]
-          ports:
-            - containerPort: 2162
+        - name: otel-collector
+          image: quay.io/signalfx/splunk-otel-collector:0.21.0
+          args: ["--config=/config/otel-collector-config.yaml"]
           env:
-            - name: MIBS_SERVER_URL
-              value: http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)
-            - name: OTEL_SERVER_URL
-              value: http://$(OTEL_SERVICE_SERVICE_HOST):$(OTEL_SERVICE_SERVICE_PORT_LOGS)
             - name: SPLUNK_HEC_URL
               valueFrom:
                 secretKeyRef:
@@ -40,18 +34,21 @@ spec:
                 secretKeyRef:
                   name: remote-splunk
                   key: SPLUNK_HEC_TLS_SKIP_VERIFY
+          ports:
+            - containerPort: 8881
+            - containerPort: 8882
           volumeMounts:
             - name: config
-              mountPath: "/work/config"
+              mountPath: "/config"
               readOnly: true
       imagePullSecrets:
         - name: regcred
       volumes:
          - name: config
            configMap:
-             name: sc4snmp-trap
+             name: sc4snmp-otel
              items:
-               - key: "config.yaml"
-                 path: "config.yaml"
+               - key: "otel-collector-config.yaml"
+                 path: "otel-collector-config.yaml"
 
 

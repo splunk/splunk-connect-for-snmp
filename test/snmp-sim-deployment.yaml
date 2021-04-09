@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mongo
+  name: snmp-sim
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mongo
+      app: snmp-sim
   template:
     metadata:
       labels:
-        app: mongo
+        app: snmp-sim
     spec:
       containers:
-        - name: mongo
-          image: mongo:4.4.4
+        - name: snmp-sim
+          image: tandrup/snmpsim
           ports:
-            - containerPort: 27017
-
+            - containerPort: 161

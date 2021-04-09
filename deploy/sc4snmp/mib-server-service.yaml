@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: mib-server-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 5000
       targetPort: 5000
   selector:
     app: sc4-snmp-mib-server
----
+

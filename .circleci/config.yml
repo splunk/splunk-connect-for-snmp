@@ -40,6 +40,17 @@ jobs:
           path: build-container
           destination: build-container
 
+  format-code:
+    docker:
+      - image: circleci/python:3.8.6
+    steps:
+      - checkout
+      - run:
+          name: "Check Formatting"
+          command: |
+            pip install black
+            black --check ./
+
   release:
     docker:
       - image: circleci/node:11
@@ -118,6 +129,8 @@ workflows:
   version: 2
   build_test:
     jobs:
+      - format-code
+
       - build:
           context:
             - gdi-github
