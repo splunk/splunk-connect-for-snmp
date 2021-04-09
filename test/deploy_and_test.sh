@@ -67,13 +67,6 @@ deploy_kubernetes() {
   splunk_password=$2
   valid_snmp_get_ip=$3
 
-  #valid_snmp_get_ip=$(ip --brief address show | grep "^docker0" | \
-  #  sed -e 's/[[:space:]]\+/|/g' | cut -d\| -f3 | cut -d/ -f1)
-  #if [ "${valid_snmp_get_ip}" == "" ] ; then
-  #  echo "Error, cannot get a valid IP that will be used for querying the SNMP simulator"
-  #  exit 4
-  #fi
-
   create_splunk_secret "$splunk_ip"
   create_splunk_indexes "$splunk_ip" "$splunk_password"
   # These extra spaces are required to fit the structure in scheduler-config.yaml
@@ -129,7 +122,9 @@ deploy_poetry() {
 run_integration_tests() {
   splunk_ip=$1
   splunk_password=$2
-  trap_external_ip=$3
+
+  trap_external_ip=$(sudo microk8s kubectl get service/sc4-snmp-traps | \
+    tail -1 | sed -e 's/[[:space:]]\+/\t/g' | cut -f4)
 
   deploy_poetry
   poetry run pytest --splunk_host="$splunk_ip" --splunk_password="$splunk_password" \
@@ -157,6 +152,6 @@ fi
 install_basic_software
 install_simulator
 trap_external_ip=$(docker0_ip)
-deploy_kubernetes "$splunk_url" "$splunk_password"
-run_integration_tests "$splunk_url" "$splunk_password" "$trap_external_ip"
+deploy_kubernetes "$splunk_url" "$splunk_password" "$trap_external_ip"
+run_integration_tests "$splunk_url" "$splunk_password"
 stop_everything
