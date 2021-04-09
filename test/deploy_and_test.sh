@@ -69,7 +69,7 @@ deploy_kubernetes() {
     cat ../deploy/sc4snmp/scheduler-config.yaml - | sudo microk8s kubectl apply -f -)
   echo "${scheduler_config}"
 
-  result=$(cat deploy/sc4snmp/traps-service.yaml  | \
+  result=$(cat ../deploy/sc4snmp/traps-service.yaml  | \
     sed "s/loadBalancerIP: replace-me/loadBalancerIP: ${valid_snmp_get_ip}/" | sudo microk8s kubectl apply -f -)
   echo "${result}"
 
