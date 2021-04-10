@@ -165,6 +165,7 @@ kubernetes_undeploy_all $SC4SNMP_POLLER_DIR/worker-deployment.yaml $SC4SNMP_POLL
 
 
 health_check
+
 sleep 5
 
 github_username="${USER}"
