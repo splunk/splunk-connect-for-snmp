@@ -23,7 +23,6 @@ kubernetes_undeploy_all() {
 
   for conf in "$@"; do
     k delete -f "${conf}"
-
   done
 
     # Hard Clean up
