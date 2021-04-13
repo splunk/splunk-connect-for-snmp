@@ -17,6 +17,7 @@ collection of SNMP data for Splunk Enterprise, Splunk Enterprise Cloud and Splun
    :maxdepth: 1
 
    gettingstarted
+   configuration
 
 
 
