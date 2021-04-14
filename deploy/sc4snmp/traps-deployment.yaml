@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: traps
-          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:v1.0
+          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:1
           args: ["--loglevel=DEBUG", "--config=/work/config/config.yaml", "--index=snmp"]
           ports:
             - containerPort: 2162
