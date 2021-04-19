@@ -1,1 +1,2 @@
 otel/testkey.key
+otel/testcert.crt
