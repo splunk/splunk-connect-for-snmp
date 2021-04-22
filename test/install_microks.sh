@@ -12,7 +12,6 @@ install_dependencies_on_ubuntu() {
   sudo snap install docker
   sudo apt-get install snmp -y
   sudo apt-get install python3-dev -y
-  #sudo apt install python3.8 -y
 }
 
 install_dependencies_on_centos() {
