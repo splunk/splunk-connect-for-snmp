@@ -54,6 +54,11 @@ wait_for_load_balancer_external_ip() {
     echo "Waiting for service/sc4-snmp-traps to have a proper external IP..."
     sleep 1
   done
+
+  while [ "$(microk8s.kubectl get pod | grep ContainerCreating)" != "" ] ; do
+    echo "Waiting for POD initialization..."
+    sleep 1
+  done
 }
 
 deploy_kubernetes() {
