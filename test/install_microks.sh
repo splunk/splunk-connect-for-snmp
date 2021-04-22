@@ -24,7 +24,7 @@ install_dependencies_on_centos() {
   sudo snap install microk8s --classic
   sudo snap install docker
   sudo yum install net-snmp net-snmp-utils -y
-  sudo yum install python3-devel
+  sudo yum install python3-devel -y
 }
 
 install_dependencies() {
