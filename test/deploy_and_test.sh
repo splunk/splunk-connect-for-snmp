@@ -50,7 +50,7 @@ docker0_ip() {
 }
 
 wait_for_load_balancer_external_ip() {
-  while [ "$(microk8s.kubectl get service/sc4-snmp-traps | grep pending)" == "" ] ; do
+  while [ "$(microk8s.kubectl get service/sc4-snmp-traps | grep pending)" != "" ] ; do
     echo "Waiting for service/sc4-snmp-traps to have a proper external IP..."
     sleep 1
   done
