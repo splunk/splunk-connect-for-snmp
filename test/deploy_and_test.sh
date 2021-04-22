@@ -49,6 +49,13 @@ docker0_ip() {
   echo "${valid_snmp_get_ip}"
 }
 
+wait_for_load_balancer_external_ip() {
+  while [ "$(microk8s.kubectl get service/sc4-snmp-traps | grep pending)" == "" ] ; do
+    echo "Waiting for service/sc4-snmp-traps to have a proper external IP..."
+    sleep 1
+  done
+}
+
 deploy_kubernetes() {
   splunk_ip=$1
   splunk_password=$2
@@ -71,6 +78,8 @@ deploy_kubernetes() {
       echo "Error when deploying $f"
     fi
   done
+
+  wait_for_load_balancer_external_ip
 }
 
 stop_simulator() {
