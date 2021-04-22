@@ -3,6 +3,7 @@
 setup_kube_roles() {
   sudo usermod -a -G microk8s "$USER"
   sudo chown -f -R "$USER" ~/.kube
+  echo "In order to properly configure Kubernetes, we need to logout the current shell. You might need to enter you password."
   su - "$USER"
 }
 
@@ -10,7 +11,8 @@ install_dependencies_on_ubuntu() {
   sudo snap install microk8s --classic
   sudo snap install docker
   sudo apt-get install snmp -y
-  sudo apt install python3.8 -y
+  sudo apt-get install python3-dev
+  #sudo apt install python3.8 -y
 }
 
 install_dependencies_on_centos() {
@@ -22,6 +24,7 @@ install_dependencies_on_centos() {
   sudo snap install microk8s --classic
   sudo snap install docker
   sudo yum install net-snmp net-snmp-utils -y
+  sudo yum install python3-devel
 }
 
 install_dependencies() {

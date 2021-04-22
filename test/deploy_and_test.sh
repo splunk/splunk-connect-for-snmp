@@ -102,7 +102,8 @@ deploy_poetry() {
   curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
   source "$HOME"/.poetry/env
   poetry install
-  poetry add -D splunk-add-on-ucc-framework
+  poetry add -D splunk-sdk
+  poetry add -D splunklib
   poetry add -D pysnmp
 }
 
@@ -123,25 +124,34 @@ post_installation_kubernetes_config() {
   microk8s.status --wait-ready
   microk8s.enable dns helm3 metallb:10.1.1.1-196.255.255.255
 }
+
+fix_local_settings() {
+  # CentOS 7 has LANG set by default to C.UTF-8, and Python doesn't like it
+  # Ubuntu (any version), and CentOS 8 are just fine
+  export LC_ALL=en_US.UTF-8
+  export LANG=en_US.UTF-8
+}
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 # MAIN
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 
-echo "Provide splunk IP from NOVA"
-if ! read -r splunk_url ; then
-  echo "Error when getting splunk URL"
-  exit 3
-fi
-
-echo "Provide splunk password from NOVA"
-if ! read -r splunk_password ; then
-  echo "Error when getting splunk URL"
-  exit 3
+while getopts u:p: flag
+do
+    case "${flag}" in
+        u) splunk_url=${OPTARG} ;;
+        p) splunk_password=${OPTARG} ;;
+    esac
+done
+if [ "$splunk_url" == "" ] || [ "splunk_password" == "" ] ; then
+  echo "Splunk URL or Splunk Password cannot be empty"
+  echo "Help: deploy_and_test.sh -u <splunk_url> -p <splunk_password>"
+  exit 1
 fi
 
 post_installation_kubernetes_config
+fix_local_settings
 install_simulator
 trap_external_ip=$(docker0_ip)
 deploy_kubernetes "$splunk_url" "$splunk_password" "$trap_external_ip"
