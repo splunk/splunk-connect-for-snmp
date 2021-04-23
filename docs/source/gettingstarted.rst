@@ -11,24 +11,52 @@ Requirements (Splunk Enterprise/Enterprise Cloud)
     1.1 Poller-specific indexes: we need an **event type** index called **snmp**, and **metrics type** index called **snmp_metric**
 2. Known Splunk URL with trusted certificate (must be trusted by standard red hat trusted chain)
 3. Physical or virtual linux host (Prefer Ubuntu or RHEL 8.1) RHEL hosts must have snap support enabled see https://snapcraft.io/docs/installing-snapd
-4. One IP allocation in addition to the ip allocated to the host. *Note: In the future clustering (scale out) will use this IP as a shared resource
+4. One IP allocation in addition to the ip allocated to the host.
+    \*Note: In the future clustering (scale out) will use this IP as a shared resource
 
-Setup MicroK8s
+Setup MicroK8s on Ubuntu
 ---------------------------------------------------
 
 The following setup instructions are validated for release 1.20x but are subject to change.
 
-1. Install MicroK8s ``sudo snap install microk8s --classic``
-2. Check completion status ``sudo microk8s status --wait-ready``
-3. Install optional modules ``sudo microk8s enable dns:<privatedns_ip> metallb helm3``
-4. Alias kubectl ``alias kubectl="microk8s kubectl"``
+1. Install MicroK8s
+::
+
+    sudo snap install microk8s --classic
+    sudo usermod -a -G microk8s "$USER"
+    sudo chown -f -R "$USER" ~/.kube
+    su - "$USER"
+
+2. Check completion status ``microk8s.status --wait-ready``
+3. Install optional modules ``microk8s.enable dns:<privatedns_ip> metallb helm3``
+
+Setup MicroK8s on CentOS
+---------------------------------------------------
+
+The following setup instructions are validated for release 1.20x but are subject to change.
+
+1. Install MicroK8s
+::
+
+    sudo yum -y install epel-release
+    sudo yum -y install snapd
+    sudo systemctl enable snapd
+    sudo systemctl start snapd
+    sudo ln -s /var/lib/snapd/snap /snap
+    sudo snap install microk8s --classic
+    sudo usermod -a -G microk8s "$USER"
+    sudo chown -f -R "$USER" ~/.kube
+    su - "$USER"
+
+2. Check completion status ``microk8s.status --wait-ready``
+3. Install optional modules ``microk8s.enable dns:<privatedns_ip> metallb helm3``
 
 Monitor MicroK8s
 ---------------------------------------------------
 
 Note HEC TLS is required for SCK
 
-* Install the following app on the designated search head https://splunkbase.splunk.com/app/4217/ (version 2.23 or newer) *NOTE Do not complete the add data process for k8s
+* Install the following app on the designated search head https://splunkbase.splunk.com/app/4217/ (version 2.23 or newer) \*NOTE Do not complete the add data process for k8s
 * Install the following app on the designated search head  and indexers https://splunkbase.splunk.com/app/3975/ (version 2.23 or newer)
 * Create the additional index em_logs
 * Get the code
@@ -64,7 +92,7 @@ Execute the following commands, use the correct values for your env:
 
 .. code-block:: bash
 
-   kubectl create secret generic remote-splunk \
+   microk8s.kubectl create secret generic remote-splunk \
    --from-literal=SPLUNK_HEC_URL=https://hec-input.fqdn.com:8088/services/collector \
    --from-literal=SPLUNK_HEC_TLS_SKIP_VERIFY=true \
    --from-literal=SPLUNK_HEC_TOKEN=splunkhectoken \
@@ -90,9 +118,9 @@ Setup Trap
 
 .. code-block:: bash
 
-    for f in deploy/sc4snmp/*.yaml ; do cat $f | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f - ; done
+    for f in deploy/sc4snmp/*.yaml ; do cat $f | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | microk8s.kubectl apply -f - ; done
 
-* Confirm deployment using ``kubectl get pods``
+* Confirm deployment using ``microk8s.kubectl get pods``
 
 .. code-block:: bash
 
@@ -115,9 +143,9 @@ Setup Poller
 
 .. code-block:: bash
 
-    kubectl apply -f deploy/sc4snmp/
+    microk8s.kubectl apply -f deploy/sc4snmp/
 
-* Confirm deployment using ``kubectl get pods``
+* Confirm deployment using ``microk8s.kubectl get pods``
 
 .. code-block:: bash
 
@@ -130,9 +158,7 @@ Setup Poller
 
 * Test the poller by logging to Splunk and confirm presence of events in snmp index and metrics in snmp_metric index.
 
-* You can change the inventory contents in scheduler-config.yaml and use following command to apply the changes to Kubernetes cluster.
-Agents configuration is placed in scheduler-config.yaml under section inventory.csv, content below is interpreted as csv file
-with following columns:
+* You can change the inventory contents in scheduler-config.yaml and use following command to apply the changes to Kubernetes cluster. Agents configuration is placed in scheduler-config.yaml under section inventory.csv, content below is interpreted as csv file with following columns:
 
 1. host (IP or name)
 2. version of SNMP protocol
@@ -143,4 +169,4 @@ with following columns:
 
 .. code-block:: bash
 
-    kubectl apply -f deploy/sc4snmp/scheduler-config.yaml
+    microk8s.kubectl apply -f deploy/sc4snmp/scheduler-config.yaml
