@@ -2,19 +2,6 @@
 
 SPLUNK_SECRET_NAME=remote-splunk
 
-install_basic_software() {
-  commands=("sudo snap install microk8s --classic" \
-    "sudo microk8s status --wait-ready"  \
-    "sudo microk8s enable dns helm3 metallb:10.1.1.1-196.255.255.255" \
-    "sudo snap install docker" "sudo apt-get install snmp -y" "sudo apt install python3.8 -y" )
-  for command in "${commands[@]}" ; do
-    if ! ${command} ; then
-      echo "Error when executing ${command}"
-      exit 1
-    fi
-  done
-}
-
 install_simulator() {
   simulator=$(nohup sudo docker run -p161:161/udp tandrup/snmpsim > /dev/null 2>&1 &)
   if ! $simulator ; then
@@ -29,10 +16,10 @@ install_simulator() {
 create_splunk_secret() {
   splunk_ip=$1
 
-  delete_secret=$(sudo microk8s kubectl delete secret "${SPLUNK_SECRET_NAME}" 2>&1)
+  delete_secret=$(microk8s.kubectl delete secret "${SPLUNK_SECRET_NAME}" 2>&1)
   echo "I have tried to remove ${SPLUNK_SECRET_NAME} and I got ${delete_secret}"
 
-  secret_created=$(sudo microk8s kubectl create secret generic "${SPLUNK_SECRET_NAME}" \
+  secret_created=$(microk8s.kubectl create secret generic "${SPLUNK_SECRET_NAME}" \
    --from-literal=SPLUNK_HEC_URL=https://"${splunk_ip}":8088/services/collector \
    --from-literal=SPLUNK_HEC_TLS_SKIP_VERIFY=true \
    --from-literal=SPLUNK_HEC_TOKEN=00000000-0000-0000-0000-000000000000 2>&1)
@@ -62,6 +49,18 @@ docker0_ip() {
   echo "${valid_snmp_get_ip}"
 }
 
+wait_for_load_balancer_external_ip() {
+  while [ "$(microk8s.kubectl get service/sc4-snmp-traps | grep pending)" != "" ] ; do
+    echo "Waiting for service/sc4-snmp-traps to have a proper external IP..."
+    sleep 1
+  done
+
+  while [ "$(microk8s.kubectl get pod | grep ContainerCreating)" != "" ] ; do
+    echo "Waiting for POD initialization..."
+    sleep 1
+  done
+}
+
 deploy_kubernetes() {
   splunk_ip=$1
   splunk_password=$2
@@ -71,19 +70,21 @@ deploy_kubernetes() {
   create_splunk_indexes "$splunk_ip" "$splunk_password"
   # These extra spaces are required to fit the structure in scheduler-config.yaml
   scheduler_config=$(echo "    ${valid_snmp_get_ip}:161,2c,public,1.3.6.1.2.1.1.1.0,1" | \
-    cat ../deploy/sc4snmp/scheduler-config.yaml - | sudo microk8s kubectl apply -f -)
+    cat ../deploy/sc4snmp/scheduler-config.yaml - | microk8s.kubectl apply -f -)
   echo "${scheduler_config}"
 
   result=$(cat ../deploy/sc4snmp/traps-service.yaml  | \
-    sed "s/loadBalancerIP: replace-me/loadBalancerIP: ${valid_snmp_get_ip}/" | sudo microk8s kubectl apply -f -)
+    sed "s/loadBalancerIP: replace-me/loadBalancerIP: ${valid_snmp_get_ip}/" | microk8s.kubectl apply -f -)
   echo "${result}"
 
   for f in $(ls ../deploy/sc4snmp/*.yaml | grep -v "scheduler-config\|traps-service"); do
     echo "Deploying $f"
-    if ! sudo microk8s kubectl apply -f "$f" ; then
+    if ! microk8s.kubectl apply -f "$f" ; then
       echo "Error when deploying $f"
     fi
   done
+
+  wait_for_load_balancer_external_ip
 }
 
 stop_simulator() {
@@ -100,12 +101,12 @@ stop_simulator() {
 
 stop_everything() {
   stop_simulator
-  if ! sudo microk8s kubectl delete secret "${SPLUNK_SECRET_NAME}" ; then
+  if ! microk8s.kubectl delete secret "${SPLUNK_SECRET_NAME}" ; then
     echo "Error when deleting ${SPLUNK_SECRET_NAME}"
   fi
   for f in ../deploy/sc4snmp/*.yaml ; do
     echo "Undeploying $f"
-    if ! sudo microk8s kubectl delete -f "$f" ; then
+    if ! microk8s.kubectl delete -f "$f" ; then
       echo "Error when deploying $f"
     fi
   done
@@ -115,7 +116,8 @@ deploy_poetry() {
   curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
   source "$HOME"/.poetry/env
   poetry install
-  poetry add -D splunk-add-on-ucc-framework
+  poetry add -D splunk-sdk
+  poetry add -D splunklib
   poetry add -D pysnmp
 }
 
@@ -123,7 +125,7 @@ run_integration_tests() {
   splunk_ip=$1
   splunk_password=$2
 
-  trap_external_ip=$(sudo microk8s kubectl get service/sc4-snmp-traps | \
+  trap_external_ip=$(microk8s.kubectl get service/sc4-snmp-traps | \
     tail -1 | sed -e 's/[[:space:]]\+/\t/g' | cut -f4)
 
   deploy_poetry
@@ -131,25 +133,39 @@ run_integration_tests() {
     --trap_external_ip="${trap_external_ip}"
   echo "Press ENTER to undeploy everything" && read -r dummy
 }
+
+post_installation_kubernetes_config() {
+  microk8s.status --wait-ready
+  microk8s.enable dns helm3 metallb:10.1.1.1-196.255.255.255
+}
+
+fix_local_settings() {
+  # CentOS 7 has LANG set by default to C.UTF-8, and Python doesn't like it
+  # Ubuntu (any version), and CentOS 8 are just fine
+  export LC_ALL=en_US.UTF-8
+  export LANG=en_US.UTF-8
+}
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 # MAIN
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 
-echo "Provide splunk IP from NOVA"
-if ! read -r splunk_url ; then
-  echo "Error when getting splunk URL"
-  exit 3
+while getopts u:p: flag
+do
+    case "${flag}" in
+        u) splunk_url=${OPTARG} ;;
+        p) splunk_password=${OPTARG} ;;
+    esac
+done
+if [ "$splunk_url" == "" ] || [ "$splunk_password" == "" ] ; then
+  echo "Splunk URL or Splunk Password cannot be empty"
+  echo "Help: deploy_and_test.sh -u <splunk_url> -p <splunk_password>"
+  exit 1
 fi
 
-echo "Provide splunk password from NOVA"
-if ! read -r splunk_password ; then
-  echo "Error when getting splunk URL"
-  exit 3
-fi
-
-install_basic_software
+post_installation_kubernetes_config
+fix_local_settings
 install_simulator
 trap_external_ip=$(docker0_ip)
 deploy_kubernetes "$splunk_url" "$splunk_password" "$trap_external_ip"
