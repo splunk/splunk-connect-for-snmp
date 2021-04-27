@@ -14,7 +14,7 @@ collection of SNMP data for Splunk Enterprise, Splunk Enterprise Cloud and Splun
 
 .. toctree::
    :caption: Table of Contents
-   :maxdepth: 1
+   :maxdepth: 2
 
    planning
    gettingstarted
