@@ -4,7 +4,7 @@ PROTO=${PROTO:=https}
 PORT=${PORT:=8088}
 EVENTS_INDEX=${EVENTS_INDEX:=em_events}
 METRICS_INDEX=${METRICS_INDEX:=em_metrics}
-META_INDEX=${META_INDEX:=em_meta}
+META_INDEX=${META_INDEX:=em_logs}
 CUSTER_NAME=${CUSTER_NAME:=splunk-connect}
 NAMESPACE=${NAMESPACE:=default}
 
