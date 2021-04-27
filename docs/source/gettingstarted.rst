@@ -1,10 +1,18 @@
 .. Getting Started
 
-Prepare Splunk Enterprise
-===================================================
+###################################################
+Getting Started
+###################################################
+
+
+**************************************************
+Prepare Splunk
+**************************************************
+
 
 Requirements (Splunk Enterprise/Enterprise Cloud)
----------------------------------------------------
+===================================================
+
 
 1. Complete the installation of 
     1.1 `Splunk app for Infrastructure <https://docs.splunk.com/Documentation/InfraApp/latest/Install/About>`_ (Splunk Enterprise Customers)
@@ -18,13 +26,17 @@ Requirements (Splunk Enterprise/Enterprise Cloud)
 5. The IP address to be used for SNMP Traps. Note if HA deployment will be used the IP must be in addition to the managment inteface of each cluster memember.
 6. Obtain the ip address of an internal DNS server able to resolve the Splunk Endpoint
 
-Requirements (Splunk Enterprise/Enterprise Cloud)
----------------------------------------------------
+Requirements (Splunk Infrastructure Monitoring)
+===================================================
 
 Obtain the correct realm and token.
 
+**************************************************
+Deploy
+**************************************************
+
 Setup MicroK8s
----------------------------------------------------
+===================================================
 
 The following setup instructions are validated for release 1.20x but are subject to change.
 
@@ -38,7 +50,7 @@ The following setup instructions are validated for release 1.20x but are subject
 7. Refresh credentials ``su - $USER``
 
 Get current deployment scripts
----------------------------------------------------
+===================================================
 
 .. code-block:: bash
 
@@ -46,7 +58,7 @@ Get current deployment scripts
    cd splunk-connect-for-snmp
 
 Monitor MicroK8s (Requires Splunk Enterprise/Cloud)
----------------------------------------------------
+===================================================
 
 1. Ensure Requirements are meet above
 2. Add the Helm repository ``microk8s.helm3 repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/``
@@ -56,7 +68,7 @@ Monitor MicroK8s (Requires Splunk Enterprise/Cloud)
 
 
 Setup Secrets
----------------------------------------------------
+===================================================
 
 Execute the following commands, use the correct values for your env:
 
@@ -73,7 +85,7 @@ Execute the following commands, use the correct values for your env:
 
 
 Deploy SC4SNMP
----------------------------------------------------
+===================================================
 
 * Apply the manifests, replace the ip ``10.0.101.22`` with the shared IP noted above
 
@@ -104,7 +116,7 @@ Deploy SC4SNMP
 
 
 Test SNMP Traps
----------------------------------------------------
+===================================================
 
 * Test the trap from a linux system with snmp installed replace the ip ``10.0.101.22`` with the shared ip above
 
@@ -119,7 +131,7 @@ Test SNMP Traps
 
 
 Setup Poller
----------------------------------------------------
+===================================================
 
 * Test the poller by logging to Splunk and confirm presence of events in snmp em_logs and metrics in em_metrics index.
 

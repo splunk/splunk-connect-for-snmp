@@ -1,7 +1,8 @@
 .. Planning
 
+###################################################
 Planning
-===================================================
+###################################################
 
 Splunk Connect for SNMP (SC4SNMP) is a solution that allows the customer to "get" data from 
 network devices and appliances where a more feature complete solution such as the 
