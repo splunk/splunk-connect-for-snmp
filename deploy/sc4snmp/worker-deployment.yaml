@@ -40,9 +40,8 @@ spec:
         - name: config
           configMap:
             # Provide the name of the ConfigMap you want to mount.
-            name: sc4snmp-scheduler
+            name: sc4snmp-config
             # An array of keys from the ConfigMap to create as files
             items:
               - key: "config.yaml"
                 path: "config.yaml"
-
