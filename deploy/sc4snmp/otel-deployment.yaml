@@ -41,8 +41,6 @@ spec:
             - name: config
               mountPath: "/config"
               readOnly: true
-      imagePullSecrets:
-        - name: regcred
       volumes:
          - name: config
            configMap:

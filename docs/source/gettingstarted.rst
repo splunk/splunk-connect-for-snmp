@@ -1,20 +1,42 @@
-... Getting Started
+.. Getting Started
 
+###################################################
 Getting Started
-===================================================
+###################################################
+
+
+**************************************************
+Prepare Splunk
+**************************************************
+
 
 Requirements (Splunk Enterprise/Enterprise Cloud)
----------------------------------------------------
+===================================================
 
-1. Splunk hec token with no index restriction **or** Splunk hec token with access to _internal, netops and net_metrics
 
-    1.1 Poller-specific indexes: we need an **event type** index called **snmp**, and **metrics type** index called **snmp_metric**
-2. Known Splunk URL with trusted certificate (must be trusted by standard red hat trusted chain)
-3. Physical or virtual linux host (Prefer Ubuntu or RHEL 8.1) RHEL hosts must have snap support enabled see https://snapcraft.io/docs/installing-snapd
-4. One IP allocation in addition to the ip allocated to the host. *Note: In the future clustering (scale out) will use this IP as a shared resource
+1. Complete the installation of 
+    1.1 `Splunk app for Infrastructure <https://docs.splunk.com/Documentation/InfraApp/latest/Install/About>`_ (Splunk Enterprise Customers)
+    1.2 `Splunk IT Essentials Work <https://docs.splunk.com/Documentation/ITE/latest/Work/Overview>`_ (Splunk Enterprise Cloud Customers)
+2. Verify the creation of the following indexes
+    1.1 em_metrics (metrics type)
+    1.2 em_meta (event type)
+    1.3 em_logs (event type)
+3. Create or obtain a new Splunk HTTP Event Collector token and the correct https endpoint.
+4. Verify the token using `curl <https://docs.splunk.com/Documentation/Splunk/8.1.3/Data/FormateventsforHTTPEventCollector>`_ Note: The endpoint must use a publicly trusted certificate authority.
+5. The IP address to be used for SNMP Traps. Note if HA deployment will be used the IP must be in addition to the managment inteface of each cluster memember.
+6. Obtain the ip address of an internal DNS server able to resolve the Splunk Endpoint
+
+Requirements (Splunk Infrastructure Monitoring)
+===================================================
+
+Obtain the correct realm and token.
+
+**************************************************
+Deploy
+**************************************************
 
 Setup MicroK8s
----------------------------------------------------
+===================================================
 
 The following setup instructions are validated for release 1.20x but are subject to change.
 
@@ -22,41 +44,31 @@ The following setup instructions are validated for release 1.20x but are subject
 2. Check completion status ``sudo microk8s status --wait-ready``
 3. Install optional modules ``sudo microk8s enable dns:<privatedns_ip> metallb helm3``
 4. Alias kubectl ``alias kubectl="microk8s kubectl"``
+4. Alias kubectl ``alias heml3="microk8s helm3"``
+5. Grant access to the kubectl config file ``sudo usermod -a -G microk8s $USER``
+6. Grant access to the kubectl config file ``sudo chown -f -R $USER ~/.kube``
+7. Refresh credentials ``su - $USER``
 
-Monitor MicroK8s
----------------------------------------------------
-
-Note HEC TLS is required for SCK
-
-* Install the following app on the designated search head https://splunkbase.splunk.com/app/4217/ (version 2.23 or newer) *NOTE Do not complete the add data process for k8s
-* Install the following app on the designated search head  and indexers https://splunkbase.splunk.com/app/3975/ (version 2.23 or newer)
-* Create the additional index em_logs
-* Get the code
+Get current deployment scripts
+===================================================
 
 .. code-block:: bash
 
    git clone https://github.com/splunk/splunk-connect-for-snmp.git
    cd splunk-connect-for-snmp
 
-* Install Splunk Connect for k8s on the cluster. 
+Monitor MicroK8s (Requires Splunk Enterprise/Cloud)
+===================================================
 
-.. code-block:: bash
+1. Ensure Requirements are meet above
+2. Add the Helm repository ``microk8s.helm3 repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/``
+3. Deploy Splunk Connect for Kubernetes ``deploy/sck/deploy_sck.sh``
+4. Wait 30 seconds
+5. Confirm the following search returns results ``| mcatalog values(metric_name)  where index=em_metrics AND metric_name=kube* AND host=<hostname>``
 
-    pushd deploy/sck
-    MONITORING_MACHINE='hec-input.fqdn.com' \
-    GLOBAL_HEC_INSECURE_SSL=true \
-    OBJECTS_INSECURE_SSL=true \
-    METRICS_INSECURE_SSL=true \
-    HEC_TOKEN='token' \
-    HEC_PORT='8088' \
-    CLUSTER_NAME='sc4s' \
-    bash deploy_sck_mk8s.sh \
-    ; popd
-
-* Verify by navigation to to the "Splunk App for Infrastructure" app click investigate and filter for the cluster name used.
 
 Setup Secrets
----------------------------------------------------
+===================================================
 
 Execute the following commands, use the correct values for your env:
 
@@ -72,75 +84,79 @@ Execute the following commands, use the correct values for your env:
    --from-literal=SIGNALFX_REALM=signalfxrealm
 
 
-Configure Open Telemetry Collector
----------------------------------------------------
+Deploy SC4SNMP
+===================================================
 
-One can find description of Splunk and SIM exporters under below links:
-https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/splunkhecexporter
-https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/signalfxexporter
-
-One can find description of filter processor below:
-https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/filterprocessor
-
-OTEL configuration is placed in deploy/sc4snmp/otel-config.yaml
-
-Setup Trap
----------------------------------------------------
 * Apply the manifests, replace the ip ``10.0.101.22`` with the shared IP noted above
 
 .. code-block:: bash
 
-    for f in deploy/sc4snmp/*.yaml ; do cat $f | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | kubectl apply -f - ; done
+    for f in deploy/sc4snmp/*.yaml ; do cat $f | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | microk8s.kubectl apply -f - ; done
+
 
 * Confirm deployment using ``kubectl get pods``
 
 .. code-block:: bash
 
-    NAME                          READY   STATUS    RESTARTS   AGE
-    mib-server-54557f5846-rzg9q   1/1     Running   0          1m
-    mib-server-54557f5846-pbt2h   1/1     Running   0          1m
-    mongo-65484dd8b4-49dfj        1/1     Running   0          1m
-    traps-676859cb8d-tnc7v        1/1     Running   0          1m
+    NAME                                                 READY   STATUS    RESTARTS   AGE
+    mongo-65484dd8b4-fnzw4                               1/1     Running   1          28h
+    sc4-snmp-traps-55bf6ff8f6-wwbnc                      1/1     Running   1          28h
+    mib-server-6bdd68795c-cpvpl                          1/1     Running   1          28h
+    rabbitmq-65bc7457dd-wtj4m                            1/1     Running   1          28h
+    sc4-snmp-scheduler-5c6db68ff4-bnpn9                  1/1     Running   1          28h
+    sc4-snmp-otel-5bb6d85555-2cwb7                       1/1     Running   1          28h
+    sc4-snmp-worker-6f45794df7-qxl2m                     1/1     Running   1          28h
+    
+* Confirm deployment using ``kubectl get svc`` confirm the value of external-ip in the row below matches IP used above
+
+.. code-block:: bash
+
+    NAME                 TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)             AGE
+    sc4-snmp-traps       LoadBalancer   10.152.183.134   10.202.6.253   162:32652/UDP       28h
+
+
+Test SNMP Traps
+===================================================
 
 * Test the trap from a linux system with snmp installed replace the ip ``10.0.101.22`` with the shared ip above
 
 .. code-block:: bash
-
+    apt-get install snmpd
     snmptrap -v2c -c public 10.0.101.22 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s test
 
+* Search splunk, one event per trap command with the host value of the test machine ip will be found
+
+.. code-block:: bash
+    index=* sourcetype="sc4snmp:traps"
+
+
 Setup Poller
----------------------------------------------------
+===================================================
 
-* Apply the manifests
-
-.. code-block:: bash
-
-    kubectl apply -f deploy/sc4snmp/
-
-* Confirm deployment using ``kubectl get pods``
-
-.. code-block:: bash
-
-    NAME                                  READY   STATUS    RESTARTS   AGE
-    mib-server-75c64468d4-nxfhw           1/1     Running   0          1m
-    mongo-65484dd8b4-49dfj                1/1     Running   0          1m
-    rabbitmq-65bc7457dd-xzdq7             1/1     Running   0          1m
-    sc4-snmp-scheduler-5c9f69784d-pfmgq   1/1     Running   0          1m
-    sc4-snmp-worker-5dff6b8c49-q7n2t      1/1     Running   0          1m
-
-* Test the poller by logging to Splunk and confirm presence of events in snmp index and metrics in snmp_metric index.
+* Test the poller by logging to Splunk and confirm presence of events in snmp em_logs and metrics in em_metrics index.
 
 * You can change the inventory contents in scheduler-config.yaml and use following command to apply the changes to Kubernetes cluster.
 Agents configuration is placed in scheduler-config.yaml under section inventory.csv, content below is interpreted as csv file
 with following columns:
 
-1. host (IP or name)
-2. version of SNMP protocol
-3. community string authorisation phrase
-4. profile of device (varBinds of profiles can be found in convig.yaml section of scheduler-config.yaml file)
-5. frequency in seconds (how often SNMP connector should ask agent for data)
-
+*. host (IP or name)
+*. version of SNMP protocol
+*. community string authorisation phrase
+*. profile of device (varBinds of profiles can be found in convig.yaml section of scheduler-config.yaml file)
+*. frequency in seconds (how often SNMP connector should ask agent for data)
 
 .. code-block:: bash
-
+    vi deploy/sc4snmp/scheduler-config.yaml
+    # Remove the comment from line 2 and correct the ip and community value
     kubectl apply -f deploy/sc4snmp/scheduler-config.yaml
+
+
+* Search splunk, one event per trap command with the host value of the test machine ip will be found
+
+.. code-block:: bash
+    index=* sourcetype="sc4snmp:meta" SNMPv2_MIB__sysLocation_0="*" | dedup host
+
+Maintain
+===================================================
+
+Manage configuration obtain and update communities, user/secrets and inventories

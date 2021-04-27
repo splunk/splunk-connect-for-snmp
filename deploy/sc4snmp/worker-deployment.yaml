@@ -35,8 +35,6 @@ spec:
             - name: config
               mountPath: "/work/config"
               readOnly: true
-      imagePullSecrets:
-        - name: regcred
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config

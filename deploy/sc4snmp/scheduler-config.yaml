@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: sc4snmp-scheduler
+  name: sc4snmp-config
 data:
   config.yaml: |
     celery:
@@ -32,35 +32,18 @@ data:
         securityName:
         authKeyType: 0
         privKeyType: 0
-      testfdse:
-        authKey: "testfdse"
-        privKey: "testfdse"
     profiles:
-      router:
+      basev1:
         varBinds:
           # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
           - ['SNMPv2-MIB', 'sysDescr']
           - ['SNMPv2-MIB', 'sysUpTime',0]
           - ['SNMPv2-MIB', 'sysName']
-          - ['CISCO-FC-MGMT-MIB', 'cfcmPortLcStatsEntry']
-          - ['EFM-CU-MIB', 'efmCuPort']
-          - '1.3.6.1.2.1.1.6.0'
-          - '1.3.6.1.2.1.1.9.1.4.*'
     splunk:
       index:
-        event: "snmp"
-        metric: "snmp_metric"
+        event:  "em_logs"
+        meta:   "em_meta"
+        metric: "em_metrics"
     mongo:
       database: "snmp_poller"
       collection: "walked_hosts"
-  inventory.csv: |
-    host,version,community,profile,freqinseconds
-    #174.62.79.72:16112,3,testfdse,1.3.6.1.2.1.1.9.1.3.1,30
-    #10.42.0.58,2c,public,1.3.6.1.2.1.1.9.1.3.1,30000
-    #174.62.79.72:16112,2c,public,1.3.6.1.2.1.1.1.0,30
-    #174.62.79.72:16112,1,public,1.3.6.1.2.1.1.2.0,30
-    #127.0.0.1:1161,2c,public,1.3.6.1.2.1.1.9.1.2.*,1
-    host.docker.internal:161,2c,public,router,120
-    #192.168.0.3,3,secretstring1,atm,2
-    #192.168.0.4,3,secretstring2,atm,3
-

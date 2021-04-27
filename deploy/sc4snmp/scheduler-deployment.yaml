@@ -27,18 +27,26 @@ spec:
             - name: config
               mountPath: "/work/config"
               readOnly: true
-      imagePullSecrets:
-        - name: regcred
+          volumeMounts:
+            - name: inventory
+              mountPath: "/work/inventory"
+              readOnly: true
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config
           configMap:
             # Provide the name of the ConfigMap you want to mount.
-            name: sc4snmp-scheduler
+            name: sc4snmp-config
             # An array of keys from the ConfigMap to create as files
             items:
               - key: "config.yaml"
                 path: "config.yaml"
+        - name: inventory
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: sc4snmp-inventory
+            # An array of keys from the ConfigMap to create as files
+            items:
               - key: "inventory.csv"
                 path: "inventory.csv"
 

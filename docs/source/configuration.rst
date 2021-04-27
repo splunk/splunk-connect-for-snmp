@@ -1,7 +1,12 @@
-Configuration operation
-===================================================
+.. Configuration
+
+###################################################
+Configuration
+###################################################
+
+**************************************************
 Traps Configuration
-===================================================
+**************************************************
 
 * traps-server-config.yaml
 
@@ -11,7 +16,7 @@ Splunk Connect for SNMP supports receiving SNMPv1 traps, SNMPv2 traps, and SNMPv
 To make it work, please configure with authorized SNMPv1/SNMPv2c community strings and/or SNMPv3 users in **traps-server-config.yaml**. Non-authorized traps/informs will be dropped.
 
 Configure SNMPv1/v2c community strings
----------------------------------------------------
+===================================================
 
 
 Add SNMPv1/SNMPv2c community strings under **v1/v2** section, respectively. 
@@ -22,7 +27,7 @@ Add SNMPv1/SNMPv2c community strings under **v1/v2** section, respectively.
 
 
 Configure SNMPv3 users
----------------------------------------------------
+===================================================
 
 It gets a little more complex with respect to SNMPv3. The user database in a SNMPv3 application is actually referenced by a combination of the user's name (called a "security Name") and an identifier for the given SNMP application you're talking to (called an "engineID"). Therefore, both userName and engineID are required for SNMPv3 under **v3** section.
 
@@ -101,69 +106,29 @@ e.g.
           - userName: snmpv3test3
             securityEngineId: 8000000004030203
 
-Test the  traps
----------------------------------------------------
 
-* Test the trap from a linux system with snmp installed.
-
-**SNMPv1 traps**
-
-.. code-block:: bash
-
-    snmptrap -v 1 -c public <host> '1.2.3.4.5.6' '192.193.194.195' 6 99 123 1.3.6.1.2.1.1.5.0 s "test snmp v1"
-
-**SNMPv2 traps**
-
-.. code-block:: bash
-
-    snmptrap -v 2c -c public <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v2"
-
-**SNMPv3 traps**
-
-You can set up the SNMPv3 users under the section **config.yaml** in **traps-server-config.yaml** and use the following command to test SNMPv3 traps.
-
-.. code-block:: bash
-
-    snmptrap -v 3 -e <engine_id> -l authPriv -u snmpv3test -a MD5 -A <auth_passphrase> -x DES -X <priv_passphrase> <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3"
-
-
-For example, 
-
-The corresponding test command for these SNMPv3 users above are:
-
-**userName: snmpv3test**
-
-.. code-block:: bash
-
-    snmptrap -v 3 -e 0x8000000004030201 -l authPriv -u snmpv3test -A AuthPass1 -X PrivPass2 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test"
-
-**userName: snmpv3test2**
-
-.. code-block:: bash
-
-    snmptrap -v 3 -e 0x8000000004030202 -l authPriv -u snmpv3test2 -a SHA -A AuthPass11 -x AES -X PrivPass22 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test2"
-
-**userName: snmpv3test3**
-
-.. code-block:: bash
-
-    snmptrap -v 3 -e 0x8000000004030203 -l noAuthNoPriv -u snmpv3test3 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test3"
-
+**************************************************
+Poller 
+**************************************************
 
     
 Scheduler Configuration
 ===================================================
 * scheduler-config.yaml
 
+  * config.yaml
+
+* scheduler-inventory.yaml
+
   * inventory.csv
   
-  * config.yaml
+
 
 Splunk Connect for SNMP supports polling from  SNMPv1 agents, SNMPv2 agents, and SNMPv3 agents.
 To make it work, please configure with authorized SNMPv1/SNMPv2c community strings and/or SNMPv3 users in **scheduler-config.yaml**. 
 
 **inventory.csv**
----------------------------------------------------
+===================================================
 
 
 Inventory.csv acts as a lookup table where the poller application will read the SNMP agents' information and its corresponding queries information.
@@ -177,27 +142,16 @@ Inventory.csv acts as a lookup table where the poller application will read the 
 
     "e.g. 174.62.79.72 (IP only) | 174.62.79.72:161 (IP+port)","e.g. 1 | 2c | 3", "e.g. public (SNMPv1/SNMPv2c community string) | testUser (SNMPv3 username, setup other params in config.yaml)","e.g 1.3.6.1.2.1.1.9.1.3.1 (single oid for snmp get) | 1.3.6.1.2.1.1.9.1.3.* (oid for snmp walk to get subtree) | router (profile used to setup detials in config.yaml", "e.g. 30"
 
-e.g.
-
-.. csv-table:: 
-   :header: "host", "version", "community", "profile", "freqinseconds"
-   
-   10.42.0.58,1,public,1.3.6.1.2.1.1.9.1.3.1,30
-   host.docker.internal:161,2c,public,1.3.6.1.2.1.1.9.1.3.*,60
-   174.62.79.72:16112,3,testUser,router,30
-
-     
-
 **config.yaml**
----------------------------------------------------
+===================================================
+
 
 
 config.yaml acts as an extension for inventory.csv for these three situations.
 
 
 1. Configure optional parameters for SNMPv1/SNMPv2c community data
------------------------------------------------------------------------
-
+-------------------------------------------------------------------
 
 Community-Based Security Model of SNMPv1/SNMPv2c may require more params, which can be set up in config.yaml.
 
@@ -217,7 +171,9 @@ Community-Based Security Model of SNMPv1/SNMPv2c may require more params, which 
 
 
 2. Configure optional parameters SNMPv3 users
----------------------------------------------------
+------------------------------------------------
+
+
 
 
 SNMPv3 users may require more params for different security levels, which can be set up in config.yaml.
