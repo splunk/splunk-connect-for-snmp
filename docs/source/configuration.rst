@@ -1,3 +1,5 @@
+.. Configuration
+
 Configuration operation
 ===================================================
 Traps Configuration
