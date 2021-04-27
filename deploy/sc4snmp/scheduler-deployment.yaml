@@ -29,7 +29,7 @@ spec:
               readOnly: true
           volumeMounts:
             - name: inventory
-              mountPath: "/work/inventory"
+              mountPath: "/work/config"
               readOnly: true
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
