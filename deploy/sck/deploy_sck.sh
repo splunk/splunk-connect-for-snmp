@@ -38,7 +38,7 @@ full_path=$(realpath $0)
 dir_path=$(dirname $full_path)
 
 cat ${dir_path}/sck_145.yaml \
-     | sed "s/##INSECURE_SSL##/${GLOBAL_HEC_INSECURE_SSL}/g" \
+     | sed "s/##INSECURE_SSL##/${INSECURE_SSL}/g" \
      | sed "s/##PROTO##/${PROTO}/g" \
      | sed "s/##PORT##/${PORT}/g" \
      | sed "s/##HOST##/${HOST}/g" \
