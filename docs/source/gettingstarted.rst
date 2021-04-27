@@ -155,3 +155,8 @@ with following columns:
 
 .. code-block:: bash
     index=* sourcetype="sc4snmp:meta" SNMPv2_MIB__sysLocation_0="*" | dedup host
+
+Maintain
+===================================================
+
+Manage configuration obtain and update communities, user/secrets and inventories
