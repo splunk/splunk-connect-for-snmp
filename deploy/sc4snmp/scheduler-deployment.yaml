@@ -17,7 +17,12 @@ spec:
       containers:
         - name: sc4-snmp-scheduler
           image: ghcr.io/splunk/splunk-connect-for-snmp-poller:1
-          args: ["--log=DEBUG", "--config=/work/config/config.yaml", "--inventory=/work/config/inventory.csv"]
+          args:
+            [
+              "--log=DEBUG",
+              "--config=/work/config/config.yaml",
+              "--inventory=/work/config/inventory.csv",
+            ]
           env:
             - name: CELERY_BROKER_URL
               value: amqp://guest@$(RABBITMQ_SERVICE_SERVICE_HOST):$(RABBITMQ_SERVICE_SERVICE_PORT)//
@@ -27,7 +32,6 @@ spec:
             - name: config
               mountPath: "/work/config"
               readOnly: true
-          volumeMounts:
             - name: inventory
               mountPath: "/work/config"
               readOnly: true
@@ -49,4 +53,3 @@ spec:
             items:
               - key: "inventory.csv"
                 path: "inventory.csv"
-
