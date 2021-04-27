@@ -21,7 +21,7 @@ spec:
             [
               "--log=DEBUG",
               "--config=/work/config/config.yaml",
-              "--inventory=/work/config/inventory.csv",
+              "--inventory=/work/inventory/inventory.csv",
             ]
           env:
             - name: CELERY_BROKER_URL
@@ -33,7 +33,7 @@ spec:
               mountPath: "/work/config"
               readOnly: true
             - name: inventory
-              mountPath: "/work/config"
+              mountPath: "/work/inventory"
               readOnly: true
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
