@@ -16,6 +16,7 @@ collection of SNMP data for Splunk Enterprise, Splunk Enterprise Cloud and Splun
    :caption: Table of Contents
    :maxdepth: 1
 
+   planning
    gettingstarted
    configuration
 

@@ -1,17 +1,27 @@
 ... Getting Started
 
-Getting Started
+Prepare Splunk Enterprise
 ===================================================
 
 Requirements (Splunk Enterprise/Enterprise Cloud)
 ---------------------------------------------------
 
-1. Splunk hec token with no index restriction **or** Splunk hec token with access to _internal, netops and net_metrics
+1. Complete the installation of 
+    1.1 `Splunk app for Infrastructure <https://docs.splunk.com/Documentation/InfraApp/latest/Install/About>`_ (Splunk Enterprise Customers)
+    1.2 `Splunk IT Essentials Work <https://docs.splunk.com/Documentation/ITE/latest/Work/Overview>`_ (Splunk Enterprise Cloud Customers)
+2. Verify the creation of the following indexes
+    1.1 em_metrics (metrics type)
+    1.2 em_meta (event type)
+    1.3 em_logs (event type)
+3. Create or obtain a new Splunk HTTP Event Collector token and the correct https endpoint.
+4. Verify the token using `curl <https://docs.splunk.com/Documentation/Splunk/8.1.3/Data/FormateventsforHTTPEventCollector>`_ Note: The endpoint must use a publicly trusted certificate authority.
+5. The IP address to be used for SNMP Traps. Note if HA deployment will be used the IP must be in addition to the managment inteface of each cluster memember.
+6. Obtain the ip address of an internal DNS server able to resolve the Splunk Endpoint
 
-    1.1 Poller-specific indexes: we need an **event type** index called **snmp**, and **metrics type** index called **snmp_metric**
-2. Known Splunk URL with trusted certificate (must be trusted by standard red hat trusted chain)
-3. Physical or virtual linux host (Prefer Ubuntu or RHEL 8.1) RHEL hosts must have snap support enabled see https://snapcraft.io/docs/installing-snapd
-4. One IP allocation in addition to the ip allocated to the host. *Note: In the future clustering (scale out) will use this IP as a shared resource
+Requirements (Splunk Enterprise/Enterprise Cloud)
+---------------------------------------------------
+
+Obtain the correct realm and token.
 
 Setup MicroK8s
 ---------------------------------------------------
@@ -22,21 +32,32 @@ The following setup instructions are validated for release 1.20x but are subject
 2. Check completion status ``sudo microk8s status --wait-ready``
 3. Install optional modules ``sudo microk8s enable dns:<privatedns_ip> metallb helm3``
 4. Alias kubectl ``alias kubectl="microk8s kubectl"``
+4. Alias kubectl ``alias heml3="microk8s helm3"``
+5. Grant access to the kubectl config file ``sudo usermod -a -G microk8s $USER``
+6. Grant access to the kubectl config file ``sudo chown -f -R $USER ~/.kube``
+7. Refresh credentials ``su - $USER``
 
-Monitor MicroK8s
+Get current deployment scripts
 ---------------------------------------------------
-
-Note HEC TLS is required for SCK
-
-* Install the following app on the designated search head https://splunkbase.splunk.com/app/4217/ (version 2.23 or newer) *NOTE Do not complete the add data process for k8s
-* Install the following app on the designated search head  and indexers https://splunkbase.splunk.com/app/3975/ (version 2.23 or newer)
-* Create the additional index em_logs
-* Get the code
 
 .. code-block:: bash
 
    git clone https://github.com/splunk/splunk-connect-for-snmp.git
    cd splunk-connect-for-snmp
+
+Monitor MicroK8s (Requires Splunk Enterprise/Cloud)
+---------------------------------------------------
+
+1. Ensure Requirements are meet above
+2. Add the Helm repository ``microk8s.helm3 repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/``
+3. Deploy Splunk Connect for Kubernetes ``deploy/sck/deploy_sck.sh``
+4. Wait 30 seconds
+5. Verify 
+
+
+
+
+
 
 * Install Splunk Connect for k8s on the cluster. 
 
