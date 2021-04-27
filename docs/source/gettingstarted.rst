@@ -127,13 +127,19 @@ Setup Poller
 Agents configuration is placed in scheduler-config.yaml under section inventory.csv, content below is interpreted as csv file
 with following columns:
 
-1. host (IP or name)
-2. version of SNMP protocol
-3. community string authorisation phrase
-4. profile of device (varBinds of profiles can be found in convig.yaml section of scheduler-config.yaml file)
-5. frequency in seconds (how often SNMP connector should ask agent for data)
-
+*. host (IP or name)
+*. version of SNMP protocol
+*. community string authorisation phrase
+*. profile of device (varBinds of profiles can be found in convig.yaml section of scheduler-config.yaml file)
+*. frequency in seconds (how often SNMP connector should ask agent for data)
 
 .. code-block:: bash
-
+    vi deploy/sc4snmp/scheduler-config.yaml
+    # Remove the comment from line 2 and correct the ip and community value
     kubectl apply -f deploy/sc4snmp/scheduler-config.yaml
+
+
+* Search splunk, one event per trap command with the host value of the test machine ip will be found
+
+.. code-block:: bash
+    index=* sourcetype="sc4snmp:meta" SNMPv2_MIB__sysLocation_0="*" | dedup host

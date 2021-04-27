@@ -101,63 +101,19 @@ e.g.
           - userName: snmpv3test3
             securityEngineId: 8000000004030203
 
-Test the  traps
----------------------------------------------------
-
-* Test the trap from a linux system with snmp installed.
-
-**SNMPv1 traps**
-
-.. code-block:: bash
-
-    snmptrap -v 1 -c public <host> '1.2.3.4.5.6' '192.193.194.195' 6 99 123 1.3.6.1.2.1.1.5.0 s "test snmp v1"
-
-**SNMPv2 traps**
-
-.. code-block:: bash
-
-    snmptrap -v 2c -c public <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v2"
-
-**SNMPv3 traps**
-
-You can set up the SNMPv3 users under the section **config.yaml** in **traps-server-config.yaml** and use the following command to test SNMPv3 traps.
-
-.. code-block:: bash
-
-    snmptrap -v 3 -e <engine_id> -l authPriv -u snmpv3test -a MD5 -A <auth_passphrase> -x DES -X <priv_passphrase> <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3"
-
-
-For example, 
-
-The corresponding test command for these SNMPv3 users above are:
-
-**userName: snmpv3test**
-
-.. code-block:: bash
-
-    snmptrap -v 3 -e 0x8000000004030201 -l authPriv -u snmpv3test -A AuthPass1 -X PrivPass2 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test"
-
-**userName: snmpv3test2**
-
-.. code-block:: bash
-
-    snmptrap -v 3 -e 0x8000000004030202 -l authPriv -u snmpv3test2 -a SHA -A AuthPass11 -x AES -X PrivPass22 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test2"
-
-**userName: snmpv3test3**
-
-.. code-block:: bash
-
-    snmptrap -v 3 -e 0x8000000004030203 -l noAuthNoPriv -u snmpv3test3 <host> 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s "test snmp v3 - snmpv3test3"
-
 
     
 Scheduler Configuration
 ===================================================
 * scheduler-config.yaml
 
+  * config.yaml
+
+* scheduler-inventory.yaml
+
   * inventory.csv
   
-  * config.yaml
+
 
 Splunk Connect for SNMP supports polling from  SNMPv1 agents, SNMPv2 agents, and SNMPv3 agents.
 To make it work, please configure with authorized SNMPv1/SNMPv2c community strings and/or SNMPv3 users in **scheduler-config.yaml**. 
@@ -176,17 +132,6 @@ Inventory.csv acts as a lookup table where the poller application will read the 
    "IP:Port of SNMP agents, where port is optional with default is 161","An indication of SNMP versions", "community string for SNMPv1/v2 OR userNanme for SNMPv3", "query info", "query frequency in seconds"
 
     "e.g. 174.62.79.72 (IP only) | 174.62.79.72:161 (IP+port)","e.g. 1 | 2c | 3", "e.g. public (SNMPv1/SNMPv2c community string) | testUser (SNMPv3 username, setup other params in config.yaml)","e.g 1.3.6.1.2.1.1.9.1.3.1 (single oid for snmp get) | 1.3.6.1.2.1.1.9.1.3.* (oid for snmp walk to get subtree) | router (profile used to setup detials in config.yaml", "e.g. 30"
-
-e.g.
-
-.. csv-table:: 
-   :header: "host", "version", "community", "profile", "freqinseconds"
-   
-   10.42.0.58,1,public,1.3.6.1.2.1.1.9.1.3.1,30
-   host.docker.internal:161,2c,public,1.3.6.1.2.1.1.9.1.3.*,60
-   174.62.79.72:16112,3,testUser,router,30
-
-     
 
 **config.yaml**
 ---------------------------------------------------
