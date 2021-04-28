@@ -73,7 +73,6 @@ then
     microk8s enable metallb:$SHAREDIP
   done
 fi
-exit
 
 HCMD=helm
 if ! command -v helm &> /dev/null
