@@ -291,8 +291,9 @@ do
   read -p 'SHAREDIP for HA installations this is in addition to the member addresses for single instance this is the host ip: ' SHAREDIP  
   
 done
+svcip=$(echo $SHAREDIP | cut -d '/' -f 1)
 cat deploy/sc4snmp/external/traps-service.yaml \
-      | sed "s/##SHAREDIP##/${SHAREDIP}/g" \
+      | sed "s/##SHAREDIP##/${svcip}/g" \
       | $KCMD -n sc4snmp apply -f -
 
 $KCMD -n sc4snmp apply -f deploy/sc4snmp/internal
