@@ -43,11 +43,10 @@ The following setup instructions are validated for release 1.20x but are subject
 1. Install MicroK8s ``sudo snap install microk8s --classic``
 2. Check completion status ``sudo microk8s status --wait-ready``
 3. Install optional modules ``sudo microk8s enable dns:<privatedns_ip> metallb helm3``
-4. Alias kubectl ``alias kubectl="microk8s kubectl"``
-4. Alias kubectl ``alias heml3="microk8s helm3"``
-5. Grant access to the kubectl config file ``sudo usermod -a -G microk8s $USER``
-6. Grant access to the kubectl config file ``sudo chown -f -R $USER ~/.kube``
-7. Refresh credentials ``su - $USER``
+4. Grant access to the kubectl config file ``sudo usermod -a -G microk8s $USER``
+4. Grant access to the kubectl config file ``sudo chown -f -R $USER ~/.kube``
+6. Refresh credentials ``su - $USER``
+
 
 Get current deployment scripts
 ===================================================
