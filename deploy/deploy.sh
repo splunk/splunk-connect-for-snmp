@@ -190,6 +190,20 @@ then
       | $HCMD -n sck install sck -f - splunk/splunk-connect-for-kubernetes
 fi #end splunk or both
 
+if [ "$MODE" == "sim" ] || [ "$MODE" == "both" ];
+then
+  while [ ! -n "$SIMREALM" ]
+  do
+    read -p 'SIMREALM Splunk SIM Realm: ' SIMREALM  
+  done
+
+  while [ ! -n "$SIMTOKEN" ]
+  do
+    read -p 'SIMTOKEN Splunk SIM Token: ' SIMTOKEN  
+  done
+
+fi #end sim or both
+
 $KCMD delete ns sc4snmp --wait=true 2>/dev/null
 $KCMD create ns sc4snmp 2>/dev/null  || true
 
