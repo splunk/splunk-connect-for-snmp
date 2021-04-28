@@ -60,6 +60,7 @@ Deploy SC4SNMP non-interactive
 
 .. code-block:: bash
 
+    sudo \
     MODE=splunk \
     PROTO=https \
     INSECURE_SSL=true \
@@ -70,7 +71,7 @@ Deploy SC4SNMP non-interactive
     EVENTS_INDEX=em_events \
     META_INDEX=em_logs \
     CLUSTER_NAME=foo \
-    SHAREDIP=10.0.0.1/32 \
+    SHAREDIP=10.202.18.166/32 \
     RESOLVERIP=8.8.4.4 \
     ./deploy/deploy.sh 
 
