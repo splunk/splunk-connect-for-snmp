@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "      [.. ..      [..                 [.. ..  [...     [..[..       [..[.......   "
 echo "    [..    [.. [..   [..      [..   [..    [..[. [..   [..[. [..   [...[..    [.. "
@@ -9,193 +9,227 @@ echo "    [..    [.. [..   [..[.... [. [..[..    [..[..    [. ..[..       [..[..
 echo "      [.. ..     [....        [..     [.. ..  [..      [..[..       [..[..        "
 
 
-
-KUBERNETES_POLLER_CONFIG_MAP_NAME="poller-config"
-SC4SNMP_POLLER_DIR="./sc4snmp/"
-SC4SNMP_TRAP_DIR="./sc4snmp/"
-
-# Change this as needed to adjust with your flavor of k8s wrapper! i.e. kubectl k3s minikube
-alias k='k3s kubectl'
-# alias k='minikube kubectl'
-
-
-kubernetes_undeploy_all() {
-
-  for conf in "$@"; do
-    k delete -f "${conf}"
-
+realpath() {
+  OURPWD=$PWD
+  cd "$(dirname "$1")"
+  LINK=$(readlink "$(basename "$1")")
+  while [ "$LINK" ]; do
+    cd "$(dirname "$LINK")"
+    LINK=$(readlink "$(basename "$1")")
   done
-
-    # Hard Clean up
-    k delete deployment sc4-snmp-traps
-    k delete service/sc4-snmp-traps-service
-
-    k delete deployment mib-server
-    k delete service/mib-server-service
-
-    # k -n default  delete pod,svc,deployment --all   --grace-period 0  --force --v=6 && sleep 3 && kubectl get pods
-    k -n default delete pod,svc,deployment --all   --grace-period 0  --force && sleep 3 && kubectl get pods
+  REALPATH="$PWD/$(basename "$1")"
+  cd "$OURPWD"
+  echo "$REALPATH"
 }
 
-download_poller_config_file() {
-  token=$1
-  poller_config_raw_file="raw.githubusercontent.com/splunk/splunk-connect-for-snmp-poller/main/config.yaml"
-  full_poller_config_raw_file="https://${token}@${poller_config_raw_file}"
-  poller_config_file_name="poller-config.yaml"
-  if ! curl --fail -s "${full_poller_config_raw_file}" -o "${poller_config_file_name}" ; then
-      echo "Cannot access ${poller_config_raw_file}"
-      exit 1
+HCMD=helm
+if ! command -v helm &> /dev/null
+then
+    if command -v microk8s.helm3 &> /dev/null
+    then
+        HCMD=microk8s.helm3
+    else
+        echo "helm3 could not be found"
+        exit
+    fi
+fi
+
+KCMD=kubectl
+if ! command -v kubectl &> /dev/null
+then
+    if command -v microk8s.kubectl &> /dev/null
+    then
+        KCMD=microk8s.kubectl
+    else
+        echo "kubectl could not be found"
+        exit
+    fi
+fi
+
+# CUSTER_NAME=${CUSTER_NAME:=splunk-connect}
+# NAMESPACE=${NAMESPACE:=default}
+
+if [ ! -n "$MODE" ]; then
+    read -p 'Select MODE one of splunk,sim,both: ' MODE
+    case "${MODE}" in
+    splunk)
+            echo "MODE Splunk"
+            ;;
+    sim)
+            echo "MODE SIM"
+            ;;
+    both)
+            echo "MODE Both"
+            ;;
+    *)
+            echo "MODE invalid"
+            exit 1
+            ;;
+    esac
+fi
+
+if [ "$MODE" == "splunk" ] || [ "$MODE" == "both" ];
+then
+
+  while [ ! -n "$HOST" ]
+  do
+    read -p 'FQDN of Splunk HEC Inputs: ' HOST
+
+    resolvedIP=$(nslookup "$HOST" | awk -F':' '/^Address: / { matched = 1 } matched { print $2}' | xargs)
+    if [[ -z "$resolvedIP" ]]; then
+      echo "$HOST" lookup failure
+      unset HOST 
+    fi
+  done
+
+  while [ ! -n "$PROTO" ]
+  do
+    read -p 'PROTO of Splunk HEC Inputs http or https (default): ' PROTO  
+    PROTO=${PROTO:-https}
+  done
+
+  while [ ! -n "$PORT" ]
+  do
+    read -p 'PORT of Splunk HEC Inputs 443 (default): ' PROTO  
+    PORT=${PORT:-443}  
+  done
+  URI_PORT=":$PORT"
+
+  if [ "$PROTO" = "https" ]; then
+    while [ ! -n "$INSECURE_SSL" ]
+    do
+      read -p 'INSECURE_SSL allow true or false (default): ' INSECURE_SSL  
+      INSECURE_SSL=${INSECURE_SSL:-false}  
+      if [ "$INSECURE_SSL" == "true" ] || [ "$INSECURE_SSL" == "false" ];
+      then
+        echo ""
+      else
+        unset INSECURE_SSL
+      fi
+    done 
   fi
 
-  echo "${poller_config_file_name}"
-}
+  if [ "$INSECURE_SSL" == "true" ];
+  then
+    CURL_SSL=-k
+  fi
 
-kubernetes_poller_deploy_or_update_config() {
-  poller_config_file=$1
-  kubernetes_configmap_name=$2
-  k apply configmap "${kubernetes_configmap_name}" --from-file="${poller_config_file}" --dry-run=client -o yaml \
-    | k apply -f -
-  k get configmap "${kubernetes_configmap_name}" -o yaml
-}
-
-kubernetes_create_or_replace_docker_secret() {
-  server=$1
-  username=$2
-  authentication_token=$3
-  email=$4
-  secret_name=$5
-
-  k delete secret "${secret_name}"
-  k create secret docker-registry "${secret_name}" \
-    --docker-server="${server}" \
-    --docker-username="${username}" \
-    --docker-password="${authentication_token}" \
-    --docker-email="${email}"
-}
-
-kubernetes_create_or_replace_hec_secret() {
-  echo "== kubernetes_create_or_replace_hec_secret =="
-  url=$1
-  hec_token=$2
-  secret_name=$3
-
-  k delete secret "${secret_name}"
-  k create secret generic remote-splunk \
-    --from-literal=SPLUNK_HEC_URL="${url}" \
-    --from-literal=SPLUNK_HEC_TLS_SKIP_VERIFY=true \
-    --from-literal=SPLUNK_HEC_TOKEN="${hec_token}"
-  k get secret
-}
-
-clean_up() {
-  echo "== clean_up =="
-  for temporary_file in "$@"; do
-    rm -rf "${temporary_file}"
+  while [ ! -n "$TOKEN" ]
+  do
+    read -p 'TOKEN of Splunk HEC Inputs: ' TOKEN   
   done
-}
 
-undeploy_poller() {
-  rabbitmq_deployment="deployment.apps/$(yq -r .metadata.name $SC4SNMP_POLLER_DIR\rq-deployment.yaml)"
-  echo "Removing deployment for ${rabbitmq_deployment}"
-  k delete "${rabbitmq_deployment}"
+  echo testing HEC url
+  curl -f $CURL_SSL $PROTO://$HOST$URI_PORT/services/collector -H "Authorization: Splunk $TOKEN" -d '{"event": "test" }'
+  if [ "$?" != "0" ]; 
+  then
+    echo Splunk URL test failed
+    exit 1
+  fi
+  echo ""
+  while [ ! -n "$EVENTS_INDEX" ]
+  do
+    echo ""
+    read -p 'EVENTS_INDEX for splunk em_events (default): ' EVENTS_INDEX  
+    EVENTS_INDEX=${EVENTS_INDEX:-em_events}  
+    echo testing HEC url with index $EVENTS_INDEX
+    curl -f $CURL_SSL $PROTO://$HOST$URI_PORT/services/collector -H "Authorization: Splunk $TOKEN" -d "{\"index\": \"$EVENTS_INDEX\", \"event\": \"test\" }"
+    if [ "$?" != "0" ]; 
+    then
+      unset EVENTS_INDEX
+    fi
+  done
 
-  rabbitmq_service="service/$(yq -r .metadata.name $SC4SNMP_POLLER_DIR/rq-service.yaml)"
-  echo "Removing service ${rabbitmq_service}"
-  k delete "${rabbitmq_service}"
-}
+  while [ ! -n "$METRICS_INDEX" ]
+  do
+    echo ""
+    read -p 'METRICS_INDEX for splunk (default): ' METRICS_INDEX  
+    METRICS_INDEX=${METRICS_INDEX:-em_metrics}  
+    echo testing HEC url with index $METRICS_INDEX
+    curl -f $CURL_SSL $PROTO://$HOST$URI_PORT/services/collector -H "Authorization: Splunk $TOKEN" -d "{\"index\": \"$METRICS_INDEX\", \"event\": \"metric\" }"
+    if [ "$?" != "0" ]; 
+    then
+      unset METRICS_INDEX
+    fi
+  done
 
-kubernetes_deploy_rabbitmq() {
-  k apply -f $SC4SNMP_POLLER_DIR/rq-deployment.yaml
-  k apply -f $SC4SNMP_POLLER_DIR/rq-service.yaml
-}
+  while [ ! -n "$META_INDEX" ]
+  do
+    echo ""
+    read -p 'META_INDEX for splunk default: ' META_INDEX  
+    META_INDEX=${META_INDEX:-em_logs}  
+    echo testing HEC url with index $META_INDEX
+    curl -f $CURL_SSL $PROTO://$HOST$URI_PORT/services/collector -H "Authorization: Splunk $TOKEN" -d "{\"index\": \"$META_INDEX\", \"event\": \"test\" }"
+    if [ "$?" != "0" ]; 
+    then
+      unset META_INDEX
+    fi
+  done
 
-kubernetes_deploy_mongo() {
-  k apply -f $SC4SNMP_POLLER_DIR/mongo-deployment.yaml
-  k apply -f $SC4SNMP_POLLER_DIR/mongo-service.yaml
-}
+  while [ ! -n "$CLUSTER_NAME" ]
+  do
+    read -p "CLUSTER_NAME of deployment $(hostname) (default): " CLUSTER_NAME  
+    CLUSTER_NAME=${CLUSTER_NAME:=$(hostname)}
+  done
 
-kubernetes_deploy_poller() {
-  k apply -f $SC4SNMP_POLLER_DIR/scheduler-config.yaml
-  k apply -f $SC4SNMP_POLLER_DIR/scheduler-deployment.yaml
-  k apply -f $SC4SNMP_POLLER_DIR/worker-deployment.yaml
-}
+  $KCMD create ns sck 2>/dev/null  || true
 
-kubernetes_deploy_mibserver() {
-  k apply -f $SC4SNMP_POLLER_DIR/mib-server-deployment.yaml
-  k apply -f $SC4SNMP_POLLER_DIR/mib-server-service.yaml
-}
+  $HCMD repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/  >/dev/null 
+  $HCMD uninstall -n sck sck
+  cat deploy/sck/sck_145.yaml \
+      | sed "s/##INSECURE_SSL##/${INSECURE_SSL}/g" \
+      | sed "s/##PROTO##/${PROTO}/g" \
+      | sed "s/##PORT##/${PORT}/g" \
+      | sed "s/##HOST##/${HOST}/g" \
+      | sed "s/##TOKEN##/${TOKEN}/g" \
+      | sed "s/##EVENTS_INDEX##/${EVENTS_INDEX}/g" \
+      | sed "s/##METRICS_INDEX##/${METRICS_INDEX}/g"  \
+      | sed "s/##META_INDEX##/${META_INDEX}/g" \
+      | sed "s/##CUSTER_NAME##/${CUSTER_NAME}/g" \
+      | sed "s/##NAMESPACE##/${NAMESPACE}/g" \
+      | $HCMD -n sck install sck -f - splunk/splunk-connect-for-kubernetes
+fi #end splunk or both
 
-kubernetes_deploy_snmpsim() {
-  k apply -f $SC4SNMP_POLLER_DIR/sim-deployment.yaml
-}
+$KCMD delete ns sc4snmp --wait=true 2>/dev/null
+$KCMD create ns sc4snmp 2>/dev/null  || true
 
-kubernetes_deploy_traps() {
-  k apply -f $SC4SNMP_TRAP_DIR/traps-server-config.yaml
-  k apply -f $SC4SNMP_TRAP_DIR/traps-deployment.yaml
-  k apply -f $SC4SNMP_TRAP_DIR/traps-service.yaml
-}
-
-kubernetes_deploy_otel() {
-  k apply -f $SC4SNMP_TRAP_DIR/otel-config.yaml
-  k apply -f $SC4SNMP_TRAP_DIR/otel-deployment.yaml
-  k apply -f $SC4SNMP_TRAP_DIR/otel-service.yaml
-}
-
-
-
-
-health_check() {
-  echo "== health_check =="
-  k get pods
-  k get service
-  k get deployment
-  k get secret
-}
-
-
-# -----------------------------------------------------------------------------
-# MAIN
-# -----------------------------------------------------------------------------
-
-kubernetes_undeploy_all $SC4SNMP_POLLER_DIR/worker-deployment.yaml $SC4SNMP_POLLER_DIR/scheduler-deployment.yaml \
-  $SC4SNMP_POLLER_DIR/mongo-deployment.yaml $SC4SNMP_POLLER_DIR/mongo-service.yaml \
-  $SC4SNMP_POLLER_DIR/rq-deployment.yaml $SC4SNMP_POLLER_DIR/rq-service.yaml \
-  $SC4SNMP_POLLER_DIR/mib-server-deployment.yaml $SC4SNMP_POLLER_DIR/mib-server-service.yaml \
-  $SC4SNMP_TRAP_DIR/traps-deployment.yaml $SC4SNMP_TRAP_DIR/traps-service.yaml \
-  $SC4SNMP_TRAP_DIR/otel-deployment.yaml $SC4SNMP_TRAP_DIR/otel-deployment.yaml
-
-
-health_check
-sleep 5
-
-github_username="${USER}"
-github_email="${github_username}@splunk.com"
-echo "Please type your person access github token:"
-read -r token
-
-poller_config_file=$(download_poller_config_file "${token}")
-
-kubernetes_poller_deploy_or_update_config "${poller_config_file}" "${KUBERNETES_POLLER_CONFIG_MAP_NAME}"
-# TODO: try to get the secret name with yq directly from scheduler-deployment.yaml. For now I am
-# getting a syntax error when trying to access a list, not sure why.
-kubernetes_create_or_replace_docker_secret "https://ghcr.io/v2/splunk" ${github_username} ${token} ${github_email} "regcred"
-kubernetes_create_or_replace_hec_secret "https://54.145.16.74:8088/services/collector" "a43a5b69-1813-44a8-b9df-3b05ca84883d" "remote-splunk"
-
-
-  echo "== kubernetes_deploy_snmpsim =="
-
-kubernetes_deploy_snmpsim
-
-  echo "== deploy remaining services =="
-kubernetes_deploy_rabbitmq
-kubernetes_deploy_mongo
-kubernetes_deploy_mibserver
-kubernetes_deploy_otel
-sleep 3
-kubernetes_deploy_traps
-kubernetes_deploy_poller
+if [ "$MODE" == "both" ];
+then
+  $KCMD -n sc4snmp create secret generic remote-splunk \
+    --from-literal=SPLUNK_HEC_URL=$PROTO://$HOST$URI_PORT/services/collector \
+    --from-literal=SPLUNK_HEC_TLS_SKIP_VERIFY=$INSECURE_SSL \
+    --from-literal=SPLUNK_HEC_TOKEN=$TOKEN \
+    --from-literal=SIGNALFX_TOKEN=$SIMTOKEN \
+    --from-literal=SIGNALFX_REALM=$SIMREALM
+fi
+if [ "$MODE" == "splunk" ];
+then
+  $KCMD -n sc4snmp create secret generic remote-splunk \
+    --from-literal=SPLUNK_HEC_URL=$PROTO://$HOST$URI_PORT/services/collector \
+    --from-literal=SPLUNK_HEC_TLS_SKIP_VERIFY=$INSECURE_SSL \
+    --from-literal=SPLUNK_HEC_TOKEN=$TOKEN 
+fi
+if [ "$MODE" == "sim" ];
+then
+  $KCMD -n sc4snmp create secret generic remote-splunk \
+    --from-literal=SIGNALFX_TOKEN=$SIMTOKEN \
+    --from-literal=SIGNALFX_REALM=$SIMREALM
+fi
 
 
-clean_up "${poller_config_file}"
-sleep 5
-health_check
+
+$KCMD -n sc4snmp create -f deploy/sc4snmp/ftr 2>/dev/null
+
+while [ ! -n "$SHAREDIP" ]
+do
+  read -p 'SHAREDIP for HA installations this is in addition to the member addresses for single instance this is the host ip: ' SHAREDIP  
+  
+done
+cat deploy/sc4snmp/external/traps-service.yaml \
+      | sed "s/##SHAREDIP##/${SHAREDIP}/g" \
+      | $KCMD -n sc4snmp apply -f -
+
+$KCMD -n sc4snmp apply -f deploy/sc4snmp/internal
+
+echo ""
+echo done
