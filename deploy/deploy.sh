@@ -22,6 +22,59 @@ realpath() {
   echo "$REALPATH"
 }
 
+if [ "$USER" != "root" ];
+then
+    echo "must be root try sudo"
+    exit
+fi
+
+K8S=${K8S:-mk8s}  
+if [ "$K8S" = "mk8s" ]; then
+  if ! command -v snap &> /dev/null
+  then
+      echo "snap could not be found"
+      exit
+  fi
+  if ! command -v microk8s &> /dev/null
+  then
+      snap install microk8s --classic
+      microk8s status --wait-ready
+  fi
+  if command -v microk8s.helm3 &> /dev/null
+    then
+    microk8s enable helm3    
+  fi
+  module_dns=$(sudo microk8s status -a dns)
+  if [ "$module_dns" = "disabled" ];
+  then
+    while [ ! -n "$RESOLVERIP" ]
+    do
+      mresolverip=$(cat /etc/resolv.conf | grep '^nameserver ' | cut -d ' ' -f 2 | grep -v '^127\.' | head -n 1)
+      mresolverip=${mresolverip:-8.8.8.8}
+      read -p "RESOLVERIP IP of internal DNS resolver default ${mresolverip}: " RESOLVERIP  
+      RESOLVERIP=${RESOLVERIP:=$mresolverip}
+      microk8s enable dns:$RESOLVERIP
+    done
+  fi
+fi
+
+module_mlb=$(sudo microk8s status -a metallb)
+if [ "$module_mlb" = "disabled" ];
+then
+  while [ ! -n "$SHAREDIP" ]
+  do
+    msharedip=$(hostname -I | cut -d ' ' -f 1)
+    echo 'SHAREDIP for HA installations use a CIDR format for a single address /32'
+    echo ' * For a HA installation this should be a unassigned IP shared by the instances'
+    echo ' * For a NON HA installation this should be the machine ip'
+    read -p "default value for this machine is ${msharedip}/32" SHAREDIP  
+
+    SHAREDIP=${SHAREDIP:=$msharedip/32}
+    microk8s enable metallb:$SHAREDIP
+  done
+fi
+exit
+
 HCMD=helm
 if ! command -v helm &> /dev/null
 then
