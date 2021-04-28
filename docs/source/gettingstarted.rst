@@ -57,62 +57,45 @@ Get current deployment scripts
    git clone https://github.com/splunk/splunk-connect-for-snmp.git
    cd splunk-connect-for-snmp
 
-Monitor MicroK8s (Requires Splunk Enterprise/Cloud)
+
+
+Deploy SC4SNMP Interactive
 ===================================================
-
-1. Ensure Requirements are meet above
-2. Add the Helm repository ``microk8s.helm3 repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/``
-3. Deploy Splunk Connect for Kubernetes ``HOST=foo.domain.com PORT=8088 EVENTS_INDEX=em_events METRICS_INDEX=em_metrics META_INDEX=em_logs PROTO=https INSECURE_SSL=false deploy/sck/deploy_sck.sh``
-4. Wait 30 seconds
-5. Confirm the following search returns results ``| mcatalog values(metric_name)  where index=em_metrics AND metric_name=kube* AND host=<hostname>``
-
-
-Setup Secrets
-===================================================
-
-Execute the following commands, use the correct values for your env:
-
-* Setup URL and token secrets (you can remove SignalFX secrets when SignalFX exporter is not configured)
 
 .. code-block:: bash
 
-   kubectl create secret generic remote-splunk \
-   --from-literal=SPLUNK_HEC_URL=https://hec-input.fqdn.com:8088/services/collector \
-   --from-literal=SPLUNK_HEC_TLS_SKIP_VERIFY=true \
-   --from-literal=SPLUNK_HEC_TOKEN=splunkhectoken \
-   --from-literal=SIGNALFX_TOKEN=signalfxtoken \
-   --from-literal=SIGNALFX_REALM=signalfxrealm
+    ./deploy/deploy.sh 
 
 
-Deploy SC4SNMP
+Deploy SC4SNMP non-interactive
 ===================================================
 
-* Apply the manifests, replace the ip ``10.0.101.22`` with the shared IP noted above
-
 .. code-block:: bash
 
-    for f in deploy/sc4snmp/*.yaml ; do cat $f | sed 's/loadBalancerIP: replace-me/loadBalancerIP: 10.0.101.22/' | microk8s.kubectl apply -f - ; done
+    MODE=splunk \
+    PROTO=https \
+    INSECURE_SSL=true \
+    HOST=i-08c221389a3b9899a.ec2.splunkit.io \
+    PORT=8088 \
+    TOKEN=450a69af-16a9-4f87-9628-c26f04ad3785 \
+    METRICS_INDEX=em_metrics \
+    EVENTS_INDEX=em_events \
+    META_INDEX=em_logs \
+    CLUSTER_NAME=foo \
+    ./deploy/deploy.sh 
 
 
-* Confirm deployment using ``kubectl get pods``
-
-.. code-block:: bash
-
-    NAME                                                 READY   STATUS    RESTARTS   AGE
-    mongo-65484dd8b4-fnzw4                               1/1     Running   1          28h
-    sc4-snmp-traps-55bf6ff8f6-wwbnc                      1/1     Running   1          28h
-    mib-server-6bdd68795c-cpvpl                          1/1     Running   1          28h
-    rabbitmq-65bc7457dd-wtj4m                            1/1     Running   1          28h
-    sc4-snmp-scheduler-5c6db68ff4-bnpn9                  1/1     Running   1          28h
-    sc4-snmp-otel-5bb6d85555-2cwb7                       1/1     Running   1          28h
-    sc4-snmp-worker-6f45794df7-qxl2m                     1/1     Running   1          28h
-    
-* Confirm deployment using ``kubectl get svc`` confirm the value of external-ip in the row below matches IP used above
+* Confirm deployment using ``kubectl get svc -n sc4snmp`` confirm the value of external-ip in the row below matches IP used above
 
 .. code-block:: bash
 
     NAME                 TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)             AGE
     sc4-snmp-traps       LoadBalancer   10.152.183.134   10.202.6.253   162:32652/UDP       28h
+
+Test Monioring with SCK (Requires Splunk)
+===================================================
+
+Confirm the following search returns results ``| mcatalog values(metric_name)  where index=em_metrics AND metric_name=kube* AND host=<hostname>``
 
 
 Test SNMP Traps
@@ -146,15 +129,24 @@ with following columns:
 *. frequency in seconds (how often SNMP connector should ask agent for data)
 
 .. code-block:: bash
-    vi deploy/sc4snmp/scheduler-config.yaml
+    cp deploy/sc4snmp/ftr/scheduler-inventory.yaml ~/scheduler-inventory.yaml
+    vi ~/scheduler-inventory.yaml
     # Remove the comment from line 2 and correct the ip and community value
-    kubectl apply -f deploy/sc4snmp/scheduler-config.yaml
+    kubectl apply -n sc4snmp -f ~/scheduler-inventory.yaml
 
 
-* Search splunk, one event per trap command with the host value of the test machine ip will be found
+Test Poller
+===================================================
+
+Search splunk, one event per trap command with the host value of the test machine ip will be found
 
 .. code-block:: bash
+
     index=* sourcetype="sc4snmp:meta" SNMPv2_MIB__sysLocation_0="*" | dedup host
+
+.. code-block:: bash
+
+    | mcatalog values(metric_name)  where index=em_metrics AND metric_name=sc4snmp* AND host=<hostname>
 
 Maintain
 ===================================================
