@@ -62,7 +62,7 @@ Monitor MicroK8s (Requires Splunk Enterprise/Cloud)
 
 1. Ensure Requirements are meet above
 2. Add the Helm repository ``microk8s.helm3 repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/``
-3. Deploy Splunk Connect for Kubernetes ``deploy/sck/deploy_sck.sh``
+3. Deploy Splunk Connect for Kubernetes ``HOST=foo.domain.com PORT=8088 EVENTS_INDEX=em_events METRICS_INDEX=em_metrics META_INDEX=em_logs PROTO=https INSECURE_SSL=false deploy/sck/deploy_sck.sh``
 4. Wait 30 seconds
 5. Confirm the following search returns results ``| mcatalog values(metric_name)  where index=em_metrics AND metric_name=kube* AND host=<hostname>``
 
