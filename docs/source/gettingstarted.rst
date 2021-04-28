@@ -37,28 +37,6 @@ Obtain the correct realm and token.
 Deploy
 **************************************************
 
-Setup MicroK8s
-===================================================
-
-The following setup instructions are validated for release 1.20x but are subject to change.
-
-* Install MicroK8s 
-
-.. code-block:: bash
-
-    sudo snap install microk8s --classic
-    sudo usermod -a -G microk8s $USER
-    sudo chown -f -R $USER ~/.kube
-    sudo microk8s status --wait-ready
-    su - $USER`
-
-* Enable required features
-
-.. code-block:: bash
-
-    sudo microk8s enable dns:<privatedns_ip> metallb helm3
-
-
 Get current deployment scripts
 ===================================================
 
@@ -92,6 +70,8 @@ Deploy SC4SNMP non-interactive
     EVENTS_INDEX=em_events \
     META_INDEX=em_logs \
     CLUSTER_NAME=foo \
+    SHAREDIP=10.0.0.1/32 \
+    RESOLVERIP=8.8.4.4 \
     ./deploy/deploy.sh 
 
 
