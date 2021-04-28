@@ -22,29 +22,79 @@ realpath() {
   echo "$REALPATH"
 }
 
+install_snapd_on_centos7() {
+  yum -y install epel-release
+  yum -y install snapd
+  systemctl enable snapd
+  systemctl start snapd
+  sleep 10
+  ln -s /var/lib/snapd/snap /snap
+}
+
+install_snapd_on_centos8() {
+  dnf -y install epel-release
+  dnf -y install snapd
+  systemctl enable snapd
+  systemctl start snapd
+  sleep 10
+  ln -s /var/lib/snapd/snap /snap
+}
+
+install_dependencies() {
+  os_release=/etc/os-release
+  if [ ! -f "$os_release" ] ; then
+    echo "$os_release does not exist"
+    exit 4
+  fi
+
+  os_id=$(grep "^ID=" "$os_release" | sed -e "s/\"//g" | cut -d= -f2)
+  os_version=$(grep "^VERSION_ID=" "$os_release" | sed -e "s/\"//g" | cut -d= -f2)
+  if [ "$os_id" == "ubuntu" ] ; then
+    echo 'Snap install not required'
+  elif [ "$os_id" == "centos" ] && [[ "$os_version" = "7*" ]]; then
+    install_snapd_on_centos7
+  elif [ "$os_id" == "centos" ] && [[ "$os_version" = "8*" ]]; then
+    install_snapd_on_centos8
+  elif [ "$os_id" == "rhel" ] && [[ "$os_version" = "7*" ]]; then
+    install_snapd_on_centos7
+  elif [ "$os_id" == "rhel" ] && [[ "$os_version" = "8*" ]]; then
+    install_snapd_on_centos8
+  else
+    echo "Unsupported operating system: $os_id $os_version"
+    exit 4
+  fi  
+}
+
 if [ "$USER" != "root" ];
 then
     echo "must be root try sudo"
     exit
 fi
 
+
 K8S=${K8S:-mk8s}  
 if [ "$K8S" = "mk8s" ]; then
+  
+    
   if ! command -v snap &> /dev/null
   then
-      echo "snap could not be found"
-      exit
+      install_dependencies
   fi
+
   if ! command -v microk8s &> /dev/null
   then
-      snap install microk8s --classic
+      while ! snap install microk8s --classic  &> /dev/null; do
+          echo error installing mk8s using snap
+          sleep 1
+      done
+      source ~/.bashrc 
       microk8s status --wait-ready
   fi
   if command -v microk8s.helm3 &> /dev/null
     then
     microk8s enable helm3    
   fi
-  module_dns=$(sudo microk8s status -a dns)
+  module_dns=$(microk8s status -a dns)
   if [ "$module_dns" = "disabled" ];
   then
     while [ ! -n "$RESOLVERIP" ]
@@ -58,7 +108,7 @@ if [ "$K8S" = "mk8s" ]; then
   fi
 fi
 
-module_mlb=$(sudo microk8s status -a metallb)
+module_mlb=$(microk8s status -a metallb)
 if [ "$module_mlb" = "disabled" ];
 then
   while [ ! -n "$SHAREDIP" ]
