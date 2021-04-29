@@ -88,12 +88,14 @@ Test SNMP Traps
 * Test the trap from a linux system with snmp installed replace the ip ``10.0.101.22`` with the shared ip above
 
 .. code-block:: bash
+
     apt-get install snmpd
     snmptrap -v2c -c public 10.0.101.22 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s test
 
 * Search splunk, one event per trap command with the host value of the test machine ip will be found
 
 .. code-block:: bash
+
     index=* sourcetype="sc4snmp:traps"
 
 
