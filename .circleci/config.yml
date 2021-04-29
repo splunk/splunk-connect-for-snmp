@@ -1,0 +1,153 @@
+#Splunk Connect for Syslog (SC4S) by Splunk, Inc.
+#
+#To the extent possible under law, the person who associated CC0 with
+#Splunk Connect for Syslog (SC4S) has waived all copyright and related or neighboring rights
+#to Splunk Connect for Syslog (SC4S).
+#
+#You should have received a copy of the CC0 legalcode along with this
+#work.  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+version: 2.1
+orbs:
+  go: circleci/go@0.2.0
+
+jobs:
+  build:
+    machine:
+      image: ubuntu-1604:202007-01
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - run:
+          name: Github packages docker Login
+          command: |
+            docker login ghcr.io -u $GH_USER -p $GH_TOKEN
+      - run:
+          name: "Build Image"
+          command: |
+            export VERSION=${CIRCLE_TAG:=CIRCLE_SHA1}
+            curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+            #source $HOME/.poetry/env
+            #poetry build
+            #docker build -f Dockerfile . -t sc4snmp-mib-server
+      - run:
+          name: Github packages push
+          command: |
+            #docker tag sc4snmp-mib-server ghcr.io/splunk/splunk-connect-for-snmp-traps:<< pipeline.git.revision >>
+            #docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:<< pipeline.git.revision >>
+            #mkdir -p build-container || true
+            #docker save sc4snmp-mib-server | gzip -c > build-container/oci_container.tar.gz
+      - store_artifacts:
+          path: build-container
+          destination: build-container
+
+  format-code:
+    docker:
+      - image: circleci/python:3.8.6
+    steps:
+      - checkout
+      - run:
+          name: "Check Formatting"
+          command: |
+            pip install black
+            black --check ./
+
+  release:
+    docker:
+      - image: circleci/node:11
+    steps:
+      - checkout
+      - run: npx semantic-release
+
+  publish:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - go/install
+      - run:
+          name: Docker Login
+          command: |
+            docker login ghcr.io -u $GH_USER -p $GH_TOKEN
+      - run:
+          name: Github packages docker Login
+          command: |
+            #docker pull ghcr.io/splunk/splunk-connect-for-snmp-traps:<< pipeline.git.revision >>
+      - run:
+          name: Release Docker Hub
+          command: |
+            export VERSION=${CIRCLE_TAG:=CIRCLE_SHA1}
+            VERSION_DOCKER_MMP=$(echo  $VERSION | sed -n 's/v\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/p')
+            VERSION_DOCKER_MM=$(echo  $VERSION | sed -n 's/v\([0-9]*\.[0-9]*\).*/\1/p')
+            VERSION_DOCKER_M=$(echo  $VERSION | sed -n 's/v\([0-9]*\).*/\1/p')
+
+            #docker build -f Dockerfile . -t release
+
+            # docker tag release ghcr.io/splunk/splunk-connect-for-snmp-traps:$VERSION
+            # docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:$VERSION
+            # docker save ghcr.io/splunk/splunk-connect-for-snmp-traps:${VERSION} | gzip -c > /tmp/workspace/oci_container.tar.gz
+
+            # docker tag release ghcr.io/splunk/splunk-connect-for-snmp-traps:<< pipeline.git.revision >>
+            # docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:<< pipeline.git.revision >>
+
+            # docker tag release ghcr.io/splunk/splunk-connect-for-snmp-traps:${CIRCLE_SHA1:0:7}
+            # docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:${CIRCLE_SHA1:0:7}
+
+            # if [[ $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              #latest
+              # docker tag release ghcr.io/splunk/splunk-connect-for-snmp-traps:latest
+              # docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:latest
+              # #MMP
+              # docker tag release ghcr.io/splunk/splunk-connect-for-snmp-traps:$VERSION_DOCKER_MMP
+              # docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:$VERSION_DOCKER_MMP
+              # #MM
+              # docker tag release ghcr.io/splunk/splunk-connect-for-snmp-traps:$VERSION_DOCKER_MM
+              # docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:$VERSION_DOCKER_MM
+              # #M
+              # docker tag release ghcr.io/splunk/splunk-connect-for-snmp-traps:$VERSION_DOCKER_M
+              # docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:$VERSION_DOCKER_M
+            # else
+              #edge
+            #   docker tag release ghcr.io/splunk/splunk-connect-for-snmp-traps:edge
+            #   docker push ghcr.io/splunk/splunk-connect-for-snmp-traps:edge
+            # fi
+      - run:
+          name: "Publish on GitHub"
+          command: |
+            go get -v -u github.com/tcnksm/ghr
+            PATH=$PATH:/usr/local/go/bin
+            export VERSION=${CIRCLE_TAG:=CIRCLE_SHA1}
+            [[ $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] && ISPRE="-prerelease"
+            $HOME/go/bin/ghr -t ${GH_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${ISPRE} ${VERSION} /tmp/workspace/
+      - store_artifacts:
+          path: /tmp/workspace/
+
+workflows:
+  version: 2
+  build_test:
+    jobs:
+      - format-code
+
+      - build:
+          context:
+            - gdi-github
+
+      - release:
+          requires:
+            - build
+          context:
+            - gdi-github
+
+  release:
+    jobs:
+      - publish:
+          context:
+            - gdi-github
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\d*\.\d*\.\d*.*$/

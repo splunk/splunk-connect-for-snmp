@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sc4snmp-config
+data:
+  config.yaml: |
+    celery:
+      broker:
+        type: "rabbitmq"
+    # Sample Configuration file
+    ipv4: True
+    ipv6: False
+    communities:
+      public:
+        communityIndex:
+        contextEngineId:
+        contextName:
+        tag:
+        securityName:
+      my-area:
+    usernames:
+      simulator:
+        authKey: "auctoritas"
+        privKey: "privatus"        
+      testUser:
+        authKey: authpass
+        privKey: privacypass
+        contextName: "4c9184f37cff01bcdc32dc486ec36961"
+        authProtocol: SHA
+        privProtocol: AES
+        securityEngineId: 8000000004030201
+        securityName:
+        authKeyType: 0
+        privKeyType: 0
+    profiles:
+      basev1:
+        varBinds:
+          # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+          - ['SNMPv2-MIB', 'sysDescr']
+          - ['SNMPv2-MIB', 'sysUpTime',0]
+          - ['SNMPv2-MIB', 'sysName']
+    splunk:
+      index:
+        event:  "em_logs"
+        meta:   "em_meta"
+        metric: "em_metrics"
+    mongo:
+      database: "snmp_poller"
+      collection: "walked_hosts"

@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "splunk-connect-for-snmp"
+version = "0.1.0"
+description = ""
+authors = ["rfaircloth-splunk <rfaircloth@splunk.com>"]
+license = "Apache-2.0"
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pysnmp = "^4.4.12"
+
+[tool.poetry.dev-dependencies]
+sphinx = "^3.4.3"
+sphinx-material = "^0.0.32"
+pytest = "^6.2.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
