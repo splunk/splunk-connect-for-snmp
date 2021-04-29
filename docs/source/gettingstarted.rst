@@ -96,7 +96,7 @@ Test SNMP Traps
 
 .. code-block:: bash
 
-    index=* sourcetype="sc4snmp:traps"
+    index=em_logs sourcetype="sc4snmp:traps"
 
 
 Setup Poller
@@ -128,7 +128,7 @@ Search splunk, one event per trap command with the host value of the test machin
 
 .. code-block:: bash
 
-    index=* sourcetype="sc4snmp:meta" SNMPv2_MIB__sysLocation_0="*" | dedup host
+    index=em_logs sourcetype="sc4snmp:meta" SNMPv2_MIB__sysLocation_0="*" | dedup host
 
 .. code-block:: bash
 
