@@ -53,7 +53,7 @@ This script has been tested with Centos 7, Centos 8, Redhat 8, and Ubuntu 20.04
 
 .. code-block:: bash
 
-    curl -sfL https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/install-from-url/deploy/install.bash  | \
+    curl -sfL https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/main/deploy/install.bash  | \
     MODE=splunk \
     PROTO=https \
     INSECURE_SSL=true \
