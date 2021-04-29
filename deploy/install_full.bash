@@ -338,7 +338,7 @@ then
     --from-literal=SIGNALFX_REALM=$SIMREALM
 fi
 
-files=( "deploy/sc4snmp/ftr/scheduler-config.yaml" "deploy/sc4snmp/ftr/scheduler-inventory.yaml" "deploy/sc4snmp/ftr/traps-server-config.yaml")
+files=( "deploy/sc4snmp/ftr/scheduler-config.yaml" "deploy/sc4snmp/ftr/scheduler-inventory.yaml" "deploy/sc4snmp/ftr/traps-server-config.yaml" )
 for i in "${files[@]}"
 do
   if [ -f $i ]; then  src_cmd="cat $i"; else src_cmd="curl -s https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/$i"; fi
