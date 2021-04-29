@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BRANCH=${BRANCH:=install-from-url}
+BRANCH=${BRANCH:=main}
 echo using $BRANCH
 URL=https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/${BRANCH}/deploy/install_full.bash
 
