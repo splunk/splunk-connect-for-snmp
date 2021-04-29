@@ -342,12 +342,10 @@ files=( "deploy/sc4snmp/ftr/scheduler-config.yaml" "deploy/sc4snmp/ftr/scheduler
 for i in "${files[@]}"
 do
   if [ -f $i ]; then  src_cmd="cat $i"; else src_cmd="curl -s https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/$i"; fi
-  echo $src_cmd sed "s/##EVENTS_INDEX##/${EVENTS_INDEX}/g" sed "s/##METRICS_INDEX##/${METRICS_INDEX}/g" sed "s/##META_INDEX##/${META_INDEX}/g" $KCMD -n sc4snmp apply -f -
-  # $src_cmd \
-  #   | sed "s/##EVENTS_INDEX##/${EVENTS_INDEX}/g" \
-  #   | sed "s/##METRICS_INDEX##/${METRICS_INDEX}/g"  \
-  #   | sed "s/##META_INDEX##/${META_INDEX}/g" \  
-  #   | $KCMD -n sc4snmp apply -f -
+  
+  $src_cmd \
+    | sed -e "s/##EVENTS_INDEX##/${EVENTS_INDEX}/g;s/##METRICS_INDEX##/${METRICS_INDEX}/g;s/##META_INDEX##/${META_INDEX}/g" \
+    | $KCMD -n sc4snmp apply -f -
 
 done
 
