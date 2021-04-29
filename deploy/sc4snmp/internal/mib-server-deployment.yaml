@@ -15,6 +15,7 @@ spec:
       containers:
         - name: mib-server
           image: ghcr.io/splunk/splunk-connect-for-snmp-mib-server:1
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
           env:

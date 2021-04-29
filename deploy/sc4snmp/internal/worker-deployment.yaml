@@ -17,6 +17,7 @@ spec:
       containers:
         - name: sc4-snmp-worker
           image: ghcr.io/splunk/splunk-connect-for-snmp-poller:1
+          imagePullPolicy: Always
           args: ["--log=DEBUG", "--config=/work/config/config.yaml"]
           env:
             - name: CELERY_BROKER_URL
