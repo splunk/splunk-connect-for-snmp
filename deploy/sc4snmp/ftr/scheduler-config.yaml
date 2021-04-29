@@ -41,9 +41,9 @@ data:
           - ['SNMPv2-MIB', 'sysName']
     splunk:
       index:
-        event:  "em_logs"
-        meta:   "em_meta"
-        metric: "em_metrics"
+        event:  "##EVENTS_INDEX##"
+        meta:   "##META_INDEX##"
+        metric: "##METRICS_INDEX##"
     mongo:
       database: "snmp_poller"
       collection: "walked_hosts"
