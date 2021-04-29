@@ -17,6 +17,7 @@ spec:
       containers:
         - name: sc4-snmp-scheduler
           image: ghcr.io/splunk/splunk-connect-for-snmp-poller:1
+          imagePullPolicy: Always
           args:
             [
               "--log=DEBUG",

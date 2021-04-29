@@ -236,8 +236,8 @@ then
   while [ ! -n "$EVENTS_INDEX" ]
   do
     echo ""
-    read -p 'EVENTS_INDEX for splunk em_events (default): ' EVENTS_INDEX  
-    EVENTS_INDEX=${EVENTS_INDEX:-em_events}  
+    read -p 'EVENTS_INDEX for splunk em_logs (default): ' EVENTS_INDEX  
+    EVENTS_INDEX=${EVENTS_INDEX:-em_logs}  
     echo testing HEC url with index $EVENTS_INDEX
     curl -f $CURL_SSL $PROTO://$HOST$URI_PORT/services/collector -H "Authorization: Splunk $TOKEN" -d "{\"index\": \"$EVENTS_INDEX\", \"event\": \"test\" }"
     if [ "$?" != "0" ]; 
@@ -249,7 +249,7 @@ then
   while [ ! -n "$METRICS_INDEX" ]
   do
     echo ""
-    read -p 'METRICS_INDEX for splunk (default): ' METRICS_INDEX  
+    read -p 'METRICS_INDEX for splunk em_metrics (default): ' METRICS_INDEX  
     METRICS_INDEX=${METRICS_INDEX:-em_metrics}  
     echo testing HEC url with index $METRICS_INDEX
     curl -f $CURL_SSL $PROTO://$HOST$URI_PORT/services/collector -H "Authorization: Splunk $TOKEN" -d "{\"index\": \"$METRICS_INDEX\", \"event\": \"metric\" }"
@@ -262,8 +262,8 @@ then
   while [ ! -n "$META_INDEX" ]
   do
     echo ""
-    read -p 'META_INDEX for splunk default: ' META_INDEX  
-    META_INDEX=${META_INDEX:-em_logs}  
+    read -p 'META_INDEX for splunk em_meta (default): ' META_INDEX  
+    META_INDEX=${META_INDEX:-em_meta}  
     echo testing HEC url with index $META_INDEX
     curl -f $CURL_SSL $PROTO://$HOST$URI_PORT/services/collector -H "Authorization: Splunk $TOKEN" -d "{\"index\": \"$META_INDEX\", \"event\": \"test\" }"
     if [ "$?" != "0" ]; 
@@ -338,11 +338,15 @@ then
     --from-literal=SIGNALFX_REALM=$SIMREALM
 fi
 
-files=( "deploy/sc4snmp/ftr/scheduler-config.yaml" "deploy/sc4snmp/ftr/scheduler-inventory.yaml" "deploy/sc4snmp/ftr/traps-server-config.yaml")
+files=( "deploy/sc4snmp/ftr/scheduler-config.yaml" "deploy/sc4snmp/ftr/scheduler-inventory.yaml" "deploy/sc4snmp/ftr/traps-server-config.yaml" )
 for i in "${files[@]}"
 do
-  if [ -f $i ]; then f=$i; else f=https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/$i; fi
-  $KCMD -n sc4snmp create -f $f
+  if [ -f $i ]; then  src_cmd="cat $i"; else src_cmd="curl -s https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/$i"; fi
+  
+  $src_cmd \
+    | sed -e "s/##EVENTS_INDEX##/${EVENTS_INDEX}/g;s/##METRICS_INDEX##/${METRICS_INDEX}/g;s/##META_INDEX##/${META_INDEX}/g" \
+    | $KCMD -n sc4snmp apply -f -
+
 done
 
 while [ ! -n "$SHAREDIP" ]

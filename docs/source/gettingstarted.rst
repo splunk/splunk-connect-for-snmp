@@ -61,8 +61,8 @@ Deploy SC4SNMP non-interactive
     PORT=8088 \
     TOKEN=450a69af-16a9-4f87-9628-c26f04ad3785 \
     METRICS_INDEX=em_metrics \
-    EVENTS_INDEX=em_events \
-    META_INDEX=em_logs \
+    EVENTS_INDEX=em_logs \
+    META_INDEX=em_meta \
     CLUSTER_NAME=foo \
     SHAREDIP=10.202.18.166/32 \
     RESOLVERIP=8.8.4.4 \
@@ -88,13 +88,15 @@ Test SNMP Traps
 * Test the trap from a linux system with snmp installed replace the ip ``10.0.101.22`` with the shared ip above
 
 .. code-block:: bash
+
     apt-get install snmpd
     snmptrap -v2c -c public 10.0.101.22 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s test
 
 * Search splunk, one event per trap command with the host value of the test machine ip will be found
 
 .. code-block:: bash
-    index=* sourcetype="sc4snmp:traps"
+
+    index=em_logs sourcetype="sc4snmp:traps"
 
 
 Setup Poller
@@ -126,7 +128,7 @@ Search splunk, one event per trap command with the host value of the test machin
 
 .. code-block:: bash
 
-    index=* sourcetype="sc4snmp:meta" SNMPv2_MIB__sysLocation_0="*" | dedup host
+    index=em_logs sourcetype="sc4snmp:meta" SNMPv2_MIB__sysLocation_0="*" | dedup host
 
 .. code-block:: bash
 
