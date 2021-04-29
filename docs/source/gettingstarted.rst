@@ -61,8 +61,8 @@ Deploy SC4SNMP non-interactive
     PORT=8088 \
     TOKEN=450a69af-16a9-4f87-9628-c26f04ad3785 \
     METRICS_INDEX=em_metrics \
-    EVENTS_INDEX=em_events \
-    META_INDEX=em_logs \
+    EVENTS_INDEX=em_logs \
+    META_INDEX=em_meta \
     CLUSTER_NAME=foo \
     SHAREDIP=10.202.18.166/32 \
     RESOLVERIP=8.8.4.4 \
