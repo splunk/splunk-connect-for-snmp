@@ -36,22 +36,12 @@ Obtain the correct realm and token.
 Deploy
 **************************************************
 
-Get current deployment scripts
-===================================================
-
-.. code-block:: bash
-
-   git clone https://github.com/splunk/splunk-connect-for-snmp.git
-   cd splunk-connect-for-snmp
-
-
-
 Deploy SC4SNMP Interactive
 ===================================================
 
 .. code-block:: bash
 
-    ./deploy/deploy.sh 
+    curl -sfL https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/main/deploy/install.bash | sudo -E bash -
 
 
 Deploy SC4SNMP non-interactive
@@ -63,7 +53,7 @@ This script has been tested with Centos 7, Centos 8, Redhat 8, and Ubuntu 20.04
 
 .. code-block:: bash
 
-    sudo \
+    curl -sfL https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/install-from-url/deploy/install.bash  | \
     MODE=splunk \
     PROTO=https \
     INSECURE_SSL=true \
@@ -76,7 +66,7 @@ This script has been tested with Centos 7, Centos 8, Redhat 8, and Ubuntu 20.04
     CLUSTER_NAME=foo \
     SHAREDIP=10.202.18.166/32 \
     RESOLVERIP=8.8.4.4 \
-    ./deploy/deploy.sh 
+    sudo -E bash -
 
 
 * Confirm deployment using ``kubectl get svc -n sc4snmp`` confirm the value of external-ip in the row below matches IP used above

@@ -65,13 +65,17 @@ install_dependencies() {
   fi  
 }
 
+
+###MAIN 
+
+
 if [ "$USER" != "root" ];
 then
     echo "must be root try sudo"
     exit
 fi
 
-
+BRANCH=${BRANCH:-main}
 K8S=${K8S:-mk8s}  
 if [ "$K8S" = "mk8s" ]; then
   
@@ -164,7 +168,7 @@ if [ ! -n "$MODE" ]; then
             echo "MODE Both"
             ;;
     *)
-            echo "MODE invalid"
+            echo "MODE invalid =$MODE"
             exit 1
             ;;
     esac
@@ -192,7 +196,7 @@ then
 
   while [ ! -n "$PORT" ]
   do
-    read -p 'PORT of Splunk HEC Inputs 443 (default): ' PROTO  
+    read -p 'PORT of Splunk HEC Inputs 443 (default): ' PORT  
     PORT=${PORT:-443}  
   done
   URI_PORT=":$PORT"
@@ -278,7 +282,9 @@ then
 
   $HCMD repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/  >/dev/null 
   $HCMD uninstall -n sck sck
-  cat deploy/sck/sck_145.yaml \
+
+  if [ -f "deploy/sck/sck_145.yaml" ]; then sck_values="cat deploy/sck/sck_145.yaml"; else sck_values="curl -s https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/deploy/sck/sck_145.yaml"; fi
+  $sck_values \
       | sed "s/##INSECURE_SSL##/${INSECURE_SSL}/g" \
       | sed "s/##PROTO##/${PROTO}/g" \
       | sed "s/##PORT##/${PORT}/g" \
@@ -332,21 +338,30 @@ then
     --from-literal=SIGNALFX_REALM=$SIMREALM
 fi
 
-
-
-$KCMD -n sc4snmp create -f deploy/sc4snmp/ftr 2>/dev/null
+files=( "deploy/sc4snmp/ftr/scheduler-config.yaml" "deploy/sc4snmp/ftr/scheduler-inventory.yaml" "deploy/sc4snmp/ftr/traps-server-config.yaml")
+for i in "${files[@]}"
+do
+  if [ -f $i ]; then f=$i; else f=https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/$i; fi
+  $KCMD -n sc4snmp create -f $f
+done
 
 while [ ! -n "$SHAREDIP" ]
 do
-  read -p 'SHAREDIP for HA installations this is in addition to the member addresses for single instance this is the host ip: ' SHAREDIP  
-  
+  read -p 'SHAREDIP for HA installations this is in addition to the member addresses for single instance this is the host ip: ' SHAREDIP    
 done
 svcip=$(echo $SHAREDIP | cut -d '/' -f 1)
-cat deploy/sc4snmp/external/traps-service.yaml \
+
+if [ -f "deploy/sc4snmp/external/traps-service.yaml" ]; then  svc_values="cat deploy/sc4snmp/external/traps-service.yaml"; else svc_values="curl -s https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/deploy/sc4snmp/external/traps-service.yaml"; fi
+$svc_values \
       | sed "s/##SHAREDIP##/${svcip}/g" \
       | $KCMD -n sc4snmp apply -f -
 
-$KCMD -n sc4snmp apply -f deploy/sc4snmp/internal
+files=( "deploy/sc4snmp/internal/mib-server-deployment.yaml" "deploy/sc4snmp/internal/mongo-deployment.yaml" "deploy/sc4snmp/internal/otel-config.yaml" "deploy/sc4snmp/internal/otel-service.yaml" "deploy/sc4snmp/internal/rq-service.yaml" "deploy/sc4snmp/internal/traps-deployment.yaml" "deploy/sc4snmp/internal/mib-server-service.yaml" "deploy/sc4snmp/internal/mongo-service.yaml" "deploy/sc4snmp/internal/otel-deployment.yaml" "deploy/sc4snmp/internal/rq-deployment.yaml" "deploy/sc4snmp/internal/scheduler-deployment.yaml" "deploy/sc4snmp/internal/worker-deployment.yaml" )
+for i in "${files[@]}"
+do
+  if [ -f $i ]; then f=$i; else f=https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/$i; fi
+  $KCMD -n sc4snmp create -f $f
+done
 
 echo ""
 echo done
