@@ -20,7 +20,7 @@ spec:
           imagePullPolicy: Always
           args:
             [
-              "--log=DEBUG",
+              "--log=WARN",
               "--config=/work/config/config.yaml",
               "--inventory=/work/inventory/inventory.csv",
             ]

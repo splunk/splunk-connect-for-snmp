@@ -39,6 +39,18 @@ data:
           - ['SNMPv2-MIB', 'sysDescr']
           - ['SNMPv2-MIB', 'sysUpTime',0]
           - ['SNMPv2-MIB', 'sysName']
+      basev1l2:
+        varBinds:
+          # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+          - ['SNMPv2-MIB', 'sysDescr']
+          - ['SNMPv2-MIB', 'sysUpTime',0]
+          - ['SNMPv2-MIB', 'sysName']
+          - ['IF-MIB','ifHCInOctets']
+          - ['IF-MIB','ifHCOutOctets']
+          - ['IF-MIB','ifInErrors']
+          - ['IF-MIB','ifOutErrors']
+          - ['IF-MIB','ifInDiscards']
+          - ['IF-MIB','ifOutDiscards']          
     splunk:
       index:
         event:  "##EVENTS_INDEX##"

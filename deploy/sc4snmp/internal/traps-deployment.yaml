@@ -18,7 +18,7 @@ spec:
         - name: traps
           image: ghcr.io/splunk/splunk-connect-for-snmp-traps:1
           imagePullPolicy: Always
-          args: ["--loglevel=DEBUG", "--config=/work/config/config.yaml"]
+          args: ["--loglevel=WARN", "--config=/work/config/config.yaml"]
           ports:
             - containerPort: 2162
           env:
