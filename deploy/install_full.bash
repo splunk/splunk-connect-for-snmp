@@ -22,6 +22,15 @@ realpath() {
   echo "$REALPATH"
 }
 
+kapply(){
+  if [ -f $2 ]; then  src_cmd="cat $2"; else src_cmd="curl -s https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/$2"; fi
+    
+  $src_cmd \
+    | sed -e "s/##SHAREDIP##/${svcip}/g;s/##INSECURE_SSL##/${INSECURE_SSL}/g;s/##PROTO##/${PROTO}/g;s/##PORT##/${PORT}/g;s/##HOST##/${HOST}/g;s/##TOKEN##/${TOKEN}/g;s/##EVENTS_INDEX##/${EVENTS_INDEX}/g;s/##METRICS_INDEX##/${METRICS_INDEX}/g;s/##META_INDEX##/${META_INDEX}/g;s/##CUSTER_NAME##/${CUSTER_NAME}/g;s/##NAMESPACE##/${NAMESPACE}/g" \
+    | $KCMD -n $1 apply -f -
+}
+
+
 install_snapd_on_centos7() {
   yum -y install epel-release
   yum -y install snapd
@@ -48,16 +57,15 @@ install_dependencies() {
   fi
 
   os_id=$(grep "^ID=" "$os_release" | sed -e "s/\"//g" | cut -d= -f2)
-  os_version=$(grep "^VERSION_ID=" "$os_release" | sed -e "s/\"//g" | cut -d= -f2)
   if [ "$os_id" == "ubuntu" ] ; then
     echo 'Snap install not required'
-  elif [ "$os_id" == "centos" ] && [[ "$os_version" = "7*" ]]; then
+  elif [ "$os_id" == "centos" ] && grep "^VERSION_ID=\"7" $os_release>/dev/null; then
     install_snapd_on_centos7
-  elif [ "$os_id" == "centos" ] && [[ "$os_version" = "8*" ]]; then
+  elif [ "$os_id" == "centos" ] && grep "^VERSION_ID=\"8" $os_release>/dev/null; then
     install_snapd_on_centos8
-  elif [ "$os_id" == "rhel" ] && [[ "$os_version" = "7*" ]]; then
+  elif [ "$os_id" == "rhel" ] && grep "^VERSION_ID=\"7" $os_release>/dev/null; then
     install_snapd_on_centos7
-  elif [ "$os_id" == "rhel" ] && [[ "$os_version" = "8*" ]]; then
+  elif [ "$os_id" == "rhel" ] && grep "^VERSION_ID=\"8" $os_release>/dev/null; then
     install_snapd_on_centos8
   else
     echo "Unsupported operating system: $os_id $os_version"
@@ -75,10 +83,11 @@ then
     exit
 fi
 
+
+KCMD=kubectl
 BRANCH=${BRANCH:-main}
 K8S=${K8S:-mk8s}  
 if [ "$K8S" = "mk8s" ]; then
-  
     
   if ! command -v snap &> /dev/null
   then
@@ -92,12 +101,10 @@ if [ "$K8S" = "mk8s" ]; then
           sleep 1
       done
       source ~/.bashrc 
-      microk8s status --wait-ready
+      
   fi
-  if command -v microk8s.helm3 &> /dev/null
-    then
-    microk8s enable helm3    
-  fi
+  microk8s status --wait-ready
+  
   module_dns=$(microk8s status -a dns)
   if [ "$module_dns" = "disabled" ];
   then
@@ -106,54 +113,60 @@ if [ "$K8S" = "mk8s" ]; then
       mresolverip=$(cat /etc/resolv.conf | grep '^nameserver ' | cut -d ' ' -f 2 | grep -v '^127\.' | head -n 1)
       mresolverip=${mresolverip:-8.8.8.8}
       read -p "RESOLVERIP IP of internal DNS resolver default ${mresolverip}: " RESOLVERIP  
-      RESOLVERIP=${RESOLVERIP:=$mresolverip}
-      microk8s enable dns:$RESOLVERIP
+      RESOLVERIP=${RESOLVERIP:=$mresolverip}      
     done
+    microk8s enable dns:$RESOLVERIP
   fi
-fi
 
-module_mlb=$(microk8s status -a metallb)
-if [ "$module_mlb" = "disabled" ];
-then
-  while [ ! -n "$SHAREDIP" ]
-  do
-    msharedip=$(hostname -I | cut -d ' ' -f 1)
-    echo 'SHAREDIP for HA installations use a CIDR format for a single address /32'
-    echo ' * For a HA installation this should be a unassigned IP shared by the instances'
-    echo ' * For a NON HA installation this should be the machine ip'
-    read -p "default value for this machine is ${msharedip}/32" SHAREDIP  
+  module_mlb=$(microk8s status -a metallb)
+  if [ "$module_mlb" = "disabled" ];
+  then
+    while [ ! -n "$SHAREDIP" ]
+    do
+      msharedip=$(hostname -I | cut -d ' ' -f 1)
+      echo 'SHAREDIP for HA installations use a CIDR format for a single address /32'
+      echo ' * For a HA installation this should be a unassigned IP shared by the instances'
+      echo ' * For a NON HA installation this should be the machine ip'
+      read -p "default value for this machine is ${msharedip}/32" SHAREDIP  
 
-    SHAREDIP=${SHAREDIP:=$msharedip/32}
+      SHAREDIP=${SHAREDIP:=$msharedip/32}      
+    done
     microk8s enable metallb:$SHAREDIP
-  done
+  fi
+
+
+  module_storage=$(microk8s status -a storage)
+  if [ "$module_storage" = "disabled" ];
+  then
+    microk8s enable storage
+  fi
+
+  if ! command -v kubectl &> /dev/null
+  then
+      if command -v microk8s.kubectl &> /dev/null
+      then
+          KCMD=microk8s.kubectl
+      else
+          echo "kubectl could not be found"
+          exit
+      fi
+  fi
+
 fi
 
-HCMD=helm
-if ! command -v helm &> /dev/null
-then
-    if command -v microk8s.helm3 &> /dev/null
-    then
-        HCMD=microk8s.helm3
-    else
-        echo "helm3 could not be found"
-        exit
-    fi
-fi
+while [ ! -n "$SHAREDIP" ]
+do
+  read -p 'SHAREDIP for HA installations this is in addition to the member addresses for single instance this is the host ip: ' SHAREDIP    
+done
+svcip=$(echo $SHAREDIP | cut -d '/' -f 1)
 
-KCMD=kubectl
-if ! command -v kubectl &> /dev/null
-then
-    if command -v microk8s.kubectl &> /dev/null
-    then
-        KCMD=microk8s.kubectl
-    else
-        echo "kubectl could not be found"
-        exit
-    fi
-fi
 
-# CUSTER_NAME=${CUSTER_NAME:=splunk-connect}
-# NAMESPACE=${NAMESPACE:=default}
+#Apply the helm operator
+$KCMD create namespace flux
+kapply flux deploy/helm-operator/namespace.yaml
+kapply flux deploy/helm-operator/crds.yaml
+kapply flux deploy/helm-operator/rbac.yaml
+kapply flux deploy/helm-operator/deployment.yaml
 
 if [ ! -n "$MODE" ]; then
     read -p 'Select MODE one of splunk,sim,both: ' MODE
@@ -279,23 +292,8 @@ then
   done
 
   $KCMD create ns sck 2>/dev/null  || true
-
-  $HCMD repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes/  >/dev/null 
-  $HCMD uninstall -n sck sck
-
-  if [ -f "deploy/sck/sck_145.yaml" ]; then sck_values="cat deploy/sck/sck_145.yaml"; else sck_values="curl -s https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/deploy/sck/sck_145.yaml"; fi
-  $sck_values \
-      | sed "s/##INSECURE_SSL##/${INSECURE_SSL}/g" \
-      | sed "s/##PROTO##/${PROTO}/g" \
-      | sed "s/##PORT##/${PORT}/g" \
-      | sed "s/##HOST##/${HOST}/g" \
-      | sed "s/##TOKEN##/${TOKEN}/g" \
-      | sed "s/##EVENTS_INDEX##/${EVENTS_INDEX}/g" \
-      | sed "s/##METRICS_INDEX##/${METRICS_INDEX}/g"  \
-      | sed "s/##META_INDEX##/${META_INDEX}/g" \
-      | sed "s/##CUSTER_NAME##/${CUSTER_NAME}/g" \
-      | sed "s/##NAMESPACE##/${NAMESPACE}/g" \
-      | $HCMD -n sck install sck -f - splunk/splunk-connect-for-kubernetes
+  kapply sck deploy/sc4snmp/sck.yaml
+  
 fi #end splunk or both
 
 if [ "$MODE" == "sim" ] || [ "$MODE" == "both" ];
@@ -312,8 +310,17 @@ then
 
 fi #end sim or both
 
-$KCMD delete ns sc4snmp --wait=true 2>/dev/null
-$KCMD create ns sc4snmp 2>/dev/null  || true
+#Create the namespace
+kapply sc4snmp deploy/sc4snmp/namespace.yaml
+
+kapply kube-system deploy/sc4snmp/secret-manager.yaml
+kapply sc4snmp deploy/celery-queue.yaml
+kapply sc4snmp deploy/mongo-cache.yaml
+
+#$KCMD -n sc4snmp wait --for=condition=released --timeout 180s helmrelease/celery
+#$KCMD -n sc4snmp wait --for=condition=released --timeout 180s helmrelease/cache
+
+$KCMD -n sc4snmp delete secret remote-splunk
 
 if [ "$MODE" == "both" ];
 then
@@ -338,34 +345,19 @@ then
     --from-literal=SIGNALFX_REALM=$SIMREALM
 fi
 
-files=( "deploy/sc4snmp/ftr/scheduler-config.yaml" "deploy/sc4snmp/ftr/scheduler-inventory.yaml" "deploy/sc4snmp/ftr/traps-server-config.yaml" )
-for i in "${files[@]}"
-do
-  if [ -f $i ]; then  src_cmd="cat $i"; else src_cmd="curl -s https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/$i"; fi
-  
-  $src_cmd \
-    | sed -e "s/##EVENTS_INDEX##/${EVENTS_INDEX}/g;s/##METRICS_INDEX##/${METRICS_INDEX}/g;s/##META_INDEX##/${META_INDEX}/g" \
-    | $KCMD -n sc4snmp apply -f -
+kapply sc4snmp deploy/sc4snmp/ftr/scheduler-config.yaml
+kapply sc4snmp deploy/sc4snmp/ftr/scheduler-inventory.yaml
+kapply sc4snmp deploy/sc4snmp/ftr/traps-server-config.yaml
+kapply sc4snmp deploy/sc4snmp/external/traps-service.yaml
 
-done
-
-while [ ! -n "$SHAREDIP" ]
-do
-  read -p 'SHAREDIP for HA installations this is in addition to the member addresses for single instance this is the host ip: ' SHAREDIP    
-done
-svcip=$(echo $SHAREDIP | cut -d '/' -f 1)
-
-if [ -f "deploy/sc4snmp/external/traps-service.yaml" ]; then  svc_values="cat deploy/sc4snmp/external/traps-service.yaml"; else svc_values="curl -s https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/deploy/sc4snmp/external/traps-service.yaml"; fi
-$svc_values \
-      | sed "s/##SHAREDIP##/${svcip}/g" \
-      | $KCMD -n sc4snmp apply -f -
-
-files=( "deploy/sc4snmp/internal/mib-server-deployment.yaml" "deploy/sc4snmp/internal/mongo-deployment.yaml" "deploy/sc4snmp/internal/otel-config.yaml" "deploy/sc4snmp/internal/otel-service.yaml" "deploy/sc4snmp/internal/rq-service.yaml" "deploy/sc4snmp/internal/traps-deployment.yaml" "deploy/sc4snmp/internal/mib-server-service.yaml" "deploy/sc4snmp/internal/mongo-service.yaml" "deploy/sc4snmp/internal/otel-deployment.yaml" "deploy/sc4snmp/internal/rq-deployment.yaml" "deploy/sc4snmp/internal/scheduler-deployment.yaml" "deploy/sc4snmp/internal/worker-deployment.yaml" )
-for i in "${files[@]}"
-do
-  if [ -f $i ]; then f=$i; else f=https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/$i; fi
-  $KCMD -n sc4snmp create -f $f
-done
+kapply sc4snmp deploy/sc4snmp/internal/otel-config.yaml
+kapply sc4snmp deploy/sc4snmp/internal/otel-deployment.yaml
+kapply sc4snmp deploy/sc4snmp/internal/otel-service.yaml
+kapply sc4snmp deploy/sc4snmp/internal/mib-server-deployment.yaml
+kapply sc4snmp deploy/sc4snmp/internal/mib-server-service.yaml
+kapply sc4snmp deploy/sc4snmp/internal/traps-deployment.yaml
+kapply sc4snmp deploy/sc4snmp/internal/scheduler-deployment.yaml
+kapply sc4snmp deploy/sc4snmp/internal/worker-deployment.yaml
 
 echo ""
 echo done

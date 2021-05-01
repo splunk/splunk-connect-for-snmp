@@ -25,8 +25,19 @@ spec:
               "--inventory=/work/inventory/inventory.csv",
             ]
           env:
+            - name: MONGO_SERVICE_SERVICE_HOST
+              value: sc4snmp-cache-mongodb
+            - name: MONGO_SERVICE_SERVICE_PORT
+              value: "27017"
+            - name: RABBIT_USER
+              value: sc4snmp
+            - name: RABBIT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: celery-rabbitmq
+                  key: rabbitmq-password
             - name: CELERY_BROKER_URL
-              value: amqp://guest@$(RABBITMQ_SERVICE_SERVICE_HOST):$(RABBITMQ_SERVICE_SERVICE_PORT)//
+              value: amqp://$(RABBIT_USER):$(RABBIT_PASSWORD)@sc4snmp-celery-rabbitmq:5672/
             - name: POLLER_EXECUTION_MODE
               value: scheduler
           volumeMounts:
