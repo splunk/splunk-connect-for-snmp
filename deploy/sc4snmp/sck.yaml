@@ -1,0 +1,143 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: sck
+spec:
+  chart:
+    name: splunk-connect-for-kubernetes
+    repository: https://splunk.github.io/splunk-connect-for-kubernetes/
+    version: 1.4.7
+  values:
+    #global settings
+    global:
+      logLevel: warn
+      splunk:
+        hec:
+          protocol: ##PROTO##
+          insecureSSL: ##INSECURE_SSL##
+          host: "##HOST##"
+          token: "##TOKEN##"
+          port: ##PORT##
+
+    #local config for logging chart
+    splunk-kubernetes-logging:
+      logLevel: debug
+      containers:
+        logFormatType: cri
+        logFormat: "%Y-%m-%dT%H:%M:%S.%N%:z"
+      kubernetes:
+        clusterName: ##CUSTER_NAME##
+        securityContext: true
+      journalLogPath: /var/log/journal
+      buffer:
+        "@type": memory
+        total_limit_size: 600m
+        chunk_limit_size: 10m
+        chunk_limit_records: 100000
+        flush_interval: 2s
+        flush_thread_count: 1
+        overflow_action: block
+        retry_max_times: 10
+        retry_type: periodic
+      k8sMetadata:
+        # Pod labels to collect
+        podLabels:
+          - app
+          - k8s-app
+          - release
+          - environment
+          - tier
+      splunk:
+        hec:
+          indexName: ##EVENTS_INDEX##
+      logs:
+        #nginx-ingress:
+        #  from:
+        #    pod: nginx-ingress
+        #    container: nginx-ingress-controller
+        #  #keep default sourcetype for sake of avoiding complexity
+        #  #if you really want to customize sourcetype you can
+        #  sourcetype: nginx:ingress:controller
+        #  multiline:
+        #    firstline: /^\w[0-1]\d[0-3]\d\s\d{2}:\d{2}:\d{2}.\d{6}\s|^\d+\.\d+\.\d+\.\d+[^\[]+|\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}[^\[]+|^NGINX\sIngress\scontroller|^----------/
+        sck:
+          from:
+            pod: sck-splunk-kubernetes-
+            container: splunk-fluentd-k8s-
+          multiline:
+            firstline: /^\d{4}-\d{2}-\d{2}\s\d{2}\:\d{2}\:\d{2}\s\+\d{4}\s\[\w+\]\:/
+            separator: "\n"
+            flushInterval: 2
+
+    #local config for objects chart
+    splunk-kubernetes-objects:
+      rbac:
+        create: true
+      serviceAccount:
+        create: true
+        name: splunk-kubernetes-objects
+      kubernetes:
+        insecureSSL: true
+        clusterName: ##CUSTER_NAME##
+      objects:
+        core:
+          v1:
+            [
+              { "name": "pods", "interval": "60s" },
+              { "name": "nodes", "interval": "60s" },
+              { "name": "component_statuses", "interval": "60s" },
+              { "name": "config_maps", "interval": "60s" },
+              { "name": "namespaces", "interval": "60s" },
+              { "name": "persistent_volumes", "interval": "60s" },
+              { "name": "persistent_volume_claims", "interval": "60s" },
+              { "name": "resource_quotas", "interval": "60s" },
+              { "name": "services", "interval": "60s" },
+              { "name": "service_accounts", "interval": "60s" },
+              { "name": "events", "mode": "watch" },
+            ]
+        apps:
+          v1:
+            [
+              { "name": "daemon_sets", "interval": "60s" },
+              { "name": "deployments", "interval": "60s" },
+              { "name": "replica_sets", "interval": "60s" },
+              { "name": "stateful_sets", "interval": "60s" },
+            ]
+      splunk:
+        hec:
+          indexName: ##META_INDEX##
+
+    #local config for metrics chart
+    splunk-kubernetes-metrics:
+      metricsInterval: 60s
+      kubernetes:
+        kubeletPort: 10255
+        kubeletPortAggregator: 10250
+        useRestClientSSL: false
+        insecureSSL: true
+        clusterName: ##CUSTER_NAME##
+      rbac:
+        create: true
+      serviceAccount:
+        create: true
+        name: splunk-kubernetes-metrics
+      splunk:
+        hec:
+          indexName: ##METRICS_INDEX##
+
+      #App for Infra Dimensions for K8s
+      customFilters:
+        node:
+          tag: "kube.node.**"
+          type: record_modifier
+          body: |-
+            <record>
+              entity_type k8s_node
+            </record>
+        pod:
+          tag: "kube.pod.**"
+          type: record_modifier
+          body: |-
+            <record>
+              entity_type k8s_pod
+            </record>

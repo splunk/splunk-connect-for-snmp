@@ -21,4 +21,7 @@ spec:
           env:
             - name: MIBS_FILES_URL
               value: "http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)/files/asn1/@mib@"
-
+            - name: MONGO_SERVICE_SERVICE_HOST
+              value: sc4snmp-cache-mongodb
+            - name: MONGO_SERVICE_SERVICE_PORT
+              value: "27017"
