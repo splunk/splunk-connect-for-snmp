@@ -165,7 +165,7 @@ spec:
     ## Loading a RabbitMQ definitions file to configure RabbitMQ
     ##
     loadDefinition:
-      enabled: true
+      enabled: false
       ## Can be templated if needed, e.g.
       ## existingSecret: "{{ .Release.Name }}-load-definition"
       ##
