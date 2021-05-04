@@ -21,7 +21,7 @@ spec:
           args: ["--log=WARN", "--config=/work/config/config.yaml"]
           env:
             - name: CELERY_BROKER_URL
-              value: amqp://guest:guest@sc4snmp-celery-rabbitmq:5672/
+              value: amqp://sc4snmp:sc4snmp@sc4snmp-celery-rabbitmq:5672/
             - name: MIBS_SERVER_URL
               value: http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)
             - name: MIBS_FILES_URL
