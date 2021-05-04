@@ -5,15 +5,14 @@ Right now we support only NOVA.
 - create an EC2 instance with the following specs:
   - t3.medium
   - 50 GB (this is the default value)
-  - ubuntu 18
+  - ubuntu 18/CentOS 7/CentOS 8
 - create a splunk instance with all the default settings
 - git clone https://github.com/splunk/splunk-connect-for-snmp.git
 - cd splunk-connect-for-snmp
-- git checkout feature/integration-tests-poller
 - cd test
-- ./deploy_and_test.sh
-  - you'll be asked to provide your Splunk's instance IP (you can get it from NOVA)
-  - you'll be asked to provide your Splunk's intance password (again, you can get it from NOVA)
+- ./install_microk8s.sh
+- cd splunk-connect-for-snmp
+- ./deploy_and_test.sh -u <splunk_url_or_ip> -p <splunk_admin_password>
   - the test will install/deploy everything, will run all the integration tests and it will prompt
     you this message:
     "Press ENTER to undeploy everything"

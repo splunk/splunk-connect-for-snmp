@@ -14,7 +14,7 @@ Requirements (Splunk Enterprise/Enterprise Cloud)
 ===================================================
 
 
-1. Complete the installation of 
+1. Complete the installation of
     1.1 `Splunk app for Infrastructure <https://docs.splunk.com/Documentation/InfraApp/latest/Install/About>`_ (Splunk Enterprise Customers)
     1.2 `Splunk IT Essentials Work <https://docs.splunk.com/Documentation/ITE/latest/Work/Overview>`_ (Splunk Enterprise Cloud Customers)
 2. Verify the creation of the following indexes
