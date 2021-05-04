@@ -100,8 +100,9 @@ if [ "$K8S" = "mk8s" ]; then
           echo error installing mk8s using snap
           sleep 1
       done
-      source ~/.bashrc 
-      
+      if [ -f ~/.bashrc ] ; then
+        source ~/.bashrc
+      fi
   fi
   microk8s status --wait-ready
   
