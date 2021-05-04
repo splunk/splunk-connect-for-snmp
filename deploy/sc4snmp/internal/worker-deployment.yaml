@@ -28,7 +28,7 @@ spec:
                   name: celery-rabbitmq
                   key: rabbitmq-password
             - name: CELERY_BROKER_URL
-              value: amqp://$(RABBIT_USER):$(RABBIT_PASSWORD)@sc4snmp-celery-rabbitmq:5672/
+              value: amqp://guest@sc4snmp-celery-rabbitmq:5672/
             - name: MIBS_SERVER_URL
               value: http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)
             - name: MIBS_FILES_URL
