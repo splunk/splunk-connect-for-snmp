@@ -313,7 +313,6 @@ fi #end sim or both
 #Create the namespace
 kapply sc4snmp deploy/sc4snmp/namespace.yaml
 
-kapply kube-system deploy/sc4snmp/secret-manager.yaml
 kapply sc4snmp deploy/celery-queue.yaml
 kapply sc4snmp deploy/mongo-cache.yaml
 
