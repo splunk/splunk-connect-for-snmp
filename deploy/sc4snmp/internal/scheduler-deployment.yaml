@@ -29,13 +29,6 @@ spec:
               value: sc4snmp-cache-mongodb
             - name: MONGO_SERVICE_SERVICE_PORT
               value: "27017"
-            - name: RABBIT_USER
-              value: sc4snmp
-            - name: RABBIT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: celery-rabbitmq
-                  key: rabbitmq-password
             - name: CELERY_BROKER_URL
               value: amqp://guest@sc4snmp-celery-rabbitmq:5672/
             - name: POLLER_EXECUTION_MODE
