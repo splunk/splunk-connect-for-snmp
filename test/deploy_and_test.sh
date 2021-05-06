@@ -139,7 +139,7 @@ run_integration_tests() {
   splunk_ip=$1
   splunk_password=$2
 
-  trap_external_ip=$(microk8s.kubectl get service/sc4-snmp-traps | \
+  trap_external_ip=$(microk8s.kubectl -n sc4snmp get service/sc4-snmp-traps | \
     tail -1 | sed -e 's/[[:space:]]\+/\t/g' | cut -f4)
 
   deploy_poetry
@@ -208,5 +208,5 @@ fix_local_settings
 install_simulator
 trap_external_ip=$(docker0_ip)
 full_kubernetes_deployment "$splunk_url" "$splunk_password" "$trap_external_ip"
-#run_integration_tests "$splunk_url" "$splunk_password"
+run_integration_tests "$splunk_url" "$splunk_password"
 #stop_everything
