@@ -51,12 +51,12 @@ docker0_ip() {
 }
 
 wait_for_load_balancer_external_ip() {
-  while [ "$(microk8s.kubectl get service/sc4-snmp-traps | grep pending)" != "" ] ; do
+  while [ "$(microk8s.kubectl get service/sc4-snmp-traps -n sc4snmp | grep pending)" != "" ] ; do
     echo "Waiting for service/sc4-snmp-traps to have a proper external IP..."
     sleep 1
   done
 
-  while [ "$(microk8s.kubectl get pod | grep ContainerCreating)" != "" ] ; do
+  while [ "$(microk8s.kubectl get pod -n sc4snmp | grep ContainerCreating)" != "" ] ; do
     echo "Waiting for POD initialization..."
     sleep 1
   done
@@ -166,6 +166,8 @@ full_kubernetes_deployment() {
     SHAREDIP=$(hostname -I | cut -d ' ' -f 1)/32 \
     RESOLVERIP=8.8.4.4 \
     sudo -E bash -
+
+    wait_for_load_balancer_external_ip
 }
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
@@ -191,6 +193,5 @@ fix_local_settings
 install_simulator
 trap_external_ip=$(docker0_ip)
 full_kubernetes_deployment "$splunk_url" "$splunk_password"
-#deploy_kubernetes "$splunk_url" "$splunk_password" "$trap_external_ip"
 #run_integration_tests "$splunk_url" "$splunk_password"
 #stop_everything
