@@ -29,11 +29,12 @@ create_splunk_secret() {
 create_splunk_indexes() {
   splunk_ip=$1
   splunk_password=$2
-  index_names=("netops" "snmp" "snmp_metric")
-  for index_name in "${index_names[@]}" ; do
+  index_names=("em_metrics" "em_meta" "em_logs")
+  index_types=("metric" "event" "event")
+  for index in "${!index_names[@]}" ; do
     if ! curl -k -u admin:"${splunk_password}" "https://${splunk_ip}:8089/services/data/indexes" \
-      -d datatype=event -d name="${index_name}" ; then
-      echo "Error when creating ${index_name}"
+      -d datatype="${index_types[${index}]}" -d name="${index_names[${index}]}" ; then
+      echo "Error when creating ${index_names[${index}]} of type ${index_types[${index}]}"
     fi
   done
 }
@@ -50,41 +51,28 @@ docker0_ip() {
 }
 
 wait_for_load_balancer_external_ip() {
-  while [ "$(microk8s.kubectl get service/sc4-snmp-traps | grep pending)" != "" ] ; do
+  while [ "$(microk8s.kubectl get service/sc4-snmp-traps -n sc4snmp | grep pending)" != "" ] ; do
     echo "Waiting for service/sc4-snmp-traps to have a proper external IP..."
     sleep 1
   done
 
-  while [ "$(microk8s.kubectl get pod | grep ContainerCreating)" != "" ] ; do
+  while [ "$(microk8s.kubectl get pod -n sc4snmp | grep ContainerCreating)" != "" ] ; do
     echo "Waiting for POD initialization..."
     sleep 1
   done
 }
 
-deploy_kubernetes() {
-  splunk_ip=$1
-  splunk_password=$2
-  valid_snmp_get_ip=$3
-
-  create_splunk_secret "$splunk_ip"
-  create_splunk_indexes "$splunk_ip" "$splunk_password"
+update_scheduler_inventory() {
+  valid_snmp_get_ip=$1
   # These extra spaces are required to fit the structure in scheduler-config.yaml
-  scheduler_config=$(echo "    ${valid_snmp_get_ip}:161,2c,public,1.3.6.1.2.1.1.1.0,1" | \
-    cat ../deploy/sc4snmp/scheduler-config.yaml - | microk8s.kubectl apply -f -)
+  scheduler_config=$(cat << EOF
+    ${valid_snmp_get_ip}:161,2c,public,1.3.6.1.2.1.1.1.0,1
+    ${valid_snmp_get_ip}:161,2c,public,1.3.6.1.2.1.25.1.1,1
+EOF
+)
+  scheduler_config=$(echo "${scheduler_config}" | \
+    cat ../deploy/sc4snmp/ftr/scheduler-inventory.yaml - | microk8s.kubectl apply -n sc4snmp -f -)
   echo "${scheduler_config}"
-
-  result=$(cat ../deploy/sc4snmp/traps-service.yaml  | \
-    sed "s/loadBalancerIP: replace-me/loadBalancerIP: ${valid_snmp_get_ip}/" | microk8s.kubectl apply -f -)
-  echo "${result}"
-
-  for f in $(ls ../deploy/sc4snmp/*.yaml | grep -v "scheduler-config\|traps-service"); do
-    echo "Deploying $f"
-    if ! microk8s.kubectl apply -f "$f" ; then
-      echo "Error when deploying $f"
-    fi
-  done
-
-  wait_for_load_balancer_external_ip
 }
 
 stop_simulator() {
@@ -95,19 +83,6 @@ stop_simulator() {
   for command in "${commands[@]}" ; do
     if ! ${command} ; then
       echo "Error when executing ${command}"
-    fi
-  done
-}
-
-stop_everything() {
-  stop_simulator
-  if ! microk8s.kubectl delete secret "${SPLUNK_SECRET_NAME}" ; then
-    echo "Error when deleting ${SPLUNK_SECRET_NAME}"
-  fi
-  for f in ../deploy/sc4snmp/*.yaml ; do
-    echo "Undeploying $f"
-    if ! microk8s.kubectl delete -f "$f" ; then
-      echo "Error when deploying $f"
     fi
   done
 }
@@ -125,13 +100,12 @@ run_integration_tests() {
   splunk_ip=$1
   splunk_password=$2
 
-  trap_external_ip=$(microk8s.kubectl get service/sc4-snmp-traps | \
+  trap_external_ip=$(microk8s.kubectl -n sc4snmp get service/sc4-snmp-traps | \
     tail -1 | sed -e 's/[[:space:]]\+/\t/g' | cut -f4)
 
   deploy_poetry
   poetry run pytest --splunk_host="$splunk_ip" --splunk_password="$splunk_password" \
     --trap_external_ip="${trap_external_ip}"
-  echo "Press ENTER to undeploy everything" && read -r dummy
 }
 
 post_installation_kubernetes_config() {
@@ -144,6 +118,31 @@ fix_local_settings() {
   # Ubuntu (any version), and CentOS 8 are just fine
   export LC_ALL=en_US.UTF-8
   export LANG=en_US.UTF-8
+}
+
+full_kubernetes_deployment() {
+  splunk_ip=$1
+  splunk_password=$2
+  valid_snmp_get_ip=$3
+
+  create_splunk_indexes "$splunk_ip" "$splunk_password"
+  curl -sfL https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/main/deploy/install.bash  | \
+    MODE=splunk \
+    PROTO=https \
+    INSECURE_SSL=true \
+    HOST="$splunk_ip" \
+    PORT=8088 \
+    TOKEN=00000000-0000-0000-0000-000000000000 \
+    METRICS_INDEX=em_metrics \
+    EVENTS_INDEX=em_logs \
+    META_INDEX=em_meta \
+    CLUSTER_NAME=foo \
+    SHAREDIP=$(hostname -I | cut -d ' ' -f 1)/32 \
+    RESOLVERIP=8.8.4.4 \
+    sudo -E bash -
+
+    wait_for_load_balancer_external_ip
+    update_scheduler_inventory "${valid_snmp_get_ip}"
 }
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
@@ -168,6 +167,5 @@ post_installation_kubernetes_config
 fix_local_settings
 install_simulator
 trap_external_ip=$(docker0_ip)
-deploy_kubernetes "$splunk_url" "$splunk_password" "$trap_external_ip"
+full_kubernetes_deployment "$splunk_url" "$splunk_password" "$trap_external_ip"
 run_integration_tests "$splunk_url" "$splunk_password"
-stop_everything
