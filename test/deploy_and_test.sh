@@ -75,32 +75,6 @@ EOF
   echo "${scheduler_config}"
 }
 
-deploy_kubernetes() {
-  splunk_ip=$1
-  splunk_password=$2
-  valid_snmp_get_ip=$3
-
-  create_splunk_secret "$splunk_ip"
-  create_splunk_indexes "$splunk_ip" "$splunk_password"
-  # These extra spaces are required to fit the structure in scheduler-config.yaml
-  scheduler_config=$(echo "    ${valid_snmp_get_ip}:161,2c,public,1.3.6.1.2.1.1.1.0,1" | \
-    cat ../deploy/sc4snmp/ftr/scheduler-config.yaml - | microk8s.kubectl apply -f -)
-  echo "${scheduler_config}"
-
-  result=$(cat ../deploy/sc4snmp/external/traps-service.yaml  | \
-    sed "s/loadBalancerIP: replace-me/loadBalancerIP: ${valid_snmp_get_ip}/" | microk8s.kubectl apply -f -)
-  echo "${result}"
-
-  for f in $(ls ../deploy/sc4snmp/*.yaml | grep -v "scheduler-config\|traps-service"); do
-    echo "Deploying $f"
-    if ! microk8s.kubectl apply -f "$f" ; then
-      echo "Error when deploying $f"
-    fi
-  done
-
-  wait_for_load_balancer_external_ip
-}
-
 stop_simulator() {
   id=$(sudo docker ps --filter ancestor=tandrup/snmpsim --format "{{.ID}}")
   echo "Trying to stop docker container $id"
@@ -109,19 +83,6 @@ stop_simulator() {
   for command in "${commands[@]}" ; do
     if ! ${command} ; then
       echo "Error when executing ${command}"
-    fi
-  done
-}
-
-stop_everything() {
-  stop_simulator
-  if ! microk8s.kubectl delete secret "${SPLUNK_SECRET_NAME}" ; then
-    echo "Error when deleting ${SPLUNK_SECRET_NAME}"
-  fi
-  for f in ../deploy/sc4snmp/*.yaml ; do
-    echo "Undeploying $f"
-    if ! microk8s.kubectl delete -f "$f" ; then
-      echo "Error when deploying $f"
     fi
   done
 }
@@ -145,7 +106,6 @@ run_integration_tests() {
   deploy_poetry
   poetry run pytest --splunk_host="$splunk_ip" --splunk_password="$splunk_password" \
     --trap_external_ip="${trap_external_ip}"
-  echo "Press ENTER to undeploy everything" && read -r dummy
 }
 
 post_installation_kubernetes_config() {
@@ -209,4 +169,3 @@ install_simulator
 trap_external_ip=$(docker0_ip)
 full_kubernetes_deployment "$splunk_url" "$splunk_password" "$trap_external_ip"
 run_integration_tests "$splunk_url" "$splunk_password"
-#stop_everything
