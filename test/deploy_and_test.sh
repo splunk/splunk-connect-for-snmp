@@ -148,8 +148,8 @@ fix_local_settings() {
 }
 
 full_kubernetes_deployment() {
-  splunk_ip = $1
-  splunk_password = $2
+  splunk_ip=$1
+  splunk_password=$2
 
   create_splunk_indexes "$splunk_ip" "$splunk_password"
   curl -sfL https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/main/deploy/install.bash  | \
