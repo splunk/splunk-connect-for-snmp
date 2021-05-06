@@ -29,11 +29,12 @@ create_splunk_secret() {
 create_splunk_indexes() {
   splunk_ip=$1
   splunk_password=$2
-  index_names=("netops" "snmp" "snmp_metric")
-  for index_name in "${index_names[@]}" ; do
+  index_names=("em_metrics" "em_meta" "em_logs")
+  index_types=("metric" "event" "event")
+  for index in "${!index_names[@]}" ; do
     if ! curl -k -u admin:"${splunk_password}" "https://${splunk_ip}:8089/services/data/indexes" \
-      -d datatype=event -d name="${index_name}" ; then
-      echo "Error when creating ${index_name}"
+      -d datatype="${index_types[${index}]}" -d name="${index_names[${index}]}" ; then
+      echo "Error when creating ${index_names[${index}]} of type ${index_types[${index}]}"
     fi
   done
 }
@@ -70,10 +71,10 @@ deploy_kubernetes() {
   create_splunk_indexes "$splunk_ip" "$splunk_password"
   # These extra spaces are required to fit the structure in scheduler-config.yaml
   scheduler_config=$(echo "    ${valid_snmp_get_ip}:161,2c,public,1.3.6.1.2.1.1.1.0,1" | \
-    cat ../deploy/sc4snmp/scheduler-config.yaml - | microk8s.kubectl apply -f -)
+    cat ../deploy/sc4snmp/ftr/scheduler-config.yaml - | microk8s.kubectl apply -f -)
   echo "${scheduler_config}"
 
-  result=$(cat ../deploy/sc4snmp/traps-service.yaml  | \
+  result=$(cat ../deploy/sc4snmp/external/traps-service.yaml  | \
     sed "s/loadBalancerIP: replace-me/loadBalancerIP: ${valid_snmp_get_ip}/" | microk8s.kubectl apply -f -)
   echo "${result}"
 
@@ -145,6 +146,27 @@ fix_local_settings() {
   export LC_ALL=en_US.UTF-8
   export LANG=en_US.UTF-8
 }
+
+full_kubernetes_deployment() {
+  splunk_ip = $1
+  splunk_password = $2
+
+  create_splunk_indexes "$splunk_ip" "$splunk_password"
+  curl -sfL https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/main/deploy/install.bash  | \
+    MODE=splunk \
+    PROTO=https \
+    INSECURE_SSL=true \
+    HOST="$splunk_ip" \
+    PORT=8088 \
+    TOKEN=00000000-0000-0000-0000-000000000000 \
+    METRICS_INDEX=em_metrics \
+    EVENTS_INDEX=em_logs \
+    META_INDEX=em_meta \
+    CLUSTER_NAME=foo \
+    SHAREDIP=$(hostname -I | cut -d ' ' -f 1)/32 \
+    RESOLVERIP=8.8.4.4 \
+    sudo -E bash -
+}
 # ------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------
 # MAIN
@@ -168,6 +190,7 @@ post_installation_kubernetes_config
 fix_local_settings
 install_simulator
 trap_external_ip=$(docker0_ip)
-deploy_kubernetes "$splunk_url" "$splunk_password" "$trap_external_ip"
-run_integration_tests "$splunk_url" "$splunk_password"
-stop_everything
+full_kubernetes_deployment "$splunk_url" "$splunk_password"
+#deploy_kubernetes "$splunk_url" "$splunk_password" "$trap_external_ip"
+#run_integration_tests "$splunk_url" "$splunk_password"
+#stop_everything
