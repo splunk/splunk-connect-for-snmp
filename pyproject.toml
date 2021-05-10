@@ -16,7 +16,7 @@ python = ">=3.6.8"
 pysnmp = "^4.4.12"
 
 [tool.poetry.dev-dependencies]
-sphinx = "^3.4.3"
+sphinx = "^4.0.0"
 sphinx-material = "^0.0.32"
 pytest = "^6.2.2"
 
