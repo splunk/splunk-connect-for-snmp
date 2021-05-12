@@ -10,7 +10,7 @@ spec:
   values:
     #global settings
     global:
-      logLevel: warn
+      logLevel: info 
       splunk:
         hec:
           protocol: ##PROTO##
@@ -18,6 +18,8 @@ spec:
           host: "##HOST##"
           token: "##TOKEN##"
           port: ##PORT##
+      kubernetes:
+        clusterName: ##CLUSTER_NAME## 
 
     #local config for logging chart
     splunk-kubernetes-logging:
@@ -27,9 +29,8 @@ spec:
         logFormatType: cri
         logFormat: "%Y-%m-%dT%H:%M:%S.%N%:z"
       fluentd:
-        path: /var/log/containers/*_sc4snmp_*.log
+        path: "/var/log/containers/*_sc4snmp_*.log,/var/log/containers/*_sck_*.log"
       kubernetes:
-        clusterName: ##CLUSTER_NAME##
         securityContext: true
       journalLogPath: /var/log/journal
       buffer:
@@ -74,18 +75,10 @@ spec:
         name: splunk-kubernetes-objects
       kubernetes:
         insecureSSL: true
-        clusterName: ##CLUSTER_NAME##
       objects:
         core:
           v1:
-            [
-              { "name": "pods", "interval": "300s" },
-              { "name": "nodes", "interval": "300s" },
-              { "name": "component_statuses", "interval": "300s" },
-              { "name": "namespaces", "interval": "300s" },
-              { "name": "services", "interval": "300s" },
-              { "name": "events", "mode": "watch" },
-            ]
+            [{ "name": "pods", "interval": "300s" },{ "name": "nodes", "interval": "300s" },{ "name": "component_statuses", "interval": "300s" },{ "name": "namespaces", "interval": "300s" },{ "name": "services", "interval": "300s" },{ "name": "events", "mode": "watch" }]
       splunk:
         hec:
           indexName: ##META_INDEX##
@@ -99,7 +92,6 @@ spec:
         kubeletPortAggregator: 10250
         useRestClientSSL: false
         insecureSSL: true
-        clusterName: ##CLUSTER_NAME##
       rbac:
         create: true
       serviceAccount:
@@ -108,8 +100,6 @@ spec:
       splunk:
         hec:
           indexName: ##METRICS_INDEX##
-
-      #App for Infra Dimensions for K8s
       customFilters:
         node:
           tag: "kube.node.**"
