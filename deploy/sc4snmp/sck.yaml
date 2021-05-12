@@ -19,7 +19,7 @@ spec:
           token: "##TOKEN##"
           port: ##PORT##
       kubernetes:
-        clusterName: ##CLUSTER_NAME## 
+        clusterName: "##CLUSTER_NAME##" 
 
     #local config for logging chart
     splunk-kubernetes-logging:
