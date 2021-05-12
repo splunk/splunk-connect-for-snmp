@@ -21,12 +21,15 @@ spec:
 
     #local config for logging chart
     splunk-kubernetes-logging:
-      logLevel: debug
+      enabled: true
+      logLevel: info 
       containers:
         logFormatType: cri
         logFormat: "%Y-%m-%dT%H:%M:%S.%N%:z"
+      fluentd:
+        path: /var/log/containers/*_sc4snmp_*.log
       kubernetes:
-        clusterName: ##CUSTER_NAME##
+        clusterName: ##CLUSTER_NAME##
         securityContext: true
       journalLogPath: /var/log/journal
       buffer:
@@ -34,7 +37,7 @@ spec:
         total_limit_size: 600m
         chunk_limit_size: 10m
         chunk_limit_records: 100000
-        flush_interval: 2s
+        flush_interval: 5s
         flush_thread_count: 1
         overflow_action: block
         retry_max_times: 10
@@ -47,19 +50,11 @@ spec:
           - release
           - environment
           - tier
+      sourcetypePrefix: "kube"
       splunk:
         hec:
           indexName: ##EVENTS_INDEX##
       logs:
-        #nginx-ingress:
-        #  from:
-        #    pod: nginx-ingress
-        #    container: nginx-ingress-controller
-        #  #keep default sourcetype for sake of avoiding complexity
-        #  #if you really want to customize sourcetype you can
-        #  sourcetype: nginx:ingress:controller
-        #  multiline:
-        #    firstline: /^\w[0-1]\d[0-3]\d\s\d{2}:\d{2}:\d{2}.\d{6}\s|^\d+\.\d+\.\d+\.\d+[^\[]+|\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}[^\[]+|^NGINX\sIngress\scontroller|^----------/
         sck:
           from:
             pod: sck-splunk-kubernetes-
@@ -67,9 +62,10 @@ spec:
           multiline:
             firstline: /^\d{4}-\d{2}-\d{2}\s\d{2}\:\d{2}\:\d{2}\s\+\d{4}\s\[\w+\]\:/
             separator: "\n"
-            flushInterval: 2
+            flushInterval: 5 
 
     #local config for objects chart
+    enabled: false
     splunk-kubernetes-objects:
       rbac:
         create: true
@@ -78,30 +74,17 @@ spec:
         name: splunk-kubernetes-objects
       kubernetes:
         insecureSSL: true
-        clusterName: ##CUSTER_NAME##
+        clusterName: ##CLUSTER_NAME##
       objects:
         core:
           v1:
             [
-              { "name": "pods", "interval": "60s" },
-              { "name": "nodes", "interval": "60s" },
-              { "name": "component_statuses", "interval": "60s" },
-              { "name": "config_maps", "interval": "60s" },
-              { "name": "namespaces", "interval": "60s" },
-              { "name": "persistent_volumes", "interval": "60s" },
-              { "name": "persistent_volume_claims", "interval": "60s" },
-              { "name": "resource_quotas", "interval": "60s" },
-              { "name": "services", "interval": "60s" },
-              { "name": "service_accounts", "interval": "60s" },
+              { "name": "pods", "interval": "300s" },
+              { "name": "nodes", "interval": "300s" },
+              { "name": "component_statuses", "interval": "300s" },
+              { "name": "namespaces", "interval": "300s" },
+              { "name": "services", "interval": "300s" },
               { "name": "events", "mode": "watch" },
-            ]
-        apps:
-          v1:
-            [
-              { "name": "daemon_sets", "interval": "60s" },
-              { "name": "deployments", "interval": "60s" },
-              { "name": "replica_sets", "interval": "60s" },
-              { "name": "stateful_sets", "interval": "60s" },
             ]
       splunk:
         hec:
@@ -109,13 +92,14 @@ spec:
 
     #local config for metrics chart
     splunk-kubernetes-metrics:
+      enabled: false
       metricsInterval: 60s
       kubernetes:
         kubeletPort: 10255
         kubeletPortAggregator: 10250
         useRestClientSSL: false
         insecureSSL: true
-        clusterName: ##CUSTER_NAME##
+        clusterName: ##CLUSTER_NAME##
       rbac:
         create: true
       serviceAccount:

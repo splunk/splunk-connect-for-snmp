@@ -26,7 +26,7 @@ kapply(){
   if [ -f $2 ]; then  src_cmd="cat $2"; else src_cmd="curl -s https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/$BRANCH/$2"; fi
     
   $src_cmd \
-    | sed -e "s/##SHAREDIP##/${svcip}/g;s/##INSECURE_SSL##/${INSECURE_SSL}/g;s/##PROTO##/${PROTO}/g;s/##PORT##/${PORT}/g;s/##HOST##/${HOST}/g;s/##TOKEN##/${TOKEN}/g;s/##EVENTS_INDEX##/${EVENTS_INDEX}/g;s/##METRICS_INDEX##/${METRICS_INDEX}/g;s/##META_INDEX##/${META_INDEX}/g;s/##CUSTER_NAME##/${CUSTER_NAME}/g;s/##NAMESPACE##/${NAMESPACE}/g" \
+    | sed -e "s/##SHAREDIP##/${svcip}/g;s/##INSECURE_SSL##/${INSECURE_SSL}/g;s/##PROTO##/${PROTO}/g;s/##PORT##/${PORT}/g;s/##HOST##/${HOST}/g;s/##TOKEN##/${TOKEN}/g;s/##EVENTS_INDEX##/${EVENTS_INDEX}/g;s/##METRICS_INDEX##/${METRICS_INDEX}/g;s/##META_INDEX##/${META_INDEX}/g;s/##CLUSTER_NAME##/${CUSTER_NAME}/g;s/##NAMESPACE##/${NAMESPACE}/g" \
     | $KCMD -n $1 apply -f -
 }
 
