@@ -66,8 +66,8 @@ spec:
             flushInterval: 5 
 
     #local config for objects chart
-    enabled: false
     splunk-kubernetes-objects:
+      enabled: false
       rbac:
         create: true
       serviceAccount:
