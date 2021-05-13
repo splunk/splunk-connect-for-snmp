@@ -75,7 +75,13 @@ splunk-kubernetes-objects:
   objects:
     core:
       v1:
-        [{ "name": "pods", "interval": "300s" },{ "name": "nodes", "interval": "300s" },{ "name": "component_statuses", "interval": "300s" },{ "name": "namespaces", "interval": "300s" },{ "name": "services", "interval": "300s" },{ "name": "events", "mode": "watch" }]
+        - name: pods
+        - name: namespaces
+        - name: component_statuses
+        - name: nodes
+        - name: services
+        - name: events
+          mode: watch
   splunk:
     hec:
       indexName: ##META_INDEX##
