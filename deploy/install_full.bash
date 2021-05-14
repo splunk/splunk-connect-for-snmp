@@ -163,11 +163,13 @@ svcip=$(echo $SHAREDIP | cut -d '/' -f 1)
 
 
 #Apply the helm operator
-$KCMD create namespace flux
-kapply flux deploy/helm-operator/namespace.yaml
-kapply flux deploy/helm-operator/crds.yaml
-kapply flux deploy/helm-operator/rbac.yaml
-kapply flux deploy/helm-operator/deployment.yaml
+if [ ! -n "$NOSCK" ]; then
+  $KCMD create namespace flux
+  kapply flux deploy/helm-operator/namespace.yaml
+  kapply flux deploy/helm-operator/crds.yaml
+  kapply flux deploy/helm-operator/rbac.yaml
+  kapply flux deploy/helm-operator/deployment.yaml
+fi
 
 if [ ! -n "$MODE" ]; then
     read -p 'Select MODE one of splunk,sim,both: ' MODE
