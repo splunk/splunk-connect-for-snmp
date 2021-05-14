@@ -116,7 +116,7 @@ with following columns:
 
 .. code-block:: bash
 
-    cp deploy/sc4snmp/ftr/scheduler-inventory.yaml ~/scheduler-inventory.yaml
+    curl -o ~/scheduler-inventory.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/main/deploy/sc4snmp/ftr/scheduler-inventory.yaml
     vi ~/scheduler-inventory.yaml
     # Remove the comment from line 2 and correct the ip and community value
     kubectl apply -n sc4snmp -f ~/scheduler-inventory.yaml
