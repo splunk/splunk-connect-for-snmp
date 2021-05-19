@@ -33,5 +33,3 @@ data:
             securityEngineId: 8000000903bc16f5802780
     thread-pool:
       max-suggested-working-threads: 10
-    splunk:
-      index: "##EVENTS_INDEX##"
