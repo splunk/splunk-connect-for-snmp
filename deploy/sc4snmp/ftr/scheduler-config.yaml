@@ -51,11 +51,6 @@ data:
           - ['IF-MIB','ifOutErrors']
           - ['IF-MIB','ifInDiscards']
           - ['IF-MIB','ifOutDiscards']          
-    splunk:
-      index:
-        event:  "##EVENTS_INDEX##"
-        meta:   "##META_INDEX##"
-        metric: "##METRICS_INDEX##"
     mongo:
       database: "snmp_poller"
       collection: "walked_hosts"

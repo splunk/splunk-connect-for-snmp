@@ -23,6 +23,9 @@ spec:
               "--log=WARN",
               "--config=/work/config/config.yaml",
               "--inventory=/work/inventory/inventory.csv",
+              "--event_index=##EVENTS_INDEX##",
+              "--metric_index=##METRICS_INDEX##",
+              "--meta_index=##META_INDEX##",
             ]
           env:
             - name: MONGO_SERVICE_SERVICE_HOST
