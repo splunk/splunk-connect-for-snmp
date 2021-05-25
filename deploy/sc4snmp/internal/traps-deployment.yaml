@@ -23,6 +23,7 @@ spec:
               "--loglevel=WARN",
               "--config=/work/config/config.yaml",
               "--index=##EVENTS_INDEX##",
+              "--ipv6=",
             ]
           ports:
             - containerPort: 2162
