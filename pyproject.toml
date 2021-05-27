@@ -13,7 +13,6 @@ log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
 [tool.poetry.dependencies]
 python = ">=3.6.8"
-pysnmp = "^4.4.12"
 
 [tool.poetry.dev-dependencies]
 sphinx = "^4.0.1"
