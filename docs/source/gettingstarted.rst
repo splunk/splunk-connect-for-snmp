@@ -69,7 +69,7 @@ Deploy SC4SNMP non-interactive
     sudo -E bash -
 
 
-* Confirm deployment using ``kubectl get svc -n sc4snmp`` confirm the value of external-ip in the row below matches IP used above
+* Confirm deployment using ``microk8s.kubectl get svc -n sc4snmp``confirm the value of external-ip in the row below matches IP used above
 
 .. code-block:: bash
 
