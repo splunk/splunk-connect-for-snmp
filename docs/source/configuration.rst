@@ -261,8 +261,15 @@ e.g.
 ---------------------------------------------------
 User can provide more detailed query information under **profiles** section to achieve two purposes: 1) query by mib string; 2) query multiple oids/mib string for one agent.
 
- 1. Add the profile string in inventory.csv as Key under **profiles** section.
- 2. add the desired query information as list entries under **<profile_tring>: varBinds**. e.g for <profile_tring> = router
+1. In **scheduler-inventory.yaml**, add the profile string(e.g. router) to **profile** field under **data > inventory.csv** section.
+
+.. csv-table:: inventory.csv
+   :header: "host", "version", "community", "profile", "freqinseconds"
+
+   10.42.0.58,1,public,router,30
+   
+
+2. In **scheduler-config.yaml**, add the desired query information under **profiles > <profiles_string> > varBinds** section as list entries. e.g. **profiles > router > varBinds**.
 
 .. code-block:: language
 
