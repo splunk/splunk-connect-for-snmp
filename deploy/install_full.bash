@@ -35,16 +35,6 @@ verify_dependencies() {
     echo "\t (squashfs is the dependency for snap package)"
     echo .
     echo .
-  
-    echo "[-] Checking whether Squashfs is installed or not..."
-    module_squashfs_exist=$(sudo lsmod | grep squashfs | cut -d' ' -f1)
-    if [ "$module_squashfs_exist" = "squashfs" ]; then
-        echo "✅ SquashFS is installed."
-    else
-        echo "⚠️ Caution: Squashfs is not installed."
-        echo "Note that some operating system may not have squashfs installed, in which case you could install it with kernel upgrade!"
-        exit 4
-    fi
 
     echo "[-] Checking whether Squashfs is enabled or not..."
     module_squashfs_disabled=$(sudo grep -nri "squashfs" /etc/modprobe.d/ | grep -v "#" | wc -l)
@@ -58,7 +48,6 @@ verify_dependencies() {
         echo .
         echo "ℹ️Easy fix: you may remove or comment the line containing 'install squashfs /bin/true' to re-activate the squashfs."
         echo "ℹ️Reboot the host after following above steps."
-        exit 4
     else
         echo "✅ SquashFS is enabled."
     fi
