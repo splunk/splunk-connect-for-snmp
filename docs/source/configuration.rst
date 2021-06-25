@@ -271,15 +271,31 @@ User can provide more detailed query information under **profiles** section to a
 
 2. In **scheduler-config.yaml**, add the desired query information under **profiles > <profiles_string> > varBinds** section as list entries. e.g. **profiles > router > varBinds**.
 
+
+When you use the mib string, you **MUST** follow the Syntax below
+
+.. code-block:: language
+
+   ["MIB-Files", "MIB object name", "MIB index number"]
+
+Where **“MIB index number”** is optional. 
+
+1. Specify the index number when you want to get the information for a specific interface. e.g. ["SNMPv2-MIB", "sysUpTime", 0]
+
+2. Don’t put the index number when you want to get information for all interfaces. e.g. ["SNMPv2-MIB", "sysORID"]
+
+**Note**: A wrong index number would cause an error. If you are not sure which index exists, don’t put it at all. For example, in the situation where ["SNMPv2-MIB", "sysUpTime", 0] exsits, both ["SNMPv2-MIB", "sysUpTime", 0] and ["SNMPv2-MIB", "sysUpTime"] will help you get ["SNMPv2-MIB", "sysUpTime", 0], while ["SNMPv2-MIB", "sysUpTime", 1] will throw erroe because index 1 doesn't exist for sysUpTime.
+
+
 .. code-block:: language
 
    profiles:
       router:
         varBinds:
-          # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
-          - ['SNMPv2-MIB', 'sysDescr']
+          # Syntax: [ "MIB-Files", "MIB object name", "MIB index number"]
+          - ['SNMPv2-MIB', 'sysDescr', 0]
           - ['SNMPv2-MIB', 'sysUpTime',0]
-          - ['SNMPv2-MIB', 'sysName']
+          - ['SNMPv2-MIB', 'sysORID']
           - ['CISCO-FC-MGMT-MIB', 'cfcmPortLcStatsEntry']
           - ['EFM-CU-MIB', 'efmCuPort']
           - '1.3.6.1.2.1.1.6.0'
