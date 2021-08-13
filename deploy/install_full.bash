@@ -1,12 +1,12 @@
 #!/bin/bash
 
-echo "      [.. ..      [..                 [.. ..  [...     [..[..       [..[.......   "
-echo "    [..    [.. [..   [..      [..   [..    [..[. [..   [..[. [..   [...[..    [.. "
-echo "     [..      [..           [ [..    [..      [.. [..  [..[.. [.. [ [..[..    [.. "
-echo "       [..    [..          [. [..      [..    [..  [.. [..[..  [..  [..[.......   "
-echo "          [.. [..        [..  [..         [.. [..   [. [..[..   [.  [..[..        "
-echo "    [..    [.. [..   [..[.... [. [..[..    [..[..    [. ..[..       [..[..        "
-echo "      [.. ..     [....        [..     [.. ..  [..      [..[..       [..[..        "
+echo "      [.. ..      [..                 [.. ..  [...     [..[..       [..[.......    "
+echo "    [..    [.. [..   [..      [..   [..    [..[. [..   [..[. [..   [...[..    [..  "
+echo "     [..      [..           [ [..    [..      [.. [..  [..[.. [.. [ [..[..    [..  "
+echo "       [..    [..          [. [..      [..    [..  [.. [..[..  [..  [..[.......    "
+echo "          [.. [..        [..  [..         [.. [..   [. [..[..   [.  [..[..         "
+echo "    [..    [.. [..   [..[.... [. [..[..    [..[..    [. ..[..       [..[..         "
+echo "      [.. ..     [....        [..     [.. ..  [..      [..[..       [..[..         "
 
 
 realpath() {
@@ -54,22 +54,24 @@ verify_dependencies() {
 }
 
 
-install_snapd_on_centos7() {
+install_dependencies_on_centos7() {
   yum -y install epel-release
   yum -y install snapd
   systemctl enable snapd
   systemctl start snapd
   sleep 10
   ln -s /var/lib/snapd/snap /snap
+  yum -y install bind-utils
 }
 
-install_snapd_on_centos8() {
+install_dependencies_on_centos8() {
   dnf -y install epel-release
   dnf -y install snapd
   systemctl enable snapd
   systemctl start snapd
   sleep 10
   ln -s /var/lib/snapd/snap /snap
+  yum -y install bind-utils
 }
 
 install_dependencies() {
@@ -81,15 +83,15 @@ install_dependencies() {
 
   os_id=$(grep "^ID=" "$os_release" | sed -e "s/\"//g" | cut -d= -f2)
   if [ "$os_id" == "ubuntu" ] ; then
-    echo 'Snap install not required'
+    echo 'Snap and nslookup install not required'
   elif [ "$os_id" == "centos" ] && grep "^VERSION_ID=\"7" $os_release>/dev/null; then
-    install_snapd_on_centos7
+    install_dependencies_on_centos7
   elif [ "$os_id" == "centos" ] && grep "^VERSION_ID=\"8" $os_release>/dev/null; then
-    install_snapd_on_centos8
+    install_dependencies_centos8
   elif [ "$os_id" == "rhel" ] && grep "^VERSION_ID=\"7" $os_release>/dev/null; then
-    install_snapd_on_centos7
+    install_dependencies_on_centos7
   elif [ "$os_id" == "rhel" ] && grep "^VERSION_ID=\"8" $os_release>/dev/null; then
-    install_snapd_on_centos8
+    install_dependencies_on_centos8
   else
     echo "Unsupported operating system: $os_id $os_version"
     exit 4
