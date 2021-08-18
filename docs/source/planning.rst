@@ -35,3 +35,16 @@ Requirements
 * Splunk Infrastructure Monitoring specific requirements
     * Ability to create of obtain real and token
 
+Planning Infrastructure
+===================================================
+
+Single installation of Splunk Connect for SNMP (SC4SNMP) on
+machine with 16 Core/32 threads x64 and 12 GB ram will be able to handle up to 1300 SNMP TRAPs per sec.
+
+Single installation of Splunk Connect for SNMP (SC4SNMP) on
+machine with 16 Core/32 threads x64 and 64 GB ram will be able to handle up to 1300 SNMP GETs per sec.
+
+When planning infrastructure for Splunk Connect for SNMP (SC4SNMP) above limitations need to be taken under consideration.
+
+
+
