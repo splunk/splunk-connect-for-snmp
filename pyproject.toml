@@ -18,6 +18,9 @@ python = ">=3.6.8"
 sphinx = "^4.0.1"
 sphinx-material = "^0.0.34"
 pytest = "^6.2.2"
+mike = "^1.0.1"
+mkdocs = "^1.2.2"
+mkdocs-material = "^7.2.4"
 
 [build-system]
 requires = ["poetry>=0.12"]
