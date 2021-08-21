@@ -1,0 +1,27 @@
+site_name: Splunk Connect for SNMP (SC4SNMP)
+
+extra:
+  version:
+    provider: mike
+
+markdown_extensions:
+  - toc:
+      permalink: True
+  - smarty
+  - fenced_code
+  - sane_lists
+  - codehilite
+
+theme:
+  name: "material"
+  palette:
+    primary: "black"
+    accent: "orange"
+  #favicon: "logo.png"
+#  logo: "logo.png"
+
+nav:
+  - Home: "index.md"
+  - Getting Started: "gettingstarted.md"
+  - Configuration: "configuration.md"
+  - Planning: "planning.md"
