@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sc4snmp-worker
+  namespace: sc4snmp
+  labels:
+    app: sc4snmp-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sc4snmp-worker
+  template:
+    metadata:
+      labels:
+        app: sc4snmp-worker
+    spec:
+      containers:
+        - name: sc4snmp-worker
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:1
+          imagePullPolicy: Always
+          args: ["--log=WARN", "--config=/work/config/config.yaml"]
+          env:
+            - name: CELERY_BROKER_URL
+              value: amqp://sc4snmp:sc4snmp@sc4snmp-celery-rabbitmq:5672/
+            - name: MIBS_SERVER_URL
+              value: http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)
+            - name: MIBS_FILES_URL
+              value: $(MIBS_SERVER_URL)/files/asn1/@mib@
+            - name: POLLER_EXECUTION_MODE
+              value: worker
+            - name: OTEL_SERVER_LOGS_URL
+              value: http://$(OTEL_SERVICE_SERVICE_HOST):$(OTEL_SERVICE_SERVICE_PORT_LOGS)
+            - name: OTEL_SERVER_METRICS_URL
+              value: http://$(OTEL_SERVICE_SERVICE_HOST):$(OTEL_SERVICE_SERVICE_PORT_METRICS)
+            - name: MONGO_SERVICE_SERVICE_HOST
+              value: sc4snmp-cache-mongodb
+            - name: MONGO_SERVICE_SERVICE_PORT
+              value: "27017"
+          volumeMounts:
+            - name: config
+              mountPath: "/work/config"
+              readOnly: true
+      volumes:
+        # You set volumes at the Pod level, then mount them into containers inside that Pod
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: sc4snmp-config
+            # An array of keys from the ConfigMap to create as files
+            items:
+              - key: "config.yaml"
+                path: "config.yaml"

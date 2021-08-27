@@ -1,0 +1,15 @@
+scheduler:
+    index:
+        event: em_logs
+        metrics: em_metrics
+        meta: em_meta
+splunk:
+    protocol: https
+    host: i-09795cf481b16123d.ec2.splunkit.io
+    insecureSSL: "true"
+    token: 00000000-0000-0000-0000-000000000000
+    port: "8088"
+    clusterName: foo
+traps:
+    loadBalancerIP: 10.202.22.145
+mode: "both"
