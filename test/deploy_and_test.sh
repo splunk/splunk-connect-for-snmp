@@ -66,8 +66,7 @@ update_scheduler_inventory() {
   valid_snmp_get_ip=$1
   # These extra spaces are required to fit the structure in scheduler-config.yaml
   scheduler_config=$(cat << EOF
-    ${valid_snmp_get_ip}:161,2c,public,1.3.6.1.2.1.1.1.0,1
-    ${valid_snmp_get_ip}:161,2c,public,1.3.6.1.2.1.25.1.1,1
+    ${valid_snmp_get_ip}:161,2c,public,basev1,1
 EOF
 )
   scheduler_config=$(echo "${scheduler_config}" | \
