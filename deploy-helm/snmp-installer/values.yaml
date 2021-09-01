@@ -11,15 +11,17 @@ scheduler:
     requests:
       cpu: 100m
       memory: 128Mi
+  inventory:
+    content: "#10.0.0.1,2c,public,basev1,300"
 splunk:
   protocol: https
-  host: i-09795cf481b16123d.ec2.splunkit.io
+  host: i-0e9ea145205eab24d.ec2.splunkit.io
   insecureSSL: "true"
   token: 00000000-0000-0000-0000-000000000000
   port: "8088"
   clusterName: foo
 traps:
-  loadBalancerIP: 10.202.22.145
+  loadBalancerIP: 10.202.16.24
   resources:
     limits:
       cpu: 100m

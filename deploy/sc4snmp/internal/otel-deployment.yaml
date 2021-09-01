@@ -23,17 +23,17 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: remote-splunk
-                  key: SPLUNK_HEC_URL
+                  key: splunkHecUrl
             - name: SPLUNK_HEC_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: remote-splunk
-                  key: SPLUNK_HEC_TOKEN
+                  key: splunkHecToken
             - name: SPLUNK_HEC_TLS_SKIP_VERIFY
               valueFrom:
                 secretKeyRef:
                   name: remote-splunk
-                  key: SPLUNK_HEC_TLS_SKIP_VERIFY
+                  key: splunkHecTlsSkipVerify
           ports:
             - containerPort: 8881
             - containerPort: 8882
