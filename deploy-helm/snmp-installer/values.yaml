@@ -1,15 +1,53 @@
 scheduler:
-    index:
-        event: em_logs
-        metrics: em_metrics
-        meta: em_meta
+  logLevel: "WARN"
+  index:
+    event: em_logs
+    metrics: em_metrics
+    meta: em_meta
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
 splunk:
-    protocol: https
-    host: i-09795cf481b16123d.ec2.splunkit.io
-    insecureSSL: "true"
-    token: 00000000-0000-0000-0000-000000000000
-    port: "8088"
-    clusterName: foo
+  protocol: https
+  host: i-09795cf481b16123d.ec2.splunkit.io
+  insecureSSL: "true"
+  token: 00000000-0000-0000-0000-000000000000
+  port: "8088"
+  clusterName: foo
 traps:
-    loadBalancerIP: 10.202.22.145
+  loadBalancerIP: 10.202.22.145
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
 mode: "both"
+mib:
+  service_host: "localhost"
+  service_port: 5000
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+worker:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+mongodb:
+  fullnameOverride: "sc4snmp-mongodb"
+  auth:
+      enabled: false
+

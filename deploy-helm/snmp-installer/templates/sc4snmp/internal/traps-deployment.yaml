@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sc4snmp-traps
-  namespace: sc4snmp
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     app: sc4snmp-traps
 spec:

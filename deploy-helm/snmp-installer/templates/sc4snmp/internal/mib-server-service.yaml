@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: sc4snmp-mib-server-service
-  namespace: sc4snmp
+  namespace: {{ .Release.Namespace | quote }}
 spec:
   type: ClusterIP
   ports:

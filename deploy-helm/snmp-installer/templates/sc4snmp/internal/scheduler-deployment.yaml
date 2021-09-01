@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sc4snmp-scheduler
-  namespace: sc4snmp
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     app: sc4snmp-scheduler
 spec:
@@ -21,7 +21,7 @@ spec:
           imagePullPolicy: Always
           args:
             [
-              "--log=WARN",
+              "--log={{ .Values.scheduler.logLevel }}",
               "--config=/work/config/config.yaml",
               "--inventory=/work/inventory/inventory.csv",
               "--event_index={{ .Values.scheduler.index.event }}",
@@ -44,6 +44,8 @@ spec:
             - name: inventory
               mountPath: "/work/inventory"
               readOnly: true
+          resources:
+{{ toYaml .Values.mib.resources | indent 12 }}
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config

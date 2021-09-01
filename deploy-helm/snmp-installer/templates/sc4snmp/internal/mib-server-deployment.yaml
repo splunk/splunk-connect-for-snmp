@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sc4snmp-mib-server
-  namespace: sc4snmp
+  namespace: {{ .Release.Namespace | quote }}
 spec:
   replicas: 1
   selector:
@@ -20,9 +20,16 @@ spec:
           ports:
             - containerPort: 5000
           env:
-            - name: MIBS_FILES_URL
-              value: "http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)/files/asn1/@mib@"
             - name: MONGO_SERVICE_SERVICE_HOST
-              value: sc4snmp-cache-mongodb
+              value: sc4snmp-mongodb
             - name: MONGO_SERVICE_SERVICE_PORT
               value: "27017"
+            - name: MIB_SERVER_SERVICE_SERVICE_HOST
+              value: {{ .Values.mib.service_host | b64enc | quote }}
+            - name: MIB_SERVER_SERVICE_SERVICE_PORT
+              value: {{ .Values.mib.service_port | quote }}
+            - name: MIBS_FILES_URL
+              value: "http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)/files/asn1/@mib@"
+          resources:
+{{ toYaml .Values.mib.resources | indent 12 }}
+

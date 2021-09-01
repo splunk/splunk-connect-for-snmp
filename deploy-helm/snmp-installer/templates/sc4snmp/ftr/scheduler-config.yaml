@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: sc4snmp-config
-  namespace: sc4snmp
+  namespace: {{ .Release.Namespace | quote }}
 data:
   config.yaml: |
     celery:
