@@ -70,7 +70,7 @@ update_scheduler_inventory() {
 EOF
 )
   scheduler_config=$(echo "${scheduler_config}" | \
-    cat ../deploy/sc4snmp/ftr/scheduler-inventory.yaml - | microk8s.kubectl apply -n sc4snmp -f -)
+    cat ./deploy/sc4snmp/ftr/scheduler-inventory.yaml - | microk8s.kubectl apply -n sc4snmp -f -)
   echo "${scheduler_config}"
 }
 

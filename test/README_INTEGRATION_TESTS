@@ -10,9 +10,10 @@ Right now we support only NOVA.
 - git clone https://github.com/splunk/splunk-connect-for-snmp.git
 - cd splunk-connect-for-snmp
 - cd test
+- chmod u+x install_microk8s.sh
 - ./install_microk8s.sh
 - cd splunk-connect-for-snmp
-- ./deploy_and_test.sh -u <splunk_url_or_ip> -p <splunk_admin_password>
+- ./test/deploy_and_test.sh -u <splunk_url_or_ip> -p <splunk_admin_password>
   - the test will install/deploy everything, will run all the integration tests and it will prompt
     you this message:
     "Press ENTER to undeploy everything"
