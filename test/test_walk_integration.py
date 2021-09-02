@@ -25,7 +25,7 @@ def test_walk_discovery(setup_splunk):
     search_string = 'search index="em_logs" sourcetype="sc4snmp:walk"'
     result_count, events_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
-    assert events_count == 193
+    assert events_count == 92
 
 
 def test_walk_bulk(setup_splunk):
