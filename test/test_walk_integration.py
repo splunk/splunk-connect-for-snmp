@@ -14,6 +14,7 @@
 #    limitations under the License.
 #   ########################################################################
 import logging
+import time
 
 from test.splunk_test_utils import splunk_single_search
 
@@ -24,6 +25,7 @@ def test_walk_discovery(setup_splunk):
     logger.info(f"Integration test for poller walk")
     search_string = 'search index="em_logs" sourcetype="sc4snmp:walk"'
     result_count, events_count = splunk_single_search(setup_splunk, search_string)
+    time.sleep(30)
     assert result_count > 0
     assert events_count == 92
 
