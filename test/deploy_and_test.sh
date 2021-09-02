@@ -167,4 +167,5 @@ fix_local_settings
 install_simulator
 trap_external_ip=$(docker0_ip)
 full_kubernetes_deployment "$splunk_url" "$splunk_password" "$trap_external_ip"
+microk8s.kubectl config set-context --current --namespace=sc4snmp
 run_integration_tests "$splunk_url" "$splunk_password"
