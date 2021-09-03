@@ -42,12 +42,12 @@ rabbitmq:
   ## @param resources.requests The requested resources for RabbitMQ containers
   ##
   resources:
-    limits:
-       cpu: 1000m
-       memory: 2Gi
-    requests:
-       cpu: 1000m
-       memory: 2Gi
+    limits: {}
+#       cpu: 1000m
+#       memory: 2Gi
+    requests: {}
+#       cpu: 1000m
+#       memory: 2Gi
 
   ## @section Persistence parameters
 
