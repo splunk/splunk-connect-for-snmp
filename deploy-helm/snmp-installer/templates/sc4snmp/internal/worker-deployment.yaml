@@ -34,7 +34,7 @@ spec:
             - name: OTEL_SERVER_METRICS_URL
               value: http://$(OTEL_SERVICE_SERVICE_HOST):$(OTEL_SERVICE_SERVICE_PORT_METRICS)
             - name: MONGO_SERVICE_SERVICE_HOST
-              value: sc4snmp-cache-mongodb
+              value: sc4snmp-mongodb
             - name: MONGO_SERVICE_SERVICE_PORT
               value: "27017"
           volumeMounts:
