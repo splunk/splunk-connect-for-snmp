@@ -33,7 +33,7 @@ traps:
 mode: "both"
 mib:
   service_host: "localhost"
-  service_port: 5000
+  service_port: "5000"
   resources:
     limits:
       cpu: 100m

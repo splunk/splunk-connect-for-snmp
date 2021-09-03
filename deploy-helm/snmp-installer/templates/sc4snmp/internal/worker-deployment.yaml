@@ -24,7 +24,7 @@ spec:
             - name: CELERY_BROKER_URL
               value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq:5672/
             - name: MIBS_SERVER_URL
-              value: http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)
+              value: {{ printf "http://%s:%s" .Values.mib.service_host .Values.mib.service_port | b64enc | quote }}
             - name: MIBS_FILES_URL
               value: $(MIBS_SERVER_URL)/files/asn1/@mib@
             - name: POLLER_EXECUTION_MODE
