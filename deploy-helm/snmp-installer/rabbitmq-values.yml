@@ -457,12 +457,12 @@ rabbitmq:
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    limits: {}
-    #   cpu: 1000m
-    #   memory: 2Gi
-    requests: {}
-    #   cpu: 1000m
-    #   memory: 2Gi
+    limits:
+       cpu: 1000m
+       memory: 2Gi
+    requests:
+       cpu: 1000m
+       memory: 2Gi
 
   ## RabbitMQ containers' liveness and readiness probes.
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes

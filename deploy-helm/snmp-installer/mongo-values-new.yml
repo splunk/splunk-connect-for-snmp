@@ -1,0 +1,61 @@
+mongodb:
+  ## @section Global parameters
+  ## Global Docker image parameters
+  ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
+  ## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
+
+  ## @section Common parameters
+  ##
+
+  ## @param fullnameOverride String to fully override mongodb.fullname template
+  ##
+  fullnameOverride: "sc4snmp-mongodb"
+  ## @param clusterDomain Default Kubernetes cluster domain
+  ##
+  clusterDomain: cluster.local
+
+  ##
+  auth:
+    ## @param auth.enabled Enable authentication
+    ## ref: https://docs.mongodb.com/manual/tutorial/enable-authentication/
+    ##
+    enabled: false
+
+  ## MongoDB&reg; containers' resource requests and limits.
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## We usually recommend not to specify default resources and to leave this as a conscious
+  ## choice for the user. This also increases chances charts run on environments with little
+  ## resources, such as Minikube. If you do want to specify resources, uncomment the following
+  ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  ## @param resources.limits The resources limits for MongoDB&reg; containers
+  ## @param resources.requests The requested resources for MongoDB&reg; containers
+  ##
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+
+  ## @section Volume Permissions parameters
+
+  ## @section Metrics parameters
+
+  metrics:
+    ## @param metrics.enabled Enable using a sidecar Prometheus exporter
+    ##
+    enabled: true
+    containerPort: 9216
+    ## Prometheus Exporter service configuration
+    ##
+    service:
+      ## @param metrics.service.annotations [object] Annotations for Prometheus Exporter pods. Evaluated as a template.
+      ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+      ##
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9216"
+
+
