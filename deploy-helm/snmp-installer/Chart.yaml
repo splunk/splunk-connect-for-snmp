@@ -27,7 +27,7 @@ dependencies:
     version: 10.23.13
     repository: https://charts.bitnami.com/bitnami
   - name: rabbitmq
-    version: 8.20.5
+    version: 8.21.0
     repository: https://charts.bitnami.com/bitnami
 #    condition: (optional) A yaml path that resolves to a boolean, used for enabling/disabling charts (e.g. subchart1.enabled )
 #    tags: # (optional)

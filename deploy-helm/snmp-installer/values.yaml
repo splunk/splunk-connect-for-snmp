@@ -12,7 +12,8 @@ scheduler:
       cpu: 100m
       memory: 128Mi
   inventory:
-    content: "#10.0.0.1,2c,public,basev1,300"
+    content: |-
+      #10.0.0.1,2c,public,basev1,300
 splunk:
   protocol: https
   host: i-0e9ea145205eab24d.ec2.splunkit.io
@@ -50,6 +51,19 @@ worker:
       memory: 256Mi
 mongodb:
   fullnameOverride: "sc4snmp-mongodb"
+  metrics:
+    enabled: true
+    image:
+      registry: docker.io
+      repository: bitnami/mongodb-exporter
+      tag: 0.10.0-debian-10-r41
+      pullPolicy: IfNotPresent
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+    mountPath: /bitnami/mongodb
   auth:
       enabled: false
 

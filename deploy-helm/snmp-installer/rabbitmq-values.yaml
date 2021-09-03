@@ -12,31 +12,30 @@ rabbitmq:
   ## Bitnami RabbitMQ image version
   ## ref: https://hub.docker.com/r/bitnami/rabbitmq/tags/
   ##
-  global:
-    namespaceOverride: "sc4snmp"
   nameOverride: "sc4snmp-rabbitmq"
   fullnameOverride: "sc4snmp-rabbitmq"
-  image:
-    registry: docker.io
-    repository: bitnami/rabbitmq
-    tag: 3.8.14-debian-10-r46
 
-    ## set to true if you would like to see extra information on logs
-    ## It turns BASH and/or NAMI debugging in the image
-    ##
-    debug: false
-
-    ## Specify a imagePullPolicy
-    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
-    ##
-    pullPolicy: IfNotPresent
-    ## Optionally specify an array of imagePullSecrets.
-    ## Secrets must be manually created in the namespace.
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-    ##
-    # pullSecrets:
-    #   - myRegistryKeySecretName
+#  image:
+#    registry: docker.io
+#    repository: bitnami/rabbitmq
+#    tag: 3.8.9-debian-10-r64
+#
+#    ## set to true if you would like to see extra information on logs
+#    ## It turns BASH and/or NAMI debugging in the image
+#    ##
+#    debug: false
+#
+#    ## Specify a imagePullPolicy
+#    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+#    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+#    ##
+#    pullPolicy: IfNotPresent
+#    ## Optionally specify an array of imagePullSecrets.
+#    ## Secrets must be manually created in the namespace.
+#    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+#    ##
+#    # pullSecrets:
+#    #   - myRegistryKeySecretName
 
   ## String to partially override rabbitmq.fullname template (will maintain the release name)
   ##
@@ -70,14 +69,14 @@ rabbitmq:
     ## RabbitMQ application password
     ## ref: https://github.com/bitnami/bitnami-docker-rabbitmq#environment-variables
     ##
-    password: password
-    # existingPasswordSecret: name-of-existing-secret
+    password: sc4snmp
+#    existingPasswordSecret: rabbitmq-password
 
     ## Erlang cookie to determine whether different nodes are allowed to communicate with each other
     ## ref: https://github.com/bitnami/bitnami-docker-rabbitmq#environment-variables
     ##
-    erlangCookie: "tmp"
-#     existingErlangSecret: name-of-existing-secret
+    erlangCookie: "9xdEl2TBqFJJMjtt3Bds1Fpdh9Wgs1YL"
+    # existingErlangSecret: name-of-existing-secret
 
     ## Enable encryption to rabbitmq
     ## ref: https://www.rabbitmq.com/ssl.html
@@ -95,13 +94,13 @@ rabbitmq:
   ## Value for the RABBITMQ_LOGS environment variable
   ## ref: https://www.rabbitmq.com/logging.html#log-file-location
   ##
-  logs: '-'
+  logs: "-"
 
   ## RabbitMQ Max File Descriptors
   ## ref: https://github.com/bitnami/bitnami-docker-rabbitmq#environment-variables
   ## ref: https://www.rabbitmq.com/install-debian.html#kernel-resource-limits
   ##
-  ulimitNofiles: '65536'
+  ulimitNofiles: "65536"
 
   ## RabbitMQ maximum available scheduler threads and online scheduler threads. By default it will create a thread per CPU detected, with the following parameters you can tune it manually.
   ## ref: https://hamidreza-s.github.io/erlang/scheduling/real-time/preemptive/migration/2016/02/09/erlang-scheduler-details.html#scheduler-threads
@@ -118,7 +117,7 @@ rabbitmq:
     enabled: false
     ## Memory high watermark type. Either absolute or relative
     ##
-    type: 'relative'
+    type: "relative"
     ## Memory high watermark value.
     ## The default value of 0.4 stands for 40% of available RAM
     ## Note: the memory relative limit is applied to the resource.limits.memory to calculate the memory threshold
@@ -128,7 +127,7 @@ rabbitmq:
 
   ## Plugins to enable
   ##
-  plugins: 'rabbitmq_management rabbitmq_peer_discovery_k8s'
+  plugins: "rabbitmq_management rabbitmq_peer_discovery_k8s"
 
   ## Community plugins to download during container initialization.
   ## Combine it with extraPlugins to also enable them.
@@ -138,7 +137,7 @@ rabbitmq:
   ## Extra plugins to enable
   ## Use this instead of `plugins` to add new plugins
   ##
-  extraPlugins: 'rabbitmq_auth_backend_ldap'
+  #extraPlugins: "rabbitmq_auth_backend_ldap"
 
   ## Clustering settings
   ##
@@ -222,7 +221,7 @@ rabbitmq:
     # queue master locator
     queue_master_locator = min-masters
     # enable guest user
-    loopback_users.guest = false
+    loopback_users.guest = true
     {{ tpl .Values.extraConfiguration . }}
     {{- if .Values.auth.tls.enabled }}
     ssl_options.verify = {{ .Values.auth.tls.sslOptionsVerify }}
@@ -293,7 +292,7 @@ rabbitmq:
     servers: []
     ## LDAP servers port
     ##
-    port: '389'
+    port: "389"
     ## Pattern used to translate the provided username into a value to be used for the LDAP bind
     ## ref: https://www.rabbitmq.com/ldap.html#usernames-and-dns
     ##
@@ -319,12 +318,12 @@ rabbitmq:
   ## Optionally specify extra secrets to be created by the chart.
   ## This can be useful when combined with load_definitions to automatically create the secret containing the definitions to be loaded.
   ## Example:
-  ## extraSecrets:
-  ##   load-definition:
-  ##     load_definition.json: |
-  ##       {
-  ##         ...
-  ##       }
+  # extraSecrets:
+  #   load-definition:
+  #     load_definition.json: |
+  #       {
+  #         ...
+  #       }
   ##
   ## Set this flag to true if extraSecrets should be created with <release-name> prepended.
   ##
@@ -375,7 +374,7 @@ rabbitmq:
   ## Name of the priority class to be used by RabbitMQ pods, priority class needs to be created beforehand
   ## Ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
   ##
-  priorityClassName: ''
+  priorityClassName: ""
 
   ## Pod affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
@@ -570,7 +569,7 @@ rabbitmq:
 
     ## If you change this value, you might have to adjust `rabbitmq.diskFreeLimit` as well.
     ##
-    size: 8Gi
+    size: 1Gi
 
     volumes:
     #  - name: volume_name
@@ -813,19 +812,18 @@ rabbitmq:
   ##
   metrics:
     enabled: false
-    plugins: 'rabbitmq_prometheus'
+    plugins: "rabbitmq_prometheus"
     ## Prometheus pod annotations
     ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
     ##
     podAnnotations:
-      prometheus.io/scrape: 'true'
-      prometheus.io/port: '{{ .Values.service.metricsPort }}'
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "{{ .Values.service.metricsPort }}"
 
     ## Prometheus Service Monitor
     ## ref: https://github.com/coreos/prometheus-operator
     ##
     serviceMonitor:
-      namespace: 'sc4snmp'
       ## If the operator is installed in your cluster, set to true to create a Service Monitor Entry
       ##
       enabled: false
@@ -862,7 +860,7 @@ rabbitmq:
     prometheusRule:
       enabled: false
       additionalLabels: {}
-      namespace: 'sc4snmp'
+      namespace: ""
       ## List of rules, used as template by Helm.
       ## These are just examples rules inspired from https://awesome-prometheus-alerts.grep.to/rules.html
       # rules:
