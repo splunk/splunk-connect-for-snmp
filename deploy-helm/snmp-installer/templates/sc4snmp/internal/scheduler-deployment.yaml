@@ -30,7 +30,7 @@ spec:
             ]
           env:
             - name: MONGO_SERVICE_SERVICE_HOST
-              value: sc4snmp-cache-mongodb
+              value: sc4snmp-mongodb
             - name: MONGO_SERVICE_SERVICE_PORT
               value: "27017"
             - name: CELERY_BROKER_URL
