@@ -23,7 +23,7 @@ spec:
             - name: MONGO_SERVICE_SERVICE_HOST
               value: sc4snmp-mongodb
             - name: MONGO_SERVICE_SERVICE_PORT
-              value: 27017
+              value: "27017"
             - name: MIB_SERVER_SERVICE_SERVICE_HOST
               value: {{ .Values.mib.service_host | b64enc | quote }}
             - name: MIB_SERVER_SERVICE_SERVICE_PORT
