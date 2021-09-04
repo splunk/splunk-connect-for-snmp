@@ -34,9 +34,9 @@ spec:
             - name: POLLER_EXECUTION_MODE
               value: worker
             - name: OTEL_SERVER_LOGS_URL
-              value: http://$(OTEL_SERVICE_SERVICE_HOST):$(OTEL_SERVICE_SERVICE_PORT_LOGS)
+              value: {{ printf "http://%s:%s" .Values.otel.service_host .Values.otel.service_logs_port | quote }}
             - name: OTEL_SERVER_METRICS_URL
-              value: http://$(OTEL_SERVICE_SERVICE_HOST):$(OTEL_SERVICE_SERVICE_PORT_METRICS)
+              value: {{ printf "http://%s:%s" .Values.otel.service_host .Values.otel.service_metrics_port | quote }}
             - name: MONGO_SERVICE_SERVICE_HOST
               value: sc4snmp-mongodb
             - name: MONGO_SERVICE_SERVICE_PORT

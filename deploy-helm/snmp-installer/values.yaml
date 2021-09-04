@@ -28,12 +28,11 @@ traps:
       cpu: 100m
       memory: 128Mi
     requests:
-      cpu: 100m
       memory: 128Mi
 mode: "both"
 mib:
-  service_host: sc4snmp-mib-server
-  service_port: 5000
+  service_host: sc4snmp-mib-server-service
+  service_port: "5000"
   resources:
     limits:
       cpu: 100m
@@ -41,6 +40,10 @@ mib:
     requests:
       cpu: 100m
       memory: 128Mi
+otel:
+  service_host: otel-service
+  service_metrics_port: "8882"
+  service_logs_port: "8881"
 worker:
   resources:
     limits:

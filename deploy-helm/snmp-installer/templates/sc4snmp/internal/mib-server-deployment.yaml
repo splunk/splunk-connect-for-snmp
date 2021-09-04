@@ -24,10 +24,6 @@ spec:
               value: sc4snmp-mongodb
             - name: MONGO_SERVICE_SERVICE_PORT
               value: "27017"
-            - name: MIB_SERVER_SERVICE_SERVICE_HOST
-              value: {{ .Values.mib.service_host | b64enc | quote }}
-            - name: MIB_SERVER_SERVICE_SERVICE_PORT
-              value: {{ .Values.mib.service_port | quote }}
             - name: MIBS_FILES_URL
               value: "http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)/files/asn1/@mib@"
           resources:
