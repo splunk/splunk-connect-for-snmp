@@ -32,8 +32,8 @@ traps:
       memory: 128Mi
 mode: "both"
 mib:
-  service_host: "localhost"
-  service_port: "5000"
+  service_host: sc4snmp-mib-server
+  service_port: 5000
   resources:
     limits:
       cpu: 100m
