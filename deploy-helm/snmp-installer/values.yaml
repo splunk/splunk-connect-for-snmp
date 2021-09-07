@@ -22,6 +22,7 @@ splunk:
   port: "8088"
   clusterName: foo
 traps:
+  logLevel: "WARN"
   loadBalancerIP: 10.202.16.24
   resources:
     limits:
@@ -45,6 +46,7 @@ otel:
   service_metrics_port: "8882"
   service_logs_port: "8881"
 worker:
+  logLevel: "WARN"
   resources:
     limits:
       cpu: 200m
@@ -52,21 +54,4 @@ worker:
     requests:
       cpu: 200m
       memory: 256Mi
-#mongodb:
-#  fullnameOverride: "sc4snmp-mongodb"
-#  metrics:
-#    enabled: true
-#    image:
-#      registry: docker.io
-#      repository: bitnami/mongodb-exporter
-#      tag: 0.10.0-debian-10-r41
-#      pullPolicy: IfNotPresent
-#  persistence:
-#    enabled: true
-#    accessModes:
-#      - ReadWriteOnce
-#    size: 8Gi
-#    mountPath: /bitnami/mongodb
-#  auth:
-#      enabled: false
 
