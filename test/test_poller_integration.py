@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 def test_poller_integration_event(setup_splunk):
     logger.info(f"Integration test for poller event")
-    search_string = 'search index="em_logs" sourcetype="sc4snmp:meta" earliest=-1m'
+    search_string = 'search index="em_meta" sourcetype="sc4snmp:meta" earliest=-1m'
     result_count, events_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
     assert events_count > 0
