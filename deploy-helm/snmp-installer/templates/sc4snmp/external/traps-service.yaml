@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sc4snmp-traps
+  namespace: {{ .Release.Namespace | quote }}
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "true"
+spec:
+  externalTrafficPolicy: Local
+  type: LoadBalancer
+  loadBalancerIP: {{ .Values.traps.loadBalancerIP }}
+  ports:
+    - port: 162
+      targetPort: 2162
+      protocol: UDP
+  selector:
+    app: sc4snmp-traps

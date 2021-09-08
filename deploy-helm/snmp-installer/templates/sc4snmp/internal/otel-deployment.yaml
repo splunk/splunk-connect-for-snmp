@@ -1,18 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sc4-snmp-otel
+  name: sc4snmp-otel
+  namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: sc4-snmp-otel
+    app: sc4snmp-otel
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sc4-snmp-otel
+      app: sc4snmp-otel
   template:
     metadata:
       labels:
-        app: sc4-snmp-otel
+        app: sc4snmp-otel
     spec:
       containers:
         - name: otel-collector

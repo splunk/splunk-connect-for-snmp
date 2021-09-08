@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sc4snmp-mib-server
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sc4snmp-mib-server
+  template:
+    metadata:
+      labels:
+        app: sc4snmp-mib-server
+    spec:
+      containers:
+        - name: sc4snmp-mib-server
+          image: ghcr.io/splunk/splunk-connect-for-snmp-mib-server:1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MONGO_SERVICE_SERVICE_HOST
+              value: sc4snmp-mongodb
+            - name: MONGO_SERVICE_SERVICE_PORT
+              value: "27017"
+            - name: MIB_SERVER_SERVICE_SERVICE_HOST
+              value: {{ .Values.mib.service_host | b64enc | quote }}
+            - name: MIB_SERVER_SERVICE_SERVICE_PORT
+              value: {{ .Values.mib.service_port | quote }}
+            - name: MIBS_FILES_URL
+              value: "http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)/files/asn1/@mib@"
+          resources:
+{{ toYaml .Values.mib.resources | indent 12 }}
+
