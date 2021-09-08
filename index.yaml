@@ -1,0 +1,21 @@
+apiVersion: v1
+entries:
+  snmp-installer:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2021-09-08T13:53:48.088320774Z"
+    dependencies:
+    - name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.23.13
+    - name: rabbitmq
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.21.0
+    description: A Helm chart for Kubernetes
+    digest: 38fa0f6aad5847b72715a8ef5756e3c14c0f2ee1a494894cafb98619780eda89
+    name: snmp-installer
+    type: application
+    urls:
+    - https://github.com/splunk/splunk-connect-for-snmp/releases/download/v0.11.0-develop.3/snmp-installer-0.1.0.tgz
+    version: 0.1.0
+generated: "2021-09-08T13:53:48.07293347Z"
