@@ -48,7 +48,7 @@ jobs:
          echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
          VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
          echo $VERSION
-         helm package charts/splunk-connect-for-syslog -d /tmp/package
+         helm package deploy-helm/snmp-installer -d /tmp/package
          gh release upload $VERSION /tmp/package/*
          helm repo index /tmp/package --url https://github.com/splunk/splunk-connect-for-snmp/releases/download/$VERSION --merge /tmp/origin/index.yaml
          cp /tmp/package/index.yaml /tmp/index/
