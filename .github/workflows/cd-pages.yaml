@@ -48,6 +48,8 @@ jobs:
          echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
          VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
          echo $VERSION
+         helm repo add bitnami https://charts.bitnami.com/bitnami
+         helm dependency update deploy-helm/snmp-installer
          helm package deploy-helm/snmp-installer -d /tmp/package
          gh release upload $VERSION /tmp/package/*
          helm repo index /tmp/package --url https://github.com/splunk/splunk-connect-for-snmp/releases/download/$VERSION --merge /tmp/origin/index.yaml
