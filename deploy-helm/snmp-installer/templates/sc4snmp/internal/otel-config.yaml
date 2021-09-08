@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sc4snmp-otel
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  otel-collector-config.yaml: |
+    receivers:
+      splunk_hec/logs:
+        endpoint: 0.0.0.0:8881
+      splunk_hec/metrics:
+        endpoint: 0.0.0.0:8882
+    exporters:
+      splunk_hec:
+        token: $SPLUNK_HEC_TOKEN
+        endpoint: $SPLUNK_HEC_URL
+        insecure_skip_verify: $SPLUNK_HEC_TLS_SKIP_VERIFY
+      #signalfx:
+        #access_token: $signalfxToken
+        #realm: $signalfxRealm
+    service:
+      pipelines:
+        logs:
+          receivers: [splunk_hec/logs]
+          exporters: [splunk_hec]
+        metrics:
+          receivers: [splunk_hec/metrics]
+          exporters: [splunk_hec]
+

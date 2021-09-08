@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sc4snmp-inventory
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  inventory.csv: |
+    host,version,community,profile,freqinseconds
+    {{ .Values.scheduler.inventory.content }}
+

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sc4snmp-worker
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: sc4snmp-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sc4snmp-worker
+  template:
+    metadata:
+      labels:
+        app: sc4snmp-worker
+    spec:
+      containers:
+        - name: sc4snmp-worker
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:1
+          imagePullPolicy: Always
+          args: ["--log={{ .Values.worker.logLevel }}", "--config=/work/config/config.yaml"]
+          env:
+            - name: CELERY_BROKER_URL
+              value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq:5672/
+            - name: MIBS_SERVER_URL
+              value: {{ printf "http://%s:%s" .Values.mib.service_host .Values.mib.service_port | quote }}
+            - name: MIBS_FILES_URL
+              value: $(MIBS_SERVER_URL)/files/asn1/@mib@
+            - name: MIB_SERVER_SERVICE_SERVICE_HOST
+              value: sc4snmp-mib-server
+            - name: MIB_SERVER_SERVICE_SERVICE_PORT
+              value: {{ .Values.mib.service_port | quote }}
+            - name: POLLER_EXECUTION_MODE
+              value: worker
+            - name: OTEL_SERVER_LOGS_URL
+              value: {{ printf "http://%s:%s" .Values.otel.service_host .Values.otel.service_logs_port | quote }}
+            - name: OTEL_SERVER_METRICS_URL
+              value: {{ printf "http://%s:%s" .Values.otel.service_host .Values.otel.service_metrics_port | quote }}
+            - name: MONGO_SERVICE_SERVICE_HOST
+              value: sc4snmp-mongodb
+            - name: MONGO_SERVICE_SERVICE_PORT
+              value: "27017"
+          volumeMounts:
+            - name: config
+              mountPath: "/work/config"
+              readOnly: true
+          resources:
+{{ toYaml .Values.worker.resources | indent 12 }}
+      volumes:
+        # You set volumes at the Pod level, then mount them into containers inside that Pod
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: sc4snmp-config
+            # An array of keys from the ConfigMap to create as files
+            items:
+              - key: "config.yaml"
+                path: "config.yaml"

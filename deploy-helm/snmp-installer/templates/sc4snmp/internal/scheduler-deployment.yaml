@@ -1,39 +1,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sc4-snmp-scheduler
+  name: sc4snmp-scheduler
+  namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: sc4-snmp-scheduler
+    app: sc4snmp-scheduler
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sc4-snmp-scheduler
+      app: sc4snmp-scheduler
   template:
     metadata:
       labels:
-        app: sc4-snmp-scheduler
+        app: sc4snmp-scheduler
     spec:
       containers:
-        - name: sc4-snmp-scheduler
+        - name: sc4snmp-scheduler
           image: ghcr.io/splunk/splunk-connect-for-snmp-poller:1
           imagePullPolicy: Always
           args:
             [
-              "--log=WARN",
+              "--log={{ .Values.scheduler.logLevel }}",
               "--config=/work/config/config.yaml",
               "--inventory=/work/inventory/inventory.csv",
-              "--event_index=##EVENTS_INDEX##",
-              "--metric_index=##METRICS_INDEX##",
-              "--meta_index=##META_INDEX##",
+              "--event_index={{ .Values.scheduler.index.event }}",
+              "--metric_index={{ .Values.scheduler.index.metrics }}",
+              "--meta_index={{ .Values.scheduler.index.meta }}",
             ]
           env:
             - name: MONGO_SERVICE_SERVICE_HOST
-              value: sc4snmp-cache-mongodb
+              value: sc4snmp-mongodb
             - name: MONGO_SERVICE_SERVICE_PORT
               value: "27017"
             - name: CELERY_BROKER_URL
-              value: amqp://sc4snmp:@sc4snmp-rabbitmq:5672/
+              value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq:5672/
             - name: POLLER_EXECUTION_MODE
               value: scheduler
           volumeMounts:
@@ -43,6 +44,8 @@ spec:
             - name: inventory
               mountPath: "/work/inventory"
               readOnly: true
+          resources:
+{{ toYaml .Values.mib.resources | indent 12 }}
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config
