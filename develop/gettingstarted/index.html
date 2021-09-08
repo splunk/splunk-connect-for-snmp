@@ -602,7 +602,7 @@ kubectl apply -n sc4snmp -f ~/scheduler-inventory.yaml
 <h3 id="test-poller">Test Poller<a class="headerlink" href="#test-poller" title="Permanent link">&para;</a></h3>
 <p>Search splunk, one event per trap command with the host value of the
 test machine ip will be found</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">index</span><span class="o">=</span>em_logs <span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:meta&quot;</span> <span class="nv">SNMPv2_MIB__sysLocation_0</span><span class="o">=</span><span class="s2">&quot;*&quot;</span> <span class="p">|</span> dedup host
+<div class="codehilite"><pre><span></span><code><span class="nv">index</span><span class="o">=</span>em_meta <span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:meta&quot;</span> <span class="nv">SNMPv2_MIB__sysLocation_0</span><span class="o">=</span><span class="s2">&quot;*&quot;</span> <span class="p">|</span> dedup host
 </code></pre></div>
 
 <div class="codehilite"><pre><span></span><code><span class="p">|</span> mcatalog values<span class="o">(</span>metric_name<span class="o">)</span>  where <span class="nv">index</span><span class="o">=</span>em_metrics AND <span class="nv">metric_name</span><span class="o">=</span>sc4snmp* AND <span class="nv">host</span><span class="o">=</span>&lt;hostname&gt;
