@@ -1,0 +1,1062 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.4">
+    
+    
+      
+        <title>Configuration - Splunk Connect for SNMP (SC4SNMP)</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.f7f47774.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#000000">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="black" data-md-color-accent="orange">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#configuration" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Splunk Connect for SNMP (SC4SNMP)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Configuration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Splunk Connect for SNMP (SC4SNMP)
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Getting Started
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Getting Started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
+      
+      <label class="md-nav__link" for="__nav_2_1">
+        Pre-requirements
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Pre-requirements" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          Pre-requirements
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gettingstarted/splunk-requirements/" class="md-nav__link">
+        Splunk Requirements
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gettingstarted/k8s-microk8s/" class="md-nav__link">
+        Install Microk8s
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gettingstarted/sck-installation/" class="md-nav__link">
+        Install Splunk for Kubernetes
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gettingstarted/sc4snmp-installation/" class="md-nav__link">
+        Install SC4SNMP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gettingstarted/sc4snmp-configuration/" class="md-nav__link">
+        Configure Poller and Traps
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gettingstarted/additional-helm-configuration/" class="md-nav__link">
+        Additional HELM values
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Configuration
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#traps-configuration" class="md-nav__link">
+    Traps Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Traps Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure-snmpv1v2c-community-strings" class="md-nav__link">
+    Configure SNMPv1/v2c community strings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-snmpv3-users" class="md-nav__link">
+    Configure SNMPv3 users
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#poller" class="md-nav__link">
+    Poller
+  </a>
+  
+    <nav class="md-nav" aria-label="Poller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scheduler-configuration" class="md-nav__link">
+    Scheduler Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inventorycsv" class="md-nav__link">
+    inventory.csv
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configyaml" class="md-nav__link">
+    config.yaml
+  </a>
+  
+    <nav class="md-nav" aria-label="config.yaml">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-configure-optional-parameters-for-snmpv1snmpv2c-community-data" class="md-nav__link">
+    1. Configure optional parameters for SNMPv1/SNMPv2c community data
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-configure-optional-parameters-snmpv3-users" class="md-nav__link">
+    2. Configure optional parameters SNMPv3 users
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-configure-more-detailed-query-information" class="md-nav__link">
+    3. Configure more detailed query information
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-the-poller" class="md-nav__link">
+    Test the poller
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/" class="md-nav__link">
+        Planning
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#traps-configuration" class="md-nav__link">
+    Traps Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="Traps Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure-snmpv1v2c-community-strings" class="md-nav__link">
+    Configure SNMPv1/v2c community strings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-snmpv3-users" class="md-nav__link">
+    Configure SNMPv3 users
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#poller" class="md-nav__link">
+    Poller
+  </a>
+  
+    <nav class="md-nav" aria-label="Poller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scheduler-configuration" class="md-nav__link">
+    Scheduler Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inventorycsv" class="md-nav__link">
+    inventory.csv
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configyaml" class="md-nav__link">
+    config.yaml
+  </a>
+  
+    <nav class="md-nav" aria-label="config.yaml">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-configure-optional-parameters-for-snmpv1snmpv2c-community-data" class="md-nav__link">
+    1. Configure optional parameters for SNMPv1/SNMPv2c community data
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-configure-optional-parameters-snmpv3-users" class="md-nav__link">
+    2. Configure optional parameters SNMPv3 users
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-configure-more-detailed-query-information" class="md-nav__link">
+    3. Configure more detailed query information
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-the-poller" class="md-nav__link">
+    Test the poller
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
+<h2 id="traps-configuration">Traps Configuration<a class="headerlink" href="#traps-configuration" title="Permanent link">&para;</a></h2>
+<ul>
+<li>traps-server-config.yaml<ul>
+<li>config.yaml</li>
+</ul>
+</li>
+</ul>
+<p>Splunk Connect for SNMP supports receiving SNMPv1 traps, SNMPv2 traps,
+and SNMPv3 traps. To make it work, please configure with authorized
+SNMPv1/SNMPv2c community strings and/or SNMPv3 users in
+<strong>traps-server-config.yaml</strong>. Non-authorized traps/informs will be
+dropped.</p>
+<h3 id="configure-snmpv1v2c-community-strings">Configure SNMPv1/v2c community strings<a class="headerlink" href="#configure-snmpv1v2c-community-strings" title="Permanent link">&para;</a></h3>
+<p>Add SNMPv1/SNMPv2c community strings under <strong>v1/v2</strong> section,
+respectively.</p>
+<p><strong>Params</strong>:</p>
+<ul>
+<li><strong>community string</strong> (required) - SNMPv1/SNMPv2c community string.</li>
+</ul>
+<h3 id="configure-snmpv3-users">Configure SNMPv3 users<a class="headerlink" href="#configure-snmpv3-users" title="Permanent link">&para;</a></h3>
+<p>It gets a little more complex with respect to SNMPv3. The user database
+in a SNMPv3 application is actually referenced by a combination of the
+user's name (called a "security Name") and an identifier for the
+given SNMP application you're talking to (called an "engineID").
+Therefore, both userName and engineID are required for SNMPv3 under
+<strong>v3</strong> section.</p>
+<p><strong>Params</strong>:</p>
+<ul>
+<li>
+<p><strong>userName</strong> (required) - A human-readable string representing the
+    name of the SNMP USM user.</p>
+</li>
+<li>
+<p><strong>authProtocol</strong> (optional) - An indication of whether messages sent
+    on behalf of this USM user can be authenticated, and if so, the type
+    of authentication protocol that is used. If both authKey and
+    authProtocol are not set, usmNoAuthProtocol is implied. If authKey
+    is set and no authProtocol is specified, usmHMACMD5AuthProtocol
+    takes effect.</p>
+<p>Supported authentication protocol identifiers are:</p>
+<ul>
+<li>None (default is authKey not given)</li>
+<li>MD5 (default if authKey is given)</li>
+<li>SHA</li>
+<li>SHA224</li>
+<li>SHA256</li>
+<li>SHA512</li>
+</ul>
+</li>
+<li>
+<p><strong>authKey</strong> (optional) - Initial value of the secret authentication
+    key.</p>
+</li>
+<li>
+<p><strong>privProtocol</strong> (optional) - An indication of whether messages sent
+    on behalf of this USM user be encrypted, and if so, the type of
+    encryption protocol that is used. If both privKey and privProtocol
+    are not set, usmNoPrivProtocol is implied. If privKey is set and no
+    privProtocol is specified, usmDESPrivProtocol takes effect.</p>
+<p>Supported encryption protocol identifiers are:</p>
+<ul>
+<li>None (default is privhKey not given)</li>
+<li>DES (default if privKey is given)</li>
+<li>3DES</li>
+<li>AES</li>
+<li>AES128</li>
+<li>AES192</li>
+<li>AES192BLMT</li>
+<li>AES256</li>
+<li>AES256BLMT</li>
+</ul>
+</li>
+<li>
+<p><strong>privKey</strong> (optional) - Initial value of the secret encryption key.</p>
+</li>
+<li>
+<p><strong>securityEngineId</strong> (required): The EngineID of the authoritative
+    SNMP engine that the traps was sent from.</p>
+</li>
+</ul>
+<p>e.g.</p>
+<div class="codehilite"><pre><span></span><code><span class="n">snmp</span><span class="o">:</span>
+   <span class="n">communities</span><span class="o">:</span>
+     <span class="n">v1</span><span class="o">:</span>
+       <span class="o">-</span> <span class="kd">public</span>
+       <span class="o">-</span> <span class="s2">&quot;my-area&quot;</span>
+     <span class="n">v2</span><span class="o">:</span>
+       <span class="o">-</span> <span class="kd">public</span>
+       <span class="o">-</span> <span class="s2">&quot;my-area&quot;</span>
+     <span class="n">v3</span><span class="o">:</span>
+       <span class="o">-</span> <span class="n">userName</span><span class="o">:</span> <span class="n">snmpv3test</span>
+         <span class="n">authKey</span><span class="o">:</span> <span class="n">AuthPass1</span>
+         <span class="n">privKey</span><span class="o">:</span> <span class="n">PrivPass2</span>
+         <span class="n">securityEngineId</span><span class="o">:</span> <span class="mi">8000000004030201</span>
+       <span class="o">-</span> <span class="n">userName</span><span class="o">:</span> <span class="n">snmpv3test2</span>
+         <span class="n">authProtocol</span><span class="o">:</span> <span class="n">SHA</span>
+         <span class="n">authKey</span><span class="o">:</span> <span class="n">AuthPass11</span>
+         <span class="n">privProtocol</span><span class="o">:</span> <span class="n">aes</span>
+         <span class="n">privKey</span><span class="o">:</span> <span class="n">PrivPass22</span>
+         <span class="n">securityEngineId</span><span class="o">:</span> <span class="mi">8000000004030202</span>
+       <span class="o">-</span> <span class="n">userName</span><span class="o">:</span> <span class="n">snmpv3test3</span>
+         <span class="n">securityEngineId</span><span class="o">:</span> <span class="mi">8000000004030203</span>
+</code></pre></div>
+
+<h2 id="poller">Poller<a class="headerlink" href="#poller" title="Permanent link">&para;</a></h2>
+<h3 id="scheduler-configuration">Scheduler Configuration<a class="headerlink" href="#scheduler-configuration" title="Permanent link">&para;</a></h3>
+<ul>
+<li>scheduler-config.yaml<ul>
+<li>config.yaml</li>
+</ul>
+</li>
+<li>scheduler-inventory.yaml<ul>
+<li>inventory.csv</li>
+</ul>
+</li>
+</ul>
+<p>Splunk Connect for SNMP supports polling from SNMPv1 agents, SNMPv2
+agents, and SNMPv3 agents. To make it work, please configure with
+authorized SNMPv1/SNMPv2c community strings and/or SNMPv3 users in
+<strong>scheduler-config.yaml</strong>.</p>
+<h3 id="inventorycsv"><strong>inventory.csv</strong><a class="headerlink" href="#inventorycsv" title="Permanent link">&para;</a></h3>
+<p>Inventory.csv acts as a lookup table where the poller application will
+read the SNMP agents' information and its corresponding queries
+information.</p>
+<div class="codehilite"><pre><span></span><code><span class="s2">&quot;</span><span class="s">host</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">version</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">community</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">profile</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">freqinseconds</span><span class="s2">&quot;</span>
+<span class="s2">&quot;</span><span class="s">IP:Port of SNMP agents, where port is optional with default is 161</span><span class="s2">&quot;</span>,<span class="s2">&quot;</span><span class="s">An indication of SNMP versions</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">community string for SNMPv1/v2 OR userNanme for SNMPv3</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">query info</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">query frequency in seconds</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<blockquote>
+<p>"e.g. 174.62.79.72 (IP only) | 174.62.79.72:161 (IP+port)","e.g. 1
+| 2c | 3", "e.g. public (SNMPv1/SNMPv2c community string) |
+testUser (SNMPv3 username, setup other params in config.yaml)","e.g
+1.3.6.1.2.1.1.9.1.3.1 (single oid for snmp get) |
+1.3.6.1.2.1.1.9.1.3.* (oid for snmp walk to get subtree) | router
+(profile used to setup detials in config.yaml", "e.g. 30"</p>
+</blockquote>
+<h3 id="configyaml"><strong>config.yaml</strong><a class="headerlink" href="#configyaml" title="Permanent link">&para;</a></h3>
+<p>config.yaml acts as an extension for inventory.csv for these three
+situations.</p>
+<h4 id="1-configure-optional-parameters-for-snmpv1snmpv2c-community-data">1. Configure optional parameters for SNMPv1/SNMPv2c community data<a class="headerlink" href="#1-configure-optional-parameters-for-snmpv1snmpv2c-community-data" title="Permanent link">&para;</a></h4>
+<p>Community-Based Security Model of SNMPv1/SNMPv2c may require more
+params, which can be set up in config.yaml.</p>
+<blockquote>
+<ol>
+<li>Add SNMPv1/SNMPv2c community string as Key under <strong>communities</strong>
+    section.</li>
+<li>Add necessary parameters.</li>
+</ol>
+<blockquote>
+<p>Here are supported optional parameters:</p>
+</blockquote>
+</blockquote>
+<ul>
+<li><strong>communityIndex</strong> (optional) - Unique index value of a row in
+    snmpCommunityTable. If it is the only positional parameter, it is
+    treated as a communityName.</li>
+<li><strong>contextEngineId</strong> (optional) - Indicates the location of the
+    context in which management information is accessed when using the
+    community string specified by the communityName.</li>
+<li><strong>contextName</strong> (optional) - The context in which management
+    information is accessed when using the above communityName.</li>
+<li><strong>tag</strong> (optional) - Arbitrary string that specifies a set of
+    transport endpoints from which a command responder application will
+    accept management requests with given communityName or to which
+    notification originator application will send notifications when
+    targets are specified by a tag value(s).</li>
+</ul>
+<h4 id="2-configure-optional-parameters-snmpv3-users">2. Configure optional parameters SNMPv3 users<a class="headerlink" href="#2-configure-optional-parameters-snmpv3-users" title="Permanent link">&para;</a></h4>
+<p>SNMPv3 users may require more params for different security levels,
+which can be set up in config.yaml.</p>
+<ol>
+<li>Add SNMPv3 userName as Key under <strong>usernames</strong> section.</li>
+<li>Add necessary parameters.</li>
+</ol>
+<blockquote>
+<p>Here are supported optional parameters:</p>
+</blockquote>
+<ul>
+<li>
+<p><strong>authKey</strong> (optional) - Initial value of the secret authentication
+    key.</p>
+</li>
+<li>
+<p><strong>authProtocol</strong> (optional) - An indication of whether messages sent
+    on behalf of this USM user can be authenticated, and if so, the type
+    of authentication protocol that is used. If both authKey and
+    authProtocol are not set, usmNoAuthProtocol is implied. If authKey
+    is set and no authProtocol is specified, usmHMACMD5AuthProtocol
+    takes effect.</p>
+<p>Supported authentication protocol identifiers are:</p>
+<ul>
+<li>None (default is authKey not given)</li>
+<li>MD5 (default if authKey is given)</li>
+<li>SHA</li>
+<li>SHA224</li>
+<li>SHA256</li>
+<li>SHA512</li>
+</ul>
+</li>
+<li>
+<p><strong>privKey</strong> (optional) - Initial value of the secret encryption key.</p>
+</li>
+<li>
+<p><strong>privProtocol</strong> (optional) - An indication of whether messages sent
+    on behalf of this USM user be encrypted, and if so, the type of
+    encryption protocol that is used. If both privKey and privProtocol
+    are not set, usmNoPrivProtocol is implied. If privKey is set and no
+    privProtocol is specified, usmDESPrivProtocol takes effect.</p>
+<p>Supported encryption protocol identifiers are:</p>
+<ul>
+<li>None (default is privhKey not given)</li>
+<li>DES (default if privKey is given)</li>
+<li>3DES</li>
+<li>AES</li>
+<li>AES128</li>
+<li>AES192</li>
+<li>AES192BLMT</li>
+<li>AES256</li>
+<li>AES256BLMT</li>
+</ul>
+</li>
+<li>
+<p><strong>securityEngineId</strong> (optional): The snmpEngineID of the
+    authoritative SNMP engine to which a dateRequest message is to be
+    sent.</p>
+</li>
+<li>
+<p><strong>securityName</strong> (optional): Together with the snmpEngineID it
+    identifies a row in the SNMP-USER-BASED-SM-MIB::usmUserTable that is
+    to be used for securing the message.</p>
+</li>
+<li>
+<p><strong>authKeyType</strong> (optional): int. Type of authKey material.</p>
+</li>
+<li>
+<p><strong>privKeyType</strong> (optional): int. Type of privKey material.</p>
+</li>
+<li>
+<p><strong>contextName</strong>: (optional) contextName is used to name an instance
+    of MIB. SNMP engine may serve several instances of the same MIB
+    within possibly multiple SNMP entities. SNMP context is a tool for
+    unambiguously identifying a collection of MIB variables behind the
+    SNMP engine.</p>
+</li>
+</ul>
+<p>e.g.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">usernames</span><span class="p">:</span>
+   <span class="nt">testUser1</span><span class="p">:</span>
+     <span class="nt">authKey</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">auctoritas</span>
+     <span class="nt">privKey</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">privatus</span>        
+   <span class="nt">testUser2</span><span class="p">:</span>
+     <span class="nt">authKey</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">testauthKey</span>
+     <span class="nt">privKey</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">testprivKey</span>
+     <span class="nt">authProtocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SHA</span>
+     <span class="nt">privProtocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">AES</span>
+     <span class="nt">securityEngineId</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8000000004030201</span>
+     <span class="nt">securityName</span><span class="p">:</span>
+     <span class="nt">authKeyType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+     <span class="nt">privKeyType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+     <span class="nt">contextName</span><span class="p">:</span> <span class="s">&quot;4c9184f37cff01bcdc32dc486ec36961&quot;</span>  
+</code></pre></div>
+
+<h4 id="3-configure-more-detailed-query-information">3. Configure more detailed query information<a class="headerlink" href="#3-configure-more-detailed-query-information" title="Permanent link">&para;</a></h4>
+<p>User can provide more detailed query information under <strong>profiles</strong>
+section to achieve two purposes: 1) query by mib string; 2) query
+multiple oids/mib string for one agent.</p>
+<ol>
+<li>In <strong>scheduler-inventory.yaml</strong>, add the profile string(e.g. router)
+    to <strong>profile</strong> field under <strong>data &gt; inventory.csv</strong> section.</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>&quot;host&quot;, &quot;version&quot;, &quot;community&quot;, &quot;profile&quot;, &quot;freqinseconds&quot;
+10.42.0.58,1,public,router,30
+</code></pre></div>
+
+<ol start="2">
+<li>In <strong>scheduler-config.yaml</strong>, add the desired query information
+    under <strong>profiles &gt; \<profiles_string> &gt; varBinds</strong> section as list
+    entries. e.g. <strong>profiles &gt; router &gt; varBinds</strong>.</li>
+</ol>
+<p>When you use the mib string, you <strong>MUST</strong> follow the Syntax below</p>
+<div class="codehilite"><pre><span></span><code><span class="p p-Indicator">[</span><span class="s">&quot;MIB-Files&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;MIB</span><span class="nv"> </span><span class="s">object</span><span class="nv"> </span><span class="s">name&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;MIB</span><span class="nv"> </span><span class="s">index</span><span class="nv"> </span><span class="s">number&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+
+<p>Where <strong>&ldquo;MIB index number&rdquo;</strong> is optional.</p>
+<ol>
+<li>Specify the index number when you want to get the information for a
+    specific interface. e.g. ["SNMPv2-MIB", "sysUpTime", 0]</li>
+<li>Don&rsquo;t put the index number when you want to get information for all
+    interfaces. e.g. ["SNMPv2-MIB", "sysORID"]</li>
+</ol>
+<p><strong>Note</strong>: A wrong index number would cause an error. If you are not sure
+which index exists, don&rsquo;t put it at all. For example, in the situation
+where ["SNMPv2-MIB", "sysUpTime", 0] exsits, both
+["SNMPv2-MIB", "sysUpTime", 0] and ["SNMPv2-MIB",
+"sysUpTime"] will help you get ["SNMPv2-MIB", "sysUpTime", 0],
+while ["SNMPv2-MIB", "sysUpTime", 1] will throw erroe because
+index 1 doesn't exist for sysUpTime.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">profiles</span><span class="p">:</span>
+   <span class="nt">router</span><span class="p">:</span>
+     <span class="nt">varBinds</span><span class="p">:</span>
+       <span class="c1"># Syntax: [ &quot;MIB-Files&quot;, &quot;MIB object name&quot;, &quot;MIB index number&quot;]</span>
+       <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;sysDescr&#39;</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">]</span>
+       <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;sysUpTime&#39;</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]</span>
+       <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;sysORID&#39;</span><span class="p p-Indicator">]</span>
+       <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;CISCO-FC-MGMT-MIB&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;cfcmPortLcStatsEntry&#39;</span><span class="p p-Indicator">]</span>
+       <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;EFM-CU-MIB&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;efmCuPort&#39;</span><span class="p p-Indicator">]</span>
+       <span class="p p-Indicator">-</span> <span class="s">&#39;1.3.6.1.2.1.1.6.0&#39;</span>
+       <span class="p p-Indicator">-</span> <span class="s">&#39;1.3.6.1.2.1.1.9.1.4.*&#39;</span>
+</code></pre></div>
+
+<h4 id="test-the-poller">Test the poller<a class="headerlink" href="#test-the-poller" title="Permanent link">&para;</a></h4>
+<p><strong>SNMPv1/SNMPv2</strong></p>
+<ul>
+<li>You can change the inventory contents in scheduler-config.yaml and
+    use following command to apply the changes to Kubernetes cluster.
+    Agents configuration is placed in scheduler-config.yaml under
+    section <strong>inventory.csv</strong>, content below is interpreted as csv file
+    with following columns:</li>
+</ul>
+<ol>
+<li>host (IP or name)</li>
+<li>version of SNMP protocol</li>
+<li>community string authorisation phrase</li>
+<li>profile of device (varBinds of profiles can be found in config.yaml
+    section of scheduler-config.yaml file)</li>
+<li>frequency in seconds (how often SNMP connector should ask agent for
+    data)</li>
+</ol>
+<p><code>`csv    "host", "version", "community", "profile", "freqinseconds"       10.42.0.58,1,public,1.3.6.1.2.1.1.9.1.3.1,30    host.docker.internal,2c,public,1.3.6.1.2.1.1.9.1.3.*,60</code>`</p>
+<div class="codehilite"><pre><span></span><code>kubectl apply -f deploy/sc4snmp/scheduler-config.yaml
+</code></pre></div>
+
+<p><strong>SNMPv3</strong></p>
+<ul>
+<li>Besides changing the inventory contents under section
+    <strong>inventory.csv</strong>, you may need to set up security passphrases for
+    the SNMPv3 under section <strong>config.yaml &gt; usernames</strong>.</li>
+</ul>
+<p>Here are the steps to configure these two SNMPv3 Users.</p>
+<hr />
+<p>User Name   Security    Auth        Priv        Auth         Priv
+              Level       Protocol    Protocol    Passphrase   Passphrase</p>
+<hr />
+<p>testUser1   Auth,Priv   MD5         DES         auctoritas   privatus</p>
+<p>testUser2   Auth,Priv   SHA         AES         authpass     privacypass</p>
+<hr />
+<ol>
+<li>Specify User Name under <strong>community</strong> filed in section
+    <strong>inventory.csv</strong>.</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>&quot;host&quot;, &quot;version&quot;, &quot;community&quot;, &quot;profile&quot;, &quot;freqinseconds&quot;
+host.docker.internal1,3,testUser1,1.3.6.1.2.1.1.9.1.3.1,30
+host.docker.internal2,3,testUser2,1.3.6.1.2.1.1.9.1.3.*,30
+</code></pre></div>
+
+<ol start="2">
+<li>Specify other security params under section <strong>config.yaml &gt;
+    usernames</strong>.</li>
+</ol>
+<div class="codehilite"><pre><span></span><code><span class="nt">usernames</span><span class="p">:</span>
+   <span class="nt">testUser1</span><span class="p">:</span>
+     <span class="nt">authKey</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">auctoritas</span>
+     <span class="nt">privKey</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">privatus</span>        
+   <span class="nt">testUser2</span><span class="p">:</span>
+     <span class="nt">authKey</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">authpass</span>
+     <span class="nt">privKey</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">privacypass</span>
+     <span class="nt">authProtocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SHA</span>
+     <span class="nt">privProtocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">AES</span>
+</code></pre></div>
+
+<ol start="3">
+<li>Apply the changes.</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>kubectl apply -f deploy/sc4snmp/scheduler-config.yaml
+</code></pre></div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../gettingstarted/additional-helm-configuration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Additional HELM values" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Additional HELM values
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../planning/" class="md-footer__link md-footer__link--next" aria-label="Next: Planning" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Planning
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.709b4209.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.febc23d1.min.js"></script>
+      
+    
+  </body>
+</html>
