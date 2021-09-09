@@ -66,12 +66,12 @@ scheduler:
       database: "snmp_poller"
       collection: "walked_hosts"
 splunk:
-  protocol: https
+  protocol: ###PROTOCOL###
   host: ###SPLUNK_HOST###
-  insecureSSL: "true"
+  insecureSSL: ###INSECURE_SSL###
   token: ###SPLUNK_TOKEN###
-  port: "8088"
-  clusterName: foo
+  port: ###SPLUNK_PORT###
+  clusterName: ###CLUSTER_NAME###
 traps:
   logLevel: "WARN"
   loadBalancerIP: ###X.X.X.X###

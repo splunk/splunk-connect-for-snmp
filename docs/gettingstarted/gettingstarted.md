@@ -1,32 +1,49 @@
 # Getting Started
 
+## Prepare Splunk
 
+### Requirements (Splunk Enterprise/Enterprise Cloud)
 
-### Requirements (microk8s installation)
+1.  
 
-Basic installation of microk8s:
-```yaml
-#we need to have a normal install of kubectl because of operator scripts
-sudo snap install kubectl --classic
-sudo snap install microk8s --classic
-# Basic setup of k8s
-sudo usermod -a -G microk8s $USER
-sudo chown -f -R $USER ~/.kube
+    Complete the installation of
 
-su - $USER
-microk8s status --wait-ready
-#Note when installing metallb you will be prompted for one or more IPs to used as entry points
-#Into the cluster if your plan to enable clustering this IP should not be assigned to the host (floats)
-#If you do not plan to cluster then this IP may be the same IP as the host
-#Note2: a single IP in cidr format is x.x.x.x/32 use CIDR or range syntax
-microk8s enable dns metallb rbac storage openebs helm3
-microk8s status --wait-ready
-#
-```
+    :   1.1 [Splunk app for
+        Infrastructure](https://docs.splunk.com/Documentation/InfraApp/latest/Install/About)
+        (Splunk Enterprise Customers) 1.2 [Splunk IT Essentials
+        Work](https://docs.splunk.com/Documentation/ITE/latest/Work/Overview)
+        (Splunk Enterprise Cloud Customers)
+
+2.  
+
+    Verify the creation of the following indexes
+
+    :   1.1 em_metrics (metrics type) 1.2 em_meta (event type) 1.3
+        em_logs (event type)
+
+3.  Create or obtain a new Splunk HTTP Event Collector token and the
+    correct https endpoint.
+
+4.  Verify the token using
+    [curl](https://docs.splunk.com/Documentation/Splunk/8.1.3/Data/FormateventsforHTTPEventCollector)
+    Note: The endpoint must use a publicly trusted certificate
+    authority.
+
+5.  The SHARED IP address to be used for SNMP Traps. Note Simple and POC
+    deployments will use the same IP as the host server if HA deployment
+    will be used the IP must be in addition to the management interface of
+    each cluster member.
+
+6.  Obtain the ip address of an internal DNS server able to resolve the
+    Splunk Endpoint
+
+### Requirements (Splunk Infrastructure Monitoring)
+
+Obtain the correct realm and token.
 
 ## Deploy
 
-This step will install SC4SNMP and its depdenencies including snapd,
+This step will install SC4SNMP and its dependencies including snapd,
 micrk8s and sck. This script has been tested with Centos 7, Centos 8,
 Redhat 8, and Ubuntu 20.04. Both interactive and non-interactive options
 are supported
@@ -101,7 +118,7 @@ columns:
 1.  host (IP or name)
 2.  version of SNMP protocol
 3.  community string authorisation phrase
-4.  profile of device (varBinds of profiles can be found in convig.yaml
+4.  profile of device (varBinds of profiles can be found in config.yaml
     section of scheduler-config.yaml file)
 5.  frequency in seconds (how often SNMP connector should ask agent for
     data)
