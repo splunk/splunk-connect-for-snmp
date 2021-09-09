@@ -22,6 +22,11 @@ theme:
 
 nav:
   - Home: "index.md"
-  - Getting Started: "gettingstarted.md"
+  - Getting Started:
+      - Install Microk8s: "gettingstarted/k8s-microk8s.md"
+      - Install Splunk for Kubernetes: "gettingstarted/sck-installation.md"
+      - Install SC4SNMP: "gettingstarted/sc4snmp-installation.md"
+      - Configure Poller and Traps: "gettingstarted/sc4snmp-configuration.md"
+      - Additional HELM values: "gettingstarted/additional-helm-configuration.md"
   - Configuration: "configuration.md"
   - Planning: "planning.md"

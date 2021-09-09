@@ -1,9 +1,10 @@
 # MicroK8s installation
 
-Basic installation of microk8s:
+Microk8s is required to deploy SC4SNMP 
 ```yaml
 #we need to have a normal install of kubectl because of operator scripts
-sudo snap install kubectl --classic 
+sudo snap install kubectl --classic
+sudo snap install microk8s --classic
 # Basic setup of k8s
 sudo usermod -a -G microk8s $USER
 sudo chown -f -R $USER ~/.kube
@@ -16,5 +17,4 @@ microk8s status --wait-ready
 #Note2: a single IP in cidr format is x.x.x.x/32 use CIDR or range syntax
 microk8s enable dns metallb rbac storage openebs helm3
 microk8s status --wait-ready
-#
 ```

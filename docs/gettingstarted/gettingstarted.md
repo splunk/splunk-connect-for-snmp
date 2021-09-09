@@ -7,7 +7,8 @@
 Basic installation of microk8s:
 ```yaml
 #we need to have a normal install of kubectl because of operator scripts
-sudo snap install kubectl --classic 
+sudo snap install kubectl --classic
+sudo snap install microk8s --classic
 # Basic setup of k8s
 sudo usermod -a -G microk8s $USER
 sudo chown -f -R $USER ~/.kube
