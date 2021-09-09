@@ -14,16 +14,67 @@ scheduler:
   inventory:
     content: |-
       #10.0.0.1,2c,public,basev1,300
+  config: |
+    celery:
+      broker:
+        type: "rabbitmq"
+    # Sample Configuration file
+    ipv4: True
+    ipv6: False
+    communities:
+      public:
+        communityIndex:
+        contextEngineId:
+        contextName:
+        tag:
+        securityName:
+      my-area:
+    usernames:
+      simulator:
+        authKey: "auctoritas"
+        privKey: "privatus"
+      testUser:
+        authKey: authpass
+        privKey: privacypass
+        contextName: "4c9184f37cff01bcdc32dc486ec36961"
+        authProtocol: SHA
+        privProtocol: AES
+        securityEngineId: 8000000004030201
+        securityName:
+        authKeyType: 0
+        privKeyType: 0
+    profiles:
+      basev1:
+        varBinds:
+          # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+          - ['SNMPv2-MIB', 'sysDescr']
+          - ['SNMPv2-MIB', 'sysUpTime',0]
+          - ['SNMPv2-MIB', 'sysName']
+      basev1l2:
+        varBinds:
+          # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+          - ['SNMPv2-MIB', 'sysDescr']
+          - ['SNMPv2-MIB', 'sysUpTime',0]
+          - ['SNMPv2-MIB', 'sysName']
+          - ['IF-MIB','ifHCInOctets']
+          - ['IF-MIB','ifHCOutOctets']
+          - ['IF-MIB','ifInErrors']
+          - ['IF-MIB','ifOutErrors']
+          - ['IF-MIB','ifInDiscards']
+          - ['IF-MIB','ifOutDiscards']
+    mongo:
+      database: "snmp_poller"
+      collection: "walked_hosts"
 splunk:
   protocol: https
-  host: i-0e9ea145205eab24d.ec2.splunkit.io
+  host: ###SPLUNK_HOST###
   insecureSSL: "true"
-  token: 00000000-0000-0000-0000-000000000000
+  token: ###SPLUNK_TOKEN###
   port: "8088"
   clusterName: foo
 traps:
   logLevel: "WARN"
-  loadBalancerIP: 10.202.16.24
+  loadBalancerIP: ###X.X.X.X###
   resources:
     limits:
       cpu: 100m
