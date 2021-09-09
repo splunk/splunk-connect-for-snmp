@@ -31,8 +31,8 @@
 
 5.  The SHARED IP address to be used for SNMP Traps. Note Simple and POC
     deployments will use the same IP as the host server if HA deployment
-    will be used the IP must be in addition to the managment inteface of
-    each cluster memember.
+    will be used the IP must be in addition to the management interface of
+    each cluster member.
 
 6.  Obtain the ip address of an internal DNS server able to resolve the
     Splunk Endpoint
@@ -43,7 +43,7 @@ Obtain the correct realm and token.
 
 ## Deploy
 
-This step will install SC4SNMP and its depdenencies including snapd,
+This step will install SC4SNMP and its dependencies including snapd,
 micrk8s and sck. This script has been tested with Centos 7, Centos 8,
 Redhat 8, and Ubuntu 20.04. Both interactive and non-interactive options
 are supported
@@ -118,7 +118,7 @@ columns:
 1.  host (IP or name)
 2.  version of SNMP protocol
 3.  community string authorisation phrase
-4.  profile of device (varBinds of profiles can be found in convig.yaml
+4.  profile of device (varBinds of profiles can be found in config.yaml
     section of scheduler-config.yaml file)
 5.  frequency in seconds (how often SNMP connector should ask agent for
     data)
