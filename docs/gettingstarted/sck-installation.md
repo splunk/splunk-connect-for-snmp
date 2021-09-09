@@ -1,7 +1,6 @@
 # SPLUNK for Kubernetes installation
 
-All information about Splunk Connect for Kubernetes are available here: https://github.com/splunk/splunk-connect-for-kubernetes.
-Below installation steps are sufficient for SC4SNMP project.
+Below steps are sufficient for SCK installation for SC4SNMP project. In case you want to investigate more, all information about Splunk Connect for Kubernetes are available [here](https://github.com/splunk/splunk-connect-for-kubernetes).
 
 ## Instalation steps
 ### Add SCK repository to HELM
@@ -9,7 +8,7 @@ Below installation steps are sufficient for SC4SNMP project.
 microk8s helm3 repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes
 ```
 ### Create values file
-In order to connect to SPLUNK instance there's a need to create `values.yaml` file of this structure:
+In order to connect to SPLUNK instance, there's a need to create `values.yaml` file of this following structure filling variables marked with "###" (description below).
 ```yaml
 #global settings
 global:
@@ -133,7 +132,6 @@ splunk-kubernetes-metrics:
           entity_type k8s_pod
 
 ```
-Fill every variable marked with "###" according to following descriptions.
 ### Values description
 | Placeholder   | Description  | Example  | 
 |---|---|---|

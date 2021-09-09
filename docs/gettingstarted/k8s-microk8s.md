@@ -1,6 +1,5 @@
-# MicroK8s installation
+# MicroK8s installation on Ubuntu
 
-Microk8s is required to deploy SC4SNMP 
 ```yaml
 #we need to have a normal install of kubectl because of operator scripts
 sudo snap install kubectl --classic

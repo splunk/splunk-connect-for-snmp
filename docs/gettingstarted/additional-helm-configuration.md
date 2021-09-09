@@ -5,7 +5,8 @@ after executing:
 ```
 microk8s helm3 inspect values splunk-connect-for-snmp/snmp-installer > values.yaml
 ```
-The whole file is divided on components:
+The whole file is divided on following components:
+
 1. scheduler
 2. splunk
 3. mib
@@ -25,12 +26,12 @@ All of the components have `resources` field for memory resources adjusting:
 ```
 More informations about `resources` concept in [kuberentes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
 
-Scheduler, MIB and Worker contains `logLevel` variable that indicates the level of logging for a pod.
+Scheduler, MIB and Worker contain `logLevel` variable that indicates the level of logging for the pod.
 
 ### Scheduler values
 | variable | description | example
 | --- | --- | --- |
-| index | indexes names, should be the same as the one given in sck configuration | event: em_logs |
+| index | indexes names, should be the same as the ones given in SCK configuration | event: em_logs / metrics: em_metrics / meta: em_meta |
 | inventory | inventory.csv content, described in sc4snmp-configuration | 10.0.101.22,2c,public,basev1,300 |
 | config | content of config.yaml | |
 
