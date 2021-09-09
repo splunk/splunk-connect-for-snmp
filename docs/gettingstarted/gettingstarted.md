@@ -1,45 +1,27 @@
 # Getting Started
 
-## Prepare Splunk
 
-### Requirements (Splunk Enterprise/Enterprise Cloud)
 
-1.  
+### Requirements (microk8s installation)
 
-    Complete the installation of
+Basic installation of microk8s:
+```yaml
+#we need to have a normal install of kubectl because of operator scripts
+sudo snap install kubectl --classic 
+# Basic setup of k8s
+sudo usermod -a -G microk8s $USER
+sudo chown -f -R $USER ~/.kube
 
-    :   1.1 [Splunk app for
-        Infrastructure](https://docs.splunk.com/Documentation/InfraApp/latest/Install/About)
-        (Splunk Enterprise Customers) 1.2 [Splunk IT Essentials
-        Work](https://docs.splunk.com/Documentation/ITE/latest/Work/Overview)
-        (Splunk Enterprise Cloud Customers)
-
-2.  
-
-    Verify the creation of the following indexes
-
-    :   1.1 em_metrics (metrics type) 1.2 em_meta (event type) 1.3
-        em_logs (event type)
-
-3.  Create or obtain a new Splunk HTTP Event Collector token and the
-    correct https endpoint.
-
-4.  Verify the token using
-    [curl](https://docs.splunk.com/Documentation/Splunk/8.1.3/Data/FormateventsforHTTPEventCollector)
-    Note: The endpoint must use a publicly trusted certificate
-    authority.
-
-5.  The SHARED IP address to be used for SNMP Traps. Note Simple and POC
-    deployments will use the same IP as the host server if HA deployment
-    will be used the IP must be in addition to the managment inteface of
-    each cluster memember.
-
-6.  Obtain the ip address of an internal DNS server able to resolve the
-    Splunk Endpoint
-
-### Requirements (Splunk Infrastructure Monitoring)
-
-Obtain the correct realm and token.
+su - $USER
+microk8s status --wait-ready
+#Note when installing metallb you will be prompted for one or more IPs to used as entry points
+#Into the cluster if your plan to enable clustering this IP should not be assigned to the host (floats)
+#If you do not plan to cluster then this IP may be the same IP as the host
+#Note2: a single IP in cidr format is x.x.x.x/32 use CIDR or range syntax
+microk8s enable dns metallb rbac storage openebs helm3
+microk8s status --wait-ready
+#
+```
 
 ## Deploy
 
