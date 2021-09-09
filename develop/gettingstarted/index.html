@@ -510,8 +510,8 @@
 <li>
 <p>The SHARED IP address to be used for SNMP Traps. Note Simple and POC
     deployments will use the same IP as the host server if HA deployment
-    will be used the IP must be in addition to the managment inteface of
-    each cluster memember.</p>
+    will be used the IP must be in addition to the management interface of
+    each cluster member.</p>
 </li>
 <li>
 <p>Obtain the ip address of an internal DNS server able to resolve the
@@ -521,7 +521,7 @@
 <h3 id="requirements-splunk-infrastructure-monitoring">Requirements (Splunk Infrastructure Monitoring)<a class="headerlink" href="#requirements-splunk-infrastructure-monitoring" title="Permanent link">&para;</a></h3>
 <p>Obtain the correct realm and token.</p>
 <h2 id="deploy">Deploy<a class="headerlink" href="#deploy" title="Permanent link">&para;</a></h2>
-<p>This step will install SC4SNMP and its depdenencies including snapd,
+<p>This step will install SC4SNMP and its dependencies including snapd,
 micrk8s and sck. This script has been tested with Centos 7, Centos 8,
 Redhat 8, and Ubuntu 20.04. Both interactive and non-interactive options
 are supported</p>
@@ -588,7 +588,7 @@ columns:</p>
 <li>host (IP or name)</li>
 <li>version of SNMP protocol</li>
 <li>community string authorisation phrase</li>
-<li>profile of device (varBinds of profiles can be found in convig.yaml
+<li>profile of device (varBinds of profiles can be found in config.yaml
     section of scheduler-config.yaml file)</li>
 <li>frequency in seconds (how often SNMP connector should ask agent for
     data)</li>
