@@ -5,7 +5,7 @@
 microk8s helm3 repo add splunk-connect-for-snmp https://splunk.github.io/splunk-connect-for-snmp
 microk8s helm3 repo update
 ```
-Now package should be visible in helm3 search command result:
+Now package should be visible in `helm3` search command result:
 ```
 splunker@ip-10-202-7-16:~/new_helm$ microk8s helm3 search repo snmp
 NAME                                  	CHART VERSION	APP VERSION	DESCRIPTION                     
@@ -16,7 +16,7 @@ splunk-connect-for-snmp/snmp-installer	0.1.1        	1.16.0     	A Helm chart fo
 ```
 microk8s helm3 inspect values splunk-connect-for-snmp/snmp-installer > values.yaml
 ```
-The most important variables to update are:
+Variables required to be updated:
 
 | Placeholder   | Description  | Example  | 
 |---|---|---|

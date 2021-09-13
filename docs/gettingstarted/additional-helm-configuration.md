@@ -1,6 +1,6 @@
 ## Additional HELM configuration
 
-`Values.yaml` are the main point of SC4SNMP management. The most important variables are already there from the very beginning 
+`values.yaml` are the main point of SC4SNMP management. The most important variables are already there from the very beginning 
 after executing:
 ```
 microk8s helm3 inspect values splunk-connect-for-snmp/snmp-installer > values.yaml

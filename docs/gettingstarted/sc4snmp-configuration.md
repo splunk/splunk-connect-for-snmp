@@ -1,8 +1,3 @@
-### Test Monitoring with SCK (Requires Splunk)
-
-Confirm the following search returns results
-`| mcatalog values(metric_name)  where index=em_metrics AND metric_name=kube* AND host=<hostname>`
-
 ### Test SNMP Traps
 
 -   Test the trap from a linux system with snmp installed replace the ip
@@ -23,7 +18,7 @@ index=em_logs sourcetype="sc4snmp:traps"
 ### Setup Poller
 
 -   Test the poller by logging to Splunk and confirm presence of events
-    in snmp em_logs and metrics in em_metrics index.
+    in snmp `em_logs` and metrics in `em_metrics` index.
 
 ### Inventory
 \* You can change the inventory contents in values.yaml, in scheduler inventory field, ex.:
@@ -45,7 +40,7 @@ columns:
     data)
 
 ### Config
-Profiles used in inventory can be created in config.yaml, which can be modified in scheduler config in values.yaml, ex.:
+Profiles used in inventory can be created in `config.yaml`, which can be modified in scheduler config in `values.yaml`, ex.:
 ```
 scheduler:
   logLevel: "WARN"
