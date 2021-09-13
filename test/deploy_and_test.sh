@@ -29,7 +29,7 @@ create_splunk_secret() {
 create_splunk_indexes() {
   splunk_ip=$1
   splunk_password=$2
-  index_names=("em_metrics" "em_meta" "em_logs")
+  index_names=("em_metrics" "em_meta" "em_events")
   index_types=("metric" "event" "event")
   for index in "${!index_names[@]}" ; do
     if ! curl -k -u admin:"${splunk_password}" "https://${splunk_ip}:8089/services/data/indexes" \
@@ -133,7 +133,7 @@ full_kubernetes_deployment() {
     PORT=8088 \
     TOKEN=00000000-0000-0000-0000-000000000000 \
     METRICS_INDEX=em_metrics \
-    EVENTS_INDEX=em_logs \
+    EVENTS_INDEX=em_events \
     META_INDEX=em_meta \
     CLUSTER_NAME=foo \
     SHAREDIP=$(hostname -I | cut -d ' ' -f 1)/32 \
