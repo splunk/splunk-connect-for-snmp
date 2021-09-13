@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: sc4snmp-worker
-          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:1
+          image: ghcr.io/splunk/splunk-connect-for-snmp-poller:{{ .Values.worker.branch }}
           imagePullPolicy: Always
           args: ["--log={{ .Values.worker.logLevel }}", "--config=/work/config/config.yaml"]
           env:
