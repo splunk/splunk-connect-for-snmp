@@ -65,7 +65,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#test-monitoring-with-sck-requires-splunk" class="md-skip">
+        <a href="#test-snmp-traps" class="md-skip">
           Skip to content
         </a>
       
@@ -321,13 +321,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#test-monitoring-with-sck-requires-splunk" class="md-nav__link">
-    Test Monitoring with SCK (Requires Splunk)
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#test-snmp-traps" class="md-nav__link">
     Test SNMP Traps
   </a>
@@ -449,13 +442,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#test-monitoring-with-sck-requires-splunk" class="md-nav__link">
-    Test Monitoring with SCK (Requires Splunk)
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#test-snmp-traps" class="md-nav__link">
     Test SNMP Traps
   </a>
@@ -512,10 +498,7 @@
                 
                   <h1>Configure Poller and Traps</h1>
                 
-                <h3 id="test-monitoring-with-sck-requires-splunk">Test Monitoring with SCK (Requires Splunk)<a class="headerlink" href="#test-monitoring-with-sck-requires-splunk" title="Permanent link">&para;</a></h3>
-<p>Confirm the following search returns results
-<code>| mcatalog values(metric_name)  where index=em_metrics AND metric_name=kube* AND host=&lt;hostname&gt;</code></p>
-<h3 id="test-snmp-traps">Test SNMP Traps<a class="headerlink" href="#test-snmp-traps" title="Permanent link">&para;</a></h3>
+                <h3 id="test-snmp-traps">Test SNMP Traps<a class="headerlink" href="#test-snmp-traps" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Test the trap from a linux system with snmp installed replace the ip
     <code>10.0.101.22</code> with the shared ip above</li>
@@ -534,7 +517,7 @@ snmptrap -v2c -c public <span class="m">10</span>.0.101.22 <span class="m">123</
 <h3 id="setup-poller">Setup Poller<a class="headerlink" href="#setup-poller" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Test the poller by logging to Splunk and confirm presence of events
-    in snmp em_logs and metrics in em_metrics index.</li>
+    in snmp <code>em_logs</code> and metrics in <code>em_metrics</code> index.</li>
 </ul>
 <h3 id="inventory">Inventory<a class="headerlink" href="#inventory" title="Permanent link">&para;</a></h3>
 <p>* You can change the inventory contents in values.yaml, in scheduler inventory field, ex.:</p>
@@ -555,7 +538,7 @@ columns:</p>
     data)</li>
 </ol>
 <h3 id="config">Config<a class="headerlink" href="#config" title="Permanent link">&para;</a></h3>
-<p>Profiles used in inventory can be created in config.yaml, which can be modified in scheduler config in values.yaml, ex.:</p>
+<p>Profiles used in inventory can be created in <code>config.yaml</code>, which can be modified in scheduler config in <code>values.yaml</code>, ex.:</p>
 <div class="codehilite"><pre><span></span><code><span class="n">scheduler</span><span class="o">:</span>
   <span class="n">logLevel</span><span class="o">:</span> <span class="s2">&quot;WARN&quot;</span>
   <span class="o">...</span>

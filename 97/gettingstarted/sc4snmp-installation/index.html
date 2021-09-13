@@ -480,7 +480,7 @@
 <span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">repo</span> <span class="nv">update</span>
 </code></pre></div>
 
-<p>Now package should be visible in helm3 search command result:</p>
+<p>Now package should be visible in <code>helm3</code> search command result:</p>
 <div class="codehilite"><pre><span></span><code><span class="n">splunker</span><span class="nv">@ip</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">202</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="mi">16</span><span class="err">:</span><span class="o">~/</span><span class="n">new_helm</span><span class="err">$</span><span class="w"> </span><span class="n">microk8s</span><span class="w"> </span><span class="n">helm3</span><span class="w"> </span><span class="k">search</span><span class="w"> </span><span class="n">repo</span><span class="w"> </span><span class="n">snmp</span><span class="w"></span>
 <span class="n">NAME</span><span class="w">                                    </span><span class="n">CHART</span><span class="w"> </span><span class="n">VERSION</span><span class="w">   </span><span class="n">APP</span><span class="w"> </span><span class="n">VERSION</span><span class="w"> </span><span class="n">DESCRIPTION</span><span class="w">                     </span>
 <span class="n">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">snmp</span><span class="o">/</span><span class="n">snmp</span><span class="o">-</span><span class="n">installer</span><span class="w">  </span><span class="mf">0.1.1</span><span class="w">           </span><span class="mf">1.16.0</span><span class="w">      </span><span class="n">A</span><span class="w"> </span><span class="n">Helm</span><span class="w"> </span><span class="n">chart</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Splunk</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">SNMP</span><span class="w"></span>
@@ -490,7 +490,7 @@
 <div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">inspect</span> <span class="nv">values</span> <span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">installer</span> <span class="o">&gt;</span> <span class="nv">values</span>.<span class="nv">yaml</span>
 </code></pre></div>
 
-<p>The most important variables to update are:</p>
+<p>Variables required to be updated:</p>
 <table>
 <thead>
 <tr>
