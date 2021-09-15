@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: traps
-          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:1
+          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:{{ .Values.traps.version }}
           imagePullPolicy: Always
           args:
             [
