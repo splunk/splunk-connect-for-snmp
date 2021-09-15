@@ -1,0 +1,68 @@
+Deployment script on Nova
+
+
+#!/bin/bash
+
+deploy_image(){
+    git clone https://github.com/splunk/$1
+    cd $1
+    git checkout $2
+    git pull
+    sudo poetry install
+    sudo poetry build
+    sudo docker build . -t $3
+    cd ..
+    sudo docker save $3 > myimage.tar
+    sudo microk8s ctr image import myimage.tar
+}
+
+sudo pip3 install poetry
+
+deploy_image splunk-connect-for-snmp-poller feat/async_rework my-poller
+deploy_image splunk-connect-for-snmp-traps async_rework my-traps
+
+sed -i 's+ghcr.io/splunk/splunk-connect-for-snmp-poller:1+my-poller:latest+g' splunk-connect-for-snmp/deploy/sc4snmp/internal/scheduler-deployment.yaml
+sed -i 's+ghcr.io/splunk/splunk-connect-for-snmp-poller:1+my-poller:latest+g' splunk-connect-for-snmp/deploy/sc4snmp/internal/worker-deployment.yaml
+sed -i 's+ghcr.io/splunk/splunk-connect-for-snmp-traps:1+my-traps:latest+g' splunk-connect-for-snmp/deploy/sc4snmp/internal/traps-deployment.yaml
+
+sed -i 's/Always/Never/g' splunk-connect-for-snmp/deploy/sc4snmp/internal/scheduler-deployment.yaml
+sed -i 's/Always/Never/g' splunk-connect-for-snmp/deploy/sc4snmp/internal/worker-deployment.yaml
+sed -i 's/Always/Never/g' splunk-connect-for-snmp/deploy/sc4snmp/internal/traps-deployment.yaml
+
+sudo microk8s.kubectl delete -n sc4snmp -f splunk-connect-for-snmp/deploy/sc4snmp/internal/scheduler-deployment.yaml
+sudo microk8s.kubectl delete -n sc4snmp -f splunk-connect-for-snmp/deploy/sc4snmp/internal/worker-deployment.yaml
+
+sudo microk8s.kubectl apply -n sc4snmp -f splunk-connect-for-snmp/deploy/sc4snmp/internal/scheduler-deployment.yaml
+sudo microk8s.kubectl apply -n sc4snmp -f splunk-connect-for-snmp/deploy/sc4snmp/internal/worker-deployment.yaml
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+How to run Poller on local machine
+
+docker run -d -p 5672:5672 rabbitmq
+
+docker run -e MONGO_SERVICE_SERVICE_PORT=27017 -e MONGO_SERVICE_SERVICE_HOST=host.docker.internal -e MIBS_FILES_URL=http://host.docker.internal:5000/files/asn1/@mib@ -p 5000:5000  ghcr.io/splunk/splunk-connect-for-snmp-mib-server:1
+
+docker run  -p 8881:8881 -p 8882:8882 -e SPLUNK_HEC_URL=https://10.202.11.190/:8088/services/collector  -e SPLUNK_HEC_TOKEN=00000000-0000-0000-0000-000000000000 -e SPLUNK_HEC_TLS_SKIP_VERIFY=true -v "$(pwd)"/test:/config quay.io/signalfx/splunk-otel-collector:0.21.0 --config=/config/otel-collector-config.yaml
+
+docker run -p 161:161/udp tandrup/snmpsim
+
+
+To start celery worker:
+export MIBS_SERVER_URL=http://localhost:5000
+export MIBS_FILES_URL=http://localhost:5000/files/asn1/@mib@
+export OTEL_SERVER_LOGS_URL=http://localhost:8881
+export OTEL_SERVER_METRICS_URL=http://localhost:8882
+export MONGO_SERVICE_SERVICE_HOST=localhost
+export MONGO_SERVICE_SERVICE_PORT=27071
+
+
+celery -A splunk_connect_for_snmp_poller.manager.celery_client worker -l INFO -n worker1
+
+
+To start scheduler:
+Parameters
+-c ../config.yaml -i ../inventory.csv --event_index em_events --metric_index em_metrics --meta_index em_meta
+
+Environment variables
+PYTHONUNBUFFERED=1;CELERY_BROKER_URL=localhost;MONGO_SERVICE_SERVICE_HOST=localhost;MONGO_SERVICE_SERVICE_PORT=27071
