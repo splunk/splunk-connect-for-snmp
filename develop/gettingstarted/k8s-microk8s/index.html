@@ -9,19 +9,19 @@
       
       
       
-      <link rel="icon" href="/assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.4">
     
     
       
-        <title>Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Install Microk8s - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/main.f7f47774.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.f7f47774.min.css">
       
         
-        <link rel="stylesheet" href="/assets/stylesheets/palette.3f5d1f46.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.3f5d1f46.min.css">
         
           
           
@@ -57,12 +57,17 @@
     <body dir="ltr" data-md-color-scheme="" data-md-color-primary="black" data-md-color-accent="orange">
   
     
-    <script>function __prefix(e){return new URL("/",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#microk8s-installation-on-ubuntu" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -71,7 +76,7 @@
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+    <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -90,7 +95,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Install Microk8s
             
           </span>
         </div>
@@ -155,7 +160,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+    <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -174,7 +179,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         Home
       </a>
     </li>
@@ -187,12 +192,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
       
       <label class="md-nav__link" for="__nav_2">
         Getting Started
@@ -208,12 +215,14 @@
             
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" checked>
       
       <label class="md-nav__link" for="__nav_2_1">
         Pre-requirements
@@ -231,7 +240,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/gettingstarted/splunk-requirements/" class="md-nav__link">
+      <a href="../splunk-requirements/" class="md-nav__link">
         Splunk Requirements
       </a>
     </li>
@@ -241,11 +250,21 @@
             
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="/gettingstarted/k8s-microk8s/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Install Microk8s
       </a>
+      
     </li>
   
 
@@ -255,7 +274,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/gettingstarted/sck-installation/" class="md-nav__link">
+      <a href="../sck-installation/" class="md-nav__link">
         Install Splunk for Kubernetes
       </a>
     </li>
@@ -273,7 +292,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/gettingstarted/sc4snmp-installation/" class="md-nav__link">
+      <a href="../sc4snmp-installation/" class="md-nav__link">
         Install SC4SNMP
       </a>
     </li>
@@ -285,7 +304,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/gettingstarted/sc4snmp-configuration/" class="md-nav__link">
+      <a href="../sc4snmp-configuration/" class="md-nav__link">
         Configure Poller and Traps
       </a>
     </li>
@@ -297,7 +316,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/gettingstarted/additional-helm-configuration/" class="md-nav__link">
+      <a href="../additional-helm-configuration/" class="md-nav__link">
         Additional HELM values
       </a>
     </li>
@@ -318,7 +337,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/configuration/" class="md-nav__link">
+      <a href="../../configuration/" class="md-nav__link">
         Configuration
       </a>
     </li>
@@ -333,7 +352,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/planning/" class="md-nav__link">
+      <a href="../../planning/" class="md-nav__link">
         Planning
       </a>
     </li>
@@ -347,11 +366,51 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content" data-md-component="content">
             <article class="md-content__inner md-typeset">
               
-  <h1>404 - Not found</h1>
+                
+                
+                <h1 id="microk8s-installation-on-ubuntu">MicroK8s installation on Ubuntu<a class="headerlink" href="#microk8s-installation-on-ubuntu" title="Permanent link">&para;</a></h1>
+<div class="codehilite"><pre><span></span><code><span class="c1">#we need to have a normal install of kubectl because of operator scripts</span>
+<span class="l l-Scalar l-Scalar-Plain">sudo snap install kubectl --classic</span>
+<span class="l l-Scalar l-Scalar-Plain">sudo snap install microk8s --classic</span>
+<span class="l l-Scalar l-Scalar-Plain"># Basic setup of k8s</span>
+<span class="l l-Scalar l-Scalar-Plain">sudo usermod -a -G microk8s $USER</span>
+<span class="l l-Scalar l-Scalar-Plain">sudo chown -f -R $USER ~/.kube</span>
+
+<span class="l l-Scalar l-Scalar-Plain">su - $USER</span>
+<span class="l l-Scalar l-Scalar-Plain">microk8s status --wait-ready</span>
+<span class="l l-Scalar l-Scalar-Plain">#Note when installing metallb you will be prompted for one or more IPs to used as entry points</span>
+<span class="l l-Scalar l-Scalar-Plain">#Into the cluster if your plan to enable clustering this IP should not be assigned to the host (floats)</span>
+<span class="l l-Scalar l-Scalar-Plain">#If you do not plan to cluster then this IP may be the same IP as the host</span>
+<span class="l l-Scalar l-Scalar-Plain">#Note2</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">a single IP in cidr format is x.x.x.x/32 use CIDR or range syntax</span>
+<span class="l l-Scalar l-Scalar-Plain">microk8s enable dns metallb rbac storage openebs helm3</span>
+<span class="l l-Scalar l-Scalar-Plain">microk8s status --wait-ready</span>
+</code></pre></div>
+                
+              
+              
+                
+
 
               
             </article>
@@ -362,6 +421,41 @@
       
         
 <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../splunk-requirements/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Splunk Requirements" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Splunk Requirements
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../sck-installation/" class="md-footer__link md-footer__link--next" aria-label="Next: Install Splunk for Kubernetes" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Install Splunk for Kubernetes
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -382,10 +476,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "/", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "/assets/javascripts/workers/search.709b4209.min.js", "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.709b4209.min.js", "version": {"provider": "mike"}}</script>
     
     
-      <script src="/assets/javascripts/bundle.febc23d1.min.js"></script>
+      <script src="../../assets/javascripts/bundle.febc23d1.min.js"></script>
       
     
   </body>
