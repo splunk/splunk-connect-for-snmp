@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: traps
-          image: ghcr.io/splunk/splunk-connect-for-snmp-traps:{{ .Values.traps.version }}
-          imagePullPolicy: Always
+          image: { { .Values.traps.image | default ghcr.io/splunk/splunk-connect-for-snmp-traps } }:{{ .Values.traps.version | default 1 }}
+          imagePullPolicy: { { .Values.traps.imagePullPolicy | default "Always" } }
           args:
             [
               "--loglevel={{ .Values.traps.logLevel }}",
@@ -30,9 +30,9 @@ spec:
             - containerPort: 2162
           env:
             - name: MIBS_SERVER_URL
-              value: http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)
+              value: {{ printf "http://%s:%s" .Values.mib.service_host .Values.mib.service_port | quote }}
             - name: OTEL_SERVER_URL
-              value: http://$(OTEL_SERVICE_SERVICE_HOST):$(OTEL_SERVICE_SERVICE_PORT_LOGS)
+              value: {{ printf "http://%s:%s" .Values.otel.service_host .Values.mib.service_logs_port | quote }}
             - name: SPLUNK_HEC_URL
               valueFrom:
                 secretKeyRef:
