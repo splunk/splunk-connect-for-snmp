@@ -32,7 +32,7 @@ spec:
             - name: MIBS_SERVER_URL
               value: {{ printf "http://%s:%s" .Values.mib.service_host .Values.mib.service_port | quote }}
             - name: OTEL_SERVER_URL
-              value: {{ printf "http://%s:%s" .Values.otel.service_host .Values.mib.service_logs_port | quote }}
+              value: {{ printf "http://%s:%s" .Values.otel.service_host .Values.otel.service_logs_port | quote }}
             - name: SPLUNK_HEC_URL
               valueFrom:
                 secretKeyRef:
