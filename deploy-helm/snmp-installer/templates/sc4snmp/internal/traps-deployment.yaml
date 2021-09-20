@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: traps
-          image: { { .Values.traps.image | default ghcr.io/splunk/splunk-connect-for-snmp-traps } }:{{ .Values.traps.version | default 1 }}
+          image: { { .Values.traps.image | default "ghcr.io/splunk/splunk-connect-for-snmp-traps" } }:{{ .Values.traps.version | default 1 }}
           imagePullPolicy: { { .Values.traps.imagePullPolicy | default "Always" } }
           args:
             [
