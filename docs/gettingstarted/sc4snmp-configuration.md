@@ -60,7 +60,11 @@ scheduler:
 
 Every change in values.yaml file can be applied with the command:
 ``` bash
-$ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+```
+
+This command should produce this kind of output:
+```
 Release "snmp" has been upgraded. Happy Helming!
 NAME: snmp
 LAST DEPLOYED: Thu Sep  9 10:54:04 2021
