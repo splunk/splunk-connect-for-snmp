@@ -352,7 +352,7 @@ Before using `enricher`, the search result is structured as following:
 ```yaml
 oid-type1="ObjectIdentity" value1-type="OctetString" 1.3.6.1.2.1.2.2.1.6.2="0x00127962f940" value1="0x00127962f940" IF-MIB::ifPhysAddress.2="12:79:62:f9:40"  
 ```
-When using the same `enricher` as in example above, int he result string two new fields "interface_index" and "interface_desc" are visible:
+When using the same `enricher` as in the example above, in the result string two new fields "interface_index" and "interface_desc" are visible:
 ```yaml
 oid-type1="ObjectIdentity" value1-type="OctetString" 1.3.6.1.2.1.2.2.1.6.2="0x00127962f940" value1="0x00127962f940" IF-MIB::ifPhysAddress.2="12:79:62:f9:40" interface_index="2" interface_desc="eth0"
 ```
