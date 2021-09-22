@@ -130,6 +130,7 @@ splunk-kubernetes-metrics:
       body: |-
         <record>
           entity_type k8s_pod
+        </record>
 
 ```
 ### Values description
