@@ -70,7 +70,7 @@ splunk:
   host: ###SPLUNK_HOST###
   token: ###SPLUNK_TOKEN###
   insecureSSL: "true"
-  port: "8088"
+  port: ###SPLUNK_PORT###
   clusterName: ###CLUSTER_NAME###
 traps:
   logLevel: "WARN"

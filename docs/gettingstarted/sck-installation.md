@@ -19,7 +19,7 @@ global:
       insecureSSL: "true"
       host: ###SPLUNK_HOST###
       token: ###SPLUNK_TOKEN###
-      port: "8088"
+      port: ###SPLUNK_PORT###
   kubernetes:
     clusterName: ###CLUSTER_NAME###
 
@@ -139,6 +139,7 @@ Values required to be filled:
 | Placeholder   | Description  | Example  | 
 |---|---|---|
 | ###SPLUNK_HOST###  | host address of splunk instance   | "i-08c221389a3b9899a.ec2.splunkit.io"  |
+| ###SPLUNK_PORT###  | port number of splunk instance   | "8088"  |
 | ###SPLUNK_TOKEN### | Splunk HTTP Event Collector token  | "450a69af-16a9-4f87-9628-c26f04ad3785"  |
 | ###CLUSTER_NAME### | name of the cluster | "foo" |
 
@@ -156,7 +157,6 @@ Other variables possible to override in case you need it:
 | variable | description | default |
 | --- | --- | --- |
 | global: splunk: hec: protocol | port of splunk instance | "8088" |
-| global: splunk: hec: port | port of splunk instance | "8088" |
 | global: splunk: hec: protocol insecure_ssl| is insecure ssl allowed | "true" |
 
 ### Install SCK with HELM
