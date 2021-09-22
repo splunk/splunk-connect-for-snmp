@@ -6,7 +6,7 @@ PORT=8088
 SPLUNK_HOST=$1
 SPLUNK_PASSWORD=$2
 TOKEN=00000000-0000-0000-0000-000000000000
-EVENTS_INDEX=em_logs
+EVENTS_INDEX=em_events
 METRICS_INDEX=em_metrics
 META_INDEX=em_meta
 
@@ -21,7 +21,7 @@ kapply(){
 create_splunk_indexes() {
   splunk_ip=$1
   splunk_password=$2
-  index_names=("em_metrics" "em_meta" "em_logs")
+  index_names=("em_metrics" "em_meta" "em_events")
   index_types=("metric" "event" "event")
   for index in "${!index_names[@]}" ; do
     if ! curl -k -u admin:"${splunk_password}" "https://${splunk_ip}:8089/services/data/indexes" \

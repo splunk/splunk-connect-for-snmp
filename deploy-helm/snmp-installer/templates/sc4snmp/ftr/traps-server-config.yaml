@@ -4,33 +4,5 @@ metadata:
   name: sc4snmp-trap
   namespace: {{ .Release.Namespace | quote }}
 data:
-  config.yaml: |
-    # Splunk Connect for SNMP Traps
-    # Sample Configuration file
-    snmp:
-      communities:
-        v1:
-          - public
-          - "my-area"
-        v2:
-          - public
-          - "my-area"
-        v3:
-          - userName: snmpv3test
-            authKey: AuthPass1
-            privKey: PrivPass2
-            securityEngineId: 8000000004030201
-          - userName: snmpv3test2
-            authProtocol: SHA
-            authKey: AuthPass11
-            privProtocol: aes
-            privKey: PrivPass22
-            securityEngineId: 8000000004030202
-          - userName: snmpv3test3
-            securityEngineId: 8000000004030203
-          - userName: testfdse
-            authKey: testfdse
-            privKey: testfdse
-            securityEngineId: 8000000903bc16f5802780
-    thread-pool:
-      max-suggested-working-threads: 10
+  config.yaml: |-
+{{ .Values.traps.config | indent 4 }}
