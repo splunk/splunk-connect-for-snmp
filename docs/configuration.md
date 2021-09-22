@@ -339,6 +339,22 @@ profiles:
        - '1.3.6.1.2.1.1.9.1.4.*'
 ```
 
+
+#### 4. Configure additional field to the metrics data
+
+User can make every metric data to include **profile** name
+(which is not included by default) by adding **profile**
+under the **additionalMetricField** in **config.yaml**
+
+
+e.g.
+
+``` yaml
+additionalMetricField:
+  - profile
+```
+
+
 #### Test the poller
 
 **SNMPv1/SNMPv2**
