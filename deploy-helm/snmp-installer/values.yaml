@@ -66,16 +66,15 @@ scheduler:
       database: "snmp_poller"
       collection: "walked_hosts"
 splunk:
-  protocol: ###PROTOCOL###
+  protocol: https
   host: ###SPLUNK_HOST###
-  insecureSSL: ###INSECURE_SSL###
   token: ###SPLUNK_TOKEN###
+  insecureSSL: "true"
   port: ###SPLUNK_PORT###
   clusterName: ###CLUSTER_NAME###
 traps:
   logLevel: "WARN"
   loadBalancerIP: ###X.X.X.X###
-  version: 1
   resources:
     limits:
       cpu: 100m
@@ -116,7 +115,6 @@ mode: "both"
 mib:
   service_host: sc4snmp-mib-server-service
   service_port: "5000"
-  version: 1
   resources:
     limits:
       cpu: 100m
@@ -130,7 +128,6 @@ otel:
   service_logs_port: "8881"
 worker:
   logLevel: "WARN"
-  version: 1
   resources:
     limits:
       cpu: 200m

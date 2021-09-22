@@ -15,8 +15,8 @@ global:
   logLevel: info 
   splunk:
     hec:
-      protocol: ###PROTOCOL###
-      insecureSSL: ###INSECURE_SSL###
+      protocol: https
+      insecureSSL: "true"
       host: ###SPLUNK_HOST###
       token: ###SPLUNK_TOKEN###
       port: ###SPLUNK_PORT###
@@ -62,7 +62,7 @@ splunk-kubernetes-logging:
   sourcetypePrefix: "kube"
   splunk:
     hec:
-      indexName: ###LOGS_INDEX###
+      indexName: em_logs
   logs:
     sck:
       from:
@@ -96,7 +96,7 @@ splunk-kubernetes-objects:
           mode: watch
   splunk:
     hec:
-      indexName: ###META_INDEX###
+      indexName: em_meta
 
 #local config for metrics chart
 splunk-kubernetes-metrics:
@@ -115,7 +115,7 @@ splunk-kubernetes-metrics:
     name: splunk-kubernetes-metrics
   splunk:
     hec:
-      indexName: ###METRICS_INDEX###
+      indexName: em_metrics
   customFilters:
     node:
       tag: "kube.node.**"
@@ -134,19 +134,38 @@ splunk-kubernetes-metrics:
 
 ```
 ### Values description
+
+Values required to be filled:
+
 | Placeholder   | Description  | Example  | 
 |---|---|---|
-| ###PROTOCOL### | protocol name | https |
-| ###INSECURE_SSL### |  | "true"
-| ###SPLUNK_HOST###  | host address of splunk instance   | "i-08c221389a3b9899a.ec2.splunkit.io"  | 
-| ###SPLUNK_PORT### | port of splunk instance | 8088 |
+| ###SPLUNK_HOST###  | host address of splunk instance   | "i-08c221389a3b9899a.ec2.splunkit.io"  |
+| ###SPLUNK_PORT###  | port number of splunk instance   | "8088"  |
 | ###SPLUNK_TOKEN### | Splunk HTTP Event Collector token  | "450a69af-16a9-4f87-9628-c26f04ad3785"  |
 | ###CLUSTER_NAME### | name of the cluster | "foo" |
-| ###LOGS_INDEX### | name of the logs index | "em_index" |
-| ###META_INDEX### | name of the meta index | "em_meta" |
-| ###METRICS_INDEX### | name of the metrics index | "em_metrics" |
+
+
+In case you want to change index names (note that in this case you need to keep consistent names in Splunk instance and SC4SNMP values file), you can override this variables:
+
+| Index type | variable | description | default value |
+| --- | --- | --- | --- |
+| Logs index | splunk-kubernetes-logging: splunk: hec: indexName: | name of the logs index | "em_index" |
+| Meta index | splunk-kubernetes-objects: splunk: hec: indexName: | name of the meta index | "em_meta" |
+| Metrics index |  splunk-kubernetes-metrics: splunk: hec: indexName: | name of the metrics index | "em_metrics" |
+
+Other variables possible to override in case you need it:
+
+| variable | description | default |
+| --- | --- | --- |
+| global: splunk: hec: protocol | port of splunk instance | "8088" |
+| global: splunk: hec: protocol insecure_ssl| is insecure ssl allowed | "true" |
 
 ### Install SCK with HELM
 ```yaml
 microk8s helm3 install sck-for-snmp -f sck_values.yaml splunk/splunk-connect-for-kubernetes
+```
+
+From now on you after every update of `values.yaml` you can use this command to propagate it:
+``` bash
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
