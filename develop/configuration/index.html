@@ -434,6 +434,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#4-configure-additional-field-to-the-metrics-data" class="md-nav__link">
+    4. Configure additional field to the metrics data
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#test-the-poller" class="md-nav__link">
     Test the poller
   </a>
@@ -572,6 +579,13 @@
           <li class="md-nav__item">
   <a href="#3-configure-more-detailed-query-information" class="md-nav__link">
     3. Configure more detailed query information
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-configure-additional-field-to-the-metrics-data" class="md-nav__link">
+    4. Configure additional field to the metrics data
   </a>
   
 </li>
@@ -950,6 +964,15 @@ index 1 doesn't exist for sysUpTime.</p>
        <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;EFM-CU-MIB&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;efmCuPort&#39;</span><span class="p p-Indicator">]</span>
        <span class="p p-Indicator">-</span> <span class="s">&#39;1.3.6.1.2.1.1.6.0&#39;</span>
        <span class="p p-Indicator">-</span> <span class="s">&#39;1.3.6.1.2.1.1.9.1.4.*&#39;</span>
+</code></pre></div>
+
+<h4 id="4-configure-additional-field-to-the-metrics-data">4. Configure additional field to the metrics data<a class="headerlink" href="#4-configure-additional-field-to-the-metrics-data" title="Permanent link">&para;</a></h4>
+<p>User can make every metric data to include <strong>profile</strong> name
+(which is not included by default) by adding <strong>profile</strong>
+under the <strong>additionalMetricField</strong> in <strong>config.yaml</strong></p>
+<p>e.g.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">additionalMetricField</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">profile</span>
 </code></pre></div>
 
 <h4 id="test-the-poller">Test the poller<a class="headerlink" href="#test-the-poller" title="Permanent link">&para;</a></h4>
