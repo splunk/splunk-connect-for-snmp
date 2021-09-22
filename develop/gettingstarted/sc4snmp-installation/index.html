@@ -503,17 +503,12 @@
 <tr>
 <td>###SPLUNK_HOST###</td>
 <td>host address of splunk instance</td>
-<td>i-08c221389a3b9899a.ec2.splunkit.io</td>
+<td>&ldquo;i-08c221389a3b9899a.ec2.splunkit.io&rdquo;</td>
 </tr>
 <tr>
 <td>###SPLUNK_PORT###</td>
-<td>port of splunk instance</td>
-<td>8088</td>
-</tr>
-<tr>
-<td>###INSECURE_SSL###</td>
-<td>is insecure ssl allowed</td>
-<td>&ldquo;true&rdquo;</td>
+<td>port number of splunk instance</td>
+<td>&ldquo;8088&rdquo;</td>
 </tr>
 <tr>
 <td>###SPLUNK_TOKEN###</td>
@@ -521,14 +516,36 @@
 <td>450a69af-16a9-4f87-9628-c26f04ad3785</td>
 </tr>
 <tr>
-<td>###CLUSTER_NAME###</td>
-<td>name of the cluster</td>
-<td>&ldquo;foo&rdquo;</td>
-</tr>
-<tr>
 <td>###X.X.X.X###</td>
 <td>SHARED IP address used for SNMP Traps</td>
 <td>10.202.18.166</td>
+</tr>
+</tbody>
+</table>
+<p>Other variables to update in case you want to:</p>
+<table>
+<thead>
+<tr>
+<th>variable</th>
+<th>description</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>splunk: protocol</td>
+<td>port of splunk instance</td>
+<td>https</td>
+</tr>
+<tr>
+<td>splunk: insecure_ssl</td>
+<td>is insecure ssl allowed</td>
+<td>&ldquo;true&rdquo;</td>
+</tr>
+<tr>
+<td>splunk: cluster_name</td>
+<td>name of the cluster</td>
+<td>&ldquo;foo&rdquo;</td>
 </tr>
 </tbody>
 </table>

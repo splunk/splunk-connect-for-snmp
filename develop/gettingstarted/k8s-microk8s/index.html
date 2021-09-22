@@ -390,21 +390,28 @@
                 
                 
                 <h1 id="microk8s-installation-on-ubuntu">MicroK8s installation on Ubuntu<a class="headerlink" href="#microk8s-installation-on-ubuntu" title="Permanent link">&para;</a></h1>
-<div class="codehilite"><pre><span></span><code><span class="c1">#we need to have a normal install of kubectl because of operator scripts</span>
-<span class="l l-Scalar l-Scalar-Plain">sudo snap install kubectl --classic</span>
-<span class="l l-Scalar l-Scalar-Plain">sudo snap install microk8s --classic</span>
-<span class="l l-Scalar l-Scalar-Plain"># Basic setup of k8s</span>
-<span class="l l-Scalar l-Scalar-Plain">sudo usermod -a -G microk8s $USER</span>
-<span class="l l-Scalar l-Scalar-Plain">sudo chown -f -R $USER ~/.kube</span>
+<p>We need to have a normal install of kubectl because of operator scripts</p>
+<div class="codehilite"><pre><span></span><code>sudo snap install kubectl --classic
+sudo snap install microk8s --classic
+</code></pre></div>
 
-<span class="l l-Scalar l-Scalar-Plain">su - $USER</span>
-<span class="l l-Scalar l-Scalar-Plain">microk8s status --wait-ready</span>
-<span class="l l-Scalar l-Scalar-Plain">#Note when installing metallb you will be prompted for one or more IPs to used as entry points</span>
-<span class="l l-Scalar l-Scalar-Plain">#Into the cluster if your plan to enable clustering this IP should not be assigned to the host (floats)</span>
-<span class="l l-Scalar l-Scalar-Plain">#If you do not plan to cluster then this IP may be the same IP as the host</span>
-<span class="l l-Scalar l-Scalar-Plain">#Note2</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">a single IP in cidr format is x.x.x.x/32 use CIDR or range syntax</span>
-<span class="l l-Scalar l-Scalar-Plain">microk8s enable dns metallb rbac storage openebs helm3</span>
-<span class="l l-Scalar l-Scalar-Plain">microk8s status --wait-ready</span>
+<p>Add user to microk8s group to not to use <code>sudo</code> anymore</p>
+<div class="codehilite"><pre><span></span><code>sudo usermod -a -G microk8s <span class="nv">$USER</span>
+sudo chown -f -R <span class="nv">$USER</span> ~/.kube
+su - <span class="nv">$USER</span>
+</code></pre></div>
+
+<p>Check microk8s status</p>
+<div class="codehilite"><pre><span></span><code>microk8s status --wait-ready
+</code></pre></div>
+
+<p>Install microk8s dependencies necessary to deploy SC4SNMP.</p>
+<p>Note: when installing metallb you will be prompted for one or more IPs to used as entry points
+Into the cluster if your plan to enable clustering this IP should not be assigned to the host (floats)
+If you do not plan to cluster then this IP may be the same IP as the host</p>
+<p>Note2: a single IP in cidr format is x.x.x.x/32 use CIDR or range syntax</p>
+<div class="codehilite"><pre><span></span><code>microk8s <span class="nb">enable</span> dns metallb rbac storage openebs helm3
+microk8s status --wait-ready
 </code></pre></div>
                 
               

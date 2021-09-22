@@ -516,8 +516,8 @@
   <span class="nt">logLevel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">info</span> 
   <span class="nt">splunk</span><span class="p">:</span>
     <span class="nt">hec</span><span class="p">:</span>
-      <span class="nt">protocol</span><span class="p">:</span> <span class="c1">###PROTOCOL###</span>
-      <span class="nt">insecureSSL</span><span class="p">:</span> <span class="c1">###INSECURE_SSL###</span>
+      <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https</span>
+      <span class="nt">insecureSSL</span><span class="p">:</span> <span class="s">&quot;true&quot;</span>
       <span class="nt">host</span><span class="p">:</span> <span class="c1">###SPLUNK_HOST###</span>
       <span class="nt">token</span><span class="p">:</span> <span class="c1">###SPLUNK_TOKEN###</span>
       <span class="nt">port</span><span class="p">:</span> <span class="c1">###SPLUNK_PORT###</span>
@@ -563,7 +563,7 @@
   <span class="nt">sourcetypePrefix</span><span class="p">:</span> <span class="s">&quot;kube&quot;</span>
   <span class="nt">splunk</span><span class="p">:</span>
     <span class="nt">hec</span><span class="p">:</span>
-      <span class="nt">indexName</span><span class="p">:</span> <span class="c1">###LOGS_INDEX###</span>
+      <span class="nt">indexName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">em_logs</span>
   <span class="nt">logs</span><span class="p">:</span>
     <span class="nt">sck</span><span class="p">:</span>
       <span class="nt">from</span><span class="p">:</span>
@@ -597,7 +597,7 @@
           <span class="nt">mode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">watch</span>
   <span class="nt">splunk</span><span class="p">:</span>
     <span class="nt">hec</span><span class="p">:</span>
-      <span class="nt">indexName</span><span class="p">:</span> <span class="c1">###META_INDEX###</span>
+      <span class="nt">indexName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">em_meta</span>
 
 <span class="c1">#local config for metrics chart</span>
 <span class="nt">splunk-kubernetes-metrics</span><span class="p">:</span>
@@ -616,7 +616,7 @@
     <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">splunk-kubernetes-metrics</span>
   <span class="nt">splunk</span><span class="p">:</span>
     <span class="nt">hec</span><span class="p">:</span>
-      <span class="nt">indexName</span><span class="p">:</span> <span class="c1">###METRICS_INDEX###</span>
+      <span class="nt">indexName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">em_metrics</span>
   <span class="nt">customFilters</span><span class="p">:</span>
     <span class="nt">node</span><span class="p">:</span>
       <span class="nt">tag</span><span class="p">:</span> <span class="s">&quot;kube.node.**&quot;</span>
@@ -635,6 +635,7 @@
 </code></pre></div>
 
 <h3 id="values-description">Values description<a class="headerlink" href="#values-description" title="Permanent link">&para;</a></h3>
+<p>Values required to be filled:</p>
 <table>
 <thead>
 <tr>
@@ -645,24 +646,14 @@
 </thead>
 <tbody>
 <tr>
-<td>###PROTOCOL###</td>
-<td>protocol name</td>
-<td>https</td>
-</tr>
-<tr>
-<td>###INSECURE_SSL###</td>
-<td></td>
-<td>&ldquo;true&rdquo;</td>
-</tr>
-<tr>
 <td>###SPLUNK_HOST###</td>
 <td>host address of splunk instance</td>
 <td>&ldquo;i-08c221389a3b9899a.ec2.splunkit.io&rdquo;</td>
 </tr>
 <tr>
 <td>###SPLUNK_PORT###</td>
-<td>port of splunk instance</td>
-<td>8088</td>
+<td>port number of splunk instance</td>
+<td>&ldquo;8088&rdquo;</td>
 </tr>
 <tr>
 <td>###SPLUNK_TOKEN###</td>
@@ -674,25 +665,67 @@
 <td>name of the cluster</td>
 <td>&ldquo;foo&rdquo;</td>
 </tr>
+</tbody>
+</table>
+<p>In case you want to change index names (note that in this case you need to keep consistent names in Splunk instance and SC4SNMP values file), you can override this variables:</p>
+<table>
+<thead>
 <tr>
-<td>###LOGS_INDEX###</td>
+<th>Index type</th>
+<th>variable</th>
+<th>description</th>
+<th>default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Logs index</td>
+<td>splunk-kubernetes-logging: splunk: hec: indexName:</td>
 <td>name of the logs index</td>
 <td>&ldquo;em_index&rdquo;</td>
 </tr>
 <tr>
-<td>###META_INDEX###</td>
+<td>Meta index</td>
+<td>splunk-kubernetes-objects: splunk: hec: indexName:</td>
 <td>name of the meta index</td>
 <td>&ldquo;em_meta&rdquo;</td>
 </tr>
 <tr>
-<td>###METRICS_INDEX###</td>
+<td>Metrics index</td>
+<td>splunk-kubernetes-metrics: splunk: hec: indexName:</td>
 <td>name of the metrics index</td>
 <td>&ldquo;em_metrics&rdquo;</td>
 </tr>
 </tbody>
 </table>
+<p>Other variables possible to override in case you need it:</p>
+<table>
+<thead>
+<tr>
+<th>variable</th>
+<th>description</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>global: splunk: hec: protocol</td>
+<td>port of splunk instance</td>
+<td>&ldquo;8088&rdquo;</td>
+</tr>
+<tr>
+<td>global: splunk: hec: protocol insecure_ssl</td>
+<td>is insecure ssl allowed</td>
+<td>&ldquo;true&rdquo;</td>
+</tr>
+</tbody>
+</table>
 <h3 id="install-sck-with-helm">Install SCK with HELM<a class="headerlink" href="#install-sck-with-helm" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 install sck-for-snmp -f sck_values.yaml splunk/splunk-connect-for-kubernetes</span>
+</code></pre></div>
+
+<p>From now on you after every update of <code>values.yaml</code> you can use this command to propagate it:</p>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
                 
               
