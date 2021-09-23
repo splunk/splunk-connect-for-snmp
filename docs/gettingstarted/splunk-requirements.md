@@ -7,7 +7,7 @@
 1. Complete the installation of [Splunk IT Essentials Work](https://docs.splunk.com/Documentation/ITE/latest/Work/Overview) OR [Splunk IT Service Intelligence](https://docs.splunk.com/Documentation/ITSI/4.9.2/Install/About)
 2. Verify the creation of the following indexes
     * em_metrics (metrics type)
-    * em_meta
+    * em_meta (event type)
     * em_logs (event type)
 3. Create or obtain a new Splunk HTTP Event Collector token and the correct https endpoint.
 4. Verify the token using [curl](https://docs.splunk.com/Documentation/Splunk/8.1.3/Data/FormateventsforHTTPEventCollector) Note: The endpoint must use a publicly trusted certificate authority.

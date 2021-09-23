@@ -8,7 +8,7 @@ Below steps are sufficient for SCK installation for SC4SNMP project. In case you
 microk8s helm3 repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes
 ```
 ### Create values file
-In order to connect to SPLUNK instance, there's a need to create `values.yaml` file of this following structure filling variables marked with "###" (description below).
+In order to connect to SPLUNK instance, there's a need to create `sck_values.yaml` file of this following structure filling variables marked with "###" (description below).
 ```yaml
 #global settings
 global:
@@ -165,7 +165,3 @@ Other variables possible to override in case you need it:
 microk8s helm3 install sck-for-snmp -f sck_values.yaml splunk/splunk-connect-for-kubernetes
 ```
 
-From now on you after every update of `values.yaml` you can use this command to propagate it:
-``` bash
-microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
-```
