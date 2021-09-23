@@ -1,7 +1,7 @@
 # Configuration
 
 In this section we're refering to following files required to configure scheduler:
-1. `scheduler-inventory.csv`
+1. `scheduler-inventory.yaml`
 2. `scheduler-config.yaml`
 3. `traps-server-config.yaml`
 
@@ -11,7 +11,7 @@ of management: `values.yaml`. The structure is:
 scheduler:
   ...
   inventory:               
-    content: |-                       <- scheduler-inventory.csv
+    content: |-                       <- scheduler-inventory.yaml
       #10.0.0.1,2c,public,basev1,300
   config: |                           <- scheduler-config.yaml
     celery:
@@ -22,9 +22,9 @@ scheduler:
     ipv6: False
     communities:
       ...
-traps:                                <- traps-server-config.yaml
+traps:
   ...
-  config:
+  config:                             <- traps-server-config.yaml
     snmp:
       communities:
         v1:
@@ -34,8 +34,11 @@ traps:                                <- traps-server-config.yaml
           - public
           - "my-area"
 ```
-From now on, when editing any of those files is mentioned, that means the change must be
-inserted in corresponding section of `values.yaml`.
+
+Use following command to propagate configuration changes:
+``` bash
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+```
 ## Traps Configuration
 
 -   traps-server-config.yaml
