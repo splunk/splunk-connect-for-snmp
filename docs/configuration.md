@@ -22,9 +22,9 @@ scheduler:
     ipv6: False
     communities:
       ...
-traps:                                <- traps-server-config.yaml
+traps:
   ...
-  config:
+  config:                             <- traps-server-config.yaml
     snmp:
       communities:
         v1:
@@ -34,8 +34,6 @@ traps:                                <- traps-server-config.yaml
           - public
           - "my-area"
 ```
-From now on, when editing SC4SNMP configuration, the configuration change must be
-inserted in corresponding section of `values.yaml`.
 
 Use following command to propagate configuration changes:
 ``` bash

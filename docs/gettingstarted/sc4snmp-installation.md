@@ -40,9 +40,15 @@ Other variables to update in case you want to:
 ``` bash
 microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
+From now on, when editing SC4SNMP configuration, the configuration change must be
+inserted in corresponding section of `values.yaml`. For more details check [configuration](../configuration.md) section.
 
+Use following command to propagate configuration changes:
+``` bash
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+```
 ### Verify deployment
-In a few minutes all of the pods should be up and running. It can be verified with:
+In a few minutes all pods should be up and running. It can be verified with:
 ``` bash
 microk8s kubectl get pods -n sc4snmp
 ```
