@@ -338,13 +338,11 @@ profiles:
        - '1.3.6.1.2.1.1.6.0'
        - '1.3.6.1.2.1.1.9.1.4.*'
 ```
-
-
 #### 4. Configure additional field to the metrics data
 
 User can make every metric data to include **profile** name
 (which is not included by default) by adding **profile**
-under the **additionalMetricField** in **config.yaml**
+under the **additionalMetricField** in **scheduler-config.yaml** (`scheduler: config` part of `values.yaml`)
 
 
 e.g.
@@ -354,6 +352,123 @@ additionalMetricField:
   - profile
 ```
 
+#### 5. Configure poller to return query with additional fields present
+
+User can provide **enricher** section to make poller enrich queries sent to Splunk by adding additional dimensions. There are two types of fields:
+1. **existingVarBinds**: this section updates query results with new fields calculated from the existing SNMP information.
+2. **additionalVarBinds**: this section updates query results with additional parameters defined below.
+
+##### Existing VarBinds
+For now, `existingVarBinds` section works only for IF-MIB oid family.
+Every property of IF-MIB family can be extracted and added as an additional dimension to the query. For example, if we want to see the name and the index of the interface along with the basic query information,
+the **enricher** must be structured as following:
+```yaml
+enricher:
+  oidFamily:
+    IF-MIB:
+      existingVarBinds:
+        - ifIndex: 'interface_index'
+        - ifDescr: 'interface_desc'
+```
+Let's run a metrics query in Splunk Search:
+```
+| msearch "index"="em_metrics"
+```
+While enricher is not being used, the example result is:
+```yaml
+{ [-]
+   com.splunk.index: em_metrics
+   host.name: 10.202.14.102
+   metric_name:sc4snmp.IF-MIB.ifInOctets_1: 398485
+}
+```
+After adding `enricher` structure as above, the same result should contain "interface_index" and "interface_desc":
+```yaml
+{ [-]
+   com.splunk.index: em_metrics
+   host.name: 10.202.14.102
+   interface_desc: lo
+   interface_index: 1
+   metric_name:sc4snmp.IF-MIB.ifInOctets_1: 398485
+}
+```
+
+For an event query in Splunk Search:
+```yaml
+index="*" sourcetype="sc4snmp:meta"
+```
+Before using `enricher`, the search result is structured as following:
+```yaml
+oid-type1="ObjectIdentity" value1-type="OctetString" 1.3.6.1.2.1.2.2.1.6.2="0x00127962f940" value1="0x00127962f940" IF-MIB::ifPhysAddress.2="12:79:62:f9:40"  
+```
+When using the same `enricher` as in the example above, in the result string two new fields "interface_index" and "interface_desc" are visible:
+```yaml
+oid-type1="ObjectIdentity" value1-type="OctetString" 1.3.6.1.2.1.2.2.1.6.2="0x00127962f940" value1="0x00127962f940" IF-MIB::ifPhysAddress.2="12:79:62:f9:40" interface_index="2" interface_desc="eth0"
+```
+
+The value of newly added properties is calculated according to current query index. 
+For IF-MIB::ifAdminStatus.**2** we're interested in IF-MIB::ifIndex.**2** and IF-MIB::ifDescr.**2**.
+```yaml
+IF-MIB::ifNumber.0 = INTEGER: 2
+IF-MIB::ifIndex.1 = INTEGER: 1
+IF-MIB::ifIndex.2 = INTEGER: 2
+IF-MIB::ifDescr.1 = STRING: lo
+IF-MIB::ifDescr.2 = STRING: eth0
+```
+Any other IF-MIB property can be inserted to existingVarBinds.
+
+**existingVarBinds list parameters**
+
+| existingVarBinds part | description | example | 
+| --- | --- | --- |
+| key | the key is the word between OID family identifier and the index | for ex. for MTU extraction, the key is **ifMtu** (derived from IF-MIB::**ifMtu**.1) |
+| value | the field name shown as an additional dimension in Splunk | `interface_mtu` |
+
+#### Additional VarBinds
+
+#### 1. Index number -- indexNum
+For every OID family there is an option to add index number as an additional dimension to both event and metrics data.
+In order to enable it, the enricher must be structured as following:
+```yaml
+enricher:
+  oidFamily:
+    IF-MIB:
+      additionalVarBinds:
+        - indexNum: 'index_number'
+    SNMPv2-MIB:
+      additionalVarBinds:
+        - indexNum: 'index_number'
+```
+For above configuration every query concerning IF-MIB or SNMPv2-MIB has additional `index_number` field equal to the index number of current record, for ex.:
+
+For event query:
+```yaml
+oid-type1="ObjectIdentity" value1-type="OctetString" 1.3.6.1.2.1.2.2.1.2.2="eth0" value1="eth0" IF-MIB::ifDescr.2="eth0" index_number="2" 
+```
+
+For metrics query:
+```yaml
+	
+{ [-]
+   com.splunk.index: em_metrics
+   host.name: 10.202.14.102
+   index_num: 1
+   metric_name:sc4snmp.IF-MIB.ifInOctets_1: 398485
+}
+```
+
+**Additional varbinds available to configure**
+
+| variable | description |
+| --- | --- | 
+| indexNum | index number of current record, for ex. `SNMPv2-MIB::sysORID.5` -> `index_num` is 5
+
+**additionalVarBinds list parameters**
+
+| additionalVarBinds part | description | example | 
+| --- | --- | --- |
+| key | the key is the value from additional varbinds table above | `indexNum` |
+| value | the field name shown as an additional dimension in Splunk | `index_number`, `index_num`, `if_mib_index_number` |
 
 #### Test the poller
 
