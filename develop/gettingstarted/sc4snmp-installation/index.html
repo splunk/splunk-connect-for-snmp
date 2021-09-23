@@ -481,9 +481,12 @@
 </code></pre></div>
 
 <p>Now package should be visible in <code>helm3</code> search command result:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">splunker</span><span class="nv">@ip</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">202</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="mi">16</span><span class="err">:</span><span class="o">~/</span><span class="n">new_helm</span><span class="err">$</span><span class="w"> </span><span class="n">microk8s</span><span class="w"> </span><span class="n">helm3</span><span class="w"> </span><span class="k">search</span><span class="w"> </span><span class="n">repo</span><span class="w"> </span><span class="n">snmp</span><span class="w"></span>
-<span class="n">NAME</span><span class="w">                                    </span><span class="n">CHART</span><span class="w"> </span><span class="n">VERSION</span><span class="w">   </span><span class="n">APP</span><span class="w"> </span><span class="n">VERSION</span><span class="w"> </span><span class="n">DESCRIPTION</span><span class="w">                     </span>
-<span class="n">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">snmp</span><span class="o">/</span><span class="n">snmp</span><span class="o">-</span><span class="n">installer</span><span class="w">  </span><span class="mf">0.1.1</span><span class="w">           </span><span class="mf">1.16.0</span><span class="w">      </span><span class="n">A</span><span class="w"> </span><span class="n">Helm</span><span class="w"> </span><span class="n">chart</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Splunk</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">SNMP</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 search repo snmp
+</code></pre></div>
+
+<p>Example output:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span>                                    <span class="nv">CHART</span> <span class="nv">VERSION</span>   <span class="nv">APP</span> <span class="nv">VERSION</span> <span class="nv">DESCRIPTION</span>                     
+<span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">installer</span>  <span class="mi">0</span>.<span class="mi">1</span>.<span class="mi">1</span>           <span class="mi">1</span>.<span class="mi">16</span>.<span class="mi">0</span>      <span class="nv">A</span> <span class="nv">Helm</span> <span class="nv">chart</span> <span class="k">for</span> <span class="nv">Splunk</span> <span class="k">for</span> <span class="nv">SNMP</span>
 </code></pre></div>
 
 <h3 id="download-and-modify-valuesyaml-file">Download and modify values.yaml file<a class="headerlink" href="#download-and-modify-valuesyaml-file" title="Permanent link">&para;</a></h3>
@@ -550,20 +553,29 @@
 </tbody>
 </table>
 <h3 id="install-sc4snmp">Install SC4SNMP<a class="headerlink" href="#install-sc4snmp" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace</span>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
+</code></pre></div>
+
+<p>From now on, when editing SC4SNMP configuration, the configuration change must be
+inserted in corresponding section of <code>values.yaml</code>. For more details check <a href="../../configuration/">configuration</a> section.</p>
+<p>Use following command to propagate configuration changes:</p>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
 
 <h3 id="verify-deployment">Verify deployment<a class="headerlink" href="#verify-deployment" title="Permanent link">&para;</a></h3>
-<p>In a few minutes all of the pods should be up and running. It can be verified with:</p>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">$ microk8s kubectl get pods -n sc4snmp</span>
-<span class="l l-Scalar l-Scalar-Plain">NAME                                 READY   STATUS    RESTARTS   AGE</span>
-<span class="l l-Scalar l-Scalar-Plain">sc4snmp-traps-569547fcb4-9gxd5       1/1     Running   0          19m</span>
-<span class="l l-Scalar l-Scalar-Plain">sc4snmp-worker-65b4c6df9d-bmgrj      1/1     Running   0          19m</span>
-<span class="l l-Scalar l-Scalar-Plain">sc4snmp-otel-6b65b45b84-frj6x        1/1     Running   0          19m</span>
-<span class="l l-Scalar l-Scalar-Plain">sc4snmp-mib-server-9f765c956-rbm7z   1/1     Running   0          19m</span>
-<span class="l l-Scalar l-Scalar-Plain">sc4snmp-scheduler-5bb8d5fd9c-p7j86   1/1     Running   1          19m</span>
-<span class="l l-Scalar l-Scalar-Plain">sc4snmp-mongodb-85f6c9c575-vhfr9     2/2     Running   0          19m</span>
-<span class="l l-Scalar l-Scalar-Plain">sc4snmp-rabbitmq-0                   1/1     Running   0          19m</span>
+<p>In a few minutes all pods should be up and running. It can be verified with:</p>
+<div class="codehilite"><pre><span></span><code>microk8s kubectl get pods -n sc4snmp
+</code></pre></div>
+
+<p>Example output:</p>
+<div class="codehilite"><pre><span></span><code>NAME                                 READY   STATUS    RESTARTS   AGE
+sc4snmp-traps-569547fcb4-9gxd5       1/1     Running   0          19m
+sc4snmp-worker-65b4c6df9d-bmgrj      1/1     Running   0          19m
+sc4snmp-otel-6b65b45b84-frj6x        1/1     Running   0          19m
+sc4snmp-mib-server-9f765c956-rbm7z   1/1     Running   0          19m
+sc4snmp-scheduler-5bb8d5fd9c-p7j86   1/1     Running   1          19m
+sc4snmp-mongodb-85f6c9c575-vhfr9     2/2     Running   0          19m
+sc4snmp-rabbitmq-0                   1/1     Running   0          19m
 </code></pre></div>
                 
               

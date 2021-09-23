@@ -690,7 +690,7 @@
                 
                 <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
 <p>In this section we&rsquo;re refering to following files required to configure scheduler:
-1. <code>scheduler-inventory.csv</code>
+1. <code>scheduler-inventory.yaml</code>
 2. <code>scheduler-config.yaml</code>
 3. <code>traps-server-config.yaml</code></p>
 <p>While installing SC4SNMP via HELM we can easily configure all of those using one point
@@ -698,7 +698,7 @@ of management: <code>values.yaml</code>. The structure is:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
   <span class="l l-Scalar l-Scalar-Plain">...</span>
   <span class="l l-Scalar l-Scalar-Plain">inventory</span><span class="p p-Indicator">:</span>               
-    <span class="nt">content</span><span class="p">:</span> <span class="p p-Indicator">|-</span><span class="err">                       &lt;- scheduler-inventory.csv</span>
+    <span class="nt">content</span><span class="p">:</span> <span class="p p-Indicator">|-</span><span class="err">                       &lt;- scheduler-inventory.yaml</span>
       <span class="no">#10.0.0.1,2c,public,basev1,300</span>
   <span class="nt">config</span><span class="p">:</span> <span class="p p-Indicator">|</span><span class="err">                           &lt;- scheduler-config.yaml</span>
     <span class="no">celery:</span>
@@ -709,10 +709,10 @@ of management: <code>values.yaml</code>. The structure is:</p>
     <span class="no">ipv6: False</span>
     <span class="no">communities:</span>
       <span class="no">...</span>
-<span class="nt">traps</span><span class="p">:</span>                                <span class="l l-Scalar l-Scalar-Plain">&lt;- traps-server-config.yaml</span>
+<span class="nt">traps</span><span class="p">:</span>
   <span class="l l-Scalar l-Scalar-Plain">...</span>
-  <span class="l l-Scalar l-Scalar-Plain">config</span><span class="p p-Indicator">:</span>
-    <span class="nt">snmp</span><span class="p">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">config</span><span class="p p-Indicator">:</span>                             <span class="l l-Scalar l-Scalar-Plain">&lt;- traps-server-config.yaml</span>
+    <span class="l l-Scalar l-Scalar-Plain">snmp</span><span class="p p-Indicator">:</span>
       <span class="nt">communities</span><span class="p">:</span>
         <span class="nt">v1</span><span class="p">:</span>
           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">public</span>
@@ -722,8 +722,10 @@ of management: <code>values.yaml</code>. The structure is:</p>
           <span class="p p-Indicator">-</span> <span class="s">&quot;my-area&quot;</span>
 </code></pre></div>
 
-<p>From now on, when editing any of those files is mentioned, that means the change must be
-inserted in corresponding section of <code>values.yaml</code>.</p>
+<p>Use following command to propagate configuration changes:</p>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
+</code></pre></div>
+
 <h2 id="traps-configuration">Traps Configuration<a class="headerlink" href="#traps-configuration" title="Permanent link">&para;</a></h2>
 <ul>
 <li>traps-server-config.yaml<ul>

@@ -510,7 +510,7 @@
 </code></pre></div>
 
 <h3 id="create-values-file">Create values file<a class="headerlink" href="#create-values-file" title="Permanent link">&para;</a></h3>
-<p>In order to connect to SPLUNK instance, there&rsquo;s a need to create <code>values.yaml</code> file of this following structure filling variables marked with &ldquo;###&rdquo; (description below).</p>
+<p>In order to connect to SPLUNK instance, there&rsquo;s a need to create <code>sck_values.yaml</code> file of this following structure filling variables marked with &ldquo;###&rdquo; (description below).</p>
 <div class="codehilite"><pre><span></span><code><span class="c1">#global settings</span>
 <span class="nt">global</span><span class="p">:</span>
   <span class="nt">logLevel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">info</span> 
@@ -722,10 +722,6 @@
 </table>
 <h3 id="install-sck-with-helm">Install SCK with HELM<a class="headerlink" href="#install-sck-with-helm" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 install sck-for-snmp -f sck_values.yaml splunk/splunk-connect-for-kubernetes</span>
-</code></pre></div>
-
-<p>From now on you after every update of <code>values.yaml</code> you can use this command to propagate it:</p>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
                 
               
