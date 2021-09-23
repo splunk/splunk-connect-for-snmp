@@ -6,8 +6,11 @@ microk8s helm3 repo add splunk-connect-for-snmp https://splunk.github.io/splunk-
 microk8s helm3 repo update
 ```
 Now package should be visible in `helm3` search command result:
+``` bash
+microk8s helm3 search repo snmp
 ```
-splunker@ip-10-202-7-16:~/new_helm$ microk8s helm3 search repo snmp
+Example output:
+``` 
 NAME                                  	CHART VERSION	APP VERSION	DESCRIPTION                     
 splunk-connect-for-snmp/snmp-installer	0.1.1        	1.16.0     	A Helm chart for Splunk for SNMP
 ```
@@ -34,14 +37,17 @@ Other variables to update in case you want to:
 | splunk: cluster_name | name of the cluster | "foo" |
 
 ### Install SC4SNMP
-```yaml
+``` bash
 microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
 
 ### Verify deployment
 In a few minutes all of the pods should be up and running. It can be verified with:
-```yaml
-$ microk8s kubectl get pods -n sc4snmp
+``` bash
+microk8s kubectl get pods -n sc4snmp
+```
+Example output:
+``` 
 NAME                                 READY   STATUS    RESTARTS   AGE
 sc4snmp-traps-569547fcb4-9gxd5       1/1     Running   0          19m
 sc4snmp-worker-65b4c6df9d-bmgrj      1/1     Running   0          19m
