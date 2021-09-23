@@ -641,10 +641,10 @@ of management: <code>values.yaml</code>. The structure is:</p>
     <span class="no">ipv6: False</span>
     <span class="no">communities:</span>
       <span class="no">...</span>
-<span class="nt">traps</span><span class="p">:</span>                                <span class="l l-Scalar l-Scalar-Plain">&lt;- traps-server-config.yaml</span>
+<span class="nt">traps</span><span class="p">:</span>
   <span class="l l-Scalar l-Scalar-Plain">...</span>
-  <span class="l l-Scalar l-Scalar-Plain">config</span><span class="p p-Indicator">:</span>
-    <span class="nt">snmp</span><span class="p">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">config</span><span class="p p-Indicator">:</span>                             <span class="l l-Scalar l-Scalar-Plain">&lt;- traps-server-config.yaml</span>
+    <span class="l l-Scalar l-Scalar-Plain">snmp</span><span class="p p-Indicator">:</span>
       <span class="nt">communities</span><span class="p">:</span>
         <span class="nt">v1</span><span class="p">:</span>
           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">public</span>
@@ -654,8 +654,6 @@ of management: <code>values.yaml</code>. The structure is:</p>
           <span class="p p-Indicator">-</span> <span class="s">&quot;my-area&quot;</span>
 </code></pre></div>
 
-<p>From now on, when editing SC4SNMP configuration, the configuration change must be
-inserted in corresponding section of <code>values.yaml</code>.</p>
 <p>Use following command to propagate configuration changes:</p>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
