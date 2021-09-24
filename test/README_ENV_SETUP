@@ -21,19 +21,29 @@ sudo pip3 install poetry
 deploy_image splunk-connect-for-snmp-poller feat/async_rework my-poller
 deploy_image splunk-connect-for-snmp-traps async_rework my-traps
 
-sed -i 's+ghcr.io/splunk/splunk-connect-for-snmp-poller:1+my-poller:latest+g' splunk-connect-for-snmp/deploy/sc4snmp/internal/scheduler-deployment.yaml
-sed -i 's+ghcr.io/splunk/splunk-connect-for-snmp-poller:1+my-poller:latest+g' splunk-connect-for-snmp/deploy/sc4snmp/internal/worker-deployment.yaml
-sed -i 's+ghcr.io/splunk/splunk-connect-for-snmp-traps:1+my-traps:latest+g' splunk-connect-for-snmp/deploy/sc4snmp/internal/traps-deployment.yaml
+Add to `values.yaml` file:
 
-sed -i 's/Always/Never/g' splunk-connect-for-snmp/deploy/sc4snmp/internal/scheduler-deployment.yaml
-sed -i 's/Always/Never/g' splunk-connect-for-snmp/deploy/sc4snmp/internal/worker-deployment.yaml
-sed -i 's/Always/Never/g' splunk-connect-for-snmp/deploy/sc4snmp/internal/traps-deployment.yaml
+1. under worker (worker is used by helm to update both poller and scheduler, as they use the same image):
 
-sudo microk8s.kubectl delete -n sc4snmp -f splunk-connect-for-snmp/deploy/sc4snmp/internal/scheduler-deployment.yaml
-sudo microk8s.kubectl delete -n sc4snmp -f splunk-connect-for-snmp/deploy/sc4snmp/internal/worker-deployment.yaml
+worker:
+  ...
+  image: my-poller
+  version: latest
+  imagePullPolicy: "Never"
 
-sudo microk8s.kubectl apply -n sc4snmp -f splunk-connect-for-snmp/deploy/sc4snmp/internal/scheduler-deployment.yaml
-sudo microk8s.kubectl apply -n sc4snmp -f splunk-connect-for-snmp/deploy/sc4snmp/internal/worker-deployment.yaml
+2. under traps:
+
+traps:
+  ...
+  image: my-traps
+  version: latest
+  imagePullPolicy: "Never"
+
+The same way works the same way for mib and otel.
+To upgrade kubernetes deployment, use:
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+
+
 
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
