@@ -44,7 +44,7 @@ docker run -d -p 27017:27017 -v ~/data:/data/db mongo
 
 docker run -e MONGO_SERVICE_SERVICE_PORT=27017 -e MONGO_SERVICE_SERVICE_HOST=host.docker.internal -e MIBS_FILES_URL=http://host.docker.internal:5000/files/asn1/@mib@ -p 5000:5000  ghcr.io/splunk/splunk-connect-for-snmp-mib-server:develop
 
-docker run  -p 8881:8881 -p 8882:8882 -e SPLUNK_HEC_URL=https://10.202.11.190/:8088/services/collector  -e SPLUNK_HEC_TOKEN=00000000-0000-0000-0000-000000000000 -e SPLUNK_HEC_TLS_SKIP_VERIFY=true -v "$(pwd)"/test:/config quay.io/signalfx/splunk-otel-collector:0.21.0 --config=/config/otel-collector-config.yaml
+docker run  -p 8881:8881 -p 8882:8882 -e SPLUNK_HEC_URL=https://10.202.11.190:8088/services/collector  -e SPLUNK_HEC_TOKEN=00000000-0000-0000-0000-000000000000 -e SPLUNK_HEC_TLS_SKIP_VERIFY=true -v "$(pwd)"/test:/config quay.io/signalfx/splunk-otel-collector:0.21.0 --config=/config/otel-collector-config.yaml
 
 docker run -p 161:161/udp tandrup/snmpsim
 
