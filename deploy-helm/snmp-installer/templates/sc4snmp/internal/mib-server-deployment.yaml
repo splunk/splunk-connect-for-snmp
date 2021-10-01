@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: sc4snmp-mib-server
-          image: {{ .Values.mib.image | default "ghcr.io/splunk/splunk-connect-for-snmp-mib-server" }}:{{ .Values.mib.version | default 1 }}
+          image: {{ .Values.mib.image | default "ghcr.io/splunk/splunk-connect-for-snmp-mib-server/container" }}:{{ .Values.mib.version | default 1 }}
           imagePullPolicy: {{ .Values.mib.imagePullPolicy | default "Always" }}
           ports:
             - containerPort: 5000
