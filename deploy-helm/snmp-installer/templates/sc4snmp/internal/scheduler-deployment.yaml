@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: sc4snmp-scheduler
-          image: {{ .Values.worker.image | default "ghcr.io/splunk/splunk-connect-for-snmp-poller" }}:{{ .Values.worker.version | default 1 }}
+          image: {{ .Values.worker.image | default "ghcr.io/splunk/splunk-connect-for-snmp-poller/container" }}:{{ .Values.worker.version | default 1 }}
           imagePullPolicy: {{ .Values.worker.imagePullPolicy | default "Always" }}
           args:
             [
