@@ -1,7 +1,7 @@
-scheduler-inventory: |-
+scheduler-inventory: |
   host,version,community,profile,freqinseconds
   #10.0.0.1,2c,public,basev1,300
-scheduler-config: |-
+scheduler-config: |
   celery:
     broker:
       type: "rabbitmq"
@@ -52,7 +52,7 @@ scheduler-config: |-
   mongo:
     database: "snmp_poller"
     collection: "walked_hosts"
-traps-server-config: |-
+traps-server-config: |
   # Splunk Connect for SNMP Traps
   # Sample Configuration file
   snmp:
