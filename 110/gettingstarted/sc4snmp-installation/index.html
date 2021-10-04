@@ -320,8 +320,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#download-and-modify-valuesyaml-file" class="md-nav__link">
-    Download and modify values.yaml file
+  <a href="#download-and-modify-deployment_valuesyaml-and-config_valuesyaml-files" class="md-nav__link">
+    Download and modify deployment_values.yaml and config_values.yaml files
   </a>
   
 </li>
@@ -441,8 +441,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#download-and-modify-valuesyaml-file" class="md-nav__link">
-    Download and modify values.yaml file
+  <a href="#download-and-modify-deployment_valuesyaml-and-config_valuesyaml-files" class="md-nav__link">
+    Download and modify deployment_values.yaml and config_values.yaml files
   </a>
   
 </li>
@@ -489,11 +489,14 @@
 <span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">installer</span>  <span class="mi">0</span>.<span class="mi">1</span>.<span class="mi">1</span>           <span class="mi">1</span>.<span class="mi">16</span>.<span class="mi">0</span>      <span class="nv">A</span> <span class="nv">Helm</span> <span class="nv">chart</span> <span class="k">for</span> <span class="nv">Splunk</span> <span class="k">for</span> <span class="nv">SNMP</span>
 </code></pre></div>
 
-<h3 id="download-and-modify-valuesyaml-file">Download and modify values.yaml file<a class="headerlink" href="#download-and-modify-valuesyaml-file" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">inspect</span> <span class="nv">values</span> <span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">installer</span> <span class="o">&gt;</span> <span class="nv">values</span>.<span class="nv">yaml</span>
+<h3 id="download-and-modify-deployment_valuesyaml-and-config_valuesyaml-files">Download and modify deployment_values.yaml and config_values.yaml files<a class="headerlink" href="#download-and-modify-deployment_valuesyaml-and-config_valuesyaml-files" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">deployment_values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">deploy</span><span class="o">-</span><span class="nv">helm</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">installer</span><span class="o">/</span><span class="nv">deployment_values</span>.<span class="nv">yaml</span>
+<span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">config_values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">deploy</span><span class="o">-</span><span class="nv">helm</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">installer</span><span class="o">/</span><span class="nv">config_values</span>.<span class="nv">yaml</span>
 </code></pre></div>
 
-<p>Variables required to be updated:</p>
+<p><code>deployment_values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
+<p><code>config_values.yaml</code> contains configuration of SC4SNMP.</p>
+<p>Variables required to be updated in <code>deployment_values.yaml</code>:</p>
 <table>
 <thead>
 <tr>
@@ -553,13 +556,13 @@
 </tbody>
 </table>
 <h3 id="install-sc4snmp">Install SC4SNMP<a class="headerlink" href="#install-sc4snmp" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
+<div class="codehilite"><pre><span></span><code>microk8s helm3 install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
 
 <p>From now on, when editing SC4SNMP configuration, the configuration change must be
-inserted in corresponding section of <code>values.yaml</code>. For more details check <a href="../../configuration/">configuration</a> section.</p>
+inserted in corresponding section of <code>config_values.yaml</code>. For more details check <a href="../../configuration/">configuration</a> section.</p>
 <p>Use following command to propagate configuration changes:</p>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
 
 <h3 id="verify-deployment">Verify deployment<a class="headerlink" href="#verify-deployment" title="Permanent link">&para;</a></h3>

@@ -694,36 +694,35 @@
 2. <code>scheduler-config.yaml</code>
 3. <code>traps-server-config.yaml</code></p>
 <p>While installing SC4SNMP via HELM we can easily configure all of those using one point
-of management: <code>values.yaml</code>. The structure is:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">...</span>
-  <span class="l l-Scalar l-Scalar-Plain">inventory</span><span class="p p-Indicator">:</span>               
-    <span class="nt">content</span><span class="p">:</span> <span class="p p-Indicator">|-</span><span class="err">                       &lt;- scheduler-inventory.yaml</span>
+of management: <code>config_values.yaml</code>. The structure is:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">files</span><span class="p">:</span>
+  <span class="nt">scheduler</span><span class="p">:</span>            
+    <span class="nt">inventory</span><span class="p">:</span> <span class="p p-Indicator">|</span><span class="err">                        &lt;- scheduler-inventory.yaml</span>
+      <span class="no">host,version,community,profile,freqinseconds</span>
       <span class="no">#10.0.0.1,2c,public,basev1,300</span>
-  <span class="nt">config</span><span class="p">:</span> <span class="p p-Indicator">|</span><span class="err">                           &lt;- scheduler-config.yaml</span>
-    <span class="no">celery:</span>
-      <span class="no">broker:</span>
-        <span class="no">type: &quot;rabbitmq&quot;</span>
-    <span class="no"># Sample Configuration file</span>
-    <span class="no">ipv4: True</span>
-    <span class="no">ipv6: False</span>
-    <span class="no">communities:</span>
-      <span class="no">...</span>
-<span class="nt">traps</span><span class="p">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">...</span>
-  <span class="l l-Scalar l-Scalar-Plain">config</span><span class="p p-Indicator">:</span>                             <span class="l l-Scalar l-Scalar-Plain">&lt;- traps-server-config.yaml</span>
-    <span class="l l-Scalar l-Scalar-Plain">snmp</span><span class="p p-Indicator">:</span>
-      <span class="nt">communities</span><span class="p">:</span>
-        <span class="nt">v1</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">public</span>
-          <span class="p p-Indicator">-</span> <span class="s">&quot;my-area&quot;</span>
-        <span class="nt">v2</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">public</span>
-          <span class="p p-Indicator">-</span> <span class="s">&quot;my-area&quot;</span>
+    <span class="nt">config</span><span class="p">:</span> <span class="p p-Indicator">|</span><span class="err">                           &lt;- scheduler-config.yaml</span>
+      <span class="no">celery:</span>
+        <span class="no">broker:</span>
+          <span class="no">type: &quot;rabbitmq&quot;</span>
+      <span class="no"># Sample Configuration file</span>
+      <span class="no">ipv4: True</span>
+      <span class="no">ipv6: False</span>
+      <span class="no">communities:</span>
+        <span class="no">...</span>
+  <span class="nt">traps</span><span class="p">:</span>                                
+    <span class="nt">config</span><span class="p">:</span>                             <span class="l l-Scalar l-Scalar-Plain">&lt;- traps-server-config.yaml</span>
+      <span class="l l-Scalar l-Scalar-Plain">snmp</span><span class="p p-Indicator">:</span>
+        <span class="nt">communities</span><span class="p">:</span>
+          <span class="nt">v1</span><span class="p">:</span>
+            <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">public</span>
+            <span class="p p-Indicator">-</span> <span class="s">&quot;my-area&quot;</span>
+          <span class="nt">v2</span><span class="p">:</span>
+            <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">public</span>
+            <span class="p p-Indicator">-</span> <span class="s">&quot;my-area&quot;</span>
 </code></pre></div>
 
 <p>Use following command to propagate configuration changes:</p>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
 
 <h2 id="traps-configuration">Traps Configuration<a class="headerlink" href="#traps-configuration" title="Permanent link">&para;</a></h2>
@@ -736,7 +735,7 @@ of management: <code>values.yaml</code>. The structure is:</p>
 <p>Splunk Connect for SNMP supports receiving SNMPv1 traps, SNMPv2 traps,
 and SNMPv3 traps. To make it work, please configure with authorized
 SNMPv1/SNMPv2c community strings and/or SNMPv3 users in
-<strong>traps-server-config.yaml</strong> (<code>traps: config</code> part of <code>values.yaml</code>). Non-authorized traps/informs will be
+<strong>traps-server-config.yaml</strong> (<code>files: traps: config</code> part of <code>config_values.yaml</code>). Non-authorized traps/informs will be
 dropped.</p>
 <h3 id="configure-snmpv1v2c-community-strings">Configure SNMPv1/v2c community strings<a class="headerlink" href="#configure-snmpv1v2c-community-strings" title="Permanent link">&para;</a></h3>
 <p>Add SNMPv1/SNMPv2c community strings under <strong>v1/v2</strong> section,
@@ -845,9 +844,9 @@ Therefore, both userName and engineID are required for SNMPv3 under
 <p>Splunk Connect for SNMP supports polling from SNMPv1 agents, SNMPv2
 agents, and SNMPv3 agents. To make it work, please configure with
 authorized SNMPv1/SNMPv2c community strings and/or SNMPv3 users in
-<strong>scheduler-config.yaml</strong> (<code>scheduler: config</code> part of <code>values.yaml</code>).</p>
+<strong>scheduler-config.yaml</strong> (<code>files: scheduler: config</code> part of <code>config_values.yaml</code>).</p>
 <h3 id="inventorycsv"><strong>inventory.csv</strong><a class="headerlink" href="#inventorycsv" title="Permanent link">&para;</a></h3>
-<p>Inventory.csv (<code>scheduler: inventory: content</code> part of <code>values.yaml</code>) acts as a lookup table where the poller application will
+<p>Inventory.csv (<code>files: scheduler: inventory</code> part of <code>config_values.yaml</code>) acts as a lookup table where the poller application will
 read the SNMP agents' information and its corresponding queries
 information.</p>
 <div class="codehilite"><pre><span></span><code><span class="s2">&quot;</span><span class="s">host</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">version</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">community</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">profile</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">freqinseconds</span><span class="s2">&quot;</span>
@@ -867,7 +866,7 @@ testUser (SNMPv3 username, setup other params in config.yaml)","e.g
 situations.</p>
 <h4 id="1-configure-optional-parameters-for-snmpv1snmpv2c-community-data">1. Configure optional parameters for SNMPv1/SNMPv2c community data<a class="headerlink" href="#1-configure-optional-parameters-for-snmpv1snmpv2c-community-data" title="Permanent link">&para;</a></h4>
 <p>Community-Based Security Model of SNMPv1/SNMPv2c may require more
-params, which can be set up in config.yaml (<code>scheduler: config</code> part of <code>values.yaml</code>).</p>
+params, which can be set up in config.yaml (<code>files: scheduler: config</code> part of <code>config_values.yaml</code>).</p>
 <blockquote>
 <ol>
 <li>Add SNMPv1/SNMPv2c community string as Key under <strong>communities</strong>
@@ -895,7 +894,7 @@ params, which can be set up in config.yaml (<code>scheduler: config</code> part 
 </ul>
 <h4 id="2-configure-optional-parameters-snmpv3-users">2. Configure optional parameters SNMPv3 users<a class="headerlink" href="#2-configure-optional-parameters-snmpv3-users" title="Permanent link">&para;</a></h4>
 <p>SNMPv3 users may require more params for different security levels,
-which can be set up in config.yaml (<code>scheduler: config</code> part of <code>values.yaml</code>).</p>
+which can be set up in config.yaml (<code>files: scheduler: config</code> part of <code>config_values.yaml</code>).</p>
 <ol>
 <li>Add SNMPv3 userName as Key under <strong>usernames</strong> section.</li>
 <li>Add necessary parameters.</li>
@@ -993,7 +992,7 @@ which can be set up in config.yaml (<code>scheduler: config</code> part of <code
 section to achieve two purposes: 1) query by mib string; 2) query
 multiple oids/mib string for one agent.</p>
 <ol>
-<li>In <strong>scheduler-inventory.yaml</strong> (<code>scheduler: inventory: content</code> part of <code>values.yaml</code>), add the profile string(e.g. router)
+<li>In <strong>scheduler-inventory.yaml</strong> (<code>files: scheduler: inventory</code> part of <code>config_values.yaml</code>), add the profile string(e.g. router)
     to <strong>profile</strong> field under <strong>data &gt; inventory.csv</strong> section.</li>
 </ol>
 <div class="codehilite"><pre><span></span><code>&quot;host&quot;, &quot;version&quot;, &quot;community&quot;, &quot;profile&quot;, &quot;freqinseconds&quot;
@@ -1001,7 +1000,7 @@ multiple oids/mib string for one agent.</p>
 </code></pre></div>
 
 <ol start="2">
-<li>In <strong>scheduler-config.yaml</strong> (<code>scheduler: config</code> part of <code>values.yaml</code>), add the desired query information
+<li>In <strong>scheduler-config.yaml</strong> (<code>files: scheduler: config</code> part of <code>config_values.yaml</code>), add the desired query information
     under <strong>profiles &gt; \<profiles_string> &gt; varBinds</strong> section as list
     entries. e.g. <strong>profiles &gt; router &gt; varBinds</strong>.</li>
 </ol>
@@ -1039,7 +1038,7 @@ index 1 doesn't exist for sysUpTime.</p>
 <h4 id="4-configure-additional-field-to-the-metrics-data">4. Configure additional field to the metrics data<a class="headerlink" href="#4-configure-additional-field-to-the-metrics-data" title="Permanent link">&para;</a></h4>
 <p>User can make every metric data to include <strong>profile</strong> name
 (which is not included by default) by adding <strong>profile</strong>
-under the <strong>additionalMetricField</strong> in <strong>scheduler-config.yaml</strong> (<code>scheduler: config</code> part of <code>values.yaml</code>)</p>
+under the <strong>additionalMetricField</strong> in <strong>scheduler-config.yaml</strong> (<code>files: scheduler: config</code> part of <code>config_values.yaml</code>)</p>
 <p>e.g.</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">additionalMetricField</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">profile</span>
@@ -1195,7 +1194,7 @@ In order to enable it, the enricher must be structured as following:</p>
 <h4 id="test-the-poller">Test the poller<a class="headerlink" href="#test-the-poller" title="Permanent link">&para;</a></h4>
 <p><strong>SNMPv1/SNMPv2</strong></p>
 <ul>
-<li>You can change the inventory contents in scheduler-config.yaml (<code>scheduler: config</code> part of <code>values.yaml</code>) and
+<li>You can change the inventory contents in scheduler-config.yaml (<code>files: scheduler: config</code> part of <code>config_values.yaml</code>) and
     use following command to apply the changes to Kubernetes cluster.
     Agents configuration is placed in scheduler-config.yaml under
     section <strong>inventory.csv</strong>, content below is interpreted as csv file
@@ -1205,19 +1204,19 @@ In order to enable it, the enricher must be structured as following:</p>
 <li>host (IP or name)</li>
 <li>version of SNMP protocol</li>
 <li>community string authorisation phrase</li>
-<li>profile of device (varBinds of profiles can be found in <code>scheduler: config</code> part of <code>values.yaml</code>)</li>
+<li>profile of device (varBinds of profiles can be found in <code>files: scheduler: config</code> part of <code>config_values.yaml</code>)</li>
 <li>frequency in seconds (how often SNMP connector should ask agent for
     data)</li>
 </ol>
 <p><code>`csv    "host", "version", "community", "profile", "freqinseconds"       10.42.0.58,1,public,1.3.6.1.2.1.1.9.1.3.1,30    host.docker.internal,2c,public,1.3.6.1.2.1.1.9.1.3.*,60</code>`</p>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
 
 <p><strong>SNMPv3</strong></p>
 <ul>
 <li>Besides changing the inventory contents under section
-    <code>scheduler: inventory: content</code> of <code>values.yaml</code>, you may need to set up security passphrases for
-    the SNMPv3 under section <code>scheduler: config: usernames</code> of <code>values.yaml</code>.</li>
+    <code>files: scheduler: inventory</code> part of <code>config_values.yaml</code>, you may need to set up security passphrases for
+    the SNMPv3 under section <code>files: scheduler: config: usernames</code> part of <code>config_values.yaml</code>.</li>
 </ul>
 <p>Here are the steps to configure these two SNMPv3 Users.</p>
 <hr />
@@ -1229,7 +1228,7 @@ In order to enable it, the enricher must be structured as following:</p>
 <hr />
 <ol>
 <li>Specify User Name under <strong>community</strong> filed in section
-    <code>scheduler: inventory: content</code> of <code>values.yaml</code>.</li>
+    <code>files: scheduler: inventory</code> part of <code>config_values.yaml</code>.</li>
 </ol>
 <div class="codehilite"><pre><span></span><code>&quot;host&quot;, &quot;version&quot;, &quot;community&quot;, &quot;profile&quot;, &quot;freqinseconds&quot;
 host.docker.internal1,3,testUser1,1.3.6.1.2.1.1.9.1.3.1,30
@@ -1237,7 +1236,7 @@ host.docker.internal2,3,testUser2,1.3.6.1.2.1.1.9.1.3.*,30
 </code></pre></div>
 
 <ol start="2">
-<li>Specify other security params under section <code>scheduler: config</code> of <code>values.yaml</code>.</li>
+<li>Specify other security params under section <code>files: scheduler: config</code> part of <code>config_values.yaml</code>.</li>
 </ol>
 <div class="codehilite"><pre><span></span><code><span class="nt">usernames</span><span class="p">:</span>
    <span class="nt">testUser1</span><span class="p">:</span>
@@ -1253,7 +1252,7 @@ host.docker.internal2,3,testUser2,1.3.6.1.2.1.1.9.1.3.*,30
 <ol start="3">
 <li>Apply the changes.</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
                 
               

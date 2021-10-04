@@ -525,7 +525,7 @@
                   <h1>Additional HELM values</h1>
                 
                 <h2 id="additional-helm-configuration">Additional HELM configuration<a class="headerlink" href="#additional-helm-configuration" title="Permanent link">&para;</a></h2>
-<p><code>values.yaml</code> are the main point of SC4SNMP management. The most important variables are already there from the very beginning 
+<p><code>deployment_values.yaml</code> are the main point of SC4SNMP management. The most important variables are already there from the very beginning 
 after executing:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">inspect</span> <span class="nv">values</span> <span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">installer</span> <span class="o">&gt;</span> <span class="nv">values</span>.<span class="nv">yaml</span>
 </code></pre></div>
@@ -565,16 +565,6 @@ after executing:</p>
 <td>index</td>
 <td>indexes names, should be the same as the ones given in SCK configuration</td>
 <td>event: em_logs / metrics: em_metrics / meta: em_meta</td>
-</tr>
-<tr>
-<td>inventory</td>
-<td>inventory.csv content, described in sc4snmp-configuration</td>
-<td>10.0.101.22,2c,public,basev1,300</td>
-</tr>
-<tr>
-<td>config</td>
-<td>content of config.yaml</td>
-<td></td>
 </tr>
 </tbody>
 </table>

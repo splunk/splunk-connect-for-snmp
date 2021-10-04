@@ -520,10 +520,12 @@ snmptrap -v2c -c public <span class="m">10</span>.0.101.22 <span class="m">123</
     in snmp <code>em_logs</code> and metrics in <code>em_metrics</code> index.</li>
 </ul>
 <h3 id="inventory">Inventory<a class="headerlink" href="#inventory" title="Permanent link">&para;</a></h3>
-<p>* You can change the inventory contents in values.yaml, in scheduler inventory field, ex.:</p>
-<div class="codehilite"><pre><span></span><code>  inventory:
-    content: |-
-      10.0.101.22,2c,public,basev1,300
+<p>* You can change the inventory contents in <code>config_values.yaml</code>, in scheduler inventory field, ex.:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">files</span><span class="o">:</span>
+  <span class="n">scheduler</span><span class="o">:</span>
+    <span class="n">inventory</span><span class="o">:</span> <span class="o">|</span>
+      <span class="n">host</span><span class="o">,</span><span class="n">version</span><span class="o">,</span><span class="n">community</span><span class="o">,</span><span class="n">profile</span><span class="o">,</span><span class="n">freqinseconds</span>
+      <span class="mf">10.0</span><span class="o">.</span><span class="mf">101.22</span><span class="o">,</span><span class="mi">2</span><span class="n">c</span><span class="o">,</span><span class="kd">public</span><span class="o">,</span><span class="n">basev1</span><span class="o">,</span><span class="mi">300</span>
 </code></pre></div>
 
 <p>Where 10.0.101.22 is a host IP.</p>
@@ -538,24 +540,23 @@ columns:</p>
     data)</li>
 </ol>
 <h3 id="config">Config<a class="headerlink" href="#config" title="Permanent link">&para;</a></h3>
-<p>Profiles used in inventory can be created in <code>config.yaml</code>, which can be modified in scheduler config in <code>values.yaml</code>, ex.:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">scheduler</span><span class="o">:</span>
-  <span class="n">logLevel</span><span class="o">:</span> <span class="s2">&quot;WARN&quot;</span>
-  <span class="o">...</span>
-  <span class="n">config</span><span class="o">:</span> <span class="o">|</span>
-    <span class="n">celery</span><span class="o">:</span>
-    <span class="o">...</span>
-    <span class="n">profiles</span><span class="o">:</span>
-      <span class="n">basev1</span><span class="o">:</span>
-        <span class="n">varBinds</span><span class="o">:</span>
-          <span class="err">#</span> <span class="n">Syntax</span><span class="o">:</span> <span class="o">[</span> <span class="s2">&quot;MIB-Files&quot;</span><span class="o">,</span> <span class="s2">&quot;MIB object name&quot;</span> <span class="s2">&quot;MIB index number&quot;</span><span class="o">]</span>
-          <span class="o">-</span> <span class="o">[</span><span class="s1">&#39;SNMPv2-MIB&#39;</span><span class="o">,</span> <span class="s1">&#39;sysDescr&#39;</span><span class="o">]</span>
-          <span class="o">-</span> <span class="o">[</span><span class="s1">&#39;SNMPv2-MIB&#39;</span><span class="o">,</span> <span class="s1">&#39;sysUpTime&#39;</span><span class="o">,</span><span class="mi">0</span><span class="o">]</span>
-          <span class="o">-</span> <span class="o">[</span><span class="s1">&#39;SNMPv2-MIB&#39;</span><span class="o">,</span> <span class="s1">&#39;sysName&#39;</span><span class="o">]</span>
+<p>Profiles used in inventory can be created in <code>config_values.yaml</code>, which can be modified in scheduler config in <code>values.yaml</code>, ex.:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">files</span><span class="o">:</span>
+  <span class="n">scheduler</span><span class="o">:</span>
+    <span class="n">config</span><span class="o">:</span> <span class="o">|</span>
+      <span class="n">celery</span><span class="o">:</span>
+      <span class="o">...</span>
+      <span class="n">profiles</span><span class="o">:</span>
+        <span class="n">basev1</span><span class="o">:</span>
+          <span class="n">varBinds</span><span class="o">:</span>
+            <span class="err">#</span> <span class="n">Syntax</span><span class="o">:</span> <span class="o">[</span> <span class="s2">&quot;MIB-Files&quot;</span><span class="o">,</span> <span class="s2">&quot;MIB object name&quot;</span> <span class="s2">&quot;MIB index number&quot;</span><span class="o">]</span>
+            <span class="o">-</span> <span class="o">[</span><span class="s1">&#39;SNMPv2-MIB&#39;</span><span class="o">,</span> <span class="s1">&#39;sysDescr&#39;</span><span class="o">]</span>
+            <span class="o">-</span> <span class="o">[</span><span class="s1">&#39;SNMPv2-MIB&#39;</span><span class="o">,</span> <span class="s1">&#39;sysUpTime&#39;</span><span class="o">,</span><span class="mi">0</span><span class="o">]</span>
+            <span class="o">-</span> <span class="o">[</span><span class="s1">&#39;SNMPv2-MIB&#39;</span><span class="o">,</span> <span class="s1">&#39;sysName&#39;</span><span class="o">]</span>
 </code></pre></div>
 
 <p>Every change in values.yaml file can be applied with the command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
 
 <p>This command should produce this kind of output:</p>
@@ -568,7 +569,7 @@ REVISION: 2
 TEST SUITE: None
 </code></pre></div>
 
-<p>More information about how to configure <code>values.yaml</code> is available here: <a href="../additional-helm-configuration/">Additional HELM values</a></p>
+<p>More information about how to configure <code>deployment_values.yaml</code> is available here: <a href="../additional-helm-configuration/">Additional HELM values</a></p>
 <h3 id="test-poller">Test Poller<a class="headerlink" href="#test-poller" title="Permanent link">&para;</a></h3>
 <p>Search splunk, one event per trap command with the host value of the
 test machine ip will be found</p>
