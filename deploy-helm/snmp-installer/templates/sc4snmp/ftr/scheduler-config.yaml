@@ -5,4 +5,4 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 data:
   config.yaml: |-
-{{ .Values.scheduler.config | indent 4}}
+{{ .Values.scheduler-config | indent 4}}
