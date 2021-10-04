@@ -44,9 +44,6 @@ otel:
   service_logs_port: "8881"
 worker:
   logLevel: "WARN"
-  image: snmp_test
-  version: latest
-  imagePullPolicy: "Never"
   resources:
     limits:
       cpu: 200m
