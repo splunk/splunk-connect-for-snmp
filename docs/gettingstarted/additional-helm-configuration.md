@@ -1,6 +1,6 @@
 ## Additional HELM configuration
 
-`values.yaml` are the main point of SC4SNMP management. The most important variables are already there from the very beginning 
+`deployment_values.yaml` are the main point of SC4SNMP management. The most important variables are already there from the very beginning 
 after executing:
 ```
 microk8s helm3 inspect values splunk-connect-for-snmp/snmp-installer > values.yaml
@@ -32,8 +32,6 @@ Scheduler, MIB and Worker contain `logLevel` variable that indicates the level o
 | variable | description | example
 | --- | --- | --- |
 | index | indexes names, should be the same as the ones given in SCK configuration | event: em_logs / metrics: em_metrics / meta: em_meta |
-| inventory | inventory.csv content, described in sc4snmp-configuration | 10.0.101.22,2c,public,basev1,300 |
-| config | content of config.yaml | |
 
 ### Splunk values
 | variable   | Description  | Example  | 
