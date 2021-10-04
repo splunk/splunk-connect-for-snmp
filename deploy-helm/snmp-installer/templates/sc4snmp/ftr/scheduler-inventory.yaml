@@ -5,5 +5,5 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 data:
   inventory.csv: |-
-    {{ .Values "scheduler-inventory" | indent 4}}
+    {{ .Values.files.scheduler.inventory | indent 4}}
 
