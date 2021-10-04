@@ -5,6 +5,15 @@ splunk:
   insecureSSL: "true"
   port: ###SPLUNK_PORT###
   clusterName: ###CLUSTER_NAME###
+traps:
+  logLevel: "WARN"
+  loadBalancerIP: ###X.X.X.X###
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      memory: 128Mi
 scheduler:
   logLevel: "WARN"
   index:
@@ -18,15 +27,6 @@ scheduler:
     requests:
       cpu: 1000m
       memory: 2Gi
-traps:
-  logLevel: "WARN"
-  loadBalancerIP: ###X.X.X.X###
-  resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      memory: 128Mi
 mode: "both"
 mib:
   service_host: sc4snmp-mib-server-service
