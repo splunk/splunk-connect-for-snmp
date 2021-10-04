@@ -4,7 +4,7 @@ metadata:
   name: sc4snmp-mib-server
   namespace: {{ .Release.Namespace | quote }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.mib.replicas }}
   selector:
     matchLabels:
       app: sc4snmp-mib-server

@@ -6,7 +6,7 @@ metadata:
   labels:
     app: sc4snmp-traps
 spec:
-  replicas: 1
+  replicas: {{ .Values.traps.replicas }}
   selector:
     matchLabels:
       app: sc4snmp-traps
