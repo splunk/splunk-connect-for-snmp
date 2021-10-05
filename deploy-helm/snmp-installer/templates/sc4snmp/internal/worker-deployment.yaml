@@ -6,7 +6,7 @@ metadata:
   labels:
     app: sc4snmp-worker
 spec:
-  replicas: 1
+  replicas: {{ .Values.worker.replicas }}
   selector:
     matchLabels:
       app: sc4snmp-worker

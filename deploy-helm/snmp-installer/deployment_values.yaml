@@ -1,5 +1,23 @@
+splunk:
+  protocol: https
+  host: ###SPLUNK_HOST###
+  token: ###SPLUNK_TOKEN###
+  insecureSSL: "true"
+  port: ###SPLUNK_PORT###
+  clusterName: ###CLUSTER_NAME###
+traps:
+  logLevel: "WARN"
+  replicas: 1
+  loadBalancerIP: ###X.X.X.X###
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      memory: 128Mi
 scheduler:
   logLevel: "WARN"
+  replicas: 1
   index:
     event: em_logs
     metrics: em_metrics
@@ -11,108 +29,9 @@ scheduler:
     requests:
       cpu: 1000m
       memory: 2Gi
-  inventory:
-    content: |-
-      #10.0.0.1,2c,public,basev1,300
-  config: |
-    celery:
-      broker:
-        type: "rabbitmq"
-    # Sample Configuration file
-    ipv4: True
-    ipv6: False
-    communities:
-      public:
-        communityIndex:
-        contextEngineId:
-        contextName:
-        tag:
-        securityName:
-      my-area:
-    usernames:
-      simulator:
-        authKey: "auctoritas"
-        privKey: "privatus"
-      testUser:
-        authKey: authpass
-        privKey: privacypass
-        contextName: "4c9184f37cff01bcdc32dc486ec36961"
-        authProtocol: SHA
-        privProtocol: AES
-        securityEngineId: 8000000004030201
-        securityName:
-        authKeyType: 0
-        privKeyType: 0
-    profiles:
-      basev1:
-        varBinds:
-          # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
-          - ['SNMPv2-MIB', 'sysDescr']
-          - ['SNMPv2-MIB', 'sysUpTime',0]
-          - ['SNMPv2-MIB', 'sysName']
-      basev1l2:
-        varBinds:
-          # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
-          - ['SNMPv2-MIB', 'sysDescr']
-          - ['SNMPv2-MIB', 'sysUpTime',0]
-          - ['SNMPv2-MIB', 'sysName']
-          - ['IF-MIB','ifHCInOctets']
-          - ['IF-MIB','ifHCOutOctets']
-          - ['IF-MIB','ifInErrors']
-          - ['IF-MIB','ifOutErrors']
-          - ['IF-MIB','ifInDiscards']
-          - ['IF-MIB','ifOutDiscards']
-    mongo:
-      database: "snmp_poller"
-      collection: "walked_hosts"
-splunk:
-  protocol: https
-  host: ###SPLUNK_HOST###
-  token: ###SPLUNK_TOKEN###
-  insecureSSL: "true"
-  port: ###SPLUNK_PORT###
-  clusterName: ###CLUSTER_NAME###
-traps:
-  logLevel: "WARN"
-  loadBalancerIP: ###X.X.X.X###
-  resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      memory: 128Mi
-  config: |
-    # Splunk Connect for SNMP Traps
-    # Sample Configuration file
-    snmp:
-      communities:
-        v1:
-          - public
-          - "my-area"
-        v2:
-          - public
-          - "my-area"
-        v3:
-          - userName: snmpv3test
-            authKey: AuthPass1
-            privKey: PrivPass2
-            securityEngineId: 8000000004030201
-          - userName: snmpv3test2
-            authProtocol: SHA
-            authKey: AuthPass11
-            privProtocol: aes
-            privKey: PrivPass22
-            securityEngineId: 8000000004030202
-          - userName: snmpv3test3
-            securityEngineId: 8000000004030203
-          - userName: testfdse
-            authKey: testfdse
-            privKey: testfdse
-            securityEngineId: 8000000903bc16f5802780
-    thread-pool:
-      max-suggested-working-threads: 10
 mode: "both"
 mib:
+  replicas: 1
   service_host: sc4snmp-mib-server-service
   service_port: "5000"
   resources:
@@ -123,11 +42,13 @@ mib:
       cpu: 100m
       memory: 128Mi
 otel:
+  replicas: 1
   service_host: otel-service
   service_metrics_port: "8882"
   service_logs_port: "8881"
 worker:
   logLevel: "WARN"
+  replicas: 1
   resources:
     limits:
       cpu: 200m

@@ -6,7 +6,7 @@ metadata:
   labels:
     app: sc4snmp-scheduler
 spec:
-  replicas: 1
+  replicas: {{ .Values.scheduler.replicas }}
   selector:
     matchLabels:
       app: sc4snmp-scheduler

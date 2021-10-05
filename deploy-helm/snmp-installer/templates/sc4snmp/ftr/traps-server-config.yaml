@@ -5,4 +5,4 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 data:
   config.yaml: |-
-{{ .Values.traps.config | indent 4 }}
+{{ .Values.files.traps.config | indent 4 }}

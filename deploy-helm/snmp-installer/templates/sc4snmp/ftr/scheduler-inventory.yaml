@@ -4,7 +4,6 @@ metadata:
   name: sc4snmp-inventory
   namespace: {{ .Release.Namespace | quote }}
 data:
-  inventory.csv: |
-    host,version,community,profile,freqinseconds
-    {{ .Values.scheduler.inventory.content }}
+  inventory.csv: |-
+{{ .Values.files.scheduler.inventory | indent 4}}
 
