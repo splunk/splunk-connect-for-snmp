@@ -6,7 +6,7 @@ metadata:
   labels:
     app: sc4snmp-otel
 spec:
-  replicas: 1
+  replicas: {{ .Values.otel.replicas }}
   selector:
     matchLabels:
       app: sc4snmp-otel

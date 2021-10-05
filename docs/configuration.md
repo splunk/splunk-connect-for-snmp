@@ -6,38 +6,37 @@ In this section we're refering to following files required to configure schedule
 3. `traps-server-config.yaml`
 
 While installing SC4SNMP via HELM we can easily configure all of those using one point
-of management: `values.yaml`. The structure is:
+of management: `config_values.yaml`. The structure is:
 ```yaml
-scheduler:
-  ...
-  inventory:               
-    content: |-                       <- scheduler-inventory.yaml
+files:
+  scheduler:            
+    inventory: |                        <- scheduler-inventory.yaml
+      host,version,community,profile,freqinseconds
       #10.0.0.1,2c,public,basev1,300
-  config: |                           <- scheduler-config.yaml
-    celery:
-      broker:
-        type: "rabbitmq"
-    # Sample Configuration file
-    ipv4: True
-    ipv6: False
-    communities:
-      ...
-traps:
-  ...
-  config:                             <- traps-server-config.yaml
-    snmp:
+    config: |                           <- scheduler-config.yaml
+      celery:
+        broker:
+          type: "rabbitmq"
+      # Sample Configuration file
+      ipv4: True
+      ipv6: False
       communities:
-        v1:
-          - public
-          - "my-area"
-        v2:
-          - public
-          - "my-area"
+        ...
+  traps:                                
+    config:                             <- traps-server-config.yaml
+      snmp:
+        communities:
+          v1:
+            - public
+            - "my-area"
+          v2:
+            - public
+            - "my-area"
 ```
 
 Use following command to propagate configuration changes:
 ``` bash
-microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
 ## Traps Configuration
 
@@ -47,7 +46,7 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snm
 Splunk Connect for SNMP supports receiving SNMPv1 traps, SNMPv2 traps,
 and SNMPv3 traps. To make it work, please configure with authorized
 SNMPv1/SNMPv2c community strings and/or SNMPv3 users in
-**traps-server-config.yaml** (`traps: config` part of `values.yaml`). Non-authorized traps/informs will be
+**traps-server-config.yaml** (`files: traps: config` part of `config_values.yaml`). Non-authorized traps/informs will be
 dropped.
 
 ### Configure SNMPv1/v2c community strings
@@ -153,11 +152,11 @@ snmp:
 Splunk Connect for SNMP supports polling from SNMPv1 agents, SNMPv2
 agents, and SNMPv3 agents. To make it work, please configure with
 authorized SNMPv1/SNMPv2c community strings and/or SNMPv3 users in
-**scheduler-config.yaml** (`scheduler: config` part of `values.yaml`).
+**scheduler-config.yaml** (`files: scheduler: config` part of `config_values.yaml`).
 
 ### **inventory.csv**
 
-Inventory.csv (`scheduler: inventory: content` part of `values.yaml`) acts as a lookup table where the poller application will
+Inventory.csv (`files: scheduler: inventory` part of `config_values.yaml`) acts as a lookup table where the poller application will
 read the SNMP agents\' information and its corresponding queries
 information.
 
@@ -181,7 +180,7 @@ situations.
 #### 1. Configure optional parameters for SNMPv1/SNMPv2c community data
 
 Community-Based Security Model of SNMPv1/SNMPv2c may require more
-params, which can be set up in config.yaml (`scheduler: config` part of `values.yaml`).
+params, which can be set up in config.yaml (`files: scheduler: config` part of `config_values.yaml`).
 
 > 1.  Add SNMPv1/SNMPv2c community string as Key under **communities**
 >     section.
@@ -206,7 +205,7 @@ params, which can be set up in config.yaml (`scheduler: config` part of `values.
 #### 2. Configure optional parameters SNMPv3 users
 
 SNMPv3 users may require more params for different security levels,
-which can be set up in config.yaml (`scheduler: config` part of `values.yaml`).
+which can be set up in config.yaml (`files: scheduler: config` part of `config_values.yaml`).
 
 1.  Add SNMPv3 userName as Key under **usernames** section.
 2.  Add necessary parameters.
@@ -295,7 +294,7 @@ User can provide more detailed query information under **profiles**
 section to achieve two purposes: 1) query by mib string; 2) query
 multiple oids/mib string for one agent.
 
-1.  In **scheduler-inventory.yaml** (`scheduler: inventory: content` part of `values.yaml`), add the profile string(e.g. router)
+1.  In **scheduler-inventory.yaml** (`files: scheduler: inventory` part of `config_values.yaml`), add the profile string(e.g. router)
     to **profile** field under **data > inventory.csv** section.
 
 ```csv
@@ -303,7 +302,7 @@ multiple oids/mib string for one agent.
 10.42.0.58,1,public,router,30
 ```
 
-2.  In **scheduler-config.yaml** (`scheduler: config` part of `values.yaml`), add the desired query information
+2.  In **scheduler-config.yaml** (`files: scheduler: config` part of `config_values.yaml`), add the desired query information
     under **profiles > \<profiles_string> > varBinds** section as list
     entries. e.g. **profiles > router > varBinds**.
 
@@ -345,7 +344,7 @@ profiles:
 
 User can make every metric data to include **profile** name
 (which is not included by default) by adding **profile**
-under the **additionalMetricField** in **scheduler-config.yaml** (`scheduler: config` part of `values.yaml`)
+under the **additionalMetricField** in **scheduler-config.yaml** (`files: scheduler: config` part of `config_values.yaml`)
 
 
 e.g.
@@ -477,7 +476,7 @@ For metrics query:
 
 **SNMPv1/SNMPv2**
 
--   You can change the inventory contents in scheduler-config.yaml (`scheduler: config` part of `values.yaml`) and
+-   You can change the inventory contents in scheduler-config.yaml (`files: scheduler: config` part of `config_values.yaml`) and
     use following command to apply the changes to Kubernetes cluster.
     Agents configuration is placed in scheduler-config.yaml under
     section **inventory.csv**, content below is interpreted as csv file
@@ -486,21 +485,21 @@ For metrics query:
 1.  host (IP or name)
 2.  version of SNMP protocol
 3.  community string authorisation phrase
-4.  profile of device (varBinds of profiles can be found in `scheduler: config` part of `values.yaml`)
+4.  profile of device (varBinds of profiles can be found in `files: scheduler: config` part of `config_values.yaml`)
 5.  frequency in seconds (how often SNMP connector should ask agent for
     data)
 
 `` `csv    "host", "version", "community", "profile", "freqinseconds"       10.42.0.58,1,public,1.3.6.1.2.1.1.9.1.3.1,30    host.docker.internal,2c,public,1.3.6.1.2.1.1.9.1.3.*,60 ``\`
 
 ``` bash
-microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
 
 **SNMPv3**
 
 -   Besides changing the inventory contents under section
-    `scheduler: inventory: content` of `values.yaml`, you may need to set up security passphrases for
-    the SNMPv3 under section `scheduler: config: usernames` of `values.yaml`.
+    `files: scheduler: inventory` part of `config_values.yaml`, you may need to set up security passphrases for
+    the SNMPv3 under section `files: scheduler: config: usernames` part of `config_values.yaml`.
 
 Here are the steps to configure these two SNMPv3 Users.
 
@@ -514,7 +513,7 @@ Here are the steps to configure these two SNMPv3 Users.
   --------------------------------------------------------------------------
 
 1.  Specify User Name under **community** filed in section
-    `scheduler: inventory: content` of `values.yaml`.
+    `files: scheduler: inventory` part of `config_values.yaml`.
 
 ```csv
 "host", "version", "community", "profile", "freqinseconds"
@@ -522,7 +521,7 @@ host.docker.internal1,3,testUser1,1.3.6.1.2.1.1.9.1.3.1,30
 host.docker.internal2,3,testUser2,1.3.6.1.2.1.1.9.1.3.*,30
 ```
 
-2.  Specify other security params under section `scheduler: config` of `values.yaml`.
+2.  Specify other security params under section `files: scheduler: config` part of `config_values.yaml`.
 
 ``` yaml
 usernames:
@@ -539,5 +538,5 @@ usernames:
 3.  Apply the changes.
 
 ``` bash
-microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```

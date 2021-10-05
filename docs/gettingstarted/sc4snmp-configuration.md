@@ -21,10 +21,12 @@ index=em_logs sourcetype="sc4snmp:traps"
     in snmp `em_logs` and metrics in `em_metrics` index.
 
 ### Inventory
-\* You can change the inventory contents in values.yaml, in scheduler inventory field, ex.:
+\* You can change the inventory contents in `config_values.yaml`, in scheduler inventory field, ex.:
 ```
-  inventory:
-    content: |-
+files:
+  scheduler:
+    inventory: |
+      host,version,community,profile,freqinseconds
       10.0.101.22,2c,public,basev1,300
 ```
 Where 10.0.101.22 is a host IP.
@@ -40,27 +42,26 @@ columns:
     data)
 
 ### Config
-Profiles used in inventory can be created in `config.yaml`, which can be modified in scheduler config in `values.yaml`, ex.:
+Profiles used in inventory can be created in `config_values.yaml`, which can be modified in scheduler config in `values.yaml`, ex.:
 ```
-scheduler:
-  logLevel: "WARN"
-  ...
-  config: |
-    celery:
-    ...
-    profiles:
-      basev1:
-        varBinds:
-          # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
-          - ['SNMPv2-MIB', 'sysDescr']
-          - ['SNMPv2-MIB', 'sysUpTime',0]
-          - ['SNMPv2-MIB', 'sysName']
+files:
+  scheduler:
+    config: |
+      celery:
+      ...
+      profiles:
+        basev1:
+          varBinds:
+            # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+            - ['SNMPv2-MIB', 'sysDescr']
+            - ['SNMPv2-MIB', 'sysUpTime',0]
+            - ['SNMPv2-MIB', 'sysName']
 ```
 
 
 Every change in values.yaml file can be applied with the command:
 ``` bash
-microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
 
 This command should produce this kind of output:
@@ -74,7 +75,7 @@ REVISION: 2
 TEST SUITE: None
 ```
 
-More information about how to configure `values.yaml` is available here: [Additional HELM values](additional-helm-configuration.md)
+More information about how to configure `deployment_values.yaml` is available here: [Additional HELM values](additional-helm-configuration.md)
 ### Test Poller
 
 Search splunk, one event per trap command with the host value of the
