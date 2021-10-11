@@ -34,7 +34,7 @@ spec:
             - name: MONGO_SERVICE_SERVICE_PORT
               value: "27017"
             - name: MIBS_SERVER_URL
-              value: { { printf "http://%s:%s" .Values.mib.service_host .Values.mib.service_port | quote } }
+              value: {{ printf "http://%s:%s" .Values.mib.service_host .Values.mib.service_port | quote }}
             - name: CELERY_BROKER_URL
               value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq:5672/
             - name: POLLER_EXECUTION_MODE
