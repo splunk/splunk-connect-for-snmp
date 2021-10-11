@@ -18,7 +18,7 @@ python = ">=3.6.8"
 pytest = "^6.2.2"
 mike = "^1.0.1"
 mkdocs = "^1.2.2"
-mkdocs-material = "^7.2.4"
+mkdocs-material = "^7.3.3"
 
 [build-system]
 requires = ["poetry>=0.12"]
