@@ -45,7 +45,7 @@ spec:
               readOnly: true
             - name: inventory
               mountPath: "/work/inventory"
-              readOnly: true
+              readOnly: false
           resources:
 {{ toYaml .Values.mib.resources | indent 12 }}
       volumes:
