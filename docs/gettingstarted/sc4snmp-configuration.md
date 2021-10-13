@@ -26,8 +26,9 @@ index=em_logs sourcetype="sc4snmp:traps"
 files:
   scheduler:
     inventory: |
-      host,version,community,profile,freqinseconds
-      10.0.101.22,2c,public,basev1,300
+      host,version,community,profile
+      10.0.101.22,2c,public,basev1
+      10.0.101.23,2c,public,*
 ```
 Where 10.0.101.22 is a host IP.
 
@@ -37,9 +38,9 @@ columns:
 1.  host (IP or name)
 2.  version of SNMP protocol
 3.  community string authorisation phrase
-4.  profile of device (varBinds of profiles can be found in config.yaml, defined in scheduler config in values.yaml)
-5.  frequency in seconds (how often SNMP connector should ask agent for
-    data)
+4.  profile of device (varBinds of profiles can be found in config.yaml, defined in scheduler config in values.yaml),
+    for automatic profile assignment '*' can be used, profile name may contain only letters, numbers, underscore or dash
+
 
 ### Config
 Profiles used in inventory can be created in `config_values.yaml`, which can be modified in scheduler config in `values.yaml`, ex.:
@@ -51,13 +52,17 @@ files:
       ...
       profiles:
         basev1:
+          frequency: 10
+          patterns:
+            - '.*STRING_TO_BE_MATCHED.*'
           varBinds:
             # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
             - ['SNMPv2-MIB', 'sysDescr']
             - ['SNMPv2-MIB', 'sysUpTime',0]
             - ['SNMPv2-MIB', 'sysName']
 ```
-
+frequency - frequency in seconds (how often SNMP connector should ask agent for data)
+patterns - list of regular expressions that will be matched against sysDescr or sysObjectId
 
 Every change in values.yaml file can be applied with the command:
 ``` bash
