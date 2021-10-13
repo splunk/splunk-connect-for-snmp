@@ -39,7 +39,7 @@ columns:
 2.  version of SNMP protocol
 3.  community string authorisation phrase
 4.  profile of device (varBinds of profiles can be found in config.yaml, defined in scheduler config in values.yaml),
-    for automatic profile assignment '*' can be used
+    for automatic profile assignment '*' can be used, profile name may contain only letters, numbers, underscore or dash
 
 
 ### Config
