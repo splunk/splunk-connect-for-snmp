@@ -524,8 +524,9 @@ snmptrap -v2c -c public <span class="m">10</span>.0.101.22 <span class="m">123</
 <div class="codehilite"><pre><span></span><code><span class="n">files</span><span class="o">:</span>
   <span class="n">scheduler</span><span class="o">:</span>
     <span class="n">inventory</span><span class="o">:</span> <span class="o">|</span>
-      <span class="n">host</span><span class="o">,</span><span class="n">version</span><span class="o">,</span><span class="n">community</span><span class="o">,</span><span class="n">profile</span><span class="o">,</span><span class="n">freqinseconds</span>
-      <span class="mf">10.0</span><span class="o">.</span><span class="mf">101.22</span><span class="o">,</span><span class="mi">2</span><span class="n">c</span><span class="o">,</span><span class="kd">public</span><span class="o">,</span><span class="n">basev1</span><span class="o">,</span><span class="mi">300</span>
+      <span class="n">host</span><span class="o">,</span><span class="n">version</span><span class="o">,</span><span class="n">community</span><span class="o">,</span><span class="n">profile</span>
+      <span class="mf">10.0</span><span class="o">.</span><span class="mf">101.22</span><span class="o">,</span><span class="mi">2</span><span class="n">c</span><span class="o">,</span><span class="kd">public</span><span class="o">,</span><span class="n">basev1</span>
+      <span class="mf">10.0</span><span class="o">.</span><span class="mf">101.23</span><span class="o">,</span><span class="mi">2</span><span class="n">c</span><span class="o">,</span><span class="kd">public</span><span class="o">,*</span>
 </code></pre></div>
 
 <p>Where 10.0.101.22 is a host IP.</p>
@@ -535,9 +536,8 @@ columns:</p>
 <li>host (IP or name)</li>
 <li>version of SNMP protocol</li>
 <li>community string authorisation phrase</li>
-<li>profile of device (varBinds of profiles can be found in config.yaml, defined in scheduler config in values.yaml)</li>
-<li>frequency in seconds (how often SNMP connector should ask agent for
-    data)</li>
+<li>profile of device (varBinds of profiles can be found in config.yaml, defined in scheduler config in values.yaml),
+    for automatic profile assignment &lsquo;*&rsquo; can be used, profile name may contain only letters, numbers, underscore or dash</li>
 </ol>
 <h3 id="config">Config<a class="headerlink" href="#config" title="Permanent link">&para;</a></h3>
 <p>Profiles used in inventory can be created in <code>config_values.yaml</code>, which can be modified in scheduler config in <code>values.yaml</code>, ex.:</p>
@@ -548,6 +548,9 @@ columns:</p>
       <span class="o">...</span>
       <span class="n">profiles</span><span class="o">:</span>
         <span class="n">basev1</span><span class="o">:</span>
+          <span class="n">frequency</span><span class="o">:</span> <span class="mi">10</span>
+          <span class="n">patterns</span><span class="o">:</span>
+            <span class="o">-</span> <span class="s1">&#39;.*STRING_TO_BE_MATCHED.*&#39;</span>
           <span class="n">varBinds</span><span class="o">:</span>
             <span class="err">#</span> <span class="n">Syntax</span><span class="o">:</span> <span class="o">[</span> <span class="s2">&quot;MIB-Files&quot;</span><span class="o">,</span> <span class="s2">&quot;MIB object name&quot;</span> <span class="s2">&quot;MIB index number&quot;</span><span class="o">]</span>
             <span class="o">-</span> <span class="o">[</span><span class="s1">&#39;SNMPv2-MIB&#39;</span><span class="o">,</span> <span class="s1">&#39;sysDescr&#39;</span><span class="o">]</span>
@@ -555,6 +558,8 @@ columns:</p>
             <span class="o">-</span> <span class="o">[</span><span class="s1">&#39;SNMPv2-MIB&#39;</span><span class="o">,</span> <span class="s1">&#39;sysName&#39;</span><span class="o">]</span>
 </code></pre></div>
 
+<p>frequency - frequency in seconds (how often SNMP connector should ask agent for data)
+patterns - list of regular expressions that will be matched against sysDescr or sysObjectId</p>
 <p>Every change in values.yaml file can be applied with the command:</p>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
