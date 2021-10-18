@@ -19,7 +19,6 @@ spec:
         - name: traps
           image: {{ .Values.traps.image | default "ghcr.io/splunk/splunk-connect-for-snmp-traps/container" }}:{{ .Values.traps.version | default 1 }}
           imagePullPolicy: {{ .Values.traps.imagePullPolicy | default "Always" }}
-          args: {{ .Values.traps.args }}
           ports:
             - containerPort: 2162
           env:
