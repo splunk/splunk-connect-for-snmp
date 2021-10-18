@@ -19,7 +19,7 @@ spec:
         - name: sc4snmp-worker
           image: {{ .Values.worker.image | default "ghcr.io/splunk/splunk-connect-for-snmp-poller/container" }}:{{ .Values.worker.version | default 1 }}
           imagePullPolicy: {{ .Values.worker.imagePullPolicy | default "Always" }}
-          args: ["--log={{ .Values.worker.logLevel }}", "--config=/work/config/config.yaml"]
+          args: {{ .Values.worker.args }}
           env:
             - name: CELERY_BROKER_URL
               value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq:5672/

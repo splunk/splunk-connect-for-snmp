@@ -3,6 +3,14 @@ files:
     inventory: |
       host,version,community,profile,freqinseconds
       #10.0.0.1,2c,public,basev1,300
+    args: [
+        "--log={{ .Values.scheduler.logLevel }}",
+        "--config=/work/config/config.yaml",
+        "--inventory=/work/inventory/inventory.csv",
+        "--event_index={{ .Values.scheduler.index.event }}",
+        "--metric_index={{ .Values.scheduler.index.metrics }}",
+        "--meta_index={{ .Values.scheduler.index.meta }}",
+    ]
     config: |
       celery:
         broker:
@@ -55,6 +63,12 @@ files:
         database: "snmp_poller"
         collection: "walked_hosts"
   traps:
+    args: [
+        "--loglevel={{ .Values.traps.logLevel }}",
+        "--config=/work/config/config.yaml",
+        "--index={{ .Values.scheduler.index.event }}",
+        "--ipv6=",
+    ]
     config: |
       # Splunk Connect for SNMP Traps
       # Sample Configuration file
@@ -85,3 +99,5 @@ files:
               securityEngineId: 8000000903bc16f5802780
       thread-pool:
         max-suggested-working-threads: 10
+    worker:
+      args: ["--log={{ .Values.worker.logLevel }}", "--config=/work/config/config.yaml"]

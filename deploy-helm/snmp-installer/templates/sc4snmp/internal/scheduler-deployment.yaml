@@ -19,15 +19,7 @@ spec:
         - name: sc4snmp-scheduler
           image: {{ .Values.worker.image | default "ghcr.io/splunk/splunk-connect-for-snmp-poller/container" }}:{{ .Values.worker.version | default 1 }}
           imagePullPolicy: {{ .Values.worker.imagePullPolicy | default "Always" }}
-          args:
-            [
-              "--log={{ .Values.scheduler.logLevel }}",
-              "--config=/work/config/config.yaml",
-              "--inventory=/work/inventory/inventory.csv",
-              "--event_index={{ .Values.scheduler.index.event }}",
-              "--metric_index={{ .Values.scheduler.index.metrics }}",
-              "--meta_index={{ .Values.scheduler.index.meta }}",
-            ]
+          args: {{ .Values.scheduler.args }}
           env:
             - name: MONGO_SERVICE_SERVICE_HOST
               value: sc4snmp-mongodb
