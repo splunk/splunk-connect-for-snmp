@@ -27,7 +27,7 @@ spec:
               "--event_index={{ .Values.scheduler.index.event }}",
               "--metric_index={{ .Values.scheduler.index.metrics }}",
               "--meta_index={{ .Values.scheduler.index.meta }}",
-              "--refresh_interval={{ .Values.files.scheduler.args.refresh_interval | quote }}",
+              "--refresh_interval={{ .Values.files.scheduler.args.refresh_interval }}",
               "--realtime_task_frequency={{ .Values.files.scheduler.args.realtime_task_frequency }}",
               "--matching_task_frequency={{ .Values.files.scheduler.args.matching_task_frequency }}",
               "--onetime_task_frequency={{ .Values.files.scheduler.args.onetime_task_frequency }}",
