@@ -15,7 +15,7 @@ log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 python = ">=3.6.8"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2.2"
+pytest = "^6.2.5"
 mike = "^1.1.2"
 mkdocs = "^1.2.3"
 mkdocs-material = "^7.2.4"
