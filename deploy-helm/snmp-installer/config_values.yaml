@@ -3,6 +3,11 @@ files:
     inventory: |
       host,version,community,profile,freqinseconds
       #10.0.0.1,2c,public,basev1,300
+    args:
+      refresh_interval: 1
+      realtime_task_frequency: 60
+      matching_task_frequency: 10
+      onetime_task_frequency: 120
     config: |
       celery:
         broker:
@@ -53,7 +58,8 @@ files:
             - ['IF-MIB','ifOutDiscards']
       mongo:
         database: "snmp_poller"
-        collection: "walked_hosts"
+        walked_collection: "walked_hosts"
+        unwalked_collection: "unwalked_hosts"
   traps:
     config: |
       # Splunk Connect for SNMP Traps
