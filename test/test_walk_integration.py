@@ -14,23 +14,26 @@
 #    limitations under the License.
 #   ########################################################################
 import logging
+import time
 
 from test.splunk_test_utils import splunk_single_search
 
 logger = logging.getLogger(__name__)
 
 
-def test_poller_integration_event(setup_splunk):
-    logger.info(f"Integration test for poller event")
-    search_string = 'search index="em_meta" sourcetype="sc4snmp:meta" earliest=-1m'
+def test_walk_discovery(setup_splunk):
+    logger.info(f"Integration test for poller walk")
+    search_string = 'search index="em_meta" sourcetype="sc4snmp:walk"'
+    time.sleep(60)
     result_count, events_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
-    assert events_count > 0
+    assert events_count == 96
 
 
-def test_poller_integration_metric(setup_splunk):
-    logger.info(f"Integration test for poller metric")
-    search_string = "| mcatalog values(metric_name) where index=em_metrics AND metric_name=sc4snmp.* earliest=-1m"
-    result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+def test_walk_bulk(setup_splunk):
+    logger.info(f"Integration test for poller walk")
+    search_string = 'search index="em_meta" sourcetype="sc4snmp:meta" 1.3.6.1.2.1.2'
+    result_count, events_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
-    assert metric_count > 0
+    assert events_count > 10
+

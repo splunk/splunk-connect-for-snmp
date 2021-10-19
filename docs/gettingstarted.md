@@ -136,7 +136,7 @@ Search splunk, one event per trap command with the host value of the
 test machine ip will be found
 
 ``` bash
-index=em_logs sourcetype="sc4snmp:meta" SNMPv2_MIB__sysLocation_0="*" | dedup host
+index=em_meta sourcetype="sc4snmp:meta" SNMPv2_MIB__sysLocation_0="*" | dedup host
 ```
 
 ``` bash
