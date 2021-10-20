@@ -1,15 +1,14 @@
 # Planning
 
 Splunk Connect for SNMP (SC4SNMP) is a solution that allows the customer
-to \"get\" data from network devices and appliances where a more feature
-complete solution such as the Splunk Universal Forwarder is not
+to \"get\" data from network devices and appliances when a more feature-complete solution, such as the Splunk Universal Forwarder, is not
 available.
 
 ## Architecture
 
-SC4SNMP is deployed using a Kubernetes distribution typically MicroK8s,
-deseigned to be a low touch experience for integration with sensitive
-edge network devices it will typically be deployed in the same network
+SC4SNMP is deployed using a Kubernetes distribution, typically MicroK8s,
+that's deseigned to be a low-touch experience for integration with sensitive
+edge network devices. It will typically be deployed in the same network
 management zone as the monitored devices and seperated from Splunk by an
 existing firewall.
 
@@ -46,17 +45,16 @@ existing firewall.
 
     Splunk Infrastructure Monitoring specific requirements
 
-    :   -   Ability to create of obtain real and token
+    :   -   Ability to create or obtain real and token
 
 ## Planning Infrastructure
 
-Single installation of Splunk Connect for SNMP (SC4SNMP) on machine with
+Single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
 16 Core/32 threads x64 and 12 GB ram will be able to handle up to 1300
 SNMP TRAPs per sec.
 
-Single installation of Splunk Connect for SNMP (SC4SNMP) on machine with
+Single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
 16 Core/32 threads x64 and 64 GB ram will be able to handle up to 1300
 SNMP GETs per sec.
 
-When planning infrastructure for Splunk Connect for SNMP (SC4SNMP) above
-limitations need to be taken under consideration.
+When planning infrastructure for Splunk Connect for SNMP, (SC4SNMP) note the limitations highlighted above.
