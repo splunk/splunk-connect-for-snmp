@@ -5,7 +5,7 @@ after executing:
 ```
 microk8s helm3 inspect values splunk-connect-for-snmp/snmp-installer > values.yaml
 ```
-The whole file is divided on following components:
+The whole file is divided into the following components:
 
 1. scheduler
 2. splunk
@@ -14,7 +14,7 @@ The whole file is divided on following components:
 5. rabbitmq
 
 ### Shared values
-All of the components have `resources` field for memory resources adjusting:
+All of the components have the `resources` field for adjusting memory resources:
 ```yaml
   resources:
     limits:
@@ -24,9 +24,9 @@ All of the components have `resources` field for memory resources adjusting:
       cpu: 1000m
       memory: 2Gi
 ```
-More informations about `resources` concept in [kuberentes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+More information about the concept of `resources` can be found in the [kuberentes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
 
-Scheduler, MIB and Worker contain `logLevel` variable that indicates the level of logging for the pod.
+Scheduler, MIB and Worker contain a `logLevel` variable that indicates the level of logging for the pod.
 
 ### Scheduler values
 | variable | description | example
