@@ -33,7 +33,6 @@ scheduler:
     requests:
       cpu: 1000m
       memory: 2Gi
-mode: "both"
 mib:
   image: ghcr.io/splunk/splunk-connect-for-snmp-mib-server/container
   pullPolicy: IfNotPresent
@@ -54,6 +53,9 @@ otel:
   service_host: otel-service
   service_metrics_port: "8882"
   service_logs_port: "8881"
+  signalfx_mode: "splunk"
+  signalfx_token: ""
+  signalfx_realm: ""
 worker:
   image: ghcr.io/splunk/splunk-connect-for-snmp-poller/container
   pullPolicy: IfNotPresent
