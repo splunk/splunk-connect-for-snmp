@@ -15,9 +15,9 @@ data:
         token: $SPLUNK_HEC_TOKEN
         endpoint: $SPLUNK_HEC_URL
         insecure_skip_verify: $SPLUNK_HEC_TLS_SKIP_VERIFY
-      #signalfx:
-        #access_token: $signalfxToken
-        #realm: $signalfxRealm
+      signalfx:
+        access_token: $signalfxToken
+        realm: $signalfxRealm
     service:
       pipelines:
         logs:
