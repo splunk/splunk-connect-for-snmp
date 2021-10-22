@@ -2,10 +2,14 @@ splunk:
   protocol: https
   host: ###SPLUNK_HOST###
   token: ###SPLUNK_TOKEN###
-  insecureSSL: "true"
+  insecureSSL: "false"
   port: ###SPLUNK_PORT###
   clusterName: ###CLUSTER_NAME###
 traps:
+  image: ghcr.io/splunk/splunk-connect-for-snmp-traps/container
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1"
   logLevel: "WARN"
   replicas: 1
   loadBalancerIP: ###X.X.X.X###
@@ -31,6 +35,10 @@ scheduler:
       memory: 2Gi
 mode: "both"
 mib:
+  image: ghcr.io/splunk/splunk-connect-for-snmp-mib-server/container
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1"
   replicas: 1
   service_host: sc4snmp-mib-server-service
   service_port: "5000"
@@ -47,6 +55,10 @@ otel:
   service_metrics_port: "8882"
   service_logs_port: "8881"
 worker:
+  image: ghcr.io/splunk/splunk-connect-for-snmp-poller/container
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1"
   logLevel: "WARN"
   replicas: 1
   resources:
