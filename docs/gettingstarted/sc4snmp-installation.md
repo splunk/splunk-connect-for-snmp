@@ -5,7 +5,7 @@
 microk8s helm3 repo add splunk-connect-for-snmp https://splunk.github.io/splunk-connect-for-snmp
 microk8s helm3 repo update
 ```
-Now package should be visible in `helm3` search command result:
+Now the package should be visible in `helm3` search command result:
 ``` bash
 microk8s helm3 search repo snmp
 ```
@@ -48,14 +48,14 @@ Other variables to update in case you want to:
 microk8s helm3 install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
 From now on, when editing SC4SNMP configuration, the configuration change must be
-inserted in corresponding section of `config_values.yaml`. For more details check [configuration](../configuration.md) section.
+inserted in the corresponding section of `config_values.yaml`. For more details check [configuration](../configuration.md) section.
 
-Use following command to propagate configuration changes:
+Use the following command to propagate configuration changes:
 ``` bash
 microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
 ### Verify deployment
-In a few minutes all pods should be up and running. It can be verified with:
+In a few minutes, all pods should be up and running. It can be verified with:
 ``` bash
 microk8s kubectl get pods -n sc4snmp
 ```
