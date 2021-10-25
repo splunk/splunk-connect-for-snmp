@@ -1,11 +1,11 @@
 # Configuration
 
-In this section we're refering to following files required to configure scheduler:
+In this section, we refer to these required files for configuring the scheduler:
 1. `scheduler-inventory.yaml`
 2. `scheduler-config.yaml`
 3. `traps-server-config.yaml`
 
-While installing SC4SNMP via HELM we can easily configure all of those using one point
+When installing SC4SNMP via HELM, we can easily configure all these files from one point
 of management: `config_values.yaml`. The structure is:
 ```yaml
 files:
@@ -34,7 +34,7 @@ files:
             - "my-area"
 ```
 
-Use following command to propagate configuration changes:
+Use the following command to propagate configuration changes:
 ``` bash
 microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
@@ -44,10 +44,9 @@ microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values
     -   config.yaml
 
 Splunk Connect for SNMP supports receiving SNMPv1 traps, SNMPv2 traps,
-and SNMPv3 traps. To make it work, please configure with authorized
+and SNMPv3 traps. To use this functionality, configure using authorized
 SNMPv1/SNMPv2c community strings and/or SNMPv3 users in
-**traps-server-config.yaml** (`files: traps: config` part of `config_values.yaml`). Non-authorized traps/informs will be
-dropped.
+**traps-server-config.yaml** (`files: traps: config` part of `config_values.yaml`). Non-authorized traps/informs will not work.
 
 ### Configure SNMPv1/v2c community strings
 
@@ -62,9 +61,9 @@ respectively.
 
 It gets a little more complex with respect to SNMPv3. The user database
 in a SNMPv3 application is actually referenced by a combination of the
-user\'s name (called a \"security Name\") and an identifier for the
-given SNMP application you\'re talking to (called an \"engineID\").
-Therefore, both userName and engineID are required for SNMPv3 under
+user's name (called a \"security Name\") and an identifier for the
+given SNMP application you're talking to (called an \"engineID\").
+Therefore, both userName and engineID are required for SNMPv3 under the
 **v3** section.
 
 **Params**:
@@ -92,7 +91,7 @@ Therefore, both userName and engineID are required for SNMPv3 under
     key.
 
 -   **privProtocol** (optional) - An indication of whether messages sent
-    on behalf of this USM user be encrypted, and if so, the type of
+    on behalf of this USM user are encrypted, and if so, the type of
     encryption protocol that is used. If both privKey and privProtocol
     are not set, usmNoPrivProtocol is implied. If privKey is set and no
     privProtocol is specified, usmDESPrivProtocol takes effect.
@@ -112,7 +111,7 @@ Therefore, both userName and engineID are required for SNMPv3 under
 -   **privKey** (optional) - Initial value of the secret encryption key.
 
 -   **securityEngineId** (required): The EngineID of the authoritative
-    SNMP engine that the traps was sent from.
+    SNMP engine that the traps were sent from.
 
 e.g.
 
@@ -150,19 +149,19 @@ snmp:
     -   inventory.csv
 
 Splunk Connect for SNMP supports polling from SNMPv1 agents, SNMPv2
-agents, and SNMPv3 agents. To make it work, please configure with
+agents, and SNMPv3 agents. To use this functionality, configure using
 authorized SNMPv1/SNMPv2c community strings and/or SNMPv3 users in
 **scheduler-config.yaml** (`files: scheduler: config` part of `config_values.yaml`).
 
 ### **inventory.csv**
 
 Inventory.csv (`files: scheduler: inventory` part of `config_values.yaml`) acts as a lookup table where the poller application will
-read the SNMP agents\' information and its corresponding queries
+read the SNMP agents' information and its corresponding query
 information.
 
 ```
 "host", "version", "community", "profile", "freqinseconds"
-"IP:Port of SNMP agents, where port is optional with default is 161","An indication of SNMP versions", "community string for SNMPv1/v2 OR userNanme for SNMPv3", "query info", "query frequency in seconds"
+"IP:Port of SNMP agents, where port is optional with default of 161","An indication of SNMP versions", "community string for SNMPv1/v2 OR userNanme for SNMPv3", "query info", "query frequency in seconds"
 ```
 
 > \"e.g. 174.62.79.72 (IP only) \| 174.62.79.72:161 (IP+port)\",\"e.g. 1
@@ -180,9 +179,9 @@ situations.
 #### 1. Configure optional parameters for SNMPv1/SNMPv2c community data
 
 Community-Based Security Model of SNMPv1/SNMPv2c may require more
-params, which can be set up in config.yaml (`files: scheduler: config` part of `config_values.yaml`).
+parameters, which can be set up in config.yaml (`files: scheduler: config` part of `config_values.yaml`).
 
-> 1.  Add SNMPv1/SNMPv2c community string as Key under **communities**
+> 1.  Add SNMPv1/SNMPv2c community string as Key under the **communities**
 >     section.
 > 2.  Add necessary parameters.
 >
@@ -198,13 +197,13 @@ params, which can be set up in config.yaml (`files: scheduler: config` part of `
     information is accessed when using the above communityName.
 -   **tag** (optional) - Arbitrary string that specifies a set of
     transport endpoints from which a command responder application will
-    accept management requests with given communityName or to which
+    accept management requests with a given communityName or to which
     notification originator application will send notifications when
     targets are specified by a tag value(s).
 
 #### 2. Configure optional parameters SNMPv3 users
 
-SNMPv3 users may require more params for different security levels,
+SNMPv3 users may require more parameters for different security levels,
 which can be set up in config.yaml (`files: scheduler: config` part of `config_values.yaml`).
 
 1.  Add SNMPv3 userName as Key under **usernames** section.
@@ -255,7 +254,7 @@ which can be set up in config.yaml (`files: scheduler: config` part of `config_v
     authoritative SNMP engine to which a dateRequest message is to be
     sent.
 
--   **securityName** (optional): Together with the snmpEngineID it
+-   **securityName** (optional): Along with the snmpEngineID, it
     identifies a row in the SNMP-USER-BASED-SM-MIB::usmUserTable that is
     to be used for securing the message.
 
@@ -290,12 +289,12 @@ usernames:
 
 #### 3. Configure more detailed query information
 
-User can provide more detailed query information under **profiles**
+Users can provide more detailed query information under the **profiles**
 section to achieve two purposes: 1) query by mib string; 2) query
 multiple oids/mib string for one agent.
 
 1.  In **scheduler-inventory.yaml** (`files: scheduler: inventory` part of `config_values.yaml`), add the profile string(e.g. router)
-    to **profile** field under **data > inventory.csv** section.
+    to the **profile** field under **data > inventory.csv** section.
 
 ```csv
 "host", "version", "community", "profile", "freqinseconds"
@@ -303,7 +302,7 @@ multiple oids/mib string for one agent.
 ```
 
 2.  In **scheduler-config.yaml** (`files: scheduler: config` part of `config_values.yaml`), add the desired query information
-    under **profiles > \<profiles_string> > varBinds** section as list
+    under the **profiles > \<profiles_string> > varBinds** section as list
     entries. e.g. **profiles > router > varBinds**.
 
 When you use the mib string, you **MUST** follow the Syntax below
@@ -316,7 +315,7 @@ Where **"MIB index number"** is optional.
 
 1.  Specify the index number when you want to get the information for a
     specific interface. e.g. \[\"SNMPv2-MIB\", \"sysUpTime\", 0\]
-2.  Don't put the index number when you want to get information for all
+2.  Don't specify the index number when you want to get information for all
     interfaces. e.g. \[\"SNMPv2-MIB\", \"sysORID\"\]
 
 **Note**: A wrong index number would cause an error. If you are not sure
@@ -342,7 +341,7 @@ profiles:
 ```
 #### 4. Configure additional field to the metrics data
 
-User can make every metric data to include **profile** name
+Users can make every metric data include a **profile** name
 (which is not included by default) by adding **profile**
 under the **additionalMetricField** in **scheduler-config.yaml** (`files: scheduler: config` part of `config_values.yaml`)
 
@@ -356,14 +355,14 @@ additionalMetricField:
 
 #### 5. Configure poller to return query with additional fields present
 
-User can provide **enricher** section to make poller enrich queries sent to Splunk by adding additional dimensions. There are two types of fields:
+Users can add an **enricher** section to make poller enrich queries sent to Splunk by adding additional dimensions. There are two types of fields:
 1. **existingVarBinds**: this section updates query results with new fields calculated from the existing SNMP information.
 2. **additionalVarBinds**: this section updates query results with additional parameters defined below.
 
 ##### Existing VarBinds
 For now, `existingVarBinds` section works only for IF-MIB oid family.
 Every property of IF-MIB family can be extracted and added as an additional dimension to the query. For example, if we want to see the name and the index of the interface along with the basic query information,
-the **enricher** must be structured as following:
+the **enricher** must be structured as follows:
 ```yaml
 enricher:
   oidFamily:
@@ -384,7 +383,7 @@ While enricher is not being used, the example result is:
    metric_name:sc4snmp.IF-MIB.ifInOctets_1: 398485
 }
 ```
-After adding `enricher` structure as above, the same result should contain "interface_index" and "interface_desc":
+After adding the `enricher` structure as noted above, the same result should contain "interface_index" and "interface_desc":
 ```yaml
 { [-]
    com.splunk.index: em_metrics
@@ -430,7 +429,7 @@ Any other IF-MIB property can be inserted to existingVarBinds.
 
 #### 1. Index number -- indexNum
 For every OID family there is an option to add index number as an additional dimension to both event and metrics data.
-In order to enable it, the enricher must be structured as following:
+In order to enable it, the enricher must be structured as follows:
 ```yaml
 enricher:
   oidFamily:
@@ -441,7 +440,7 @@ enricher:
       additionalVarBinds:
         - indexNum: 'index_number'
 ```
-For above configuration every query concerning IF-MIB or SNMPv2-MIB has additional `index_number` field equal to the index number of current record, for ex.:
+For the above configuration, every query concerning IF-MIB or SNMPv2-MIB has an additional `index_number` field equal to the index number of current record, for ex.:
 
 For event query:
 ```yaml
@@ -477,9 +476,9 @@ For metrics query:
 **SNMPv1/SNMPv2**
 
 -   You can change the inventory contents in scheduler-config.yaml (`files: scheduler: config` part of `config_values.yaml`) and
-    use following command to apply the changes to Kubernetes cluster.
-    Agents configuration is placed in scheduler-config.yaml under
-    section **inventory.csv**, content below is interpreted as csv file
+    use the following command to apply the changes to the Kubernetes cluster.
+    Agents configuration is placed in scheduler-config.yaml under the
+    section **inventory.csv**, and the content below is interpreted as a .csv file
     with following columns:
 
 1.  host (IP or name)
@@ -497,9 +496,9 @@ microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values
 
 **SNMPv3**
 
--   Besides changing the inventory contents under section
+-   Besides changing the inventory contents under the section
     `files: scheduler: inventory` part of `config_values.yaml`, you may need to set up security passphrases for
-    the SNMPv3 under section `files: scheduler: config: usernames` part of `config_values.yaml`.
+    the SNMPv3 under the section `files: scheduler: config: usernames` part of `config_values.yaml`.
 
 Here are the steps to configure these two SNMPv3 Users.
 
@@ -521,7 +520,7 @@ host.docker.internal1,3,testUser1,1.3.6.1.2.1.1.9.1.3.1,30
 host.docker.internal2,3,testUser2,1.3.6.1.2.1.1.9.1.3.*,30
 ```
 
-2.  Specify other security params under section `files: scheduler: config` part of `config_values.yaml`.
+2.  Specify other security parameters under section `files: scheduler: config` part of `config_values.yaml`.
 
 ``` yaml
 usernames:
