@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: traps
-          image: {{ .Values.traps.image | default "ghcr.io/splunk/splunk-connect-for-snmp-traps/container" }}:{{ .Values.traps.version | default 1 }}
-          imagePullPolicy: {{ .Values.traps.imagePullPolicy | default "Always" }}
+          image: {{ .Values.traps.image | default "ghcr.io/splunk/splunk-connect-for-snmp-traps/container" }}:{{ .Values.traps.tag | default "1" }}
+          imagePullPolicy: {{ .Values.traps.pullPolicy | default "IfNotPresent" }}
           args:
             [
               "--loglevel={{ .Values.traps.logLevel }}",
