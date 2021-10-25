@@ -1,6 +1,6 @@
 # SPLUNK for Kubernetes installation
 
-Below steps are sufficient for SCK installation for SC4SNMP project. In case you want to investigate more, all information about Splunk Connect for Kubernetes are available [here](https://github.com/splunk/splunk-connect-for-kubernetes).
+The below steps are sufficient for a SCK installation for the SC4SNMP project. In case you want to investigate more, all information about Splunk Connect for Kubernetes is available [here](https://github.com/splunk/splunk-connect-for-kubernetes).
 
 ## Instalation steps
 ### Add SCK repository to HELM
@@ -8,7 +8,7 @@ Below steps are sufficient for SCK installation for SC4SNMP project. In case you
 microk8s helm3 repo add splunk https://splunk.github.io/splunk-connect-for-kubernetes
 ```
 ### Create values file
-In order to connect to SPLUNK instance, there's a need to create `sck_values.yaml` file of this following structure filling variables marked with "###" (description below).
+In order to connect to SPLUNK instance, you must create a `sck_values.yaml` file with this structure, populating variables marked with "###" (as described below):
 ```yaml
 #global settings
 global:
@@ -145,7 +145,7 @@ Values required to be filled:
 | ###CLUSTER_NAME### | name of the cluster | "foo" |
 
 
-In case you want to change index names (note that in this case you need to keep consistent names in Splunk instance and SC4SNMP values file), you can override this variables:
+In case you want to change index names (note that in this case you need to keep consistent names in Splunk instance and SC4SNMP values file), you can override these variables:
 
 | Index type | variable | description | default value |
 | --- | --- | --- | --- |
@@ -153,7 +153,7 @@ In case you want to change index names (note that in this case you need to keep 
 | Meta index | splunk-kubernetes-objects: splunk: hec: indexName: | name of the meta index | "em_meta" |
 | Metrics index |  splunk-kubernetes-metrics: splunk: hec: indexName: | name of the metrics index | "em_metrics" |
 
-Other variables possible to override in case you need it:
+Other variables you can override, if necessary: in case you need it:
 
 | variable | description | default |
 | --- | --- | --- |
