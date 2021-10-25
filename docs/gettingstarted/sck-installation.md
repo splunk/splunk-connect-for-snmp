@@ -16,7 +16,7 @@ global:
   splunk:
     hec:
       protocol: https
-      insecureSSL: "true"
+      insecureSSL: "false"
       host: ###SPLUNK_HOST###
       token: ###SPLUNK_TOKEN###
       port: ###SPLUNK_PORT###
@@ -158,7 +158,7 @@ Other variables possible to override in case you need it:
 | variable | description | default |
 | --- | --- | --- |
 | global: splunk: hec: protocol | port of splunk instance | "8088" |
-| global: splunk: hec: protocol insecure_ssl| is insecure ssl allowed | "true" |
+| global: splunk: hec: protocol insecure_ssl| is insecure ssl allowed | "false" |
 
 ### Install SCK with HELM
 ```yaml
