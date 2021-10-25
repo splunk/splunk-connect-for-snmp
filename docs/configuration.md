@@ -160,16 +160,14 @@ read the SNMP agents' information and its corresponding query
 information.
 
 ```
-"host", "version", "community", "profile", "freqinseconds"
-"IP:Port of SNMP agents, where port is optional with default of 161","An indication of SNMP versions", "community string for SNMPv1/v2 OR userNanme for SNMPv3", "query info", "query frequency in seconds"
+"host", "version", "community", "profile"
+"IP:Port of SNMP agents, where port is optional with default of 161","An indication of SNMP versions", "community string for SNMPv1/v2 OR userName for SNMPv3", "query info"
 ```
 
 > \"e.g. 174.62.79.72 (IP only) \| 174.62.79.72:161 (IP+port)\",\"e.g. 1
 > \| 2c \| 3\", \"e.g. public (SNMPv1/SNMPv2c community string) \|
-> testUser (SNMPv3 username, setup other params in config.yaml)\",\"e.g
-> 1.3.6.1.2.1.1.9.1.3.1 (single oid for snmp get) \|
-> 1.3.6.1.2.1.1.9.1.3.\* (oid for snmp walk to get subtree) \| router
-> (profile used to setup detials in config.yaml\", \"e.g. 30\"
+> testUser (SNMPv3 username, setup other params in config.yaml)\",| router
+> (profile used to setup detials in config.yaml\"
 
 ### **config.yaml**
 
@@ -297,8 +295,8 @@ multiple oids/mib string for one agent.
     to the **profile** field under **data > inventory.csv** section.
 
 ```csv
-"host", "version", "community", "profile", "freqinseconds"
-10.42.0.58,1,public,router,30
+"host", "version", "community", "profile"
+10.42.0.58,1,public,router
 ```
 
 2.  In **scheduler-config.yaml** (`files: scheduler: config` part of `config_values.yaml`), add the desired query information
@@ -422,8 +420,12 @@ Any other IF-MIB property can be inserted to existingVarBinds.
 
 | existingVarBinds part | description | example | 
 | --- | --- | --- |
-| key | the key is the word between OID family identifier and the index | for ex. for MTU extraction, the key is **ifMtu** (derived from IF-MIB::**ifMtu**.1) |
-| value | the field name shown as an additional dimension in Splunk | `interface_mtu` |
+| key | the key is the word between OID family identifier and the index | for ex. for physical address, the key is **ifPhysAddress** (derived from IF-MIB::**ifPhysAddress**.1) |
+| value | the field name shown as an additional dimension in Splunk | `physical_address` |
+
+Note: values that are going to be used as additional dimensions are gathered during SNMP Walk operation after enricher 
+configuration. That means that they're static, and they won't get updated even if its value changes on the device.
+Please use static values with enricher (like ifDescr, ifIndex or IfSpeed).
 
 #### Additional VarBinds
 
@@ -485,10 +487,25 @@ For metrics query:
 2.  version of SNMP protocol
 3.  community string authorisation phrase
 4.  profile of device (varBinds of profiles can be found in `files: scheduler: config` part of `config_values.yaml`)
+    
+Note that profile must be first created in `files.scheduler.config`, for example:
+```yaml
+profiles:
+  router:
+    frequency: 20
+    varBinds:
+    - 1.3.6.1.2.1.1.9.1.3.*
+    - ['SNMPv2-MIB', 'sysUpTime',0]
+    - ['SNMPv2-MIB', 'sysName']
+```
 5.  frequency in seconds (how often SNMP connector should ask agent for
     data)
 
-`` `csv    "host", "version", "community", "profile", "freqinseconds"       10.42.0.58,1,public,1.3.6.1.2.1.1.9.1.3.1,30    host.docker.internal,2c,public,1.3.6.1.2.1.1.9.1.3.*,60 ``\`
+```csv    
+"host", "version", "community", "profile"
+10.42.0.58,1,public,router  
+host.docker.internal,2c,public,router
+```
 
 ``` bash
 microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
@@ -515,9 +532,9 @@ Here are the steps to configure these two SNMPv3 Users.
     `files: scheduler: inventory` part of `config_values.yaml`.
 
 ```csv
-"host", "version", "community", "profile", "freqinseconds"
-host.docker.internal1,3,testUser1,1.3.6.1.2.1.1.9.1.3.1,30
-host.docker.internal2,3,testUser2,1.3.6.1.2.1.1.9.1.3.*,30
+"host", "version", "community", "profile"
+host.docker.internal1,3,testUser1,router
+host.docker.internal2,3,testUser2,profile_name
 ```
 
 2.  Specify other security parameters under section `files: scheduler: config` part of `config_values.yaml`.
