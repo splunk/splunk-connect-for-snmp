@@ -46,7 +46,7 @@ microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values
 Splunk Connect for SNMP supports receiving SNMPv1 traps, SNMPv2 traps,
 and SNMPv3 traps. To use this functionality, configure using authorized
 SNMPv1/SNMPv2c community strings and/or SNMPv3 users in
-**traps-server-config.yaml** (`files: traps: config` part of `config_values.yaml`). Non-authorized traps/informs will not work.
+**traps-server-config.yaml** (`files.traps.config` part of `config_values.yaml`). Non-authorized traps/informs will not work.
 
 ### Configure SNMPv1/v2c community strings
 
@@ -151,11 +151,11 @@ snmp:
 Splunk Connect for SNMP supports polling from SNMPv1 agents, SNMPv2
 agents, and SNMPv3 agents. To use this functionality, configure using
 authorized SNMPv1/SNMPv2c community strings and/or SNMPv3 users in
-**scheduler-config.yaml** (`files: scheduler: config` part of `config_values.yaml`).
+**scheduler-config.yaml** (`files.scheduler.config` part of `config_values.yaml`).
 
 ### **inventory.csv**
 
-Inventory.csv (`files: scheduler: inventory` part of `config_values.yaml`) acts as a lookup table where the poller application will
+Inventory.csv (`files.scheduler.inventory` part of `config_values.yaml`) acts as a lookup table where the poller application will
 read the SNMP agents' information and its corresponding query
 information.
 
@@ -177,7 +177,7 @@ situations.
 #### 1. Configure optional parameters for SNMPv1/SNMPv2c community data
 
 Community-Based Security Model of SNMPv1/SNMPv2c may require more
-parameters, which can be set up in config.yaml (`files: scheduler: config` part of `config_values.yaml`).
+parameters, which can be set up in config.yaml (`files.scheduler.config` part of `config_values.yaml`).
 
 > 1.  Add SNMPv1/SNMPv2c community string as Key under the **communities**
 >     section.
@@ -202,7 +202,7 @@ parameters, which can be set up in config.yaml (`files: scheduler: config` part 
 #### 2. Configure optional parameters SNMPv3 users
 
 SNMPv3 users may require more parameters for different security levels,
-which can be set up in config.yaml (`files: scheduler: config` part of `config_values.yaml`).
+which can be set up in config.yaml (`files.scheduler.config` part of `config_values.yaml`).
 
 1.  Add SNMPv3 userName as Key under **usernames** section.
 2.  Add necessary parameters.
@@ -291,7 +291,7 @@ Users can provide more detailed query information under the **profiles**
 section to achieve two purposes: 1) query by mib string; 2) query
 multiple oids/mib string for one agent.
 
-1.  In **scheduler-inventory.yaml** (`files: scheduler: inventory` part of `config_values.yaml`), add the profile string(e.g. router)
+1.  In **scheduler-inventory.yaml** (`files.scheduler.inventory` part of `config_values.yaml`), add the profile string(e.g. router)
     to the **profile** field under **data > inventory.csv** section.
 
 ```csv
@@ -299,7 +299,7 @@ multiple oids/mib string for one agent.
 10.42.0.58,1,public,router
 ```
 
-2.  In **scheduler-config.yaml** (`files: scheduler: config` part of `config_values.yaml`), add the desired query information
+2.  In **scheduler-config.yaml** (`files.scheduler.config` part of `config_values.yaml`), add the desired query information
     under the **profiles > \<profiles_string> > varBinds** section as list
     entries. e.g. **profiles > router > varBinds**.
 
@@ -341,7 +341,7 @@ profiles:
 
 Users can make every metric data include a **profile** name
 (which is not included by default) by adding **profile**
-under the **additionalMetricField** in **scheduler-config.yaml** (`files: scheduler: config` part of `config_values.yaml`)
+under the **additionalMetricField** in **scheduler-config.yaml** (`files.scheduler.config` part of `config_values.yaml`)
 
 
 e.g.
@@ -477,7 +477,7 @@ For metrics query:
 
 **SNMPv1/SNMPv2**
 
--   You can change the inventory contents in scheduler-config.yaml (`files: scheduler: config` part of `config_values.yaml`) and
+-   You can change the inventory contents in scheduler-config.yaml (`files.scheduler.config` part of `config_values.yaml`) and
     use the following command to apply the changes to the Kubernetes cluster.
     Agents configuration is placed in scheduler-config.yaml under the
     section **inventory.csv**, and the content below is interpreted as a .csv file
@@ -486,7 +486,7 @@ For metrics query:
 1.  host (IP or name)
 2.  version of SNMP protocol
 3.  community string authorisation phrase
-4.  profile of device (varBinds of profiles can be found in `files: scheduler: config` part of `config_values.yaml`)
+4.  profile of device (varBinds of profiles can be found in `files.scheduler.config` part of `config_values.yaml`)
     
 Note that profile must be first created in `files.scheduler.config`, for example:
 ```yaml
@@ -514,8 +514,8 @@ microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values
 **SNMPv3**
 
 -   Besides changing the inventory contents under the section
-    `files: scheduler: inventory` part of `config_values.yaml`, you may need to set up security passphrases for
-    the SNMPv3 under the section `files: scheduler: config: usernames` part of `config_values.yaml`.
+    `files.scheduler.inventory` part of `config_values.yaml`, you may need to set up security passphrases for
+    the SNMPv3 under the section `files.scheduler.config.usernames` part of `config_values.yaml`.
 
 Here are the steps to configure these two SNMPv3 Users.
 
@@ -529,7 +529,7 @@ Here are the steps to configure these two SNMPv3 Users.
   --------------------------------------------------------------------------
 
 1.  Specify User Name under **community** filed in section
-    `files: scheduler: inventory` part of `config_values.yaml`.
+    `files.scheduler.inventory` part of `config_values.yaml`.
 
 ```csv
 "host", "version", "community", "profile"
@@ -537,7 +537,7 @@ host.docker.internal1,3,testUser1,router
 host.docker.internal2,3,testUser2,profile_name
 ```
 
-2.  Specify other security parameters under section `files: scheduler: config` part of `config_values.yaml`.
+2.  Specify other security parameters under section `files.scheduler.config` part of `config_values.yaml`.
 
 ``` yaml
 usernames:
