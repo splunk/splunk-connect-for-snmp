@@ -460,13 +460,12 @@
                 
                 <h1 id="planning">Planning<a class="headerlink" href="#planning" title="Permanent link">&para;</a></h1>
 <p>Splunk Connect for SNMP (SC4SNMP) is a solution that allows the customer
-to "get" data from network devices and appliances where a more feature
-complete solution such as the Splunk Universal Forwarder is not
+to "get" data from network devices and appliances when a more feature-complete solution, such as the Splunk Universal Forwarder, is not
 available.</p>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
-<p>SC4SNMP is deployed using a Kubernetes distribution typically MicroK8s,
-deseigned to be a low touch experience for integration with sensitive
-edge network devices it will typically be deployed in the same network
+<p>SC4SNMP is deployed using a Kubernetes distribution, typically MicroK8s,
+that&rsquo;s deseigned to be a low-touch experience for integration with sensitive
+edge network devices. It will typically be deployed in the same network
 management zone as the monitored devices and seperated from Splunk by an
 existing firewall.</p>
 <p><img alt="image" src="../images/sc4snmp_deployment.png" /></p>
@@ -503,18 +502,17 @@ existing firewall.</p>
 </li>
 <li>
 <p>Splunk Infrastructure Monitoring specific requirements</p>
-<p>:   -   Ability to create of obtain real and token</p>
+<p>:   -   Ability to create or obtain real and token</p>
 </li>
 </ul>
 <h2 id="planning-infrastructure">Planning Infrastructure<a class="headerlink" href="#planning-infrastructure" title="Permanent link">&para;</a></h2>
-<p>Single installation of Splunk Connect for SNMP (SC4SNMP) on machine with
+<p>Single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
 16 Core/32 threads x64 and 12 GB ram will be able to handle up to 1300
 SNMP TRAPs per sec.</p>
-<p>Single installation of Splunk Connect for SNMP (SC4SNMP) on machine with
+<p>Single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
 16 Core/32 threads x64 and 64 GB ram will be able to handle up to 1300
 SNMP GETs per sec.</p>
-<p>When planning infrastructure for Splunk Connect for SNMP (SC4SNMP) above
-limitations need to be taken under consideration.</p>
+<p>When planning infrastructure for Splunk Connect for SNMP, (SC4SNMP) note the limitations highlighted above.</p>
                 
               
               
