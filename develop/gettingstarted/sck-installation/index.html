@@ -503,14 +503,14 @@
                 
                 
                 <h1 id="splunk-for-kubernetes-installation">SPLUNK for Kubernetes installation<a class="headerlink" href="#splunk-for-kubernetes-installation" title="Permanent link">&para;</a></h1>
-<p>Below steps are sufficient for SCK installation for SC4SNMP project. In case you want to investigate more, all information about Splunk Connect for Kubernetes are available <a href="https://github.com/splunk/splunk-connect-for-kubernetes">here</a>.</p>
+<p>The below steps are sufficient for a SCK installation for the SC4SNMP project. In case you want to investigate more, all information about Splunk Connect for Kubernetes is available <a href="https://github.com/splunk/splunk-connect-for-kubernetes">here</a>.</p>
 <h2 id="instalation-steps">Instalation steps<a class="headerlink" href="#instalation-steps" title="Permanent link">&para;</a></h2>
 <h3 id="add-sck-repository-to-helm">Add SCK repository to HELM<a class="headerlink" href="#add-sck-repository-to-helm" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">repo</span> <span class="nv">add</span> <span class="nv">splunk</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">splunk</span>.<span class="nv">github</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">kubernetes</span>
 </code></pre></div>
 
 <h3 id="create-values-file">Create values file<a class="headerlink" href="#create-values-file" title="Permanent link">&para;</a></h3>
-<p>In order to connect to SPLUNK instance, there&rsquo;s a need to create <code>sck_values.yaml</code> file of this following structure filling variables marked with &ldquo;###&rdquo; (description below).</p>
+<p>In order to connect to SPLUNK instance, you must create a <code>sck_values.yaml</code> file with this structure, populating variables marked with &ldquo;###&rdquo; (as described below):</p>
 <div class="codehilite"><pre><span></span><code><span class="c1">#global settings</span>
 <span class="nt">global</span><span class="p">:</span>
   <span class="nt">logLevel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">info</span> 
@@ -667,7 +667,7 @@
 </tr>
 </tbody>
 </table>
-<p>In case you want to change index names (note that in this case you need to keep consistent names in Splunk instance and SC4SNMP values file), you can override this variables:</p>
+<p>In case you want to change index names (note that in this case you need to keep consistent names in Splunk instance and SC4SNMP values file), you can override these variables:</p>
 <table>
 <thead>
 <tr>
@@ -698,7 +698,7 @@
 </tr>
 </tbody>
 </table>
-<p>Other variables possible to override in case you need it:</p>
+<p>Other variables you can override, if necessary: in case you need it:</p>
 <table>
 <thead>
 <tr>
