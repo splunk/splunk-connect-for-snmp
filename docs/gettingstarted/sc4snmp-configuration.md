@@ -1,15 +1,15 @@
 ### Test SNMP Traps
 
--   Test the trap from a linux system with snmp installed replace the ip
-    `10.0.101.22` with the shared ip above
+-   Test the trap from a linux system with SNMP installed. Replace the IP address 
+    `10.0.101.22` with the shared IP address above
 
 ``` bash
 apt-get install snmpd
 snmptrap -v2c -c public 10.0.101.22 123 1.3.6.1.6.3.1.1.5.1 1.3.6.1.2.1.1.5.0 s test
 ```
 
--   Search splunk, one event per trap command with the host value of the
-    test machine ip will be found
+-   Search splunk: You should see one event per trap command with the host value of the
+    test machine IP address
 
 ``` bash
 index=em_logs sourcetype="sc4snmp:traps"
@@ -17,8 +17,8 @@ index=em_logs sourcetype="sc4snmp:traps"
 
 ### Setup Poller
 
--   Test the poller by logging to Splunk and confirm presence of events
-    in snmp `em_logs` and metrics in `em_metrics` index.
+-   Test the poller by logging into Splunk and confirm the presence of events
+    in snmp `em_logs` and metrics in `em_metrics` index
 
 ### Inventory
 \* You can change the inventory contents in `config_values.yaml`, in scheduler inventory field, ex.:
@@ -32,7 +32,7 @@ files:
 ```
 Where 10.0.101.22 is a host IP.
 
-Content below is interpreted as csv file with following
+Content below is interpreted as a .csv file with the following
 columns:
 
 1.  host (IP or name)
@@ -83,8 +83,8 @@ TEST SUITE: None
 More information about how to configure `deployment_values.yaml` is available here: [Additional HELM values](additional-helm-configuration.md)
 ### Test Poller
 
-Search splunk, one event per trap command with the host value of the
-test machine ip will be found
+Search splunk: You should see one event per trap command with the host value of the
+test machine IP address
 
 ``` bash
 index=em_meta sourcetype="sc4snmp:meta" SNMPv2_MIB__sysLocation_0="*" | dedup host
@@ -96,5 +96,5 @@ index=em_meta sourcetype="sc4snmp:meta" SNMPv2_MIB__sysLocation_0="*" | dedup ho
 
 ### Maintain
 
-Manage configuration obtain and update communities, user/secrets and
+Manage configuration, obtain and update communities, user/secrets and
 inventories
