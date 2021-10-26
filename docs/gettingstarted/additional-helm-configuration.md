@@ -24,6 +24,7 @@ All of the components have the `resources` field for adjusting memory resources:
       cpu: 1000m
       memory: 2Gi
 ```
+Note, that when your environment contains big amount of memory and CPU you should increase limits for all of the pods (mib, scheduler, worker, traps), as long until it works stably.
 More information about the concept of `resources` can be found in the [kuberentes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
 
 Scheduler, MIB and Worker contain a `logLevel` variable that indicates the level of logging for the pod.

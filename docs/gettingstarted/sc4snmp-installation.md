@@ -40,7 +40,7 @@ Other variables to update in case you want to:
 | variable | description | default |
 | --- | --- | --- |
 | splunk: protocol | port of splunk instance| https |
-| splunk: insecure_ssl| is insecure ssl allowed | "true" |
+| splunk: insecure_ssl| is insecure ssl allowed | "false" |
 | splunk: cluster_name | name of the cluster | "foo" |
 
 ### Install SC4SNMP

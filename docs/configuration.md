@@ -34,7 +34,7 @@ files:
             - "my-area"
 ```
 
-Use the following command to propagate configuration changes:
+When you addd modifications to any of `yaml` files, use the following command to propagate configuration changes:
 ``` bash
 microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
@@ -174,6 +174,13 @@ information.
 config.yaml acts as an extension for inventory.csv for these three
 situations.
 
+### **args**
+There are 4 parameters to be configured in `config_values.yaml`:
+1. refresh_interval - indicates how often (in seconds) we monitor changes on `inventory.csv` and `config.yaml`
+2. realtime_task_frequency - indicates how often (in seconds) we check if any of the monitored devices were restarted
+3. matching_task_frequency - indicates how often (in seconds) dynamic profiles are matched for a host (specified in inventory with an "*" in `profile` column)
+4. onetime_task_frequency - indicates how often (in seconds) one time walk (walk of whole OID tree 1.3.6.1) will be triggered after the fail.
+
 #### 1. Configure optional parameters for SNMPv1/SNMPv2c community data
 
 Community-Based Security Model of SNMPv1/SNMPv2c may require more
@@ -287,7 +294,7 @@ usernames:
 
 #### 3. Configure more detailed query information
 
-Users can provide more detailed query information under the **profiles**
+Users can provide query information under the **profiles**
 section to achieve two purposes: 1) query by mib string; 2) query
 multiple oids/mib string for one agent.
 
@@ -321,7 +328,7 @@ which index exists, don't put it at all. For example, in the situation
 where \[\"SNMPv2-MIB\", \"sysUpTime\", 0\] exsits, both
 \[\"SNMPv2-MIB\", \"sysUpTime\", 0\] and \[\"SNMPv2-MIB\",
 \"sysUpTime\"\] will help you get \[\"SNMPv2-MIB\", \"sysUpTime\", 0\],
-while \[\"SNMPv2-MIB\", \"sysUpTime\", 1\] will throw erroe because
+while \[\"SNMPv2-MIB\", \"sysUpTime\", 1\] will throw error because
 index 1 doesn\'t exist for sysUpTime.
 
 ``` yaml
@@ -498,14 +505,16 @@ profiles:
     - ['SNMPv2-MIB', 'sysUpTime',0]
     - ['SNMPv2-MIB', 'sysName']
 ```
-5.  frequency in seconds (how often SNMP connector should ask agent for
-    data)
 
+Under `files.scheduler.inventory` put the line:
 ```csv    
 "host", "version", "community", "profile"
 10.42.0.58,1,public,router  
 host.docker.internal,2c,public,router
 ```
+Where `10.42.0.58` is an IP address of a device running SNMP.
+
+Use below command to update SC4SNMP with the changes you've made:
 
 ``` bash
 microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
@@ -556,3 +565,17 @@ usernames:
 ``` bash
 microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
+
+## Workflow of the SC4SNMP
+Everytime you add a new host to the `files.scheduler.inventory`, one time walk is scheduled for it. This serves for gathering useful information
+about the device, like:
+
+    1. uptime of the system, so then we know if device was restarted and we need to refresh the database
+    2. system description and object id, that helps to match patterns for dynamic profile matching
+
+In case first one time walk was unsuccessful (fo ex. we couldn't connect to the device), another onetime walk will be triggered
+after the time specified in `files.scheduler.args.onetime_task_frequency`.
+
+In case you want to enrich `IF-MIB` OID family, every newly added job will trigger a small WALK only for IF-MIB OID family -> `1.3.6.1.2.1.2.*`.
+
+
