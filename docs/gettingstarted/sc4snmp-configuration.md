@@ -81,6 +81,12 @@ TEST SUITE: None
 ```
 
 More information about how to configure `deployment_values.yaml` is available here: [Additional HELM values](additional-helm-configuration.md)
+
+### Dynamic profile assignment
+If you want to use dynamic profile assignment please place * as profile name in inventory. sysDescr or sysObjectId from 
+the agent will be matched against entries in patterns property of each profile. 
+The matching process may result in multiple profiles per device.
+
 ### Test Poller
 
 Search splunk: You should see one event per trap command with the host value of the
