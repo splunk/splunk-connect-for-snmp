@@ -26,29 +26,28 @@ scheduler:
     event: em_logs
     metrics: em_metrics
     meta: em_meta
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 2Gi
-    requests:
-      cpu: 1000m
-      memory: 2Gi
+#  resources:
+#    limits:
+#      cpu: 1000m
+#      memory: 2Gi
+#    requests:
+#      cpu: 1000m
+#      memory: 2Gi
 mib:
   image: ghcr.io/splunk/splunk-connect-for-snmp-mib-server/container
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "1"
   replicas: 1
-#  resources:
-#    limits:
-#      cpu: 100m
-#      memory: 128Mi
-#    requests:
-#      cpu: 100m
-#      memory: 128Mi
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
 otel:
   replicas: 1
-  service_host: otel-service
   signalfx_mode: "splunk"
   signalfx_token: ""
   signalfx_realm: ""
