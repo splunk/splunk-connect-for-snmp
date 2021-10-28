@@ -44,10 +44,10 @@ files:
           v2:
             - public
             - "my-area"
-#          v1:
+          v1:
 #            - public
 #            - "my-area"
-#          v3:
+          v3:
 #            - userName: snmpv3test
 #              authKey: AuthPass1
 #              privKey: PrivPass2
