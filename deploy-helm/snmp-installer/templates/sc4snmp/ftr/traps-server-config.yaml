@@ -7,7 +7,7 @@ data:
   config.yaml: |-
     # Splunk Connect for SNMP Traps
     # Sample Configuration file
+    thread-pool:
+      max-suggested-working-threads: 10
     snmp:
-      thread-pool:
-        max-suggested-working-threads: 10
 {{ .Values.files.traps.config | indent 6 }}
