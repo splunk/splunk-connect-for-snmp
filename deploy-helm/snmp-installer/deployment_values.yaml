@@ -39,20 +39,16 @@ mib:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "1"
   replicas: 1
-  service_host: sc4snmp-mib-server-service
-  service_port: "5000"
-  resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
+#  resources:
+#    limits:
+#      cpu: 100m
+#      memory: 128Mi
+#    requests:
+#      cpu: 100m
+#      memory: 128Mi
 otel:
   replicas: 1
   service_host: otel-service
-  service_metrics_port: "8882"
-  service_logs_port: "8881"
   signalfx_mode: "splunk"
   signalfx_token: ""
   signalfx_realm: ""

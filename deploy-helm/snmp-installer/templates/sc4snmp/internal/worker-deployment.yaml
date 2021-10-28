@@ -24,7 +24,7 @@ spec:
             - name: CELERY_BROKER_URL
               value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq:5672/
             - name: MIBS_SERVER_URL
-              value: {{ printf "http://%s:%s" .Values.mib.service_host .Values.mib.service_port | quote }}
+              value: {{ printf "http://%s:%s" ( .Values.mib.service_host | default sc4snmp-mib-server-service ) ( .Values.mib.service_port | default "5000" ) | quote }}
             - name: MIBS_FILES_URL
               value: $(MIBS_SERVER_URL)/files/asn1/@mib@
             - name: MIB_SERVER_SERVICE_SERVICE_HOST
@@ -34,9 +34,9 @@ spec:
             - name: POLLER_EXECUTION_MODE
               value: worker
             - name: OTEL_SERVER_LOGS_URL
-              value: {{ printf "http://%s:%s" .Values.otel.service_host .Values.otel.service_logs_port | quote }}
+              value: {{ printf "http://%s:%s" ( .Values.otel.service_host | default otel-service ) ( .Values.otel.service_logs_port | default "8881" ) | quote }}
             - name: OTEL_SERVER_METRICS_URL
-              value: {{ printf "http://%s:%s" .Values.otel.service_host .Values.otel.service_metrics_port | quote }}
+              value: {{ printf "http://%s:%s" ( .Values.otel.service_host | default otel-service ) ( .Values.otel.service_metrics_port | default "8882" ) | quote }}
             - name: MONGO_SERVICE_SERVICE_HOST
               value: sc4snmp-mongodb
             - name: MONGO_SERVICE_SERVICE_PORT
