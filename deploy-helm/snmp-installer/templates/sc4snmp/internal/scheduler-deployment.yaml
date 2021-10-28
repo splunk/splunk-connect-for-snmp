@@ -51,13 +51,13 @@ spec:
               mountPath: "/work/inventory"
               readOnly: false
           resources:
-{{ ( toYaml .Values.mib.resources | default
+{{ ( toYaml .Values.mib.resources | default (
      limits:
        cpu: 1000m
        memory: 2Gi
      requests:
        cpu: 1000m
-       memory: 2Gi  | indent 12 }}
+       memory: 2Gi )  | indent 12 }}
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config
