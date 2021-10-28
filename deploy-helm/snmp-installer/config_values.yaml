@@ -41,13 +41,13 @@ files:
   traps:
     config: |
         communities:
-#          v2:
-#            - public
-#            - "my-area"
+          v2:
+            - public
+            - "my-area"
 #          v1:
 #            - public
 #            - "my-area"
-          v3:
+#          v3:
 #            - userName: snmpv3test
 #              authKey: AuthPass1
 #              privKey: PrivPass2
