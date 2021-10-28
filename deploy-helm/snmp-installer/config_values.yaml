@@ -41,10 +41,10 @@ files:
   traps:
     config: |
         communities:
-          v2:
-            - public
-            - "my-area"
-          v1:
+#          v2:
+#            - public
+#            - "my-area"
+#          v1:
 #            - public
 #            - "my-area"
           v3:
