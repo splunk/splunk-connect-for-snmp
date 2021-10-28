@@ -5,4 +5,29 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 data:
   config.yaml: |-
-{{ .Values.files.scheduler.config | indent 4}}
+    celery:
+      broker:
+        type: "rabbitmq"
+    # Sample Configuration file
+    ipv4: True
+    ipv6: False
+    enricher:
+      oidFamily:
+        IF-MIB:
+          existingVarBinds:
+            - ifDescr: 'interface_desc'
+            - ifPhysAddress: 'MAC_address'
+          additionalVarBinds:
+            - indexNum: 'index_number'
+    mongo:
+      database: "snmp_poller"
+      walked_collection: "walked_hosts"
+      unwalked_collection: "unwalked_hosts"
+{{- if .Values.files.scheduler.config.usernames }}
+    usernames:
+{{ .Values.files.scheduler.config.usernames | toYaml | indent 6  }}
+{{- end -}}
+{{- if .Values.files.scheduler.config.profiles }}
+    profiles:
+{{ .Values.files.scheduler.config.profiles | toYaml | indent 6  }}
+{{- end -}}

@@ -13,12 +13,12 @@ traps:
   logLevel: "WARN"
   replicas: 1
   loadBalancerIP: ###X.X.X.X###
-  resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      memory: 128Mi
+#  resources:
+#    limits:
+#      cpu: 100m
+#      memory: 128Mi
+#    requests:
+#      memory: 128Mi
 scheduler:
   logLevel: "WARN"
   replicas: 1
@@ -39,13 +39,13 @@ mib:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "1"
   replicas: 1
-  resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
+#  resources:
+#    limits:
+#      cpu: 100m
+#      memory: 128Mi
+#    requests:
+#      cpu: 100m
+#      memory: 128Mi
 otel:
   replicas: 1
   signalfx_mode: "splunk"
@@ -58,13 +58,13 @@ worker:
   tag: "1"
   logLevel: "WARN"
   replicas: 1
-  resources:
-    limits:
-      cpu: 200m
-      memory: 256Mi
-    requests:
-      cpu: 200m
-      memory: 256Mi
+#  resources:
+#    limits:
+#      cpu: 200m
+#      memory: 256Mi
+#    requests:
+#      cpu: 200m
+#      memory: 256Mi
 mongodb:
   ## @section Global parameters
   ## Global Docker image parameters

@@ -6,7 +6,7 @@ metadata:
   labels:
     app: sc4snmp-worker
 spec:
-  replicas: {{ .Values.worker.replicas }}
+  replicas: {{ .Values.worker.replicas | default "1" }}
   selector:
     matchLabels:
       app: sc4snmp-worker
@@ -46,7 +46,16 @@ spec:
               mountPath: "/work/config"
               readOnly: true
           resources:
-{{ toYaml .Values.worker.resources | indent 12 }}
+            {{- if .Values.worker.resources }}
+{{ .Values.worker.resources | toYaml | trim | indent 12 }}
+            {{ else }}
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            {{ end }}
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config

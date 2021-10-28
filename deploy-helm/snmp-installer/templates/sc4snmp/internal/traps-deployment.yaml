@@ -52,6 +52,17 @@ spec:
             - name: config
               mountPath: "/work/config"
               readOnly: true
+          resources:
+            {{- if .Values.traps.resources }}
+{{ .Values.traps.resources | toYaml | trim | indent 12 }}
+            {{ else }}
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            {{ end }}
       volumes:
         - name: config
           configMap:

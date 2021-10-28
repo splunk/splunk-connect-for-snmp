@@ -5,4 +5,9 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 data:
   config.yaml: |-
-{{ .Values.files.traps.config | indent 4 }}
+    # Splunk Connect for SNMP Traps
+    # Sample Configuration file
+    snmp:
+      thread-pool:
+        max-suggested-working-threads: 10
+{{ .Values.files.traps.config | indent 6 }}
