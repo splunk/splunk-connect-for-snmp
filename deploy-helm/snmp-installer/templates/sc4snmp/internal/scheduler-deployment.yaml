@@ -57,7 +57,7 @@ spec:
        memory: 2Gi
      requests:
        cpu: 1000m
-       memory: 2Gi ) | indent 12 }}
+       memory: 2Gi  | indent 12 }}
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config
