@@ -36,7 +36,7 @@ files:
 
 Use the following command to propagate configuration changes:
 ``` bash
-microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml -f static_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
 ## Traps Configuration
 
@@ -491,7 +491,7 @@ For metrics query:
 `` `csv    "host", "version", "community", "profile", "freqinseconds"       10.42.0.58,1,public,1.3.6.1.2.1.1.9.1.3.1,30    host.docker.internal,2c,public,1.3.6.1.2.1.1.9.1.3.*,60 ``\`
 
 ``` bash
-microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml -f static_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
 
 **SNMPv3**
@@ -537,5 +537,5 @@ usernames:
 3.  Apply the changes.
 
 ``` bash
-microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml -f static_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
 ```
