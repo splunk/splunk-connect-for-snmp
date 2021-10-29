@@ -46,3 +46,7 @@ data:
         tag:
         securityName:
 {{- end -}}
+{{- if (.Values.files.scheduler.config).additionalMetricField }}
+    additionalMetricField:
+{{ .Values.files.scheduler.config.additionalMetricField | indent 6 }}
+{{- end -}}
