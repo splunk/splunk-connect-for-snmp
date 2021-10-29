@@ -1,3 +1,4 @@
+{{- $workerArgs := .Values.files.scheduler.args | default dict -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,16 +22,16 @@ spec:
           imagePullPolicy: {{ .Values.worker.pullPolicy | default "IfNotPresent" }}
           args:
             [
-              "--log={{ .Values.scheduler.logLevel }}",
+              {{ printf "\"--log=%s\"" ( .Values.scheduler.logLevel | default "WARN" ) }},
               "--config=/work/config/config.yaml",
               "--inventory=/work/inventory/inventory.csv",
               "--event_index={{ .Values.scheduler.index.event }}",
               "--metric_index={{ .Values.scheduler.index.metrics }}",
               "--meta_index={{ .Values.scheduler.index.meta }}",
-              "--refresh_interval={{ .Values.files.scheduler.args.refresh_interval }}",
-              "--realtime_task_frequency={{ .Values.files.scheduler.args.realtime_task_frequency }}",
-              "--matching_task_frequency={{ .Values.files.scheduler.args.matching_task_frequency }}",
-              "--onetime_task_frequency={{ .Values.files.scheduler.args.onetime_task_frequency }}",
+              "--refresh_interval={{ $workerArgs.refresh_interval | default 1 }}",
+              "--realtime_task_frequency={{ $workerArgs.realtime_task_frequency | default 60 }}",
+              "--matching_task_frequency={{ $workerArgs.matching_task_frequency | default 10 }}",
+              "--onetime_task_frequency={{ $workerArgs.onetime_task_frequency | default 120 }}",
             ]
           env:
             - name: MONGO_SERVICE_SERVICE_HOST
@@ -38,7 +39,7 @@ spec:
             - name: MONGO_SERVICE_SERVICE_PORT
               value: "27017"
             - name: MIBS_SERVER_URL
-              value: {{ printf "http://%s:%s" .Values.mib.service_host .Values.mib.service_port | quote }}
+              value: {{ printf "http://sc4snmp-mib-server-service:%s" ( "5000" | default .Values.mib.service_port ) | quote }}
             - name: CELERY_BROKER_URL
               value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq:5672/
             - name: POLLER_EXECUTION_MODE
@@ -51,7 +52,16 @@ spec:
               mountPath: "/work/inventory"
               readOnly: false
           resources:
-{{ toYaml .Values.mib.resources | indent 12 }}
+            {{- if .Values.scheduler.resources }}
+{{ .Values.scheduler.resources | toYaml | trim | indent 12 }}
+            {{ else }}
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+            requests:
+              cpu: 1000m
+              memory: 2Gi
+            {{ end }}
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config
