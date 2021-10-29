@@ -3,7 +3,7 @@ entries:
   snmp-installer:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2021-10-29T15:27:48.535644263Z"
+    created: "2021-10-29T15:50:22.284150239Z"
     dependencies:
     - name: mongodb
       repository: https://charts.bitnami.com/bitnami
@@ -12,11 +12,11 @@ entries:
       repository: https://charts.bitnami.com/bitnami
       version: 8.23.3
     description: A Helm chart for Splunk for SNMP
-    digest: 401bb5fd20768c2f9ffccea4b1bbaddcf273675214c0ce146d36126ee86e9857
+    digest: f0ed83d41f97ef47457ab081f197e5e52c1969248f6ce2afc3ed985ca007ddb7
     name: snmp-installer
     type: application
     urls:
-    - https://github.com/splunk/splunk-connect-for-snmp/releases/download/v0.11.0-develop.17/snmp-installer-0.1.4.tgz
+    - https://github.com/splunk/splunk-connect-for-snmp/releases/download/v0.11.0-develop.18/snmp-installer-0.1.4.tgz
     version: 0.1.4
   - apiVersion: v2
     appVersion: 1.16.0
@@ -86,4 +86,4 @@ entries:
     urls:
     - https://github.com/splunk/splunk-connect-for-snmp/releases/download/v0.11.0-develop.4/snmp-installer-0.1.0.tgz
     version: 0.1.0
-generated: "2021-10-29T15:27:48.524271569Z"
+generated: "2021-10-29T15:50:22.266961883Z"
