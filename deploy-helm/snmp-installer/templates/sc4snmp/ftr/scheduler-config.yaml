@@ -23,6 +23,7 @@ data:
       database: "snmp_poller"
       walked_collection: "walked_hosts"
       unwalked_collection: "unwalked_hosts"
+{{- if .Values.files.scheduler.config }}
 {{- if .Values.files.scheduler.config.usernames }}
     usernames:
 {{ .Values.files.scheduler.config.usernames | toYaml | indent 6  }}
@@ -34,4 +35,5 @@ data:
 {{- if .Values.files.scheduler.config.communities }}
     communities:
 {{ .Values.files.scheduler.config.communities | toYaml | indent 6  }}
+{{- end -}}
 {{- end -}}
