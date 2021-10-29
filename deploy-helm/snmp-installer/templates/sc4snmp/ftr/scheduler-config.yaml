@@ -35,5 +35,20 @@ data:
 {{- if .Values.files.scheduler.config.communities }}
     communities:
 {{ .Values.files.scheduler.config.communities | toYaml | indent 6  }}
+{{ else }}
+       public:
+         communityIndex:
+         contextEngineId:
+         contextName:
+         tag:
+         securityName:
 {{- end -}}
+{{ else }}
+    communities:
+       public:
+         communityIndex:
+         contextEngineId:
+         contextName:
+         tag:
+         securityName:
 {{- end -}}
