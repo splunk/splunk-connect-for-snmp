@@ -1,4 +1,4 @@
-{{- $workerArgs := .Values.files.scheduler.config.args | default dict -}}
+{{- $workerArgs := .Values.files.scheduler.args | default dict -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
