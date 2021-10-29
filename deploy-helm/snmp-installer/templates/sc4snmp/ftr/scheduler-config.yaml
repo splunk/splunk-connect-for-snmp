@@ -18,6 +18,10 @@ data:
             - ifDescr: 'interface_desc'
             - ifPhysAddress: 'MAC_address'
             {{- if (.Values.files.scheduler.config).enricherIfMib }}
+{{ .Values.files.scheduler.config.enricherIfMib | trim | indent 12 -}}
+            {{- end }}
+          additionalVarBinds:
+            - indexNum: 'index_number'
         TCP-MIB:
           additionalVarBinds:
             - regex: '([0-9]+_[0-9]+_[0-9]+_[0-9]+)_([0-9]+)_([0-9]+_[0-9]+_[0-9]+_[0-9]+)_([0-9]+)'
@@ -26,10 +30,6 @@ data:
           additionalVarBinds:
             - regex: '(ipv4)_"([0-9]+_[0-9]+_[0-9]+_[0-9]+)"_([0-9]+)_(ipv4)_"([0-9]+_[0-9]+_[0-9]+_[0-9]+)"_([0-9]+)_([0-9]+)'
               names: 'protocol_version_one/IP_one/port_one/protocol_version_two/IP_two/port_two'
-{{ .Values.files.scheduler.config.enricherIfMib | trim | indent 12 -}}
-            {{- end }}
-          additionalVarBinds:
-            - indexNum: 'index_number'
     mongo:
       database: "snmp_poller"
       walked_collection: "walked_hosts"
