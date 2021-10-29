@@ -22,7 +22,7 @@ spec:
           imagePullPolicy: {{ .Values.worker.pullPolicy | default "IfNotPresent" }}
           args:
             [
-              "--log={{ .Values.scheduler.logLevel }}",
+              {{ printf "\"--log=%s\"" ( .Values.scheduler.logLevel | default "WARN" ) }},
               "--config=/work/config/config.yaml",
               "--inventory=/work/inventory/inventory.csv",
               "--event_index={{ .Values.scheduler.index.event }}",

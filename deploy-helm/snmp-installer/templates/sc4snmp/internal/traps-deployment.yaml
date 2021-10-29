@@ -21,7 +21,7 @@ spec:
           imagePullPolicy: {{ .Values.traps.pullPolicy | default "IfNotPresent" }}
           args:
             [
-              "--loglevel={{ .Values.traps.logLevel }}",
+              {{ printf "\"--loglevel=%s\"" ( .Values.traps.logLevel | default "WARN" ) }},
               "--config=/work/config/config.yaml",
               "--index={{ .Values.scheduler.index.event }}",
               "--ipv6=",

@@ -10,7 +10,7 @@ traps:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "1"
-  logLevel: "WARN"
+#  logLevel: "WARN"
   replicas: 1
   loadBalancerIP: ###X.X.X.X###
 #  resources:
@@ -20,7 +20,7 @@ traps:
 #    requests:
 #      memory: 128Mi
 scheduler:
-  logLevel: "WARN"
+#  logLevel: "WARN"
   replicas: 1
   index:
     event: em_logs
@@ -56,7 +56,7 @@ worker:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "1"
-  logLevel: "WARN"
+#  logLevel: "WARN"
   replicas: 1
 #  resources:
 #    limits:

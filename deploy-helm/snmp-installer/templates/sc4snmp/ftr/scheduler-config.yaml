@@ -24,10 +24,12 @@ data:
             - indexNum: 'index_number'
         TCP-MIB:
           additionalVarBinds:
+            - indexNum: 'index_number'
             - regex: '([0-9]+_[0-9]+_[0-9]+_[0-9]+)_([0-9]+)_([0-9]+_[0-9]+_[0-9]+_[0-9]+)_([0-9]+)'
               names: 'IP_one/port/IP_two/index_number'
         UDP-MIB:
           additionalVarBinds:
+            - indexNum: 'index_number'
             - regex: '(ipv4)_"([0-9]+_[0-9]+_[0-9]+_[0-9]+)"_([0-9]+)_(ipv4)_"([0-9]+_[0-9]+_[0-9]+_[0-9]+)"_([0-9]+)_([0-9]+)'
               names: 'protocol_version_one/IP_one/port_one/protocol_version_two/IP_two/port_two'
     mongo:
