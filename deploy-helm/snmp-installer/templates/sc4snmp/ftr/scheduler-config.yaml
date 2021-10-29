@@ -31,3 +31,7 @@ data:
     profiles:
 {{ .Values.files.scheduler.config.profiles | toYaml | indent 6  }}
 {{- end -}}
+{{- if .Values.files.scheduler.config.communities }}
+    communities:
+{{ .Values.files.scheduler.config.communities | toYaml | indent 6  }}
+{{- end -}}
