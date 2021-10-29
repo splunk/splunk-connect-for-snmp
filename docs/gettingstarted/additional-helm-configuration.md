@@ -46,9 +46,3 @@ Scheduler, MIB and Worker contain a `logLevel` variable that indicates the level
 | variable   | Description  | Example  | 
 |---|---|---|
 | loadBalancerIP | shared IP  | 10.0.101.22 |
-
-### RabbitMQ values
-Values described here: https://github.com/bitnami/charts/tree/master/bitnami/rabbitmq in Parameters section.
-
-### MongoDB values
-Values described here: https://github.com/bitnami/charts/tree/master/bitnami/mongodb in Parameters section.
