@@ -26,16 +26,17 @@ data:
 {{- if .Values.files.scheduler.config }}
 {{- if .Values.files.scheduler.config.usernames }}
     usernames:
-{{ .Values.files.scheduler.config.usernames | toYaml | indent 6  }}
-{{- end -}}
+{{ .Values.files.scheduler.config.usernames | indent 6 -}}
+{{ end }}
 {{- if .Values.files.scheduler.config.profiles }}
     profiles:
-{{ .Values.files.scheduler.config.profiles | toYaml | indent 6  }}
-{{- end -}}
+{{ .Values.files.scheduler.config.profiles | indent 6 -}}
+{{ end }}
 {{- if .Values.files.scheduler.config.communities }}
     communities:
-{{ .Values.files.scheduler.config.communities | toYaml | indent 6  }}
+{{ .Values.files.scheduler.config.communities | indent 6 -}}
 {{ else }}
+    communities:
        public:
          communityIndex:
          contextEngineId:

@@ -6,7 +6,7 @@ files:
     config:
 ############################
 #      ### Example of usernames ###
-#      usernames:
+#      usernames: |
 #        simulator:
 #          authKey: "auctoritas"
 #          privKey: "privatus"
@@ -22,7 +22,7 @@ files:
 #          privKeyType: 0
 ############################
 #      ### Example of communities ###
-#      communities:
+#      communities: |
 #         public:
 #           communityIndex:
 #           contextEngineId:
@@ -32,7 +32,7 @@ files:
 #         my-area:
 ############################
 #      ### Example of profile ###
-#      profiles:
+#      profiles: |
 #        nameofprofile:
 #          frequency: ###number_of_seconds###
 #          varBinds:
