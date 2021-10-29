@@ -1,8 +1,8 @@
 files:
   scheduler:
     inventory: |
-      host,version,community,profile,freqinseconds
-      #10.0.0.1,2c,public,basev1,300
+      host,version,community,profile
+      #10.0.0.1,2c,public,basev1
     config:
 ############################
 #      ### Example of usernames ###
