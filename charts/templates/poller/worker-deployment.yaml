@@ -38,7 +38,7 @@ spec:
             - name: OTEL_SERVER_METRICS_URL
               value: {{ printf "http://otel-service:%s" ( .Values.otel.service_metrics_port | default "8882" ) | quote }}
             - name: MONGO_SERVICE_SERVICE_HOST
-              value: sc4snmp-mongodb
+              value: sc4snmp-mongodb-headless
             - name: MONGO_SERVICE_SERVICE_PORT
               value: "27017"
           volumeMounts:
