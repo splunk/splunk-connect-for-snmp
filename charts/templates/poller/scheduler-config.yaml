@@ -15,8 +15,11 @@ data:
       oidFamily:
         IF-MIB:
           existingVarBinds:
-            - ifDescr: 'interface_desc'
-            - ifPhysAddress: 'MAC_address'
+            - ifDescr: 'Desc'
+            - ifPhysAddress: 'MACaddress'
+            - ifAdminStatus: "AdminStatus"
+            - ifOperStatus: "OperationalStatus"
+            - ifType: "Type"
             {{- if (.Values.files.scheduler.config).enricherIfMib }}
 {{ .Values.files.scheduler.config.enricherIfMib | trim | indent 12 -}}
             {{- end }}
