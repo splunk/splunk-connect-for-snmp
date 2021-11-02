@@ -202,7 +202,7 @@ mongodb:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9216"
 rabbitmq:
-  replicaCount: 2
+  replicaCount: 1
   pdb:
     create: true
 
