@@ -1,0 +1,542 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.4">
+    
+    
+      
+        <title>MicroK8s installation for RHEL 8 - Splunk Connect for SNMP (SC4SNMP)</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.f7f47774.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.3f5d1f46.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#000000">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="black" data-md-color-accent="orange">
+  
+    
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#microk8s-installation-for-rhel-8" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Splunk Connect for SNMP (SC4SNMP)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MicroK8s installation for RHEL 8
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Splunk Connect for SNMP (SC4SNMP)
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      <label class="md-nav__link" for="__nav_2">
+        Getting Started
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Getting Started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
+      
+      <label class="md-nav__link" for="__nav_2_1">
+        Pre-requirements
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Pre-requirements" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_1">
+          <span class="md-nav__icon md-icon"></span>
+          Pre-requirements
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splunk-requirements/" class="md-nav__link">
+        Splunk Requirements
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../k8s-microk8s/" class="md-nav__link">
+        Install Microk8s
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sck-installation/" class="md-nav__link">
+        Install Splunk for Kubernetes
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sc4snmp-installation/" class="md-nav__link">
+        Install SC4SNMP
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sc4snmp-configuration/" class="md-nav__link">
+        Configure Poller and Traps
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../additional-helm-configuration/" class="md-nav__link">
+        Additional HELM values
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/" class="md-nav__link">
+        Planning
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="microk8s-installation-for-rhel-8">MicroK8s installation for RHEL 8<a class="headerlink" href="#microk8s-installation-for-rhel-8" title="Permanent link">&para;</a></h1>
+<p>Enable iSCSI API </p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">sudo yum -y update</span>
+<span class="l l-Scalar l-Scalar-Plain">sudo setenforce 0</span>
+<span class="l l-Scalar l-Scalar-Plain">sudo yum install -y iscsi-initiator-utils git</span>
+<span class="l l-Scalar l-Scalar-Plain">sudo systemctl enable iscsid</span>
+</code></pre></div>
+
+<p>Install brew and some handfull tools:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">/bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">echo &#39;eval &quot;$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)&quot;&#39;&gt;&gt; /home/ec2-user/.bash_profile</span>
+<span class="l l-Scalar l-Scalar-Plain">eval &quot;$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)&quot;</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">brew install helm kubectl kubectx k9s nano</span>
+</code></pre></div>
+
+<p>Use <a href="kurl.sh">kurl.sh</a> to prepare url for a microk8s installation. Use:
+1.  Kubernetes version: 1.20.x ( or newer) 
+2. CRI: Containerd ( lates)
+3. CNI: Weave (latest)
+4. PVC: Provisioner  openEBS (2.6.0) </p>
+<p>Url to install k8s example:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">curl https://kurl.sh/bb01dee | sudo bash</span>
+</code></pre></div>
+
+<p>After the installation run:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">echo unset KUBECONFIG &gt;&gt; ~/.bash_profile</span>
+<span class="l l-Scalar l-Scalar-Plain">bash -l</span>
+<span class="l l-Scalar l-Scalar-Plain">echo &#39;alias k=kubectl&#39; &gt;&gt;~/.bashrc</span>
+</code></pre></div>
+
+<p>Refresh <code>.bashrc</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">. ~/.bashrc</span>
+</code></pre></div>
+
+<p>Check if the installations are running:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">k get all -A</span>
+</code></pre></div>
+
+<p>The response for the above command should look like this:</p>
+<div class="codehilite"><pre><span></span><code><span class="p p-Indicator">[</span><span class="nv">ec2-user@ip-172-31-16-56 ~</span><span class="p p-Indicator">]</span><span class="l l-Scalar l-Scalar-Plain">$ k get all -A</span>
+<span class="l l-Scalar l-Scalar-Plain">NAMESPACE     NAME                                                       READY   STATUS    RESTARTS   AGE</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   pod/coredns-74ff55c5b-lkpxc                                1/1     Running   0          10m</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   pod/coredns-74ff55c5b-sr6hl                                1/1     Running   0          10m</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   pod/etcd-ip-172-31-16-56.ec2.internal                      1/1     Running   0          10m</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   pod/kube-apiserver-ip-172-31-16-56.ec2.internal            1/1     Running   0          10m</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   pod/kube-controller-manager-ip-172-31-16-56.ec2.internal   1/1     Running   0          10m</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   pod/kube-proxy-spb46                                       1/1     Running   0          10m</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   pod/kube-scheduler-ip-172-31-16-56.ec2.internal            1/1     Running   0          10m</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   pod/weave-net-rkbdz                                        2/2     Running   1          10m</span>
+
+<span class="l l-Scalar l-Scalar-Plain">NAMESPACE     NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE</span>
+<span class="l l-Scalar l-Scalar-Plain">default       service/kubernetes   ClusterIP   10.96.0.1    &lt;none&gt;        443/TCP                  11m</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   service/kube-dns     ClusterIP   10.96.0.10   &lt;none&gt;        53/UDP,53/TCP,9153/TCP   10m</span>
+
+<span class="l l-Scalar l-Scalar-Plain">NAMESPACE     NAME                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   daemonset.apps/kube-proxy   1         1         1       1            1           kubernetes.io/os=linux   10m</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   daemonset.apps/weave-net    1         1         1       1            1           &lt;none&gt;                   10m</span>
+
+<span class="l l-Scalar l-Scalar-Plain">NAMESPACE     NAME                      READY   UP-TO-DATE   AVAILABLE   AGE</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   deployment.apps/coredns   2/2     2            2           10m</span>
+
+<span class="l l-Scalar l-Scalar-Plain">NAMESPACE     NAME                                DESIRED   CURRENT   READY   AGE</span>
+<span class="l l-Scalar l-Scalar-Plain">kube-system   replicaset.apps/coredns-74ff55c5b   2         2         2       10m</span>
+</code></pre></div>
+
+<p>Note that you&rsquo;ll use <code>helm</code> commands with <code>helm</code> and not <code>microk8s helm</code>.</p>
+<p>Also, for SNMP install you need to create PV for mongodb and rabbitmq. To do so, please 
+create two files:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">touch rabbitmq_pvc.yaml</span>
+<span class="l l-Scalar l-Scalar-Plain">touch mongodb_pvc.yaml</span>
+</code></pre></div>
+
+<p>The content of <code>rabbitmq_pvc.yaml</code> should be:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">PersistentVolume</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+ <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pv1</span>
+ <span class="nt">labels</span><span class="p">:</span>
+   <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">local</span>
+   <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">app</span>
+<span class="nt">spec</span><span class="p">:</span>
+ <span class="nt">capacity</span><span class="p">:</span>
+   <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">15Gi</span>
+ <span class="nt">accessModes</span><span class="p">:</span>
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
+ <span class="nt">hostPath</span><span class="p">:</span>
+   <span class="nt">path</span><span class="p">:</span> <span class="s">&quot;/home/ec2-user/data/pv1&quot;</span>
+</code></pre></div>
+
+<p>The content of <code>mongodb_pvc.yaml</code> should be:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">PersistentVolume</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">metadata</span><span class="p">:</span>
+ <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pv2</span>
+ <span class="nt">labels</span><span class="p">:</span>
+   <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">local</span>
+   <span class="nt">app</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">app</span>
+<span class="nt">spec</span><span class="p">:</span>
+ <span class="nt">capacity</span><span class="p">:</span>
+   <span class="nt">storage</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">15Gi</span>
+ <span class="nt">accessModes</span><span class="p">:</span>
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
+ <span class="nt">hostPath</span><span class="p">:</span>
+   <span class="nt">path</span><span class="p">:</span> <span class="s">&quot;/home/ec2-user/data/pv2&quot;</span>
+</code></pre></div>
+
+<p>Where directory in <code>hostPath.path</code> <code>ec2-user</code> should refer to yours account name.</p>
+<p>Create directory trees:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">mkdir -p /home/ec2-user/data/pv1 /home/ec2-user/data/pv2</span>
+</code></pre></div>
+
+<p>Where <code>ec2-user</code> is yours account name.</p>
+<p>Move files to directories:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">mv mongodb_pvc.yaml /home/ec2-user/data/pv1</span>
+<span class="l l-Scalar l-Scalar-Plain">mv rabbitmq_pvc.yaml /home/ec2-user/data/pv2</span>
+</code></pre></div>
+
+<p>Change directories ownership:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">sudo chown -R 1001:1001 ~/data</span>
+</code></pre></div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.709b4209.min.js", "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.febc23d1.min.js"></script>
+      
+    
+  </body>
+</html>
