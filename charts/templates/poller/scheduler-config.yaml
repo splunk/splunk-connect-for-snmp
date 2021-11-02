@@ -24,14 +24,10 @@ data:
             - indexNum: 'index_number'
         TCP-MIB:
           additionalVarBinds:
-            - indexNum: 'index_number'
-            - regex: '([0-9]+_[0-9]+_[0-9]+_[0-9]+)_([0-9]+)_([0-9]+_[0-9]+_[0-9]+_[0-9]+)_([0-9]+)'
-              names: 'IP_one/port/IP_two/index_number'
+            - regex: '(?P<IP_one>[0-9]+_[0-9]+_[0-9]+_[0-9]+)_(?P<port>[0-9]+)_(?P<IP_two>[0-9]+_[0-9]+_[0-9]+_[0-9]+)_(?P<index_number>[0-9]+)'
         UDP-MIB:
           additionalVarBinds:
-            - indexNum: 'index_number'
-            - regex: '(ipv4)_"([0-9]+_[0-9]+_[0-9]+_[0-9]+)"_([0-9]+)_(ipv4)_"([0-9]+_[0-9]+_[0-9]+_[0-9]+)"_([0-9]+)_([0-9]+)'
-              names: 'protocol_version_one/IP_one/port_one/protocol_version_two/IP_two/port_two'
+            - regex: '(?P<protocol_version_one>ipv4)_"(?P<IP_one>[0-9]+_[0-9]+_[0-9]+_[0-9]+)"_(?P<port_one>[0-9]+)_(?P<protocol_version_two>ipv4)_"(?P<IP_two>[0-9]+_[0-9]+_[0-9]+_[0-9]+)"_(?P<index_number>[0-9]+)_(?P<port_two>[0-9]+)'
     mongo:
       database: "snmp_poller"
       walked_collection: "walked_hosts"
