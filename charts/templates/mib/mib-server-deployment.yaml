@@ -21,7 +21,7 @@ spec:
             - containerPort: 5000
           env:
             - name: MONGO_SERVICE_SERVICE_HOST
-              value: sc4snmp-mongodb
+              value: sc4snmp-mongodb-headless
             - name: MONGO_SERVICE_SERVICE_PORT
               value: "27017"
             - name: MIB_SERVER_SERVICE_SERVICE_HOST
