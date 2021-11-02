@@ -15,9 +15,9 @@ NAME                                  	CHART VERSION	APP VERSION	DESCRIPTION
 splunk-connect-for-snmp/splunk-connect-for-snmp	0.1.1        	1.16.0     	A Helm chart for Splunk for SNMP
 ```
 
-### Download and modify deployment_values.yaml and config_values.yaml files
+### Download and modify values.yaml
 ```
-curl -o /values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/charts/values.yaml.example
+curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/charts/values.yaml.example
 ```
 
 `values.yaml` is being used during the installation process for configuring kubernetes values.
