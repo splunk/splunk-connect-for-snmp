@@ -21,7 +21,7 @@ spec:
           imagePullPolicy: {{ .Values.traps.pullPolicy | default "IfNotPresent" }}
           args:
             [
-              "--loglevel={{ .Values.traps.logLevel }}",
+              {{ printf "\"--loglevel=%s\"" ( .Values.traps.logLevel | default "WARN" ) }},
               "--config=/work/config/config.yaml",
               "--index={{ .Values.scheduler.index.event }}",
               "--ipv6=",
@@ -30,9 +30,9 @@ spec:
             - containerPort: 2162
           env:
             - name: MIBS_SERVER_URL
-              value: {{ printf "http://%s:%s" .Values.mib.service_host .Values.mib.service_port | quote }}
+              value: {{ printf "http://sc4snmp-mib-server-service:%s" "5000" | quote }}
             - name: OTEL_SERVER_URL
-              value: {{ printf "http://%s:%s" .Values.otel.service_host .Values.otel.service_logs_port | quote }}
+              value: {{ printf "http://otel-service:%s" "8881" | quote }}
             - name: SPLUNK_HEC_URL
               valueFrom:
                 secretKeyRef:
@@ -52,6 +52,17 @@ spec:
             - name: config
               mountPath: "/work/config"
               readOnly: true
+          resources:
+            {{- if .Values.traps.resources }}
+{{ .Values.traps.resources | toYaml | trim | indent 12 }}
+            {{ else }}
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            {{ end }}
       volumes:
         - name: config
           configMap:

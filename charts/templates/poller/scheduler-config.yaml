@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sc4snmp-config
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  config.yaml: |-
+    celery:
+      broker:
+        type: "rabbitmq"
+    # Sample Configuration file
+    ipv4: True
+    ipv6: False
+    enricher:
+      oidFamily:
+        IF-MIB:
+          existingVarBinds:
+            - ifDescr: 'Desc'
+            - ifPhysAddress: 'MACaddress'
+            - ifAdminStatus: "AdminStatus"
+            - ifOperStatus: "OperationalStatus"
+            - ifType: "Type"
+            {{- if (.Values.files.scheduler.config).enricherIfMib }}
+{{ .Values.files.scheduler.config.enricherIfMib | trim | indent 12 -}}
+            {{- end }}
+          additionalVarBinds:
+            - indexNum: 'index_number'
+        TCP-MIB:
+          additionalVarBinds:
+            - regex: '(?P<IP_one>[0-9]+_[0-9]+_[0-9]+_[0-9]+)_(?P<port>[0-9]+)_(?P<IP_two>[0-9]+_[0-9]+_[0-9]+_[0-9]+)_(?P<index_number>[0-9]+)'
+        UDP-MIB:
+          additionalVarBinds:
+            - regex: '(?P<protocol_version_one>ipv4)_"(?P<IP_one>[0-9]+_[0-9]+_[0-9]+_[0-9]+)"_(?P<port_one>[0-9]+)_(?P<protocol_version_two>ipv4)_"(?P<IP_two>[0-9]+_[0-9]+_[0-9]+_[0-9]+)"_(?P<index_number>[0-9]+)_(?P<port_two>[0-9]+)'
+    mongo:
+      database: "snmp_poller"
+      walked_collection: "walked_hosts"
+      unwalked_collection: "unwalked_hosts"
+{{- if (.Values.files.scheduler.config).usernames }}
+    usernames:
+{{ .Values.files.scheduler.config.usernames | indent 6 -}}
+{{ end }}
+{{- if (.Values.files.scheduler.config).profiles }}
+    profiles:
+{{ .Values.files.scheduler.config.profiles | indent 6 -}}
+{{ end }}
+{{- if (.Values.files.scheduler.config).communities }}
+    communities:
+{{ .Values.files.scheduler.config.communities | indent 6 }}
+{{ else }}
+    communities:
+      public:
+        communityIndex:
+        contextEngineId:
+        contextName:
+        tag:
+        securityName:
+{{- end -}}
+{{- if (.Values.files.scheduler.config).additionalMetricField }}
+    additionalMetricField:
+{{ .Values.files.scheduler.config.additionalMetricField | indent 6 }}
+{{- end -}}

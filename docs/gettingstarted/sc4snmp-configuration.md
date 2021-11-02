@@ -66,7 +66,7 @@ patterns - list of regular expressions that will be matched against sysDescr or 
 
 Every change in values.yaml file can be applied with the command:
 ``` bash
-microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml -f static_values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
 
 This command should produce this kind of output:

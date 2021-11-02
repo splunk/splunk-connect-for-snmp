@@ -36,7 +36,7 @@ files:
 
 When you addd modifications to any of `yaml` files, use the following command to propagate configuration changes:
 ``` bash
-microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml -f static_values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
 ## Traps Configuration
 
@@ -517,7 +517,7 @@ Where `10.42.0.58` is an IP address of a device running SNMP.
 Use below command to update SC4SNMP with the changes you've made:
 
 ``` bash
-microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml -f static_values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
 
 **SNMPv3**
@@ -563,7 +563,7 @@ usernames:
 3.  Apply the changes.
 
 ``` bash
-microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml splunk-connect-for-snmp/snmp-installer --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml -f static_values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
 
 ## Workflow of the SC4SNMP

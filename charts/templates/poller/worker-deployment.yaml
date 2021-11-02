@@ -6,7 +6,7 @@ metadata:
   labels:
     app: sc4snmp-worker
 spec:
-  replicas: {{ .Values.worker.replicas }}
+  replicas: {{ .Values.worker.replicas | default "1" }}
   selector:
     matchLabels:
       app: sc4snmp-worker
@@ -19,12 +19,12 @@ spec:
         - name: sc4snmp-worker
           image: {{ .Values.worker.image | default "ghcr.io/splunk/splunk-connect-for-snmp-poller/container" }}:{{ .Values.worker.tag | default "1" }}
           imagePullPolicy: {{ .Values.worker.pullPolicy | default "IfNotPresent" }}
-          args: ["--log={{ .Values.worker.logLevel }}", "--config=/work/config/config.yaml"]
+          args: [{{ printf "\"--log=%s\"" ( .Values.worker.logLevel | default "WARN" ) }}, "--config=/work/config/config.yaml"]
           env:
             - name: CELERY_BROKER_URL
               value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq:5672/
             - name: MIBS_SERVER_URL
-              value: {{ printf "http://%s:%s" .Values.mib.service_host .Values.mib.service_port | quote }}
+              value: {{ printf "http://sc4snmp-mib-server-service:%s" ( .Values.mib.service_port | default "5000" ) | quote }}
             - name: MIBS_FILES_URL
               value: $(MIBS_SERVER_URL)/files/asn1/@mib@
             - name: MIB_SERVER_SERVICE_SERVICE_HOST
@@ -34,11 +34,11 @@ spec:
             - name: POLLER_EXECUTION_MODE
               value: worker
             - name: OTEL_SERVER_LOGS_URL
-              value: {{ printf "http://%s:%s" .Values.otel.service_host .Values.otel.service_logs_port | quote }}
+              value: {{ printf "http://otel-service:%s" ( .Values.otel.service_logs_port | default "8881" ) | quote }}
             - name: OTEL_SERVER_METRICS_URL
-              value: {{ printf "http://%s:%s" .Values.otel.service_host .Values.otel.service_metrics_port | quote }}
+              value: {{ printf "http://otel-service:%s" ( .Values.otel.service_metrics_port | default "8882" ) | quote }}
             - name: MONGO_SERVICE_SERVICE_HOST
-              value: sc4snmp-mongodb
+              value: sc4snmp-mongodb-headless
             - name: MONGO_SERVICE_SERVICE_PORT
               value: "27017"
           volumeMounts:
@@ -46,7 +46,16 @@ spec:
               mountPath: "/work/config"
               readOnly: true
           resources:
-{{ toYaml .Values.worker.resources | indent 12 }}
+            {{- if .Values.worker.resources }}
+{{ .Values.worker.resources | toYaml | trim | indent 12 }}
+            {{ else }}
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            {{ end }}
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config

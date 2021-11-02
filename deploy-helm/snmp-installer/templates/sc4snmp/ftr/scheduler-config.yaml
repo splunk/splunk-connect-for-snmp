@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: sc4snmp-config
-  namespace: {{ .Release.Namespace | quote }}
-data:
-  config.yaml: |-
-{{ .Values.files.scheduler.config | indent 4}}
