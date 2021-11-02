@@ -12,7 +12,7 @@ microk8s helm3 search repo snmp
 Example output:
 ``` 
 NAME                                  	CHART VERSION	APP VERSION	DESCRIPTION                     
-splunk-connect-for-snmp/splunk-connect-for-snmp	0.1.1        	1.16.0     	A Helm chart for Splunk for SNMP
+splunk-connect-for-snmp/splunk-connect-for-snmp	0.1.4        	1.16.0     	A Helm chart for SNMP Connect for SNMP
 ```
 
 ### Download and modify values.yaml
@@ -43,7 +43,7 @@ Other variables to update in case you want to:
 microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
 From now on, when editing SC4SNMP configuration, the configuration change must be
-inserted in the corresponding section of `config_values.yaml`. For more details check [configuration](../configuration.md) section.
+inserted in the corresponding section of `values.yaml`. For more details check [configuration](../configuration.md) section.
 
 Use the following command to propagate configuration changes:
 ``` bash
@@ -57,11 +57,14 @@ microk8s kubectl get pods -n sc4snmp
 Example output:
 ``` 
 NAME                                 READY   STATUS    RESTARTS   AGE
-sc4snmp-traps-569547fcb4-9gxd5       1/1     Running   0          19m
-sc4snmp-worker-65b4c6df9d-bmgrj      1/1     Running   0          19m
-sc4snmp-otel-6b65b45b84-frj6x        1/1     Running   0          19m
-sc4snmp-mib-server-9f765c956-rbm7z   1/1     Running   0          19m
-sc4snmp-scheduler-5bb8d5fd9c-p7j86   1/1     Running   0          19m
-sc4snmp-mongodb-85f6c9c575-vhfr9     2/2     Running   0          19m
-sc4snmp-rabbitmq-0                   1/1     Running   0          19m
+sc4snmp-scheduler-8566485657-qxzs2    1/1     Running   0          105s
+sc4snmp-mib-server-77d79fb469-9t4hl   1/1     Running   0          105s
+sc4snmp-worker-c57696f7f-dtcxf        1/1     Running   0          105s
+sc4snmp-otel-6b65b45b84-rh7sl         1/1     Running   0          105s
+sc4snmp-traps-6b8567554f-vcrvj        1/1     Running   0          105s
+sc4snmp-mongodb-arbiter-0             1/1     Running   0          105s
+sc4snmp-mongodb-0                     2/2     Running   0          105s
+sc4snmp-mongodb-1                     2/2     Running   0          35s
+sc4snmp-rabbitmq-0                    1/1     Running   0          105s
+sc4snmp-rabbitmq-1                    1/1     Running   0          105s
 ```

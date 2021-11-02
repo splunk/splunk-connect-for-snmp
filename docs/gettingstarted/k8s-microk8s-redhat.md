@@ -1,4 +1,4 @@
-# MicroK8s installation for RHEL
+# MicroK8s installation for RHEL 8
 
 Enable iSCSI API 
 ```yaml

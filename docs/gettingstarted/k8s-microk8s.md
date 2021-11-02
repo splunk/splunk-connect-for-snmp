@@ -5,11 +5,13 @@ Snap tool is installed by default only on Ubuntu. If you use a different platfor
 For CentOS:
 [Installing snap on CentOS | Snapcraft documentation](https://snapcraft.io/docs/installing-snap-on-centos)
 
-For 
+For RedHat 7:
+[Installing snap on RedHat | Snapcraft documentation](https://snapcraft.io/docs/installing-snap-on-red-hat)
 
-We need to have a normal install of kubectl because of operator scripts
+
+Then microk8s must be installed with:
+
 ```bash
-sudo snap install kubectl --classic
 sudo snap install microk8s --classic
 ```
 
