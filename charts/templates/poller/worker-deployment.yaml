@@ -39,7 +39,7 @@ spec:
               value: {{ printf "http://otel-service:%s" ( .Values.otel.service_metrics_port | default "8882" ) | quote }}
             - name: MONGO_URI
           {{- if eq .Values.mongodb.architecture "replicaset" }}
-              value: mongodb+srv://sc4snmp-mongodb-headless.{{ .Release.Namespace }}.svc.cluster.local/?tls=false&ssl=false&replicaSet=rs0
+              value: mongodb+srv://sc4snmp-mongodb-headless.{{ .Release.Namespace }}.svc.{{ .Values.mongodb.clusterDomain }}/?tls=false&ssl=false&replicaSet=rs0
           {{ else }}
               value: mongodb://sc4snmp-mongodb:27017
           {{ end }}              
