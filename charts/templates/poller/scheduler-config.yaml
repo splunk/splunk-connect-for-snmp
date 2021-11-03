@@ -15,16 +15,15 @@ data:
       oidFamily:
         IF-MIB:
           existingVarBinds:
-            - ifDescr: 'Desc'
-            - ifPhysAddress: 'MACaddress'
-            - ifAdminStatus: "AdminStatus"
-            - ifOperStatus: "OperationalStatus"
             - ifType: "Type"
-            {{- if (.Values.files.scheduler.config).enricherIfMib }}
-{{ .Values.files.scheduler.config.enricherIfMib | trim | indent 12 -}}
-            {{- end }}
+            - ifMtu: "MTU"
+            - ifSpeed: "Speed"
           additionalVarBinds:
             - indexNum: 'index_number'
+            - ifAdminStatus: "AdminStatus"
+            - ifOperStatus: "OperationalStatus"
+            - ifDescr: "ifDescr"
+
         TCP-MIB:
           additionalVarBinds:
             - regex: '(?P<IP_one>[0-9]+_[0-9]+_[0-9]+_[0-9]+)_(?P<port>[0-9]+)_(?P<IP_two>[0-9]+_[0-9]+_[0-9]+_[0-9]+)_(?P<index_number>[0-9]+)'

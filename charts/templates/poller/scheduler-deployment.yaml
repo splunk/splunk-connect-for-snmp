@@ -34,10 +34,12 @@ spec:
               "--onetime_task_frequency={{ $workerArgs.onetime_task_frequency | default 120 }}",
             ]
           env:
-            - name: MONGO_SERVICE_SERVICE_HOST
-              value: sc4snmp-mongodb-headless
-            - name: MONGO_SERVICE_SERVICE_PORT
-              value: "27017"
+            - name: MONGO_URI
+          {{- if eq .Values.mongodb.architecture "replicaset" }}
+              value: mongodb+srv://sc4snmp-mongodb-headless.snmp.svc.cluster.local/?tls=false&ssl=false&replicaSet=rs0
+          {{ else }}
+              value: mongodb://sc4snmp-mongodb:27017
+          {{ end }}              
             - name: MIBS_SERVER_URL
               value: {{ printf "http://sc4snmp-mib-server-service:%s" ( "5000" | default .Values.mib.service_port ) | quote }}
             - name: CELERY_BROKER_URL
