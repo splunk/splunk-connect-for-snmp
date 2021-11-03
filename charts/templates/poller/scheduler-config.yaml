@@ -18,11 +18,11 @@ data:
             - ifType: "Type"
             - ifMtu: "MTU"
             - ifSpeed: "Speed"
-          additionalVarBinds:
-            - indexNum: 'index_number'
             - ifAdminStatus: "AdminStatus"
             - ifOperStatus: "OperationalStatus"
             - ifDescr: "ifDescr"
+          additionalVarBinds:
+            - indexNum: 'index_number'
 
         TCP-MIB:
           additionalVarBinds:
