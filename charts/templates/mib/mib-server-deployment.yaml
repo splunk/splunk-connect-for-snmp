@@ -20,10 +20,12 @@ spec:
           ports:
             - containerPort: 5000
           env:
-            - name: MONGO_SERVICE_SERVICE_HOST
-              value: sc4snmp-mongodb-headless
-            - name: MONGO_SERVICE_SERVICE_PORT
-              value: "27017"
+            - name: MONGO_URI
+          {{- if eq .Values.mongodb.architecture "replicaset" }}
+              value: mongodb+srv://sc4snmp-mongodb-headless.snmp.svc.cluster.local/?tls=false&ssl=false&replicaSet=rs0
+          {{ else }}
+              value: mongodb://sc4snmp-mongodb:27017
+          {{ end }}              
             - name: MIB_SERVER_SERVICE_SERVICE_HOST
               value: sc4snmp-mib-server-service
             - name: MIB_SERVER_SERVICE_SERVICE_PORT

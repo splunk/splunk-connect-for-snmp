@@ -42,7 +42,7 @@ How to run Poller on local machine
 docker run -d -p 5672:5672 rabbitmq
 docker run -d -p 27017:27017 -v ~/data:/data/db mongo
 
-docker run -e MONGO_SERVICE_SERVICE_PORT=27017 -e MONGO_SERVICE_SERVICE_HOST=host.docker.internal -e MIBS_FILES_URL=http://host.docker.internal:5000/files/asn1/@mib@ -p 5000:5000  ghcr.io/splunk/splunk-connect-for-snmp-mib-server:develop
+docker run -e MONGO_URI=mongodb://localhost:27017 -e MIBS_FILES_URL=http://host.docker.internal:5000/files/asn1/@mib@ -p 5000:5000  ghcr.io/splunk/splunk-connect-for-snmp-mib-server:develop
 
 docker run  -p 8881:8881 -p 8882:8882 -e SPLUNK_HEC_URL=https://10.202.11.190:8088/services/collector  -e SPLUNK_HEC_TOKEN=00000000-0000-0000-0000-000000000000 -e SPLUNK_HEC_TLS_SKIP_VERIFY=true -v "$(pwd)"/test:/config quay.io/signalfx/splunk-otel-collector:0.21.0 --config=/config/otel-collector-config.yaml
 
@@ -54,8 +54,8 @@ export MIBS_SERVER_URL=http://localhost:5000
 export MIBS_FILES_URL=http://localhost:5000/files/asn1/@mib@
 export OTEL_SERVER_LOGS_URL=http://localhost:8881
 export OTEL_SERVER_METRICS_URL=http://localhost:8882
-export MONGO_SERVICE_SERVICE_HOST=localhost
-export MONGO_SERVICE_SERVICE_PORT=27017
+export MONGO_URI=mongodb://sc4snmp-mongodb:27017
+
 export CELERY_BROKER_URL=amqp://guest:guest@localhost:5672//
 
 
@@ -67,4 +67,4 @@ Parameters
 -c ../config.yaml -i ../inventory.csv --event_index em_events --metric_index em_metrics --meta_index em_meta
 
 Environment variables
-PYTHONUNBUFFERED=1;CELERY_BROKER_URL=localhost;MONGO_SERVICE_SERVICE_HOST=localhost;MONGO_SERVICE_SERVICE_PORT=27017
+PYTHONUNBUFFERED=1;CELERY_BROKER_URL=localhost;MONGO_URI=mongodb://localhost:27017
