@@ -13,10 +13,17 @@ spec:
       labels:
         app: sc4snmp-mib-server
     spec:
+      securityContext:
+          runAsNonRoot: true      
+          runAsUser: 1001
+          runAsGroup: 1001
+          fsGroup: 2000    
       containers:
         - name: sc4snmp-mib-server
           image: {{ .Values.mib.image | default "ghcr.io/splunk/splunk-connect-for-snmp-mib-server/container" }}:{{ .Values.mib.tag | default "1" }}
           imagePullPolicy: {{ .Values.mib.pullPolicy | default "IfNotPresent" }}
+          securityContext:
+            allowPrivilegeEscalation: false          
           ports:
             - containerPort: 5000
           env:
