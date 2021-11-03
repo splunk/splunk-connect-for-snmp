@@ -17,7 +17,8 @@ spec:
     spec:
       containers:
         - name: otel-collector
-          image: quay.io/signalfx/splunk-otel-collector:0.21.0
+          image: {{ .Values.otel.image | default "quay.io/signalfx/splunk-otel-collector" }}:{{ .Values.otel.tag | default "0.37.1" }}
+          imagePullPolicy: {{ .Values.otel.pullPolicy | default "IfNotPresent" }}
           args: ["--config=/config/otel-collector-config.yaml"]
           env:
             - name: SPLUNK_HEC_URL
