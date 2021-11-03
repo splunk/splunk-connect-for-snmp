@@ -15,6 +15,11 @@ spec:
       labels:
         app: sc4snmp-traps
     spec:
+      securityContext:
+          runAsNonRoot: true      
+          runAsUser: 1001
+          runAsGroup: 1001
+          fsGroup: 2000    
       containers:
         - name: traps
           image: {{ .Values.traps.image | default "ghcr.io/splunk/splunk-connect-for-snmp-traps/container" }}:{{ .Values.traps.tag | default "1" }}
@@ -26,6 +31,8 @@ spec:
               "--index={{ .Values.scheduler.index.event }}",
               "--ipv6=",
             ]
+          securityContext:
+            allowPrivilegeEscalation: false          
           ports:
             - containerPort: 2162
           env:

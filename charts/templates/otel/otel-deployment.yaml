@@ -15,11 +15,18 @@ spec:
       labels:
         app: sc4snmp-otel
     spec:
+      securityContext:
+          runAsNonRoot: true      
+          runAsUser: 1001
+          runAsGroup: 1001
+          fsGroup: 2000    
       containers:
         - name: otel-collector
           image: {{ .Values.otel.image | default "quay.io/signalfx/splunk-otel-collector" }}:{{ .Values.otel.tag | default "0.37.1" }}
           imagePullPolicy: {{ .Values.otel.pullPolicy | default "IfNotPresent" }}
           args: ["--config=/config/otel-collector-config.yaml"]
+          securityContext:
+            allowPrivilegeEscalation: false          
           env:
             - name: SPLUNK_HEC_URL
               valueFrom:

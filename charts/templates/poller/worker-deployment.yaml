@@ -15,11 +15,18 @@ spec:
       labels:
         app: sc4snmp-worker
     spec:
+      securityContext:
+          runAsNonRoot: true      
+          runAsUser: 1001
+          runAsGroup: 1001
+          fsGroup: 2000
       containers:
         - name: sc4snmp-worker
           image: {{ .Values.worker.image | default "ghcr.io/splunk/splunk-connect-for-snmp-poller/container" }}:{{ .Values.worker.tag | default "1" }}
           imagePullPolicy: {{ .Values.worker.pullPolicy | default "IfNotPresent" }}
           args: [{{ printf "\"--log=%s\"" ( .Values.worker.logLevel | default "WARN" ) }}, "--config=/work/config/config.yaml"]
+          securityContext:
+            allowPrivilegeEscalation: false          
           env:
             - name: CELERY_BROKER_URL
               value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq:5672/
@@ -43,6 +50,7 @@ spec:
           {{ else }}
               value: mongodb://sc4snmp-mongodb:27017
           {{ end }}              
+     
           volumeMounts:
             - name: config
               mountPath: "/work/config"
