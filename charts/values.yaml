@@ -51,13 +51,14 @@ otel:
   signalfx_mode: "splunk"
   signalfx_token: ""
   signalfx_realm: ""
-worker:
+poller:
   image: ghcr.io/splunk/splunk-connect-for-snmp-poller/container
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "1"
+worker:
   #  logLevel: "WARN"
-  replicas: 1
+  replicas: 2
 #  resources:
 #    limits:
 #      cpu: 200m

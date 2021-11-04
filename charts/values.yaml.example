@@ -5,6 +5,15 @@ splunk:
   insecureSSL: "false"
   port: ###SPLUNK_PORT###
   clusterName: ###CLUSTER_NAME###
+otel:
+  image: quay.io/signalfx/splunk-otel-collector
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.22.0"
+  replicas: 1
+  signalfx_mode: "splunk"
+  signalfx_token: ""
+  signalfx_realm: ""
 traps:
   image: ghcr.io/splunk/splunk-connect-for-snmp-traps/container
   pullPolicy: IfNotPresent
@@ -46,15 +55,6 @@ mib:
 #    requests:
 #      cpu: 100m
 #      memory: 128Mi
-otel:
-  image: quay.io/signalfx/splunk-otel-collector
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.22.0"
-  replicas: 1
-  signalfx_mode: "splunk"
-  signalfx_token: ""
-  signalfx_realm: ""
 worker:
   image: ghcr.io/splunk/splunk-connect-for-snmp-poller/container
   pullPolicy: IfNotPresent
