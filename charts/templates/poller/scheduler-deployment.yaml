@@ -23,8 +23,8 @@ spec:
           fsGroup: 2000    
       containers:
         - name: sc4snmp-scheduler
-          image: {{ .Values.worker.image | default "ghcr.io/splunk/splunk-connect-for-snmp-poller/container" }}:{{ .Values.worker.tag | default "1" }}
-          imagePullPolicy: {{ .Values.worker.pullPolicy | default "IfNotPresent" }}
+          image: {{ .Values.poller.image | default "ghcr.io/splunk/splunk-connect-for-snmp-poller/container" }}:{{ .Values.poller.tag | default "1" }}
+          imagePullPolicy: {{ .Values.poller.pullPolicy | default "IfNotPresent" }}
           args:
             [
               {{ printf "\"--log=%s\"" ( .Values.scheduler.logLevel | default "WARN" ) }},
