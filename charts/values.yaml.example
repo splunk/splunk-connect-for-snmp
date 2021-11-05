@@ -55,12 +55,13 @@ mib:
 #    requests:
 #      cpu: 100m
 #      memory: 128Mi
-worker:
+poller:
   image: ghcr.io/splunk/splunk-connect-for-snmp-poller/container
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "1"
   #  logLevel: "WARN"
+worker:
   replicas: 1
 #  resources:
 #    limits:
