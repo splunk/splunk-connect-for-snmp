@@ -21,6 +21,7 @@ data:
             - ifAdminStatus: "AdminStatus"
             - ifOperStatus: "OperationalStatus"
             - ifDescr: "ifDescr"
+            - ifName: "ifName"
           additionalVarBinds:
             - indexNum: 'index_number'
     mongo:
