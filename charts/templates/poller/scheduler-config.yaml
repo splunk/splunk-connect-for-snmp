@@ -15,13 +15,24 @@ data:
       oidFamily:
         IF-MIB:
           existingVarBinds:
-            - ifType: "Type"
-            - ifMtu: "MTU"
-            - ifSpeed: "Speed"
-            - ifAdminStatus: "AdminStatus"
-            - ifOperStatus: "OperationalStatus"
-            - ifDescr: "ifDescr"
-            - ifName: "ifName"
+            - id: "ifSpeed"
+              name: "Speed"
+              ttl: 42000
+            - id: "ifDescr"
+              name: 'ifDescr'
+              ttl: 42000
+            - id: "ifType"
+              name: "Type"
+              ttl: 42000
+            - id: "ifMtu"
+              name: 'MTU'
+              ttl: 42000
+            - id: "ifAdminStatus"
+              name: "AdminStatus"
+              ttl: 42000
+            - id: "ifOperStatus"
+              name: 'OperationalStatus'
+              ttl: 600
           additionalVarBinds:
             - indexNum: 'index_number'
     mongo:
