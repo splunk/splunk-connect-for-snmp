@@ -39,7 +39,9 @@ spec:
               "--onetime_task_frequency={{ $workerArgs.onetime_task_frequency | default 120 }}",
             ]
           securityContext:
-            allowPrivilegeEscalation: false          
+            allowPrivilegeEscalation: false
+          ports:
+            - containerPort: 8765
           env:
             - name: MONGO_URI
           {{- if eq .Values.mongodb.architecture "replicaset" }}

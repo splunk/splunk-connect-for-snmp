@@ -39,6 +39,8 @@ spec:
               value: {{ ( .Values.mib.service_port | default "5000" ) | quote }}
             - name: MIBS_FILES_URL
               value: "http://$(MIB_SERVER_SERVICE_SERVICE_HOST):$(MIB_SERVER_SERVICE_SERVICE_PORT)/files/asn1/@mib@"
+            - name: SCHEDULER_REFRESH_URI
+              value: "http://$(SCHEDULER_SERVICE_SERVICE_HOST):8765/refresh"
           resources:
           {{- if .Values.mib.resources }}
 {{ .Values.mib.resources | toYaml | trim | indent 12 }}

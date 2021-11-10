@@ -73,6 +73,7 @@ kapply sc4snmp ../deploy/sc4snmp/internal/mib-server-deployment.yaml
 kapply sc4snmp ../deploy/sc4snmp/internal/mib-server-service.yaml
 kapply sc4snmp ../deploy/sc4snmp/internal/traps-deployment.yaml
 kapply sc4snmp ../deploy/sc4snmp/internal/scheduler-deployment.yaml
+kapply sc4snmp ../deploy/sc4snmp/internal/scheduler-service.yaml
 kapply sc4snmp ../deploy/sc4snmp/internal/worker-deployment.yaml
 
 kapply sc4snmp snmp-sim-deployment.yaml
