@@ -89,7 +89,7 @@ entries:
   splunk-connect-for-snmp:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2021-11-05T10:45:42.896087585Z"
+    created: "2021-11-10T14:15:56.243019921Z"
     dependencies:
     - name: mongodb
       repository: https://charts.bitnami.com/bitnami
@@ -98,10 +98,10 @@ entries:
       repository: https://charts.bitnami.com/bitnami
       version: 8.23.3
     description: A Helm chart for SNMP Connect for SNMP
-    digest: 5f4b8993f2893d524a0c22774411d9f42f2501746389dfda0641f56db32293a5
+    digest: 6f57f7a59e1ffaf5aa285560603fa164696fcd17ad8359a531b6841a23fadf6b
     name: splunk-connect-for-snmp
     type: application
     urls:
-    - https://github.com/splunk/splunk-connect-for-snmp/releases/download/v0.11.0-develop.24/splunk-connect-for-snmp-0.1.4.tgz
+    - https://github.com/splunk/splunk-connect-for-snmp/releases/download/v0.11.0-develop.25/splunk-connect-for-snmp-0.1.4.tgz
     version: 0.1.4
-generated: "2021-11-05T10:45:42.882640804Z"
+generated: "2021-11-10T14:15:56.231024915Z"
