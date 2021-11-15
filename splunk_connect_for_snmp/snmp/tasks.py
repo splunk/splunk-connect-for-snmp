@@ -162,7 +162,7 @@ class SNMPTask(Task):
                 if "" in mibs:
                     mibs.remove("")
                 return found, mibs
-        logger.error(f"No MIB found for {id}")
+        #logger.error(f"No MIB found for {id}")
         return found, mibs
 
 
