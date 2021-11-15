@@ -170,6 +170,7 @@ def run_walk(id: str, profiles: List[str] = None, walk: bool = False):
         var_binds = []
 
         for profile in profiles:
+            #TODO: Add profile name back to metric
             if profile in config_base["poller"]["profiles"]:
                 for varBind in config_base["poller"]["profiles"][profile]["varBinds"]:
                     logger.debug(f"varBind {varBind}")
@@ -193,24 +194,7 @@ def run_walk(id: str, profiles: List[str] = None, walk: bool = False):
                         )
                     else:
                         continue
-        #         var_binds = (
-        #             var_binds
-        #             + config_base["poller"]["profiles"][profile]["varBinds"]
-        #         )
-
-        # logger.debug(f"Active raw Varbinds {var_binds}")
-        # varBindsCollection = sort_varbinds(var_binds)
-        # sorted_varBinds = varBindsCollection.bulk
-        # logger.debug(f"Varbind collection: {sorted_varBinds}")
-
-        # for varBind in config_base['poller']["profiles"][profile]["varBinds"]:
-        #     varBinds.append(
-        #         ObjectType(
-        #             ObjectIdentity(varBind).addAsn1MibSource(
-        #                 "file:///Users/rfaircloth/splunk/github/GitHub/splunk-connect-for-snmp-mib-server/mibs/asn1",
-        #             )
-        #         ).loadMibs()
-        #     )
+ 
 
     logger.debug(target)
     i = 0
@@ -239,12 +223,8 @@ def run_walk(id: str, profiles: List[str] = None, walk: bool = False):
     )
     for errorIndication, errorStatus, errorIndex, varBindTable in iterator:
 
-        # errorIndication, errorStatus, errorIndex, varBindTable = yield from iterator
-
         if errorIndication:
             logger.error(errorIndication)
-            # snmpEngine.transportDispatcher.closeDispatcher()
-            # raise Exception(errorIndication)
             break
         elif errorStatus:
             logger.error(
@@ -257,7 +237,6 @@ def run_walk(id: str, profiles: List[str] = None, walk: bool = False):
             break
  
         else:
-            # for varBindRow in varBindTable:
             for varBind in varBindTable:
                 i += 1
                 logger.debug(varBind)
@@ -334,20 +313,7 @@ def walk(self, **kwargs):
 
     retry = True
     now = datetime.utcnow().timestamp()
-    # loop = asyncio.get_event_loop()
-    # while retry:
-    #     retry, result = loop.run_until_complete(
-    #         run_walk(
-    #             kwargs["id"],
-    #             walk=True,
-    #         )
-    #     )
-    # loop.close()
     while retry:
-        #     retry, result  = asyncio.run(run_walk(
-        #             kwargs["id"],
-        #             walk=True,
-        #         ))
         retry, result = run_walk(
             kwargs["id"],
             walk=True,
@@ -367,27 +333,15 @@ def walk(self, **kwargs):
 def poll(self, **kwargs):
     retry = True
     now = datetime.utcnow().timestamp()
-    # retry, result = asyncio.run(run_walk(
-    #         kwargs["id"],
-    #         profiles=kwargs["profiles"],
-    #     ))
-    # loop = asyncio.get_event_loop()
 
-    # retry, result = loop.run_until_complete(
-    #     run_walk(
-    #         kwargs["id"],
-    #         profiles=kwargs["profiles"],
-    #     )
-    # )
-    # loop.close()
-
-    ##TODO if needed send talk
 
     # After a Walk tell schedule to recalc
     retry, result = run_walk(
         kwargs["id"],
         profiles=kwargs["profiles"],
     )
+
+    #TODO: If profile has third value use get instead
 
     app.send_task(
         "splunk_connect_for_snmp.enrich.tasks.enrich",
