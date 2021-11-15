@@ -12,14 +12,35 @@ log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(linen
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
 [tool.poetry.dependencies]
-python = ">=3.6.8"
+python = "^3.7"
+pymongo = {extras = ["srv"], version = "^3.12.1"}
+requests = {extras = ["crypto"], version = "^2.26.0"}
+celery = "^5.2.0"
+opentelemetry-api = "^1.6.2"
+opentelemetry-sdk = "^1.6.2"
+opentelemetry-instrumentation-celery = "^0.25b2"
+opentelemetry-instrumentation-logging = "^0.25b2"
+opentelemetry-exporter-jaeger-thrift = "^1.6.2"
+pyrate-limiter = "^2.4.7"
+requests-cache = "^0.8.1"
+requests-ratelimiter = "^0.2.1"
+mongoengine = "^0.23.1"
+celerybeat-mongo = "^0.2.0"
+pysnmplib = "^5.0.1"
+PyYAML = "^6.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"
 mike = "^1.0.1"
 mkdocs = "^1.2.2"
 mkdocs-material = "^7.2.4"
+python-dotenv = "^0.19.2"
 
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+#Run BEAT
+#poetry run celery -A splunk_connect_for_snmp.app beat -S celerybeatmongo.schedulers.MongoScheduler --loglevel=INFO
+#RUN Worker
+#poetry run celery -A splunk_connect_for_snmp.app worker --loglevel=INFO

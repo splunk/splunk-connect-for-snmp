@@ -1,0 +1,67 @@
+splunk:
+  protocol: https
+  host: splunk-home-indexer-service.splunk.svc.cluster.local
+  token: 5D638361-0292-26E3-172A-544785590DD8
+  insecureSSL: "true"
+  port: "8088"
+  clusterName: homecluster
+traps:
+  tag: "develop"
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  #  logLevel: "WARN"
+  # replicas: Number of replicas for trap container should be 2x number of nodes
+  replicas: 6
+  #loadBalancerIP: The IP address in the metallb pool
+  loadBalancerIP: 10.1.0.1
+mib:
+  tag: "develop"
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  # replicas: Number of replicas for trap container should two or more
+  replicas: 1
+poller:
+  tag: "develop"
+  pullPolicy: Always
+worker:
+  # replicas: Number of replicas for worker container should two or more
+  replicas: 2
+  logLevel: "DEBUG"
+scheduler:
+  logLevel: "DEBUG"
+files:
+  scheduler:
+    inventory: |
+      host,version,community,profile,frequency
+      10.0.0.1,2c,homelab,*,
+      192.168.1.64,2c,homelab,*,
+      192.168.1.138,2c,homelab,*,
+      192.168.1.215,2c,homelab,*,
+    # config:
+    #   profiles: |
+    #     generic_switch:
+    #       frequency: 60 
+    #       varBinds:
+    #         - ['SNMPv2-MIB', 'sysDescr']
+    #         - ['SNMPv2-MIB', 'sysName', 0]
+    #         - ['IF-MIB']
+    #         - ['TCP-MIB']
+    #         - ['UDP-MIB']
+  traps:
+    config: |
+      communities:
+        v2:
+          - public
+          - homelab
+mongodb:
+  persistence:
+    storageClass: "openebs-hostpath"
+  volumePermissions:
+    enabled: true
+rabbitmq:
+  replicaCount: 1
+  persistence:
+    enabled: true
+    storageClass: "openebs-hostpath"
+  volumePermissions:
+    enabled: true
