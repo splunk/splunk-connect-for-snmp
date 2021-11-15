@@ -44,3 +44,6 @@ build-backend = "poetry.masonry.api"
 #poetry run celery -A splunk_connect_for_snmp.app beat -S celerybeatmongo.schedulers.MongoScheduler --loglevel=INFO
 #RUN Worker
 #poetry run celery -A splunk_connect_for_snmp.app worker --loglevel=INFO
+#
+#docker run --rm -d -p 27017:27017 --name example-mongo mongo:latest
+#docker run --rm -d -p 5672:5672 --hostname my-rabbit --name some-rabbit rabbitmq:3

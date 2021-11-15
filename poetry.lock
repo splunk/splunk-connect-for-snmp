@@ -282,17 +282,17 @@ python-versions = "*"
 
 [[package]]
 name = "jinja2"
-version = "2.11.3"
+version = "3.0.3"
 description = "A very fast and expressive template engine."
-category = "main"
+category = "dev"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+python-versions = ">=3.6"
 
 [package.dependencies]
-MarkupSafe = ">=0.23"
+MarkupSafe = ">=2.0"
 
 [package.extras]
-i18n = ["Babel (>=0.8)"]
+i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "kombu"
@@ -342,7 +342,7 @@ testing = ["coverage", "pyyaml"]
 name = "markupsafe"
 version = "2.0.1"
 description = "Safely add untrusted strings to HTML/XML markup."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -645,19 +645,18 @@ python-versions = ">=3.7,<4.0"
 
 [[package]]
 name = "pysnmp-pysmi"
-version = "1.0.4"
+version = "1.1.0"
 description = ""
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
-Jinja2 = ">=2.10.1,<3.0.0"
 ply = ">=3.11,<4.0"
 
 [[package]]
 name = "pysnmplib"
-version = "5.0.1"
+version = "5.0.2"
 description = ""
 category = "main"
 optional = false
@@ -1015,8 +1014,8 @@ iniconfig = [
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
 jinja2 = [
-    {file = "Jinja2-2.11.3-py2.py3-none-any.whl", hash = "sha256:03e47ad063331dd6a3f04a43eddca8a966a26ba0c5b7207a9a9e4e08f1b29419"},
-    {file = "Jinja2-2.11.3.tar.gz", hash = "sha256:a6d58433de0ae800347cab1fa3043cebbabe8baa9d29e668f1c768cb87a333c6"},
+    {file = "Jinja2-3.0.3-py3-none-any.whl", hash = "sha256:077ce6014f7b40d03b47d1f1ca4b0fc8328a692bd284016f806ed0eaca390ad8"},
+    {file = "Jinja2-3.0.3.tar.gz", hash = "sha256:611bb273cd68f3b993fabdc4064fc858c5b47a973cb5aa7999ec1ba405c87cd7"},
 ]
 kombu = [
     {file = "kombu-5.2.1-py3-none-any.whl", hash = "sha256:31bd287191bf56b1addba54a28eced8d6b6b5ba57ad184f48b065578f73c8e33"},
@@ -1295,12 +1294,12 @@ pysnmp-pyasn1 = [
     {file = "pysnmp_pyasn1-1.0.2-py3-none-any.whl", hash = "sha256:6a2deea2efb91a753baabb0b1b5ffeb2df55a0b5d0d8ca4030f89b316f12bcd1"},
 ]
 pysnmp-pysmi = [
-    {file = "pysnmp-pysmi-1.0.4.tar.gz", hash = "sha256:815cd63cc450a801928166362538a6d7e1cdbb1500e46935ae4bf9ab5762adc8"},
-    {file = "pysnmp_pysmi-1.0.4-py3-none-any.whl", hash = "sha256:5d1000089abb49d98a4b55697911bfcd7c4a0c1c24fd5aec00835e994b5bc30d"},
+    {file = "pysnmp-pysmi-1.1.0.tar.gz", hash = "sha256:021c271e8c6d356a49afefdef702fac18471958183382031ba320da1db51456c"},
+    {file = "pysnmp_pysmi-1.1.0-py3-none-any.whl", hash = "sha256:9adf37ce7c48ed4a1a7275ebea7783788d7e99b624176b428b6310d0bf0050d2"},
 ]
 pysnmplib = [
-    {file = "pysnmplib-5.0.1-py3-none-any.whl", hash = "sha256:8d3cd4e902f6ea5e3179771534d921c22f0738216ecfe995e1b20d368d0ee0f2"},
-    {file = "pysnmplib-5.0.1.tar.gz", hash = "sha256:7157a0b11e02981eb3b7d4d235eedbc6743109ff2aceefa0a63b5b5c47b66e1e"},
+    {file = "pysnmplib-5.0.2-py3-none-any.whl", hash = "sha256:85d119bfcf4c5ac084e563d4fdc39edd753ad10df719d355de1c80fddddaf362"},
+    {file = "pysnmplib-5.0.2.tar.gz", hash = "sha256:8f4f961fbeb86947084b3c6a5c94e7b2c8eb50f01934897459700d629aeaae31"},
 ]
 pytest = [
     {file = "pytest-6.2.5-py3-none-any.whl", hash = "sha256:7310f8d27bc79ced999e760ca304d69f6ba6c6649c0b60fb0e04a4a77cacc134"},
