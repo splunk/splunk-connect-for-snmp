@@ -138,13 +138,13 @@ class SNMPTask(Task):
         found = False
         oid_list = tuple(oid.split("."))
 
-        if id.startswith("RFC1213-MIB::mib-"):
-            start = 6
-        elif id.startswith("SNMPv2-SMI::enterprises."):
-            start = 8
-        else:
-            start = 8
-
+        # if id.startswith("RFC1213-MIB::mib-"):
+        #     start = 6
+        # elif id.startswith("SNMPv2-SMI::enterprises."):
+        #     start = 8
+        # else:
+        #     start = 8
+        start = 3
         if start + 4>len(oid_list):
             end = len(oid_list)
         else:
@@ -161,10 +161,8 @@ class SNMPTask(Task):
                 mibs = response.content.decode('utf-8').splitlines()
                 if "" in mibs:
                     mibs.remove("")
-                found = True                
-            else:
                 return found, mibs
-        
+        logger.error(f"No MIB found for {id}")
         return found, mibs
 
 
