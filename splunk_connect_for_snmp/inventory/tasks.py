@@ -186,23 +186,6 @@ def inventory_seed(url=None, tlsverify=True):
                     task_config["kwargs"]["id"] = str(fr["_id"])
                 logger.debug(task_config)
                 periodic_obj.manage_task(run_immediately_if_new=True, **task_config)
-                # if target["profiles"].lstrip() != "":
-                #     dp = target["profiles"].lstrip().split(";")
-                #     for p in dp:
-                #         # TODO: Check profile inventory and log error for undefined profiles
-                #         task_config = {
-                #             "name": f"sc4snmp;{ip};{p};poll;static",
-                #             "task": "splunk_connect_for_snmp.snmp.tasks.poll",
-                #             "target": f"sc4snmp;{ip}",
-                #             "args": [],
-                #             "kwargs": target,
-                #             "interval": {"every": 20, "period": "seconds"},
-                #             "enabled": False,
-                #             "run_immediately": False,
-                #         }
-                #         periodic_obj.manage_task(**task_config)
-
-                # TODO: Loop through static profiles and remove if needed
     return True
 
 
@@ -309,7 +292,7 @@ def inventory_setup_poller(**kwargs):
                 "enabled": True,
                 "run_immediately": run_immediately,
             }
-            periodic_obj.delete_unused_poll_tasks(
-                f"{target['target']}", activeschedules
-            )
             periodic_obj.manage_task(**task_config)
+        periodic_obj.delete_unused_poll_tasks(
+            f"{target['target']}", activeschedules
+        )

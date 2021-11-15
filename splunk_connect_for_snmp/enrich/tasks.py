@@ -146,10 +146,12 @@ def enrich(self, **kwargs):
                         result[current_data["id"]]["fields"][field_key] = current_data[
                             "value"
                         ]
-
+    #TODO Walk only
     app.send_task(
         "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller",
         kwargs=({"id": kwargs["id"]}),
     )
+    #TODO Send events new task    
+
 
     return result
