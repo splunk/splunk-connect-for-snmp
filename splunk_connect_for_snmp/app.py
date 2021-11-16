@@ -16,6 +16,11 @@ trace.set_tracer_provider(provider)
 
 logger = get_task_logger(__name__)
 
+ # //using rabbitmq as the message broker
+app = Celery("sc4snmp")
+app.config_from_object('splunk_connect_for_snmp.celery_config')
+#app.conf.update(**config)
+
 @signals.worker_process_init.connect(weak=False)
 def init_celery_tracing(*args, **kwargs):
     CeleryInstrumentor().instrument()
@@ -27,8 +32,22 @@ def init_celery_beat_tracing(*args, **kwargs):
     CeleryInstrumentor().instrument()
     LoggingInstrumentor().instrument()
 
+
+app.autodiscover_tasks(
+    packages=[
+        "splunk_connect_for_snmp",
+        "splunk_connect_for_snmp.enrich",
+        "splunk_connect_for_snmp.inventory",
+        "splunk_connect_for_snmp.snmp",
+        "splunk_connect_for_snmp.splunk",
+    ]
+)
+
+
+
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs) -> None:
+    periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
 
     schedule_data_create_interval = {
         "name": "sc4snmp;inventory;seed",
@@ -41,21 +60,5 @@ def setup_periodic_tasks(sender, **kwargs) -> None:
         "enabled": True,
         "run_immediately": True,
     }
-    periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
+    
     periodic_obj.manage_task(**schedule_data_create_interval)
-
- # //using rabbitmq as the message broker
-app = Celery("sc4snmp")
-app.config_from_object('splunk_connect_for_snmp.celery_config')
-#app.conf.update(**config)
-
-app.autodiscover_tasks(
-    packages=[
-        "splunk_connect_for_snmp",
-        "splunk_connect_for_snmp.enrich",
-        "splunk_connect_for_snmp.inventory",
-        "splunk_connect_for_snmp.snmp",
-        "splunk_connect_for_snmp.splunk",
-    ]
-)
-

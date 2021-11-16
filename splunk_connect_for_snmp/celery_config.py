@@ -20,5 +20,6 @@ broker_url = os.getenv("CELERY_BROKER_URL")
 result_backend = MONGO_URI
 mongodb_backend_settings = {"database": "sc4snmp_celery"}
 
-
 beat_scheduler = "celerybeatmongo.schedulers.MongoScheduler"
+mongodb_scheduler_url = MONGO_URI
+mongodb_scheduler_db = MONGO_DB_CELERY_DATABASE
