@@ -20,7 +20,7 @@ celery)
 trap)
     echo -n "trap"
     ;;
-
+    python -m splunk_connect_for_snmp.traps
 *)
 echo -n "unknown cmd $@"
 ;;
