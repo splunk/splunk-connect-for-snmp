@@ -12,7 +12,7 @@ import requests
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 
-from splunk_connect_for_snmp.app import app
+from splunk_connect_for_snmp.poller import app
 
 SPLUNK_HEC_URI = os.getenv("SPLUNK_HEC_URI")
 SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN")
