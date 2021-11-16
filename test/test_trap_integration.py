@@ -15,10 +15,9 @@
 #   ########################################################################
 import logging
 import time
+from test.splunk_test_utils import splunk_single_search
 
 from pysnmp.hlapi import *
-
-from test.splunk_test_utils import splunk_single_search
 
 logger = logging.getLogger(__name__)
 

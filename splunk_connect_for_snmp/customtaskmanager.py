@@ -1,29 +1,22 @@
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except:
-    pass
 import logging
-import os
+from typing import List, Union
 
 from celerybeatmongo.models import PeriodicTask
-from mongoengine import *
+
+# from mongoengine import *
 from mongoengine.connection import connect, disconnect
-from typing import Union, List
+
+import splunk_connect_for_snmp.celery_config
 
 logger = logging.getLogger(__name__)
-
-MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB = os.getenv("MONGO_DB", "sc4")
-MONGO_DB_SCHEDULES = os.getenv("MONGO_DB_SCHEDULES", "schedules")
 
 
 class CustomPeriodicTaskManage:
     def __init__(self):
-
-        self.mongo_uri = MONGO_URI
-        connect(host=self.mongo_uri, db=MONGO_DB)
+        connect(
+            host=splunk_connect_for_snmp.celery_config.mongodb_scheduler_url,
+            db=splunk_connect_for_snmp.celery_config.mongodb_scheduler_db,
+        )
 
     def __del__(self):
         disconnect()
@@ -114,9 +107,3 @@ class CustomPeriodicTaskManage:
 
         if isChanged:
             periodic_document.save()
-        return {
-            "status": "success",
-            "message": "{0} task has been managed and will be synced by celery beat service".format(
-                task_data["task"]
-            ),
-        }
