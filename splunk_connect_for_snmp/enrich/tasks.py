@@ -15,7 +15,7 @@ from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 from pysnmp.proto.api.v2c import Null
 
-from splunk_connect_for_snmp.app import app
+from splunk_connect_for_snmp.poller import app
 
 logger = get_task_logger(__name__)
 

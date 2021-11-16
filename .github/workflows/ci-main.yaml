@@ -20,10 +20,12 @@ on:
     branches:
       - "main"
       - "develop"
+      - "next"
   pull_request:
     branches:
       - "main"
       - "develop"
+      - "next"
 jobs:
   release:
     name: Release
@@ -33,6 +35,45 @@ jobs:
         with:
           submodules: false
           persist-credentials: false
+
+      #Build docker images
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to GitHub Packages Docker Registry
+        uses: docker/login-action@v1.9.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker meta
+        id: docker_meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/splunk/splunk-connect-for-snmp/container
+          tags: |
+            type=semver,pattern=v{{major}}.{{minor}}
+            type=semver,pattern=v{{major}}
+            type=semver,pattern=v{{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=semver,pattern={{version}}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+            type=sha,format=long
+      - name: Build and push action
+        id: docker_action_build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          labels: ${{ steps.docker_meta.outputs.labels }}
+          cache-to: type=inline
+
       - name: Semantic Release
         id: version
         uses: cycjimmy/semantic-release-action@v2.5.4
@@ -54,7 +95,8 @@ jobs:
       - uses: oleksiyrudenko/gha-git-credentials@v2-latest
         with:
           token: "${{ secrets.PAT_CLATOOL }}"
-      - name: Upload
+
+      - name: Upload Docs
         run: |
           BRANCH=$(echo $GITHUB_REF | cut -d / -f 3)
           echo $BRANCH

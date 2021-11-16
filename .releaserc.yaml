@@ -5,6 +5,9 @@ branches:
   - name: develop
     channel: beta
     prerelease: true
+  - name: next
+    channel: alpha
+    prerelease: true
 plugins:
   - "@semantic-release/commit-analyzer"
   - "@semantic-release/release-notes-generator"

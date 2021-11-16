@@ -26,7 +26,7 @@ from pysnmp.hlapi import *
 from pysnmp.smi import builder, compiler, error, view
 from requests_cache import MongoCache
 
-from splunk_connect_for_snmp.app import app
+from splunk_connect_for_snmp.poller import app
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 
 logger = get_task_logger(__name__)
