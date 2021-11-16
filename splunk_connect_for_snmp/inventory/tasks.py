@@ -7,6 +7,7 @@ except:
 
 import csv
 import os
+import re
 import sys
 import traceback
 from io import StringIO
@@ -21,10 +22,9 @@ from requests_cache import MongoCache
 
 from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
-import re
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-from typing import Union, List
+from typing import List, Union
 
 logger = get_task_logger(__name__)
 
@@ -293,6 +293,4 @@ def inventory_setup_poller(**kwargs):
                 "run_immediately": run_immediately,
             }
             periodic_obj.manage_task(**task_config)
-        periodic_obj.delete_unused_poll_tasks(
-            f"{target['target']}", activeschedules
-        )
+        periodic_obj.delete_unused_poll_tasks(f"{target['target']}", activeschedules)
