@@ -15,6 +15,7 @@ from datetime import datetime
 from typing import List
 
 import pymongo
+import yaml
 from bson.objectid import ObjectId
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
@@ -24,15 +25,14 @@ from celery.utils.log import get_task_logger
 from pysnmp.hlapi import *
 from pysnmp.smi import builder, compiler, error, view
 from requests_cache import MongoCache
-import yaml
 
 from splunk_connect_for_snmp.app import app
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 
 logger = get_task_logger(__name__)
 
-MIB_SOURCES = os.getenv("MIB_SOURCES","https://pysnmp.github.io/mibs/asn1/@mib@")
-MIB_INDEX = os.getenv("MIB_INDEX","https://pysnmp.github.io/mibs/index/")
+MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
+MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index/")
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4")
 
@@ -108,31 +108,38 @@ def map_metric_type(t, snmp_value):
     return metric_type
 
 
-
 class SNMPTask(Task):
     def __init__(self):
         # self.snmpEngine = SnmpEngine()
-       
+
         self.session = CachedLimiterSession(
             per_second=120,
             cache_name="cache_http",
             backend=MongoCache(url=MONGO_URI, db=MONGO_DB),
             expire_after=1800,
-            #logger=logger,
+            # logger=logger,
             match_headers=False,
             stale_if_error=True,
-            allowable_codes=[200, 404]
+            allowable_codes=[200, 404],
         )
-        load_mibs(["HOST-RESOURCES-MIB","IANAifType-MIB","IF-MIB","IP-MIB","RFC1389-MIB","SNMPv2-MIB","UCD-SNMP-MIB","TCP-MIB","UDP-MIB"])
+        load_mibs(
+            [
+                "HOST-RESOURCES-MIB",
+                "IANAifType-MIB",
+                "IF-MIB",
+                "IP-MIB",
+                "RFC1389-MIB",
+                "SNMPv2-MIB",
+                "UCD-SNMP-MIB",
+                "TCP-MIB",
+                "UDP-MIB",
+            ]
+        )
         self.snmpEngine = SnmpEngine()
         # self.index: dict = {}
-        
-        
 
+    def isMIBKnown(self, id: str, oid: str) -> tuple([bool, List]):
 
-
-    def isMIBKnown(self,id: str, oid: str) -> tuple([bool, List]):
-        
         index: dict = {}
         mibs = []
         found = False
@@ -145,29 +152,30 @@ class SNMPTask(Task):
         # else:
         #     start = 8
         start = 3
-        if start + 4>len(oid_list):
+        if start + 4 > len(oid_list):
             end = len(oid_list)
         else:
             end = start + 3
-        if start>end:
+        if start > end:
             return False, []
-        for i in range(start,end, 1):
+        for i in range(start, end, 1):
             oid_to_check = "/".join(oid_list[:i])
-            
-            response = self.session.request("GET", f"{MIB_INDEX}{oid_to_check}/mib.txt", timeout=90)
+
+            response = self.session.request(
+                "GET", f"{MIB_INDEX}{oid_to_check}/mib.txt", timeout=90
+            )
             if response.status_code == 200:
                 logger.debug(f"found for {id} based on {oid_to_check}")
                 logger.debug(response.content)
-                mibs = response.content.decode('utf-8').splitlines()
+                mibs = response.content.decode("utf-8").splitlines()
                 if "" in mibs:
                     mibs.remove("")
                 return found, mibs
-        #logger.error(f"No MIB found for {id}")
+        # logger.error(f"No MIB found for {id}")
         return found, mibs
 
-
     # @asyncio.coroutine
-    def run_walk(self,id: str, profiles: List[str] = None, walk: bool = False):
+    def run_walk(self, id: str, profiles: List[str] = None, walk: bool = False):
 
         mongo_client = pymongo.MongoClient(MONGO_URI)
         targets_collection = mongo_client.sc4.targets
@@ -191,9 +199,11 @@ class SNMPTask(Task):
             var_binds = []
 
             for profile in profiles:
-                #TODO: Add profile name back to metric
+                # TODO: Add profile name back to metric
                 if profile in config_base["poller"]["profiles"]:
-                    for varBind in config_base["poller"]["profiles"][profile]["varBinds"]:
+                    for varBind in config_base["poller"]["profiles"][profile][
+                        "varBinds"
+                    ]:
                         logger.debug(f"varBind {varBind}")
                         if len(varBind) == 3:
                             varBinds.append(
@@ -208,14 +218,15 @@ class SNMPTask(Task):
                         elif len(varBind) == 2:
                             varBinds.append(
                                 ObjectType(
-                                    ObjectIdentity(varBind[0], varBind[1]).addAsn1MibSource(
+                                    ObjectIdentity(
+                                        varBind[0], varBind[1]
+                                    ).addAsn1MibSource(
                                         MIB_SOURCES,
                                     )
                                 ).loadMibs()
                             )
                         else:
                             continue
-    
 
         logger.debug(target)
         i = 0
@@ -231,7 +242,6 @@ class SNMPTask(Task):
         else:
             raise NotImplementedError("version 3 not yet implemented")
 
-        
         # while True:
         iterator = bulkCmd(
             self.snmpEngine,
@@ -256,17 +266,17 @@ class SNMPTask(Task):
                     )
                 )
                 break
-    
+
             else:
                 for varBind in varBindTable:
                     i += 1
-                    #logger.debug(varBind)
+                    # logger.debug(varBind)
                     mib, metric, index = varBind[0].getMibSymbol()
 
                     id = varBind[0].prettyPrint()
                     oid = str(varBind[0].getOid())
 
-                    #logger.debug(f"{mib}.{metric} id={id} oid={oid}")
+                    # logger.debug(f"{mib}.{metric} id={id} oid={oid}")
 
                     if isMIBResolved(id):
                         group_key = get_group_key(mib, oid, index)
@@ -306,7 +316,7 @@ class SNMPTask(Task):
             #     logger.debug("Completed Walk")
             #     break
 
-        #self.snmpEngine.transportDispatcher.closeDispatcher()
+        # self.snmpEngine.transportDispatcher.closeDispatcher()
         if len(seedmibs) > 0:
             load_mibs(seedmibs)
         return retry, metrics
@@ -339,14 +349,13 @@ def poll(self, **kwargs):
     retry = True
     now = datetime.utcnow().timestamp()
 
-
     # After a Walk tell schedule to recalc
     retry, result = self.run_walk(
         kwargs["id"],
         profiles=kwargs["profiles"],
     )
 
-    #TODO: If profile has third value use get instead
+    # TODO: If profile has third value use get instead
 
     app.send_task(
         "splunk_connect_for_snmp.enrich.tasks.enrich",

@@ -15,7 +15,6 @@
 #   ########################################################################
 import logging
 import time
-
 from test.splunk_test_utils import splunk_single_search
 
 logger = logging.getLogger(__name__)
@@ -36,4 +35,3 @@ def test_walk_bulk(setup_splunk):
     result_count, events_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
     assert events_count > 10
-
