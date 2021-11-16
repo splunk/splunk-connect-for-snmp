@@ -17,7 +17,7 @@ trace.set_tracer_provider(provider)
 logger = get_task_logger(__name__)
 
  # //using rabbitmq as the message broker
-app = Celery("sc4snmp")
+app = Celery("sc4snmp_poller")
 app.config_from_object('splunk_connect_for_snmp.celery_config')
 #app.conf.update(**config)
 
