@@ -58,7 +58,7 @@ def init_celery_beat_tracing(*args, **kwargs):
 
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp")
-app.config_from_object('celery_config')
+app.config_from_object('splunk_connect_for_snmp.celery_config')
 #app.conf.update(**config)
 
 app.autodiscover_tasks(
