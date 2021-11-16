@@ -25,17 +25,17 @@ trace.set_tracer_provider(provider)
 
 logger = get_task_logger(__name__)
 
-MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB = os.getenv("MONGO_DB", "sc4")
-MONGO_DB_SCHEDULES = os.getenv("MONGO_DB_SCHEDULES", "schedules")
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+# MONGO_URI = os.getenv("MONGO_URI")
+# MONGO_DB = os.getenv("MONGO_DB", "sc4")
+# MONGO_DB_SCHEDULES = os.getenv("MONGO_DB_SCHEDULES", "schedules")
+# CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 
-config = {
-    "mongodb_scheduler_url": MONGO_URI,
-    "mongodb_scheduler_db": MONGO_DB,
-    "mongodb_scheduler_collection": MONGO_DB_SCHEDULES,
-    "broker": CELERY_BROKER_URL,
-}
+# config = {
+#     "mongodb_scheduler_url": MONGO_URI,
+#     "mongodb_scheduler_db": MONGO_DB,
+#     "mongodb_scheduler_collection": MONGO_DB_SCHEDULES,
+#     "broker": CELERY_BROKER_URL,
+# }
 
 
 @signals.worker_process_init.connect(weak=False)
@@ -49,24 +49,17 @@ def init_celery_beat_tracing(*args, **kwargs):
     CeleryInstrumentor().instrument()
     LoggingInstrumentor().instrument()
 
-    mongo_client = pymongo.MongoClient(MONGO_URI)
-    db = mongo_client[MONGO_DB]
-    collist = db.list_collection_names()
-    if not "targets" in collist:
-        mycol = db["targets"]
+    # mongo_client = pymongo.MongoClient(MONGO_URI)
+    # db = mongo_client[MONGO_DB]
+    # collist = db.list_collection_names()
+    # if not "targets" in collist:
+    #     mycol = db["targets"]
 
 
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp")
-app.conf.update(**config)
-
-# app.conf.beat_schedule = {
-#   'call-every-30-seconds': {
-#     'task': 'splunk-connect-collector.tasks.hello',
-#     'schedule': 30.0 #time-interval type
-#    }
-# }
-
+app.config_from_object('celery_config')
+#app.conf.update(**config)
 
 app.autodiscover_tasks(
     packages=[

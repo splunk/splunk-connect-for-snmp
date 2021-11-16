@@ -15,7 +15,7 @@ poller:
       condition:
         type: "base"
       varBinds:
-        # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+        # Syntax: [ "MIB-Files", "MIB ocelery[tblib]bject name" "MIB index number"]
         - ["SNMPv2-MIB", "sysDescr",0]
         - ["SNMPv2-MIB", "sysName",0]
         - ["SNMPv2-MIB", "sysObjectID",0]
