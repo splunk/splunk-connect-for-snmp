@@ -76,7 +76,7 @@ def inventory_seed(url=None, tlsverify=True):
     session = CachedLimiterSession(
         per_second=120,
         cache_name="cache_http",
-        backend=MongoCache(url=MONGO_URI, db=MONGO_DB),
+        backend=MongoCache(connection=mongo_client, db_name=MONGO_DB),
         expire_after=300,
         logger=logger,
         match_headers=False,
