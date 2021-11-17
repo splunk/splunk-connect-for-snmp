@@ -14,7 +14,11 @@ COPY poetry.lock pyproject.toml /app/
 COPY splunk_connect_for_snmp /app/splunk_connect_for_snmp
 WORKDIR /app
 RUN poetry config virtualenvs.in-project true ;\
-    poetry install --no-dev
+    poetry build ;\
+    . /app/.venv/bin/activate ;\
+    pip install dist/*.whl
+
+
 
 
 FROM base as final
