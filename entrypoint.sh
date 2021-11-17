@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 echo args "$@"
-. /venv/bin/activate
+. /app/.venv/bin/activate
 LOG_LEVEL=${LOG_LEVEL:=INFO}
 
 wait-for-dep "${CELERY_BROKER_URL}"
