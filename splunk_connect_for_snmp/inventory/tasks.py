@@ -29,7 +29,7 @@ from typing import List, Union
 logger = get_task_logger(__name__)
 
 MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB = os.getenv("MONGO_DB", "sc4")
+MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 
 
 def isTrueish(flag: Union[str, bool]) -> bool:
