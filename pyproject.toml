@@ -28,7 +28,6 @@ mongoengine = "^0.23.1"
 celerybeat-mongo = "^0.2.0"
 pysnmplib = "^5.0.1"
 PyYAML = "^6.0"
-asyncio = "^3.4.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"
