@@ -49,7 +49,7 @@ python-versions = "*"
 
 [[package]]
 name = "black"
-version = "21.10b0"
+version = "21.11b0"
 description = "The uncompromising code formatter."
 category = "dev"
 optional = false
@@ -62,7 +62,7 @@ pathspec = ">=0.9.0,<1"
 platformdirs = ">=2"
 regex = ">=2020.1.8"
 tomli = ">=0.2.6,<2.0.0"
-typed-ast = {version = ">=1.4.2", markers = "python_version < \"3.8\""}
+typed-ast = {version = ">=1.4.2", markers = "python_version < \"3.8\" and implementation_name == \"cpython\""}
 typing-extensions = [
     {version = ">=3.10.0.0", markers = "python_version < \"3.10\""},
     {version = "!=3.10.0.1", markers = "python_version >= \"3.10\""},
@@ -998,6 +998,7 @@ description = "Waits for dependencies before running the app"
 category = "main"
 optional = false
 python-versions = ">=3.6"
+develop = false
 
 [package.dependencies]
 requests = ">=2.21.0"
@@ -1011,6 +1012,12 @@ postgres = ["psycopg2-binary"]
 rabbitmq = ["pika"]
 redis = ["redis"]
 websockets = ["websocket-server"]
+
+[package.source]
+type = "git"
+url = "https://github.com/rfaircloth-splunk/wait-for-dep.git"
+reference = "master"
+resolved_reference = "35ddbade132183e5a50a189dd63fc485c839c1f0"
 
 [[package]]
 name = "watchdog"
@@ -1054,7 +1061,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "ddcd07698d8ef9684145b020963f83c81d9c5ac94003a26cebad82b445cf9d31"
+content-hash = "cf57c0457a7f49acda60e40c6c51aad02d447f5d0cbbba46de7156d261a3544b"
 
 [metadata.files]
 amqp = [
@@ -1078,8 +1085,8 @@ billiard = [
     {file = "billiard-3.6.4.0.tar.gz", hash = "sha256:299de5a8da28a783d51b197d496bef4f1595dd023a93a4f59dde1886ae905547"},
 ]
 black = [
-    {file = "black-21.10b0-py3-none-any.whl", hash = "sha256:6eb7448da9143ee65b856a5f3676b7dda98ad9abe0f87fce8c59291f15e82a5b"},
-    {file = "black-21.10b0.tar.gz", hash = "sha256:a9952229092e325fe5f3dae56d81f639b23f7131eb840781947e4b2886030f33"},
+    {file = "black-21.11b0-py3-none-any.whl", hash = "sha256:0b1f66cbfadcd332ceeaeecf6373d9991d451868d2e2219ad0ac1213fb701117"},
+    {file = "black-21.11b0.tar.gz", hash = "sha256:83f3852301c8dcb229e9c444dd79f573c8d31c7c2dad9bbaaa94c808630e32aa"},
 ]
 cached-property = [
     {file = "cached-property-1.5.2.tar.gz", hash = "sha256:9fa5755838eecbb2d234c3aa390bd80fbd3ac6b6869109bfc1b499f7bd89a130"},
@@ -1661,10 +1668,7 @@ vine = [
     {file = "vine-5.0.0-py2.py3-none-any.whl", hash = "sha256:4c9dceab6f76ed92105027c49c823800dd33cacce13bdedc5b914e3514b7fb30"},
     {file = "vine-5.0.0.tar.gz", hash = "sha256:7d3b1624a953da82ef63462013bbd271d3eb75751489f9807598e8f340bd637e"},
 ]
-wait-for-dep = [
-    {file = "wait-for-dep-0.3.2.tar.gz", hash = "sha256:ab542d55b0fb14276c53afae3e7555fb2a27833c5f2a7e344897f6fd3293d855"},
-    {file = "wait_for_dep-0.3.2-py3-none-any.whl", hash = "sha256:8e1b816922796b507817a9cc24c30f7e22a167a87502faec0ba5e2c637d4d3c1"},
-]
+wait-for-dep = []
 watchdog = [
     {file = "watchdog-2.1.6-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:9693f35162dc6208d10b10ddf0458cc09ad70c30ba689d9206e02cd836ce28a3"},
     {file = "watchdog-2.1.6-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:aba5c812f8ee8a3ff3be51887ca2d55fb8e268439ed44110d3846e4229eb0e8b"},
