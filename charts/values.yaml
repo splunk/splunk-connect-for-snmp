@@ -5,11 +5,12 @@ splunk:
   insecureSSL: "false"
   port: ###SPLUNK_PORT###
   clusterName: ###CLUSTER_NAME###
-traps:
-  image: ghcr.io/splunk/splunk-connect-for-snmp-traps/container
+sc4snmp:
+  image: ghcr.io/splunk/splunk-connect-for-snmp/container
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1"
+  tag: "next"
+traps:
   #  logLevel: "WARN"
   replicas: 1
   loadBalancerIP: ###X.X.X.X###
@@ -51,11 +52,6 @@ otel:
   signalfx_mode: "splunk"
   signalfx_token: ""
   signalfx_realm: ""
-poller:
-  image: ghcr.io/splunk/splunk-connect-for-snmp-poller/container
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "1"
 worker:
   #  logLevel: "WARN"
   replicas: 2

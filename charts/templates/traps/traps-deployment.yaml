@@ -22,43 +22,38 @@ spec:
           fsGroup: 2000    
       containers:
         - name: traps
-          image: {{ .Values.traps.image | default "ghcr.io/splunk/splunk-connect-for-snmp-traps/container" }}:{{ .Values.traps.tag | default "1" }}
-          imagePullPolicy: {{ .Values.traps.pullPolicy | default "IfNotPresent" }}
+          image: {{ .Values.sc4snmp.image | default "ghcr.io/splunk/splunk-connect-for-snmp/container" }}:{{ .Values.sc4snmp.tag | default "1" }}
+          imagePullPolicy: {{ .Values.sc4snmp.pullPolicy | default "IfNotPresent" }}
           args:
             [
-              {{ printf "\"--loglevel=%s\"" ( .Values.traps.logLevel | default "WARN" ) }},
-              "--config=/work/config/config.yaml",
-              "--index={{ .Values.scheduler.index.event }}",
-              "--ipv6=",
+              "trap",
             ]
           securityContext:
             allowPrivilegeEscalation: false          
           ports:
             - containerPort: 2162
           env:
+            - name: CELERY_BROKER_URL
+              value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq-headless:5672/
+            - name: MONGO_URI
+          {{- if eq .Values.mongodb.architecture "replicaset" }}
+              value: mongodb+srv://sc4snmp-mongodb-headless.{{ .Release.Namespace }}.svc.{{ .Values.mongodb.clusterDomain }}/?tls=false&ssl=false&replicaSet=rs0
+          {{ else }}
+              value: mongodb://sc4snmp-mongodb:27017
+          {{ end }}              
             - name: MIBS_SERVER_URL
               value: {{ printf "http://sc4snmp-mib-server-service:%s" "5000" | quote }}
             - name: OTEL_SERVER_URL
               value: {{ printf "http://otel-service:%s" "8881" | quote }}
-            - name: SPLUNK_HEC_URL
-              valueFrom:
-                secretKeyRef:
-                  name: remote-splunk
-                  key: splunkHecUrl
-            - name: SPLUNK_HEC_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: remote-splunk
-                  key: splunkHecToken
-            - name: SPLUNK_HEC_TLS_SKIP_VERIFY
-              valueFrom:
-                secretKeyRef:
-                  name: remote-splunk
-                  key: splunkHecTlsSkipVerify
+            - name: LOG_LEVEL
+              value: {{ .Values.worker.logLevel | default "INFO" }}
           volumeMounts:
             - name: config
               mountPath: "/work/config"
               readOnly: true
+            - name: pysnmp-cache-volume
+              mountPath: "/.pysnmp/"
+              readOnly: false
           resources:
             {{- if .Values.traps.resources }}
 {{ .Values.traps.resources | toYaml | trim | indent 12 }}
@@ -77,3 +72,5 @@ spec:
             items:
               - key: "config.yaml"
                 path: "config.yaml"
+        - name: pysnmp-cache-volume
+          emptyDir: {}                
