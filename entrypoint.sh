@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-. /venv/bin/activate
+#. /venv/bin/activate
 
 case $1 in
 
@@ -18,9 +18,8 @@ celery)
     esac
     ;;
 trap)
-    echo -n "trap"
-    ;;
     python -m splunk_connect_for_snmp.traps
+    ;;
 *)
 echo -n "unknown cmd $@"
 ;;
