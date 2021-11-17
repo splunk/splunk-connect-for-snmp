@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -e
-#. /venv/bin/activate
+. /venv/bin/activate
 
 case $1 in
 
