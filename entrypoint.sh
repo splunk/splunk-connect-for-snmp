@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+echo args $@
 . /venv/bin/activate
 
 case $1 in
@@ -7,13 +8,13 @@ case $1 in
 celery)
     case $2 in
     beat)
-        celery -A splunk_connect_for_snmp.app_poller beat  --loglevel=INFO
+        celery -A splunk_connect_for_snmp.poller beat  --loglevel=INFO
         ;;
     worker)
-        celery -A splunk_connect_for_snmp.app_poller worker --loglevel=INFO
+        celery -A splunk_connect_for_snmp.poller worker --loglevel=INFO
         ;;
     *)
-        celery -A splunk_connect_for_snmp.app_poller ${@:3} --loglevel=INFO
+        celery -A splunk_connect_for_snmp.poller ${@:3} --loglevel=INFO
         ;;
     esac
     ;;
