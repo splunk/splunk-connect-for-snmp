@@ -992,6 +992,27 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "wait-for-dep"
+version = "0.3.2"
+description = "Waits for dependencies before running the app"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+requests = ">=2.21.0"
+
+[package.extras]
+kafka = ["kafka-python"]
+memcached = ["python3-memcached"]
+mongodb = ["pymongo"]
+mysql = ["mysql-connector-python"]
+postgres = ["psycopg2-binary"]
+rabbitmq = ["pika"]
+redis = ["redis"]
+websockets = ["websocket-server"]
+
+[[package]]
 name = "watchdog"
 version = "2.1.6"
 description = "Filesystem events monitoring"
@@ -1033,7 +1054,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "cc4fac2d79afb8c979ba01d556dbe5b12675fb7ae063353de0c07a73ac26dc00"
+content-hash = "ddcd07698d8ef9684145b020963f83c81d9c5ac94003a26cebad82b445cf9d31"
 
 [metadata.files]
 amqp = [
@@ -1639,6 +1660,10 @@ verspec = [
 vine = [
     {file = "vine-5.0.0-py2.py3-none-any.whl", hash = "sha256:4c9dceab6f76ed92105027c49c823800dd33cacce13bdedc5b914e3514b7fb30"},
     {file = "vine-5.0.0.tar.gz", hash = "sha256:7d3b1624a953da82ef63462013bbd271d3eb75751489f9807598e8f340bd637e"},
+]
+wait-for-dep = [
+    {file = "wait-for-dep-0.3.2.tar.gz", hash = "sha256:ab542d55b0fb14276c53afae3e7555fb2a27833c5f2a7e344897f6fd3293d855"},
+    {file = "wait_for_dep-0.3.2-py3-none-any.whl", hash = "sha256:8e1b816922796b507817a9cc24c30f7e22a167a87502faec0ba5e2c637d4d3c1"},
 ]
 watchdog = [
     {file = "watchdog-2.1.6-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:9693f35162dc6208d10b10ddf0458cc09ad70c30ba689d9206e02cd836ce28a3"},

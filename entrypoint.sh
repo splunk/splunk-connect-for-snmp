@@ -5,6 +5,10 @@ echo args "$@"
 LOG_LEVEL=${LOG_LEVEL:=INFO}
 case $1 in
 
+wait-for-dep "$CELERY_BROKER_URL"
+wait-for-dep "$MONGO_URI"
+
+
 celery)
     case $2 in
     beat)
