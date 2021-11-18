@@ -5,7 +5,6 @@ try:
 except:
     pass
 
-import json
 import os
 
 import requests
