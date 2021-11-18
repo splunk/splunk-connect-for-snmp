@@ -26,9 +26,8 @@ index=em_logs sourcetype="sc4snmp:traps"
 files:
   scheduler:
     inventory: |
-      host,version,community,profile
-      10.0.101.22,2c,public,basev1
-      10.0.101.23,2c,public,*
+      address,version,community,walk_interval,profiles,SmartProfiles,delete
+      10.0.0.1,2c,homelab,300,,,
 ```
 Where 10.0.101.22 is a host IP.
 
