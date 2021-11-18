@@ -154,7 +154,9 @@ def enrich(self, **kwargs):
 
     app.send_task(
         "splunk_connect_for_snmp.splunk.tasks.prepare",
-        kwargs=({"ts": kwargs["ts"], "target": current_target["target"], "result": result}),
+        kwargs=(
+            {"ts": kwargs["ts"], "target": current_target["target"], "result": result}
+        ),
     )
 
     return result

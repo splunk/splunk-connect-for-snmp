@@ -70,7 +70,7 @@ def inventory_seed(path=None):
     periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
 
     with open(path) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
+        csv_reader = csv.reader(csv_file, delimiter=",")
         line_count = 0
         for target in csv_reader:
             if line_count == 0:
@@ -146,15 +146,13 @@ def inventory_seed(path=None):
                 ur = targets_collection.update_one(
                     {"target": ir.address}, updates, upsert=True
                 )
-                fr = targets_collection.find_one(
-                    {"target": ir.address}, {"_id": True}
-                )
+                fr = targets_collection.find_one({"target": ir.address}, {"_id": True})
                 task_config = {
                     "name": f"sc4snmp;{ir.address};walk",
                     "task": "splunk_connect_for_snmp.snmp.tasks.walk",
                     "target": f"{ir.address}",
                     "args": [],
-                    "kwargs": {"id": str(fr['_id'])},
+                    "kwargs": {"id": str(fr["_id"])},
                     "interval": {"every": ir.walk_interval, "period": "seconds"},
                     "enabled": True,
                     "run_immediately": True,
@@ -162,7 +160,7 @@ def inventory_seed(path=None):
                 if ur.modified_count:
                     logger.debug("Device Config Changed need to walk")
                     logger.info(f"Upserted id: {fr['_id']}")
-                    task_config["kwargs"]["id"] = str(fr['_id'])
+                    task_config["kwargs"]["id"] = str(fr["_id"])
                     task_config["run_immediately"] = True
                 else:
                     task_config["kwargs"]["id"] = str(fr["_id"])

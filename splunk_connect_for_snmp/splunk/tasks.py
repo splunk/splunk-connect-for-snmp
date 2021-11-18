@@ -34,7 +34,9 @@ def send(self, result):
 
     for item in result:
         try:
-            response = requests.post(url=SPLUNK_HEC_URI, json=item, timeout=60, verify=False)
+            response = requests.post(
+                url=SPLUNK_HEC_URI, json=item, timeout=60, verify=False
+            )
             logger.debug("Response code is %s", response.status_code)
             logger.debug("Response is %s", response.text)
         except requests.ConnectionError as e:
@@ -79,9 +81,9 @@ def prepare(self, target, ts, result):
             }
             for field, values in data["fields"].items():
                 short_field = field.split(".")[-1]
-                metric['fields'][short_field] = values["value"]
+                metric["fields"][short_field] = values["value"]
             for field, values in data["metrics"].items():
-                metric['fields'][f"metric_name:{field}"] = values["value"]
+                metric["fields"][f"metric_name:{field}"] = values["value"]
             splunk_metrics.append(metric)
 
     app.send_task(

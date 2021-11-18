@@ -19,7 +19,7 @@ from typing import List
 
 @dataclass
 class InventoryRecord:
-    #address,version,community,walk_interval,profiles,SmartProfiles,delete
+    # address,version,community,walk_interval,profiles,SmartProfiles,delete
     address: str
     version: str
     community: str
