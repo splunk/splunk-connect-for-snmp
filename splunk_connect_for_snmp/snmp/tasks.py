@@ -5,11 +5,7 @@ try:
 except:
     pass
 
-import asyncio
-import json
 import os
-import sys
-import traceback
 from collections import OrderedDict, namedtuple
 from datetime import datetime
 from typing import List
@@ -26,8 +22,8 @@ from pysnmp.hlapi import *
 from pysnmp.smi import builder, compiler, error, view
 from requests_cache import MongoCache
 
-from splunk_connect_for_snmp.poller import app
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
+from splunk_connect_for_snmp.poller import app
 
 logger = get_task_logger(__name__)
 
@@ -48,7 +44,6 @@ def load_mibs(mibs: List[str]) -> None:
     for mib in mibs:
         mibBuilder.loadModules(mib)
     logger.debug("Indexing MIB objects..."),
-    mibView = view.MibViewController(mibBuilder)
 
 
 MTYPES_CC = tuple(["Counter32", "Counter64", "TimeTicks"])
@@ -101,9 +96,8 @@ def map_metric_type(t, snmp_value):
     # If this claims to be a metic type but isn't a number make it a te (type error)
     if metric_type in MTYPES:
         try:
-            f = float(snmp_value)
+            float(snmp_value)
         except:
-            logger.warn("Logic says this is a metric but the data says its not")
             metric_type = "te"
     return metric_type
 
@@ -141,7 +135,6 @@ class SNMPTask(Task):
 
     def isMIBKnown(self, id: str, oid: str) -> tuple([bool, List]):
 
-        index: dict = {}
         mibs = []
         found = False
         oid_list = tuple(oid.split("."))
@@ -194,10 +187,8 @@ class SNMPTask(Task):
             ]
         else:
             varBinds: list[ObjectType] = []
-            with open("config.yaml", "r") as file:
+            with open("config.yaml") as file:
                 config_base = yaml.safe_load(file)
-
-            var_binds = []
 
             for profile in profiles:
                 # TODO: Add profile name back to metric
@@ -281,7 +272,7 @@ class SNMPTask(Task):
 
                     if isMIBResolved(id):
                         group_key = get_group_key(mib, oid, index)
-                        if not group_key in metrics:
+                        if group_key not in metrics:
                             metrics[group_key] = {
                                 "metrics": OrderedDict(),
                                 "fields": OrderedDict(),
@@ -333,7 +324,7 @@ def walk(self, **kwargs):
             kwargs["id"],
             walk=True,
         )
-    ##TODO if needed send talk
+    # TODO if needed send talk
 
     # After a Walk tell schedule to recalc
     app.send_task(

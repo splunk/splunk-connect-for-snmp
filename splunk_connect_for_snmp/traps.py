@@ -1,3 +1,5 @@
+import asyncio
+
 from celery import Celery, signals
 from celery.utils.log import get_task_logger
 from opentelemetry import trace
@@ -6,11 +8,9 @@ from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-
-from pysnmp.entity import engine, config
 from pysnmp.carrier.asyncio.dgram import udp
+from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
-import asyncio
 
 provider = TracerProvider()
 processor = BatchSpanProcessor(JaegerExporter())
@@ -76,7 +76,7 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
         % (transportAddress, contextEngineId.prettyPrint(), contextName.prettyPrint())
     )
     for name, val in varBinds:
-        print("%s = %s" % (name.prettyPrint(), val.prettyPrint()))
+        print(f"{name.prettyPrint()} = {val.prettyPrint()}")
 
     app.send_task(
         "splunk_connect_for_snmp.splunk.tasks.send",

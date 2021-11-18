@@ -1,15 +1,13 @@
-from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-
 try:
     from dotenv import load_dotenv
 
     load_dotenv()
 except:
     pass
-
 import csv
 import os
 import re
+from typing import List, Union
 
 import pymongo
 import urllib3
@@ -19,9 +17,10 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
+from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-from typing import List, Union
+
 
 logger = get_task_logger(__name__)
 
@@ -78,7 +77,6 @@ def inventory_seed(path=None):
                 line_count += 1
                 continue
             logger.debug(f"Inventory record {target}")
-            target_update = []
             ir = InventoryRecord(*target)
             # The default port is 161
             if len(ir.address.split(":")) == 1:
@@ -171,7 +169,7 @@ def inventory_seed(path=None):
 
 @shared_task()
 def inventory_setup_poller(**kwargs):
-    with open("config.yaml", "r") as file:
+    with open("config.yaml") as file:
         config_base = yaml.safe_load(file)
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
@@ -213,13 +211,13 @@ def inventory_setup_poller(**kwargs):
 
             if (
                 profile["condition"]["type"] == "field"
-                and not "field" in profile["condition"]
+                and "field" not in profile["condition"]
             ):
                 logger.error(f"Profile {profile_name} condition has no field")
                 continue
             if (
                 profile["condition"]["type"] == "field"
-                and not "patterns" in profile["condition"]
+                and "patterns" not in profile["condition"]
             ):
                 logger.error(f"Profile {profile_name} condition has no patterns")
                 continue

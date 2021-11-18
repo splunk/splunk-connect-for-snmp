@@ -1,5 +1,5 @@
 import logging
-from typing import List, Union
+from typing import List
 
 from celerybeatmongo.models import PeriodicTask
 
@@ -38,7 +38,7 @@ class CustomPeriodicTaskManage:
             logger.debug(p)
             periodic_document = periodic.get(name=p.name)
             logger.debug("Got Schedule")
-            if not p.name in activeschedules:
+            if p.name not in activeschedules:
                 periodic_document.delete()
                 logger.debug("Deleting Schedule")
 
