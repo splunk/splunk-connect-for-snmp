@@ -1,3 +1,5 @@
+from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
+
 try:
     from dotenv import load_dotenv
 
@@ -8,9 +10,6 @@ except:
 import csv
 import os
 import re
-import sys
-import traceback
-from io import StringIO
 
 import pymongo
 import urllib3
@@ -18,10 +17,8 @@ import yaml
 from bson.objectid import ObjectId
 from celery import shared_task, signature
 from celery.utils.log import get_task_logger
-from requests_cache import MongoCache
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from typing import List, Union
@@ -66,63 +63,48 @@ def isFalseish(flag: Union[str, bool]) -> bool:
 
 @shared_task()
 # This task gets the inventory and creates a task to schedules each walk task
-def inventory_seed(url=None, tlsverify=True):
-    logger.info(f"url %{url}")
-
+def inventory_seed(path=None):
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4.targets
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
-    session = CachedLimiterSession(
-        per_second=120,
-        cache_name="cache_http",
-        backend=MongoCache(connection=mongo_client, db_name=MONGO_DB),
-        expire_after=300,
-        logger=logger,
-        match_headers=False,
-        stale_if_error=True,
-    )
-    response = session.request(
-        "GET",
-        url,
-        timeout=60,
-        verify=tlsverify,
-    )
-    logger.debug(f"result={response.text}")
 
     dict_from_csv = {}
-    with StringIO(response.text) as infile:
-        reader = csv.reader(infile)
-        headers = next(reader)[0:]
-        for row in reader:
-            target = {key: value for key, value in zip(headers, row[0:])}
+    with open(path) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        line_count = 0
+        for target in csv_reader:
+            if line_count == 0:
+                print(f'Column names are {", ".join(target)}')
+                line_count += 1
+                continue
             logger.debug(f"Inventory record {target}")
             target_update = []
-
+            ir = InventoryRecord(*target)
             # The default port is 161
-            if len(target["address"].split(":")) == 1:
-                target["address"] = f"{target['address']}:161"
+            if len(ir.ip.split(":")) == 1:
+                ir.ip = f"{ir.ip}:161"
 
             try:
-                wi = float(target["walk_interval"])
+                wi = float(ir.walk_interval)
                 if wi < 0 or wi > 42000:
-                    target["walk_interval"] = 42000
+                    ir.walk_interval = 42000
             except:
-                target["walk_interval"] = 42000
+                ir.walk_interval = 42000
 
-            if "delete" in target and isTrueish(target["delete"]):
-                periodic_obj.delete_task(target["address"])
+            if "delete" in target and isTrueish(ir.delete):
+                periodic_obj.delete_task(ir.ip)
             else:
-                if not target["version"] in ("1", "2", "2c", "3"):
+                if ir.version not in ("1", "2", "2c", "3"):
                     logger.error("Invalid version in inventory record {row}")
                     continue
-                if target["version"] == "3" and target["community"] == "public":
+                if ir.version == "3" and ir.community == "public":
                     logger.error(
                         "Invalid community in inventory record {row} when version=3 community can not be public"
                     )
                     continue
 
-                if len(target["community"].strip()) == 0:
+                if len(ir.community.strip()) == 0:
                     logger.error(
                         "Invalid community in inventory record {row} must not be blank"
                     )
@@ -135,19 +117,19 @@ def inventory_seed(url=None, tlsverify=True):
                         "$set": {
                             "config": {
                                 "community": {
-                                    "version": target["version"],
-                                    "name": target["community"],
+                                    "version": ir.version,
+                                    "name": ir.community,
                                 }
                             }
                         }
                     }
                 )
-                profiles: list[str] = []
-                if len(target["profiles"].strip()) > 0:
-                    profiles = target["profiles"].split(";")
+                profiles: List[str] = []
+                if len(ir.profiles.strip()) > 0:
+                    profiles = ir.profiles.split(";")
 
                 SmartProfiles: bool = True
-                if isFalseish(target["SmartProfiles"]):
+                if isFalseish(ir.SmartProfiles):
                     SmartProfiles = False
 
                 updates.append(
@@ -163,26 +145,27 @@ def inventory_seed(url=None, tlsverify=True):
                     }
                 )
                 ur = targets_collection.update_one(
-                    {"target": target["address"]}, updates, upsert=True
+                    {"target": ir.ip}, updates, upsert=True
                 )
-
+                fr = targets_collection.find_one(
+                    {"target": ir.ip}, {"_id": True}
+                )
                 task_config = {
-                    "name": f"sc4snmp;{target['address']};walk",
+                    "name": f"sc4snmp;{ir.ip};walk",
                     "task": "splunk_connect_for_snmp.snmp.tasks.walk",
-                    "target": f"{target['address']}",
+                    "target": f"{ir.ip}",
                     "args": [],
-                    "kwargs": {},
-                    "interval": {"every": target["walk_interval"], "period": "seconds"},
+                    "kwargs": {"id": str(fr['_id'])},
+                    "interval": {"every": ir.walk_interval, "period": "seconds"},
                     "enabled": True,
+                    "run_immediately": True,
                 }
-                if ur.modified_count > 0:
+                if ur.modified_count:
                     logger.debug("Device Config Changed need to walk")
-                    task_config["kwargs"]["id"] = str(ur["_id"])
+                    logger.info(f"Upserted id: {fr['_id']}")
+                    task_config["kwargs"]["id"] = str(fr['_id'])
                     task_config["run_immediately"] = True
                 else:
-                    fr = targets_collection.find_one(
-                        {"target": target["address"]}, {"_id": True}
-                    )
                     task_config["kwargs"]["id"] = str(fr["_id"])
                 logger.debug(task_config)
                 periodic_obj.manage_task(run_immediately_if_new=True, **task_config)
@@ -190,7 +173,6 @@ def inventory_seed(url=None, tlsverify=True):
 
 
 @shared_task()
-# This task gets the inventory and creates a task to schedules each walk task
 def inventory_setup_poller(**kwargs):
 
     with open("config.yaml", "r") as file:
@@ -249,7 +231,7 @@ def inventory_setup_poller(**kwargs):
 
             # skip this profile it is static
             if profile["condition"]["type"] == "base":
-                logger.debug(f"Adding base profile f{profile_name}")
+                logger.debug(f"Adding base profile {profile_name}")
                 logger.debug(f"profile is a base {profile_name}")
                 if not profile["frequency"] in smart_profiles:
                     smart_profiles[profile["frequency"]] = []
