@@ -20,7 +20,7 @@ from splunk_connect_for_snmp.poller import app
 logger = get_task_logger(__name__)
 
 MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB = os.getenv("MONGO_DB", "sc4")
+MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 
 
 def chunk(it, size):

@@ -28,6 +28,8 @@ mongoengine = "^0.23.1"
 celerybeat-mongo = "^0.2.0"
 pysnmplib = "^5.0.1"
 PyYAML = "^6.0"
+#Note this is temporary PR to upstream project is issued
+wait-for-dep = { git="https://github.com/rfaircloth-splunk/wait-for-dep.git" }
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"

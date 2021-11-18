@@ -34,7 +34,7 @@ logger = get_task_logger(__name__)
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index/")
 MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB = os.getenv("MONGO_DB", "sc4")
+MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 
 
 def load_mibs(mibs: List[str]) -> None:
@@ -111,11 +111,12 @@ def map_metric_type(t, snmp_value):
 class SNMPTask(Task):
     def __init__(self):
         # self.snmpEngine = SnmpEngine()
-
+        self.mongo_client = pymongo.MongoClient(MONGO_URI)
+    
         self.session = CachedLimiterSession(
             per_second=120,
             cache_name="cache_http",
-            backend=MongoCache(url=MONGO_URI, db=MONGO_DB),
+            backend=MongoCache(connection=self.mongo_client, db_name=MONGO_DB),
             expire_after=1800,
             # logger=logger,
             match_headers=False,

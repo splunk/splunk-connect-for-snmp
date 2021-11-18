@@ -7,22 +7,22 @@ RUN mkdir /app
 WORKDIR /app
 
 FROM base as builder
-WORKDIR /code
-RUN pip install poetry
-RUN python -m venv /venv
-RUN /venv/bin/python -m pip install --upgrade pip
+RUN pip install --upgrade pip ;\
+    pip install poetry 
 
-COPY poetry.lock pyproject.toml /code/
-RUN poetry export -f requirements.txt | /venv/bin/pip install -r /dev/stdin
+COPY poetry.lock pyproject.toml /app/
+COPY splunk_connect_for_snmp /app/splunk_connect_for_snmp
+WORKDIR /app
+RUN poetry config virtualenvs.in-project true ;\
+    poetry build ;\
+    . /app/.venv/bin/activate ;\
+    pip install dist/*.whl
 
-COPY splunk_connect_for_snmp /code/splunk_connect_for_snmp
 
-#RUN poetry install --no-dev -n --no-ansi
-RUN poetry build && /venv/bin/pip install dist/*.whl
 
 
 FROM base as final
 
-COPY --from=builder /venv /venv
+COPY --from=builder /app/.venv /app/.venv
 COPY entrypoint.sh ./
 ENTRYPOINT ["./entrypoint.sh"]

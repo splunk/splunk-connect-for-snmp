@@ -22,14 +22,23 @@ spec:
           fsGroup: 2000
       containers:
         - name: sc4snmp-worker
-          image: {{ .Values.poller.image | default "ghcr.io/splunk/splunk-connect-for-snmp-poller/container" }}:{{ .Values.poller.tag | default "1" }}
-          imagePullPolicy: {{ .Values.poller.pullPolicy | default "IfNotPresent" }}
-          args: [{{ printf "\"--log=%s\"" ( .Values.worker.logLevel | default "WARN" ) }}, "--config=/work/config/config.yaml"]
+          image: {{ .Values.sc4snmp.image | default "ghcr.io/splunk/splunk-connect-for-snmp/container" }}:{{ .Values.sc4snmp.tag | default "1" }}
+          imagePullPolicy: {{ .Values.sc4snmp.pullPolicy | default "IfNotPresent" }}
+          args:
+            [
+              "celery","worker",
+            ]
           securityContext:
             allowPrivilegeEscalation: false          
           env:
             - name: CELERY_BROKER_URL
-              value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq:5672/
+              value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq-headless:5672/
+            - name: MONGO_URI
+          {{- if eq .Values.mongodb.architecture "replicaset" }}
+              value: mongodb+srv://sc4snmp-mongodb-headless.{{ .Release.Namespace }}.svc.{{ .Values.mongodb.clusterDomain }}/?tls=false&ssl=false&replicaSet=rs0
+          {{ else }}
+              value: mongodb://sc4snmp-mongodb:27017
+          {{ end }}              
             - name: MIBS_SERVER_URL
               value: {{ printf "http://sc4snmp-mib-server-service:%s" ( .Values.mib.service_port | default "5000" ) | quote }}
             - name: MIBS_FILES_URL
@@ -38,23 +47,20 @@ spec:
               value: sc4snmp-mib-server
             - name: MIB_SERVER_SERVICE_SERVICE_PORT
               value: {{ .Values.mib.service_port | quote }}
-            - name: POLLER_EXECUTION_MODE
-              value: worker
             - name: OTEL_SERVER_LOGS_URL
               value: {{ printf "http://otel-service:%s" ( .Values.otel.service_logs_port | default "8881" ) | quote }}
             - name: OTEL_SERVER_METRICS_URL
               value: {{ printf "http://otel-service:%s" ( .Values.otel.service_metrics_port | default "8882" ) | quote }}
-            - name: MONGO_URI
-          {{- if eq .Values.mongodb.architecture "replicaset" }}
-              value: mongodb+srv://sc4snmp-mongodb-headless.{{ .Release.Namespace }}.svc.{{ .Values.mongodb.clusterDomain }}/?tls=false&ssl=false&replicaSet=rs0
-          {{ else }}
-              value: mongodb://sc4snmp-mongodb:27017
-          {{ end }}              
+            - name: LOG_LEVEL
+              value: {{ .Values.worker.logLevel | default "INFO" }}
      
           volumeMounts:
             - name: config
               mountPath: "/work/config"
               readOnly: true
+            - name: pysnmp-cache-volume
+              mountPath: "/.pysnmp/"
+              readOnly: false
           resources:
             {{- if .Values.worker.resources }}
 {{ .Values.worker.resources | toYaml | trim | indent 12 }}
@@ -76,3 +82,5 @@ spec:
             items:
               - key: "config.yaml"
                 path: "config.yaml"
+        - name: pysnmp-cache-volume
+          emptyDir: {}                

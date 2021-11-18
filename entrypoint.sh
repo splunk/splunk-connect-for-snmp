@@ -1,27 +1,32 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -e
-. /venv/bin/activate
+echo args "$@"
+. /app/.venv/bin/activate
+LOG_LEVEL=${LOG_LEVEL:=INFO}
+
+wait-for-dep "${CELERY_BROKER_URL}"
+wait-for-dep "${MONGO_URI}"
 
 case $1 in
+
 
 celery)
     case $2 in
     beat)
-        celery -A splunk_connect_for_snmp.app_poller beat  --loglevel=INFO
+        celery -A splunk_connect_for_snmp.poller beat  --loglevel=$LOG_LEVEL
         ;;
     worker)
-        celery -A splunk_connect_for_snmp.app_poller worker --loglevel=INFO
+        celery -A splunk_connect_for_snmp.poller worker --loglevel=$LOG_LEVEL
         ;;
     *)
-        celery -A splunk_connect_for_snmp.app_poller ${@:3} --loglevel=INFO
+        celery -A splunk_connect_for_snmp.poller "${@:3}" --loglevel=$LOG_LEVEL
         ;;
     esac
     ;;
 trap)
-    echo -n "trap"
+    python -m splunk_connect_for_snmp.traps --loglevel=$LOG_LEVEL
     ;;
-    python -m splunk_connect_for_snmp.traps
 *)
-echo -n "unknown cmd $@"
+echo -n unknown cmd "$@"
 ;;
 esac
