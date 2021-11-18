@@ -112,7 +112,7 @@ class SNMPTask(Task):
     def __init__(self):
         # self.snmpEngine = SnmpEngine()
         self.mongo_client = pymongo.MongoClient(MONGO_URI)
-    
+
         self.session = CachedLimiterSession(
             per_second=120,
             cache_name="cache_http",
