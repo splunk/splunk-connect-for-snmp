@@ -158,6 +158,7 @@ def inventory_seed(path=None):
                     "kwargs": {"id": str(fr['_id'])},
                     "interval": {"every": ir.walk_interval, "period": "seconds"},
                     "enabled": True,
+                    "run_immediately": True,
                 }
                 if ur.modified_count:
                     logger.debug("Device Config Changed need to walk")
