@@ -51,7 +51,7 @@ def enrich(self, **kwargs):
     result = kwargs["result"]
     target_id = ObjectId(kwargs["id"])
     current_target = targets_collection.find_one(
-        {"_id": target_id}, {"attributes": True}
+        {"_id": target_id}, {"attributes": True, "target": True}
     )
     detectchange: bool = False
     if "detectchange" in kwargs:
@@ -151,6 +151,10 @@ def enrich(self, **kwargs):
         "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller",
         kwargs=({"id": kwargs["id"]}),
     )
-    # TODO Send events new task
+
+    app.send_task(
+        "splunk_connect_for_snmp.splunk.tasks.prepare",
+        kwargs=({"ts": kwargs["ts"], "target": current_target["target"], "result": result}),
+    )
 
     return result

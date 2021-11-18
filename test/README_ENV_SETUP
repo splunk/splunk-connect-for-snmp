@@ -59,6 +59,11 @@ export MONGO_URI=mongodb://localhost:27017
 export CELERY_BROKER_URL=amqp://guest:guest@localhost:5672//
 
 
+export SPLUNK_HEC_URI=https://localhost:8088/services/collector
+export SPLUNK_HEC_INDEX_METRICS=em_metrics
+export SPLUNK_HEC_INDEX_EVENTS=em_events
+export SPLUNK_HEC_TOKEN=796bb611-0189-47dc-a5f8-25fe7be42c00
+
 celery -A splunk_connect_for_snmp_poller.manager.celery_client worker -l INFO -n worker1
 
 

@@ -61,7 +61,7 @@ MTYPES = tuple(["cc", "c", "g"])
 
 
 def isMIBResolved(id):
-    if id.startswith("RFC1213-MIB::mib-") or id.startswith("SNMPv2-SMI::enterprises."):
+    if id.startswith("RFC1213-MIB::") or id.startswith("SNMPv2-SMI::enterprises."):
         return False
     else:
         return True
@@ -228,7 +228,7 @@ class SNMPTask(Task):
                         else:
                             continue
 
-        logger.debug(target)
+        logger.debug(f"target = {target}")
         i = 0
         metrics = OrderedDict()
         retry = False
@@ -276,7 +276,7 @@ class SNMPTask(Task):
                     id = varBind[0].prettyPrint()
                     oid = str(varBind[0].getOid())
 
-                    # logger.debug(f"{mib}.{metric} id={id} oid={oid}")
+                    # logger.debug(f"{mib}.{metric} id={id} oid={oid} index={index}")
 
                     if isMIBResolved(id):
                         group_key = get_group_key(mib, oid, index)
@@ -323,7 +323,6 @@ class SNMPTask(Task):
 
 
 @shared_task(bind=True, base=SNMPTask)
-# This task gets the inventory and creates a task to schedules each walk task
 def walk(self, **kwargs):
 
     retry = True
@@ -344,7 +343,6 @@ def walk(self, **kwargs):
 
 
 @shared_task(bind=True, base=SNMPTask)
-# This task gets the inventory and creates a task to schedules each walk task
 def poll(self, **kwargs):
     retry = True
     now = datetime.utcnow().timestamp()

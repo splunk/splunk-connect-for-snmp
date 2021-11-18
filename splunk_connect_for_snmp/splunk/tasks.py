@@ -29,14 +29,25 @@ class HECTask(Task):
 
 
 @shared_task(bind=True, base=HECTask)
-# This task gets the inventory and creates a task to schedules each walk task
 def send(self, result):
-    logger.warn("I should send something")
+    logger.debug("+++++++++endpoint+++++++++ %s", SPLUNK_HEC_URI)
+
+    for item in result:
+        try:
+            response = requests.post(url=SPLUNK_HEC_URI, json=item, timeout=60, verify=False)
+            logger.debug("Response code is %s", response.status_code)
+            logger.debug("Response is %s", response.text)
+        except requests.ConnectionError as e:
+            logger.error(
+                f"Connection error when sending data to HEC index - {result['index']}: {e}"
+            )
+
+    logger.debug(f"send result size {len(result)}")
+
     return "sent"
 
 
 @shared_task(bind=True)
-# This task gets the inventory and creates a task to schedules each walk task
 def prepare(self, target, ts, result):
     splunk_metrics = []
     #     {
@@ -59,7 +70,7 @@ def prepare(self, target, ts, result):
         if len(data["metrics"]) > 0:
             metric = {
                 "time": ts,
-                "event": "event",
+                "event": "metric",
                 "source": "sc4snmp",
                 "sourcetype": "sc4snmp:metric",
                 "host": target,
@@ -68,9 +79,9 @@ def prepare(self, target, ts, result):
             }
             for field, values in data["fields"].items():
                 short_field = field.split(".")[-1]
-                metric[short_field] = values["value"]
+                metric['fields'][short_field] = values["value"]
             for field, values in data["metrics"].items():
-                metric[f"metric_name:{field}"] = values["value"]
+                metric['fields'][f"metric_name:{field}"] = values["value"]
             splunk_metrics.append(metric)
 
     app.send_task(
