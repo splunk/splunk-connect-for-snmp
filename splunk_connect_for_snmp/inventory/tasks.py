@@ -124,7 +124,7 @@ def inventory_seed(path=None):
                     }
                 )
                 profiles: List[str] = []
-                if len(ir.profiles) > 0:
+                if ir.profiles:
                     profiles = ir.profiles
 
                 SmartProfiles: bool = True
@@ -230,7 +230,7 @@ def inventory_setup_poller(**kwargs):
             if profile["condition"]["type"] == "base":
                 logger.debug(f"Adding base profile {profile_name}")
                 logger.debug(f"profile is a base {profile_name}")
-                if not profile["frequency"] in assigned_profiles:
+                if profile["frequency"] not in assigned_profiles:
                     assigned_profiles[profile["frequency"]] = []
                 assigned_profiles[profile["frequency"]].append(profile_name)
 
@@ -247,7 +247,7 @@ def inventory_setup_poller(**kwargs):
                         result = re.match(pattern, cs["value"])
                         if result:
                             logger.debug(f"Adding smart profile {profile_name}")
-                            if not profile["frequency"] in assigned_profiles:
+                            if profile["frequency"] not in assigned_profiles:
                                 assigned_profiles[profile["frequency"]] = []
                             assigned_profiles[profile["frequency"]].append(profile_name)
                             continue
@@ -255,7 +255,7 @@ def inventory_setup_poller(**kwargs):
         for profile_name in target["config"]["profiles"]["StaticProfiles"]:
             if profile_name in config_base["poller"]["profiles"]:
                 profile = config_base["poller"]["profiles"][profile_name]
-                if not profile["frequency"] in assigned_profiles:
+                if profile["frequency"] not in assigned_profiles:
                     assigned_profiles[profile["frequency"]] = []
                 assigned_profiles[profile["frequency"]].append(profile_name)
 
