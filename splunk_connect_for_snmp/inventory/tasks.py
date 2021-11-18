@@ -19,7 +19,6 @@ from celery import shared_task, signature
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from typing import List, Union
@@ -69,22 +68,6 @@ def inventory_seed(path=None):
     targets_collection = mongo_client.sc4.targets
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
-    session = CachedLimiterSession(
-        per_second=120,
-        cache_name="cache_http",
-        backend=MongoCache(connection=mongo_client, db_name=MONGO_DB),
-        expire_after=300,
-        logger=logger,
-        match_headers=False,
-        stale_if_error=True,
-    )
-    response = session.request(
-        "GET",
-        url,
-        timeout=60,
-        verify=tlsverify,
-    )
-    logger.debug(f"result={response.text}")
 
     dict_from_csv = {}
     with open(path) as csv_file:
