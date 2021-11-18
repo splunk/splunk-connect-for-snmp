@@ -81,8 +81,8 @@ def inventory_seed(path=None):
             target_update = []
             ir = InventoryRecord(*target)
             # The default port is 161
-            if len(ir.ip.split(":")) == 1:
-                ir.ip = f"{ir.ip}:161"
+            if len(ir.address.split(":")) == 1:
+                ir.address = f"{ir.address}:161"
 
             try:
                 wi = float(ir.walk_interval)
@@ -92,7 +92,7 @@ def inventory_seed(path=None):
                 ir.walk_interval = 42000
 
             if "delete" in target and isTrueish(ir.delete):
-                periodic_obj.delete_task(ir.ip)
+                periodic_obj.delete_task(ir.address)
             else:
                 if ir.version not in ("1", "2", "2c", "3"):
                     logger.error("Invalid version in inventory record {row}")
@@ -144,15 +144,15 @@ def inventory_seed(path=None):
                     }
                 )
                 ur = targets_collection.update_one(
-                    {"target": ir.ip}, updates, upsert=True
+                    {"target": ir.address}, updates, upsert=True
                 )
                 fr = targets_collection.find_one(
-                    {"target": ir.ip}, {"_id": True}
+                    {"target": ir.address}, {"_id": True}
                 )
                 task_config = {
-                    "name": f"sc4snmp;{ir.ip};walk",
+                    "name": f"sc4snmp;{ir.address};walk",
                     "task": "splunk_connect_for_snmp.snmp.tasks.walk",
-                    "target": f"{ir.ip}",
+                    "target": f"{ir.address}",
                     "args": [],
                     "kwargs": {"id": str(fr['_id'])},
                     "interval": {"every": ir.walk_interval, "period": "seconds"},
