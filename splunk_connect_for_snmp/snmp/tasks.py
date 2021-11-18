@@ -1,3 +1,5 @@
+from splunk_connect_for_snmp.snmp.task_utilities import mib_string_handler, _any_failure_happened
+
 try:
     from dotenv import load_dotenv
 
@@ -175,6 +177,34 @@ class SNMPTask(Task):
         # logger.error(f"No MIB found for {id}")
         return found, mibs
 
+    def return_snmp_iterators(self, varbind_collection, communitydata, udp_transport_target):
+        iterators = []
+        bulk_varbinds, get_varbinds = varbind_collection.bulk, varbind_collection.get
+        if bulk_varbinds:
+            bulk_iterator = bulkCmd(
+                self.snmpEngine,
+                communitydata,
+                udp_transport_target,
+                ContextData(),
+                0,
+                50,
+                *bulk_varbinds,
+            )
+            iterators.append(bulk_iterator)
+        if get_varbinds:
+            get_iterator = next(
+            getCmd(
+                self.snmpEngine,
+                communitydata,
+                udp_transport_target,
+                ContextData(),
+                *get_varbinds,
+            )
+        )
+            iterators.append(get_varbinds)
+        return iterators
+
+
     # @asyncio.coroutine
     def run_walk(self, id: str, profiles: List[str] = None, walk: bool = False):
 
@@ -185,7 +215,7 @@ class SNMPTask(Task):
         )
 
         if walk:
-            varBinds = [
+            var_binds = [
                 ObjectType(
                     ObjectIdentity("1.3.6").addAsn1MibSource(
                         MIB_SOURCES,
@@ -193,7 +223,6 @@ class SNMPTask(Task):
                 ).loadMibs()
             ]
         else:
-            varBinds: list[ObjectType] = []
             with open("config.yaml", "r") as file:
                 config_base = yaml.safe_load(file)
 
@@ -202,39 +231,17 @@ class SNMPTask(Task):
             for profile in profiles:
                 # TODO: Add profile name back to metric
                 if profile in config_base["poller"]["profiles"]:
-                    for varBind in config_base["poller"]["profiles"][profile][
-                        "varBinds"
-                    ]:
-                        logger.debug(f"varBind {varBind}")
-                        if len(varBind) == 3:
-                            varBinds.append(
-                                ObjectType(
-                                    ObjectIdentity(
-                                        varBind[0], varBind[1], varBind[2]
-                                    ).addAsn1MibSource(
-                                        MIB_SOURCES,
-                                    )
-                                ).loadMibs()
-                            )
-                        elif len(varBind) == 2:
-                            varBinds.append(
-                                ObjectType(
-                                    ObjectIdentity(
-                                        varBind[0], varBind[1]
-                                    ).addAsn1MibSource(
-                                        MIB_SOURCES,
-                                    )
-                                ).loadMibs()
-                            )
-                        else:
-                            continue
+                    profile_varbinds = config_base["poller"]["profiles"][profile]["varBinds"]
+                    var_binds.append(profile_varbinds)
+
+            varbind_collection = mib_string_handler(var_binds)
 
         logger.debug(f"target = {target}")
         i = 0
         metrics = OrderedDict()
         retry = False
         seedmibs = []
-        logger.debug(f"Walking {target} for {varBinds}")
+        logger.debug(f"Walking {target} for {varbind_collection}")
 
         target_address = target["target"].split(":")[0]
         target_port = target["target"].split(":")[1]
@@ -242,75 +249,56 @@ class SNMPTask(Task):
             communitydata = CommunityData(target["config"]["community"]["name"])
         else:
             raise NotImplementedError("version 3 not yet implemented")
-
+        iterators = self.return_snmp_iterators(varbind_collection, communitydata, UdpTransportTarget((target_address,
+                                                                                                      target_port)))
         # while True:
-        iterator = bulkCmd(
-            self.snmpEngine,
-            communitydata,
-            UdpTransportTarget((target_address, target_port)),
-            ContextData(),
-            0,
-            50,
-            *varBinds,
-        )
-        for errorIndication, errorStatus, errorIndex, varBindTable in iterator:
+        for iterator in iterators:
+            for errorIndication, errorStatus, errorIndex, varBindTable in iterator:
+                if _any_failure_happened(errorIndication, errorStatus, errorIndex, varBindTable):
+                    break
+                else:
+                    for varBind in varBindTable:
+                        i += 1
+                        # logger.debug(varBind)
+                        mib, metric, index = varBind[0].getMibSymbol()
 
-            if errorIndication:
-                logger.error(errorIndication)
-                break
-            elif errorStatus:
-                logger.error(
-                    "%s at %s"
-                    % (
-                        errorStatus.prettyPrint(),
-                        errorIndex and varBinds[int(errorIndex) - 1][0] or "?",
-                    )
-                )
-                break
+                        id = varBind[0].prettyPrint()
+                        oid = str(varBind[0].getOid())
 
-            else:
-                for varBind in varBindTable:
-                    i += 1
-                    # logger.debug(varBind)
-                    mib, metric, index = varBind[0].getMibSymbol()
+                        # logger.debug(f"{mib}.{metric} id={id} oid={oid} index={index}")
 
-                    id = varBind[0].prettyPrint()
-                    oid = str(varBind[0].getOid())
+                        if isMIBResolved(id):
+                            group_key = get_group_key(mib, oid, index)
+                            if not group_key in metrics:
+                                metrics[group_key] = {
+                                    "metrics": OrderedDict(),
+                                    "fields": OrderedDict(),
+                                }
 
-                    # logger.debug(f"{mib}.{metric} id={id} oid={oid} index={index}")
+                            snmp_val = varBind[1]
+                            snmp_type = type(snmp_val).__name__
 
-                    if isMIBResolved(id):
-                        group_key = get_group_key(mib, oid, index)
-                        if not group_key in metrics:
-                            metrics[group_key] = {
-                                "metrics": OrderedDict(),
-                                "fields": OrderedDict(),
-                            }
-
-                        snmp_val = varBind[1]
-                        snmp_type = type(snmp_val).__name__
-
-                        metric_type = map_metric_type(snmp_type, snmp_val)
-                        if metric_type in MTYPES:
-                            metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
-                                "type": metric_type,
-                                "value": snmp_val.prettyPrint(),
-                                "oid": oid,
-                            }
-                        else:
-                            if not snmp_val.prettyPrint() == "":
-                                metrics[group_key]["fields"][f"{mib}.{metric}"] = {
+                            metric_type = map_metric_type(snmp_type, snmp_val)
+                            if metric_type in MTYPES:
+                                metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
                                     "type": metric_type,
                                     "value": snmp_val.prettyPrint(),
                                     "oid": oid,
                                 }
+                            else:
+                                if not snmp_val.prettyPrint() == "":
+                                    metrics[group_key]["fields"][f"{mib}.{metric}"] = {
+                                        "type": metric_type,
+                                        "value": snmp_val.prettyPrint(),
+                                        "oid": oid,
+                                    }
 
-                    else:
-                        found, remotemibs = self.isMIBKnown(id, oid)
-                        if found:
-                            retry = True
-                            seedmibs = list(set(remotemibs + seedmibs))
-                            break
+                        else:
+                            found, remotemibs = self.isMIBKnown(id, oid)
+                            if found:
+                                retry = True
+                                seedmibs = list(set(remotemibs + seedmibs))
+                                break
 
             # varBinds = varBindTable[-1]
             # if isEndOfMib(varBinds):

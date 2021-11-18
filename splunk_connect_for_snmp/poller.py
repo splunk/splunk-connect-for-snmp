@@ -44,7 +44,6 @@ app.autodiscover_tasks(
 )
 
 
-
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs) -> None:
     periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
@@ -54,7 +53,7 @@ def setup_periodic_tasks(sender, **kwargs) -> None:
         "task": "splunk_connect_for_snmp.inventory.tasks.inventory_seed",
         "args": [],
         "kwargs": {
-            "path": "inventory.csv"
+            "path": "/Users/omrozowicz/Documents/snmp/splunk-connect-for-snmp/splunk_connect_for_snmp/inventory.csv"
         },
         "interval": {"every": 20, "period": "seconds"},
         "enabled": True,
