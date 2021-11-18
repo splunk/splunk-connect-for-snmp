@@ -54,7 +54,7 @@ def setup_periodic_tasks(sender, **kwargs) -> None:
         "task": "splunk_connect_for_snmp.inventory.tasks.inventory_seed",
         "args": [],
         "kwargs": {
-            "url": "https://gist.githubusercontent.com/rfaircloth-splunk/0590fa671f794902005257bcbd2ee274/raw/90f6930aaace6ca5aba8edc8c57f38552049c1d1/snmp_inventory.csv"
+            "path": "inventory.csv"
         },
         "interval": {"every": 20, "period": "seconds"},
         "enabled": True,
