@@ -15,7 +15,6 @@ import yaml
 from bson.objectid import ObjectId
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
-
 from pysnmp.hlapi import *
 from pysnmp.smi import builder, compiler, view
 from requests_cache import MongoCache
@@ -37,12 +36,7 @@ class VarbindCollection(namedtuple("VarbindCollection", "get, bulk")):
 
 
 def translate_list_to_oid(varbind):
-    return ObjectType(
-        ObjectIdentity(
-            *varbind
-        )).addAsn1MibSource(
-            MIB_SOURCES
-        )
+    return ObjectType(ObjectIdentity(*varbind)).addAsn1MibSource(MIB_SOURCES)
 
 
 def mib_string_handler(mib_list: list) -> VarbindCollection:
@@ -75,9 +69,7 @@ def mib_string_handler(mib_list: list) -> VarbindCollection:
                     f"Learn more about the format at https://bit.ly/3qtqzQc"
                 )
         except Exception as e:
-            logger.error(
-                f"Error happened translating string: {mib_string}: {e}"
-            )
+            logger.error(f"Error happened translating string: {mib_string}: {e}")
     return VarbindCollection(get=get_list, bulk=bulk_list)
 
 
@@ -241,7 +233,9 @@ class SNMPTask(Task):
         # logger.error(f"No MIB found for {id}")
         return found, mibs
 
-    def return_snmp_iterators(self, varbind_collection, communitydata, udp_transport_target):
+    def return_snmp_iterators(
+        self, varbind_collection, communitydata, udp_transport_target
+    ):
         bulk_varbinds, get_varbinds = varbind_collection.bulk, varbind_collection.get
         bulk_iterator, get_iterator = None, None
         if bulk_varbinds:
@@ -265,7 +259,6 @@ class SNMPTask(Task):
             )
         return bulk_iterator, get_iterator
 
-
     # @asyncio.coroutine
     def run_walk(self, id: str, profiles: List[str] = None, walk: bool = False):
 
@@ -285,11 +278,15 @@ class SNMPTask(Task):
             for profile in profiles:
                 # TODO: Add profile name back to metric
                 if profile in config_base["poller"]["profiles"]:
-                    profile_varbinds = config_base["poller"]["profiles"][profile]["varBinds"]
+                    profile_varbinds = config_base["poller"]["profiles"][profile][
+                        "varBinds"
+                    ]
                     var_binds += profile_varbinds
 
         varbind_collection = mib_string_handler(var_binds)
-        logger.debug(f"{len(varbind_collection.bulk)} events for bulk, {len(varbind_collection.get)} events for get")
+        logger.debug(
+            f"{len(varbind_collection.bulk)} events for bulk, {len(varbind_collection.get)} events for get"
+        )
         logger.debug(f"target = {target}")
 
         metrics = OrderedDict()
@@ -297,28 +294,42 @@ class SNMPTask(Task):
         seedmibs = []
         logger.debug(f"Walking {target} for {varbind_collection}")
 
-
         target_address = target["target"].split(":")[0]
         target_port = target["target"].split(":")[1]
         if target["config"]["community"]["version"] in ("1", "2", "2c"):
             communitydata = CommunityData(target["config"]["community"]["name"])
         else:
             raise NotImplementedError("version 3 not yet implemented")
-        bulk_iterator, get_iterator = self.return_snmp_iterators(varbind_collection, communitydata, UdpTransportTarget(
-                                                                                                    (target_address,
-                                                                                                      target_port)))
+        bulk_iterator, get_iterator = self.return_snmp_iterators(
+            varbind_collection,
+            communitydata,
+            UdpTransportTarget((target_address, target_port)),
+        )
         if bulk_iterator:
-            for (errorIndication, errorStatus, errorIndex, varBindTable) in bulk_iterator:
-                if _any_failure_happened(errorIndication, errorStatus, errorIndex, varBindTable):
+            for (
+                errorIndication,
+                errorStatus,
+                errorIndex,
+                varBindTable,
+            ) in bulk_iterator:
+                if _any_failure_happened(
+                    errorIndication, errorStatus, errorIndex, varBindTable
+                ):
                     break
                 else:
                     retry = self.process_snmp_data(varBindTable, metrics, seedmibs)
 
         if get_iterator:
-            for (errorIndication, errorStatus, errorIndex, varBindTable) in get_iterator:
-                if not _any_failure_happened(errorIndication, errorStatus, errorIndex, varBindTable):
+            for (
+                errorIndication,
+                errorStatus,
+                errorIndex,
+                varBindTable,
+            ) in get_iterator:
+                if not _any_failure_happened(
+                    errorIndication, errorStatus, errorIndex, varBindTable
+                ):
                     retry = self.process_snmp_data(varBindTable, metrics, seedmibs)
-
 
         # self.snmpEngine.transportDispatcher.closeDispatcher()
         if len(seedmibs) > 0:
@@ -372,6 +383,7 @@ class SNMPTask(Task):
                     break
 
         return retry
+
 
 @shared_task(bind=True, base=SNMPTask)
 def walk(self, **kwargs):
