@@ -15,11 +15,8 @@ import yaml
 from bson.objectid import ObjectId
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
-
-# from pysnmp.hlapi import ObjectIdentity, ObjectType, SnmpEngine
-# from pysnmp.hlapi.asyncio import *
 from pysnmp.hlapi import *
-from pysnmp.smi import builder, compiler, error, view
+from pysnmp.smi import builder, compiler, view
 from requests_cache import MongoCache
 
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
@@ -31,6 +28,74 @@ MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index/")
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
+
+
+class VarbindCollection(namedtuple("VarbindCollection", "get, bulk")):
+    def __add__(self, other):
+        return VarbindCollection(bulk=self.bulk + other.bulk, get=self.get + other.get)
+
+
+def translate_list_to_oid(varbind):
+    return ObjectType(ObjectIdentity(*varbind)).addAsn1MibSource(MIB_SOURCES)
+
+
+def mib_string_handler(mib_list: list) -> VarbindCollection:
+    """
+    Perform the SNMP Get for mib-name/string, where mib string is a list
+    1) case 1: with mib index - consider it as a single oid -> snmpget
+    e.g. ['SNMPv2-MIB', 'sysUpTime',0] (syntax -> [<mib_file_name>, <mib_name/string>, <min_index>])
+
+    2) case 2: without mib index - consider it as a oid with * -> snmpbulkwalk
+    . ['SNMPv2-MIB', 'sysORUpTime'] (syntax -> [<mib_file_name>, <mib_name/string>)
+    """
+    if not mib_list:
+        return VarbindCollection(get=[], bulk=[])
+    get_list, bulk_list = [], []
+    for mib_string in mib_list:
+        try:
+            if not isinstance(mib_string, list):
+                bulk_list.append(ObjectType(ObjectIdentity(mib_string)))
+                continue
+            oid = translate_list_to_oid(mib_string)
+            mib_string_length = len(mib_string)
+            if mib_string_length == 3:
+                get_list.append(oid)
+            elif mib_string_length < 3:
+                bulk_list.append(oid)
+            else:
+                raise Exception(
+                    f"Invalid mib string - {mib_string}."
+                    f"\nPlease provide a valid mib string in the correct format. "
+                    f"Learn more about the format at https://bit.ly/3qtqzQc"
+                )
+        except Exception as e:
+            logger.error(f"Error happened translating string: {mib_string}: {e}")
+    return VarbindCollection(get=get_list, bulk=bulk_list)
+
+
+def _any_failure_happened(
+    error_indication, error_status, error_index, var_binds: list
+) -> bool:
+    """
+    This function checks if any failure happened during GET or BULK operation.
+    @param error_indication:
+    @param error_status:
+    @param error_index: index of varbind where error appeared
+    @param var_binds: list of varbinds
+    @return: if any failure happened
+    """
+    if error_indication:
+        result = f"error: {error_indication}"
+        logger.error(result)
+    elif error_status:
+        result = "error: {} at {}".format(
+            error_status.prettyPrint(),
+            error_index and var_binds[int(error_index) - 1][0] or "?",
+        )
+        logger.error(result)
+    else:
+        return False
+    return True
 
 
 def load_mibs(mibs: List[str]) -> None:
@@ -168,6 +233,32 @@ class SNMPTask(Task):
         # logger.error(f"No MIB found for {id}")
         return found, mibs
 
+    def return_snmp_iterators(
+        self, varbind_collection, communitydata, udp_transport_target
+    ):
+        bulk_varbinds, get_varbinds = varbind_collection.bulk, varbind_collection.get
+        bulk_iterator, get_iterator = None, None
+        if bulk_varbinds:
+            bulk_iterator = bulkCmd(
+                self.snmpEngine,
+                communitydata,
+                udp_transport_target,
+                ContextData(),
+                0,
+                50,
+                *bulk_varbinds,
+                lexicographicMode=False,
+            )
+        if get_varbinds:
+            get_iterator = getCmd(
+                self.snmpEngine,
+                communitydata,
+                udp_transport_target,
+                ContextData(),
+                *get_varbinds,
+            )
+        return bulk_iterator, get_iterator
+
     # @asyncio.coroutine
     def run_walk(self, id: str, profiles: List[str] = None, walk: bool = False):
 
@@ -178,54 +269,30 @@ class SNMPTask(Task):
         )
 
         if walk:
-            varBinds = [
-                ObjectType(
-                    ObjectIdentity("1.3.6").addAsn1MibSource(
-                        MIB_SOURCES,
-                    )
-                ).loadMibs()
-            ]
+            var_binds = ["1.3.6"]
         else:
-            varBinds: list[ObjectType] = []
-            with open("config.yaml") as file:
+            with open("config.yaml", "r") as file:
                 config_base = yaml.safe_load(file)
+            var_binds = []
 
             for profile in profiles:
                 # TODO: Add profile name back to metric
                 if profile in config_base["poller"]["profiles"]:
-                    for varBind in config_base["poller"]["profiles"][profile][
+                    profile_varbinds = config_base["poller"]["profiles"][profile][
                         "varBinds"
-                    ]:
-                        logger.debug(f"varBind {varBind}")
-                        if len(varBind) == 3:
-                            varBinds.append(
-                                ObjectType(
-                                    ObjectIdentity(
-                                        varBind[0], varBind[1], varBind[2]
-                                    ).addAsn1MibSource(
-                                        MIB_SOURCES,
-                                    )
-                                ).loadMibs()
-                            )
-                        elif len(varBind) == 2:
-                            varBinds.append(
-                                ObjectType(
-                                    ObjectIdentity(
-                                        varBind[0], varBind[1]
-                                    ).addAsn1MibSource(
-                                        MIB_SOURCES,
-                                    )
-                                ).loadMibs()
-                            )
-                        else:
-                            continue
+                    ]
+                    var_binds += profile_varbinds
 
+        varbind_collection = mib_string_handler(var_binds)
+        logger.debug(
+            f"{len(varbind_collection.bulk)} events for bulk, {len(varbind_collection.get)} events for get"
+        )
         logger.debug(f"target = {target}")
-        i = 0
+
         metrics = OrderedDict()
         retry = False
         seedmibs = []
-        logger.debug(f"Walking {target} for {varBinds}")
+        logger.debug(f"Walking {target} for {varbind_collection}")
 
         target_address = target["target"].split(":")[0]
         target_port = target["target"].split(":")[1]
@@ -233,85 +300,89 @@ class SNMPTask(Task):
             communitydata = CommunityData(target["config"]["community"]["name"])
         else:
             raise NotImplementedError("version 3 not yet implemented")
-
-        # while True:
-        iterator = bulkCmd(
-            self.snmpEngine,
+        bulk_iterator, get_iterator = self.return_snmp_iterators(
+            varbind_collection,
             communitydata,
             UdpTransportTarget((target_address, target_port)),
-            ContextData(),
-            0,
-            50,
-            *varBinds,
         )
-        for errorIndication, errorStatus, errorIndex, varBindTable in iterator:
+        if bulk_iterator:
+            for (
+                errorIndication,
+                errorStatus,
+                errorIndex,
+                varBindTable,
+            ) in bulk_iterator:
+                if _any_failure_happened(
+                    errorIndication, errorStatus, errorIndex, varBindTable
+                ):
+                    break
+                else:
+                    retry = self.process_snmp_data(varBindTable, metrics, seedmibs)
 
-            if errorIndication:
-                logger.error(errorIndication)
-                break
-            elif errorStatus:
-                logger.error(
-                    "%s at %s"
-                    % (
-                        errorStatus.prettyPrint(),
-                        errorIndex and varBinds[int(errorIndex) - 1][0] or "?",
-                    )
-                )
-                break
-
-            else:
-                for varBind in varBindTable:
-                    i += 1
-                    # logger.debug(varBind)
-                    mib, metric, index = varBind[0].getMibSymbol()
-
-                    id = varBind[0].prettyPrint()
-                    oid = str(varBind[0].getOid())
-
-                    # logger.debug(f"{mib}.{metric} id={id} oid={oid} index={index}")
-
-                    if isMIBResolved(id):
-                        group_key = get_group_key(mib, oid, index)
-                        if group_key not in metrics:
-                            metrics[group_key] = {
-                                "metrics": OrderedDict(),
-                                "fields": OrderedDict(),
-                            }
-
-                        snmp_val = varBind[1]
-                        snmp_type = type(snmp_val).__name__
-
-                        metric_type = map_metric_type(snmp_type, snmp_val)
-                        if metric_type in MTYPES:
-                            metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
-                                "type": metric_type,
-                                "value": snmp_val.prettyPrint(),
-                                "oid": oid,
-                            }
-                        else:
-                            if not snmp_val.prettyPrint() == "":
-                                metrics[group_key]["fields"][f"{mib}.{metric}"] = {
-                                    "type": metric_type,
-                                    "value": snmp_val.prettyPrint(),
-                                    "oid": oid,
-                                }
-
-                    else:
-                        found, remotemibs = self.isMIBKnown(id, oid)
-                        if found:
-                            retry = True
-                            seedmibs = list(set(remotemibs + seedmibs))
-                            break
-
-            # varBinds = varBindTable[-1]
-            # if isEndOfMib(varBinds):
-            #     logger.debug("Completed Walk")
-            #     break
+        if get_iterator:
+            for (
+                errorIndication,
+                errorStatus,
+                errorIndex,
+                varBindTable,
+            ) in get_iterator:
+                if not _any_failure_happened(
+                    errorIndication, errorStatus, errorIndex, varBindTable
+                ):
+                    retry = self.process_snmp_data(varBindTable, metrics, seedmibs)
 
         # self.snmpEngine.transportDispatcher.closeDispatcher()
         if len(seedmibs) > 0:
             load_mibs(seedmibs)
         return retry, metrics
+
+    def process_snmp_data(self, varBindTable, metrics, seedmibs):
+        i = 0
+        retry = False
+        for varBind in varBindTable:
+            i += 1
+            # logger.debug(varBind)
+            mib, metric, index = varBind[0].getMibSymbol()
+
+            id = varBind[0].prettyPrint()
+            oid = str(varBind[0].getOid())
+
+            # logger.debug(f"{mib}.{metric} id={id} oid={oid} index={index}")
+
+            if isMIBResolved(id):
+                group_key = get_group_key(mib, oid, index)
+                if not group_key in metrics:
+                    metrics[group_key] = {
+                        "metrics": OrderedDict(),
+                        "fields": OrderedDict(),
+                    }
+
+                snmp_val = varBind[1]
+                snmp_type = type(snmp_val).__name__
+
+                metric_type = map_metric_type(snmp_type, snmp_val)
+                if metric_type in MTYPES:
+                    metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
+                        "type": metric_type,
+                        "value": snmp_val.prettyPrint(),
+                        "oid": oid,
+                    }
+                else:
+                    if not snmp_val.prettyPrint() == "":
+                        metrics[group_key]["fields"][f"{mib}.{metric}"] = {
+                            "type": metric_type,
+                            "value": snmp_val.prettyPrint(),
+                            "oid": oid,
+                        }
+
+            else:
+                found, remotemibs = self.isMIBKnown(id, oid)
+                if found:
+                    retry = True
+                    seedmibs = list(set(remotemibs + seedmibs))
+                    break
+
+        return retry
 
 
 @shared_task(bind=True, base=SNMPTask)
