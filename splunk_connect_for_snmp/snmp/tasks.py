@@ -246,7 +246,7 @@ class SNMPTask(Task):
 
     def return_snmp_iterators(self, varbind_collection, communitydata, udp_transport_target):
         bulk_varbinds, get_varbinds = varbind_collection.bulk, varbind_collection.get
-        iterators = []
+        bulk_iterator, get_iterator = None, None
         if bulk_varbinds:
             bulk_iterator = bulkCmd(
                 self.snmpEngine,
@@ -256,8 +256,8 @@ class SNMPTask(Task):
                 0,
                 50,
                 *bulk_varbinds,
+                lexicographicMode=False,
             )
-            iterators.append(bulk_iterator)
         if get_varbinds:
             get_iterator = getCmd(
                 self.snmpEngine,
@@ -266,8 +266,7 @@ class SNMPTask(Task):
                 ContextData(),
                 *get_varbinds,
             )
-            iterators.append(get_iterator)
-        return iterators
+        return bulk_iterator, get_iterator
 
 
     # @asyncio.coroutine
@@ -309,17 +308,25 @@ class SNMPTask(Task):
             communitydata = CommunityData(target["config"]["community"]["name"])
         else:
             raise NotImplementedError("version 3 not yet implemented")
-        iterators = self.return_snmp_iterators(varbind_collection, communitydata, UdpTransportTarget(
+        bulk_iterator, get_iterator = self.return_snmp_iterators(varbind_collection, communitydata, UdpTransportTarget(
                                                                                                     (target_address,
                                                                                                       target_port)))
         # while True:
-        for iterator in iterators:
-            for (errorIndication, errorStatus, errorIndex, varBindTable) in iterator:
+        logger.info(f"metrics for get: {len(varbind_collection.get)} bulk: {len(varbind_collection.bulk)}")
+        if bulk_iterator:
+            for (errorIndication, errorStatus, errorIndex, varBindTable) in bulk_iterator:
                 if _any_failure_happened(errorIndication, errorStatus, errorIndex, varBindTable):
                     break
                 else:
                     retry = self.process_snmp_data(varBindTable, metrics, seedmibs)
-                    logger.info(f"metrics for get: {len(varbind_collection.get)} bulk: {len(varbind_collection.bulk)}")
+                    if not walk:
+                        logger.info(f"bulk varBindTable: {varBindTable}")
+                        logger.info(f"metrics for bulk it: {metrics}")
+
+        if get_iterator:
+            for (errorIndication, errorStatus, errorIndex, varBindTable) in get_iterator:
+                if not _any_failure_happened(errorIndication, errorStatus, errorIndex, varBindTable):
+                    retry = self.process_snmp_data(varBindTable, metrics, seedmibs)
 
 
         # self.snmpEngine.transportDispatcher.closeDispatcher()
@@ -373,7 +380,7 @@ class SNMPTask(Task):
                     seedmibs = list(set(remotemibs + seedmibs))
                     break
 
-            return retry
+        return retry
 
 @shared_task(bind=True, base=SNMPTask)
 def walk(self, **kwargs):
