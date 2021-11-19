@@ -280,7 +280,6 @@ class SNMPTask(Task):
         else:
             with open("config.yaml", "r") as file:
                 config_base = yaml.safe_load(file)
-                logger.info(f"config base: {config_base}")
             var_binds = []
 
             for profile in profiles:
@@ -290,7 +289,7 @@ class SNMPTask(Task):
                     var_binds += profile_varbinds
 
         varbind_collection = mib_string_handler(var_binds)
-        logger.info(f"{len(varbind_collection.bulk)} events for bulk, {len(varbind_collection.get)} events for get")
+        logger.debug(f"{len(varbind_collection.bulk)} events for bulk, {len(varbind_collection.get)} events for get")
         logger.debug(f"target = {target}")
 
         metrics = OrderedDict()
