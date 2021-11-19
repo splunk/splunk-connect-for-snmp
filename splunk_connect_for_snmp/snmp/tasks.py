@@ -283,7 +283,7 @@ class SNMPTask(Task):
         else:
             with open("config.yaml", "r") as file:
                 config_base = yaml.safe_load(file)
-
+                logger.info(f"config base: {config_base}")
             var_binds = []
 
             for profile in profiles:
@@ -311,17 +311,12 @@ class SNMPTask(Task):
         bulk_iterator, get_iterator = self.return_snmp_iterators(varbind_collection, communitydata, UdpTransportTarget(
                                                                                                     (target_address,
                                                                                                       target_port)))
-        # while True:
-        logger.info(f"metrics for get: {len(varbind_collection.get)} bulk: {len(varbind_collection.bulk)}")
         if bulk_iterator:
             for (errorIndication, errorStatus, errorIndex, varBindTable) in bulk_iterator:
                 if _any_failure_happened(errorIndication, errorStatus, errorIndex, varBindTable):
                     break
                 else:
                     retry = self.process_snmp_data(varBindTable, metrics, seedmibs)
-                    if not walk:
-                        logger.info(f"bulk varBindTable: {varBindTable}")
-                        logger.info(f"metrics for bulk it: {metrics}")
 
         if get_iterator:
             for (errorIndication, errorStatus, errorIndex, varBindTable) in get_iterator:
