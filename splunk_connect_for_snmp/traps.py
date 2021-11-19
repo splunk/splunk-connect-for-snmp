@@ -1,3 +1,5 @@
+import asyncio
+
 from celery import Celery, signals
 from celery.utils.log import get_task_logger
 from opentelemetry import trace
@@ -6,11 +8,9 @@ from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-
-from pysnmp.entity import engine, config
 from pysnmp.carrier.asyncio.dgram import udp
+from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
-import asyncio
 
 provider = TracerProvider()
 processor = BatchSpanProcessor(JaegerExporter())
@@ -19,10 +19,11 @@ trace.set_tracer_provider(provider)
 
 logger = get_task_logger(__name__)
 
- # //using rabbitmq as the message broker
+# //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
-app.config_from_object('splunk_connect_for_snmp.celery_config')
-#app.conf.update(**config)
+app.config_from_object("splunk_connect_for_snmp.celery_config")
+# app.conf.update(**config)
+
 
 @signals.worker_process_init.connect(weak=False)
 def init_celery_tracing(*args, **kwargs):
@@ -58,30 +59,30 @@ snmpEngine = engine.SnmpEngine()
 config.addTransport(
     snmpEngine,
     udp.domainName + (1,),
-    udp.UdpTransport().openServerMode(('127.0.0.1', 2062))
+    udp.UdpTransport().openServerMode(("127.0.0.1", 2062)),
 )
 
 # SecurityName <-> CommunityName mapping
-config.addV1System(snmpEngine, 'my-area', 'public')
+config.addV1System(snmpEngine, "my-area", "public")
 
 # Callback function for receiving notifications
 # noinspection PyUnusedLocal
-def cbFun(snmpEngine,
-          stateReference,
-          contextEngineId, contextName,
-          varBinds,
-          cbCtx):
-    transportDomain, transportAddress = snmpEngine.msgAndPduDsp.getTransportInfo(stateReference)
-    print('Notification from %s, SNMP Engine %s, Context %s' % (transportAddress,
-                                                                contextEngineId.prettyPrint(),
-                                                                contextName.prettyPrint()))
+def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cbCtx):
+    transportDomain, transportAddress = snmpEngine.msgAndPduDsp.getTransportInfo(
+        stateReference
+    )
+    print(
+        "Notification from %s, SNMP Engine %s, Context %s"
+        % (transportAddress, contextEngineId.prettyPrint(), contextName.prettyPrint())
+    )
     for name, val in varBinds:
-        print('%s = %s' % (name.prettyPrint(), val.prettyPrint()))
-        
+        print(f"{name.prettyPrint()} = {val.prettyPrint()}")
+
     app.send_task(
         "splunk_connect_for_snmp.splunk.tasks.send",
         ([""]),
     )
+
 
 # Register SNMP Application at the SNMP engine
 ntfrcv.NotificationReceiver(snmpEngine, cbFun)

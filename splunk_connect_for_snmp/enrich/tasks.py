@@ -13,7 +13,6 @@ import pymongo
 from bson.objectid import ObjectId
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
-from pysnmp.proto.api.v2c import Null
 
 from splunk_connect_for_snmp.poller import app
 
@@ -53,14 +52,8 @@ def enrich(self, **kwargs):
     current_target = targets_collection.find_one(
         {"_id": target_id}, {"attributes": True, "target": True}
     )
-    detectchange: bool = False
-    if "detectchange" in kwargs:
-        detectchange = True
-    reschedule: bool = False
-    if "reschedule" in kwargs:
-        reschedule = True
 
-    if not "attributes" in current_target:
+    if "attributes" not in current_target:
         current_target["attributes"] = {}
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
@@ -70,7 +63,7 @@ def enrich(self, **kwargs):
         group_key_hash = shake_128(group_key.encode()).hexdigest(255)
 
         if (
-            not group_key_hash in current_target["attributes"]
+            group_key_hash not in current_target["attributes"]
             and len(group_data["fields"]) > 0
         ):
 
@@ -139,7 +132,7 @@ def enrich(self, **kwargs):
                 for field_key, field_data in result[current_data["id"]][
                     "fields"
                 ].items():
-                    if not field_key in result[current_data["id"]]["fields"]:
+                    if field_key not in result[current_data["id"]]["fields"]:
                         logger.debug(
                             f"Using Cached Attribute {field_key}={current_data['value']}"
                         )
@@ -154,7 +147,9 @@ def enrich(self, **kwargs):
 
     app.send_task(
         "splunk_connect_for_snmp.splunk.tasks.prepare",
-        kwargs=({"ts": kwargs["ts"], "target": current_target["target"], "result": result}),
+        kwargs=(
+            {"ts": kwargs["ts"], "target": current_target["target"], "result": result}
+        ),
     )
 
     return result

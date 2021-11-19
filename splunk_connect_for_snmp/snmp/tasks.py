@@ -20,8 +20,8 @@ from pysnmp.hlapi import *
 from pysnmp.smi import builder, compiler, view
 from requests_cache import MongoCache
 
-from splunk_connect_for_snmp.poller import app
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
+from splunk_connect_for_snmp.poller import app
 
 logger = get_task_logger(__name__)
 
@@ -117,7 +117,6 @@ def load_mibs(mibs: List[str]) -> None:
     for mib in mibs:
         mibBuilder.loadModules(mib)
     logger.debug("Indexing MIB objects..."),
-    mibView = view.MibViewController(mibBuilder)
 
 
 MTYPES_CC = tuple(["Counter32", "Counter64", "TimeTicks"])
@@ -170,9 +169,8 @@ def map_metric_type(t, snmp_value):
     # If this claims to be a metic type but isn't a number make it a te (type error)
     if metric_type in MTYPES:
         try:
-            f = float(snmp_value)
+            float(snmp_value)
         except:
-            logger.warn("Logic says this is a metric but the data says its not")
             metric_type = "te"
     return metric_type
 
@@ -181,7 +179,7 @@ class SNMPTask(Task):
     def __init__(self):
         # self.snmpEngine = SnmpEngine()
         self.mongo_client = pymongo.MongoClient(MONGO_URI)
-    
+
         self.session = CachedLimiterSession(
             per_second=120,
             cache_name="cache_http",
@@ -210,7 +208,6 @@ class SNMPTask(Task):
 
     def isMIBKnown(self, id: str, oid: str) -> tuple([bool, List]):
 
-        index: dict = {}
         mibs = []
         found = False
         oid_list = tuple(oid.split("."))
@@ -387,7 +384,7 @@ def walk(self, **kwargs):
             kwargs["id"],
             walk=True,
         )
-    ##TODO if needed send talk
+    # TODO if needed send talk
 
     # After a Walk tell schedule to recalc
     app.send_task(

@@ -11,8 +11,8 @@ of management: `config_values.yaml`. The structure is:
 files:
   scheduler:            
     inventory: |                        <- scheduler-inventory.yaml
-      host,version,community,profile,freqinseconds
-      #10.0.0.1,2c,public,basev1,300
+      address,version,community,walk_interval,profiles,SmartProfiles,delete
+      10.0.0.1,2c,homelab,300,,,
     config: |                           <- scheduler-config.yaml
       celery:
         broker:
@@ -160,7 +160,8 @@ read the SNMP agents' information and its corresponding query
 information.
 
 ```
-"host", "version", "community", "profile", "freqinseconds"
+address,version,community,walk_interval,profiles,SmartProfiles,delete
+10.0.0.1,2c,homelab,300,,,
 "IP:Port of SNMP agents, where port is optional with default of 161","An indication of SNMP versions", "community string for SNMPv1/v2 OR userNanme for SNMPv3", "query info", "query frequency in seconds"
 ```
 
@@ -488,7 +489,8 @@ For metrics query:
 5.  frequency in seconds (how often SNMP connector should ask agent for
     data)
 
-`` `csv    "host", "version", "community", "profile", "freqinseconds"       10.42.0.58,1,public,1.3.6.1.2.1.1.9.1.3.1,30    host.docker.internal,2c,public,1.3.6.1.2.1.1.9.1.3.*,60 ``\`
+`` `csv    address,version,community,walk_interval,profiles,SmartProfiles,delete
+10.0.0.1,2c,homelab,300,,, ``\`
 
 ``` bash
 microk8s helm3 upgrade --install snmp -f deployment_values.yaml -f config_values.yaml -f static_values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
@@ -515,9 +517,10 @@ Here are the steps to configure these two SNMPv3 Users.
     `files: scheduler: inventory` part of `config_values.yaml`.
 
 ```csv
-"host", "version", "community", "profile", "freqinseconds"
-host.docker.internal1,3,testUser1,1.3.6.1.2.1.1.9.1.3.1,30
-host.docker.internal2,3,testUser2,1.3.6.1.2.1.1.9.1.3.*,30
+address,version,community,walk_interval,profiles,SmartProfiles,delete
+10.0.0.1,2c,homelab,300,,,
+10.0.0.2:143,2c,homelab,300,,,
+10.0.0.2:143,2c,homelab,300,,,
 ```
 
 2.  Specify other security parameters under section `files: scheduler: config` part of `config_values.yaml`.

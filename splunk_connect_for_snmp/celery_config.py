@@ -12,11 +12,11 @@ MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 MONGO_DB_SCHEDULES = os.getenv("MONGO_DB_SCHEDULES", "schedules")
 
 MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB_CELERY_DATABASE= os.getenv("MONGO_DB_CELERY_DATABASE", MONGO_DB)
+MONGO_DB_CELERY_DATABASE = os.getenv("MONGO_DB_CELERY_DATABASE", MONGO_DB)
 
-#broker 
+# broker
 broker_url = os.getenv("CELERY_BROKER_URL")
-#results config
+# results config
 result_backend = MONGO_URI
 mongodb_backend_settings = {"database": MONGO_DB_CELERY_DATABASE}
 

@@ -1,27 +1,26 @@
-from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-
 try:
     from dotenv import load_dotenv
 
     load_dotenv()
 except:
     pass
-
 import csv
 import os
 import re
+from typing import List, Union
 
 import pymongo
 import urllib3
 import yaml
 from bson.objectid import ObjectId
-from celery import shared_task, signature
+from celery import shared_task
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
+from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-from typing import List, Union
+
 
 logger = get_task_logger(__name__)
 
@@ -69,9 +68,8 @@ def inventory_seed(path=None):
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
 
-    dict_from_csv = {}
     with open(path) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
+        csv_reader = csv.reader(csv_file, delimiter=",")
         line_count = 0
         for target in csv_reader:
             if line_count == 0:
@@ -79,11 +77,10 @@ def inventory_seed(path=None):
                 line_count += 1
                 continue
             logger.debug(f"Inventory record {target}")
-            target_update = []
             ir = InventoryRecord(*target)
             # The default port is 161
-            if len(ir.ip.split(":")) == 1:
-                ir.ip = f"{ir.ip}:161"
+            if len(ir.address.split(":")) == 1:
+                ir.address = f"{ir.address}:161"
 
             try:
                 wi = float(ir.walk_interval)
@@ -93,7 +90,7 @@ def inventory_seed(path=None):
                 ir.walk_interval = 42000
 
             if "delete" in target and isTrueish(ir.delete):
-                periodic_obj.delete_task(ir.ip)
+                periodic_obj.delete_task(ir.address)
             else:
                 if ir.version not in ("1", "2", "2c", "3"):
                     logger.error("Invalid version in inventory record {row}")
@@ -125,8 +122,8 @@ def inventory_seed(path=None):
                     }
                 )
                 profiles: List[str] = []
-                if len(ir.profiles.strip()) > 0:
-                    profiles = ir.profiles.split(";")
+                if ir.profiles:
+                    profiles = ir.profiles
 
                 SmartProfiles: bool = True
                 if isFalseish(ir.SmartProfiles):
@@ -145,17 +142,15 @@ def inventory_seed(path=None):
                     }
                 )
                 ur = targets_collection.update_one(
-                    {"target": ir.ip}, updates, upsert=True
+                    {"target": ir.address}, updates, upsert=True
                 )
-                fr = targets_collection.find_one(
-                    {"target": ir.ip}, {"_id": True}
-                )
+                fr = targets_collection.find_one({"target": ir.address}, {"_id": True})
                 task_config = {
-                    "name": f"sc4snmp;{ir.ip};walk",
+                    "name": f"sc4snmp;{ir.address};walk",
                     "task": "splunk_connect_for_snmp.snmp.tasks.walk",
-                    "target": f"{ir.ip}",
+                    "target": f"{ir.address}",
                     "args": [],
-                    "kwargs": {"id": str(fr['_id'])},
+                    "kwargs": {"id": str(fr["_id"])},
                     "interval": {"every": ir.walk_interval, "period": "seconds"},
                     "enabled": True,
                     "run_immediately": True,
@@ -163,7 +158,7 @@ def inventory_seed(path=None):
                 if ur.modified_count:
                     logger.debug("Device Config Changed need to walk")
                     logger.info(f"Upserted id: {fr['_id']}")
-                    task_config["kwargs"]["id"] = str(fr['_id'])
+                    task_config["kwargs"]["id"] = str(fr["_id"])
                     task_config["run_immediately"] = True
                 else:
                     task_config["kwargs"]["id"] = str(fr["_id"])
@@ -174,12 +169,10 @@ def inventory_seed(path=None):
 
 @shared_task()
 def inventory_setup_poller(**kwargs):
-
-    with open("config.yaml", "r") as file:
+    with open("config.yaml") as file:
         config_base = yaml.safe_load(file)
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
-    profiles: list[str] = []
 
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4.targets
@@ -188,7 +181,7 @@ def inventory_setup_poller(**kwargs):
         {"_id": ObjectId(kwargs["id"])},
         {"target": True, "state": True, "config": {"profiles": True}},
     )
-    smart_profiles: dict[int, list[str]] = {}
+    assigned_profiles: dict[int, list[str]] = {}
     logger.debug(f"target is target {target}")
     logger.debug(f" Config base is {config_base}")
     if target["config"]["profiles"]["SmartProfiles"]:
@@ -200,15 +193,15 @@ def inventory_setup_poller(**kwargs):
                 logger.debug(f"Skipping disabled profile {profile_name}")
                 continue
 
-            if not "frequency" in profile:
+            if "frequency" not in profile:
                 logger.error(f"Profile {profile_name} has no frequency")
                 continue
 
-            if not "condition" in profile:
+            if "condition" not in profile:
                 logger.error(f"Profile {profile_name} has no condition")
                 continue
 
-            if not "type" in profile["condition"]:
+            if "type" not in profile["condition"]:
                 logger.error(f"Profile {profile_name} condition has no type")
                 continue
 
@@ -218,13 +211,13 @@ def inventory_setup_poller(**kwargs):
 
             if (
                 profile["condition"]["type"] == "field"
-                and not "field" in profile["condition"]
+                and "field" not in profile["condition"]
             ):
                 logger.error(f"Profile {profile_name} condition has no field")
                 continue
             if (
                 profile["condition"]["type"] == "field"
-                and not "patterns" in profile["condition"]
+                and "patterns" not in profile["condition"]
             ):
                 logger.error(f"Profile {profile_name} condition has no patterns")
                 continue
@@ -233,9 +226,9 @@ def inventory_setup_poller(**kwargs):
             if profile["condition"]["type"] == "base":
                 logger.debug(f"Adding base profile {profile_name}")
                 logger.debug(f"profile is a base {profile_name}")
-                if not profile["frequency"] in smart_profiles:
-                    smart_profiles[profile["frequency"]] = []
-                smart_profiles[profile["frequency"]].append(profile_name)
+                if profile["frequency"] not in assigned_profiles:
+                    assigned_profiles[profile["frequency"]] = []
+                assigned_profiles[profile["frequency"]].append(profile_name)
 
             elif profile["condition"]["type"] == "field":
                 logger.debug(f"profile is a field condition {profile_name}")
@@ -250,29 +243,35 @@ def inventory_setup_poller(**kwargs):
                         result = re.match(pattern, cs["value"])
                         if result:
                             logger.debug(f"Adding smart profile {profile_name}")
-                            if not profile["frequency"] in smart_profiles:
-                                smart_profiles[profile["frequency"]] = []
-                            smart_profiles[profile["frequency"]].append(profile_name)
+                            if profile["frequency"] not in assigned_profiles:
+                                assigned_profiles[profile["frequency"]] = []
+                            assigned_profiles[profile["frequency"]].append(profile_name)
                             continue
+    else:
+        for profile_name in target["config"]["profiles"]["StaticProfiles"]:
+            if profile_name in config_base["poller"]["profiles"]:
+                profile = config_base["poller"]["profiles"][profile_name]
+                if profile["frequency"] not in assigned_profiles:
+                    assigned_profiles[profile["frequency"]] = []
+                assigned_profiles[profile["frequency"]].append(profile_name)
 
-        logger.debug(f"Smart Profiles Assigned {smart_profiles}")
-        activeschedules: list[str] = []
-        for period in smart_profiles:
-            run_immediately: bool = False
-            if period > 300:
-                run_immediately = True
-            name = f"sc4snmp;{target['target']};{period};poll"
-            activeschedules.append(name)
-            task_config = {
-                "name": name,
-                "task": "splunk_connect_for_snmp.snmp.tasks.poll",
-                "target": f"{target['target']}",
-                "args": [],
-                "kwargs": {"id": kwargs["id"], "profiles": set(smart_profiles[period])},
-                # TODO: Make the inteval from profile
-                "interval": {"every": period, "period": "seconds"},
-                "enabled": True,
-                "run_immediately": run_immediately,
-            }
-            periodic_obj.manage_task(**task_config)
-        periodic_obj.delete_unused_poll_tasks(f"{target['target']}", activeschedules)
+    logger.debug(f"Profiles Assigned {assigned_profiles}")
+    activeschedules: list[str] = []
+    for period in assigned_profiles:
+        run_immediately: bool = False
+        if period > 300:
+            run_immediately = True
+        name = f"sc4snmp;{target['target']};{period};poll"
+        activeschedules.append(name)
+        task_config = {
+            "name": name,
+            "task": "splunk_connect_for_snmp.snmp.tasks.poll",
+            "target": f"{target['target']}",
+            "args": [],
+            "kwargs": {"id": kwargs["id"], "profiles": set(assigned_profiles[period])},
+            "interval": {"every": period, "period": "seconds"},
+            "enabled": True,
+            "run_immediately": run_immediately,
+        }
+        periodic_obj.manage_task(**task_config)
+    periodic_obj.delete_unused_poll_tasks(f"{target['target']}", activeschedules)

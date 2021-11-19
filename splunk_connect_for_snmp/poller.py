@@ -16,10 +16,11 @@ trace.set_tracer_provider(provider)
 
 logger = get_task_logger(__name__)
 
- # //using rabbitmq as the message broker
+# //using rabbitmq as the message broker
 app = Celery("sc4snmp_poller")
-app.config_from_object('splunk_connect_for_snmp.celery_config')
-#app.conf.update(**config)
+app.config_from_object("splunk_connect_for_snmp.celery_config")
+# app.conf.update(**config)
+
 
 @signals.worker_process_init.connect(weak=False)
 def init_celery_tracing(*args, **kwargs):
@@ -52,12 +53,10 @@ def setup_periodic_tasks(sender, **kwargs) -> None:
         "name": "sc4snmp;inventory;seed",
         "task": "splunk_connect_for_snmp.inventory.tasks.inventory_seed",
         "args": [],
-        "kwargs": {
-            "path": "inventory.csv"
-        },
+        "kwargs": {"path": "inventory.csv"},
         "interval": {"every": 20, "period": "seconds"},
         "enabled": True,
         "run_immediately": True,
     }
-    
+
     periodic_obj.manage_task(**schedule_data_create_interval)
