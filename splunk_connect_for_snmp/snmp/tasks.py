@@ -217,7 +217,7 @@ class SNMPTask(Task):
             end = start + 3
         if start > end:
             return False, []
-        for i in range(start, end, 1):
+        for i in range(end, start, -1):
             oid_to_check = "/".join(oid_list[:i])
 
             response = self.session.request(
@@ -271,7 +271,7 @@ class SNMPTask(Task):
         if walk:
             var_binds = ["1.3.6"]
         else:
-            with open("config.yaml", "r") as file:
+            with open("config.yaml") as file:
                 config_base = yaml.safe_load(file)
             var_binds = []
 
