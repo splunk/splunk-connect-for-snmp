@@ -45,11 +45,9 @@ def send(self, result):
 
     logger.debug(f"send result size {len(result)}")
 
-    return "sent"
-
 
 @shared_task(bind=True)
-def prepare(self, target, ts, result):
+def prepare(self, work):
     splunk_metrics = []
     #     {
     #   "time": 1486683865,
@@ -67,14 +65,14 @@ def prepare(self, target, ts, result):
     #     "metric_name:cpu.idle": 13.34
     #   }
     # }
-    for key, data in result.items():
+    for key, data in work["result"].items():
         if len(data["metrics"]) > 0:
             metric = {
-                "time": ts,
+                "time": work["ts"],
                 "event": "metric",
                 "source": "sc4snmp",
                 "sourcetype": "sc4snmp:metric",
-                "host": target,
+                "host": work["host"],
                 "index": SPLUNK_HEC_INDEX_METRICS,
                 "fields": {},
             }
@@ -84,10 +82,5 @@ def prepare(self, target, ts, result):
             for field, values in data["metrics"].items():
                 metric["fields"][f"metric_name:{field}"] = values["value"]
             splunk_metrics.append(metric)
-
-    app.send_task(
-        "splunk_connect_for_snmp.splunk.tasks.send",
-        ([splunk_metrics]),
-    )
 
     return splunk_metrics
