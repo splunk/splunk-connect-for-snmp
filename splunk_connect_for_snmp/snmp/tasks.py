@@ -6,8 +6,8 @@ except:
     pass
 
 import os
+import time
 from collections import OrderedDict, namedtuple
-from datetime import datetime
 from typing import List
 
 import pymongo
@@ -389,7 +389,7 @@ class SNMPTask(Task):
 def walk(self, **kwargs):
 
     retry = True
-    now = datetime.utcnow().timestamp()
+    now = str(time.time())
     while retry:
         retry, result = self.run_walk(
             kwargs["id"],
