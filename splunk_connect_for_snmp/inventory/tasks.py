@@ -18,6 +18,7 @@ from celery.canvas import chain, chord, group, signature
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
+from splunk_connect_for_snmp.common.boolish import isFalseish, isTrueish
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -27,38 +28,6 @@ logger = get_task_logger(__name__)
 
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
-
-
-def isTrueish(flag: Union[str, bool]) -> bool:
-
-    if isinstance(flag, bool):
-        return flag
-
-    if flag.lower() in [
-        "true",
-        "1",
-        "t",
-        "y",
-        "yes",
-    ]:
-        return True
-    else:
-        return False
-
-
-def isFalseish(flag: Union[str, bool]) -> bool:
-    if isinstance(flag, bool):
-        return flag
-    if flag.lower() in [
-        "false",
-        "0",
-        "f",
-        "n",
-        "no",
-    ]:
-        return True
-    else:
-        return False
 
 
 @shared_task()
