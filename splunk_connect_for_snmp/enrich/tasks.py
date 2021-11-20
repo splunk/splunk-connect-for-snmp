@@ -43,12 +43,11 @@ TRACKED_CC = ["CHECKPOINT-MIB-2.sysUpTime"]
 
 
 @shared_task(bind=True, base=EnrichTask)
-def enrich(self, **kwargs):
+def enrich(self, result):
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4.targets
     updates = []
-    result = kwargs["result"]
-    target_id = ObjectId(kwargs["id"])
+    target_id = ObjectId(result["id"])
     current_target = targets_collection.find_one(
         {"_id": target_id}, {"attributes": True, "target": True}
     )
@@ -59,7 +58,7 @@ def enrich(self, **kwargs):
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
 
     # First write back to DB new/changed data
-    for group_key, group_data in result.items():
+    for group_key, group_data in result["result"].items():
         group_key_hash = shake_128(group_key.encode()).hexdigest(255)
 
         if (
@@ -128,28 +127,16 @@ def enrich(self, **kwargs):
 
         # Now add back any fields we need
         for current_key, current_data in current_target["attributes"].items():
-            if current_data["id"] in result:
-                for field_key, field_data in result[current_data["id"]][
+            if current_data["id"] in result["result"]:
+                for field_key, field_data in result["result"][current_data["id"]][
                     "fields"
                 ].items():
-                    if field_key not in result[current_data["id"]]["fields"]:
+                    if field_key not in result["result"][current_data["id"]]["fields"]:
                         logger.debug(
                             f"Using Cached Attribute {field_key}={current_data['value']}"
                         )
-                        result[current_data["id"]]["fields"][field_key] = current_data[
-                            "value"
-                        ]
-    # TODO Walk only
-    app.send_task(
-        "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller",
-        kwargs=({"id": kwargs["id"]}),
-    )
-
-    app.send_task(
-        "splunk_connect_for_snmp.splunk.tasks.prepare",
-        kwargs=(
-            {"ts": kwargs["ts"], "target": current_target["target"], "result": result}
-        ),
-    )
-
+                        result["result"][current_data["id"]]["fields"][
+                            field_key
+                        ] = current_data["value"]
+    result["host"] = current_target["target"].split(":")[0]
     return result

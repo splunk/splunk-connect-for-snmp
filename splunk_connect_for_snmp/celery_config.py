@@ -18,6 +18,7 @@ MONGO_DB_CELERY_DATABASE = os.getenv("MONGO_DB_CELERY_DATABASE", MONGO_DB)
 broker_url = os.getenv("CELERY_BROKER_URL")
 # results config
 result_backend = MONGO_URI
+result_extended = True
 mongodb_backend_settings = {"database": MONGO_DB_CELERY_DATABASE}
 
 

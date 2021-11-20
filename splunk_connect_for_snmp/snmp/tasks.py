@@ -398,11 +398,9 @@ def walk(self, **kwargs):
     # TODO if needed send talk
 
     # After a Walk tell schedule to recalc
-    app.send_task(
-        "splunk_connect_for_snmp.enrich.tasks.enrich",
-        kwargs=({"id": kwargs["id"], "ts": now, "result": result, "reschedule": True}),
-    )
-    return result
+    work = {"id": kwargs["id"], "ts": now, "result": result, "reschedule": True}
+
+    return work
 
 
 @shared_task(bind=True, base=SNMPTask)
@@ -418,11 +416,6 @@ def poll(self, **kwargs):
 
     # TODO: If profile has third value use get instead
 
-    app.send_task(
-        "splunk_connect_for_snmp.enrich.tasks.enrich",
-        kwargs=(
-            {"id": kwargs["id"], "ts": now, "result": result, "detectchange": True}
-        ),
-    )
+    work = {"id": kwargs["id"], "ts": now, "result": result, "detectchange": False}
 
-    return result
+    return work
