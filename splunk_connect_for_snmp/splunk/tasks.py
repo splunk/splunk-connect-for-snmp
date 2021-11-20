@@ -11,6 +11,7 @@ import requests
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 
+from splunk_connect_for_snmp.common.boolish import isFalseish, isTrueish
 from splunk_connect_for_snmp.poller import app
 
 SPLUNK_HEC_URI = os.getenv("SPLUNK_HEC_URI")
@@ -24,26 +25,23 @@ logger = get_task_logger(__name__)
 
 class HECTask(Task):
     def __init__(self):
-        pass
+        self.verify = isFalseish(os.getenv("SPLUNK_HEC_TLSVERIFY", "yes"))
+        self.session = requests.session()
+        self.header = None
 
 
 @shared_task(bind=True, base=HECTask)
 def send(self, result):
-    logger.debug("+++++++++endpoint+++++++++ %s", SPLUNK_HEC_URI)
-
     for item in result:
         try:
-            response = requests.post(
-                url=SPLUNK_HEC_URI, json=item, timeout=60, verify=False
+            response = self.session.post(
+                url=SPLUNK_HEC_URI, json=item, timeout=60, verify=self.verify
             )
-            logger.debug("Response code is %s", response.status_code)
-            logger.debug("Response is %s", response.text)
+            logger.debug(f"Response code is {response.status_code} {response.text}")
         except requests.ConnectionError as e:
             logger.error(
                 f"Connection error when sending data to HEC index - {result['index']}: {e}"
             )
-
-    logger.debug(f"send result size {len(result)}")
 
 
 @shared_task(bind=True)
