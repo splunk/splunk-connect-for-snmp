@@ -5,47 +5,83 @@ try:
 except:
     pass
 
+import json
 import os
 
-import requests
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
+from requests import ConnectionError, ConnectTimeout, ReadTimeout, Session, Timeout
 
 from splunk_connect_for_snmp.common.boolish import isFalseish, isTrueish
 from splunk_connect_for_snmp.poller import app
 
 SPLUNK_HEC_URI = os.getenv("SPLUNK_HEC_URI")
-SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN")
+SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN", None)
 SPLUNK_HEC_INDEX_EVENTS = os.getenv("SPLUNK_HEC_INDEX_EVENTS", "netops")
 SPLUNK_HEC_INDEX_METRICS = os.getenv("SPLUNK_HEC_INDEX_METRICS", "netmetrics")
-
+SPLUNK_HEC_TLSVERIFY = isFalseish(os.getenv("SPLUNK_HEC_TLSVERIFY", "yes"))
 
 logger = get_task_logger(__name__)
+
+# Token is only appropriate if we are working direct with Splunk
+if SPLUNK_HEC_TOKEN:
+    SPLUNK_HEC_HEADERS = {"Authorization": f"Splunk {SPLUNK_HEC_TOKEN}"}
+else:
+    SPLUNK_HEC_HEADERS = None
+SPLUNK_HEC_CHUNK_SIZE = int(os.getenv("SPLUNK_HEC_CHUNK_SIZE", "50"))
 
 
 class HECTask(Task):
     def __init__(self):
-        self.verify = isFalseish(os.getenv("SPLUNK_HEC_TLSVERIFY", "yes"))
-        self.session = requests.session()
-        self.header = None
+        self.session = Session()
+        self.session.verify = SPLUNK_HEC_TLSVERIFY
+        self.session.headers = SPLUNK_HEC_HEADERS
+        self.session.logger = logger
 
 
-@shared_task(bind=True, base=HECTask)
-def send(self, result):
-    for item in result:
-        try:
-            response = self.session.post(
-                url=SPLUNK_HEC_URI, json=item, timeout=60, verify=self.verify
-            )
+# This tasks is retryable when using otel or local splunk this should be rare but
+# may happen
+@shared_task(
+    bind=True,
+    base=HECTask,
+    default_retry_delay=5,
+    max_retries=60,
+    retry_backoff=True,
+    retry_backoff_max=1,
+    autoretry_for=[ConnectionError, ConnectTimeout, ReadTimeout, Timeout],
+    retry_jitter=True,
+)
+def send(self, data):
+    # If a device is very large a walk may produce more than 1MB of data.
+    # 50 items is a reasonable guess to keep the post under the http post size limit
+    # and be reasonable efficient
+    for i in range(0, len(data), SPLUNK_HEC_CHUNK_SIZE):
+        # using sessions is important this avoid expensive setup time
+        response = self.session.post(
+            SPLUNK_HEC_URI,
+            data="\n".join(data[i : i + SPLUNK_HEC_CHUNK_SIZE]),
+            timeout=60,
+        )
+        # 200 is good
+        if response.status_code == 200:
             logger.debug(f"Response code is {response.status_code} {response.text}")
-        except requests.ConnectionError as e:
+            pass
+        # These errors can't be retried
+        elif response.status_code in (403, 401, 400):
             logger.error(
-                f"Connection error when sending data to HEC index - {result['index']}: {e}"
+                f"Response code is {response.status_code} {response.text} headers were {SPLUNK_HEC_HEADERS}"
             )
+        # These can be but are not exceptions so we will setup retry ourself
+        elif response.status_code in (500, 503):
+            logger.warn(f"Response code is {response.status_code} {response.text}")
+            self.retry(countdown=5)
+        # Any other response code is undocumented we have to treat this as fatal
+        else:
+            logger.error(f"Response code is {response.status_code} {response.text}")
 
 
-@shared_task(bind=True)
-def prepare(self, work):
+@shared_task()
+def prepare(work):
     splunk_metrics = []
     #     {
     #   "time": 1486683865,
@@ -79,6 +115,6 @@ def prepare(self, work):
                 metric["fields"][short_field] = values["value"]
             for field, values in data["metrics"].items():
                 metric["fields"][f"metric_name:{field}"] = values["value"]
-            splunk_metrics.append(metric)
+            splunk_metrics.append(json.dumps(metric, indent=None))
 
     return splunk_metrics
