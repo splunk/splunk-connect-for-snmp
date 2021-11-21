@@ -7,6 +7,7 @@ except:
 
 import json
 import os
+from typing import Union
 
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
@@ -82,6 +83,13 @@ def send(self, data):
             logger.error(f"Response code is {response.status_code} {response.text}")
 
 
+def valueAsBest(value) -> Union[str, float]:
+    try:
+        return float(value)
+    except:
+        return value
+
+
 @shared_task()
 def prepare(work):
     splunk_metrics = []
@@ -114,9 +122,9 @@ def prepare(work):
             }
             for field, values in data["fields"].items():
                 short_field = field.split(".")[-1]
-                metric["fields"][short_field] = values["value"]
+                metric["fields"][short_field] = valueAsBest(values["value"])
             for field, values in data["metrics"].items():
-                metric["fields"][f"metric_name:{field}"] = values["value"]
+                metric["fields"][f"metric_name:{field}"] = valueAsBest(values["value"])
             splunk_metrics.append(json.dumps(metric, indent=None))
 
     return splunk_metrics
