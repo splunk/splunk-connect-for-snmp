@@ -406,7 +406,7 @@ def walk(self, **kwargs):
 @shared_task(bind=True, base=SNMPTask)
 def poll(self, **kwargs):
     retry = True
-    now = datetime.utcnow().timestamp()
+    now = str(time.time())
 
     # After a Walk tell schedule to recalc
     retry, result = self.run_walk(
