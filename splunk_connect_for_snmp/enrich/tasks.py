@@ -45,7 +45,7 @@ TRACKED_CC = ["CHECKPOINT-MIB-2.sysUpTime"]
 @shared_task(bind=True, base=EnrichTask)
 def enrich(self, result):
     mongo_client = pymongo.MongoClient(MONGO_URI)
-    targets_collection = mongo_client.sc4.targets
+    targets_collection = mongo_client.sc4snmp.targets
     updates = []
     target_id = ObjectId(result["id"])
     current_target = targets_collection.find_one(
