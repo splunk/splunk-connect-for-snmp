@@ -7,7 +7,7 @@ except:
 
 import os
 import time
-from collections import OrderedDict, namedtuple
+from collections import namedtuple
 from typing import List
 
 import pymongo
@@ -289,7 +289,7 @@ class SNMPTask(Task):
         )
         logger.debug(f"target = {target}")
 
-        metrics = OrderedDict()
+        metrics = {}
         retry = False
         seedmibs = []
         logger.debug(f"Walking {target} for {varbind_collection}")
@@ -353,8 +353,8 @@ class SNMPTask(Task):
                 group_key = get_group_key(mib, oid, index)
                 if not group_key in metrics:
                     metrics[group_key] = {
-                        "metrics": OrderedDict(),
-                        "fields": OrderedDict(),
+                        "metrics": {},
+                        "fields": {},
                     }
 
                 snmp_val = varBind[1]
