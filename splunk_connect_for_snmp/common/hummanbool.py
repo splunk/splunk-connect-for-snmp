@@ -1,7 +1,7 @@
 from typing import Union
 
 
-def isTrueish(flag: Union[str, bool]) -> bool:
+def hummanBool(flag: Union[str, bool], default: bool = False) -> bool:
 
     if isinstance(flag, bool):
         return flag
@@ -14,14 +14,7 @@ def isTrueish(flag: Union[str, bool]) -> bool:
         "yes",
     ]:
         return True
-    else:
-        return False
-
-
-def isFalseish(flag: Union[str, bool]) -> bool:
-    if isinstance(flag, bool):
-        return flag
-    if flag.lower() in [
+    elif flag.lower() in [
         "false",
         "0",
         "f",
@@ -30,4 +23,4 @@ def isFalseish(flag: Union[str, bool]) -> bool:
     ]:
         return False
     else:
-        return True
+        return default

@@ -18,7 +18,7 @@ from celery.canvas import chain, chord, group, signature
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.common.boolish import isFalseish, isTrueish
+from splunk_connect_for_snmp.common.hummanbool import hummanBool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -59,7 +59,7 @@ def inventory_seed(path=None):
             except:
                 ir.walk_interval = 42000
 
-            if "delete" in target and isTrueish(ir.delete):
+            if "delete" in target and hummanBool(ir.delete, default=False):
                 periodic_obj.delete_task(ir.address)
             else:
                 if ir.version not in ("1", "2", "2c", "3"):
@@ -95,9 +95,7 @@ def inventory_seed(path=None):
                 if ir.profiles:
                     profiles = ir.profiles
 
-                SmartProfiles: bool = True
-                if isFalseish(ir.SmartProfiles):
-                    SmartProfiles = False
+                SmartProfiles: bool = hummanBool(ir.SmartProfiles, default=True)
 
                 updates.append(
                     {
@@ -177,7 +175,7 @@ def inventory_setup_poller(work):
             logger.debug(f"Checking match for {profile_name} {profile}")
 
             # Skip this profile its disabled
-            if isTrueish(profile.get("disabled", False)):
+            if hummanBool(profile.get("disabled", False), default=False):
                 logger.debug(f"Skipping disabled profile {profile_name}")
                 continue
 
