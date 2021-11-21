@@ -34,7 +34,7 @@ MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 # This task gets the inventory and creates a task to schedules each walk task
 def inventory_seed(path=None):
     mongo_client = pymongo.MongoClient(MONGO_URI)
-    targets_collection = mongo_client.sc4.targets
+    targets_collection = mongo_client.sc4snmp.targets
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
 
@@ -161,7 +161,7 @@ def inventory_setup_poller(work):
     periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
 
     mongo_client = pymongo.MongoClient(MONGO_URI)
-    targets_collection = mongo_client.sc4.targets
+    targets_collection = mongo_client.sc4snmp.targets
 
     target = targets_collection.find_one(
         {"_id": ObjectId(work["id"])},

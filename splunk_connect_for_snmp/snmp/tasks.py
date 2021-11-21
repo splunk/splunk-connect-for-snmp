@@ -263,7 +263,7 @@ class SNMPTask(Task):
     def run_walk(self, id: str, profiles: List[str] = None, walk: bool = False):
 
         mongo_client = pymongo.MongoClient(MONGO_URI)
-        targets_collection = mongo_client.sc4.targets
+        targets_collection = mongo_client.sc4snmp.targets
         target = targets_collection.find_one(
             {"_id": ObjectId(id)}, {"target": True, "config": {"community": True}}
         )
