@@ -39,7 +39,7 @@ TRACKED_F = [
     "SNMPv2-MIB.sysName",
     "SNMPv2-MIB.sysLocation",
 ]
-TRACKED_CC = ["CHECKPOINT-MIB-2.sysUpTime"]
+TRACKED_CC = ["SNMPv2-MIB.sysUpTime"]
 
 
 @shared_task(bind=True, base=EnrichTask)
