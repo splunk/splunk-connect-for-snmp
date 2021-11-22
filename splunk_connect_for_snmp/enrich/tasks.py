@@ -51,7 +51,8 @@ def enrich(self, result):
     current_target = targets_collection.find_one(
         {"_id": target_id}, {"attributes": True, "target": True}
     )
-
+    if not current_target:
+        current_target = {}
     if "attributes" not in current_target:
         current_target["attributes"] = {}
 
@@ -66,11 +67,11 @@ def enrich(self, result):
             and len(group_data["fields"]) > 0
         ):
 
-            current_target["attributes"][group_key_hash] = {
-                "id": group_key,
-                "fields": {},
-                "metrics": {},
-            }
+            # current_target["attributes"][group_key_hash] = {
+            #     "id": group_key,
+            #     "fields": {},
+            #     "metrics": {},
+            # }
             updates.append(
                 {"$set": {"attributes": {group_key_hash: {"id": group_key}}}}
             )
@@ -80,7 +81,9 @@ def enrich(self, result):
             field_value["name"] = field_key
             cv = None
 
-            if field_key_hash in current_target["attributes"][group_key_hash]["fields"]:
+            if field_key_hash in current_target["attributes"].get(
+                group_key_hash, {}
+            ).get("fields", {}):
                 cv = current_target["attributes"][group_key_hash]["fields"][
                     field_key_hash
                 ]
@@ -126,17 +129,18 @@ def enrich(self, result):
                 updates.clear()
 
         # Now add back any fields we need
-        for current_key, current_data in current_target["attributes"].items():
-            if current_data["id"] in result["result"]:
-                for field_key, field_data in result["result"][current_data["id"]][
-                    "fields"
-                ].items():
-                    if field_key not in result["result"][current_data["id"]]["fields"]:
-                        logger.debug(
-                            f"Using Cached Attribute {field_key}={current_data['value']}"
-                        )
-                        result["result"][current_data["id"]]["fields"][
-                            field_key
-                        ] = current_data["value"]
+        current_group_data = current_target["attributes"].get(group_key_hash, None)
+        if current_group_data:
+            id = current_group_data["id"]
+            fields = current_group_data["fields"]
+            logger.debug(f"data id {id}")
+            if id in result["result"]:
+                for persist_data in fields.values():
+                    logger.debug(f"data is {persist_data}")
+                    if persist_data["name"] not in result["result"][id]["fields"]:
+                        result["result"][id]["fields"][
+                            persist_data["name"]
+                        ] = persist_data
+
     result["host"] = current_target["target"].split(":")[0]
     return result
