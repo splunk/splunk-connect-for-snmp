@@ -8,7 +8,8 @@ except:
 import os
 import time
 from collections import namedtuple
-from typing import List
+from io import StringIO
+from typing import List, Union
 
 import pymongo
 import yaml
@@ -16,6 +17,14 @@ from bson.objectid import ObjectId
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 from pysnmp.hlapi import *
+
+# from pysnmp.hlapi import (
+#     CommunityData,
+#     UdpTransportTarget,
+#     getCmd,
+#     bulkCmd,
+#     ContextData,
+# )
 from pysnmp.smi import builder, compiler, view
 from requests_cache import MongoCache
 
@@ -25,52 +34,16 @@ from splunk_connect_for_snmp.poller import app
 logger = get_task_logger(__name__)
 
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
-MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index/")
+MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 
 
-class VarbindCollection(namedtuple("VarbindCollection", "get, bulk")):
-    def __add__(self, other):
-        return VarbindCollection(bulk=self.bulk + other.bulk, get=self.get + other.get)
-
-
-def translate_list_to_oid(varbind):
-    return ObjectType(ObjectIdentity(*varbind)).addAsn1MibSource(MIB_SOURCES)
-
-
-def mib_string_handler(mib_list: list) -> VarbindCollection:
-    """
-    Perform the SNMP Get for mib-name/string, where mib string is a list
-    1) case 1: with mib index - consider it as a single oid -> snmpget
-    e.g. ['SNMPv2-MIB', 'sysUpTime',0] (syntax -> [<mib_file_name>, <mib_name/string>, <min_index>])
-
-    2) case 2: without mib index - consider it as a oid with * -> snmpbulkwalk
-    . ['SNMPv2-MIB', 'sysORUpTime'] (syntax -> [<mib_file_name>, <mib_name/string>)
-    """
-    if not mib_list:
-        return VarbindCollection(get=[], bulk=[])
-    get_list, bulk_list = [], []
-    for mib_string in mib_list:
-        try:
-            if not isinstance(mib_string, list):
-                bulk_list.append(ObjectType(ObjectIdentity(mib_string)))
-                continue
-            oid = translate_list_to_oid(mib_string)
-            mib_string_length = len(mib_string)
-            if mib_string_length == 3:
-                get_list.append(oid)
-            elif mib_string_length < 3:
-                bulk_list.append(oid)
-            else:
-                raise Exception(
-                    f"Invalid mib string - {mib_string}."
-                    f"\nPlease provide a valid mib string in the correct format. "
-                    f"Learn more about the format at https://bit.ly/3qtqzQc"
-                )
-        except Exception as e:
-            logger.error(f"Error happened translating string: {mib_string}: {e}")
-    return VarbindCollection(get=get_list, bulk=bulk_list)
+def valueAsBest(value) -> Union[str, float]:
+    try:
+        return float(value)
+    except:
+        return value
 
 
 def _any_failure_happened(
@@ -98,19 +71,6 @@ def _any_failure_happened(
     return True
 
 
-def load_mibs(mibs: List[str]) -> None:
-    mibBuilder = builder.MibBuilder()
-    logger.info("This worker requires additional mibs")
-    # Optionally attach PySMI MIB compiler (if installed)
-    logger.debug("Attaching MIB compiler...")
-    compiler.addMibCompiler(mibBuilder, sources=[MIB_SOURCES])
-    logger.debug("Loading MIB modules..."),
-    logger.info(f"loading mib modules {','.join(mibs)}")
-    for mib in mibs:
-        mibBuilder.loadModules(mib)
-    logger.debug("Indexing MIB objects..."),
-
-
 MTYPES_CC = tuple(["Counter32", "Counter64", "TimeTicks"])
 MTYPES_C = tuple()
 MTYPES_G = tuple(
@@ -127,7 +87,7 @@ def isMIBResolved(id):
         return True
 
 
-def get_group_key(mib, oid, index):
+def get_group_key(mib, oid, index) -> str:
     parts = []
     for iv in index:
         ivt = type(iv._value).__name__
@@ -180,23 +140,44 @@ class SNMPTask(Task):
             # logger=logger,
             match_headers=False,
             stale_if_error=True,
-            allowable_codes=[200, 404],
+            allowable_codes=[200],
         )
-        load_mibs(
-            [
-                "HOST-RESOURCES-MIB",
-                "IANAifType-MIB",
-                "IF-MIB",
-                "IP-MIB",
-                "RFC1389-MIB",
-                "SNMPv2-MIB",
-                "UCD-SNMP-MIB",
-                "TCP-MIB",
-                "UDP-MIB",
-            ]
-        )
+
         self.snmpEngine = SnmpEngine()
-        # self.index: dict = {}
+        self.builder = self.snmpEngine.getMibBuilder()
+        compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
+        for mib in [
+            "HOST-RESOURCES-MIB",
+            # "IANAifType-MIB",
+            "IF-MIB",
+            "IP-MIB",
+            # "RFC1389-MIB",
+            "SNMPv2-MIB",
+            # "UCD-SNMP-MIB",
+            "TCP-MIB",
+            "UDP-MIB",
+        ]:
+            self.builder.loadModules(mib)
+
+        mib_response = self.session.get(f"{MIB_INDEX}")
+        self.mib_map = {}
+        if mib_response.status_code == 200:
+            with StringIO(mib_response.text) as response_content:
+                for line in response_content:
+                    entry = line.split(",")
+                    if not len(entry) == 2:
+                        self.mib_map[entry[1]] = entry[0]
+            logger.debug(f"Loaded {len(self.mib_map.keys())} mib map entries")
+        else:
+            logger.error(
+                f"Unable to load mib map from index http error {self.mib_response.status_code}"
+            )
+
+    def load_mibs(self, mibs: List[str]) -> None:
+        logger.info(f"loading mib modules {','.join(mibs)}")
+        for mib in mibs:
+            self.builder.loadModules(mib)
+        # logger.debug("Indexing MIB objects..."),
 
     def isMIBKnown(self, id: str, oid: str) -> tuple([bool, List]):
 
@@ -210,7 +191,7 @@ class SNMPTask(Task):
         #     start = 8
         # else:
         #     start = 8
-        start = 3
+        start = 5
         if start + 4 > len(oid_list):
             end = len(oid_list)
         else:
@@ -218,100 +199,50 @@ class SNMPTask(Task):
         if start > end:
             return False, []
         for i in range(end, start, -1):
-            oid_to_check = "/".join(oid_list[:i])
-
-            response = self.session.request(
-                "GET", f"{MIB_INDEX}{oid_to_check}/mib.txt", timeout=90
-            )
-            if response.status_code == 200:
-                logger.debug(f"found for {id} based on {oid_to_check}")
-                logger.debug(response.content)
-                mibs = response.content.decode("utf-8").splitlines()
-                if "" in mibs:
-                    mibs.remove("")
+            oid_to_check = ".".join(oid_list[:i])
+            if oid_to_check in self.mib_map:
+                mibs = [mib_map[oid_to_check]]
+                logger.debug(f"found {mibs} for {id} based on {oid_to_check}")
                 return found, mibs
-        # logger.error(f"No MIB found for {id}")
         return found, mibs
 
-    def return_snmp_iterators(
-        self, varbind_collection, communitydata, udp_transport_target
-    ):
-        bulk_varbinds, get_varbinds = varbind_collection.bulk, varbind_collection.get
-        bulk_iterator, get_iterator = None, None
-        if bulk_varbinds:
-            bulk_iterator = bulkCmd(
-                self.snmpEngine,
-                communitydata,
-                udp_transport_target,
-                ContextData(),
-                0,
-                50,
-                *bulk_varbinds,
-                lexicographicMode=False,
-            )
-        if get_varbinds:
-            get_iterator = getCmd(
-                self.snmpEngine,
-                communitydata,
-                udp_transport_target,
-                ContextData(),
-                *get_varbinds,
-            )
-        return bulk_iterator, get_iterator
-
     # @asyncio.coroutine
-    def run_walk(self, id: str, profiles: List[str] = None, walk: bool = False):
-
-        mongo_client = pymongo.MongoClient(MONGO_URI)
-        targets_collection = mongo_client.sc4snmp.targets
-        target = targets_collection.find_one(
-            {"_id": ObjectId(id)}, {"target": True, "config": {"community": True}}
-        )
-
-        if walk:
-            var_binds = ["1.3.6"]
-        else:
-            with open("config.yaml") as file:
-                config_base = yaml.safe_load(file)
-            var_binds = []
-
-            for profile in profiles:
-                # TODO: Add profile name back to metric
-                if profile in config_base["poller"]["profiles"]:
-                    profile_varbinds = config_base["poller"]["profiles"][profile][
-                        "varBinds"
-                    ]
-                    var_binds += profile_varbinds
-
-        varbind_collection = mib_string_handler(var_binds)
-        logger.debug(
-            f"{len(varbind_collection.bulk)} events for bulk, {len(varbind_collection.get)} events for get"
-        )
-        logger.debug(f"target = {target}")
-
+    def run_walk(self, kwargs):
+        varbinds_bulk = []
+        varbinds_get = []
         metrics = {}
         retry = False
         seedmibs = []
-        logger.debug(f"Walking {target} for {varbind_collection}")
 
-        target_address = target["target"].split(":")[0]
-        target_port = target["target"].split(":")[1]
-        if target["config"]["community"]["version"] in ("1", "2", "2c"):
-            communitydata = CommunityData(target["config"]["community"]["name"])
+        # Connection and Security setup
+        target_address = kwargs["address"].split(":")[0]
+        target_port = kwargs["address"].split(":")[1]
+        if kwargs["version"] in ("1", "2", "2c"):
+            communitydata = CommunityData(kwargs["community"])
         else:
             raise NotImplementedError("version 3 not yet implemented")
-        bulk_iterator, get_iterator = self.return_snmp_iterators(
-            varbind_collection,
-            communitydata,
-            UdpTransportTarget((target_address, target_port)),
-        )
-        if bulk_iterator:
-            for (
-                errorIndication,
-                errorStatus,
-                errorIndex,
-                varBindTable,
-            ) in bulk_iterator:
+        transport = UdpTransportTarget((target_address, target_port))
+
+        # What to do
+        if kwargs.get("walk", False):
+            varbinds_bulk.append(ObjectType(ObjectIdentity("1.3.6")))
+        else:
+            for mib, entries in kwargs["varbinds_bulk"].items():
+                for entry in entries:
+                    varbinds_bulk.append(ObjectType(ObjectIdentity(mib, entry)))
+
+        if len(varbinds_bulk) > 0:
+
+            for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
+                self.snmpEngine,
+                communitydata,
+                transport,
+                ContextData(),
+                0,
+                50,
+                *varbinds_bulk,
+                lexicographicMode=False,
+            ):
                 if _any_failure_happened(
                     errorIndication, errorStatus, errorIndex, varBindTable
                 ):
@@ -319,21 +250,17 @@ class SNMPTask(Task):
                 else:
                     retry = self.process_snmp_data(varBindTable, metrics, seedmibs)
 
-        if get_iterator:
-            for (
-                errorIndication,
-                errorStatus,
-                errorIndex,
-                varBindTable,
-            ) in get_iterator:
+        if len(varbinds_get) > 0:
+            for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
+                self.snmpEngine, communitydata, transport, ContextData(), *varbinds_get
+            ):
                 if not _any_failure_happened(
                     errorIndication, errorStatus, errorIndex, varBindTable
                 ):
                     retry = self.process_snmp_data(varBindTable, metrics, seedmibs)
 
-        # self.snmpEngine.transportDispatcher.closeDispatcher()
         if len(seedmibs) > 0:
-            load_mibs(seedmibs)
+            self.load_mibs(seedmibs)
         return retry, metrics
 
     def process_snmp_data(self, varBindTable, metrics, seedmibs):
@@ -351,7 +278,7 @@ class SNMPTask(Task):
 
             if isMIBResolved(id):
                 group_key = get_group_key(mib, oid, index)
-                if not group_key in metrics:
+                if group_key not in metrics:
                     metrics[group_key] = {
                         "metrics": {},
                         "fields": {},
@@ -361,17 +288,18 @@ class SNMPTask(Task):
                 snmp_type = type(snmp_val).__name__
 
                 metric_type = map_metric_type(snmp_type, snmp_val)
-                if metric_type in MTYPES:
+                metric_value = valueAsBest(snmp_val.prettyPrint())
+                if metric_type in MTYPES and (isinstance(metric_value, float)):
                     metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
                         "type": metric_type,
-                        "value": snmp_val.prettyPrint(),
+                        "value": metric_value,
                         "oid": oid,
                     }
                 else:
                     if not snmp_val.prettyPrint() == "":
                         metrics[group_key]["fields"][f"{mib}.{metric}"] = {
                             "type": metric_type,
-                            "value": snmp_val.prettyPrint(),
+                            "value": metric_value,
                             "oid": oid,
                         }
 
@@ -391,10 +319,7 @@ def walk(self, **kwargs):
     retry = True
     now = str(time.time())
     while retry:
-        retry, result = self.run_walk(
-            kwargs["id"],
-            walk=True,
-        )
+        retry, result = self.run_walk(kwargs)
     # TODO if needed send talk
 
     # After a Walk tell schedule to recalc
@@ -409,10 +334,7 @@ def poll(self, **kwargs):
     now = str(time.time())
 
     # After a Walk tell schedule to recalc
-    retry, result = self.run_walk(
-        kwargs["id"],
-        profiles=kwargs["profiles"],
-    )
+    retry, result = self.run_walk(kwargs)
 
     # TODO: If profile has third value use get instead
 
