@@ -113,7 +113,7 @@ def prepare(work):
     #   }
     # }
     for key, data in work["result"].items():
-        if len(data["metrics"]) > 0:
+        if len(data["metrics"].keys()) > 0:
             metric = {
                 "time": work["ts"],
                 "event": "metric",
