@@ -1,3 +1,5 @@
+import json
+
 try:
     from dotenv import load_dotenv
 
@@ -13,7 +15,8 @@ from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp.poller import app
 
-SPLUNK_HEC_URI = os.getenv("SPLUNK_HEC_URI")
+OTEL_SERVER_METRICS_URL = os.getenv("OTEL_SERVER_METRICS_URL")
+OTEL_SERVER_LOGS_URL = os.getenv("OTEL_SERVER_LOGS_URL")
 SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN")
 SPLUNK_HEC_INDEX_EVENTS = os.getenv("SPLUNK_HEC_INDEX_EVENTS", "netops")
 SPLUNK_HEC_INDEX_METRICS = os.getenv("SPLUNK_HEC_INDEX_METRICS", "netmetrics")
@@ -28,22 +31,30 @@ class HECTask(Task):
 
 
 @shared_task(bind=True, base=HECTask)
-def send(self, result):
-    logger.debug("+++++++++endpoint+++++++++ %s", SPLUNK_HEC_URI)
-
-    for item in result:
+def send(self, metrics, events):
+    for item in metrics:
         try:
-            response = requests.post(
-                url=SPLUNK_HEC_URI, json=item, timeout=60, verify=False
-            )
+            # response = requests.post(headers={'Authorization': f'Splunk {SPLUNK_HEC_TOKEN}'}, url=SPLUNK_HEC_URI_METRICS,
+            #                          json=item, timeout=60, verify=False)
+            response = requests.post(url=OTEL_SERVER_METRICS_URL, json=item, timeout=60, verify=False)
             logger.debug("Response code is %s", response.status_code)
             logger.debug("Response is %s", response.text)
         except requests.ConnectionError as e:
             logger.error(
-                f"Connection error when sending data to HEC index - {result['index']}: {e}"
+                f"Connection error when sending data to HEC index - {metrics['index']}: {e}"
             )
 
-    logger.debug(f"send result size {len(result)}")
+    for item in events:
+        try:
+            response = requests.post(url=OTEL_SERVER_LOGS_URL, json=item, timeout=60, verify=False)
+            logger.debug("Response code is %s", response.status_code)
+            logger.debug("Response is %s", response.text)
+        except requests.ConnectionError as e:
+            logger.error(
+                f"Connection error when sending data to HEC index - {events['index']}: {e}"
+            )
+
+    logger.debug(f"send result size {len(metrics)}")
 
     return "sent"
 
@@ -51,22 +62,10 @@ def send(self, result):
 @shared_task(bind=True)
 def prepare(self, target, ts, result):
     splunk_metrics = []
-    #     {
-    #   "time": 1486683865,
-    #   "event": "metric",
-    #   "source": "metrics",
-    #   "sourcetype": "perflog",
-    #   "host": "host_1.splunk.com",
-    #   "fields": {
-    #     "service_version": "0",
-    #     "service_environment": "test",
-    #     "path": "/dev/sda1",
-    #     "fstype": "ext3",
-    #     "metric_name:cpu.usr": 11.12,
-    #     "metric_name:cpu.sys": 12.23,
-    #     "metric_name:cpu.idle": 13.34
-    #   }
-    # }
+    splunk_events = []
+
+    logger.debug(f"@@@@@@@@@@@@@ Timestamp = {ts}")
+
     for key, data in result.items():
         if len(data["metrics"]) > 0:
             metric = {
@@ -84,10 +83,24 @@ def prepare(self, target, ts, result):
             for field, values in data["metrics"].items():
                 metric["fields"][f"metric_name:{field}"] = values["value"]
             splunk_metrics.append(metric)
+        else:
+            event = {
+                "time": ts,
+                "event": json.dumps(data["fields"]),
+                "source": "sc4snmp",
+                "sourcetype": "sc4snmp:event",
+                "host": target,
+                "index": SPLUNK_HEC_INDEX_EVENTS,
+            }
+
+            splunk_events.append(event)
+
+    logger.info(f"Size of metrics: {len(splunk_metrics)}")
+    logger.info(f"Size of events: {len(splunk_events)}")
 
     app.send_task(
         "splunk_connect_for_snmp.splunk.tasks.send",
-        ([splunk_metrics]),
+        ([splunk_metrics, splunk_events]),
     )
 
-    return splunk_metrics
+    return splunk_metrics, splunk_events

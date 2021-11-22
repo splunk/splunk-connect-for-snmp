@@ -36,7 +36,7 @@ class VarbindCollection(namedtuple("VarbindCollection", "get, bulk")):
 
 
 def translate_list_to_oid(varbind):
-    return ObjectType(ObjectIdentity(*varbind)).addAsn1MibSource(MIB_SOURCES)
+    return ObjectType(ObjectIdentity(*varbind)).addAsn1MibSource(MIB_SOURCES).loadMibs()
 
 
 def mib_string_handler(mib_list: list) -> VarbindCollection:
@@ -417,6 +417,26 @@ def poll(self, **kwargs):
     )
 
     # TODO: If profile has third value use get instead
+
+    app.send_task(
+        "splunk_connect_for_snmp.enrich.tasks.enrich",
+        kwargs=(
+            {"id": kwargs["id"], "ts": now, "result": result, "detectchange": True}
+        ),
+    )
+
+    return result
+
+
+@shared_task(bind=True, base=SNMPTask)
+def trap(self, **kwargs):
+    now = datetime.utcnow().timestamp()
+
+    # After a Walk tell schedule to recalc
+    retry, result = self.run_walk(
+        kwargs["id"],
+        profiles=kwargs["profiles"],
+    )
 
     app.send_task(
         "splunk_connect_for_snmp.enrich.tasks.enrich",

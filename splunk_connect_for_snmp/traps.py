@@ -79,8 +79,8 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
         print(f"{name.prettyPrint()} = {val.prettyPrint()}")
 
     app.send_task(
-        "splunk_connect_for_snmp.splunk.tasks.send",
-        ([""]),
+        "splunk_connect_for_snmp.snmp.tasks.trap",
+        kwargs=({"id": transportAddress, "varBinds": varBinds}),
     )
 
 
