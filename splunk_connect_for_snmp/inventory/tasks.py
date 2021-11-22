@@ -264,9 +264,6 @@ def inventory_setup_poller(work):
                     ),
                 ),
             },
-            "options": {
-                "link": signature("splunk_connect_for_snmp.enrich.tasks.enrich")
-            },
             "interval": {"every": period, "period": "seconds"},
             "enabled": True,
             "run_immediately": run_immediately,
