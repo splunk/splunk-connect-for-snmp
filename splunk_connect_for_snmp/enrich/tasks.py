@@ -133,10 +133,8 @@ def enrich(self, result):
         if current_group_data:
             id = current_group_data["id"]
             fields = current_group_data["fields"]
-            logger.debug(f"data id {id}")
             if id in result["result"]:
                 for persist_data in fields.values():
-                    logger.debug(f"data is {persist_data}")
                     if persist_data["name"] not in result["result"][id]["fields"]:
                         result["result"][id]["fields"][
                             persist_data["name"]
