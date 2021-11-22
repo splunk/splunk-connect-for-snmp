@@ -118,7 +118,13 @@ def inventory_seed(path=None):
                     "task": "splunk_connect_for_snmp.snmp.tasks.walk",
                     "target": f"{ir.address}",
                     "args": [],
-                    "kwargs": {"id": str(fr["_id"])},
+                    "kwargs": {
+                        "walk": True,
+                        "id": str(fr["_id"]),
+                        "address": ir.address,
+                        "version": ir.version,
+                        "community": ir.community,
+                    },
                     "options": {
                         "link": chain(
                             signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
@@ -165,7 +171,7 @@ def inventory_setup_poller(work):
 
     target = targets_collection.find_one(
         {"_id": ObjectId(work["id"])},
-        {"target": True, "state": True, "config": {"profiles": True}},
+        {"target": True, "state": True, "config": True},
     )
     assigned_profiles: dict[int, list[str]] = {}
     logger.debug(f"target is target {target}")
@@ -242,19 +248,78 @@ def inventory_setup_poller(work):
                 assigned_profiles[profile["frequency"]].append(profile_name)
 
     logger.debug(f"Profiles Assigned {assigned_profiles}")
+
     activeschedules: list[str] = []
     for period in assigned_profiles:
         run_immediately: bool = False
         if period > 300:
             run_immediately = True
         name = f"sc4snmp;{target['target']};{period};poll"
+        period_profiles = set(assigned_profiles[period])
         activeschedules.append(name)
+
+        varbinds_bulk = {}
+        varbinds_get = {}
+        varbinds_oid = []
+        # First pass we only look at profiles for a full mib walk
+        for ap in period_profiles:
+            profile_binds = config_base["poller"]["profiles"][ap]["varBinds"]
+            for pb in profile_binds:
+                if str(pb[0]).find(".") == -1:
+                    if len(pb) == 1:
+                        if pb[0] not in varbinds_bulk:
+                            varbinds_bulk[pb[0]] = None
+        # Second pass we only look at profiles for a tabled mib walk
+        for ap in period_profiles:
+            profile_binds = config_base["poller"]["profiles"][ap]["varBinds"]
+            for pb in profile_binds:
+                if str(pb[0]).find(".") == -1:
+                    if len(pb) == 2:
+                        if pb[0] not in varbinds_bulk:
+                            varbinds_bulk[pb[0]] = [pb[1]]
+                        elif (
+                            pb[0] in varbinds_bulk and pb[1] not in varbinds_bulk[pb[0]]
+                        ):
+                            varbinds_bulk[pb[0]].append(pb[1])
+
+        # #Third pass we only look at profiles for a get mib walk, we only need
+        # #to do gets if there is not a bulk/walk
+        for ap in period_profiles:
+            profile_binds = config_base["poller"]["profiles"][ap]["varBinds"]
+            for pb in profile_binds:
+                if str(pb[0]).find(".") == -1:
+                    if len(pb) == 3:
+                        if pb[0] not in varbinds_bulk or (
+                            pb[0] in varbinds_bulk and pb[1] not in varbinds_bulk[pb[0]]
+                        ):
+                            if pb[0] not in varbinds_get:
+                                varbinds_get[pb[0]] = {}
+                            if pb[1] not in varbinds_get[pb[0]]:
+                                varbinds_get[pb[0]][pb[1]] = []
+
+                            varbinds_get[pb[0]][pb[1]].append(pb[2])
+
+        for ap in period_profiles:
+            profile_binds = config_base["poller"]["profiles"][ap]["varBinds"]
+            for pb in profile_binds:
+                if str(pb[0]).find(".") > -1:
+                    varbinds_oid.append(pb[0])
+
         task_config = {
             "name": name,
             "task": "splunk_connect_for_snmp.snmp.tasks.poll",
             "target": f"{target['target']}",
             "args": [],
-            "kwargs": {"id": work["id"], "profiles": set(assigned_profiles[period])},
+            "kwargs": {
+                "id": work["id"],
+                "address": target["target"],
+                "version": target["config"]["community"]["version"],
+                "community": target["config"]["community"]["name"],
+                "profiles": period_profiles,
+                "varbinds_bulk": varbinds_bulk,
+                "varbinds_get": varbinds_get,
+                "varbinds_oid": varbinds_oid,
+            },
             "options": {
                 "link": chain(
                     signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
