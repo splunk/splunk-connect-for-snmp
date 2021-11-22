@@ -1,4 +1,5 @@
 import json
+import time
 
 try:
     from dotenv import load_dotenv
@@ -60,11 +61,27 @@ def send(self, data):
     # If a device is very large a walk may produce more than 1MB of data.
     # 50 items is a reasonable guess to keep the post under the http post size limit
     # and be reasonable efficient
+    #logger.warn(data)
+    #logger.warn(type(data))
+    #logger.warn(len(data))
+
+    # for i in range(0, len(data)):
+    #     logger.warn(type(data[i]))
+    #     logger.warn(f"Data: {data[i]}\n")
+
     for i in range(0, len(data), SPLUNK_HEC_CHUNK_SIZE):
+        logger.warn(data[i])
+        logger.warn(type(data[i]))
         # using sessions is important this avoid expensive setup time
+        data = "\n".join([json.dumps(p, indent=None) for p in data[i : i + SPLUNK_HEC_CHUNK_SIZE]])
+        #logger.debug(f"data = {data}")
+
+        # test_1 = '{"event":"event 123","time": 1447828325} {"event":"event 234","time": 1447828326}'
+        # logger.warn(test_1)
+
         response = self.session.post(
             SPLUNK_HEC_URI,
-            data="\n".join(data[i : i + SPLUNK_HEC_CHUNK_SIZE]),
+            data=data,
             timeout=60,
         )
         # 200 is good
@@ -94,7 +111,6 @@ def valueAsBest(value) -> Union[str, float]:
 
 @shared_task()
 def prepare(work):
-    splunk_metrics = []
     splunk_events = []
     #     {
     #   "time": 1486683865,
@@ -128,7 +144,7 @@ def prepare(work):
                 metric["fields"][short_field] = valueAsBest(values["value"])
             for field, values in data["metrics"].items():
                 metric["fields"][f"metric_name:{field}"] = valueAsBest(values["value"])
-            splunk_metrics.append(json.dumps(metric, indent=None))
+            splunk_events.append(metric)
         else:
             event = {
                 "time": work["ts"],
@@ -140,4 +156,4 @@ def prepare(work):
             }
             splunk_events.append(event)
 
-    return splunk_metrics, splunk_events
+    return splunk_events
