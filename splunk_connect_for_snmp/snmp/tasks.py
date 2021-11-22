@@ -202,14 +202,11 @@ class SNMPTask(Task):
     # @asyncio.coroutine
     def run_walk(self, kwargs):
         varbinds_bulk = []
-        retry_bulk = False
         get_mibs = []
         bulk_mibs = []
-        retry_get = False
         varbinds_get = []
         metrics = {}
         retry = False
-        seedmibs = []
 
         # Connection and Security setup
         target_address = kwargs["address"].split(":")[0]
@@ -330,7 +327,6 @@ def walk(self, **kwargs):
     now = str(time.time())
     while retry:
         retry, result = self.run_walk(kwargs)
-    # TODO if needed send talk
 
     # After a Walk tell schedule to recalc
     work = {"id": kwargs["id"], "ts": now, "result": result, "reschedule": True}
