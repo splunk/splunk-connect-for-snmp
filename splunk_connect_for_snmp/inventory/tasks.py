@@ -43,7 +43,7 @@ def inventory_seed(path=None):
         line_count = 0
         for target in csv_reader:
             if line_count == 0:
-                print(f'Column names are {", ".join(target)}')
+                # print(f'Column names are {", ".join(target)}')
                 line_count += 1
                 continue
             logger.debug(f"Inventory record {target}")
@@ -160,7 +160,6 @@ def inventory_seed(path=None):
 
 @shared_task()
 def inventory_setup_poller(work):
-    logger.warn(f"work {work}")
     with open("config.yaml") as file:
         config_base = yaml.safe_load(file)
 
