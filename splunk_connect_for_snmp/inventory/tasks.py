@@ -36,7 +36,7 @@ def inventory_seed(path=None):
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4snmp.targets
 
-    periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
+    periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
     with open(path) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=",")
@@ -158,7 +158,7 @@ def inventory_setup_poller(work):
     with open("config.yaml") as file:
         config_base = yaml.safe_load(file)
 
-    periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
+    periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4snmp.targets

@@ -422,20 +422,20 @@ def poll(self, **kwargs):
 
 
 @shared_task(bind=True, base=SNMPTask)
-def trap(self, **kwargs):
-    now = datetime.utcnow().timestamp()
+def trap(self, work):
+    now = str(time.time())
 
-    # After a Walk tell schedule to recalc
-    retry, result = self.run_walk(
-        kwargs["id"],
-        profiles=kwargs["profiles"],
-    )
+    # work = {"id": transportAddress, "data": data}
 
-    app.send_task(
-        "splunk_connect_for_snmp.enrich.tasks.enrich",
-        kwargs=(
-            {"id": kwargs["id"], "ts": now, "result": result, "detectchange": True}
-        ),
-    )
+    for w in work["data"]:
+        logger.debug(f"Trap received {w[0]} = {w[1]}")
+        ObjectType(ObjectIdentity(w[0]))
 
-    return result
+    # app.send_task(
+    #     "splunk_connect_for_snmp.enrich.tasks.enrich",
+    #     kwargs=(
+    #         {"id": kwargs["id"], "ts": now, "result": result, "detectchange": True}
+    #     ),
+    # )
+
+    return {}

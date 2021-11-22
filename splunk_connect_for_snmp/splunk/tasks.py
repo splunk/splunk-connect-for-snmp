@@ -138,6 +138,6 @@ def prepare(work):
                 "host": work["host"],
                 "index": SPLUNK_HEC_INDEX_EVENTS,
             }
-
             splunk_events.append(event)
+
     return splunk_metrics, splunk_events

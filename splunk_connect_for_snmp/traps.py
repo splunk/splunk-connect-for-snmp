@@ -12,6 +12,8 @@ from pysnmp.carrier.asyncio.dgram import udp
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
 
+from splunk_connect_for_snmp.snmp.tasks import trap
+
 provider = TracerProvider()
 processor = BatchSpanProcessor(JaegerExporter())
 provider.add_span_processor(processor)
@@ -43,6 +45,7 @@ app.autodiscover_tasks(
         "splunk_connect_for_snmp.enrich",
         "splunk_connect_for_snmp.inventory",
         "splunk_connect_for_snmp.splunk",
+        "splunk_connect_for_snmp.snmp",
     ]
 )
 
@@ -75,12 +78,16 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
         "Notification from %s, SNMP Engine %s, Context %s"
         % (transportAddress, contextEngineId.prettyPrint(), contextName.prettyPrint())
     )
+    data = []
     for name, val in varBinds:
+        data.append((name.prettyPrint(), val.prettyPrint()))
+        # mib, metric, index = varBind[0].getMibSymbol()
         print(f"{name.prettyPrint()} = {val.prettyPrint()}")
 
+    work = {"id": transportAddress, "data": data}
+
     app.send_task(
-        "splunk_connect_for_snmp.snmp.tasks.trap",
-        kwargs=({"id": transportAddress, "varBinds": varBinds}),
+        "splunk_connect_for_snmp.snmp.tasks.trap", [work]
     )
 
 
