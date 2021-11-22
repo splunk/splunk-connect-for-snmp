@@ -5,6 +5,7 @@ try:
 except:
     pass
 
+import csv
 import os
 import time
 from collections import namedtuple
@@ -81,7 +82,11 @@ MTYPES = tuple(["cc", "c", "g"])
 
 
 def isMIBResolved(id):
-    if id.startswith("RFC1213-MIB::") or id.startswith("SNMPv2-SMI::enterprises."):
+    if (
+        id.startswith("RFC1213-MIB::")
+        or id.startswith("SNMPv2-SMI::enterprises.")
+        or id.startswith("SNMPv2-SMI::mib-2")
+    ):
         return False
     else:
         return True
@@ -162,57 +167,46 @@ class SNMPTask(Task):
         mib_response = self.session.get(f"{MIB_INDEX}")
         self.mib_map = {}
         if mib_response.status_code == 200:
-            with StringIO(mib_response.text) as response_content:
-                for line in response_content:
-                    entry = line.split(",")
-                    if not len(entry) == 2:
-                        self.mib_map[entry[1]] = entry[0]
-            logger.debug(f"Loaded {len(self.mib_map.keys())} mib map entries")
+            with StringIO(mib_response.text) as index_csv:
+                reader = csv.reader(index_csv)
+                for each_row in reader:
+                    if len(each_row) == 2:
+                        self.mib_map[each_row[1]] = each_row[0]
+            logger.error(f"Loaded {len(self.mib_map.keys())} mib map entries")
         else:
             logger.error(
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
 
     def load_mibs(self, mibs: List[str]) -> None:
-        logger.info(f"loading mib modules {','.join(mibs)}")
+        logger.info(f"loading mib modules {mibs}")
         for mib in mibs:
-            self.builder.loadModules(mib)
+            if mib:
+                self.builder.loadModules(mib)
         # logger.debug("Indexing MIB objects..."),
 
-    def isMIBKnown(self, id: str, oid: str) -> tuple([bool, List]):
+    def isMIBKnown(self, id: str, oid: str) -> tuple([bool, str]):
 
-        mibs = []
-        found = False
         oid_list = tuple(oid.split("."))
 
-        # if id.startswith("RFC1213-MIB::mib-"):
-        #     start = 6
-        # elif id.startswith("SNMPv2-SMI::enterprises."):
-        #     start = 8
-        # else:
-        #     start = 8
         start = 5
-        if start + 4 > len(oid_list):
-            end = len(oid_list)
-        else:
-            end = start + 3
-        if start > end:
-            return False, []
-        for i in range(end, start, -1):
+        for i in range(len(oid_list), start, -1):
             oid_to_check = ".".join(oid_list[:i])
             if oid_to_check in self.mib_map:
-                mibs = [mib_map[oid_to_check]]
-                logger.debug(f"found {mibs} for {id} based on {oid_to_check}")
-                return found, mibs
-        return found, mibs
+                mib = self.mib_map[oid_to_check]
+                logger.debug(f"found {mib} for {id} based on {oid_to_check}")
+                return True, mib
+        logger.warn(f"no mib found {id} based on {oid}")
+        return False, None
 
     # @asyncio.coroutine
     def run_walk(self, kwargs):
         varbinds_bulk = []
+        get_mibs = []
+        bulk_mibs = []
         varbinds_get = []
         metrics = {}
         retry = False
-        seedmibs = []
 
         # Connection and Security setup
         target_address = kwargs["address"].split(":")[0]
@@ -227,9 +221,13 @@ class SNMPTask(Task):
         if kwargs.get("walk", False):
             varbinds_bulk.append(ObjectType(ObjectIdentity("1.3.6")))
         else:
+            needed_mibs = []
             for mib, entries in kwargs["varbinds_bulk"].items():
                 for entry in entries:
                     varbinds_bulk.append(ObjectType(ObjectIdentity(mib, entry)))
+                if mib.find(".") == -1 and not mib in needed_mibs:
+                    needed_mibs.append(mib)
+            self.load_mibs(needed_mibs)
 
         if len(varbinds_bulk) > 0:
 
@@ -241,15 +239,18 @@ class SNMPTask(Task):
                 0,
                 50,
                 *varbinds_bulk,
-                lexicographicMode=False,
+                lexicographicMode=not kwargs.get("walk", False),
             ):
                 if _any_failure_happened(
                     errorIndication, errorStatus, errorIndex, varBindTable
                 ):
                     break
                 else:
-                    retry = self.process_snmp_data(varBindTable, metrics, seedmibs)
-
+                    tmp_retry, tmp_mibs = self.process_snmp_data(varBindTable, metrics)
+                    if tmp_mibs:
+                        bulk_mibs = list(set(bulk_mibs + tmp_mibs))
+                    if tmp_retry:
+                        retry = True
         if len(varbinds_get) > 0:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
                 self.snmpEngine, communitydata, transport, ContextData(), *varbinds_get
@@ -257,15 +258,20 @@ class SNMPTask(Task):
                 if not _any_failure_happened(
                     errorIndication, errorStatus, errorIndex, varBindTable
                 ):
-                    retry = self.process_snmp_data(varBindTable, metrics, seedmibs)
+                    retry_get, tmp_mibs = self.process_snmp_data(varBindTable, metrics)
+                    if tmp_mibs:
+                        get_mibs = list(set(bulk_mibs + get_mibs))
+                    if tmp_retry:
+                        retry = True
 
-        if len(seedmibs) > 0:
-            self.load_mibs(seedmibs)
+        self.load_mibs(bulk_mibs)
+        self.load_mibs(get_mibs)
         return retry, metrics
 
-    def process_snmp_data(self, varBindTable, metrics, seedmibs):
+    def process_snmp_data(self, varBindTable, metrics):
         i = 0
         retry = False
+        remotemibs = []
         for varBind in varBindTable:
             i += 1
             # logger.debug(varBind)
@@ -304,13 +310,14 @@ class SNMPTask(Task):
                         }
 
             else:
-                found, remotemibs = self.isMIBKnown(id, oid)
+                found, mib = self.isMIBKnown(id, oid)
+                if not mib in remotemibs:
+                    remotemibs.append(mib)
                 if found:
                     retry = True
-                    seedmibs = list(set(remotemibs + seedmibs))
                     break
 
-        return retry
+        return retry, remotemibs
 
 
 @shared_task(bind=True, base=SNMPTask)
@@ -320,7 +327,6 @@ def walk(self, **kwargs):
     now = str(time.time())
     while retry:
         retry, result = self.run_walk(kwargs)
-    # TODO if needed send talk
 
     # After a Walk tell schedule to recalc
     work = {"id": kwargs["id"], "ts": now, "result": result, "reschedule": True}
@@ -330,7 +336,6 @@ def walk(self, **kwargs):
 
 @shared_task(bind=True, base=SNMPTask)
 def poll(self, **kwargs):
-    retry = True
     now = str(time.time())
 
     # After a Walk tell schedule to recalc
