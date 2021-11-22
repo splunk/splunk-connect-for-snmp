@@ -6,8 +6,8 @@ except:
     pass
 
 import os
-from collections import OrderedDict, namedtuple
-from datetime import datetime
+import time
+from collections import namedtuple
 from typing import List
 
 import pymongo
@@ -217,7 +217,7 @@ class SNMPTask(Task):
             end = start + 3
         if start > end:
             return False, []
-        for i in range(start, end, 1):
+        for i in range(end, start, -1):
             oid_to_check = "/".join(oid_list[:i])
 
             response = self.session.request(
@@ -263,7 +263,7 @@ class SNMPTask(Task):
     def run_walk(self, id: str, profiles: List[str] = None, walk: bool = False):
 
         mongo_client = pymongo.MongoClient(MONGO_URI)
-        targets_collection = mongo_client.sc4.targets
+        targets_collection = mongo_client.sc4snmp.targets
         target = targets_collection.find_one(
             {"_id": ObjectId(id)}, {"target": True, "config": {"community": True}}
         )
@@ -271,7 +271,7 @@ class SNMPTask(Task):
         if walk:
             var_binds = ["1.3.6"]
         else:
-            with open("config.yaml", "r") as file:
+            with open("config.yaml") as file:
                 config_base = yaml.safe_load(file)
             var_binds = []
 
@@ -289,7 +289,7 @@ class SNMPTask(Task):
         )
         logger.debug(f"target = {target}")
 
-        metrics = OrderedDict()
+        metrics = {}
         retry = False
         seedmibs = []
         logger.debug(f"Walking {target} for {varbind_collection}")
@@ -353,8 +353,8 @@ class SNMPTask(Task):
                 group_key = get_group_key(mib, oid, index)
                 if not group_key in metrics:
                     metrics[group_key] = {
-                        "metrics": OrderedDict(),
-                        "fields": OrderedDict(),
+                        "metrics": {},
+                        "fields": {},
                     }
 
                 snmp_val = varBind[1]
@@ -389,7 +389,7 @@ class SNMPTask(Task):
 def walk(self, **kwargs):
 
     retry = True
-    now = datetime.utcnow().timestamp()
+    now = str(time.time())
     while retry:
         retry, result = self.run_walk(
             kwargs["id"],
@@ -398,17 +398,15 @@ def walk(self, **kwargs):
     # TODO if needed send talk
 
     # After a Walk tell schedule to recalc
-    app.send_task(
-        "splunk_connect_for_snmp.enrich.tasks.enrich",
-        kwargs=({"id": kwargs["id"], "ts": now, "result": result, "reschedule": True}),
-    )
-    return result
+    work = {"id": kwargs["id"], "ts": now, "result": result, "reschedule": True}
+
+    return work
 
 
 @shared_task(bind=True, base=SNMPTask)
 def poll(self, **kwargs):
     retry = True
-    now = datetime.utcnow().timestamp()
+    now = str(time.time())
 
     # After a Walk tell schedule to recalc
     retry, result = self.run_walk(
@@ -418,14 +416,9 @@ def poll(self, **kwargs):
 
     # TODO: If profile has third value use get instead
 
-    app.send_task(
-        "splunk_connect_for_snmp.enrich.tasks.enrich",
-        kwargs=(
-            {"id": kwargs["id"], "ts": now, "result": result, "detectchange": True}
-        ),
-    )
+    work = {"id": kwargs["id"], "ts": now, "result": result, "detectchange": False}
 
-    return result
+    return work
 
 
 @shared_task(bind=True, base=SNMPTask)

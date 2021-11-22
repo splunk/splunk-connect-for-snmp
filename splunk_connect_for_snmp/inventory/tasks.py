@@ -14,9 +14,11 @@ import urllib3
 import yaml
 from bson.objectid import ObjectId
 from celery import shared_task
+from celery.canvas import chain, chord, group, signature
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
+from splunk_connect_for_snmp.common.hummanbool import hummanBool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -28,43 +30,11 @@ MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 
 
-def isTrueish(flag: Union[str, bool]) -> bool:
-
-    if isinstance(flag, bool):
-        return flag
-
-    if flag.lower() in [
-        "true",
-        "1",
-        "t",
-        "y",
-        "yes",
-    ]:
-        return True
-    else:
-        return False
-
-
-def isFalseish(flag: Union[str, bool]) -> bool:
-    if isinstance(flag, bool):
-        return flag
-    if flag.lower() in [
-        "false",
-        "0",
-        "f",
-        "n",
-        "no",
-    ]:
-        return True
-    else:
-        return False
-
-
 @shared_task()
 # This task gets the inventory and creates a task to schedules each walk task
 def inventory_seed(path=None):
     mongo_client = pymongo.MongoClient(MONGO_URI)
-    targets_collection = mongo_client.sc4.targets
+    targets_collection = mongo_client.sc4snmp.targets
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
 
@@ -89,7 +59,7 @@ def inventory_seed(path=None):
             except:
                 ir.walk_interval = 42000
 
-            if "delete" in target and isTrueish(ir.delete):
+            if "delete" in target and hummanBool(ir.delete, default=False):
                 periodic_obj.delete_task(ir.address)
             else:
                 if ir.version not in ("1", "2", "2c", "3"):
@@ -125,9 +95,7 @@ def inventory_seed(path=None):
                 if ir.profiles:
                     profiles = ir.profiles
 
-                SmartProfiles: bool = True
-                if isFalseish(ir.SmartProfiles):
-                    SmartProfiles = False
+                SmartProfiles: bool = hummanBool(ir.SmartProfiles, default=True)
 
                 updates.append(
                     {
@@ -151,10 +119,28 @@ def inventory_seed(path=None):
                     "target": f"{ir.address}",
                     "args": [],
                     "kwargs": {"id": str(fr["_id"])},
+                    "options": {
+                        "link": chain(
+                            signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
+                            group(
+                                signature(
+                                    "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller"
+                                ),
+                                chain(
+                                    signature(
+                                        "splunk_connect_for_snmp.splunk.tasks.prepare"
+                                    ),
+                                    signature(
+                                        "splunk_connect_for_snmp.splunk.tasks.send"
+                                    ),
+                                ),
+                            ),
+                        ),
+                    },
                     "interval": {"every": ir.walk_interval, "period": "seconds"},
                     "enabled": True,
-                    "run_immediately": True,
                 }
+
                 if ur.modified_count:
                     logger.debug("Device Config Changed need to walk")
                     logger.info(f"Upserted id: {fr['_id']}")
@@ -162,23 +148,23 @@ def inventory_seed(path=None):
                     task_config["run_immediately"] = True
                 else:
                     task_config["kwargs"]["id"] = str(fr["_id"])
-                logger.debug(task_config)
                 periodic_obj.manage_task(run_immediately_if_new=True, **task_config)
     return True
 
 
 @shared_task()
-def inventory_setup_poller(**kwargs):
+def inventory_setup_poller(work):
+    logger.warn(f"work {work}")
     with open("config.yaml") as file:
         config_base = yaml.safe_load(file)
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
 
     mongo_client = pymongo.MongoClient(MONGO_URI)
-    targets_collection = mongo_client.sc4.targets
+    targets_collection = mongo_client.sc4snmp.targets
 
     target = targets_collection.find_one(
-        {"_id": ObjectId(kwargs["id"])},
+        {"_id": ObjectId(work["id"])},
         {"target": True, "state": True, "config": {"profiles": True}},
     )
     assigned_profiles: dict[int, list[str]] = {}
@@ -189,7 +175,7 @@ def inventory_setup_poller(**kwargs):
             logger.debug(f"Checking match for {profile_name} {profile}")
 
             # Skip this profile its disabled
-            if isTrueish(profile.get("disabled", False)):
+            if hummanBool(profile.get("disabled", False), default=False):
                 logger.debug(f"Skipping disabled profile {profile_name}")
                 continue
 
@@ -268,7 +254,19 @@ def inventory_setup_poller(**kwargs):
             "task": "splunk_connect_for_snmp.snmp.tasks.poll",
             "target": f"{target['target']}",
             "args": [],
-            "kwargs": {"id": kwargs["id"], "profiles": set(assigned_profiles[period])},
+            "kwargs": {"id": work["id"], "profiles": set(assigned_profiles[period])},
+            "options": {
+                "link": chain(
+                    signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
+                    chain(
+                        signature("splunk_connect_for_snmp.splunk.tasks.prepare"),
+                        signature("splunk_connect_for_snmp.splunk.tasks.send"),
+                    ),
+                ),
+            },
+            "options": {
+                "link": signature("splunk_connect_for_snmp.enrich.tasks.enrich")
+            },
             "interval": {"every": period, "period": "seconds"},
             "enabled": True,
             "run_immediately": run_immediately,
