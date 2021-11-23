@@ -27,13 +27,13 @@ spec:
           imagePullPolicy: {{ .Values.sc4snmp.pullPolicy | default "IfNotPresent" }}
           args:
             [
-              "celery","beat",
+              "celery", "beat",
             ]
           securityContext:
             allowPrivilegeEscalation: false          
           env:
             - name: CELERY_BROKER_URL
-              value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq-headless:5672/
+              value: amqp://{{ .Release.Namespace }}:sc4snmp@sc4snmp-rabbitmq:5672/
             - name: MONGO_URI
           {{- if eq .Values.mongodb.architecture "replicaset" }}
               value: mongodb+srv://sc4snmp-mongodb-headless.{{ .Release.Namespace }}.svc.{{ .Values.mongodb.clusterDomain }}/?tls=false&ssl=false&replicaSet=rs0

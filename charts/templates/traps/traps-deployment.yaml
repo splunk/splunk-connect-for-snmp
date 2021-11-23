@@ -16,17 +16,17 @@ spec:
         app: sc4snmp-traps
     spec:
       securityContext:
-          runAsNonRoot: true      
+          runAsNonRoot: true
           runAsUser: 1001
           runAsGroup: 1001
-          fsGroup: 2000    
+          fsGroup: 2000
       containers:
         - name: traps
           image: {{ .Values.sc4snmp.image | default "ghcr.io/splunk/splunk-connect-for-snmp/container" }}:{{ .Values.sc4snmp.tag | default "1" }}
           imagePullPolicy: {{ .Values.sc4snmp.pullPolicy | default "IfNotPresent" }}
           args:
             [
-              "trap",
+              "celery", "worker",
             ]
           securityContext:
             allowPrivilegeEscalation: false          

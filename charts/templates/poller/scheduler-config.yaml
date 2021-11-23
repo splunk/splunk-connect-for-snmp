@@ -11,34 +11,6 @@ data:
     # Sample Configuration file
     ipv4: True
     ipv6: False
-    enricher:
-      oidFamily:
-        IF-MIB:
-          existingVarBinds:
-            - id: "ifSpeed"
-              name: "Speed"
-              ttl: 42000
-            - id: "ifDescr"
-              name: 'ifDescr'
-              ttl: 42000
-            - id: "ifType"
-              name: "Type"
-              ttl: 42000
-            - id: "ifMtu"
-              name: 'MTU'
-              ttl: 42000
-            - id: "ifAdminStatus"
-              name: "AdminStatus"
-              ttl: 42000
-            - id: "ifOperStatus"
-              name: 'OperationalStatus'
-              ttl: 600
-          additionalVarBinds:
-            - indexNum: 'index_number'
-    mongo:
-      database: "snmp_poller"
-      walked_collection: "walked_hosts"
-      unwalked_collection: "unwalked_hosts"
 {{- if (.Values.files.scheduler.config).usernames }}
     usernames:
 {{ .Values.files.scheduler.config.usernames | indent 6 -}}
