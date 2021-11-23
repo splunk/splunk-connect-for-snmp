@@ -48,20 +48,11 @@ spec:
             - name: MIB_SERVER_SERVICE_SERVICE_PORT
               value: {{ .Values.mib.service_port | quote }}
             - name: SPLUNK_HEC_URI
-              valueFrom:
-                secretKeyRef:
-                  name: remote-splunk
-                  key: splunkHecUrl
+              value: {{ printf "%s://%s:%s/services/collector" .Values.splunk.protocol .Values.splunk.host .Values.splunk.port | b64enc | quote }}
             - name: SPLUNK_HEC_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: remote-splunk
-                  key: splunkHecToken
+              value: {{ .Values.splunk.token | b64enc | quote }}
             - name: SPLUNK_HEC_TLSVERIFY
-              valueFrom:
-                secretKeyRef:
-                  name: remote-splunk
-                  key: splunkHecTlsSkipVerify
+              value: {{ .Values.splunk.insecureSSL | b64enc | quote }}
             - name: LOG_LEVEL
               value: {{ .Values.worker.logLevel | default "info" }}
      
