@@ -11,6 +11,10 @@ data:
     # Sample Configuration file
     ipv4: True
     ipv6: False
+{{- if (.Values.files.scheduler.config).poller }}
+    poller:
+{{ .Values.files.scheduler.config.poller | indent 6 -}}
+{{ end }}
 {{- if (.Values.files.scheduler.config).usernames }}
     usernames:
 {{ .Values.files.scheduler.config.usernames | indent 6 -}}
