@@ -8,13 +8,10 @@ except:
 import csv
 import os
 import time
-from collections import namedtuple
 from io import StringIO
 from typing import List, Union
 
 import pymongo
-import yaml
-from bson.objectid import ObjectId
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 from pysnmp.hlapi import *
@@ -26,11 +23,10 @@ from pysnmp.hlapi import *
 #     bulkCmd,
 #     ContextData,
 # )
-from pysnmp.smi import builder, compiler, view
+from pysnmp.smi import builder, compiler, rfc1902, view
 from requests_cache import MongoCache
 
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
-from splunk_connect_for_snmp.poller import app
 
 logger = get_task_logger(__name__)
 
@@ -150,6 +146,7 @@ class SNMPTask(Task):
 
         self.snmpEngine = SnmpEngine()
         self.builder = self.snmpEngine.getMibBuilder()
+        self.mib_view_controller = view.MibViewController(self.builder)
         compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
         for mib in [
             "HOST-RESOURCES-MIB",
@@ -352,17 +349,14 @@ def poll(self, **kwargs):
 def trap(self, work):
     now = str(time.time())
 
-    # work = {"id": transportAddress, "data": data}
-
+    var_bind_table = []
+    metrics = {}
     for w in work["data"]:
-        logger.debug(f"Trap received {w[0]} = {w[1]}")
-        ObjectType(ObjectIdentity(w[0]))
+        translated_var_bind = rfc1902.ObjectType(
+            rfc1902.ObjectIdentity(w[0]), w[1]
+        ).resolveWithMib(self.mib_view_controller)
+        var_bind_table.append(translated_var_bind)
 
-    # app.send_task(
-    #     "splunk_connect_for_snmp.enrich.tasks.enrich",
-    #     kwargs=(
-    #         {"id": kwargs["id"], "ts": now, "result": result, "detectchange": True}
-    #     ),
-    # )
+    self.process_snmp_data(var_bind_table, metrics)
 
-    return {}
+    return {"ts": now, "result": metrics, "host": work["host"], "detectchange": False, "sourcetype": "sc4snmp:traps"}

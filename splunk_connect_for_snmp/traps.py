@@ -1,6 +1,6 @@
 import asyncio
 
-from celery import Celery, signals
+from celery import Celery, signals, chain
 from celery.utils.log import get_task_logger
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
@@ -13,6 +13,7 @@ from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
 
 from splunk_connect_for_snmp.snmp.tasks import trap
+from splunk_connect_for_snmp.splunk.tasks import prepare, send
 
 provider = TracerProvider()
 processor = BatchSpanProcessor(JaegerExporter())
@@ -81,14 +82,12 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
     data = []
     for name, val in varBinds:
         data.append((name.prettyPrint(), val.prettyPrint()))
-        # mib, metric, index = varBind[0].getMibSymbol()
         print(f"{name.prettyPrint()} = {val.prettyPrint()}")
 
-    work = {"id": transportAddress, "data": data}
+    work = {"data": data, "host": transportAddress[0]}
 
-    app.send_task(
-        "splunk_connect_for_snmp.snmp.tasks.trap", [work]
-    )
+    my_chain = chain(trap.s(work), prepare.s(), send.s())
+    result = my_chain.apply_async()
 
 
 # Register SNMP Application at the SNMP engine
