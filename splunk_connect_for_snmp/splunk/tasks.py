@@ -14,7 +14,6 @@ from celery.utils.log import get_task_logger
 from requests import ConnectionError, ConnectTimeout, ReadTimeout, Session, Timeout
 
 from splunk_connect_for_snmp.common.hummanbool import hummanBool
-from splunk_connect_for_snmp.poller import app
 
 SPLUNK_HEC_URI = os.getenv("SPLUNK_HEC_URI")
 SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN", None)
@@ -92,7 +91,7 @@ def valueAsBest(value) -> Union[str, float]:
 
 @shared_task()
 def prepare(work):
-    splunk_metrics = []
+    splunk_input = []
     #     {
     #   "time": 1486683865,
     #   "event": "metric",
@@ -115,7 +114,7 @@ def prepare(work):
                 "time": work["ts"],
                 "event": "metric",
                 "source": "sc4snmp",
-                "sourcetype": "sc4snmp:metric",
+                "sourcetype": work.get("sourcetype", "sc4snmp:metric"),
                 "host": work["host"],
                 "index": SPLUNK_HEC_INDEX_METRICS,
                 "fields": {},
@@ -125,6 +124,16 @@ def prepare(work):
                 metric["fields"][short_field] = valueAsBest(values["value"])
             for field, values in data["metrics"].items():
                 metric["fields"][f"metric_name:{field}"] = valueAsBest(values["value"])
-            splunk_metrics.append(json.dumps(metric, indent=None))
+            splunk_input.append(json.dumps(metric, indent=None))
+        else:
+            event = {
+                "time": work["ts"],
+                "event": json.dumps(data["fields"]),
+                "source": "sc4snmp",
+                "sourcetype": work.get("sourcetype", "sc4snmp:event"),
+                "host": work["host"],
+                "index": SPLUNK_HEC_INDEX_EVENTS,
+            }
+            splunk_input.append(json.dumps(event, indent=None))
 
-    return splunk_metrics
+    return splunk_input
