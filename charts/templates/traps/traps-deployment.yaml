@@ -26,7 +26,7 @@ spec:
           imagePullPolicy: {{ .Values.sc4snmp.pullPolicy | default "IfNotPresent" }}
           args:
             [
-              "celery", "worker",
+              "trap"
             ]
           securityContext:
             allowPrivilegeEscalation: false          
