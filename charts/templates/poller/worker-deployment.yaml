@@ -47,10 +47,21 @@ spec:
               value: sc4snmp-mib-server
             - name: MIB_SERVER_SERVICE_SERVICE_PORT
               value: {{ .Values.mib.service_port | quote }}
-            - name: OTEL_SERVER_LOGS_URL
-              value: {{ printf "http://otel-service:%s" ( .Values.otel.service_logs_port | default "8881" ) | quote }}
-            - name: OTEL_SERVER_METRICS_URL
-              value: {{ printf "http://otel-service:%s" ( .Values.otel.service_metrics_port | default "8882" ) | quote }}
+            - name: SPLUNK_HEC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: remote-splunk
+                  key: splunkHecUrl
+            - name: SPLUNK_HEC_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: remote-splunk
+                  key: splunkHecToken
+            - name: SPLUNK_HEC_TLS_SKIP_VERIFY
+              valueFrom:
+                secretKeyRef:
+                  name: remote-splunk
+                  key: splunkHecTlsSkipVerify
             - name: LOG_LEVEL
               value: {{ .Values.worker.logLevel | default "info" }}
      
