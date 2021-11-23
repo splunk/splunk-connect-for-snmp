@@ -47,7 +47,7 @@ app.autodiscover_tasks(
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs) -> None:
-    periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
+    periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
     schedule_data_create_interval = {
         "name": "sc4snmp;inventory;seed",
