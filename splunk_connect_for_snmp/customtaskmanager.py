@@ -11,7 +11,7 @@ import splunk_connect_for_snmp.celery_config
 logger = logging.getLogger(__name__)
 
 
-class CustomPeriodicTaskManage:
+class CustomPeriodicTaskManager:
     def __init__(self):
         connect(
             host=splunk_connect_for_snmp.celery_config.mongodb_scheduler_url,

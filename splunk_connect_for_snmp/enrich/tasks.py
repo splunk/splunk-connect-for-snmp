@@ -14,8 +14,6 @@ from bson.objectid import ObjectId
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 
-from splunk_connect_for_snmp.poller import app
-
 logger = get_task_logger(__name__)
 
 MONGO_URI = os.getenv("MONGO_URI")
