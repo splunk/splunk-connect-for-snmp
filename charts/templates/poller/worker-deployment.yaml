@@ -47,7 +47,7 @@ spec:
               value: sc4snmp-mib-server
             - name: MIB_SERVER_SERVICE_SERVICE_PORT
               value: {{ .Values.mib.service_port | quote }}
-            - name: SPLUNK_HEC_URL
+            - name: SPLUNK_HEC_URI
               valueFrom:
                 secretKeyRef:
                   name: remote-splunk
@@ -57,7 +57,7 @@ spec:
                 secretKeyRef:
                   name: remote-splunk
                   key: splunkHecToken
-            - name: SPLUNK_HEC_TLS_SKIP_VERIFY
+            - name: SPLUNK_HEC_TLSVERIFY
               valueFrom:
                 secretKeyRef:
                   name: remote-splunk
