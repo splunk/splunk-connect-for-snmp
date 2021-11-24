@@ -39,14 +39,6 @@ spec:
           {{ else }}
               value: mongodb://sc4snmp-mongodb:27017
           {{ end }}
-            - name: MIBS_SERVER_URL
-              value: {{ printf "http://sc4snmp-mib-server-service:%s" ( .Values.mib.service_port | default "5000" ) | quote }}
-            - name: MIBS_FILES_URL
-              value: $(MIBS_SERVER_URL)/files/asn1/@mib@
-            - name: MIB_SERVER_SERVICE_SERVICE_HOST
-              value: sc4snmp-mib-server
-            - name: MIB_SERVER_SERVICE_SERVICE_PORT
-              value: {{ .Values.mib.service_port | quote }}
             - name: SPLUNK_HEC_URI
               value: {{ printf "%s://%s:%s/services/collector" .Values.splunk.protocol .Values.splunk.host .Values.splunk.port | quote }}
             - name: SPLUNK_HEC_TOKEN
@@ -55,7 +47,6 @@ spec:
               value: {{ .Values.splunk.insecureSSL | quote }}
             - name: LOG_LEVEL
               value: {{ .Values.worker.logLevel | default "info" }}
-     
           volumeMounts:
             - name: config
               mountPath: "/work/config"
