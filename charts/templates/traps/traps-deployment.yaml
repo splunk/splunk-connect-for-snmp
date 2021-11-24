@@ -1,87 +1,87 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: sc4snmp-traps
-  namespace: {{ .Release.Namespace | quote }}
-  labels:
-    app: sc4snmp-traps
-spec:
-  replicas: {{ .Values.traps.replicas }}
-  selector:
-    matchLabels:
-      app: sc4snmp-traps
-  template:
-    metadata:
-      labels:
-        app: sc4snmp-traps
-    spec:
-      securityContext:
-          runAsNonRoot: true
-          runAsUser: 1001
-          runAsGroup: 1001
-          fsGroup: 2000
-      containers:
-        - name: traps
-          image: {{ .Values.sc4snmp.image | default "ghcr.io/splunk/splunk-connect-for-snmp/container" }}:{{ .Values.sc4snmp.tag | default "1" }}
-          imagePullPolicy: {{ .Values.sc4snmp.pullPolicy | default "IfNotPresent" }}
-          args:
-            [
-              "trap"
-            ]
-          securityContext:
-            allowPrivilegeEscalation: false          
-          ports:
-            - containerPort: 2162
-          env:
-            - name: CELERY_BROKER_URL
-              value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq-headless:5672/
-            - name: MONGO_URI
-          {{- if eq .Values.mongodb.architecture "replicaset" }}
-              value: mongodb+srv://sc4snmp-mongodb-headless.{{ .Release.Namespace }}.svc.{{ .Values.mongodb.clusterDomain }}/?tls=false&ssl=false&replicaSet=rs0
-          {{ else }}
-              value: mongodb://sc4snmp-mongodb:27017
-          {{ end }}              
-            - name: MIBS_SERVER_URL
-              value: {{ printf "http://sc4snmp-mib-server-service:%s" "5000" | quote }}
-            - name: OTEL_SERVER_URL
-              value: {{ printf "http://otel-service:%s" "8881" | quote }}
-            - name: LOG_LEVEL
-              value: {{ .Values.worker.logLevel | default "INFO" }}
-          volumeMounts:
-            - name: config
-              mountPath: "/work/config"
-              readOnly: true
-            - name: inventory
-              mountPath: "/work/inventory"
-              readOnly: false
-            - name: pysnmp-cache-volume
-              mountPath: "/.pysnmp/"
-              readOnly: false
-          resources:
-            {{- if .Values.traps.resources }}
-{{ .Values.traps.resources | toYaml | trim | indent 12 }}
-            {{ else }}
-            limits:
-              cpu: 100m
-              memory: 128Mi
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            {{ end }}
-      volumes:
-        - name: config
-          configMap:
-            name: sc4snmp-trap
-            items:
-              - key: "config.yaml"
-                path: "config.yaml"
-        - name: inventory
-          configMap:
-            # Provide the name of the ConfigMap you want to mount.
-            name: sc4snmp-inventory
-            # An array of keys from the ConfigMap to create as files
-            items:
-              - key: "inventory.csv"
-                path: "inventory.csv"
-        - name: pysnmp-cache-volume
-          emptyDir: {}                
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: sc4snmp-traps
+#  namespace: {{ .Release.Namespace | quote }}
+#  labels:
+#    app: sc4snmp-traps
+#spec:
+#  replicas: {{ .Values.traps.replicas }}
+#  selector:
+#    matchLabels:
+#      app: sc4snmp-traps
+#  template:
+#    metadata:
+#      labels:
+#        app: sc4snmp-traps
+#    spec:
+#      securityContext:
+#          runAsNonRoot: true
+#          runAsUser: 1001
+#          runAsGroup: 1001
+#          fsGroup: 2000
+#      containers:
+#        - name: traps
+#          image: {{ .Values.sc4snmp.image | default "ghcr.io/splunk/splunk-connect-for-snmp/container" }}:{{ .Values.sc4snmp.tag | default "1" }}
+#          imagePullPolicy: {{ .Values.sc4snmp.pullPolicy | default "IfNotPresent" }}
+#          args:
+#            [
+#              "trap"
+#            ]
+#          securityContext:
+#            allowPrivilegeEscalation: false
+#          ports:
+#            - containerPort: 2162
+#          env:
+#            - name: CELERY_BROKER_URL
+#              value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq-headless:5672/
+#            - name: MONGO_URI
+#          {{- if eq .Values.mongodb.architecture "replicaset" }}
+#              value: mongodb+srv://sc4snmp-mongodb-headless.{{ .Release.Namespace }}.svc.{{ .Values.mongodb.clusterDomain }}/?tls=false&ssl=false&replicaSet=rs0
+#          {{ else }}
+#              value: mongodb://sc4snmp-mongodb:27017
+#          {{ end }}
+#            - name: MIBS_SERVER_URL
+#              value: {{ printf "http://sc4snmp-mib-server-service:%s" "5000" | quote }}
+#            - name: OTEL_SERVER_URL
+#              value: {{ printf "http://otel-service:%s" "8881" | quote }}
+#            - name: LOG_LEVEL
+#              value: {{ .Values.worker.logLevel | default "INFO" }}
+#          volumeMounts:
+#            - name: config
+#              mountPath: "/work/config"
+#              readOnly: true
+#            - name: inventory
+#              mountPath: "/work/inventory"
+#              readOnly: false
+#            - name: pysnmp-cache-volume
+#              mountPath: "/.pysnmp/"
+#              readOnly: false
+#          resources:
+#            {{- if .Values.traps.resources }}
+#{{ .Values.traps.resources | toYaml | trim | indent 12 }}
+#            {{ else }}
+#            limits:
+#              cpu: 100m
+#              memory: 128Mi
+#            requests:
+#              cpu: 100m
+#              memory: 128Mi
+#            {{ end }}
+#      volumes:
+#        - name: config
+#          configMap:
+#            name: sc4snmp-trap
+#            items:
+#              - key: "config.yaml"
+#                path: "config.yaml"
+#        - name: inventory
+#          configMap:
+#            # Provide the name of the ConfigMap you want to mount.
+#            name: sc4snmp-inventory
+#            # An array of keys from the ConfigMap to create as files
+#            items:
+#              - key: "inventory.csv"
+#                path: "inventory.csv"
+#        - name: pysnmp-cache-volume
+#          emptyDir: {}
