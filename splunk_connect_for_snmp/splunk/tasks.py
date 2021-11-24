@@ -119,6 +119,8 @@ def prepare(work):
                 "index": SPLUNK_HEC_INDEX_METRICS,
                 "fields": {},
             }
+            if "frequency" in work:
+                metric["fields"]["frequency"] = work["frequency"]
             for field, values in data["fields"].items():
                 short_field = field.split(".")[-1]
                 metric["fields"][short_field] = valueAsBest(values["value"])
