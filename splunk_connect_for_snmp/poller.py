@@ -1,3 +1,5 @@
+import os
+
 from celery import Celery, signals
 from celery.utils.log import get_task_logger
 from opentelemetry import trace
@@ -21,6 +23,7 @@ app = Celery("sc4snmp_poller")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
 # app.conf.update(**config)
 
+INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/work/inventory/inventory.csv")
 
 @signals.worker_process_init.connect(weak=False)
 def init_celery_tracing(*args, **kwargs):
@@ -53,7 +56,7 @@ def setup_periodic_tasks(sender, **kwargs) -> None:
         "name": "sc4snmp;inventory;seed",
         "task": "splunk_connect_for_snmp.inventory.tasks.inventory_seed",
         "args": [],
-        "kwargs": {"path": "inventory.csv"},
+        "kwargs": {"path": INVENTORY_PATH},
         "interval": {"every": 600, "period": "seconds"},
         "enabled": True,
         "run_immediately": True,
