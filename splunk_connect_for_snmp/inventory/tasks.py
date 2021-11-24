@@ -318,6 +318,7 @@ def inventory_setup_poller(work):
                 "varbinds_bulk": varbinds_bulk,
                 "varbinds_get": varbinds_get,
                 "varbinds_oid": varbinds_oid,
+                "frequency": period,
             },
             "options": {
                 "link": chain(
