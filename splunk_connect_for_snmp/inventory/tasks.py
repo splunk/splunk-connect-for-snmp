@@ -28,11 +28,14 @@ logger = get_task_logger(__name__)
 
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
+CONFIG_PATH = os.getenv("CONFIG_PATH", "/work/config/config.yaml")
 
 
 @shared_task()
 # This task gets the inventory and creates a task to schedules each walk task
 def inventory_seed(path=None):
+    logger.info(f"Inside inventory seed")
+    logger.info(path)
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4snmp.targets
 
@@ -160,7 +163,7 @@ def inventory_seed(path=None):
 
 @shared_task()
 def inventory_setup_poller(work):
-    with open("config.yaml") as file:
+    with open(CONFIG_PATH) as file:
         config_base = yaml.safe_load(file)
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
