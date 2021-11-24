@@ -1,3 +1,22 @@
+#
+# Copyright 2021 Splunk Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+import yaml
+
+from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
+
 try:
     from dotenv import load_dotenv
 
@@ -205,13 +224,15 @@ class SNMPTask(Task):
         metrics = {}
         retry = False
 
+        with open("config.yaml") as file:
+            config_base = yaml.safe_load(file)
+
         # Connection and Security setup
         target_address = kwargs["address"].split(":")[0]
         target_port = kwargs["address"].split(":")[1]
-        if kwargs["version"] in ("1", "2", "2c"):
-            communitydata = CommunityData(kwargs["community"])
-        else:
-            raise NotImplementedError("version 3 not yet implemented")
+        auth_data = build_authData(kwargs["version"], kwargs["community"], config_base["poller"])
+        context_data = build_contextData(kwargs["version"], kwargs["community"], config_base["poller"])
+
         transport = UdpTransportTarget((target_address, target_port))
 
         # What to do
@@ -230,9 +251,9 @@ class SNMPTask(Task):
 
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
                 self.snmpEngine,
-                communitydata,
+                auth_data,
                 transport,
-                ContextData(),
+                context_data,
                 0,
                 50,
                 *varbinds_bulk,
@@ -250,7 +271,7 @@ class SNMPTask(Task):
                         retry = True
         if len(varbinds_get) > 0:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
-                self.snmpEngine, communitydata, transport, ContextData(), *varbinds_get
+                self.snmpEngine, auth_data, transport, context_data, *varbinds_get
             ):
                 if not _any_failure_happened(
                     errorIndication, errorStatus, errorIndex, varBindTable
@@ -360,3 +381,193 @@ def trap(self, work):
     self.process_snmp_data(var_bind_table, metrics)
 
     return {"ts": now, "result": metrics, "host": work["host"], "detectchange": False, "sourcetype": "sc4snmp:traps"}
+
+
+def build_authData(version, community, server_config):
+    """
+    create authData (CommunityData or UsmUserData) instance based on the SNMP's version
+    @params version: str, "1" | "2c" | "3"
+    @params community:
+        for v1/v2c: str, community string/community name, e.g. "public"
+        for v3: str, userName
+    @params server_config: dict of config.yaml
+        for v3 to lookup authKey/privKey using userName
+    @return authData class instance
+        for v1/v2c: CommunityData class instance
+        for v3: UsmUserData class instance
+    reference: https://github.com/etingof/pysnmp/blob/master/pysnmp/hlapi/v3arch/auth.py
+    """
+    if version == "3":
+        try:
+            # Essential params for SNMP v3
+            # UsmUserData(userName, authKey=None, privKey=None)
+            userName = community
+            authKey = None
+            privKey = None
+            authProtocol = None
+            privProtocol = None
+            securityEngineId = None
+            securityName = None
+            authKeyType = 0
+            privKeyType = 0
+
+            if server_config["usernames"].get(userName, None):
+                authKey = server_config["usernames"][userName].get("authKey", None)
+                privKey = server_config["usernames"][userName].get("privKey", None)
+
+                authProtocol = server_config["usernames"][userName].get(
+                    "authProtocol", None
+                )
+                if authProtocol:
+                    authProtocol = AuthProtocolMap.get(authProtocol.upper(), "NONE")
+                privProtocol = server_config["usernames"][userName].get(
+                    "privProtocol", None
+                )
+                if privProtocol:
+                    privProtocol = PrivProtocolMap.get(privProtocol.upper(), "NONE")
+                securityEngineId = server_config["usernames"][userName].get(
+                    "securityEngineId", None
+                )
+                if securityEngineId:
+                    securityEngineId = rfc1902.OctetString(
+                        hexValue=str(securityEngineId)
+                    )
+                securityName = server_config["usernames"][userName].get(
+                    "securityName", None
+                )
+                authKeyType = int(
+                    server_config["usernames"][userName].get("authKeyType", 0)
+                )  # USM_KEY_TYPE_PASSPHRASE
+                privKeyType = int(
+                    server_config["usernames"][userName].get("privKeyType", 0)
+                )  # USM_KEY_TYPE_PASSPHRASE
+        except Exception as e:
+            logger.error(
+                f"Error happend while parsing parmas of UsmUserData for SNMP v3: {e}"
+            )
+        try:
+            logger.debug(
+                f"=============\nuserName - {userName}, authKey - {authKey}, privKey - {privKey}"
+            )
+            return UsmUserData(
+                userName,
+                authKey,
+                privKey,
+                authProtocol,
+                privProtocol,
+                securityEngineId,
+                securityName,
+                authKeyType,
+                privKeyType,
+            )
+        except Exception as e:
+            logger.error(f"Error happend while building UsmUserData for SNMP v3: {e}")
+    else:
+        try:
+            # Essential params for SNMP v1/v2c
+            # CommunityData(community_string, mpModel)
+            communityName = community
+            communityIndex = None
+            contextEngineId = None
+            contextName = None
+            tag = None
+            securityName = None
+            if server_config["communities"].get(communityName, None):
+                communityIndex = server_config["communities"][communityName].get(
+                    "communityIndex", None
+                )
+                contextEngineId = server_config["communities"][communityName].get(
+                    "contextEngineId", None
+                )
+                contextName = server_config["communities"][communityName].get(
+                    "contextName", None
+                )
+                tag = server_config["communities"][communityName].get("tag", None)
+                securityName = server_config["communities"][communityName].get(
+                    "securityName", None
+                )
+            logger.debug(
+                f"\ncommunityName - {communityName}, "
+                f"communityIndex - {communityIndex}, "
+                f"contextEngineId - {contextEngineId}, "
+                f"contextName - {contextName}, "
+                f"tag - {tag}, "
+                f"securityName - {securityName}"
+            )
+        except Exception as e:
+            logger.error(
+                f"Error happend while parsing parmas of communityName for SNMP v1/v2c: {e}"
+            )
+        if version == "1":
+            # for SNMP v1
+            # CommunityData(community_string, mpModel=0)
+            try:
+                # return CommunityData(community, mpModel=0)
+                mpModel = 0
+                return CommunityData(
+                    communityIndex,
+                    communityName,
+                    mpModel,
+                    contextEngineId,
+                    contextName,
+                    tag,
+                    securityName,
+                )
+            except Exception as e:
+                logger.error(
+                    f"Error happend while building CommunityData for SNMP v1: {e}"
+                )
+        else:
+            # for SNMP v2c
+            # CommunityData(community_string, mpModel=1)
+            try:
+                # return CommunityData(community, mpModel=1)
+                mpModel = 1
+                return CommunityData(
+                    communityIndex,
+                    communityName,
+                    mpModel,
+                    contextEngineId,
+                    contextName,
+                    tag,
+                    securityName,
+                )
+            except Exception as e:
+                logger.error(
+                    f"Error happend while building CommunityData for SNMP v2c: {e}"
+                )
+
+
+def build_contextData(version, community, server_config):
+    """
+    create ContextData instance based on the SNMP's version
+    for SNMP v1/v2c, use the default ContextData with contextName as empty string
+    for SNMP v3, users can specify contextName, o.w. use empty string as contextName
+    @params version: str, "1" | "2c" | "3"
+    @params community:
+        for v1/v2c: str, community string/community name, e.g. "public"
+        for v3: str, userName
+    @params server_config: dict of config.yaml
+        for v3 to lookup authKey/privKey using userName
+    @return ContextData class instance
+        for v1/v2c: default ContextData(contextEngineId=None, contextName='')
+        for v3: can specify contextName ContextData(contextEngineId=None, contextName=<contextName>)
+    reference: https://pysnmp.readthedocs.io/en/latest/docs/api-reference.html
+    """
+    contextEngineId = None
+    contextName = ""
+    try:
+        if version == "3" and server_config["usernames"].get(community, None):
+            contextEngineId = server_config["usernames"][community].get(
+                "contextEngineId", None
+            )
+            contextName = server_config["usernames"][community].get("contextName", "")
+        logger.debug(
+            f"======contextEngineId: {contextEngineId}, contextName: {contextName}============="
+        )
+    except Exception as e:
+        logger.error(f"Error happend while parsing params for ContextData: {e}")
+    try:
+        return ContextData(contextEngineId, contextName)
+    except Exception as e:
+        logger.error(f"Error happend while building ContextData: {e}")

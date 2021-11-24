@@ -1,4 +1,26 @@
 poller:
+  communities:
+    public:
+      communityIndex:
+      contextEngineId:
+      contextName:
+      tag:
+      securityName:
+    my-area:
+  usernames:
+    simulator:
+      authKey: "auctoritas"
+      privKey: "privatus"
+    testUser:
+      authKey: authpass
+      privKey: privacypass
+      contextName: "4c9184f37cff01bcdc32dc486ec36961"
+      authProtocol: SHA
+      privProtocol: AES
+      securityEngineId: 8000000004030201
+      securityName:
+      authKeyType: 0
+      privKeyType: 0
   profiles:
     BaseUpTime:
       frequency: 60
