@@ -62,6 +62,8 @@ def inventory_seed(path=None):
             if "delete" in target and hummanBool(ir.delete, default=False):
                 periodic_obj.delete_task(ir.address)
             else:
+                if ir.address.lstrip()[:1] == "#":
+                    continue
                 if ir.version not in ("1", "2", "2c", "3"):
                     logger.error("Invalid version in inventory record {row}")
                     continue
