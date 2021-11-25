@@ -76,14 +76,14 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
     transportDomain, transportAddress = snmpEngine.msgAndPduDsp.getTransportInfo(
         stateReference
     )
-    print(
+    logger.debug(
         "Notification from %s, SNMP Engine %s, Context %s"
         % (transportAddress, contextEngineId.prettyPrint(), contextName.prettyPrint())
     )
     data = []
     for name, val in varBinds:
         data.append((name.prettyPrint(), val.prettyPrint()))
-        print(f"{name.prettyPrint()} = {val.prettyPrint()}")
+        logger.debug(f"{name.prettyPrint()} = {val.prettyPrint()}")
 
     work = {"data": data, "host": transportAddress[0]}
 
