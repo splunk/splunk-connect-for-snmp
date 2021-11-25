@@ -10,8 +10,8 @@ spec:
   type: LoadBalancer
   loadBalancerIP: {{ .Values.traps.loadBalancerIP }}
   ports:
-    - port: 2162
-      targetPort: 2162
+    - port: 2062
+      targetPort: 162
       protocol: UDP
   selector:
     app: sc4snmp-traps
