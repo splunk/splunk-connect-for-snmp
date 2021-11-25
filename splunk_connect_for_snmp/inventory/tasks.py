@@ -7,18 +7,18 @@ except:
 import csv
 import os
 import re
-from typing import List, Union
+from typing import List
 
 import pymongo
 import urllib3
 import yaml
 from bson.objectid import ObjectId
 from celery import shared_task
-from celery.canvas import chain, chord, group, signature
+from celery.canvas import chain, group, signature
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.common.hummanbool import hummanBool
+from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -59,8 +59,9 @@ def inventory_seed(path=None):
             except:
                 ir.walk_interval = 42000
 
-            if "delete" in target and hummanBool(ir.delete, default=False):
+            if "delete" in target and human_bool(ir.delete, default=False):
                 periodic_obj.delete_task(ir.address)
+                logger.info(f"Deleting device: {ir.address}")
             else:
                 if ir.address.lstrip()[:1] == "#":
                     continue
@@ -97,7 +98,7 @@ def inventory_seed(path=None):
                 if ir.profiles:
                     profiles = ir.profiles
 
-                SmartProfiles: bool = hummanBool(ir.SmartProfiles, default=True)
+                SmartProfiles: bool = human_bool(ir.SmartProfiles, default=True)
 
                 updates.append(
                     {
@@ -114,6 +115,7 @@ def inventory_seed(path=None):
                 ur = targets_collection.update_one(
                     {"target": ir.address}, updates, upsert=True
                 )
+                logger.debug(f"Updating target={ir.address} with updates={updates}")
                 fr = targets_collection.find_one({"target": ir.address}, {"_id": True})
                 task_config = {
                     "name": f"sc4snmp;{ir.address};walk",
@@ -151,7 +153,7 @@ def inventory_seed(path=None):
 
                 if ur.modified_count:
                     logger.debug("Device Config Changed need to walk")
-                    logger.info(f"Upserted id: {fr['_id']}")
+                    logger.debug(f"Upserted id: {fr['_id']}")
                     task_config["kwargs"]["id"] = str(fr["_id"])
                     task_config["run_immediately"] = True
                 else:
@@ -182,7 +184,7 @@ def inventory_setup_poller(work):
             logger.debug(f"Checking match for {profile_name} {profile}")
 
             # Skip this profile its disabled
-            if hummanBool(profile.get("disabled", False), default=False):
+            if human_bool(profile.get("disabled", False), default=False):
                 logger.debug(f"Skipping disabled profile {profile_name}")
                 continue
 

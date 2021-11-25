@@ -13,13 +13,13 @@ from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 from requests import ConnectionError, ConnectTimeout, ReadTimeout, Session, Timeout
 
-from splunk_connect_for_snmp.common.hummanbool import hummanBool
+from splunk_connect_for_snmp.common.hummanbool import human_bool
 
 SPLUNK_HEC_URI = os.getenv("SPLUNK_HEC_URI")
 SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN", None)
 SPLUNK_HEC_INDEX_EVENTS = os.getenv("SPLUNK_HEC_INDEX_EVENTS", "netops")
 SPLUNK_HEC_INDEX_METRICS = os.getenv("SPLUNK_HEC_INDEX_METRICS", "netmetrics")
-SPLUNK_HEC_TLSVERIFY = hummanBool(
+SPLUNK_HEC_TLSVERIFY = human_bool(
     os.getenv("SPLUNK_HEC_TLSVERIFY", "yes"), default=True
 )
 
