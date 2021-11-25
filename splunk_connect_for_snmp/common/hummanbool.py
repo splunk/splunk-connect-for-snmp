@@ -1,7 +1,7 @@
 from typing import Union
 
 
-def hummanBool(flag: Union[str, bool], default: bool = False) -> bool:
+def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
 
     if isinstance(flag, bool):
         return flag
