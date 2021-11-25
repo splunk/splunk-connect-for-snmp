@@ -51,7 +51,7 @@ spec:
             - name: LOG_LEVEL
               value: {{ .Values.scheduler.logLevel | default "INFO" }}
             - name: INVENTORY_REFRESH_RATE
-              value: {{ .Values.scheduler.inventory_refresh_rate | default "600" }}
+              value: {{ .Values.scheduler.inventory_refresh_rate | quote | default "600" }}
           volumeMounts:
             - name: config
               mountPath: "/work/config"
