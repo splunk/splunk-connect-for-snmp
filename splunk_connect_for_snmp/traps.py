@@ -64,7 +64,7 @@ snmpEngine = engine.SnmpEngine()
 config.addTransport(
     snmpEngine,
     udp.domainName + (1,),
-    udp.UdpTransport().openServerMode(("127.0.0.1", 2062)),
+    udp.UdpTransport().openServerMode(("127.0.0.1", 2162)),
 )
 
 # SecurityName <-> CommunityName mapping

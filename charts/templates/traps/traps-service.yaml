@@ -10,7 +10,7 @@ spec:
   type: LoadBalancer
   loadBalancerIP: {{ .Values.traps.loadBalancerIP }}
   ports:
-    - port: 2062
+    - port: 162
       targetPort: 2162
       protocol: UDP
   selector:
