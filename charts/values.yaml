@@ -2,7 +2,7 @@ splunk:
   protocol: https
   host: ###SPLUNK_HOST###
   token: ###SPLUNK_TOKEN###
-  insecureSSL: "false"
+  secureSSL: "false"
   port: ###SPLUNK_PORT###
   clusterName: ###CLUSTER_NAME###
 sc4snmp:

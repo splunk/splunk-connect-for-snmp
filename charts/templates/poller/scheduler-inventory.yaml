@@ -6,4 +6,3 @@ metadata:
 data:
   inventory.csv: |-
 {{ .Values.files.scheduler.inventory | indent 4}}
-

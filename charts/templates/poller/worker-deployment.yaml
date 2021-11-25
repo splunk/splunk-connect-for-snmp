@@ -26,34 +26,27 @@ spec:
           imagePullPolicy: {{ .Values.sc4snmp.pullPolicy | default "IfNotPresent" }}
           args:
             [
-              "celery","worker",
+              "celery", "worker",
             ]
           securityContext:
             allowPrivilegeEscalation: false          
           env:
             - name: CELERY_BROKER_URL
-              value: amqp://sc4snmp:sc4snmp@sc4snmp-rabbitmq-headless:5672/
+              value: amqp://{{ .Release.Namespace }}:sc4snmp@sc4snmp-rabbitmq:5672/
             - name: MONGO_URI
           {{- if eq .Values.mongodb.architecture "replicaset" }}
               value: mongodb+srv://sc4snmp-mongodb-headless.{{ .Release.Namespace }}.svc.{{ .Values.mongodb.clusterDomain }}/?tls=false&ssl=false&replicaSet=rs0
           {{ else }}
               value: mongodb://sc4snmp-mongodb:27017
-          {{ end }}              
-            - name: MIBS_SERVER_URL
-              value: {{ printf "http://sc4snmp-mib-server-service:%s" ( .Values.mib.service_port | default "5000" ) | quote }}
-            - name: MIBS_FILES_URL
-              value: $(MIBS_SERVER_URL)/files/asn1/@mib@
-            - name: MIB_SERVER_SERVICE_SERVICE_HOST
-              value: sc4snmp-mib-server
-            - name: MIB_SERVER_SERVICE_SERVICE_PORT
-              value: {{ .Values.mib.service_port | quote }}
-            - name: OTEL_SERVER_LOGS_URL
-              value: {{ printf "http://otel-service:%s" ( .Values.otel.service_logs_port | default "8881" ) | quote }}
-            - name: OTEL_SERVER_METRICS_URL
-              value: {{ printf "http://otel-service:%s" ( .Values.otel.service_metrics_port | default "8882" ) | quote }}
+          {{ end }}
+            - name: SPLUNK_HEC_URI
+              value: {{ printf "%s://%s:%s/services/collector" .Values.splunk.protocol .Values.splunk.host .Values.splunk.port | quote }}
+            - name: SPLUNK_HEC_TOKEN
+              value: {{ .Values.splunk.token | quote }}
+            - name: SPLUNK_HEC_TLSVERIFY
+              value: {{ .Values.splunk.secureSSL | quote }}
             - name: LOG_LEVEL
-              value: {{ .Values.worker.logLevel | default "INFO" }}
-     
+              value: {{ .Values.worker.logLevel | default "info" }}
           volumeMounts:
             - name: config
               mountPath: "/work/config"
