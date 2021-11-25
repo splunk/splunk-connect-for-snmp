@@ -2,7 +2,7 @@ splunk:
   protocol: https
   host: ###SPLUNK_HOST###
   token: ###SPLUNK_TOKEN###
-  insecureSSL: "false"
+  secureSSL: "false"
   port: ###SPLUNK_PORT###
   clusterName: ###CLUSTER_NAME###
 otel:
@@ -76,6 +76,57 @@ files:
       host,version,community,profile
       #10.0.0.1,2c,public,basev1
     config:
+      poller:
+        profiles:
+          BaseUpTime:
+            frequency: 60
+            condition:
+              type: "base"
+              # field: "SNMPv2-MIB.sysDescr"
+              # patterns:
+              #   - "^.*"
+              #"SNMPv2-MIB.sysObjectID"
+            varBinds:
+              - ["SNMPv2-MIB", "sysUpTime",0]
+          BaseDeviceData:
+            frequency: 600
+            condition:
+              type: "base"
+            varBinds:
+              # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+              - ["SNMPv2-MIB", "sysDescr",0]
+              - ["SNMPv2-MIB", "sysName",0]
+              - ["SNMPv2-MIB", "sysObjectID",0]
+              - ["SNMPv2-MIB", "sysContact",0]
+              - ["SNMPv2-MIB", "sysLocation",0]
+          EnirchIF:
+            frequency: 600
+            condition:
+              type: "base"
+            varBinds:
+              - ["IF-MIB", "ifDescr"]
+              - ["IF-MIB", "ifAdminStatus"]
+              - ["IF-MIB", "ifName"]
+              - ["IF-MIB", "ifAlias"]
+          BaseIF:
+            frequency: 30
+            condition:
+              type: "base"
+            varBinds:
+              # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+              - ["IF-MIB", "ifInDiscards"]
+              - ["IF-MIB", "ifInErrors"]
+              - ["IF-MIB", "ifInNUcastPkts"]
+              - ["IF-MIB", "ifInOctets"]
+              - ["IF-MIB", "ifInUcastPkts"]
+              - ["IF-MIB", "ifInUnknownProtos"]
+              - ["IF-MIB", "ifOutDiscards"]
+              - ["IF-MIB", "ifOutErrors"]
+              - ["IF-MIB", "ifOutNUcastPkts"]
+              - ["IF-MIB", "ifOutOctets"]
+              - ["IF-MIB", "ifOutQLen"]
+              - ["IF-MIB", "ifOutUcastPkts", 1]
+              - ["TCP-MIB", "tcpCurrEstab", 0]
   ############################
   #      ### Example of usernames ###
   #      usernames: |

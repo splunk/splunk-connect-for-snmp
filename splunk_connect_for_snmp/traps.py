@@ -53,7 +53,7 @@ app.autodiscover_tasks(
 # Get the event loop for this thread
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
-
+logger.info("START EVENT LOOP")
 # Create SNMP engine with autogenernated engineID and pre-bound
 # to socket transport dispatcher
 snmpEngine = engine.SnmpEngine()
