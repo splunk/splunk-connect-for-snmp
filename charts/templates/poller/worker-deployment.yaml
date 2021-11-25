@@ -51,9 +51,6 @@ spec:
             - name: config
               mountPath: "/work/config"
               readOnly: true
-            - name: inventory
-              mountPath: "/work/inventory"
-              readOnly: false
             - name: pysnmp-cache-volume
               mountPath: "/.pysnmp/"
               readOnly: false
@@ -78,13 +75,5 @@ spec:
             items:
               - key: "config.yaml"
                 path: "config.yaml"
-        - name: inventory
-          configMap:
-            # Provide the name of the ConfigMap you want to mount.
-            name: sc4snmp-inventory
-            # An array of keys from the ConfigMap to create as files
-            items:
-              - key: "inventory.csv"
-                path: "inventory.csv"
         - name: pysnmp-cache-volume
           emptyDir: {}                
