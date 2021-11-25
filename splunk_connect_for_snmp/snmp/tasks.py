@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import pysnmp
 import yaml
 
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
@@ -42,7 +43,9 @@ from pysnmp.hlapi import *
 #     bulkCmd,
 #     ContextData,
 # )
-from pysnmp.smi import builder, compiler, rfc1902, view
+from pysnmp.proto import rfc1902
+from pysnmp.smi import compiler, view
+from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
 
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
@@ -430,7 +433,7 @@ def build_authData(version, community, server_config):
                     "securityEngineId", None
                 )
                 if securityEngineId:
-                    securityEngineId = rfc1902.OctetString(
+                    securityEngineId = pysnmp.proto.rfc1902.OctetString(
                         hexValue=str(securityEngineId)
                     )
                 securityName = server_config["usernames"][userName].get(

@@ -11,9 +11,9 @@ poller:
     simulator:
       authKey: "auctoritas"
       privKey: "privatus"
-    testUser:
-      authKey: authpass
-      privKey: privacypass
+    snmp-poller:
+      authKey: PASSWORD1
+      privKey: PASSWORD1
       contextName: "4c9184f37cff01bcdc32dc486ec36961"
       authProtocol: SHA
       privProtocol: AES
