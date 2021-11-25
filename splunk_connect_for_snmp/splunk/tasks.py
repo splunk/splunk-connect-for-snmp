@@ -121,6 +121,8 @@ def prepare(work):
             }
             if "frequency" in work:
                 metric["fields"]["frequency"] = work["frequency"]
+            if "profiles" in work:
+                metric["fields"]["profiles"] = ",".join(work["profiles"])
             for field, values in data["fields"].items():
                 short_field = field.split(".")[-1]
                 metric["fields"][short_field] = valueAsBest(values["value"])
