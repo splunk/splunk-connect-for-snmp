@@ -27,7 +27,7 @@ requests-ratelimiter = "^0.2.1"
 mongoengine = "^0.23.1"
 #celerybeat-mongo = "^0.2.0"
 celerybeat-mongo = {git="https://github.com/rfaircloth-splunk/celerybeat-mongo", branch="main"}
-pysnmplib = {git="https://github.com/pysnmp/pysnmp", branch="main"}
+pysnmplib = "^5.0.5"
 PyYAML = "^6.0"
 #Note this is temporary PR to upstream project is issued
 wait-for-dep = { git="https://github.com/rfaircloth-splunk/wait-for-dep.git" }

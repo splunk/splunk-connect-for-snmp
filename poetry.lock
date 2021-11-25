@@ -195,7 +195,7 @@ python-versions = ">=3.6.1"
 
 [[package]]
 name = "charset-normalizer"
-version = "2.0.7"
+version = "2.0.8"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
 category = "main"
 optional = false
@@ -889,7 +889,7 @@ python-versions = ">=3.6.1,<4.0.0"
 
 [[package]]
 name = "pysnmp-pyasn1"
-version = "1.1.0"
+version = "1.1.2"
 description = "ASN.1 types and codecs"
 category = "main"
 optional = false
@@ -897,11 +897,11 @@ python-versions = ">=3.8,<4.0"
 
 [[package]]
 name = "pysnmp-pysmi"
-version = "1.1.3"
+version = "1.1.6"
 description = ""
 category = "main"
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
 ply = ">=3.11,<4.0"
@@ -909,43 +909,16 @@ requests = ">=2.26.0,<3.0.0"
 
 [[package]]
 name = "pysnmplib"
-version = "5.0.6"
+version = "5.0.9"
 description = ""
 category = "main"
 optional = false
-python-versions = "^3.8"
-develop = false
+python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
-pycryptodomex = "^3.11.0"
-pysnmp-pyasn1 = "^1.0.3"
-pysnmp-pysmi = "^1.0.4"
-
-[package.source]
-type = "git"
-url = "https://github.com/pysnmp/pysnmp"
-reference = "main"
-resolved_reference = "e9ef0e2166a8665cfaf928539ca4171f4b82f430"
-
-[[package]]
-name = "pysnmplib"
-version = "5.0.7"
-description = ""
-category = "main"
-optional = false
-python-versions = "^3.8"
-develop = false
-
-[package.dependencies]
-pycryptodomex = "^3.11.0"
-pysnmp-pyasn1 = "^1.0.3"
-pysnmp-pysmi = "^1.0.4"
-
-[package.source]
-type = "git"
-url = "https://github.com/pysnmp/pysnmp"
-reference = "main"
-resolved_reference = "5d09c42c2b57cac8f10d17719486c7aec6d2920a"
+pycryptodomex = ">=3.11.0,<4.0.0"
+pysnmp-pyasn1 = ">=1.0.3,<2.0.0"
+pysnmp-pysmi = ">=1.0.4,<2.0.0"
 
 [[package]]
 name = "pytest"
@@ -1292,7 +1265,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "8d8b10671dd9e24b13730efa9753d5107d70cf412a62f53184ae6e3327f6116a"
+content-hash = "4e163b4910adfb9a9936f640fac9cf81da067a08b664c1ab4c92eecc4751f3b8"
 
 [metadata.files]
 amqp = [
@@ -1344,8 +1317,8 @@ cfgv = [
     {file = "cfgv-3.3.1.tar.gz", hash = "sha256:f5a830efb9ce7a445376bb66ec94c638a9787422f96264c98edc6bdeed8ab736"},
 ]
 charset-normalizer = [
-    {file = "charset-normalizer-2.0.7.tar.gz", hash = "sha256:e019de665e2bcf9c2b64e2e5aa025fa991da8720daa3c1138cadd2fd1856aed0"},
-    {file = "charset_normalizer-2.0.7-py3-none-any.whl", hash = "sha256:f7af805c321bfa1ce6714c51f254e0d5bb5e5834039bc17db7ebe3a4cec9492b"},
+    {file = "charset-normalizer-2.0.8.tar.gz", hash = "sha256:735e240d9a8506778cd7a453d97e817e536bb1fc29f4f6961ce297b9c7a917b0"},
+    {file = "charset_normalizer-2.0.8-py3-none-any.whl", hash = "sha256:83fcdeb225499d6344c8f7f34684c2981270beacc32ede2e669e94f7fa544405"},
 ]
 click = [
     {file = "click-8.0.3-py3-none-any.whl", hash = "sha256:353f466495adaeb40b6b5f592f9f91cb22372351c84caeb068132442a4518ef3"},
@@ -1796,14 +1769,17 @@ pyrate-limiter = [
     {file = "pyrate-limiter-2.4.7.tar.gz", hash = "sha256:1201725eaed89d4a139b6bff73f9b660bf82c002e5d3d529c4f60981133f3128"},
 ]
 pysnmp-pyasn1 = [
-    {file = "pysnmp-pyasn1-1.1.0.tar.gz", hash = "sha256:f5d287c9661cf744f5d1d36917ea09a7876a238601cae4d1a17c868c6c566e10"},
-    {file = "pysnmp_pyasn1-1.1.0-py3-none-any.whl", hash = "sha256:9a6946eb87df06d93e90912a78fdf8e45ae7282a281edce967532e27b569966f"},
+    {file = "pysnmp-pyasn1-1.1.2.tar.gz", hash = "sha256:b3345370fcb49e03ecc78b336a3f940e0c0c1409d702f64af1fe165b61e37b35"},
+    {file = "pysnmp_pyasn1-1.1.2-py3-none-any.whl", hash = "sha256:de4132bc2931a7b32277aac1ce8e7650db137199df087a376530153b1b1b4d8d"},
 ]
 pysnmp-pysmi = [
-    {file = "pysnmp-pysmi-1.1.3.tar.gz", hash = "sha256:369d2e5c0dbc092054d4400aa361286aebb2256afda881a57a88cfee10b757e2"},
-    {file = "pysnmp_pysmi-1.1.3-py3-none-any.whl", hash = "sha256:83cb89ead90de657eb092ee85bc453769ffc322bafa0f8ff72f0763f516c0f73"},
+    {file = "pysnmp-pysmi-1.1.6.tar.gz", hash = "sha256:0db4c90616e9fef533bfe2a4febcc3e454f2c848d40596070952c227c55b9ecc"},
+    {file = "pysnmp_pysmi-1.1.6-py3-none-any.whl", hash = "sha256:4709148646ab594f7cb3edde4bf298484f3eff149e078af54e3aec1b99af8a0b"},
 ]
-pysnmplib = []
+pysnmplib = [
+    {file = "pysnmplib-5.0.9-py3-none-any.whl", hash = "sha256:36d86e66464e4a1ccb909baf04dd1ff49e5afcb44187a499a8f7ac151b3f48af"},
+    {file = "pysnmplib-5.0.9.tar.gz", hash = "sha256:567287d0e0eb19028f972ad7e3cd7893469bcdd9850b2487ac663575e37acf60"},
+]
 pytest = [
     {file = "pytest-6.2.5-py3-none-any.whl", hash = "sha256:7310f8d27bc79ced999e760ca304d69f6ba6c6649c0b60fb0e04a4a77cacc134"},
     {file = "pytest-6.2.5.tar.gz", hash = "sha256:131b36680866a76e6781d13f101efb86cf674ebb9762eb70d3082b6f29889e89"},
