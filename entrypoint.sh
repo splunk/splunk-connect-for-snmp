@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 set -e
-echo args "$@"
-echo $(pwd)
-echo $(ls -l)
 . /app/.venv/bin/activate
 LOG_LEVEL=${LOG_LEVEL:=INFO}
-echo $LOG_LEVEL
 wait-for-dep "${CELERY_BROKER_URL}"
 wait-for-dep "${MONGO_URI}"
 
