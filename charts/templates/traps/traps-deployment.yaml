@@ -16,20 +16,20 @@ spec:
         app: sc4snmp-traps
     spec:
       securityContext:
-          runAsNonRoot: true      
+          runAsNonRoot: true
           runAsUser: 1001
           runAsGroup: 1001
-          fsGroup: 2000    
+          fsGroup: 2000
       containers:
         - name: traps
           image: {{ .Values.sc4snmp.image | default "ghcr.io/splunk/splunk-connect-for-snmp/container" }}:{{ .Values.sc4snmp.tag | default "1" }}
           imagePullPolicy: {{ .Values.sc4snmp.pullPolicy | default "IfNotPresent" }}
           args:
             [
-              "trap",
+              "trap"
             ]
           securityContext:
-            allowPrivilegeEscalation: false          
+            allowPrivilegeEscalation: false
           ports:
             - containerPort: 2162
           env:
@@ -40,7 +40,7 @@ spec:
               value: mongodb+srv://sc4snmp-mongodb-headless.{{ .Release.Namespace }}.svc.{{ .Values.mongodb.clusterDomain }}/?tls=false&ssl=false&replicaSet=rs0
           {{ else }}
               value: mongodb://sc4snmp-mongodb:27017
-          {{ end }}              
+          {{ end }}
             - name: MIBS_SERVER_URL
               value: {{ printf "http://sc4snmp-mib-server-service:%s" "5000" | quote }}
             - name: OTEL_SERVER_URL
@@ -73,4 +73,4 @@ spec:
               - key: "config.yaml"
                 path: "config.yaml"
         - name: pysnmp-cache-volume
-          emptyDir: {}                
+          emptyDir: {}

@@ -12,7 +12,7 @@ log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(linen
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 pymongo = {extras = ["srv"], version = "^3.12.1"}
 requests = {extras = ["crypto"], version = "^2.26.0"}
 celery = "^5.2.0"
@@ -27,7 +27,7 @@ requests-ratelimiter = "^0.2.1"
 mongoengine = "^0.23.1"
 #celerybeat-mongo = "^0.2.0"
 celerybeat-mongo = {git="https://github.com/rfaircloth-splunk/celerybeat-mongo", branch="main"}
-pysnmplib = "^5.0.1"
+pysnmplib = "^5.0.5"
 PyYAML = "^6.0"
 #Note this is temporary PR to upstream project is issued
 wait-for-dep = { git="https://github.com/rfaircloth-splunk/wait-for-dep.git" }

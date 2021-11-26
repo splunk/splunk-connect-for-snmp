@@ -364,7 +364,8 @@ def poll(self, **kwargs):
 
     # TODO: If profile has third value use get instead
 
-    work = {"id": kwargs["id"], "ts": now, "result": result, "detectchange": False, "frequency": kwargs["frequency"]}
+    work = {"id": kwargs["id"], "ts": now, "result": result, "detectchange": False, "frequency": kwargs["frequency"],
+            "profiles": kwargs["profiles"]}
 
     return work
 
