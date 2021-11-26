@@ -68,6 +68,7 @@ files:
       address,version,community,walk_interval,profiles,SmartProfiles,delete
       #10.0.0.1,2c,public,300,,True,
     config:
+      poller: {}
   ############################
   #      ### Example of usernames ###
   #      usernames: |
