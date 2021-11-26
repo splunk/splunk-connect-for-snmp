@@ -5,20 +5,12 @@ splunk:
   secureSSL: "false"
   port: ###SPLUNK_PORT###
   clusterName: ###CLUSTER_NAME###
-otel:
-  image: quay.io/signalfx/splunk-otel-collector
+sc4snmp:
+  image: ghcr.io/splunk/splunk-connect-for-snmp/container
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.22.0"
-  replicas: 1
-  signalfx_mode: "splunk"
-  signalfx_token: ""
-  signalfx_realm: ""
+  tag: "next"
 traps:
-  image: ghcr.io/splunk/splunk-connect-for-snmp-traps/container
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "1"
   #  logLevel: "WARN"
   replicas: 1
   loadBalancerIP: ###X.X.X.X###
@@ -43,10 +35,6 @@ scheduler:
 #      cpu: 1000m
 #      memory: 2Gi
 mib:
-  image: ghcr.io/splunk/splunk-connect-for-snmp-mib-server/container
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "1"
   replicas: 1
 #  resources:
 #    limits:
@@ -56,8 +44,6 @@ mib:
 #      cpu: 100m
 #      memory: 128Mi
 poller:
-  image: ghcr.io/splunk/splunk-connect-for-snmp-poller/container
-  pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "1"
   #  logLevel: "WARN"
@@ -73,8 +59,8 @@ worker:
 files:
   scheduler:
     inventory: |
-      host,version,community,profile
-      #10.0.0.1,2c,public,basev1
+      address,version,community,walk_interval,profiles,SmartProfiles,delete
+      #10.0.0.1,2c,public,300,,True,
     config:
       poller:
         profiles:
