@@ -63,7 +63,7 @@ files:
       #10.0.0.1,2c,public,300,,True,
     config:
       poller:
-        profiles:
+        profiles: |
           BaseUpTime:
             frequency: 60
             condition:
