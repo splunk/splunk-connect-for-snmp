@@ -139,7 +139,9 @@ def enrich(self, result):
 
             if len(updates) >= 20:
                 targets_collection.update_one({"_id": target_id}, updates, upsert=True)
-                logger.debug(f"Executing enricher update for target={target_id} with content={updates}")
+                logger.debug(
+                    f"Executing enricher update for target={target_id} with content={updates}"
+                )
                 updates.clear()
 
         # Now add back any fields we need
@@ -154,5 +156,6 @@ def enrich(self, result):
                             persist_data["name"]
                         ] = persist_data
 
-    result["host"] = current_target["target"].split(":")[0]
+    if "host" not in result.keys():
+        result["host"] = result["address"].split(":")[0]
     return result
