@@ -15,7 +15,7 @@
 #
 import asyncio
 
-from celery import Celery, signals, chain
+from celery import Celery, chain, signals
 from celery.utils.log import get_task_logger
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
@@ -79,7 +79,7 @@ snmpEngine = engine.SnmpEngine()
 config.addTransport(
     snmpEngine,
     udp.domainName + (1,),
-    udp.UdpTransport().openServerMode(("127.0.0.1", 2162)),
+    udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
 )
 
 # SecurityName <-> CommunityName mapping
