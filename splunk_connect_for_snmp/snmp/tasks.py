@@ -234,8 +234,12 @@ class SNMPTask(Task):
         # Connection and Security setup
         target_address = kwargs["address"].split(":")[0]
         target_port = kwargs["address"].split(":")[1]
-        auth_data = build_authData(kwargs["version"], kwargs["community"], config_base["poller"])
-        context_data = build_contextData(kwargs["version"], kwargs["community"], config_base["poller"])
+        auth_data = build_authData(
+            kwargs["version"], kwargs["community"], config_base["poller"]
+        )
+        context_data = build_contextData(
+            kwargs["version"], kwargs["community"], config_base["poller"]
+        )
 
         transport = UdpTransportTarget((target_address, target_port))
 
@@ -351,7 +355,10 @@ def walk(self, **kwargs):
         retry, result = self.run_walk(kwargs)
 
     # After a Walk tell schedule to recalc
-    work = {"id": kwargs["id"], "ts": now, "result": result, "reschedule": True}
+    work = kwargs
+    work["ts"] = now
+    work["result"] = result
+    work["reschedule"] = True
 
     return work
 
@@ -364,9 +371,10 @@ def poll(self, **kwargs):
     retry, result = self.run_walk(kwargs)
 
     # TODO: If profile has third value use get instead
-
-    work = {"id": kwargs["id"], "ts": now, "result": result, "detectchange": False, "frequency": kwargs["frequency"],
-            "profiles": kwargs["profiles"]}
+    work = kwargs
+    work["ts"] = now
+    work["result"] = result
+    work["detectchange"] = False
 
     return work
 
@@ -385,7 +393,13 @@ def trap(self, work):
 
     self.process_snmp_data(var_bind_table, metrics)
 
-    return {"ts": now, "result": metrics, "host": work["host"], "detectchange": False, "sourcetype": "sc4snmp:traps"}
+    return {
+        "ts": now,
+        "result": metrics,
+        "host": work["host"],
+        "detectchange": False,
+        "sourcetype": "sc4snmp:traps",
+    }
 
 
 def build_authData(version, community, server_config):
