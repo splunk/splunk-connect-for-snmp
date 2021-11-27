@@ -18,6 +18,9 @@ from typing import Union
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
 
+    if flag is None:
+        return False
+
     if isinstance(flag, bool):
         return flag
 
