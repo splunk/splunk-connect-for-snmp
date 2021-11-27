@@ -30,7 +30,7 @@ celerybeat-mongo = {git="https://github.com/rfaircloth-splunk/celerybeat-mongo",
 pysnmplib = "^5.0.5"
 PyYAML = "^6.0"
 #Note this is temporary PR to upstream project is issued
-wait-for-dep = { git="https://github.com/rfaircloth-splunk/wait-for-dep.git" }
+wait-for-dep = { git="https://github.com/rfaircloth-splunk/wait-for-dep.git"  }
 flower = "^1.0.0"
 mongolock = "^1.3.4"
 
