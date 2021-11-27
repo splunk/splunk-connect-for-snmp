@@ -347,11 +347,17 @@ class SNMPTask(Task):
         return retry, remotemibs
 
 
-@shared_task(bind=True, base=SNMPTask, expires=21000)
+@shared_task(
+    bind=True,
+    base=SNMPTask,
+    expires=21000,
+    autoretry_for=[MongoLockLocked],
+)
 def walk(self, **kwargs):
 
     retry = True
-    lock = MongoLock()
+    mongo_client = pymongo.MongoClient(MONGO_URI)
+    lock = MongoLock(client=mongo_client, db="sc4snmp")
     with lock(kwargs["address"], self.request.id, expire=300, timeout=300):
         now = str(time.time())
         while retry:
@@ -373,12 +379,12 @@ def walk(self, **kwargs):
     max_retries=3,
     retry_backoff=True,
     retry_backoff_max=1,
-    autoretry_for=[MongoLockLocked],
     retry_jitter=True,
     expires=30,
 )
 def poll(self, **kwargs):
-    lock = MongoLock()
+    mongo_client = pymongo.MongoClient(MONGO_URI)
+    lock = MongoLock(client=mongo_client, db="sc4snmp")
     with lock(kwargs["address"], self.request.id, expire=90, timeout=20):
         now = str(time.time())
 
