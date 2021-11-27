@@ -77,7 +77,7 @@ def inventory_seed(path=None):
             except:
                 ir.walk_interval = 42000
 
-            if "delete" in target and human_bool(ir.delete, default=False):
+            if human_bool(ir.delete, default=False):
                 periodic_obj.delete_task(ir.address)
                 logger.info(f"Deleting device: {ir.address}")
             else:
