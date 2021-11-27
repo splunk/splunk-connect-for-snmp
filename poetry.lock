@@ -1208,7 +1208,7 @@ testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", 
 
 [[package]]
 name = "wait-for-dep"
-version = "0.3.2"
+version = "0.3.2.1"
 description = "Waits for dependencies before running the app"
 category = "main"
 optional = false
@@ -1232,7 +1232,7 @@ websockets = ["websocket-server"]
 type = "git"
 url = "https://github.com/rfaircloth-splunk/wait-for-dep.git"
 reference = "master"
-resolved_reference = "86a61845af3867750fd848433c76b2bac4b5c15c"
+resolved_reference = "cfa6b17c11017bf96b70f7812874b3611f1bd4e4"
 
 [[package]]
 name = "watchdog"
