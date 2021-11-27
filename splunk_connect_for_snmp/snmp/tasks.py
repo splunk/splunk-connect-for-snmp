@@ -34,6 +34,7 @@ from typing import List, Union
 import pymongo
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
+from mongolock import MongoLock, MongoLockLocked
 from pysnmp.hlapi import *
 
 # from pysnmp.hlapi import (
@@ -346,13 +347,15 @@ class SNMPTask(Task):
         return retry, remotemibs
 
 
-@shared_task(bind=True, base=SNMPTask)
+@shared_task(bind=True, base=SNMPTask, expires=21000)
 def walk(self, **kwargs):
 
     retry = True
-    now = str(time.time())
-    while retry:
-        retry, result = self.run_walk(kwargs)
+    lock = MongoLock()
+    with lock(kwargs["address"], self.request.id, expire=300, timeout=300):
+        now = str(time.time())
+        while retry:
+            retry, result = self.run_walk(kwargs)
 
     # After a Walk tell schedule to recalc
     work = kwargs
@@ -363,12 +366,24 @@ def walk(self, **kwargs):
     return work
 
 
-@shared_task(bind=True, base=SNMPTask)
+@shared_task(
+    bind=True,
+    base=SNMPTask,
+    default_retry_delay=5,
+    max_retries=3,
+    retry_backoff=True,
+    retry_backoff_max=1,
+    autoretry_for=[MongoLockLocked],
+    retry_jitter=True,
+    expires=30,
+)
 def poll(self, **kwargs):
-    now = str(time.time())
+    lock = MongoLock()
+    with lock(kwargs["address"], self.request.id, expire=90, timeout=20):
+        now = str(time.time())
 
-    # After a Walk tell schedule to recalc
-    retry, result = self.run_walk(kwargs)
+        # After a Walk tell schedule to recalc
+        retry, result = self.run_walk(kwargs)
 
     # TODO: If profile has third value use get instead
     work = kwargs
