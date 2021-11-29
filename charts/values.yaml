@@ -55,13 +55,13 @@ otel:
 worker:
   #  logLevel: "WARN"
   replicas: 2
-#  resources:
-#    limits:
-#      cpu: 200m
-#      memory: 256Mi
-#    requests:
-#      cpu: 200m
-#      memory: 256Mi
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+    requests:
+      cpu: 1000m
+      memory: 1024Mi
 files:
   scheduler:
     inventory: |
