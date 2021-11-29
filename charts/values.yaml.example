@@ -260,12 +260,12 @@ rabbitmq:
     ## @param auth.password RabbitMQ application password
     ## ref: https://github.com/bitnami/bitnami-docker-rabbitmq#environment-variables
     ##
-    password: "sc4snmp"
+    existingPasswordSecret: snmp-rabbitmq-password
 
     ## @param auth.erlangCookie Erlang cookie to determine whether different nodes are allowed to communicate with each other
     ## ref: https://github.com/bitnami/bitnami-docker-rabbitmq#environment-variables
     ##
-    erlangCookie: "9xdEl2TBqFJJMjtt3Bds1Fpdh9Wgs1YL"
+    erlangCookie: snmp-rabbitmq-cookie
 
   # ## Loading a RabbitMQ definitions file to configure RabbitMQ
   # ##
