@@ -68,7 +68,6 @@ app.autodiscover_tasks(
 # Get the event loop for this thread
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
-logger.info("START EVENT LOOP")
 # Create SNMP engine with autogenernated engineID and pre-bound
 # to socket transport dispatcher
 snmpEngine = engine.SnmpEngine()
@@ -91,14 +90,9 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
     transportDomain, transportAddress = snmpEngine.msgAndPduDsp.getTransportInfo(
         stateReference
     )
-    logger.debug(
-        "Notification from %s, SNMP Engine %s, Context %s"
-        % (transportAddress, contextEngineId.prettyPrint(), contextName.prettyPrint())
-    )
     data = []
     for name, val in varBinds:
         data.append((name.prettyPrint(), val.prettyPrint()))
-        logger.debug(f"{name.prettyPrint()} = {val.prettyPrint()}")
 
     work = {"data": data, "host": transportAddress[0]}
 
