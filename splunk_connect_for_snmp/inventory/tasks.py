@@ -114,7 +114,7 @@ def inventory_seed(path=None):
                 )
                 profiles: List[str] = []
                 if ir.profiles:
-                    profiles = ir.profiles
+                    profiles = ir.profiles.split(";")
 
                 SmartProfiles: bool = human_bool(ir.SmartProfiles, default=True)
 
