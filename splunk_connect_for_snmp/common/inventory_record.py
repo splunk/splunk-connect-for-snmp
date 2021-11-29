@@ -24,7 +24,7 @@ class InventoryRecord:
     version: str
     community: str
     walk_interval: str
-    profiles: List
+    profiles: str
     SmartProfiles: bool
     delete: bool
 
