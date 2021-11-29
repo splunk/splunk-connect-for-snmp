@@ -407,8 +407,8 @@ def trap(self, work):
     var_bind_table = []
     metrics = {}
     for w in work["data"]:
-        translated_var_bind = rfc1902.ObjectType(
-            rfc1902.ObjectIdentity(w[0]), w[1]
+        translated_var_bind = ObjectType(
+            ObjectIdentity(w[0]), w[1]
         ).resolveWithMib(self.mib_view_controller)
         var_bind_table.append(translated_var_bind)
 
