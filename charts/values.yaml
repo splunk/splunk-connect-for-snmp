@@ -225,13 +225,12 @@ rabbitmq:
     ## @param auth.password RabbitMQ application password
     ## ref: https://github.com/bitnami/bitnami-docker-rabbitmq#environment-variables
     ##
-    password: "sc4snmp"
+    existingPasswordSecret: snmp-rabbitmq-password
 
     ## @param auth.erlangCookie Erlang cookie to determine whether different nodes are allowed to communicate with each other
     ## ref: https://github.com/bitnami/bitnami-docker-rabbitmq#environment-variables
     ##
-    erlangCookie: "9xdEl2TBqFJJMjtt3Bds1Fpdh9Wgs1YL"
-
+    existingErlangSecret: snmp-rabbitmq-cookie
   # ## Loading a RabbitMQ definitions file to configure RabbitMQ
   # ##
   loadDefinition:
@@ -249,12 +248,12 @@ rabbitmq:
   # ## @param resources.requests The requested resources for RabbitMQ containers
   # ##
   resources:
-    limits: {}
-    #       cpu: 1000m
-    #       memory: 2Gi
-    requests: {}
-  #       cpu: 1000m
-  #       memory: 2Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 1000m
+      memory: 2Gi
 
   ## @section Persistence parameters
 
