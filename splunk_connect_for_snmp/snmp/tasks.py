@@ -273,7 +273,7 @@ class SNMPTask(Task):
                 0,
                 50,
                 *varbinds_bulk,
-                lexicographicMode=not kwargs.get("walk", False),
+                lexicographicMode=False,
             ):
                 if _any_failure_happened(
                     errorIndication, errorStatus, errorIndex, varBindTable
@@ -285,6 +285,7 @@ class SNMPTask(Task):
                         bulk_mibs = list(set(bulk_mibs + tmp_mibs))
                     if tmp_retry:
                         retry = True
+
         if len(varbinds_get) > 0:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
                 self.snmpEngine, auth_data, transport, context_data, *varbinds_get
