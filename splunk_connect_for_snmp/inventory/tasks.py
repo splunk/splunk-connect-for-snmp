@@ -252,15 +252,14 @@ def inventory_setup_poller(self, work):
                 continue
 
             if "frequency" not in profile:
-                logger.error(f"Profile {profile_name} has no frequency")
+                logger.warn(f"Profile {profile_name} has no frequency")
                 continue
 
             if "condition" not in profile:
-                logger.error(f"Profile {profile_name} has no condition")
                 continue
 
             if "type" not in profile["condition"]:
-                logger.error(f"Profile {profile_name} condition has no type")
+                logger.warn(f"Profile {profile_name} condition has no type")
                 continue
 
             if profile["condition"]["type"] not in ("base", "field"):
@@ -271,13 +270,13 @@ def inventory_setup_poller(self, work):
                 profile["condition"]["type"] == "field"
                 and "field" not in profile["condition"]
             ):
-                logger.error(f"Profile {profile_name} condition has no field")
+                logger.warn(f"Profile {profile_name} condition has no field")
                 continue
             if (
                 profile["condition"]["type"] == "field"
                 and "patterns" not in profile["condition"]
             ):
-                logger.error(f"Profile {profile_name} condition has no patterns")
+                logger.warn(f"Profile {profile_name} condition has no patterns")
                 continue
 
             # skip this profile it is static

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from splunk_connect_for_snmp import customtaskmanager
+
 try:
     from dotenv import load_dotenv
 
@@ -42,6 +44,7 @@ def chunk(it, size):
 
 class EnrichTask(Task):
     def __init__(self):
+        self._periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
         pass
 
 
@@ -115,6 +118,13 @@ def enrich(self, result):
                         }
                     }
                 )
+                if field_key == TRACKED_CC:
+                    if int(cv) < int(field_value):
+                        task_config = {
+                            "name": f'sc4snmp;{current_target["target"]};walk',
+                            "run_immediately": True,
+                        }
+                        self._periodic_obj.manage_task(**task_config)
 
             elif cv:
                 # unchanged
