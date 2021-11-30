@@ -23,6 +23,8 @@ except:
 import json
 import os
 from typing import Union
+from urllib.error import URLError
+from urllib.parse import urlunsplit
 
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
@@ -30,7 +32,33 @@ from requests import ConnectionError, ConnectTimeout, ReadTimeout, Session, Time
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 
-SPLUNK_HEC_URI = os.getenv("SPLUNK_HEC_URI")
+SPLUNK_HEC_SCHEME = os.getenv("SPLUNK_HEC_SCHEME", "https")
+SPLUNK_HEC_HOST = os.getenv("SPLUNK_HEC_HOST", None)
+SPLUNK_HEC_PORT = os.getenv("SPLUNK_HEC_PORT", None)
+SPLUNK_HEC_PATH = os.getenv("SPLUNK_HEC_PATH", "services/collector")
+
+url = {}
+url["scheme"] = SPLUNK_HEC_SCHEME
+url["hostn_enc"] = SPLUNK_HEC_HOST
+url["path"] = SPLUNK_HEC_PATH
+if SPLUNK_HEC_PORT:
+    url["port"] = ":" + SPLUNK_HEC_PORT
+else:
+    url["port"] = ""
+url["query"] = None
+url["frag"] = None
+
+SPLUNK_HEC_URI = urlunsplit(
+    (
+        url["scheme"],
+        (url["hostn_enc"]) + (url["port"]),
+        url["path"],
+        url["query"],
+        url["frag"],
+    )
+)
+
+
 SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN", None)
 SPLUNK_HEC_INDEX_EVENTS = os.getenv("SPLUNK_HEC_INDEX_EVENTS", "netops")
 SPLUNK_HEC_INDEX_METRICS = os.getenv("SPLUNK_HEC_INDEX_METRICS", "netmetrics")
