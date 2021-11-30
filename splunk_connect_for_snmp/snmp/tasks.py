@@ -254,6 +254,13 @@ class SNMPTask(Task):
                     varbinds_bulk.append(ObjectType(ObjectIdentity(mib, entry)))
                 if mib.find(".") == -1 and not mib in needed_mibs:
                     needed_mibs.append(mib)
+
+            for mib, names in kwargs["varbinds_get"].items():
+                for name, indexes in names.items():
+                    for index in indexes:
+                        varbinds_get.append(ObjectType(ObjectIdentity(mib, name, index)))
+                if mib.find(".") == -1 and not mib in needed_mibs:
+                    needed_mibs.append(mib)
             self.load_mibs(needed_mibs)
 
         if len(varbinds_bulk) > 0:
