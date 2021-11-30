@@ -57,7 +57,7 @@ MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
-CONFIG_PATH = os.getenv("CONFIG_PATH", "/work/config/config.yaml")
+CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 
 
 def valueAsBest(value) -> Union[str, float]:

@@ -33,13 +33,19 @@ spec:
             {{- toYaml .Values.traps.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            [
+              "celery", "trap",
+            ]   
           env:
+            - name: CONFIG_PATH
+              value: /app/config/config.yaml
             - name: CELERY_BROKER_URL
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
             - name: LOG_LEVEL
-              value: {{ .Values.scheduler.logLevel | default "INFO" }}
+              value: {{ .Values.traps.logLevel | default "INFO" }}
           ports:
             - name: http
               containerPort: 80
@@ -56,6 +62,17 @@ spec:
                 - "inspect ping -d celery@$HOSTNAME"
             failureThreshold: 180
             periodSeconds: 30
+          volumeMounts:
+            - name: config
+              mountPath: "/app/config"
+              readOnly: true
+            - name: pysnmp-cache-volume
+              mountPath: "/.pysnmp/"
+              readOnly: false                
+            - name: tmp
+              mountPath: "/tmp/"
+              readOnly: false                    
+
           resources:
             {{- toYaml .Values.traps.resources | nindent 12 }}
       {{- with .Values.traps.nodeSelector }}
@@ -85,3 +102,17 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        # You set volumes at the Pod level, then mount them into containers inside that Pod
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: {{ include "splunk-connect-for-snmp.scheduler.fullname" . }}-config
+            # An array of keys from the ConfigMap to create as files
+            items:
+              - key: "config.yaml"
+                path: "config.yaml"
+        - name: pysnmp-cache-volume
+          emptyDir: {}    
+        - name: tmp
+          emptyDir: {}              

@@ -47,7 +47,7 @@ app = Celery("sc4snmp_poller")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
 # app.conf.update(**config)
 
-INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/work/inventory/inventory.csv")
+INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
 INVENTORY_REFRESH_RATE = int(os.getenv("INVENTORY_REFRESH_RATE", "600"))
 
 

@@ -33,13 +33,32 @@ spec:
             {{- toYaml .Values.worker.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            [
+              "celery", "worker",
+            ]           
           env:
+            - name: CONFIG_PATH
+              value: /app/config/config.yaml
             - name: CELERY_BROKER_URL
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
             - name: LOG_LEVEL
-              value: {{ .Values.scheduler.logLevel | default "INFO" }}
+              value: {{ .Values.worker.logLevel | default "INFO" }}
+          volumeMounts:
+            - name: config
+              mountPath: "/app/config"
+              readOnly: true
+            - name: inventory
+              mountPath: "/app/inventory"
+              readOnly: true
+            - name: pysnmp-cache-volume
+              mountPath: "/.pysnmp/"
+              readOnly: false                    
+            - name: tmp
+              mountPath: "/tmp/"
+              readOnly: false                    
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
       {{- with .Values.worker.nodeSelector }}
@@ -69,3 +88,25 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        # You set volumes at the Pod level, then mount them into containers inside that Pod
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: {{ include "splunk-connect-for-snmp.scheduler.fullname" . }}-config
+            # An array of keys from the ConfigMap to create as files
+            items:
+              - key: "config.yaml"
+                path: "config.yaml"
+        - name: inventory
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: {{ include "splunk-connect-for-snmp.scheduler.fullname" . }}-inventory
+            # An array of keys from the ConfigMap to create as files
+            items:
+              - key: "inventory.csv"
+                path: "inventory.csv"
+        - name: pysnmp-cache-volume
+          emptyDir: {}    
+        - name: tmp
+          emptyDir: {}                        

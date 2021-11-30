@@ -1,28 +1,22 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: sc4snmp-config
-  namespace: {{ .Release.Namespace | quote }}
+  name: {{ include "splunk-connect-for-snmp.scheduler.fullname" . }}-config
+  labels:
+    {{- include "splunk-connect-for-snmp.scheduler.labels" . | nindent 4 }}
 data:
   config.yaml: |-
-    celery:
-      broker:
-        type: "rabbitmq"
-    # Sample Configuration file
-    ipv4: True
-    ipv6: False
-    poller:
-{{- if (.Values.files.scheduler.config.poller).usernames }}
+{{- if (.Values.scheduler).usernames }}
       usernames:
-{{ .Values.files.scheduler.config.poller.usernames | indent 8 -}}
+{{ .Values.scheduler.usernames | indent 8 -}}
 {{ end }}
-{{- if (.Values.files.scheduler.config.poller).profiles }}
+{{- if (.Values.scheduler).profiles }}
       profiles:
-{{ .Values.files.scheduler.config.poller.profiles | indent 8 -}}
+{{ .Values.scheduler.profiles | indent 8 -}}
 {{ end }}
-{{- if (.Values.files.scheduler.config.poller).communities }}
+{{- if (.Values.scheduler).communities }}
       communities:
-{{ .Values.files.scheduler.config.poller.communities | indent 8 }}
+{{ .Values.scheduler.communities | indent 8 }}
 {{ else }}
       communities:
         public:
@@ -32,7 +26,7 @@ data:
           tag:
           securityName:
 {{- end -}}
-{{- if (.Values.files.scheduler.config.poller).additionalMetricField }}
+{{- if (.Values.scheduler).additionalMetricField }}
       additionalMetricField:
-{{ .Values.files.scheduler.config.additionalMetricField | indent 8 }}
+{{ .Values.scheduler.config.additionalMetricField | indent 8 }}
 {{- end -}}

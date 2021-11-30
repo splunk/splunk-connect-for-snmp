@@ -38,6 +38,8 @@ spec:
               "celery", "beat",
             ]          
           env:
+            - name: CONFIG_PATH
+              value: /app/config/config.yaml
             - name: CELERY_BROKER_URL
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
@@ -48,11 +50,15 @@ spec:
               value: {{ .Values.scheduler.inventory_refresh_rate | default "600" | quote }}
           volumeMounts:
             - name: config
-              mountPath: "/work/config"
+              mountPath: "/app/config"
               readOnly: true
             - name: pysnmp-cache-volume
               mountPath: "/.pysnmp/"
               readOnly: false            
+            - name: tmp
+              mountPath: "/tmp/"
+              readOnly: false                    
+
           resources:
             {{- toYaml .Values.scheduler.resources | nindent 12 }}
       {{- with .Values.scheduler.nodeSelector }}
@@ -87,10 +93,12 @@ spec:
         - name: config
           configMap:
             # Provide the name of the ConfigMap you want to mount.
-            name: sc4snmp-config
+            name: {{ include "splunk-connect-for-snmp.scheduler.fullname" . }}-config
             # An array of keys from the ConfigMap to create as files
             items:
               - key: "config.yaml"
                 path: "config.yaml"
         - name: pysnmp-cache-volume
           emptyDir: {}    
+        - name: tmp
+          emptyDir: {}                        

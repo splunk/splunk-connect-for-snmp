@@ -7,5 +7,5 @@
 {{- end }}  
 
 {{- define "splunk-connect-for-snmp.celery_url" -}}
-{{- printf "amqp://%s:%s@%s-rabbitmq:5672/" .Values.rabbitmq.auth.user .Values.rabbitmq.auth.password .Release.Name }}
+{{- printf "amqp://%s:%s@%s-rabbitmq:5672/" .Values.rabbitmq.auth.username .Values.rabbitmq.auth.password .Release.Name }}
 {{- end }}  

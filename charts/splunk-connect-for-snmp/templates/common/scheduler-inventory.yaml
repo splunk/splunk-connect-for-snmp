@@ -1,8 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: sc4snmp-inventory
-  namespace: {{ .Release.Namespace | quote }}
+  name: {{ include "splunk-connect-for-snmp.scheduler.fullname" . }}-inventory
+  labels:
+    {{- include "splunk-connect-for-snmp.scheduler.labels" . | nindent 4 }}
 data:
+{{- with .Values.scheduler.inventory}}
   inventory.csv: |-
-{{ .Values.files.scheduler.inventory | indent 4}}
+  {{- toYaml . | nindent 4 }}
+{{- end }}
