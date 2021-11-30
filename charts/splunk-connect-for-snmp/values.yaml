@@ -259,7 +259,7 @@ rabbitmq:
   rbac:
     create: true
   auth:
-    user: sc4snmp
+    username: sc4snmp
     password: password
     erlangCookie: cookie
 

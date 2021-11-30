@@ -44,7 +44,7 @@ logger = get_task_logger(__name__)
 
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
-CONFIG_PATH = os.getenv("CONFIG_PATH", "/work/config/config.yaml")
+CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 
 
 @shared_task()
