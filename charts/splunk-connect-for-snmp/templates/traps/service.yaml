@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "splunk-connect-for-snmp.traps.fullname" . }}
+  labels:
+    {{- include "splunk-connect-for-snmp.traps.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.traps.service.type }}
+  ports:
+    - port: {{ .Values.traps.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "splunk-connect-for-snmp.traps.selectorLabels" . | nindent 4 }}
