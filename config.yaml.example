@@ -1,78 +1,16 @@
 poller:
-# this part has to be here for v2 pooling with community name public
-  communities:
-    public:
-      communityIndex:
-      contextEngineId:
-      contextName:
-      tag:
-      securityName:
-    my-area:
-# this part has to be here for v3 pooling with community name snmp-poller
-  usernames:
-    simulator:
-      authKey: "auctoritas"
-      privKey: "privatus"
-    snmp-poller:
-      authKey: PASSWORD1
-      privKey: PASSWORD1
-      authProtocol: SHA
-      privProtocol: AES
   profiles:
-    BaseUpTime:
-      frequency: 60
-      condition:
-        type: "base"
-        # field: "SNMPv2-MIB.sysDescr"
-        # patterns:
-        #   - "^.*"
-        #"SNMPv2-MIB.sysObjectID"
-      varBinds:
-        - ["SNMPv2-MIB", "sysUpTime",0]
-    BaseDeviceData:
-      frequency: 600
-      condition:
-        type: "base"
-      varBinds:
-        # Syntax: [ "MIB-Files", "MIB ocelery[tblib]bject name" "MIB index number"]
-        - ["SNMPv2-MIB", "sysDescr",0]
-        - ["SNMPv2-MIB", "sysName",0]
-        - ["SNMPv2-MIB", "sysObjectID",0]
-        - ["SNMPv2-MIB", "sysContact",0]
-        - ["SNMPv2-MIB", "sysLocation",0]
-    EnirchIF:
-      frequency: 600
-      condition:
-        type: "base"
-      varBinds:
-        - ["IF-MIB", "ifDescr"]
-        - ["IF-MIB", "ifAdminStatus"]
-        - ["IF-MIB", "ifName"]
-        - ["IF-MIB", "ifAlias"]
-    BaseIF:
-      frequency: 30
-      condition:
-        type: "base"
-      varBinds:
-        # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
-        - ["IF-MIB", "ifInDiscards"]
-        - ["IF-MIB", "ifInErrors"]
-        - ["IF-MIB", "ifInNUcastPkts"]
-        - ["IF-MIB", "ifInOctets"]
-        - ["IF-MIB", "ifInUcastPkts"]
-        - ["IF-MIB", "ifInUnknownProtos"]
-        - ["IF-MIB", "ifOutDiscards"]
-        - ["IF-MIB", "ifOutErrors"]
-        - ["IF-MIB", "ifOutNUcastPkts"]
-        - ["IF-MIB", "ifOutOctets"]
-        - ["IF-MIB", "ifOutQLen"]
-        - ["IF-MIB", "ifOutUcastPkts"]
-    # MIKROTIK:
-    #   frequency: 300
-    #   condition:
-    #     type: "field"
-    #     field: "SNMPv2-MIB.sysObjectID"
-    #     patterns: "^MIKROTIK"
-    #   varBinds:
-    #     # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
-    #     - ["MIKROTIK"]
+    #A standard profile can be disabled as follows
+    #MIKROTIK:
+      #enabled: false
+
+    #A Standard profile can be replaced as follows or added
+    #MIKROTIK:
+    #  frequency: 300
+    #  condition:
+    #    type: "field"
+    #    field: "SNMPv2-MIB.sysObjectID"
+    #    patterns: "^MIKROTIK"
+    #  varBinds:
+    #    # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
+    #    - ["MIKROTIK"]
