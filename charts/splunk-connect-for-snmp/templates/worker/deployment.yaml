@@ -93,7 +93,7 @@ spec:
         - name: config
           configMap:
             # Provide the name of the ConfigMap you want to mount.
-            name: {{ include "splunk-connect-for-snmp.scheduler.fullname" . }}-config
+            name: {{ include "splunk-connect-for-snmp.name" . }}-config
             # An array of keys from the ConfigMap to create as files
             items:
               - key: "config.yaml"
@@ -101,7 +101,7 @@ spec:
         - name: inventory
           configMap:
             # Provide the name of the ConfigMap you want to mount.
-            name: {{ include "splunk-connect-for-snmp.scheduler.fullname" . }}-inventory
+            name: {{ include "splunk-connect-for-snmp.name" . }}-inventory
             # An array of keys from the ConfigMap to create as files
             items:
               - key: "inventory.csv"

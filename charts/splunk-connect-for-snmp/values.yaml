@@ -125,7 +125,6 @@ traps:
 
   podSecurityContext:
     fsGroup: 10001
-    runAsGroup: 10001
 
   securityContext:
     capabilities:
@@ -134,10 +133,11 @@ traps:
     readOnlyRootFilesystem: true
     runAsNonRoot: true
     runAsUser: 10001
+    runAsGroup: 10001
 
   service:
-    type: ClusterIP
-    port: 80
+    type: LoadBalancer
+    port: 162
 
   ingress:
     enabled: false

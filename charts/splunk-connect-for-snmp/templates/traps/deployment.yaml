@@ -35,8 +35,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             [
-              "celery", "trap",
-            ]   
+              "trap"
+            ] 
           env:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
@@ -47,21 +47,9 @@ spec:
             - name: LOG_LEVEL
               value: {{ .Values.traps.logLevel | default "INFO" }}
           ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
-          readinessProbe:
-            exec:
-              command:
-                - /app/.venv/bin/celery
-                - "inspect ping -d celery@$HOSTNAME"
-          startupProbe:
-            exec:
-              command:
-                - /app/.venv/bin/celery
-                - "inspect ping -d celery@$HOSTNAME"
-            failureThreshold: 180
-            periodSeconds: 30
+            - name: snmp-udp
+              containerPort: 2162
+              protocol: UDP
           volumeMounts:
             - name: config
               mountPath: "/app/config"
@@ -107,7 +95,7 @@ spec:
         - name: config
           configMap:
             # Provide the name of the ConfigMap you want to mount.
-            name: {{ include "splunk-connect-for-snmp.scheduler.fullname" . }}-config
+            name: {{ include "splunk-connect-for-snmp.name" . }}-config
             # An array of keys from the ConfigMap to create as files
             items:
               - key: "config.yaml"
