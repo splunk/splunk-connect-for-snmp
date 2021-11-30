@@ -1,0 +1,28 @@
+{{- if .Values.traps.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "splunk-connect-for-snmp.traps.fullname" . }}
+  labels:
+    {{- include "splunk-connect-for-snmp.traps.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "splunk-connect-for-snmp.traps.fullname" . }}
+  minReplicas: {{ .Values.traps.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.traps.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.traps.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.traps.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.traps.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.traps.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

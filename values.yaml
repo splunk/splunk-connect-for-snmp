@@ -1,28 +1,23 @@
 splunk:
   protocol: https
-  host: splunk-home-indexer-service.splunk.svc.cluster.local
-  token: 5D638361-0292-26E3-172A-544785590DD8
+  host: splunk-s1-standalone-service.splunk.svc.cluster.local
+  token: EDEF57CF-0685-53DC-242B-A0B03867CCEA
   insecureSSL: "true"
   port: "8088"
   clusterName: homecluster
 traps:
-  tag: "develop"
-  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   #  logLevel: "WARN"
   # replicas: Number of replicas for trap container should be 2x number of nodes
-  replicas: 6
+  replicas: 2
   #loadBalancerIP: The IP address in the metallb pool
   loadBalancerIP: 10.1.0.1
-mib:
-  tag: "develop"
-  pullPolicy: Always
-  # Overrides the image tag whose default is the chart appVersion.
-  # replicas: Number of replicas for trap container should two or more
-  replicas: 1
-poller:
-  tag: "develop"
-  pullPolicy: Always
+# mib:
+#   tag: "develop"
+#   pullPolicy: Always
+#   # Overrides the image tag whose default is the chart appVersion.
+#   # replicas: Number of replicas for trap container should two or more
+#  replicas: 1
 worker:
   # replicas: Number of replicas for worker container should two or more
   replicas: 2
@@ -32,11 +27,8 @@ scheduler:
 files:
   scheduler:
     inventory: |
-      host,version,community,profile,frequency
-      10.0.0.1,2c,homelab,*,
-      192.168.1.64,2c,homelab,*,
-      192.168.1.138,2c,homelab,*,
-      192.168.1.215,2c,homelab,*,
+      address,version,community,walk_interval,profiles,SmartProfiles,delete
+      10.0.0.1,2c,homelab,500,,,
     # config:
     #   profiles: |
     #     generic_switch:

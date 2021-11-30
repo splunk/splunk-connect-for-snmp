@@ -19,6 +19,7 @@ version: 0.11.0-next.48
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "0.11.0-next.48"
+#
 dependencies:
   - name: mongodb
     version: 10.28.1
