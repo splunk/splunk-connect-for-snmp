@@ -62,9 +62,10 @@ SPLUNK_HEC_URI = urlunsplit(
 SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN", None)
 SPLUNK_HEC_INDEX_EVENTS = os.getenv("SPLUNK_HEC_INDEX_EVENTS", "netops")
 SPLUNK_HEC_INDEX_METRICS = os.getenv("SPLUNK_HEC_INDEX_METRICS", "netmetrics")
-SPLUNK_HEC_TLSVERIFY = human_bool(
-    os.getenv("SPLUNK_HEC_TLSVERIFY", "yes"), default=True
-)
+if human_bool(os.getenv("SPLUNK_HEC_INSECURESSL", "yes"), default=True):
+    SPLUNK_HEC_TLSVERIFY = False
+else:
+    SPLUNK_HEC_TLSVERIFY = True
 
 logger = get_task_logger(__name__)
 
