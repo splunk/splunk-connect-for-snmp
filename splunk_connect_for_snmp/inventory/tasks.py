@@ -22,13 +22,14 @@ except:
 import csv
 import os
 import re
+from posixpath import basename
 from typing import List
 
 import pymongo
 import urllib3
 import yaml
 from bson.objectid import ObjectId
-from celery import shared_task
+from celery import Task, shared_task
 from celery.canvas import chain, group, signature
 from celery.utils.log import get_task_logger
 
@@ -180,10 +181,47 @@ def inventory_seed(path=None):
     return True
 
 
-@shared_task()
-def inventory_setup_poller(work):
-    with open(CONFIG_PATH) as file:
-        config_base = yaml.safe_load(file)
+class InventoryTask(Task):
+    def __init__(self):
+        self.profiles = {}
+        pkg_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "..", "profiles"
+        )
+        for file in os.listdir(pkg_path):
+            if file.endswith("yaml"):
+                with open(os.path.join(pkg_path, file)) as of:
+                    profiles = yaml.safe_load(of)
+                    logger.info(
+                        f"loading {len(profiles.keys())} profiles from shared profile group {file}"
+                    )
+                    for key, profile in profiles.items():
+                        self.profiles[key] = profile
+        try:
+            with open(CONFIG_PATH) as file:
+                config_runtime = yaml.safe_load(file)
+                if (
+                    "poller" in config_runtime
+                    and "profiles" in config_runtime["poller"]
+                ):
+                    profiles = config_runtime.get(profiles, {})
+                    logger.info(
+                        f"loading {len(profiles.keys())} profiles from runtime profile group"
+                    )
+                    for key, profile in profiles.items():
+                        if key in self.profiles:
+                            if not profile.get("enabled", True):
+                                logger.info(f"disabling profile {key}")
+                                del self.profiles[key]
+                            else:
+                                self.profiles[key] = profile
+                        else:
+                            self.profiles[key] = profile
+        except FileNotFoundError:
+            pass
+
+
+@shared_task(bind=True, base=InventoryTask)
+def inventory_setup_poller(self, work):
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
@@ -196,9 +234,8 @@ def inventory_setup_poller(work):
     )
     assigned_profiles: dict[int, list[str]] = {}
     logger.debug(f"target is target {target}")
-    logger.debug(f" Config base is {config_base}")
     if target["config"]["profiles"]["SmartProfiles"]:
-        for profile_name, profile in config_base["poller"]["profiles"].items():
+        for profile_name, profile in self.profiles.items():
             logger.debug(f"Checking match for {profile_name} {profile}")
 
             # Skip this profile its disabled
@@ -262,8 +299,8 @@ def inventory_setup_poller(work):
                             continue
     else:
         for profile_name in target["config"]["profiles"]["StaticProfiles"]:
-            if profile_name in config_base["poller"]["profiles"]:
-                profile = config_base["poller"]["profiles"][profile_name]
+            if profile_name in self.profiles:
+                profile = self.profiles[profile_name]
                 if profile["frequency"] not in assigned_profiles:
                     assigned_profiles[profile["frequency"]] = []
                 assigned_profiles[profile["frequency"]].append(profile_name)
@@ -284,7 +321,7 @@ def inventory_setup_poller(work):
         varbinds_oid = []
         # First pass we only look at profiles for a full mib walk
         for ap in period_profiles:
-            profile_binds = config_base["poller"]["profiles"][ap]["varBinds"]
+            profile_binds = self.profiles[ap]["varBinds"]
             for pb in profile_binds:
                 if str(pb[0]).find(".") == -1:
                     if len(pb) == 1:
@@ -292,7 +329,7 @@ def inventory_setup_poller(work):
                             varbinds_bulk[pb[0]] = None
         # Second pass we only look at profiles for a tabled mib walk
         for ap in period_profiles:
-            profile_binds = config_base["poller"]["profiles"][ap]["varBinds"]
+            profile_binds = self.profiles[ap]["varBinds"]
             for pb in profile_binds:
                 if str(pb[0]).find(".") == -1:
                     if len(pb) == 2:
@@ -306,7 +343,7 @@ def inventory_setup_poller(work):
         # #Third pass we only look at profiles for a get mib walk, we only need
         # #to do gets if there is not a bulk/walk
         for ap in period_profiles:
-            profile_binds = config_base["poller"]["profiles"][ap]["varBinds"]
+            profile_binds = self.profiles[ap]["varBinds"]
             for pb in profile_binds:
                 if str(pb[0]).find(".") == -1:
                     if len(pb) == 3:
@@ -321,7 +358,7 @@ def inventory_setup_poller(work):
                             varbinds_get[pb[0]][pb[1]].append(pb[2])
 
         for ap in period_profiles:
-            profile_binds = config_base["poller"]["profiles"][ap]["varBinds"]
+            profile_binds = self.profiles[ap]["varBinds"]
             for pb in profile_binds:
                 if str(pb[0]).find(".") > -1:
                     varbinds_oid.append(pb[0])
