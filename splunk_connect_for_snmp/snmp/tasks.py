@@ -258,7 +258,9 @@ class SNMPTask(Task):
             for mib, names in kwargs["varbinds_get"].items():
                 for name, indexes in names.items():
                     for index in indexes:
-                        varbinds_get.append(ObjectType(ObjectIdentity(mib, name, index)))
+                        varbinds_get.append(
+                            ObjectType(ObjectIdentity(mib, name, index))
+                        )
                 if mib.find(".") == -1 and not mib in needed_mibs:
                     needed_mibs.append(mib)
             self.load_mibs(needed_mibs)
@@ -292,7 +294,7 @@ class SNMPTask(Task):
                 if not _any_failure_happened(
                     errorIndication, errorStatus, errorIndex, varBindTable
                 ):
-                    retry_get, tmp_mibs = self.process_snmp_data(varBindTable, metrics)
+                    tmp_retry, tmp_mibs = self.process_snmp_data(varBindTable, metrics)
                     if tmp_mibs:
                         get_mibs = list(set(bulk_mibs + get_mibs))
                     if tmp_retry:
@@ -414,9 +416,9 @@ def trap(self, work):
     var_bind_table = []
     metrics = {}
     for w in work["data"]:
-        translated_var_bind = ObjectType(
-            ObjectIdentity(w[0]), w[1]
-        ).resolveWithMib(self.mib_view_controller)
+        translated_var_bind = ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
+            self.mib_view_controller
+        )
         var_bind_table.append(translated_var_bind)
 
     self.process_snmp_data(var_bind_table, metrics)
