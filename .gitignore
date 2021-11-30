@@ -134,3 +134,5 @@ dmypy.json
 charts/charts
 myvalues.yaml
 inventory.csv
+charts.old
+charts/splunk-connect-for-snmp/charts/*.tgz
