@@ -5,6 +5,8 @@ splunk:
   insecureSSL: "true"
   port: "8088"
   clusterName: homecluster
+image:
+  tag: "next"
 traps:
   # Overrides the image tag whose default is the chart appVersion.
   #  logLevel: "WARN"
@@ -32,7 +34,7 @@ files:
     # config:
     #   profiles: |
     #     generic_switch:
-    #       frequency: 60 
+    #       frequency: 60
     #       varBinds:
     #         - ['SNMPv2-MIB', 'sysDescr']
     #         - ['SNMPv2-MIB', 'sysName', 0]

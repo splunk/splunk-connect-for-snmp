@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sc4snmp-inventory
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  inventory.csv: |-
+{{ .Values.files.scheduler.inventory | indent 4}}

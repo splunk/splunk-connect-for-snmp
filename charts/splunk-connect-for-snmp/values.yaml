@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: ghcr.io/splunk/splunk-connect-for-snmp/container
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -27,19 +27,19 @@ scheduler:
 
   podAnnotations: {}
 
-  podSecurityContext: 
+  podSecurityContext:
     fsGroup: 10001
 
-  securityContext: 
+  securityContext:
     capabilities:
       drop:
-      - ALL
+        - ALL
     readOnlyRootFilesystem: true
     runAsNonRoot: true
     runAsUser: 10001
     runAsGroup: 10001
 
-  resources: 
+  resources:
     limits:
       cpu: 2
       memory: 1Gi
@@ -60,7 +60,6 @@ scheduler:
 
   podAntiAffinity: soft
 
-
 worker:
   nameOverride: ""
   fullnameOverride: ""
@@ -76,19 +75,19 @@ worker:
 
   podAnnotations: {}
 
-  podSecurityContext: 
+  podSecurityContext:
     fsGroup: 10001
 
-  securityContext: 
+  securityContext:
     capabilities:
       drop:
-      - ALL
+        - ALL
     readOnlyRootFilesystem: true
     runAsNonRoot: true
     runAsUser: 10001
     runAsGroup: 10001
 
-  resources: 
+  resources:
     limits:
       cpu: 2
       memory: 512Mi
@@ -124,14 +123,14 @@ traps:
 
   podAnnotations: {}
 
-  podSecurityContext: 
+  podSecurityContext:
     fsGroup: 10001
     runAsGroup: 10001
 
-  securityContext: 
+  securityContext:
     capabilities:
       drop:
-      - ALL
+        - ALL
     readOnlyRootFilesystem: true
     runAsNonRoot: true
     runAsUser: 10001
@@ -143,7 +142,8 @@ traps:
   ingress:
     enabled: false
     className: ""
-    annotations: {}
+    annotations:
+      {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     hosts:
@@ -156,7 +156,7 @@ traps:
     #    hosts:
     #      - chart-example.local
 
-  resources: 
+  resources:
     limits:
       cpu: 2
       memory: 1Gi
@@ -176,4 +176,148 @@ traps:
   tolerations: []
 
   podAntiAffinity: soft
-  
+
+#############################################################################
+### Please do not modify below values, unless you know what you're doing! ###
+#############################################################################
+mongodb:
+  architecture: "replicaset"
+  ## @section Global parameters
+  ## Global Docker image parameters
+  ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
+  ## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
+
+  ## @section Common parameters
+  ##
+
+  ## @param fullnameOverride String to fully override mongodb.fullname template
+  ##
+  fullnameOverride: "sc4snmp-mongodb"
+  ## @param clusterDomain Default Kubernetes cluster domain
+  ##
+  clusterDomain: cluster.local
+
+  ##
+  auth:
+    ## @param auth.enabled Enable authentication
+    ## ref: https://docs.mongodb.com/manual/tutorial/enable-authentication/
+    ##
+    enabled: false
+
+  ## MongoDB&reg; containers' resource requests and limits.
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## We usually recommend not to specify default resources and to leave this as a conscious
+  ## choice for the user. This also increases chances charts run on environments with little
+  ## resources, such as Minikube. If you do want to specify resources, uncomment the following
+  ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  ## @param resources.limits The resources limits for MongoDB&reg; containers
+  ## @param resources.requests The requested resources for MongoDB&reg; containers
+  ##
+  rbac:
+    create: true
+  resources:
+    limits:
+      cpu: 500m
+      memory: 768Mi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+  ## @section Volume Permissions parameters
+
+  ## @section Metrics parameters
+
+  metrics:
+    ## @param metrics.enabled Enable using a sidecar Prometheus exporter
+    ##
+    enabled: true
+    containerPort: 9216
+    ## Prometheus Exporter service configuration
+    ##
+    service:
+      ## @param metrics.service.annotations [object] Annotations for Prometheus Exporter pods. Evaluated as a template.
+      ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+      ##
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9216"
+rabbitmq:
+  replicaCount: 1
+  pdb:
+    create: true
+
+  podManagementPolicy: Parallel
+  ## @section Common parameters
+
+  ## @param nameOverride String to partially override rabbitmq.fullname template (will maintain the release name)
+  ##
+  nameOverride: "sc4snmp-rabbitmq"
+
+  ## @param fullnameOverride String to fully override rabbitmq.fullname template
+  ##
+  fullnameOverride: "sc4snmp-rabbitmq"
+  rbac:
+    create: true
+  auth:
+    user: sc4snmp
+    password: password
+    erlangCookie: cookie
+
+  # ## RabbitMQ containers' resource requests and limits
+  # ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  # ## We usually recommend not to specify default resources and to leave this as a conscious
+  # ## choice for the user. This also increases chances charts run on environments with little
+  # ## resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # ## @param resources.limits The resources limits for RabbitMQ containers
+  # ## @param resources.requests The requested resources for RabbitMQ containers
+  # ##
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+
+  ## @section Persistence parameters
+
+  persistence:
+    ## @param persistence.enabled Enable RabbitMQ data persistence using PVC
+    ##
+    enabled: true
+
+    # ## @param persistence.storageClass PVC Storage Class for RabbitMQ data volume
+    # ## If defined, storageClassName: <storageClass>
+    # ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    # ## If undefined (the default) or set to null, no storageClassName spec is
+    # ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    # ##   GKE, AWS & OpenStack)
+    # ##
+    # storageClass: ""
+    # ## @param persistence.selector Selector to match an existing Persistent Volume
+    # ## selector:
+    # ##   matchLabels:
+    # ##     app: my-app
+    # ##
+    # selector: {}
+    # ## @param persistence.accessMode PVC Access Mode for RabbitMQ data volume
+    # ##
+    # accessMode: ReadWriteOnce
+
+    # ## @param persistence.existingClaim Provide an existing PersistentVolumeClaims
+    # ## The value is evaluated as a template
+    # ## So, for example, the name can depend on .Release or .Chart
+    # ##
+    # existingClaim: ""
+
+    ## @param persistence.size PVC Storage Request for RabbitMQ data volume
+    ## If you change this value, you might have to adjust `rabbitmq.diskFreeLimit` as well
+    ##
+    size: 8Gi
+
+    # ## @param persistence.volumes Additional volumes without creating PVC
+    # ##  - name: volume_name
+    # ##    emptyDir: {}
+    # ##
+    # volumes: []
