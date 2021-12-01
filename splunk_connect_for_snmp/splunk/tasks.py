@@ -171,7 +171,9 @@ def prepare(work):
                 short_field = field.split(".")[-1]
                 metric["fields"][short_field] = valueAsBest(values["value"])
             for field, values in data["metrics"].items():
-                metric["fields"][f"metric_name:{field}"] = valueAsBest(values["value"])
+                metric["fields"][f"metric_name:sc4snmp.{field}"] = valueAsBest(
+                    values["value"]
+                )
             splunk_input.append(json.dumps(metric, indent=None))
         else:
             event = {
