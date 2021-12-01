@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-__version__ = "0.11.0-next.49"
+__version__ = "0.0.0"
