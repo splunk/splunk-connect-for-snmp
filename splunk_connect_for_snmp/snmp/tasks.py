@@ -235,7 +235,7 @@ class SNMPTask(Task):
         # Connection and Security setup
         target_address = kwargs["address"].split(":")[0]
         target_port = kwargs["address"].split(":")[1]
-        auth_data = build_authData(kwargs["version"], kwargs["community"], config_base["poller"])
+        auth_data = build_authData(kwargs["version"], kwargs["community"], config_base)
         context_data = build_contextData(
             kwargs["version"], kwargs["community"], config_base
         )

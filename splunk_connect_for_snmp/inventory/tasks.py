@@ -203,7 +203,7 @@ class InventoryTask(Task):
                     "poller" in config_runtime
                     and "profiles" in config_runtime["poller"]
                 ):
-                    profiles = config_runtime.get("poller", {}).get("profiles")
+                    profiles = config_runtime.get("profiles", {})
                     logger.info(
                         f"loading {len(profiles.keys())} profiles from runtime profile group"
                     )
