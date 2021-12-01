@@ -57,7 +57,7 @@ MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
-CONFIG_PATH = os.getenv("CONFIG_PATH", "/work/config/config.yaml")
+CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 
 
 def valueAsBest(value) -> Union[str, float]:
@@ -235,11 +235,9 @@ class SNMPTask(Task):
         # Connection and Security setup
         target_address = kwargs["address"].split(":")[0]
         target_port = kwargs["address"].split(":")[1]
-        auth_data = build_authData(
-            kwargs["version"], kwargs["community"], config_base["poller"]
-        )
+        auth_data = build_authData(kwargs["version"], kwargs["community"], config_base)
         context_data = build_contextData(
-            kwargs["version"], kwargs["community"], config_base["poller"]
+            kwargs["version"], kwargs["community"], config_base
         )
 
         transport = UdpTransportTarget((target_address, target_port))

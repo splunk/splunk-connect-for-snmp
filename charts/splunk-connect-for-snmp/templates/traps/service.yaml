@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "splunk-connect-for-snmp.traps.fullname" . }}
+  labels:
+    {{- include "splunk-connect-for-snmp.traps.labels" . | nindent 4 }}
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "true"    
+spec:
+  type: {{ .Values.traps.service.type }}
+  #externalTrafficPolicy: Local
+  {{- if .Values.traps.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.traps.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.traps.service.port }}
+      targetPort: 2162
+      protocol: UDP
+      name: snmp-udp
+  selector:
+    {{- include "splunk-connect-for-snmp.traps.selectorLabels" . | nindent 4 }}

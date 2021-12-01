@@ -98,8 +98,8 @@ jobs:
           echo $VERSION
           wget https://splunk.github.io/splunk-connect-for-snmp/index.yaml -P /tmp/origin
           helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm dependency update charts
-          helm package charts -d /tmp/package
+          helm dependency build charts/splunk-connect-for-snmp
+          helm package charts/splunk-connect-for-snmp -d /tmp/package
           gh release upload $VERSION /tmp/package/*
           helm repo index /tmp/package --url https://github.com/splunk/splunk-connect-for-snmp/releases/download/$VERSION --merge /tmp/origin/index.yaml
           cp /tmp/package/index.yaml /tmp/index/

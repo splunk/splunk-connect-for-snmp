@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "splunk-connect-for-snmp.name" . }}-config
+  labels:
+    {{- include "splunk-connect-for-snmp.scheduler.labels" . | nindent 4 }}
+data:
+  config.yaml: |-
+{{- if (.Values.scheduler).usernames }}
+      usernames:
+{{ .Values.scheduler.usernames | indent 8 -}}
+{{ end }}
+{{- if (.Values.scheduler).profiles }}
+      profiles:
+{{ .Values.scheduler.profiles | indent 8 -}}
+{{ end }}
+{{- if (.Values.scheduler).communities }}
+      communities:
+{{ .Values.scheduler.communities | indent 8 }}
+{{ else }}
+      communities:
+        public:
+          communityIndex:
+          contextEngineId:
+          contextName:
+          tag:
+          securityName:
+{{- end -}}
+{{- if (.Values.scheduler).additionalMetricField }}
+      additionalMetricField:
+{{ .Values.scheduler.config.additionalMetricField | indent 8 }}
+{{- end -}}

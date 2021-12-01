@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}
+  labels:
+    {{- include "splunk-connect-for-snmp.worker.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.worker.autoscaling.enabled }}
+  replicas: {{ .Values.worker.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.worker.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.worker.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "splunk-connect-for-snmp.worker.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.worker.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.worker.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            [
+              "celery", "worker",
+            ]           
+          env:
+            - name: CONFIG_PATH
+              value: /app/config/config.yaml
+            - name: CELERY_BROKER_URL
+              value: {{ include "splunk-connect-for-snmp.celery_url" . }}
+            - name: MONGO_URI
+              value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
+            - name: LOG_LEVEL
+              value: {{ .Values.worker.logLevel | default "INFO" }}
+            {{- if .Values.splunk.protocol }}
+            - name: SPLUNK_HEC_SCHEME
+              value: {{ .Values.splunk.protocol | default "https" | quote }}
+            {{- end}}              
+            - name: SPLUNK_HEC_HOST
+              value: {{ .Values.splunk.host | quote }}
+            {{- if .Values.splunk.port }}
+            - name: SPLUNK_HEC_PORT
+              value: {{ .Values.splunk.port | default "" | quote }}
+            {{- end}}
+            {{- if .Values.splunk.path }}
+            - name: SPLUNK_HEC_PATH
+              value: {{ .Values.splunk.path | default "/services/collector" | quote }}
+            {{- end}}
+            - name: SPLUNK_HEC_INSECURESSL
+              value: {{ .Values.splunk.insecureSSL | default "false" | quote }}
+            - name: SPLUNK_HEC_TOKEN
+              valueFrom:
+                  secretKeyRef:
+                    name: {{ include "splunk-connect-for-snmp.name" . }}-splunk
+                    key: hec_token
+          volumeMounts:
+            - name: config
+              mountPath: "/app/config"
+              readOnly: true
+            - name: inventory
+              mountPath: "/app/inventory"
+              readOnly: true
+            - name: pysnmp-cache-volume
+              mountPath: "/.pysnmp/"
+              readOnly: false                    
+            - name: tmp
+              mountPath: "/tmp/"
+              readOnly: false                    
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}
+      {{- with .Values.worker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if eq .Values.worker.podAntiAffinity "hard" }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchLabels:
+                    {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 22 }}
+      {{- else if eq .Values.worker.podAntiAffinity "soft" }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 22 }}
+      {{- end }}
+      {{- with .Values.worker.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        # You set volumes at the Pod level, then mount them into containers inside that Pod
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: {{ include "splunk-connect-for-snmp.name" . }}-config
+            # An array of keys from the ConfigMap to create as files
+            items:
+              - key: "config.yaml"
+                path: "config.yaml"
+        - name: inventory
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: {{ include "splunk-connect-for-snmp.name" . }}-inventory
+            # An array of keys from the ConfigMap to create as files
+            items:
+              - key: "inventory.csv"
+                path: "inventory.csv"
+        - name: pysnmp-cache-volume
+          emptyDir: {}    
+        - name: tmp
+          emptyDir: {}                        
