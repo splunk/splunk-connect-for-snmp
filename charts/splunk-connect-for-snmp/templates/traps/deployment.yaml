@@ -44,6 +44,10 @@ spec:
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
+            - name: MIB_SOURCES
+              value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/asn1/@mib@"
+            - name: MIB_INDEX
+              value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/index.csv"
             - name: LOG_LEVEL
               value: {{ .Values.traps.logLevel | default "INFO" }}
 {{- if .Values.splunk.protocol }}

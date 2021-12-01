@@ -2,8 +2,7 @@
 set -e
 . /app/.venv/bin/activate
 LOG_LEVEL=${LOG_LEVEL:=INFO}
-wait-for-dep "${CELERY_BROKER_URL}"
-wait-for-dep "${MONGO_URI}"
+wait-for-dep "${CELERY_BROKER_URL}" "${MONGO_URI}" "${MIB_INDEX}"
 
 case $1 in
 
