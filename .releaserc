@@ -1,7 +1,7 @@
 #
 # Copyright 2021 Splunk Inc.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0(the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
@@ -15,62 +15,61 @@
 #
 {
   "branches":
+  [
+    "+([0-9])?(.{+([0-9]),x}).x",
+    "main",
+    { name: "next", channel: "beta", prerelease: "beta" },
+    { name: "develop", channel: "beta", prerelease: true },
+  ],
+    plugins:
+  [
+    "@semantic-release/commit-analyzer",
     [
-      "+([0-9])?(.{+([0-9]),x}).x",
-      "main",
-      { name: "next", channel: "alpha", prerelease: true },
-      "next-major",
-      { name: "develop", channel: "beta", prerelease: true },
+      "@google/semantic-release-replace-plugin",
+      {
+        "replacements": [
+          {
+            "files": ["splunk_connect_for_snmp/__init__.py"],
+            "from": "__version__ ?=.*",
+            "to": "__version__ = \"${nextRelease.version}\"",
+            "results": [
+              {
+                "file": "splunk_connect_for_snmp/__init__.py",
+                "hasChanged": true,
+                "numMatches": 1,
+                "numReplacements": 1
+              }
+            ],
+            "countMatches": true
+          },
+          {
+            "files": ["pyproject.toml"],
+            "from": "^version ?=.*",
+            "to": "version = \"${nextRelease.version}\"",
+            "results": [
+              {
+                "file": "pyproject.toml",
+                "hasChanged": true,
+                "numMatches": 1,
+                "numReplacements": 1
+              }
+            ],
+            "countMatches": true
+          }
+        ]
+      }
     ],
-  plugins:
+    ["@semantic-release/exec", {
+      "prepareCmd": 'yq -i eval ".appVersion = \"${nextRelease.version}\"" charts/splunk-connect-for-snmp/Chart.yaml;yq -i eval ".version = \"${nextRelease.version}\"" charts/splunk-connect-for-snmp/Chart.yaml'
+    }],
+    "@semantic-release/release-notes-generator",
     [
-      "@semantic-release/commit-analyzer",
-      [
-        "@google/semantic-release-replace-plugin",
-        {
-          "replacements": [
-            {
-              "files": ["splunk_connect_for_snmp/__init__.py"],
-              "from": "__version__ ?=.*",
-              "to": "__version__ = \"${nextRelease.version}\"",
-              "results": [
-                {
-                  "file": "splunk_connect_for_snmp/__init__.py",
-                  "hasChanged": true,
-                  "numMatches": 1,
-                  "numReplacements": 1
-                }
-              ],
-              "countMatches": true
-            },
-            {
-              "files": ["pyproject.toml"],
-              "from": "^version ?=.*",
-              "to": "version = \"${nextRelease.version}\"",
-              "results": [
-                {
-                  "file": "pyproject.toml",
-                  "hasChanged": true,
-                  "numMatches": 1,
-                  "numReplacements": 1
-                }
-              ],
-              "countMatches": true
-            }
-          ]
-        }
-      ],
-        ["@semantic-release/exec", {
-            "prepareCmd": 'yq -i eval ".appVersion = \"${nextRelease.version}\"" charts/splunk-connect-for-snmp/Chart.yaml;yq -i eval ".version = \"${nextRelease.version}\"" charts/splunk-connect-for-snmp/Chart.yaml'
-        }],        
-      "@semantic-release/release-notes-generator",
-      [
-        "@semantic-release/git",
-        {
-          "assets": ["NOTICE", "charts/splunk-connect-for-snmp/Chart.yaml", "pyproject.toml", "splunk_connect_for_snmp/__init__.py"],
-          "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}",
-        },
-      ],
-      ["@semantic-release/github", { "assets": ["NOTICE"] }],
+      "@semantic-release/git",
+      {
+        "assets": ["NOTICE", "charts/splunk-connect-for-snmp/Chart.yaml", "pyproject.toml", "splunk_connect_for_snmp/__init__.py"],
+        "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}",
+      },
     ],
+    ["@semantic-release/github", { "assets": ["NOTICE"] }],
+  ],
 }
