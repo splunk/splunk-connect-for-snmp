@@ -235,7 +235,7 @@ class SNMPTask(Task):
         # Connection and Security setup
         target_address = kwargs["address"].split(":")[0]
         target_port = kwargs["address"].split(":")[1]
-        auth_data = build_authData(kwargs["version"], kwargs["community"], config_base)
+        auth_data = build_authData(kwargs["version"], kwargs["community"], config_base["poller"])
         context_data = build_contextData(
             kwargs["version"], kwargs["community"], config_base
         )
@@ -248,18 +248,21 @@ class SNMPTask(Task):
         else:
             needed_mibs = []
             for mib, entries in kwargs["varbinds_bulk"].items():
-                for entry in entries:
-                    varbinds_bulk.append(ObjectType(ObjectIdentity(mib, entry)))
-                if mib.find(".") == -1 and not mib in needed_mibs:
-                    needed_mibs.append(mib)
+                if entries:
+                    for entry in entries:
+                        varbinds_bulk.append(ObjectType(ObjectIdentity(mib, entry)))
+                    if mib.find(".") == -1 and mib not in needed_mibs:
+                        needed_mibs.append(mib)
 
             for mib, names in kwargs["varbinds_get"].items():
-                for name, indexes in names.items():
-                    for index in indexes:
-                        varbinds_get.append(
-                            ObjectType(ObjectIdentity(mib, name, index))
-                        )
-                if mib.find(".") == -1 and not mib in needed_mibs:
+                if names:
+                    for name, indexes in names.items():
+                        if indexes:
+                            for index in indexes:
+                                varbinds_get.append(
+                                    ObjectType(ObjectIdentity(mib, name, index))
+                                )
+                if mib.find(".") == -1 and mib not in needed_mibs:
                     needed_mibs.append(mib)
             self.load_mibs(needed_mibs)
 
@@ -543,7 +546,7 @@ def build_authData(version, community, server_config):
                 f"securityName - {securityName}"
             )
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Error happend while parsing parmas of communityName for SNMP v1/v2c: {e}"
             )
         if version == "1":
