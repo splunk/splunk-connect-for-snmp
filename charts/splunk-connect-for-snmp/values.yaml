@@ -190,9 +190,6 @@ mongodb:
   ## @section Common parameters
   ##
 
-  ## @param fullnameOverride String to fully override mongodb.fullname template
-  ##
-  fullnameOverride: "sc4snmp-mongodb"
   ## @param clusterDomain Default Kubernetes cluster domain
   ##
   clusterDomain: cluster.local
@@ -249,13 +246,6 @@ rabbitmq:
   podManagementPolicy: Parallel
   ## @section Common parameters
 
-  ## @param nameOverride String to partially override rabbitmq.fullname template (will maintain the release name)
-  ##
-  nameOverride: "sc4snmp-rabbitmq"
-
-  ## @param fullnameOverride String to fully override rabbitmq.fullname template
-  ##
-  fullnameOverride: "sc4snmp-rabbitmq"
   rbac:
     create: true
   auth:
