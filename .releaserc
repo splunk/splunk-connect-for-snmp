@@ -18,8 +18,8 @@
   [
     "+([0-9])?(.{+([0-9]),x}).x",
     "main",
-    { name: "next", channel: "beta", prerelease: "beta" },
-    { name: "develop", channel: "beta", prerelease: true },
+    { name: "next", channel: "alpha", prerelease: "alpha" },
+    { name: "develop", channel: "beta", prerelease: "beta" },
   ],
     plugins:
   [
