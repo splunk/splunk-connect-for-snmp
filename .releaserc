@@ -61,13 +61,13 @@
         }
       ],
         ["@semantic-release/exec", {
-            "prepareCmd": 'yq -i eval ".appVersion = \"${nextRelease.version}\"" charts/Chart.yaml;yq -i eval ".version = \"${nextRelease.version}\"" charts/Chart.yaml'
+            "prepareCmd": 'yq -i eval ".appVersion = \"${nextRelease.version}\"" charts/splunk-connect-for-snmp/Chart.yaml;yq -i eval ".version = \"${nextRelease.version}\"" charts/splunk-connect-for-snmp/Chart.yaml'
         }],        
       "@semantic-release/release-notes-generator",
       [
         "@semantic-release/git",
         {
-          "assets": ["NOTICE", "charts/Chart.yaml", "pyproject.toml", "splunk_connect_for_snmp/__init__.py"],
+          "assets": ["NOTICE", "charts/splunk-connect-for-snmp/Chart.yaml", "pyproject.toml", "splunk_connect_for_snmp/__init__.py"],
           "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}",
         },
       ],
