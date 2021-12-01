@@ -1,14 +1,29 @@
+#
+# Copyright 2021 Splunk Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 # Support use of .env file for developers
 try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except:
+except ImportError:
     pass
 
 import os
 
-import pymongo
 from celery import Celery, signals
 from celery.utils.log import get_task_logger
 from opentelemetry import trace
@@ -16,7 +31,9 @@ from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+from splunk_connect_for_snmp import customtaskmanager
 
 provider = TracerProvider()
 processor = BatchSpanProcessor(JaegerExporter())
@@ -25,17 +42,13 @@ trace.set_tracer_provider(provider)
 
 logger = get_task_logger(__name__)
 
-# MONGO_URI = os.getenv("MONGO_URI")
-# MONGO_DB = os.getenv("MONGO_DB", "sc4")
-# MONGO_DB_SCHEDULES = os.getenv("MONGO_DB_SCHEDULES", "schedules")
-# CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+# //using rabbitmq as the message broker
+app = Celery("sc4snmp_poller")
+app.config_from_object("splunk_connect_for_snmp.celery_config")
+# app.conf.update(**config)
 
-# config = {
-#     "mongodb_scheduler_url": MONGO_URI,
-#     "mongodb_scheduler_db": MONGO_DB,
-#     "mongodb_scheduler_collection": MONGO_DB_SCHEDULES,
-#     "broker": CELERY_BROKER_URL,
-# }
+INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
+INVENTORY_REFRESH_RATE = int(os.getenv("INVENTORY_REFRESH_RATE", "600"))
 
 
 @signals.worker_process_init.connect(weak=False)
@@ -49,17 +62,6 @@ def init_celery_beat_tracing(*args, **kwargs):
     CeleryInstrumentor().instrument()
     LoggingInstrumentor().instrument()
 
-    # mongo_client = pymongo.MongoClient(MONGO_URI)
-    # db = mongo_client[MONGO_DB]
-    # collist = db.list_collection_names()
-    # if not "targets" in collist:
-    #     mycol = db["targets"]
-
-
-# //using rabbitmq as the message broker
-app = Celery("sc4snmp")
-app.config_from_object('splunk_connect_for_snmp.celery_config')
-#app.conf.update(**config)
 
 app.autodiscover_tasks(
     packages=[
@@ -71,19 +73,19 @@ app.autodiscover_tasks(
     ]
 )
 
-from splunk_connect_for_snmp import customtaskmanager
 
-schedule_data_create_interval = {
-    "name": "sc4snmp;inventory;seed",
-    "task": "splunk_connect_for_snmp.inventory.tasks.inventory_seed",
-    "args": [],
-    "kwargs": {
-        "url": "https://gist.githubusercontent.com/rfaircloth-splunk/0590fa671f794902005257bcbd2ee274/raw/90f6930aaace6ca5aba8edc8c57f38552049c1d1/snmp_inventory.csv"
-    },
-    "interval": {"every": 20, "period": "seconds"},
-    "enabled": True,
-    "run_immediately": True,
-}
+@app.on_after_finalize.connect
+def setup_periodic_tasks(sender, **kwargs) -> None:
+    periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
-periodic_obj = customtaskmanager.CustomPeriodicTaskManage()
-print(periodic_obj.manage_task(**schedule_data_create_interval))
+    schedule_data_create_interval = {
+        "name": "sc4snmp;inventory;seed",
+        "task": "splunk_connect_for_snmp.inventory.tasks.inventory_seed",
+        "args": [],
+        "kwargs": {"path": INVENTORY_PATH},
+        "interval": {"every": INVENTORY_REFRESH_RATE, "period": "seconds"},
+        "enabled": True,
+        "run_immediately": True,
+    }
+
+    periodic_obj.manage_task(**schedule_data_create_interval)

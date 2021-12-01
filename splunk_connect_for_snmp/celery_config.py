@@ -23,7 +23,7 @@ except ImportError:
 
 import os
 
-MONGO_DB = os.getenv("MONGO_DB", "SC4SNMP")
+MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 MONGO_DB_SCHEDULES = os.getenv("MONGO_DB_SCHEDULES", "schedules")
 
 MONGO_URI = os.getenv("MONGO_URI")
@@ -36,8 +36,6 @@ result_backend = MONGO_URI
 result_extended = True
 mongodb_backend_settings = {"database": MONGO_DB_CELERY_DATABASE}
 
-
 beat_scheduler = "celerybeatmongo.schedulers.MongoScheduler"
 mongodb_scheduler_url = MONGO_URI
 mongodb_scheduler_db = MONGO_DB_CELERY_DATABASE
-# mongodb_scheduler_connection_alias = "sc4snmp_celery_beat"
