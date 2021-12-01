@@ -199,10 +199,7 @@ class InventoryTask(Task):
         try:
             with open(CONFIG_PATH) as file:
                 config_runtime = yaml.safe_load(file)
-                if (
-                    "poller" in config_runtime
-                    and "profiles" in config_runtime["poller"]
-                ):
+                if "profiles" in config_runtime:
                     profiles = config_runtime.get("profiles", {})
                     logger.info(
                         f"loading {len(profiles.keys())} profiles from runtime profile group"
