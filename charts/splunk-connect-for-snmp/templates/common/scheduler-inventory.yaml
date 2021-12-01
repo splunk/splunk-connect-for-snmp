@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "splunk-connect-for-snmp.scheduler.labels" . | nindent 4 }}
 data:
-{{- with .Values.scheduler.inventory}}
   inventory.csv: |-
+{{- with .Values.scheduler.inventory}}
 {{ . | indent 4}}
 {{- end }}
