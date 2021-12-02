@@ -85,18 +85,11 @@ jobs:
             @google/semantic-release-replace-plugin
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN_ADMIN }}
-  mike:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: oleksiyrudenko/gha-git-credentials@v2-latest
-        with:
-          token: "${{ secrets.PAT_CLATOOL }}"
 
       - name: Upload Docs
+        uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        with:
+        token: "${{ secrets.PAT_CLATOOL }}"
         run: |
           BRANCH=$(echo $GITHUB_REF | cut -d / -f 3)
           echo $BRANCH
