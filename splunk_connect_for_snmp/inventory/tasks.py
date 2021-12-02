@@ -24,7 +24,6 @@ except:
 import csv
 import os
 import re
-from posixpath import basename
 from typing import List
 
 import pymongo
@@ -305,13 +304,13 @@ def inventory_setup_poller(self, work):
                                 assigned_profiles[profile["frequency"]] = []
                             assigned_profiles[profile["frequency"]].append(profile_name)
                             continue
-    else:
-        for profile_name in target["config"]["profiles"]["StaticProfiles"]:
-            if profile_name in self.profiles:
-                profile = self.profiles[profile_name]
-                if profile["frequency"] not in assigned_profiles:
-                    assigned_profiles[profile["frequency"]] = []
-                assigned_profiles[profile["frequency"]].append(profile_name)
+
+    for profile_name in target["config"]["profiles"]["StaticProfiles"]:
+        if profile_name in self.profiles:
+            profile = self.profiles[profile_name]
+            if profile["frequency"] not in assigned_profiles:
+                assigned_profiles[profile["frequency"]] = []
+            assigned_profiles[profile["frequency"]].append(profile_name)
 
     logger.debug(f"Profiles Assigned {assigned_profiles}")
 
@@ -326,50 +325,54 @@ def inventory_setup_poller(self, work):
 
         varbinds_bulk = {}
         varbinds_get = {}
-        varbinds_oid = []
         # First pass we only look at profiles for a full mib walk
         for ap in period_profiles:
+            if ap not in varbinds_bulk:
+                varbinds_bulk[ap] = {}
             profile_binds = self.profiles[ap]["varBinds"]
             for pb in profile_binds:
                 if str(pb[0]).find(".") == -1:
                     if len(pb) == 1:
-                        if pb[0] not in varbinds_bulk:
-                            varbinds_bulk[pb[0]] = None
+                        if pb[0] not in varbinds_bulk[ap]:
+                            varbinds_bulk[ap][pb[0]] = None
         # Second pass we only look at profiles for a tabled mib walk
         for ap in period_profiles:
+            if ap not in varbinds_bulk:
+                varbinds_bulk[ap] = {}
             profile_binds = self.profiles[ap]["varBinds"]
             for pb in profile_binds:
                 if str(pb[0]).find(".") == -1:
                     if len(pb) == 2:
-                        if pb[0] not in varbinds_bulk:
-                            varbinds_bulk[pb[0]] = [pb[1]]
+                        if pb[0] not in varbinds_bulk[ap]:
+                            varbinds_bulk[ap][pb[0]] = [pb[1]]
                         elif (
-                            pb[0] in varbinds_bulk and pb[1] not in varbinds_bulk[pb[0]]
+                            pb[0] in varbinds_bulk[ap] and pb[1] not in varbinds_bulk[ap][pb[0]]
                         ):
-                            varbinds_bulk[pb[0]].append(pb[1])
+                            varbinds_bulk[ap][pb[0]].append(pb[1])
 
         # #Third pass we only look at profiles for a get mib walk, we only need
         # #to do gets if there is not a bulk/walk
         for ap in period_profiles:
+            varbinds_get[ap] = {}
             profile_binds = self.profiles[ap]["varBinds"]
             for pb in profile_binds:
                 if str(pb[0]).find(".") == -1:
                     if len(pb) == 3:
-                        if pb[0] not in varbinds_bulk or (
-                            pb[0] in varbinds_bulk and pb[1] not in varbinds_bulk[pb[0]]
+                        if pb[0] not in varbinds_bulk[ap] or (
+                            pb[0] in varbinds_bulk[ap] and pb[1] not in varbinds_bulk[ap][pb[0]]
                         ):
-                            if pb[0] not in varbinds_get:
-                                varbinds_get[pb[0]] = {}
-                            if pb[1] not in varbinds_get[pb[0]]:
-                                varbinds_get[pb[0]][pb[1]] = []
+                            if pb[0] not in varbinds_get[ap]:
+                                varbinds_get[ap][pb[0]] = {}
+                            if pb[1] not in varbinds_get[ap][pb[0]]:
+                                varbinds_get[ap][pb[0]][pb[1]] = []
 
-                            varbinds_get[pb[0]][pb[1]].append(pb[2])
+                            varbinds_get[ap][pb[0]][pb[1]].append(pb[2])
 
         for ap in period_profiles:
-            profile_binds = self.profiles[ap]["varBinds"]
-            for pb in profile_binds:
-                if str(pb[0]).find(".") > -1:
-                    varbinds_oid.append(pb[0])
+            if len(varbinds_bulk[ap]) == 0:
+                del varbinds_bulk[ap]
+            if len(varbinds_get[ap]) == 0:
+                del varbinds_get[ap]
 
         task_config = {
             "name": name,
@@ -381,10 +384,8 @@ def inventory_setup_poller(self, work):
                 "address": target["target"],
                 "version": target["config"]["community"]["version"],
                 "community": target["config"]["community"]["name"],
-                "profiles": period_profiles,
                 "varbinds_bulk": varbinds_bulk,
                 "varbinds_get": varbinds_get,
-                "varbinds_oid": varbinds_oid,
                 "frequency": period,
             },
             "options": {
