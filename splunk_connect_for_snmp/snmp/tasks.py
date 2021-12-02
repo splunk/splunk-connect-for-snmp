@@ -359,13 +359,11 @@ class SNMPTask(Task):
                     if profile:
                         metrics[group_key]["profiles"].add(profile)
                 else:
-                    if not snmp_val.prettyPrint() == "":
-                        metrics[group_key]["fields"][f"{mib}.{metric}"] = {
-                            "type": metric_type,
-                            "value": metric_value,
-                            "oid": oid,
-                        }
-
+                    metrics[group_key]["fields"][f"{mib}.{metric}"] = {
+                        "type": metric_type,
+                        "value": metric_value,
+                        "oid": oid,
+                    }
             else:
                 found, mib = self.isMIBKnown(id, oid)
                 if not mib in remotemibs:
