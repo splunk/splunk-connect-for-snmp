@@ -91,10 +91,12 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
         stateReference
     )
     data = []
+    device_ip = snmpEngine.msgAndPduDsp.getTransportInfo(stateReference)[1][0]
+
     for name, val in varBinds:
         data.append((name.prettyPrint(), val.prettyPrint()))
 
-    work = {"data": data, "host": transportAddress[0]}
+    work = {"data": data, "host": device_ip}
 
     my_chain = chain(trap.s(work), prepare.s(), send.s())
     result = my_chain.apply_async()
