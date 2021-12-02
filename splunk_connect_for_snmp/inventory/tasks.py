@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import time
+
 try:
     from dotenv import load_dotenv
 
@@ -45,6 +47,7 @@ logger = get_task_logger(__name__)
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
+PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
 
 
 @shared_task()
@@ -184,6 +187,10 @@ def inventory_seed(path=None):
 class InventoryTask(Task):
     def __init__(self):
         self.profiles = {}
+        self.load_profiles()
+        self.last_modified = time.time()
+
+    def load_profiles(self):
         pkg_path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), "..", "profiles"
         )
@@ -219,6 +226,10 @@ class InventoryTask(Task):
 
 @shared_task(bind=True, base=InventoryTask)
 def inventory_setup_poller(self, work):
+    if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
+        self.load_profiles()
+        self.last_modified = time.time()
+        logger.debug(f"Profiles reloaded")
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
