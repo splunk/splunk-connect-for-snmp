@@ -17,8 +17,8 @@ jobs:
           submodules: false
           persist-credentials: false
       - uses: oleksiyrudenko/gha-git-credentials@v2-latest
-          with:
-            token: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          token: "${{ secrets.GITHUB_TOKEN }}"
 
       #Build docker images
       - name: Set up QEMU
