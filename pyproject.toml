@@ -7,6 +7,9 @@ license = "Apache-2.0"
 
 include = ["splunk_connect_for_snmp/profiles/*.yaml"]
 
+[tool.poetry.scripts]
+traps = 'splunk_connect_for_snmp.traps:main'
+
 [tool.pytest.ini_options]
 log_cli = true
 log_cli_level = "DEBUG"

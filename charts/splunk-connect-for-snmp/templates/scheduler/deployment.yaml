@@ -82,8 +82,12 @@ spec:
               readOnly: false            
             - name: tmp
               mountPath: "/tmp/"
-              readOnly: false                    
-
+              readOnly: false   
+            {{- if .Values.poller.usernameSecrets }}                 
+            - name: snmpv3-secrets
+              mountPath: "/app/secrets/snmpv3"
+              readOnly: true
+            {{- end }}
           resources:
             {{- toYaml .Values.scheduler.resources | nindent 12 }}
       {{- with .Values.scheduler.nodeSelector }}
@@ -123,6 +127,47 @@ spec:
             items:
               - key: "config.yaml"
                 path: "config.yaml"
+        {{- if .Values.poller.usernameSecrets }}
+        - name: snmpv3-secrets
+          projected:
+            sources:
+            {{- range .Values.poller.usernameSecrets }}
+            {{- $secret := (lookup "v1" "Secret" $.Release.Namespace . ) -}}            
+            {{- if $secret }}
+            - secret:
+                name: {{ . }}
+                items:
+                  {{ if $secret.data.userName -}}
+                  - key: userName
+                    path: {{ . }}/userName                
+                  {{- end }} 
+                  {{ if $secret.data.authKey -}}
+                  - key: authKey
+                    path: {{ . }}/authKey
+                  {{- end }} 
+                  {{ if $secret.data.privKey -}}
+                  - key: privKey
+                    path: {{ . }}/privKey
+                  {{- end }} 
+                  {{ if $secret.data.authProtocol -}}
+                  - key: authProtocol
+                    path: {{ . }}/authProtocol
+                  {{- end }} 
+                  {{ if $secret.data.privProtocol -}}
+                  - key: privProtocol
+                    path: {{ . }}/privProtocol
+                  {{- end }} 
+                  {{ if $secret.data.contextEngineId -}}
+                  - key: contextEngineId
+                    path: {{ . }}/contextEngineId
+                  {{- end }} 
+                  {{ if $secret.data.contextName -}}
+                  - key: contextName
+                    path: {{ . }}/contextName
+                  {{- end }} 
+            {{- end }}                    
+            {{- end }}
+        {{- end }}     
         - name: pysnmp-cache-volume
           emptyDir: {}    
         - name: tmp

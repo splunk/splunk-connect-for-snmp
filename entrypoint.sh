@@ -21,7 +21,7 @@ celery)
     esac
     ;;
 trap)
-    celery -A splunk_connect_for_snmp.traps worker -l "$LOG_LEVEL"
+    traps "$LOG_LEVEL"
     ;;
 *)
 echo -n unknown cmd "$@"

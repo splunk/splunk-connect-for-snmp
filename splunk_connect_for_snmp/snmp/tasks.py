@@ -236,9 +236,7 @@ class SNMPTask(Task):
         target_address = kwargs["address"].split(":")[0]
         target_port = kwargs["address"].split(":")[1]
         auth_data = build_authData(kwargs["version"], kwargs["community"], config_base)
-        context_data = build_contextData(
-            kwargs["version"], kwargs["community"], config_base
-        )
+        context_data = build_contextData(kwargs["version"], kwargs["community"])
 
         transport = UdpTransportTarget((target_address, target_port))
 
@@ -289,7 +287,9 @@ class SNMPTask(Task):
                 ):
                     break
                 else:
-                    tmp_retry, tmp_mibs = self.process_snmp_data(varBindTable, metrics, bulk_mapping)
+                    tmp_retry, tmp_mibs = self.process_snmp_data(
+                        varBindTable, metrics, bulk_mapping
+                    )
                     if tmp_mibs:
                         bulk_mibs = list(set(bulk_mibs + tmp_mibs))
                     if tmp_retry:
@@ -302,7 +302,9 @@ class SNMPTask(Task):
                 if not _any_failure_happened(
                     errorIndication, errorStatus, errorIndex, varBindTable
                 ):
-                    tmp_retry, tmp_mibs = self.process_snmp_data(varBindTable, metrics, get_mapping)
+                    tmp_retry, tmp_mibs = self.process_snmp_data(
+                        varBindTable, metrics, get_mapping
+                    )
                     if tmp_mibs:
                         get_mibs = list(set(bulk_mibs + get_mibs))
                     if tmp_retry:
@@ -313,7 +315,9 @@ class SNMPTask(Task):
 
         for group_key, metric in metrics.items():
             if "profiles" in metrics[group_key]:
-                metrics[group_key]["profiles"] = ",".join(metrics[group_key]["profiles"])
+                metrics[group_key]["profiles"] = ",".join(
+                    metrics[group_key]["profiles"]
+                )
 
         return retry, metrics
 
@@ -337,7 +341,7 @@ class SNMPTask(Task):
                     metrics[group_key] = {
                         "metrics": {},
                         "fields": {},
-                        "profiles": set()
+                        "profiles": set(),
                     }
 
                 snmp_val = varBind[1]
@@ -348,7 +352,9 @@ class SNMPTask(Task):
 
                 profile = None
                 if mapping:
-                    profile = mapping.get(f"{mib}:{metric}:{index}", mapping.get(f"{mib}:{metric}"))
+                    profile = mapping.get(
+                        f"{mib}:{metric}:{index}", mapping.get(f"{mib}:{metric}")
+                    )
 
                 if metric_type in MTYPES and (isinstance(metric_value, float)):
                     metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
@@ -451,6 +457,19 @@ def trap(self, work):
     }
 
 
+def getSecretValue(
+    location: str, key: str, default: str = None, required: bool = False
+) -> str:
+    source = os.path.join(location, key)
+    result = default
+    if os.path.exists(source):
+        with open(os.path.join(location, key)) as file:
+            result = file.read().replace("\n", "")
+    elif required:
+        raise Exception(f"Required secret key {key} not found in {location}")
+    return result
+
+
 def build_authData(version, community, server_config):
     """
     create authData (CommunityData or UsmUserData) instance based on the SNMP's version
@@ -466,67 +485,75 @@ def build_authData(version, community, server_config):
     reference: https://github.com/etingof/pysnmp/blob/master/pysnmp/hlapi/v3arch/auth.py
     """
     if version == "3":
+        userName = community
+        authKey = None
+        privKey = None
+        authProtocol = None
+        privProtocol = None
+        securityEngineId = None
+        securityName = None
+        authKeyType = 0
+        privKeyType = 0
+
         try:
             # Essential params for SNMP v3
             # UsmUserData(userName, authKey=None, privKey=None)
-            userName = community
-            authKey = None
-            privKey = None
-            authProtocol = None
-            privProtocol = None
-            securityEngineId = None
-            securityName = None
-            authKeyType = 0
-            privKeyType = 0
+            secretName = community
+            location = os.path.join("secrets/snmpv3", secretName)
+            if os.path.exists(location):
+                userName = getSecretValue(location, "userName", required=True)
 
-            if server_config["usernames"].get(userName, None):
-                authKey = server_config["usernames"][userName].get("authKey", None)
-                privKey = server_config["usernames"][userName].get("privKey", None)
+                authKey = getSecretValue(location, "authKey", required=False)
+                privKey = getSecretValue(location, "privKey", required=False)
 
-                authProtocol = server_config["usernames"][userName].get(
-                    "authProtocol", None
+                authProtocol = getSecretValue(location, "authProtocol", required=False)
+                authProtocol = AuthProtocolMap.get(authProtocol.upper(), "NONE")
+
+                privProtocol = getSecretValue(
+                    location, "privProtocol", required=False, default="NONE"
                 )
-                if authProtocol:
-                    authProtocol = AuthProtocolMap.get(authProtocol.upper(), "NONE")
-                privProtocol = server_config["usernames"][userName].get(
-                    "privProtocol", None
-                )
-                if privProtocol:
-                    privProtocol = PrivProtocolMap.get(privProtocol.upper(), "NONE")
-                securityEngineId = server_config["usernames"][userName].get(
-                    "securityEngineId", None
+                privProtocol = PrivProtocolMap.get(privProtocol.upper(), "NONE")
+
+                securityEngineId = getSecretValue(
+                    location, "securityEngineId", required=False
                 )
                 if securityEngineId:
                     securityEngineId = pysnmp.proto.rfc1902.OctetString(
                         hexValue=str(securityEngineId)
                     )
-                securityName = server_config["usernames"][userName].get(
-                    "securityName", None
-                )
+
+                securityName = getSecretValue(location, "securityName", required=False)
+
                 authKeyType = int(
-                    server_config["usernames"][userName].get("authKeyType", 0)
-                )  # USM_KEY_TYPE_PASSPHRASE
+                    getSecretValue(location, "authKeyType", required=False, default="0")
+                )
+
                 privKeyType = int(
-                    server_config["usernames"][userName].get("privKeyType", 0)
-                )  # USM_KEY_TYPE_PASSPHRASE
+                    getSecretValue(location, "privKeyType", required=False, default="0")
+                )
+
+            else:
+                raise Exception("invalid username from secret {secretName}")
+
         except Exception as e:
             logger.error(
                 f"Error happend while parsing parmas of UsmUserData for SNMP v3: {e}"
             )
+            raise
         try:
             logger.debug(
-                f"=============\nuserName - {userName}, authKey - {authKey}, privKey - {privKey}"
+                f"userName - {userName}, authKey - {authKey}, privKey - {privKey}, authProtocol={authProtocol}, privProtocol={privProtocol}, securityEngineId={securityEngineId}, securityName={securityName}, authKeyType={authKeyType} privKeyType={privKeyType}"
             )
             return UsmUserData(
                 userName,
-                authKey,
-                privKey,
-                authProtocol,
-                privProtocol,
-                securityEngineId,
-                securityName,
-                authKeyType,
-                privKeyType,
+                authKey=authKey,
+                privKey=privKey,
+                authProtocol=authProtocol,
+                privProtocol=privProtocol,
+                securityEngineId=securityEngineId,
+                securityName=securityName,
+                authKeyType=authKeyType,
+                privKeyType=privKeyType,
             )
         except Exception as e:
             logger.error(f"Error happend while building UsmUserData for SNMP v3: {e}")
@@ -585,6 +612,7 @@ def build_authData(version, community, server_config):
                 logger.error(
                     f"Error happend while building CommunityData for SNMP v1: {e}"
                 )
+                raise
         else:
             # for SNMP v2c
             # CommunityData(community_string, mpModel=1)
@@ -604,9 +632,10 @@ def build_authData(version, community, server_config):
                 logger.error(
                     f"Error happend while building CommunityData for SNMP v2c: {e}"
                 )
+                raise
 
 
-def build_contextData(version, community, server_config):
+def build_contextData(version, community):
     """
     create ContextData instance based on the SNMP's version
     for SNMP v1/v2c, use the default ContextData with contextName as empty string
@@ -625,17 +654,23 @@ def build_contextData(version, community, server_config):
     contextEngineId = None
     contextName = ""
     try:
-        if version == "3" and server_config["usernames"].get(community, None):
-            contextEngineId = server_config["usernames"][community].get(
-                "contextEngineId", None
+        if version == "3":
+            location = os.path.join("secrets/snmpv3", community)
+            if os.path.exists(location):
+                contextEngineId = getSecretValue(
+                    location, "contextEngineId", required=False
+                )
+                contextName = getSecretValue(
+                    location, "contextName", required=False, default=""
+                )
+            logger.debug(
+                f"======contextEngineId: {contextEngineId}, contextName: {contextName}============="
             )
-            contextName = server_config["usernames"][community].get("contextName", "")
-        logger.debug(
-            f"======contextEngineId: {contextEngineId}, contextName: {contextName}============="
-        )
     except Exception as e:
         logger.error(f"Error happend while parsing params for ContextData: {e}")
+        raise
     try:
         return ContextData(contextEngineId, contextName)
     except Exception as e:
         logger.error(f"Error happend while building ContextData: {e}")
+        raise
