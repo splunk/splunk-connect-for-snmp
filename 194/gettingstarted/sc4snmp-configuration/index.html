@@ -65,7 +65,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#test-snmp-traps" class="md-skip">
+        <a href="#create-snmp-v3-users" class="md-skip">
           Skip to content
         </a>
       
@@ -347,6 +347,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#create-snmp-v3-users" class="md-nav__link">
+    Create SNMP v3 users
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#test-snmp-traps" class="md-nav__link">
     Test SNMP Traps
   </a>
@@ -473,6 +480,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#create-snmp-v3-users" class="md-nav__link">
+    Create SNMP v3 users
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#test-snmp-traps" class="md-nav__link">
     Test SNMP Traps
   </a>
@@ -529,7 +543,27 @@
                 
                   <h1>Configure Poller and Traps</h1>
                 
-                <h3 id="test-snmp-traps">Test SNMP Traps<a class="headerlink" href="#test-snmp-traps" title="Permanent link">&para;</a></h3>
+                <h3 id="create-snmp-v3-users">Create SNMP v3 users<a class="headerlink" href="#create-snmp-v3-users" title="Permanent link">&para;</a></h3>
+<p>Configuration of SNMP v3 when supported by the monitored devices is the most secure choice available
+for authentication and data privacy. Each set of credentials will be stored as &ldquo;Secret&rdquo; objects in k8s
+and will be referenced in the values.yaml. This allows the secret to be created once including automation
+by third party password managers then consumed without storing sensitive data in plain text.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with &quot;sc4snmp-&quot;</span>
+<span class="c1"># &lt;namespace&gt;=Namespace used to install sc4snmp</span>
+<span class="c1"># &lt;username&gt;=the SNMPv3 Username</span>
+<span class="c1"># &lt;key&gt;=key note must be at least 8 char long subject to target limitations</span>
+<span class="c1"># &lt;authProtocol&gt;=One of SHA (SHA1) or MD5 </span>
+<span class="c1"># &lt;privProtocol&gt;=One of AES or DES </span>
+<span class="c1"># Note MD5 and DES are considered insecure but must be supported for standards compliance</span>
+kubectl create -n &lt;namespace&gt; secret generic &lt;secretname&gt; <span class="se">\</span>
+  --from-literal<span class="o">=</span><span class="nv">username</span><span class="o">=</span>&lt;username&gt; <span class="se">\</span>
+  --from-literal<span class="o">=</span><span class="nv">authKey</span><span class="o">=</span>&lt;key&gt; <span class="se">\</span>
+  --from-literal<span class="o">=</span><span class="nv">privKey</span><span class="o">=</span>&lt;key&gt; <span class="se">\</span>
+  --from-literal<span class="o">=</span><span class="nv">authProtocol</span><span class="o">=</span>&lt;authProtocol&gt; <span class="se">\</span>
+  --from-literal<span class="o">=</span><span class="nv">privProtocol</span><span class="o">=</span>&lt;privProtocol&gt; <span class="se">\</span>
+</code></pre></div>
+
+<h3 id="test-snmp-traps">Test SNMP Traps<a class="headerlink" href="#test-snmp-traps" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Test the trap from a linux system with SNMP installed. Replace the IP address 
     <code>10.0.101.22</code> with the shared IP address above</li>
