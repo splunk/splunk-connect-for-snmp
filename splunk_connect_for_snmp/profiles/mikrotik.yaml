@@ -3,7 +3,8 @@ MIKROTIK:
   condition:
     type: "field"
     field: "SNMPv2-MIB.sysObjectID"
-    patterns: "^MIKROTIK"
+    patterns:
+      - "^MIKROTIK"
   varBinds:
     # Syntax: [ "MIB-Files", "MIB object name" "MIB index number"]
     - ["MIKROTIK"]
