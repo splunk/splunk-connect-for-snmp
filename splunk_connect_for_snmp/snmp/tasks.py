@@ -242,28 +242,34 @@ class SNMPTask(Task):
 
         transport = UdpTransportTarget((target_address, target_port))
 
+        get_mapping = {}
+        bulk_mapping = {}
+
         # What to do
         if kwargs.get("walk", False):
             varbinds_bulk.append(ObjectType(ObjectIdentity("1.3.6")))
         else:
             needed_mibs = []
-            for mib, entries in kwargs["varbinds_bulk"].items():
-                if entries:
-                    for entry in entries:
-                        varbinds_bulk.append(ObjectType(ObjectIdentity(mib, entry)))
+            for profile_name in kwargs["varbinds_bulk"]:
+                for mib, entries in kwargs["varbinds_bulk"][profile_name].items():
+                    if entries:
+                        for entry in entries:
+                            varbinds_bulk.append(ObjectType(ObjectIdentity(mib, entry)))
+                            bulk_mapping[f"{mib}:{entry}"] = profile_name
+                        if mib.find(".") == -1 and mib not in needed_mibs:
+                            needed_mibs.append(mib)
+            for profile_name in kwargs["varbinds_get"]:
+                for mib, names in kwargs["varbinds_get"][profile_name].items():
+                    if names:
+                        for name, indexes in names.items():
+                            if indexes:
+                                for index in indexes:
+                                    varbinds_get.append(
+                                        ObjectType(ObjectIdentity(mib, name, index))
+                                    )
+                                    get_mapping[f"{mib}:{name}:{index}"] = profile_name
                     if mib.find(".") == -1 and mib not in needed_mibs:
                         needed_mibs.append(mib)
-
-            for mib, names in kwargs["varbinds_get"].items():
-                if names:
-                    for name, indexes in names.items():
-                        if indexes:
-                            for index in indexes:
-                                varbinds_get.append(
-                                    ObjectType(ObjectIdentity(mib, name, index))
-                                )
-                if mib.find(".") == -1 and mib not in needed_mibs:
-                    needed_mibs.append(mib)
             self.load_mibs(needed_mibs)
 
         if len(varbinds_bulk) > 0:
@@ -283,7 +289,7 @@ class SNMPTask(Task):
                 ):
                     break
                 else:
-                    tmp_retry, tmp_mibs = self.process_snmp_data(varBindTable, metrics)
+                    tmp_retry, tmp_mibs = self.process_snmp_data(varBindTable, metrics, bulk_mapping)
                     if tmp_mibs:
                         bulk_mibs = list(set(bulk_mibs + tmp_mibs))
                     if tmp_retry:
@@ -296,7 +302,7 @@ class SNMPTask(Task):
                 if not _any_failure_happened(
                     errorIndication, errorStatus, errorIndex, varBindTable
                 ):
-                    tmp_retry, tmp_mibs = self.process_snmp_data(varBindTable, metrics)
+                    tmp_retry, tmp_mibs = self.process_snmp_data(varBindTable, metrics, get_mapping)
                     if tmp_mibs:
                         get_mibs = list(set(bulk_mibs + get_mibs))
                     if tmp_retry:
@@ -304,9 +310,14 @@ class SNMPTask(Task):
 
         self.load_mibs(bulk_mibs)
         self.load_mibs(get_mibs)
+
+        for group_key, metric in metrics.items():
+            if "profiles" in metrics[group_key]:
+                metrics[group_key]["profiles"] = ",".join(metrics[group_key]["profiles"])
+
         return retry, metrics
 
-    def process_snmp_data(self, varBindTable, metrics):
+    def process_snmp_data(self, varBindTable, metrics, mapping={}):
         i = 0
         retry = False
         remotemibs = []
@@ -326,6 +337,7 @@ class SNMPTask(Task):
                     metrics[group_key] = {
                         "metrics": {},
                         "fields": {},
+                        "profiles": set()
                     }
 
                 snmp_val = varBind[1]
@@ -333,12 +345,19 @@ class SNMPTask(Task):
 
                 metric_type = map_metric_type(snmp_type, snmp_val)
                 metric_value = valueAsBest(snmp_val.prettyPrint())
+
+                profile = None
+                if mapping:
+                    profile = mapping.get(f"{mib}:{metric}:{index}", mapping.get(f"{mib}:{metric}"))
+
                 if metric_type in MTYPES and (isinstance(metric_value, float)):
                     metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
                         "type": metric_type,
                         "value": metric_value,
                         "oid": oid,
                     }
+                    if profile:
+                        metrics[group_key]["profiles"].add(profile)
                 else:
                     if not snmp_val.prettyPrint() == "":
                         metrics[group_key]["fields"][f"{mib}.{metric}"] = {
