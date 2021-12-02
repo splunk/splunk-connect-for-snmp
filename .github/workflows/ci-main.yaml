@@ -35,7 +35,9 @@ jobs:
         with:
           submodules: false
           persist-credentials: false
-
+      - uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        with:
+          token: "${{ secrets.PAT_CLATOOL }}"
       #Build docker images
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -87,9 +89,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN_ADMIN }}
 
       - name: Upload Docs
-        uses: oleksiyrudenko/gha-git-credentials@v2-latest
-        with:
-        token: "${{ secrets.PAT_CLATOOL }}"
         run: |
           BRANCH=$(echo $GITHUB_REF | cut -d / -f 3)
           echo $BRANCH
