@@ -17,7 +17,6 @@ import logging
 from typing import List
 
 from celerybeatmongo.models import PeriodicTask
-
 from mongoengine.connection import connect, disconnect
 
 import splunk_connect_for_snmp.celery_config
