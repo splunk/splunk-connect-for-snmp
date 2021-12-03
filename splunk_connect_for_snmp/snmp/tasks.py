@@ -216,7 +216,7 @@ class SNMPTask(Task):
                 mib = self.mib_map[oid_to_check]
                 logger.debug(f"found {mib} for {id} based on {oid_to_check}")
                 return True, mib
-        logger.warn(f"no mib found {id} based on {oid}")
+        logger.debug(f"no mib found {id} based on {oid}")
         return False, None
 
     # @asyncio.coroutine
@@ -227,7 +227,7 @@ class SNMPTask(Task):
         varbinds_get = []
         metrics = {}
         retry = False
-
+        broken = []
         with open(CONFIG_PATH) as file:
             config_base = yaml.safe_load(file)
 
@@ -287,7 +287,7 @@ class SNMPTask(Task):
                     break
                 else:
                     tmp_retry, tmp_mibs = self.process_snmp_data(
-                        varBindTable, metrics, bulk_mapping
+                        varBindTable, metrics, broken, bulk_mapping
                     )
                     if tmp_mibs:
                         bulk_mibs = list(set(bulk_mibs + tmp_mibs))
@@ -302,7 +302,7 @@ class SNMPTask(Task):
                     errorIndication, errorStatus, errorIndex, varBindTable
                 ):
                     tmp_retry, tmp_mibs = self.process_snmp_data(
-                        varBindTable, metrics, get_mapping
+                        varBindTable, metrics, broken, get_mapping
                     )
                     if tmp_mibs:
                         get_mibs = list(set(bulk_mibs + get_mibs))
@@ -318,9 +318,9 @@ class SNMPTask(Task):
                     metrics[group_key]["profiles"]
                 )
 
-        return retry, metrics
+        return retry, metrics, broken
 
-    def process_snmp_data(self, varBindTable, metrics, mapping={}):
+    def process_snmp_data(self, varBindTable, metrics, broken, mapping={}):
         i = 0
         retry = False
         remotemibs = []
@@ -377,6 +377,8 @@ class SNMPTask(Task):
                 if found:
                     retry = True
                     break
+                else:
+                    broken.append(f"NO Mib {id},{oid}")
 
         return retry, remotemibs
 
@@ -395,14 +397,17 @@ def walk(self, **kwargs):
     with lock(kwargs["address"], self.request.id, expire=300, timeout=300):
         now = str(time.time())
         while retry:
-            retry, result = self.run_walk(kwargs)
+            retry, result, broken = self.run_walk(kwargs)
 
     # After a Walk tell schedule to recalc
     work = kwargs
     work["ts"] = now
     work["result"] = result
+    work["broken"] = broken
     work["reschedule"] = True
 
+    if len(broken) > 0:
+        logger.info(f"Walk data not resolved with mib\nf{broken}")
     return work
 
 
@@ -423,13 +428,17 @@ def poll(self, **kwargs):
         now = str(time.time())
 
         # After a Walk tell schedule to recalc
-        retry, result = self.run_walk(kwargs)
+        retry, result, broken = self.run_walk(kwargs)
 
     # TODO: If profile has third value use get instead
     work = kwargs
     work["ts"] = now
     work["result"] = result
+    work["broken"] = broken
     work["detectchange"] = False
+
+    if len(broken) > 0:
+        logger.warning(f"Walk data not resolved with mib\nf{broken}")
 
     return work
 
@@ -440,17 +449,19 @@ def trap(self, work):
 
     var_bind_table = []
     metrics = {}
+    broken = []
     for w in work["data"]:
         translated_var_bind = ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
             self.mib_view_controller
         )
         var_bind_table.append(translated_var_bind)
 
-    self.process_snmp_data(var_bind_table, metrics)
+    self.process_snmp_data(var_bind_table, metrics, broken)
 
     return {
         "ts": now,
         "result": metrics,
+        "broken": broken,
         "host": work["host"],
         "detectchange": False,
         "sourcetype": "sc4snmp:traps",
