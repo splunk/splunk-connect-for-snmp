@@ -66,7 +66,7 @@ jobs:
           if [[ $VERSION != *"develop"* ]]; then
             pip3 install poetry
             poetry install
-            poetry run mike deploy --rebase -p $VERSION
+            poetry run mike deploy -p $VERSION
           fi
   helm:
     runs-on: ubuntu-latest
