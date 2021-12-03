@@ -40,6 +40,7 @@ from pysnmp.hlapi import (
     ContextData,
     SnmpEngine,
     UdpTransportTarget,
+    UsmUserData,
     bulkCmd,
     getCmd,
 )
@@ -544,7 +545,7 @@ def build_authData(version, community, server_config):
                 )
 
             else:
-                raise Exception("invalid username from secret {secretName}")
+                raise Exception(f"invalid username from secret {secretName}")
 
         except Exception as e:
             logger.error(
