@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 try:
     from dotenv import load_dotenv
 
@@ -35,6 +36,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from pysnmp.carrier.asyncio.dgram import udp
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
+from pysnmp.proto import rfc1902
 
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.tasks import trap
@@ -152,10 +154,10 @@ def main():
             privProtocol = PrivProtocolMap.get(privProtocol.upper(), "NONE")
 
             securityEngineId = getSecretValue(
-                location, "securityEngineId", required=False
+                location, "securityEngineId", required=False, default=None
             )
             if securityEngineId:
-                securityEngineId = pysnmp.proto.rfc1902.OctetString(
+                securityEngineId = rfc1902.OctetString(
                     hexValue=str(securityEngineId)
                 )
 
@@ -175,7 +177,7 @@ def main():
                 authKey=authKey,
                 privProtocol=privProtocol,
                 privKey=privKey,
-                securityEngineId=None,
+                securityEngineId=securityEngineId,
                 securityName=None,
                 authKeyType=0,
                 privKeyType=0,
