@@ -108,7 +108,11 @@ worker:
 
   podAntiAffinity: soft
 
+poller:
+  usernameSecrets: []
 traps:
+  usernameSecrets: []
+  communities: {}
   nameOverride: ""
   fullnameOverride: ""
 
