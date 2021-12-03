@@ -6,7 +6,7 @@ splunk:
   port: "8088"
   clusterName: homecluster
 image:
-  tag: "develop"
+  tag: "pr-212"
   pullPolicy: "Always"
 traps:
   # communities:
