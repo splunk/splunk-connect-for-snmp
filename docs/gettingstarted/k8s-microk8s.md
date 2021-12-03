@@ -2,7 +2,6 @@
 
 We need to have a normal install of kubectl because of operator scripts
 ```bash
-sudo snap install kubectl --classic
 sudo snap install microk8s --classic
 ```
 
