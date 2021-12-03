@@ -1,5 +1,5 @@
 BaseUpTime:
-  frequency: 60
+  frequency: 300
   condition:
     type: "base"
     # field: "SNMPv2-MIB.sysDescr"
@@ -9,7 +9,7 @@ BaseUpTime:
   varBinds:
     - ["SNMPv2-MIB", "sysUpTime",0]
 BaseDeviceData:
-  frequency: 600
+  frequency: 1200
   condition:
     type: "base"
   varBinds:
@@ -29,7 +29,7 @@ EnirchIF:
     - ["IF-MIB", "ifName"]
     - ["IF-MIB", "ifAlias"]
 BaseIF:
-  frequency: 30
+  frequency: 300
   condition:
     type: "base"
   varBinds:
