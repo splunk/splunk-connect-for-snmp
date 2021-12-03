@@ -21,6 +21,8 @@ on:
       - "main"
       - "develop"
       - "next"
+    tags-ignore:
+      - "v*"
   pull_request:
     branches:
       - "main"
@@ -75,7 +77,7 @@ jobs:
           cache-to: type=inline
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: "14"
       - name: Semantic Release
         id: version
         uses: cycjimmy/semantic-release-action@v2.6.0
