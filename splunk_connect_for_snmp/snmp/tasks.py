@@ -341,8 +341,9 @@ class SNMPTask(Task):
                     metrics[group_key] = {
                         "metrics": {},
                         "fields": {},
-                        "profiles": set(),
                     }
+                    if mapping:
+                        metrics[group_key]["profiles"] = set()
 
                 snmp_val = varBind[1]
                 snmp_type = type(snmp_val).__name__

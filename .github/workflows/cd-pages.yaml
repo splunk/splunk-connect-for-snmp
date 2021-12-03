@@ -58,13 +58,16 @@ jobs:
           labels: ${{ steps.docker_meta.outputs.labels }}
           cache-to: type=inline
 
-      - name: Upload
-        run: |
-          VERSION=$(echo $GITHUB_REF | cut -d / -f 3 | sed 's/v//')
-          echo $VERSION
-          pip3 install poetry
-          poetry install
-          poetry run mike deploy --rebase -p $VERSION
+#      - name: Upload
+#        run: |
+#          VERSION=$(echo $GITHUB_REF | cut -d / -f 3 | sed 's/v//')
+#          echo $VERSION
+#          #We only published tagged version for main
+#          if [[ $VERSION != *"develop"* ]]; then
+#            pip3 install poetry
+#            poetry install
+#            poetry run mike deploy -p $VERSION
+#          fi
   helm:
     runs-on: ubuntu-latest
     needs:
@@ -88,6 +91,7 @@ jobs:
           echo $VERSION
           wget https://splunk.github.io/splunk-connect-for-snmp/index.yaml -P /tmp/origin
           helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo add pysnmp-mibs https://pysnmp.github.io/mibs/charts
           helm dependency build charts/splunk-connect-for-snmp
           helm package charts/splunk-connect-for-snmp -d /tmp/package
           gh release upload $VERSION /tmp/package/*
