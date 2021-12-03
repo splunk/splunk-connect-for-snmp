@@ -103,11 +103,16 @@ def send(self, data):
     # and be reasonable efficient
     for i in range(0, len(data), SPLUNK_HEC_CHUNK_SIZE):
         # using sessions is important this avoid expensive setup time
-        response = self.session.post(
-            SPLUNK_HEC_URI,
-            data="\n".join(data[i : i + SPLUNK_HEC_CHUNK_SIZE]),
-            timeout=60,
-        )
+        try:
+            response = self.session.post(
+                SPLUNK_HEC_URI,
+                data="\n".join(data[i : i + SPLUNK_HEC_CHUNK_SIZE]),
+                timeout=60,
+            )
+        except ConnectionError:
+            logger.error(f"Unable to communicate with Splunk endpoint")
+            self.retry(countdown=30)
+            raise
         # 200 is good
         if response.status_code == 200:
             logger.debug(f"Response code is {response.status_code} {response.text}")
