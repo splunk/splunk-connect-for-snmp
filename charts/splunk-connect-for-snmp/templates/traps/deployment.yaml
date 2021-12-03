@@ -134,7 +134,7 @@ spec:
         - name: snmpv3-secrets
           projected:
             sources:
-            {{- range .Values.poller.usernameSecrets }}
+            {{- range .Values.traps.usernameSecrets }}
             {{- $secret := (lookup "v1" "Secret" $.Release.Namespace . ) -}}            
             {{- if $secret }}
             - secret:
