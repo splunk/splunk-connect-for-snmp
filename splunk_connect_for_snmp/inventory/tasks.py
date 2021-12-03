@@ -290,21 +290,26 @@ def inventory_setup_poller(self, work):
 
             elif profile["condition"]["type"] == "field":
                 logger.debug(f"profile is a field condition {profile_name}")
-
-                if profile["condition"]["field"].replace(".", "|") in target["state"]:
-                    cs = target["state"][
+                if "state" in target:
+                    if (
                         profile["condition"]["field"].replace(".", "|")
-                    ]
+                        in target["state"]
+                    ):
+                        cs = target["state"][
+                            profile["condition"]["field"].replace(".", "|")
+                        ]
 
-                    for pattern in profile["condition"]["patterns"]:
+                        for pattern in profile["condition"]["patterns"]:
 
-                        result = re.match(pattern, cs["value"])
-                        if result:
-                            logger.debug(f"Adding smart profile {profile_name}")
-                            if profile["frequency"] not in assigned_profiles:
-                                assigned_profiles[profile["frequency"]] = []
-                            assigned_profiles[profile["frequency"]].append(profile_name)
-                            continue
+                            result = re.match(pattern, cs["value"])
+                            if result:
+                                logger.debug(f"Adding smart profile {profile_name}")
+                                if profile["frequency"] not in assigned_profiles:
+                                    assigned_profiles[profile["frequency"]] = []
+                                assigned_profiles[profile["frequency"]].append(
+                                    profile_name
+                                )
+                                continue
 
     for profile_name in target["config"]["profiles"]["StaticProfiles"]:
         if profile_name in self.profiles:
@@ -347,7 +352,8 @@ def inventory_setup_poller(self, work):
                         if pb[0] not in varbinds_bulk[ap]:
                             varbinds_bulk[ap][pb[0]] = [pb[1]]
                         elif (
-                            pb[0] in varbinds_bulk[ap] and pb[1] not in varbinds_bulk[ap][pb[0]]
+                            pb[0] in varbinds_bulk[ap]
+                            and pb[1] not in varbinds_bulk[ap][pb[0]]
                         ):
                             varbinds_bulk[ap][pb[0]].append(pb[1])
 
@@ -360,7 +366,8 @@ def inventory_setup_poller(self, work):
                 if str(pb[0]).find(".") == -1:
                     if len(pb) == 3:
                         if pb[0] not in varbinds_bulk[ap] or (
-                            pb[0] in varbinds_bulk[ap] and pb[1] not in varbinds_bulk[ap][pb[0]]
+                            pb[0] in varbinds_bulk[ap]
+                            and pb[1] not in varbinds_bulk[ap][pb[0]]
                         ):
                             if pb[0] not in varbinds_get[ap]:
                                 varbinds_get[ap][pb[0]] = {}
