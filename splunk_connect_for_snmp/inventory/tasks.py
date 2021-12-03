@@ -82,6 +82,7 @@ def inventory_seed(path=None):
 
             if human_bool(ir.delete, default=False):
                 periodic_obj.delete_task(ir.address)
+                targets_collection.remove({"target": ir.address})
                 logger.info(f"Deleting device: {ir.address}")
             else:
                 if ir.address.lstrip()[:1] == "#":
