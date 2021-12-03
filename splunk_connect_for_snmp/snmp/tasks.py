@@ -342,7 +342,7 @@ class SNMPTask(Task):
                         "metrics": {},
                         "fields": {},
                     }
-                    if len(mapping) > 0:
+                    if mapping:
                         metrics[group_key]["profiles"] = set()
 
                 snmp_val = varBind[1]
