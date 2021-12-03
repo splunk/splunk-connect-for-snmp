@@ -15,11 +15,11 @@ by third party password managers then consumed without storing sensitive data in
 # <privProtocol>=One of AES or DES 
 # Note MD5 and DES are considered insecure but must be supported for standards compliance
 kubectl create -n <namespace> secret generic <secretname> \
-  --from-literal=username=<username> \
+  --from-literal=userName=<username> \
   --from-literal=authKey=<key> \
   --from-literal=privKey=<key> \
   --from-literal=authProtocol=<authProtocol> \
-  --from-literal=privProtocol=<privProtocol> \
+  --from-literal=privProtocol=<privProtocol> 
 ```
 
 ### Test SNMP Traps
