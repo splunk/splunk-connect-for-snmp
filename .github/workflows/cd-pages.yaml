@@ -12,13 +12,14 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
-          submodules: false
-          persist-credentials: false
+          fetch-depth: 0
       - uses: oleksiyrudenko/gha-git-credentials@v2-latest
         with:
-          token: "${{ secrets.GITHUB_TOKEN }}"
+          token: "${{ secrets.PAT_CLATOOL }}"
+
 
       #Build docker images
       - name: Set up QEMU
@@ -57,6 +58,7 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
           cache-to: type=inline
+          
       - name: Upload
         run: |
           VERSION=$(echo $GITHUB_REF | cut -d / -f 3 | sed 's/v//')
