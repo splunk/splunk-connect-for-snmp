@@ -165,7 +165,7 @@ def prepare(work):
             }
             if "frequency" in work:
                 metric["fields"]["frequency"] = work["frequency"]
-            if data["profiles"]:
+            if "profiles" in data:
                 metric["fields"]["profiles"] = data["profiles"]
             for field, values in data["fields"].items():
                 short_field = field.split(".")[-1]
