@@ -35,7 +35,14 @@ from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 from mongolock import MongoLock, MongoLockLocked
 from pysnmp.error import PySnmpError
-from pysnmp.hlapi import CommunityData, ContextData, UdpTransportTarget, bulkCmd, getCmd
+from pysnmp.hlapi import (
+    CommunityData,
+    ContextData,
+    SnmpEngine,
+    UdpTransportTarget,
+    bulkCmd,
+    getCmd,
+)
 from pysnmp.proto import rfc1902
 from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
