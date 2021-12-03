@@ -58,16 +58,16 @@ jobs:
           labels: ${{ steps.docker_meta.outputs.labels }}
           cache-to: type=inline
 
-      - name: Upload
-        run: |
-          VERSION=$(echo $GITHUB_REF | cut -d / -f 3 | sed 's/v//')
-          echo $VERSION
-          #We only published tagged version for main
-          if [[ $VERSION != *"develop"* ]]; then
-            pip3 install poetry
-            poetry install
-            poetry run mike deploy -p $VERSION
-          fi
+#      - name: Upload
+#        run: |
+#          VERSION=$(echo $GITHUB_REF | cut -d / -f 3 | sed 's/v//')
+#          echo $VERSION
+#          #We only published tagged version for main
+#          if [[ $VERSION != *"develop"* ]]; then
+#            pip3 install poetry
+#            poetry install
+#            poetry run mike deploy -p $VERSION
+#          fi
   helm:
     runs-on: ubuntu-latest
     needs:
