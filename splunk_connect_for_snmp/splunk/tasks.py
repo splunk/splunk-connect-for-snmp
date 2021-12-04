@@ -33,7 +33,7 @@ from requests import ConnectionError, ConnectTimeout, ReadTimeout, Session, Time
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 
 SPLUNK_HEC_SCHEME = os.getenv("SPLUNK_HEC_SCHEME", "https")
-SPLUNK_HEC_HOST = os.getenv("SPLUNK_HEC_HOST", None)
+SPLUNK_HEC_HOST = os.getenv("SPLUNK_HEC_HOST", "127.0.0.1")
 SPLUNK_HEC_PORT = os.getenv("SPLUNK_HEC_PORT", None)
 SPLUNK_HEC_PATH = os.getenv("SPLUNK_HEC_PATH", "services/collector")
 
@@ -160,11 +160,11 @@ def prepare(work):
     for key, data in work["result"].items():
         if len(data["metrics"].keys()) > 0:
             metric = {
-                "time": work["ts"],
+                "time": work["time"],
                 "event": "metric",
                 "source": "sc4snmp",
                 "sourcetype": work.get("sourcetype", "sc4snmp:metric"),
-                "host": work["host"],
+                "host": work["address"],
                 "index": SPLUNK_HEC_INDEX_METRICS,
                 "fields": {},
             }
@@ -182,11 +182,11 @@ def prepare(work):
             splunk_input.append(json.dumps(metric, indent=None))
         else:
             event = {
-                "time": work["ts"],
+                "time": work["time"],
                 "event": json.dumps(data["fields"]),
                 "source": "sc4snmp",
                 "sourcetype": work.get("sourcetype", "sc4snmp:event"),
-                "host": work["host"],
+                "host": work["address"],
                 "index": SPLUNK_HEC_INDEX_EVENTS,
             }
             splunk_input.append(json.dumps(event, indent=None))
