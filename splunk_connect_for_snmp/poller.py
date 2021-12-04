@@ -72,20 +72,3 @@ app.autodiscover_tasks(
         "splunk_connect_for_snmp.splunk",
     ]
 )
-
-
-@app.on_after_finalize.connect
-def setup_periodic_tasks(sender, **kwargs) -> None:
-    periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
-
-    schedule_data_create_interval = {
-        "name": "sc4snmp;inventory;seed",
-        "task": "splunk_connect_for_snmp.inventory.tasks.inventory_seed",
-        "args": [],
-        "kwargs": {"path": INVENTORY_PATH},
-        "interval": {"every": INVENTORY_REFRESH_RATE, "period": "seconds"},
-        "enabled": True,
-        "run_immediately": True,
-    }
-
-    periodic_obj.manage_task(**schedule_data_create_interval)

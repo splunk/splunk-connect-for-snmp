@@ -137,3 +137,4 @@ inventory.csv
 charts.old
 charts/splunk-connect-for-snmp/charts/*.tgz
 .config.yaml
+secrets
