@@ -513,7 +513,7 @@
 </code></pre></div>
 
 <p>Now the package should be visible in <code>helm3</code> search command result:</p>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 search repo snmp
+<div class="codehilite"><pre><span></span><code>microk8s helm3 search repo snmp --devel 
 </code></pre></div>
 
 <p>Example output:</p>
@@ -522,7 +522,7 @@
 </code></pre></div>
 
 <h3 id="download-and-modify-valuesyaml">Download and modify values.yaml<a class="headerlink" href="#download-and-modify-valuesyaml" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">charts</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>.<span class="nv">example</span>
+<div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
 </code></pre></div>
 
 <p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
