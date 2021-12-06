@@ -305,7 +305,7 @@ class SNMPTask(Task):
                         varBindTable, metrics, get_mapping
                     )
                     if tmp_mibs:
-                        get_mibs = list(set(bulk_mibs + get_mibs))
+                        get_mibs = list(set(get_mibs + tmp_mibs))
                     if tmp_retry:
                         retry = True
 
@@ -446,7 +446,11 @@ def trap(self, work):
         )
         var_bind_table.append(translated_var_bind)
 
-    self.process_snmp_data(var_bind_table, metrics)
+    retry = False
+
+    while retry:
+        retry, remotemibs = self.process_snmp_data(var_bind_table, metrics)
+        self.load_mibs(remotemibs)
 
     return {
         "ts": now,
