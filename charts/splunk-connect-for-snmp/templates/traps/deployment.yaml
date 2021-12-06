@@ -170,7 +170,7 @@ spec:
                   {{- end }}
                   {{ if $secret.data.securityEngineId -}}
                   - key: securityEngineId
-                    path: { { . } }/securityEngineId
+                    path: {{ . }}/securityEngineId
                   {{- end }}
             {{- end }}                    
             {{- end }}
