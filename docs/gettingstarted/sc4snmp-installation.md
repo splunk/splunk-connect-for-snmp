@@ -7,7 +7,7 @@ microk8s helm3 repo update
 ```
 Now the package should be visible in `helm3` search command result:
 ``` bash
-microk8s helm3 search repo snmp
+microk8s helm3 search repo snmp --devel 
 ```
 Example output:
 ``` 
@@ -17,7 +17,7 @@ splunk-connect-for-snmp/splunk-connect-for-snmp	0.1.1        	1.16.0     	A Helm
 
 ### Download and modify values.yaml
 ```
-curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/charts/values.yaml.example
+curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
 ```
 
 `values.yaml` is being used during the installation process for configuring kubernetes values.
