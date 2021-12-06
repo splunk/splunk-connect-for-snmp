@@ -352,8 +352,12 @@ class SNMPTask(Task):
 
                 profile = None
                 if mapping:
+                    index_number = index[0]._value
+                    if type(index_number) is tuple:
+                        index_number = index_number[0]
+
                     profile = mapping.get(
-                        f"{mib}:{metric}:{index}", mapping.get(f"{mib}:{metric}")
+                        f"{mib}:{metric}:{index_number}", mapping.get(f"{mib}:{metric}")
                     )
 
                 if metric_type in MTYPES and (isinstance(metric_value, float)):
