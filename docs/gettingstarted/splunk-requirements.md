@@ -9,6 +9,8 @@
     * em_metrics (metrics type)
     * em_meta (event type)
     * em_logs (event type)
+    * netmetrics (metrics type)
+    * netops (event type)
 3. Create or obtain a new Splunk HTTP Event Collector token and the correct https endpoint.
 4. Verify the token using [curl](https://docs.splunk.com/Documentation/Splunk/8.1.3/Data/FormateventsforHTTPEventCollector) Note: The endpoint must use a publicly trusted certificate authority.
 5. The SHARED IP address to be used for SNMP Traps. Note Simple and POC deployments will use the same IP as the host server. If HA deployment will be used, the IP must be in addition to the managment interface of each cluster member.
