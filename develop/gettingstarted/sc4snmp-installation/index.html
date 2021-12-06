@@ -366,6 +366,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#test-snmp-traps" class="md-nav__link">
+    Test SNMP Traps
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-snmp-poller" class="md-nav__link">
+    Test SNMP Poller
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -493,6 +507,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#test-snmp-traps" class="md-nav__link">
+    Test SNMP Traps
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-snmp-poller" class="md-nav__link">
+    Test SNMP Poller
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -517,8 +545,8 @@
 </code></pre></div>
 
 <p>Example output:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span>                                    <span class="nv">CHART</span> <span class="nv">VERSION</span>   <span class="nv">APP</span> <span class="nv">VERSION</span> <span class="nv">DESCRIPTION</span>                     
-<span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span> <span class="mi">0</span>.<span class="mi">1</span>.<span class="mi">1</span>           <span class="mi">1</span>.<span class="mi">16</span>.<span class="mi">0</span>      <span class="nv">A</span> <span class="nv">Helm</span> <span class="nv">chart</span> <span class="k">for</span> <span class="nv">Splunk</span> <span class="k">for</span> <span class="nv">SNMP</span>
+<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span>                                            <span class="nv">CHART</span> <span class="nv">VERSION</span>   <span class="nv">APP</span> <span class="nv">VERSION</span>     <span class="nv">DESCRIPTION</span>                           
+<span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span> <span class="mi">0</span>.<span class="mi">11</span>.<span class="mi">0</span><span class="o">-</span><span class="nv">beta</span>.<span class="mi">22</span>  <span class="mi">0</span>.<span class="mi">11</span>.<span class="mi">0</span><span class="o">-</span><span class="nv">beta</span>.<span class="mi">22</span>  <span class="nv">A</span> <span class="nv">Helm</span> <span class="nv">chart</span> <span class="k">for</span> <span class="nv">SNMP</span> <span class="k">Connect</span> <span class="k">for</span> <span class="nv">SNMP</span>
 </code></pre></div>
 
 <h3 id="download-and-modify-valuesyaml">Download and modify values.yaml<a class="headerlink" href="#download-and-modify-valuesyaml" title="Permanent link">&para;</a></h3>
@@ -591,23 +619,92 @@
 <p>From now on, when editing SC4SNMP configuration, the configuration change must be
 inserted in the corresponding section of <code>config_values.yaml</code>. For more details check <a href="../../configuration/">configuration</a> section.</p>
 <p>Use the following command to propagate configuration changes:</p>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace --version &lt;VERSION_TAG&gt;
 </code></pre></div>
 
+<p>| variable | description | default |
+|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|</p>
 <h3 id="verify-deployment">Verify deployment<a class="headerlink" href="#verify-deployment" title="Permanent link">&para;</a></h3>
 <p>In a few minutes, all pods should be up and running. It can be verified with:</p>
 <div class="codehilite"><pre><span></span><code>microk8s kubectl get pods -n sc4snmp
 </code></pre></div>
 
 <p>Example output:</p>
-<div class="codehilite"><pre><span></span><code>NAME                                 READY   STATUS    RESTARTS   AGE
-sc4snmp-traps-569547fcb4-9gxd5       1/1     Running   0          19m
-sc4snmp-worker-65b4c6df9d-bmgrj      1/1     Running   0          19m
-sc4snmp-otel-6b65b45b84-frj6x        1/1     Running   0          19m
-sc4snmp-mib-server-9f765c956-rbm7z   1/1     Running   0          19m
-sc4snmp-scheduler-5bb8d5fd9c-p7j86   1/1     Running   0          19m
-sc4snmp-mongodb-85f6c9c575-vhfr9     2/2     Running   0          19m
-sc4snmp-rabbitmq-0                   1/1     Running   0          19m
+<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span>                                                      <span class="nv">READY</span>   <span class="nv">STATUS</span>             <span class="nv">RESTARTS</span>      <span class="nv">AGE</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="mi">66685</span><span class="nv">fcb6d</span><span class="o">-</span><span class="nv">f6rxb</span>      <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>            <span class="mi">0</span>             <span class="mi">6</span><span class="nv">m4s</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">scheduler</span><span class="o">-</span><span class="mi">6586488</span><span class="nv">d85</span><span class="o">-</span><span class="nv">t6j5d</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>            <span class="mi">0</span>             <span class="mi">6</span><span class="nv">m4s</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">mongodb</span><span class="o">-</span><span class="nv">arbiter</span><span class="o">-</span><span class="mi">0</span>                                    <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>            <span class="mi">0</span>             <span class="mi">6</span><span class="nv">m4s</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">mibserver</span><span class="o">-</span><span class="mi">6</span><span class="nv">f575ddb7d</span><span class="o">-</span><span class="nv">mmkmn</span>                           <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>            <span class="mi">0</span>             <span class="mi">6</span><span class="nv">m4s</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">mongodb</span><span class="o">-</span><span class="mi">0</span>                                            <span class="mi">2</span><span class="o">/</span><span class="mi">2</span>     <span class="nv">Running</span>            <span class="mi">0</span>             <span class="mi">6</span><span class="nv">m4s</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">mongodb</span><span class="o">-</span><span class="mi">1</span>                                            <span class="mi">2</span><span class="o">/</span><span class="mi">2</span>     <span class="nv">Running</span>            <span class="mi">0</span>             <span class="mi">4</span><span class="nv">m58s</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">rabbitmq</span><span class="o">-</span><span class="mi">0</span>                                           <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>            <span class="mi">0</span>             <span class="mi">6</span><span class="nv">m4s</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">traps</span><span class="o">-</span><span class="mi">54</span><span class="nv">f79b945d</span><span class="o">-</span><span class="nv">bmbg7</span>       <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>            <span class="mi">0</span>             <span class="mi">6</span><span class="nv">m4s</span>
+</code></pre></div>
+
+<h3 id="test-snmp-traps">Test SNMP Traps<a class="headerlink" href="#test-snmp-traps" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Test the trap from a linux system with SNMP installed. Replace the IP address 
+    <code>10.0.101.22</code> with the shared IP address above</li>
+</ul>
+<div class="codehilite"><pre><span></span><code>apt update
+apt-get install snmpd
+snmptrap -v2c -c public <span class="m">10</span>.0.101.22 <span class="m">123</span> <span class="m">1</span>.3.6.1.2.1.1.4 <span class="m">1</span>.3.6.1.2.1.1.4 s <span class="nb">test</span>
+</code></pre></div>
+
+<ul>
+<li>Search Splunk: You should see one event per trap command with the host value of the
+    test machine IP address</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">&quot;netops&quot;</span> <span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:traps&quot;</span>
+</code></pre></div>
+
+<h3 id="test-snmp-poller">Test SNMP Poller<a class="headerlink" href="#test-snmp-poller" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Test the trap from a linux system install snmpd.</li>
+</ul>
+<div class="codehilite"><pre><span></span><code>apt update
+apt-get install snmpd
+</code></pre></div>
+
+<ul>
+<li>To test snmp poller, snmpd need to be configure to listening on external IP. To enabled listening snmpd to external IP, 
+in configuration file: <code>/etc/snmp/snmpd.conf</code> replace the IP address  <code>10.0.101.22</code> with the server IP address where snmpd is configured
+<code>agentaddress  10.0.101.22,127.0.0.1,[::1]</code>. Restart snmpd by execute command:</li>
+</ul>
+<div class="codehilite"><pre><span></span><code>service snmpd stop
+service snmpd start
+</code></pre></div>
+
+<ul>
+<li>Configure SC4SNMP Poller to test add IP address which need to be poll. Add configuration entry in <code>value.yaml</code> file by 
+replace the IP address <code>10.0.101.22</code> with the server IP address where snmpd were configured.</li>
+</ul>
+<div class="codehilite"><pre><span></span><code>poller:
+  usernameSecrets:
+    - sc4snmp-homesecure-sha-aes
+    - sc4snmp-homesecure-sha-des
+  inventory: <span class="p">|</span>
+    address,version,community,walk_interval,profiles,SmartProfiles,delete
+    <span class="m">10</span>.0.101.22,public,60,,,
+</code></pre></div>
+
+<ul>
+<li>Load <code>value.yaml</code> file in SC4SNMP</li>
+</ul>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace --version &lt;VERSION_TAG&gt;
+</code></pre></div>
+
+<p>| variable | description | default |
+|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|</p>
+<ul>
+<li>Check in Splunk</li>
+</ul>
+<p>Up to 1 min events appear in Splunk:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">&quot;netops&quot;</span> <span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:event&quot;</span>
+</code></pre></div>
+
+<p>Up to 1 min events appear in Splunk:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">|</span> mpreview <span class="nv">index</span><span class="o">=</span><span class="s2">&quot;netmetrics&quot;</span> <span class="p">|</span> search <span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:metric&quot;</span>
 </code></pre></div>
 
               
