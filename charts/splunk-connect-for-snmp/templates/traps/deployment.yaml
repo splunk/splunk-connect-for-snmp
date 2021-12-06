@@ -170,10 +170,6 @@ spec:
                   - key: contextName
                     path: {{ . }}/contextName
                   {{- end }}
-                  {{ if $secret.data.securityEngineId -}}
-                  - key: securityEngineId
-                    path: {{ . }}/securityEngineId
-                  {{- end }}
             {{- end }}                    
             {{- end }}
         {{- end }}                  

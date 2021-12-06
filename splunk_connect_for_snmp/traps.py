@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
+
 from pysnmp.proto.api import v2c
 
 try:
@@ -27,7 +29,6 @@ import os
 
 import yaml
 from celery import Celery, chain, signals
-from celery.utils.log import get_task_logger
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
@@ -37,7 +38,6 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from pysnmp.carrier.asyncio.dgram import udp
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
-from pysnmp.proto import rfc1902
 
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.tasks import trap
@@ -48,11 +48,11 @@ processor = BatchSpanProcessor(JaegerExporter())
 provider.add_span_processor(processor)
 trace.set_tracer_provider(provider)
 
-logger = get_task_logger(__name__)
-
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
+SECURITY_ENGINE_ID = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "8000000903000A397056B8AC")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
-
+logging.basicConfig(level=getattr(logging, LOG_LEVEL), format='%(asctime)s %(levelname)s %(message)s')
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
@@ -75,12 +75,10 @@ def getSecretValue(
     location: str, key: str, default: str = None, required: bool = False
 ) -> str:
     source = os.path.join(location, key)
-    print(source)
     result = default
     if os.path.exists(source):
         with open(os.path.join(location, key)) as file:
             result = file.read().replace("\n", "")
-            print(result)
     elif required:
         raise Exception(f"Required secret key {key} not found in {location}")
     return result
@@ -92,7 +90,7 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
     transportDomain, transportAddress = snmpEngine.msgAndPduDsp.getTransportInfo(
         stateReference
     )
-    print('Notification from ContextEngineId "%s", ContextName "%s"' % (
+    logging.debug('Notification from ContextEngineId "%s", ContextName "%s"' % (
         contextEngineId.prettyPrint(), contextName.prettyPrint()))
     data = []
     device_ip = snmpEngine.msgAndPduDsp.getTransportInfo(stateReference)[1][0]
@@ -101,8 +99,6 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
         data.append((name.prettyPrint(), val.prettyPrint()))
 
     work = {"data": data, "host": device_ip}
-    print("cb fun")
-    print(work)
     my_chain = chain(trap.s(work), prepare.s(), send.s())
     result = my_chain.apply_async()
 
@@ -125,13 +121,6 @@ def main():
     # Create SNMP engine with autogenernated engineID and pre-bound
     # to socket transport dispatcher
     snmpEngine = engine.SnmpEngine()
-
-    # Transport setup
-    snmpEngine.observer.registerObserver(
-            request_observer,
-            "rfc3412.receiveMessage:request",
-            "rfc3412.returnResponsePdu",
-        )
     # UDP over IPv4, first listening interface/port
     config.addTransport(
         snmpEngine,
@@ -156,19 +145,14 @@ def main():
             privKey = getSecretValue(location, "privKey", required=False)
 
             authProtocol = getSecretValue(location, "authProtocol", required=False)
-            print(f"authProtocol: {authProtocol}")
+            logging.debug(f"authProtocol: {authProtocol}")
             authProtocol = AuthProtocolMap.get(authProtocol.upper(), "NONE")
 
             privProtocol = getSecretValue(
                 location, "privProtocol", required=False, default="NONE"
             )
-            print(f"privProtocol: {privProtocol}")
+            logging.debug(f"privProtocol: {privProtocol}")
             privProtocol = PrivProtocolMap.get(privProtocol.upper(), "NONE")
-
-            securityEngineId = getSecretValue(
-                location, "securityEngineId", required=True
-            )
-            print(f"securityEngineId: {securityEngineId}")
 
             config.addV3User(
                 snmpEngine,
@@ -177,56 +161,13 @@ def main():
                 authKey=authKey,
                 privProtocol=privProtocol,
                 privKey=privKey,
-                securityEngineId=v2c.OctetString(hexValue=securityEngineId),
+                securityEngineId=v2c.OctetString(hexValue=SECURITY_ENGINE_ID),
             )
-            print(f"V3 users: {userName} auth {authProtocol} authkey {authKey} privprotocol {privProtocol} "
-                  f"privkey {privKey} securityEngineId {securityEngineId}")
+            logging.debug(f"V3 users: {userName} auth {authProtocol} authkey {authKey} privprotocol {privProtocol} "
+                  f"privkey {privKey} securityEngineId {SECURITY_ENGINE_ID}")
 
-    config.addV3User(
-        snmpEngine, 'usr-md5-des',
-        config.usmHMACMD5AuthProtocol, 'authkey1',
-        config.usmDESPrivProtocol, 'privkey1'
-    )
-    # user: usr-sha-aes128, auth: SHA, priv AES
-    config.addV3User(
-        snmpEngine, 'usr-sha-aes128',
-        config.usmHMACSHAAuthProtocol, 'authkey1',
-        config.usmAesCfb128Protocol, 'privkey1'
-    )
-    # user: usr-sha-aes128, auth: SHA, priv AES, securityEngineId: 8000000001020304
-    # this USM entry is used for TRAP receiving purposes
-    config.addV3User(
-        snmpEngine, 'usr-sha-aes128',
-        config.usmHMACSHAAuthProtocol, 'authkey1',
-        config.usmAesCfb128Protocol, 'privkey1',
-        securityEngineId=v2c.OctetString(hexValue='8000000001020304')
-    )
     # Register SNMP Application at the SNMP engine
     ntfrcv.NotificationReceiver(snmpEngine, cbFun)
 
     # Run asyncio main loop
     loop.run_forever()
-
-
-# Register a callback to be invoked at specified execution point of
-# SNMP Engine and passed local variables at code point's local scope
-# noinspection PyUnusedLocal,PyUnusedLocal
-def request_observer(snmp_engine, execution_point, variables, callback_ctx):
-    print(f'Raw data is "{variables}"')
-    print("Execution point: %s" % execution_point)
-    print(
-        "* transportDomain: %s"
-        % ".".join([str(x) for x in variables["transportDomain"]])
-    )
-    print(
-        "* transportAddress: %s"
-        % "@".join([str(x) for x in variables["transportAddress"]])
-    )
-    print("* securityModel: %s" % variables["securityModel"])
-    print("* securityName: %s" % variables["securityName"])
-    print("* securityLevel: %s" % variables["securityLevel"])
-    print(
-        "* contextEngineId: %s" % variables["contextEngineId"].prettyPrint()
-    )
-    print("* contextName: %s" % variables["contextName"].prettyPrint())
-    print("* PDU: %s" % variables["pdu"].prettyPrint())
