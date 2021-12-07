@@ -16,6 +16,7 @@ traps:
   usernameSecrets:
     - sc4snmp-homesecure-sha-aes
     #- sc4snmp-homesecure-sha-des
+  securityEngineId: "8000000903000A397056B8AC"
 
 
   # Overrides the image tag whose default is the chart appVersion.
