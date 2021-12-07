@@ -59,11 +59,10 @@ traps:
 ```   
 ### Define load balancer IP
 `loadBalancerIP` is the IP address in the metallb pool. 
-
 Example:
 ```yaml
 traps:
-  replicas: 2
+  loadBalancerIP: 10.202.4.202
 ```
 
 ### Define number of traps server replica
@@ -71,7 +70,7 @@ traps:
 Example:
 ```yaml
 traps:
-  loadBalancerIP: 10.202.4.202
+  replicas: 2
 ```
 
 ### Define log level
