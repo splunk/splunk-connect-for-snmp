@@ -18,11 +18,4 @@ mongodb:
     storageClass: "microk8s-hostpath"
   volumePermissions:
     enabled: true
-  externalAccess:
-    enabled: false
-    service:
-      type: NodePort
-      nodePorts:
-        - '30000'
-        - '30001'
 ```
