@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
+
+from pysnmp.proto.api import v2c
+
 try:
     from dotenv import load_dotenv
 
@@ -25,7 +29,6 @@ import os
 
 import yaml
 from celery import Celery, chain, signals
-from celery.utils.log import get_task_logger
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
@@ -45,11 +48,11 @@ processor = BatchSpanProcessor(JaegerExporter())
 provider.add_span_processor(processor)
 trace.set_tracer_provider(provider)
 
-logger = get_task_logger(__name__)
-
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
+SECURITY_ENGINE_ID = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "8000000903000A397056B8AC")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
-
+logging.basicConfig(level=getattr(logging, LOG_LEVEL), format='%(asctime)s %(levelname)s %(message)s')
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
@@ -87,6 +90,8 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
     transportDomain, transportAddress = snmpEngine.msgAndPduDsp.getTransportInfo(
         stateReference
     )
+    logging.debug('Notification from ContextEngineId "%s", ContextName "%s"' % (
+        contextEngineId.prettyPrint(), contextName.prettyPrint()))
     data = []
     device_ip = snmpEngine.msgAndPduDsp.getTransportInfo(stateReference)[1][0]
 
@@ -94,7 +99,6 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
         data.append((name.prettyPrint(), val.prettyPrint()))
 
     work = {"data": data, "host": device_ip}
-
     my_chain = chain(trap.s(work), prepare.s(), send.s())
     result = my_chain.apply_async()
 
@@ -117,13 +121,10 @@ def main():
     # Create SNMP engine with autogenernated engineID and pre-bound
     # to socket transport dispatcher
     snmpEngine = engine.SnmpEngine()
-
-    # Transport setup
-
     # UDP over IPv4, first listening interface/port
     config.addTransport(
         snmpEngine,
-        udp.domainName + (1,),
+        udp.domainName,
         udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
     )
     with open(CONFIG_PATH) as file:
@@ -138,36 +139,21 @@ def main():
     if "usernameSecrets" in config_base:
         for secret in config_base["usernameSecrets"]:
             location = os.path.join("secrets/snmpv3", secret)
-            userName = getSecretValue(location, "userName", required=True)
+            userName = getSecretValue(location, "userName", required=True, default=None)
 
             authKey = getSecretValue(location, "authKey", required=False)
             privKey = getSecretValue(location, "privKey", required=False)
 
             authProtocol = getSecretValue(location, "authProtocol", required=False)
+            logging.debug(f"authProtocol: {authProtocol}")
             authProtocol = AuthProtocolMap.get(authProtocol.upper(), "NONE")
 
             privProtocol = getSecretValue(
                 location, "privProtocol", required=False, default="NONE"
             )
+            logging.debug(f"privProtocol: {privProtocol}")
             privProtocol = PrivProtocolMap.get(privProtocol.upper(), "NONE")
 
-            securityEngineId = getSecretValue(
-                location, "securityEngineId", required=False
-            )
-            if securityEngineId:
-                securityEngineId = pysnmp.proto.rfc1902.OctetString(
-                    hexValue=str(securityEngineId)
-                )
-
-            securityName = getSecretValue(location, "securityName", required=False)
-
-            authKeyType = int(
-                getSecretValue(location, "authKeyType", required=False, default="0")
-            )
-
-            privKeyType = int(
-                getSecretValue(location, "privKeyType", required=False, default="0")
-            )
             config.addV3User(
                 snmpEngine,
                 userName=userName,
@@ -175,12 +161,10 @@ def main():
                 authKey=authKey,
                 privProtocol=privProtocol,
                 privKey=privKey,
-                securityEngineId=None,
-                securityName=None,
-                authKeyType=0,
-                privKeyType=0,
-                contextEngineId=None,
+                securityEngineId=v2c.OctetString(hexValue=SECURITY_ENGINE_ID),
             )
+            logging.debug(f"V3 users: {userName} auth {authProtocol} authkey {authKey} privprotocol {privProtocol} "
+                  f"privkey {privKey} securityEngineId {SECURITY_ENGINE_ID}")
 
     # Register SNMP Application at the SNMP engine
     ntfrcv.NotificationReceiver(snmpEngine, cbFun)

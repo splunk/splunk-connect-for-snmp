@@ -7,17 +7,17 @@ microk8s helm3 repo update
 ```
 Now the package should be visible in `helm3` search command result:
 ``` bash
-microk8s helm3 search repo snmp
+microk8s helm3 search repo snmp --devel 
 ```
 Example output:
 ``` 
-NAME                                  	CHART VERSION	APP VERSION	DESCRIPTION                     
-splunk-connect-for-snmp/splunk-connect-for-snmp	0.1.1        	1.16.0     	A Helm chart for Splunk for SNMP
+NAME                                           	CHART VERSION 	APP VERSION   	DESCRIPTION                           
+splunk-connect-for-snmp/splunk-connect-for-snmp	0.11.0-beta.22	0.11.0-beta.22	A Helm chart for SNMP Connect for SNMP
 ```
 
 ### Download and modify values.yaml
 ```
-curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/charts/values.yaml.example
+curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
 ```
 
 `values.yaml` is being used during the installation process for configuring kubernetes values.
@@ -47,8 +47,11 @@ inserted in the corresponding section of `config_values.yaml`. For more details 
 
 Use the following command to propagate configuration changes:
 ``` bash
-microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version <VERSION_TAG>
 ```
+| variable | description | default |
+|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|
+
 ### Verify deployment
 In a few minutes, all pods should be up and running. It can be verified with:
 ``` bash
@@ -56,12 +59,81 @@ microk8s kubectl get pods -n sc4snmp
 ```
 Example output:
 ``` 
-NAME                                 READY   STATUS    RESTARTS   AGE
-sc4snmp-traps-569547fcb4-9gxd5       1/1     Running   0          19m
-sc4snmp-worker-65b4c6df9d-bmgrj      1/1     Running   0          19m
-sc4snmp-otel-6b65b45b84-frj6x        1/1     Running   0          19m
-sc4snmp-mib-server-9f765c956-rbm7z   1/1     Running   0          19m
-sc4snmp-scheduler-5bb8d5fd9c-p7j86   1/1     Running   0          19m
-sc4snmp-mongodb-85f6c9c575-vhfr9     2/2     Running   0          19m
-sc4snmp-rabbitmq-0                   1/1     Running   0          19m
+NAME                                                      READY   STATUS             RESTARTS      AGE
+snmp-splunk-connect-for-snmp-worker-66685fcb6d-f6rxb      1/1     Running            0             6m4s
+snmp-splunk-connect-for-snmp-scheduler-6586488d85-t6j5d   1/1     Running            0             6m4s
+snmp-mongodb-arbiter-0                                    1/1     Running            0             6m4s
+snmp-mibserver-6f575ddb7d-mmkmn                           1/1     Running            0             6m4s
+snmp-mongodb-0                                            2/2     Running            0             6m4s
+snmp-mongodb-1                                            2/2     Running            0             4m58s
+snmp-rabbitmq-0                                           1/1     Running            0             6m4s
+snmp-splunk-connect-for-snmp-traps-54f79b945d-bmbg7       1/1     Running            0             6m4s
 ```
+
+### Test SNMP Traps
+
+-   Test the trap from a linux system with SNMP installed. Replace the IP address 
+    `10.0.101.22` with the shared IP address above
+
+``` bash
+apt update
+apt-get install snmpd
+snmptrap -v2c -c public 10.0.101.22 123 1.3.6.1.2.1.1.4 1.3.6.1.2.1.1.4 s test
+```
+
+-   Search Splunk: You should see one event per trap command with the host value of the
+    test machine IP address
+
+``` bash
+index="netops" sourcetype="sc4snmp:traps"
+```
+
+### Test SNMP Poller
+
+- Test the trap from a linux system install snmpd.
+    
+``` bash
+apt update
+apt-get install snmpd
+```
+
+- To test snmp poller, snmpd need to be configure to listening on external IP. To enabled listening snmpd to external IP, 
+in configuration file: `/etc/snmp/snmpd.conf` replace the IP address  `10.0.101.22` with the server IP address where snmpd is configured
+`agentaddress  10.0.101.22,127.0.0.1,[::1]`. Restart snmpd by execute command:
+``` bash
+service snmpd stop
+service snmpd start
+```
+
+- Configure SC4SNMP Poller to test add IP address which need to be poll. Add configuration entry in `value.yaml` file by 
+replace the IP address `10.0.101.22` with the server IP address where snmpd were configured.
+``` bash
+poller:
+  usernameSecrets:
+    - sc4snmp-homesecure-sha-aes
+    - sc4snmp-homesecure-sha-des
+  inventory: |
+    address,version,community,walk_interval,profiles,SmartProfiles,delete
+    10.0.101.22,public,60,,,
+```
+
+- Load `value.yaml` file in SC4SNMP
+
+``` bash
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version <VERSION_TAG>
+```
+| variable | description | default |
+|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|
+
+-   Check in Splunk
+ 
+ Up to 1 min events appear in Splunk:
+
+``` bash
+index="netops" sourcetype="sc4snmp:event"
+```
+ Up to 1 min events appear in Splunk:
+``` bash
+| mpreview index="netmetrics" | search sourcetype="sc4snmp:metric"
+```
+
