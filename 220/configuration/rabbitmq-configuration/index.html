@@ -61,6 +61,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#rabbitmq-configuration" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -377,15 +382,64 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rabbitmq-configuration-file" class="md-nav__link">
+    RabbitMQ configuration file
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content" data-md-component="content">
             <article class="md-content__inner md-typeset">
               
                 
 
-  <h1>Rabbitmq configuration</h1>
+<h1 id="rabbitmq-configuration">RabbitMQ configuration<a class="headerlink" href="#rabbitmq-configuration" title="Permanent link">&para;</a></h1>
+<p>RabbitMQ is a service with is used as queue service for SC4SNMP. It is queuing tasks like SNMP Walk and GETs.  </p>
+<h3 id="rabbitmq-configuration-file">RabbitMQ configuration file<a class="headerlink" href="#rabbitmq-configuration-file" title="Permanent link">&para;</a></h3>
+<p>RabbitMQ configuration is keep in <code>values.yaml</code> file in section <code>rabbitmq</code>.  To downland example file execute command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
+</code></pre></div>
 
-
+<p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">rabbitmq</span><span class="p">:</span>
+  <span class="nt">pdb</span><span class="p">:</span>
+    <span class="nt">create</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="nt">replicaCount</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">persistence</span><span class="p">:</span>
+    <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">storageClass</span><span class="p">:</span> <span class="s">&quot;microk8s-hostpath&quot;</span>
+  <span class="nt">volumePermissions</span><span class="p">:</span>
+    <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
 
               
             </article>

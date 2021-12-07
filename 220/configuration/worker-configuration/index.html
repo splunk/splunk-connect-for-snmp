@@ -13,7 +13,7 @@
     
     
       
-        <title>Worker configuration - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Worker Configuration - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -61,6 +61,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#worker-configuration" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -96,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Worker configuration
+              Worker Configuration
             
           </span>
         </div>
@@ -377,15 +382,83 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#worker-configuration-file" class="md-nav__link">
+    Worker configuration file
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-number-of-worker-server-replica" class="md-nav__link">
+    Define number of worker server replica
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-log-level" class="md-nav__link">
+    Define log level
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content" data-md-component="content">
             <article class="md-content__inner md-typeset">
               
                 
 
-  <h1>Worker configuration</h1>
+<h1 id="worker-configuration">Worker Configuration<a class="headerlink" href="#worker-configuration" title="Permanent link">&para;</a></h1>
+<p>Worker is a service with is responsible for tasks execution like: SNMP Walk, GET or serve Trap messages.  </p>
+<h3 id="worker-configuration-file">Worker configuration file<a class="headerlink" href="#worker-configuration-file" title="Permanent link">&para;</a></h3>
+<p>Worker configuration is keep in <code>values.yaml</code> file in section <code>worker</code>.  To downland example file execute command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
+</code></pre></div>
 
+<p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+  <span class="c1"># replicas: Number of replicas for worker container should two or more</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;WARN&quot;</span>
+</code></pre></div>
 
+<h3 id="define-number-of-worker-server-replica">Define number of worker server replica<a class="headerlink" href="#define-number-of-worker-server-replica" title="Permanent link">&para;</a></h3>
+<p><code>replicas</code> Defines number of replicas for worker container should be 2x number of nodes. Default value is <code>2</code>. 
+Example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+</code></pre></div>
+
+<h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
+<p>Log level for trap can be set by changing value for key <code>logLevel</code>. Allowed value are: <code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code>. 
+Default value is <code>WARN</code></p>
 
               
             </article>

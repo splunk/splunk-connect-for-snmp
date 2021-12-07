@@ -61,6 +61,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#scheduler-configuration" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -377,15 +382,116 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scheduler-configuration-file" class="md-nav__link">
+    Scheduler configuration file
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-log-level" class="md-nav__link">
+    Define log level
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-inventory-refresh-rate" class="md-nav__link">
+    Configure inventory refresh rate
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-profile" class="md-nav__link">
+    Configure profile
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content" data-md-component="content">
             <article class="md-content__inner md-typeset">
               
                 
 
-  <h1>Scheduler configuration</h1>
+<h1 id="scheduler-configuration">Scheduler configuration<a class="headerlink" href="#scheduler-configuration" title="Permanent link">&para;</a></h1>
+<p>Scheduler is a service with is responsible for manager schedules for SNMP walks and GETs. Schedules definition are store in Mongo DB. </p>
+<h3 id="scheduler-configuration-file">Scheduler configuration file<a class="headerlink" href="#scheduler-configuration-file" title="Permanent link">&para;</a></h3>
+<p>Scheduler configuration is keep in <code>values.yaml</code> file in section <code>scheduler</code>.  To downland example file execute command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
+</code></pre></div>
 
+<p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+  <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;WARN&quot;</span>
+  <span class="nt">inventory_refresh_rate</span><span class="p">:</span> <span class="s">&quot;20&quot;</span>
+  <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+    <span class="no">match_test_profile:</span>
+      <span class="no">frequency: 5</span>
+            <span class="no">condition:</span>
+              <span class="no">type: &quot;field&quot;</span>
+              <span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span>
+              <span class="no">patterns: &quot;^.*&quot;</span>
+      <span class="no">varBinds:</span>
+        <span class="no">- [&quot;SNMPv2-MIB&quot;, &quot;sysDescr&quot;,0]</span>
+</code></pre></div>
 
+<h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
+<p>Log level for trap can be set by changing value for key <code>logLevel</code>. Allowed value are: <code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code>. 
+Default value is <code>WARN</code></p>
+<h3 id="configure-inventory-refresh-rate">Configure inventory refresh rate<a class="headerlink" href="#configure-inventory-refresh-rate" title="Permanent link">&para;</a></h3>
+<p><code>inventory_refresh_rate</code> - <TO_DO check what it does></p>
+<h3 id="configure-profile">Configure profile<a class="headerlink" href="#configure-profile" title="Permanent link">&para;</a></h3>
+<p><TO_DO check it>
+Profiles used in inventory can be created in <code>values.yaml</code>, which can be modified in scheduler config in <code>values.yaml</code>, ex.:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+  <span class="nt">config</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+    <span class="no">profiles:</span>
+      <span class="no">basev1:</span>
+        <span class="no">frequency: 10</span>
+        <span class="no">patterns:</span>
+           <span class="no">- &#39;.*STRING_TO_BE_MATCHED.*&#39;</span>
+        <span class="no">varBinds:</span>
+          <span class="no"># Syntax: [ &quot;MIB-Files&quot;, &quot;MIB object name&quot; &quot;MIB index number&quot;]</span>
+          <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysDescr&#39;]</span>
+          <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysUpTime&#39;,0]</span>
+          <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
+</code></pre></div>
+
+<p>frequency - frequency in seconds (how often SNMP connector should ask agent for data)
+patterns - list of regular expressions that will be matched against sysDescr or sysObjectId</p>
+<p>Every change in values.yaml file can be applied with the command:</p>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
+</code></pre></div>
 
               
             </article>

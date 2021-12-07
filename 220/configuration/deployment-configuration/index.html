@@ -408,13 +408,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#traps-values" class="md-nav__link">
-    Traps values
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -452,12 +445,12 @@ after executing:</p>
 </table>
 <p>The whole file is divided into the following components:</p>
 <ol>
-<li>scheduler</li>
-<li>worker</li>
-<li>poller</li>
-<li>traps</li>
-<li>mongodb</li>
-<li>rabbitmq</li>
+<li>scheduler - more detail <a href="../scheduler-configuration/">scheduler configuration</a></li>
+<li>worker - more detail <a href="../worker-configuration/">worker configuration</a></li>
+<li>poller - more detail <a href="../poller-configuration/">poller configuration</a></li>
+<li>traps - more detail <a href="../trap-configuration/">trap configuration</a></li>
+<li>mongodb - more detail <a href="../mongo-configuration/">mongo configuration</a></li>
+<li>rabbitmq - more detail <a href="../rabbitmq-configuration/">rabbitmq configuration</a></li>
 </ol>
 <h3 id="shared-values">Shared values<a class="headerlink" href="#shared-values" title="Permanent link">&para;</a></h3>
 <p>All of the components have the <code>resources</code> field for adjusting memory resources:</p>
@@ -471,24 +464,6 @@ after executing:</p>
 </code></pre></div>
 
 <p>More information about the concept of <code>resources</code> can be found in the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">kuberentes documentation</a>.</p>
-<p>Scheduler, MIB and Worker contain a <code>logLevel</code> variable that indicates the level of logging for the pod.</p>
-<h3 id="traps-values">Traps values<a class="headerlink" href="#traps-values" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>variable</th>
-<th>Description</th>
-<th>Example</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>loadBalancerIP</td>
-<td>shared IP</td>
-<td>10.0.101.22</td>
-</tr>
-</tbody>
-</table>
 
               
             </article>

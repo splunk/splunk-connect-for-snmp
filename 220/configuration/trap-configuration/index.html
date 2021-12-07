@@ -509,17 +509,17 @@ More information how to define &ldquo;Secrets&rdquo; object for SNMPv3 can be fo
 </code></pre></div>
 
 <h3 id="define-load-balancer-ip">Define load balancer IP<a class="headerlink" href="#define-load-balancer-ip" title="Permanent link">&para;</a></h3>
-<p><code>loadBalancerIP</code> is the IP address in the metallb pool. </p>
-<p>Example:</p>
+<p><code>loadBalancerIP</code> is the IP address in the metallb pool. 
+Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
-  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="nt">loadBalancerIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10.202.4.202</span>
 </code></pre></div>
 
 <h3 id="define-number-of-traps-server-replica">Define number of traps server replica<a class="headerlink" href="#define-number-of-traps-server-replica" title="Permanent link">&para;</a></h3>
 <p><code>replicas</code> Defines number of replicas for trap container should be 2x number of nodes. Default value is <code>2</code>. 
 Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
-  <span class="nt">loadBalancerIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10.202.4.202</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
 </code></pre></div>
 
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
