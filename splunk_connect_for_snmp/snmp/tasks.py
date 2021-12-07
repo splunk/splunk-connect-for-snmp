@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from functools import wraps
+
 import yaml
 
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
@@ -381,12 +383,38 @@ class SNMPTask(Task):
         return retry, remotemibs
 
 
+class RevokeChainRequested(Exception):
+    def __init__(self, return_value):
+        Exception.__init__(self, "")
+        self.return_value = return_value
+
+
+def revoke_chain_authority(a_shared_task):
+    """
+    @see: https://gist.github.com/bloudermilk/2173940
+    @param a_shared_task: a @shared_task(bind=True) celery function.
+    @return:
+    """
+    @wraps(a_shared_task)
+    def inner(self, *args, **kwargs):
+        try:
+            return a_shared_task(self, *args, **kwargs)
+        except RevokeChainRequested as e:
+            # Drop subsequent tasks in chain (if not EAGER mode)
+            if self.request.callbacks:
+                self.request.callbacks[:] = []
+            return e.return_value
+
+    return inner
+
+
 @shared_task(
     bind=True,
     base=SNMPTask,
     expires=21000,
     autoretry_for=[MongoLockLocked],
 )
+@revoke_chain_authority
 def walk(self, **kwargs):
 
     retry = True
@@ -399,7 +427,7 @@ def walk(self, **kwargs):
 
     if not result:
         logger.error(f"Walk for {kwargs['address']} failed!")
-        return
+        raise RevokeChainRequested(False)
     # After a Walk tell schedule to recalc
     work = kwargs
     work["ts"] = now
