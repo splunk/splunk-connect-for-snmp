@@ -81,14 +81,13 @@ def _any_failure_happened(
     @return: if any failure happened
     """
     if error_indication:
-        result = error_indication
-        raise SnmpActionError(operation, address, result)
+        raise SnmpActionError(f"An error of SNMP {operation} for a host {address} occurred: {error_indication}")
     elif error_status:
         result = "{} at {}".format(
             error_status.prettyPrint(),
             error_index and var_binds[int(error_index) - 1][0] or "?",
         )
-        raise SnmpActionError(operation, address, result)
+        raise SnmpActionError(f"An error of SNMP {operation} for a host {address} occurred: {result}")
     return True
 
 
@@ -387,7 +386,7 @@ class SNMPTask(Task):
 @shared_task(
     bind=True,
     base=SNMPTask,
-    expires=21000,
+    max_retries=3,
     autoretry_for=[MongoLockLocked, SnmpActionError],
 )
 def walk(self, **kwargs):
