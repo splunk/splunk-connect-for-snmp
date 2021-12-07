@@ -397,6 +397,9 @@ def walk(self, **kwargs):
         while retry:
             retry, result = self.run_walk(kwargs)
 
+    if not result:
+        logger.error(f"Walk for {kwargs['address']} failed!")
+        return
     # After a Walk tell schedule to recalc
     work = kwargs
     work["ts"] = now
