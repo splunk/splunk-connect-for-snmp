@@ -18,6 +18,7 @@ from functools import wraps
 import yaml
 
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
+from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 try:
     from dotenv import load_dotenv
@@ -69,7 +70,7 @@ def valueAsBest(value) -> Union[str, float]:
 
 
 def _any_failure_happened(
-    error_indication, error_status, error_index, var_binds: list
+    error_indication, error_status, error_index, var_binds: list, address, operation
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
@@ -80,16 +81,14 @@ def _any_failure_happened(
     @return: if any failure happened
     """
     if error_indication:
-        result = f"error: {error_indication}"
-        logger.error(result)
+        result = error_indication
+        raise SnmpActionError(operation, address, result)
     elif error_status:
-        result = "error: {} at {}".format(
+        result = "{} at {}".format(
             error_status.prettyPrint(),
             error_index and var_binds[int(error_index) - 1][0] or "?",
         )
-        logger.error(result)
-    else:
-        return False
+        raise SnmpActionError(operation, address, result)
     return True
 
 
@@ -246,8 +245,10 @@ class SNMPTask(Task):
 
         # What to do
         if kwargs.get("walk", False):
+            operation = "WALK"
             varbinds_bulk.append(ObjectType(ObjectIdentity("1.3.6")))
         else:
+            operation = "POLL"
             needed_mibs = []
             for profile_name in kwargs["varbinds_bulk"]:
                 for mib, entries in kwargs["varbinds_bulk"][profile_name].items():
@@ -271,7 +272,7 @@ class SNMPTask(Task):
                         needed_mibs.append(mib)
             self.load_mibs(needed_mibs)
 
-        if len(varbinds_bulk) > 0:
+        if varbinds_bulk:
 
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
                 self.snmpEngine,
@@ -284,7 +285,7 @@ class SNMPTask(Task):
                 lexicographicMode=False,
             ):
                 if _any_failure_happened(
-                    errorIndication, errorStatus, errorIndex, varBindTable
+                    errorIndication, errorStatus, errorIndex, varBindTable, target_address, operation
                 ):
                     break
                 else:
@@ -296,12 +297,12 @@ class SNMPTask(Task):
                     if tmp_retry:
                         retry = True
 
-        if len(varbinds_get) > 0:
+        if varbinds_get:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
                 self.snmpEngine, auth_data, transport, context_data, *varbinds_get
             ):
                 if not _any_failure_happened(
-                    errorIndication, errorStatus, errorIndex, varBindTable
+                    errorIndication, errorStatus, errorIndex, varBindTable, target_address, operation
                 ):
                     tmp_retry, tmp_mibs = self.process_snmp_data(
                         varBindTable, metrics, get_mapping
@@ -383,38 +384,12 @@ class SNMPTask(Task):
         return retry, remotemibs
 
 
-class RevokeChainRequested(Exception):
-    def __init__(self, return_value):
-        Exception.__init__(self, "")
-        self.return_value = return_value
-
-
-def revoke_chain_authority(a_shared_task):
-    """
-    @see: https://gist.github.com/bloudermilk/2173940
-    @param a_shared_task: a @shared_task(bind=True) celery function.
-    @return:
-    """
-    @wraps(a_shared_task)
-    def inner(self, *args, **kwargs):
-        try:
-            return a_shared_task(self, *args, **kwargs)
-        except RevokeChainRequested as e:
-            # Drop subsequent tasks in chain (if not EAGER mode)
-            if self.request.callbacks:
-                self.request.callbacks[:] = []
-            return e.return_value
-
-    return inner
-
-
 @shared_task(
     bind=True,
     base=SNMPTask,
     expires=21000,
-    autoretry_for=[MongoLockLocked],
+    autoretry_for=[MongoLockLocked, SnmpActionError],
 )
-@revoke_chain_authority
 def walk(self, **kwargs):
 
     retry = True
@@ -425,9 +400,6 @@ def walk(self, **kwargs):
         while retry:
             retry, result = self.run_walk(kwargs)
 
-    if not result:
-        logger.error(f"Walk for {kwargs['address']} failed!")
-        raise RevokeChainRequested(False)
     # After a Walk tell schedule to recalc
     work = kwargs
     work["ts"] = now
