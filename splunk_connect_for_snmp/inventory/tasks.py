@@ -67,6 +67,10 @@ def inventory_seed(path=None):
                 # print(f'Column names are {", ".join(target)}')
                 line_count += 1
                 continue
+
+            if target and target[0].lstrip()[:1] == "#":
+                continue
+
             logger.debug(f"Inventory record {target}")
             ir = InventoryRecord(*target)
             # The default port is 161
@@ -85,8 +89,6 @@ def inventory_seed(path=None):
                 targets_collection.remove({"target": ir.address})
                 logger.info(f"Deleting device: {ir.address}")
             else:
-                if ir.address.lstrip()[:1] == "#":
-                    continue
                 if ir.version not in ("1", "2", "2c", "3"):
                     logger.error("Invalid version in inventory record {row}")
                     continue
