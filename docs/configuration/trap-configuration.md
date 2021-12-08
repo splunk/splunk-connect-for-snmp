@@ -48,7 +48,7 @@ traps:
 ### Configure user secrets for SNMPv3 
 `usernameSecrets` key in traps enable configure SNMPv3 secrets for trap messages sent by SNMP device. `usernameSecrets` define which secrets 
 in "Secret" objects in k8s should be use, as a value it need to put name of "Secret" objects. 
-More information how to define "Secrets" object for SNMPv3 can be found in <TO_DO link to V3 secrets>
+More information how to define "Secrets" object for SNMPv3 can be found in [SNMPv3 Configuration](snmpv3-configuration.md)
 
 Example:
 ```yaml
