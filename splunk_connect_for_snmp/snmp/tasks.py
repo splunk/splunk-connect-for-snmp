@@ -59,7 +59,7 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
     max_retries=300,
     retry_backoff=True,
     retry_jitter=True,
-    retry_backoff_max=7200,
+    retry_backoff_max=3600,
     autoretry_for=(MongoLockLocked, SnmpActionError,),
     throws=(SnmpActionError, SnmpActionError,)
 )
