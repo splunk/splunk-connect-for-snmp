@@ -56,7 +56,6 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 @shared_task(
     bind=True,
     base=Poller,
-    max_retries=300,
     retry_backoff=True,
     retry_jitter=True,
     retry_backoff_max=3600,
