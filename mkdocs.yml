@@ -29,7 +29,8 @@ nav:
         - Install Splunk for Kubernetes: "gettingstarted/sck-installation.md"
       - Install SC4SNMP: "gettingstarted/sc4snmp-installation.md"
   #- Configuration: "configuration.md"
-  - Configuration: "configuration/deployment-configuration.md"
+  - Configuration:
+    - Deployment: "configuration/deployment-configuration.md"
     - Poller: "configuration/poller-configuration.md"
     - Trap: "configuration/trap-configuration.md"
     - Scheduler: "configuration/scheduler-configuration.md"
