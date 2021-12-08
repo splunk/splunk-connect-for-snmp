@@ -9,15 +9,15 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.5">
     
     
       
-        <title>Scheduler configuration - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Scheduler - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.62128196.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.a617204b.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.9204c3b2.min.css">
@@ -38,7 +38,7 @@
       
     
     
-    <script>function __md_scope(e,t,_){return new URL(_||(t===localStorage?"../..":"../.."),location).pathname+"."+e}function __md_get(e,t=localStorage,_){return JSON.parse(t.getItem(__md_scope(e,t,_)))}function __md_set(e,t,_=localStorage,o){try{_.setItem(__md_scope(e,_,o),JSON.stringify(t))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -101,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Scheduler configuration
+              Scheduler
             
           </span>
         </div>
@@ -311,34 +311,6 @@
 
             
           
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../gettingstarted/sc4snmp-configuration.md" class="md-nav__link">
-        Configure Poller and Traps
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../gettingstarted/additional-helm-configuration.md" class="md-nav__link">
-        Additional HELM values
-      </a>
-    </li>
-  
-
-            
-          
         </ul>
       </nav>
     </li>
@@ -351,11 +323,219 @@
 
   
   
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Configuration" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
-        Configuration
+      <a href="../deployment-configuration/" class="md-nav__link">
+        Deployment
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../poller-configuration/" class="md-nav__link">
+        Poller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trap-configuration/" class="md-nav__link">
+        Trap
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Scheduler
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Scheduler
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scheduler-configuration-file" class="md-nav__link">
+    Scheduler configuration file
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-log-level" class="md-nav__link">
+    Define log level
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-profile" class="md-nav__link">
+    Configure profile
+  </a>
+  
+    <nav class="md-nav" aria-label="Configure profile">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#varbinds-configuration" class="md-nav__link">
+    varBinds configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#smartprofile-configuration" class="md-nav__link">
+    SmartProfile configuration
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../worker-configuration/" class="md-nav__link">
+        Worker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mongo-configuration/" class="md-nav__link">
+        Mongo DB
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rabbitMQ-configuration.md" class="md-nav__link">
+        RabbitMQ
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../snmpv3-configuration/" class="md-nav__link">
+        SNMPv3 configuration
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -416,16 +596,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-inventory-refresh-rate" class="md-nav__link">
-    Configure inventory refresh rate
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#configure-profile" class="md-nav__link">
     Configure profile
   </a>
+  
+    <nav class="md-nav" aria-label="Configure profile">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#varbinds-configuration" class="md-nav__link">
+    varBinds configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#smartprofile-configuration" class="md-nav__link">
+    SmartProfile configuration
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -443,7 +636,8 @@
                 
 
 <h1 id="scheduler-configuration">Scheduler configuration<a class="headerlink" href="#scheduler-configuration" title="Permanent link">&para;</a></h1>
-<p>Scheduler is a service with is responsible for manager schedules for SNMP walks and GETs. Schedules definition are store in Mongo DB. </p>
+<p>Scheduler is a service with is responsible for manager schedules for SNMP walks and GETs. Schedules definition 
+are store in Mongo DB. </p>
 <h3 id="scheduler-configuration-file">Scheduler configuration file<a class="headerlink" href="#scheduler-configuration-file" title="Permanent link">&para;</a></h3>
 <p>Scheduler configuration is keep in <code>values.yaml</code> file in section <code>scheduler</code>.  To downland example file execute command:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
@@ -453,44 +647,129 @@
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
   <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;WARN&quot;</span>
-  <span class="nt">inventory_refresh_rate</span><span class="p">:</span> <span class="s">&quot;20&quot;</span>
   <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>
-    <span class="no">match_test_profile:</span>
-      <span class="no">frequency: 5</span>
-            <span class="no">condition:</span>
-              <span class="no">type: &quot;field&quot;</span>
-              <span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span>
-              <span class="no">patterns: &quot;^.*&quot;</span>
+    <span class="no">test_profile:</span>
+      <span class="no">frequency: 5 </span>
+      <span class="no">condition: </span>
+        <span class="no">type: &quot;field&quot; </span>
+        <span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot; </span>
+        <span class="no">patterns: </span>
+          <span class="no">- &quot;^.*&quot;</span>
       <span class="no">varBinds:</span>
+          <span class="no"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span>
         <span class="no">- [&quot;SNMPv2-MIB&quot;, &quot;sysDescr&quot;,0]</span>
 </code></pre></div>
 
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
 <p>Log level for trap can be set by changing value for key <code>logLevel</code>. Allowed value are: <code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code>. 
 Default value is <code>WARN</code></p>
-<h3 id="configure-inventory-refresh-rate">Configure inventory refresh rate<a class="headerlink" href="#configure-inventory-refresh-rate" title="Permanent link">&para;</a></h3>
-<p><code>inventory_refresh_rate</code> - <TO_DO check what it does></p>
 <h3 id="configure-profile">Configure profile<a class="headerlink" href="#configure-profile" title="Permanent link">&para;</a></h3>
-<p><TO_DO check it>
-Profiles used in inventory can be created in <code>values.yaml</code>, which can be modified in scheduler config in <code>values.yaml</code>, ex.:</p>
+<p>Profiles used in inventory can be created in <code>values.yaml</code>, which can be modified in scheduler config in 
+<code>values.yaml</code>, ex.:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-  <span class="nt">config</span><span class="p">:</span> <span class="p p-Indicator">|</span>
-    <span class="no">profiles:</span>
+    <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+      <span class="no">#Name of profile</span>
       <span class="no">basev1:</span>
+        <span class="no"># Define frequency for profile</span>
         <span class="no">frequency: 10</span>
-        <span class="no">patterns:</span>
-           <span class="no">- &#39;.*STRING_TO_BE_MATCHED.*&#39;</span>
+        <span class="no">#Define condition</span>
+        <span class="no">condition:</span>
+          <span class="no"># Define type of condition. Allowed value field and base </span>
+          <span class="no">typy: field</span>
+          <span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span>
+          <span class="no"># Define paterns</span>
+          <span class="no">patterns:</span>
+            <span class="no">- &#39;.*STRING_TO_BE_MATCHED.*&#39;</span>
+        <span class="no">#Define varbinds to query</span>
         <span class="no">varBinds:</span>
-          <span class="no"># Syntax: [ &quot;MIB-Files&quot;, &quot;MIB object name&quot; &quot;MIB index number&quot;]</span>
-          <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysDescr&#39;]</span>
+          <span class="no"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span>
+          <span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
+          <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
           <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysUpTime&#39;,0]</span>
+</code></pre></div>
+
+<h4 id="varbinds-configuration">varBinds configuration<a class="headerlink" href="#varbinds-configuration" title="Permanent link">&para;</a></h4>
+<p><code>varBinds</code> short for &ldquo;variable binding&rdquo; in SNMP. The combination of an Object Identifier (OID) and a value. 
+<code>varBinds</code> are use for defining in profiles what OIDs should be getting from SNMP Agents. <code>varBinds</code> is required 
+subsection of each profile. Syntax configuration of <code>varBinds</code> looks following:</p>
+<p>[ &ldquo;MIB-Component&rdquo;, &ldquo;MIB object&rdquo;[Optional], &ldquo;MIB index number&rdquo;[Optional]]</p>
+<ul>
+<li><code>MIB-Component</code> - The SNMP MIB, itself, consists of distinct component MIBs, each of which refers to a specific 
+ defined collection of management information that is part of the overall SNMP MIB eg. <code>SNMPv2-MIB</code>. 
+ If only <code>MIB-Component</code> is set than all whole sub tree is getting.</li>
+<li><code>MIB object</code> -  The SNMP MIB stores only simple data types: scalars and two-dimensional arrays of scalars, 
+ called tables. Keywords SYNTAX, ACCESS, and DESCRIPTION as well as other keywords such as STATUS and 
+ INDEX are used to define the SNMP MIB managed objects. </li>
+<li><code>MIB index number</code> - Define index number for given MIB Object eg. <code>0</code>.</li>
+</ul>
+<p>Example
+ ```yaml
+      varBinds:
+          # Syntax: [ &ldquo;MIB-Component&rdquo;, &ldquo;MIB object name&rdquo;[Optional], &ldquo;MIB index number&rdquo;[Optional]]
+          - [&lsquo;SNMPv2-MIB&rsquo;]
+          - [&lsquo;SNMPv2-MIB&rsquo;, &lsquo;sysName&rsquo;]
+          - [&lsquo;SNMPv2-MIB&rsquo;, &lsquo;sysUpTime&rsquo;,0]</p>
+<div class="codehilite"><pre><span></span><code><span class="cp">#### Static Profile configuration</span>
+<span class="n">Static</span><span class="w"> </span><span class="n">Profile</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">they</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">defined</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">profile</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">inventory</span><span class="w"> </span><span class="n">configuration</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="err">`</span><span class="n">poller</span><span class="err">`</span><span class="w"> </span>
+<span class="n">service</span><span class="w"> </span><span class="p">[</span><span class="n">Inventory</span><span class="w"> </span><span class="n">configuration</span><span class="p">](</span><span class="n">poller</span><span class="o">-</span><span class="n">configuration</span><span class="p">.</span><span class="n">md</span><span class="o">/</span><span class="err">#</span><span class="n">configure</span><span class="o">-</span><span class="n">inventory</span><span class="p">).</span><span class="w"> </span><span class="n">Static</span><span class="w"> </span><span class="n">Profile</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">executed</span><span class="w"> </span>
+<span class="n">even</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">SmartProfile</span><span class="w"> </span><span class="n">flag</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">inventory</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="nb">false</span><span class="p">.</span><span class="w"> </span>
+<span class="n">To</span><span class="w"> </span><span class="n">configure</span><span class="w"> </span><span class="n">Static</span><span class="w"> </span><span class="n">Profile</span><span class="w"> </span><span class="n">following</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="n">need</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="err">`</span><span class="n">profiles</span><span class="err">`</span><span class="w"> </span><span class="nl">section</span><span class="p">:</span><span class="w"></span>
+<span class="o">-</span><span class="w"> </span><span class="err">`</span><span class="n">ProfileName</span><span class="err">`</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">define</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">subsection</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="err">`</span><span class="n">profiles</span><span class="err">`</span><span class="p">.</span><span class="w"> </span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="err">`</span><span class="n">frequency</span><span class="err">`</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">define</span><span class="w"> </span><span class="n">interval</span><span class="w"> </span><span class="n">between</span><span class="w"> </span><span class="n">executing</span><span class="w"> </span><span class="n">SNMP</span><span class="w"> </span><span class="n">gets</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">second</span><span class="p">.</span><span class="w">  </span>
+<span class="w">    </span><span class="o">-</span><span class="w">  </span><span class="err">`</span><span class="n">varBinds</span><span class="err">`</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">define</span><span class="w"> </span><span class="n">var</span><span class="w"> </span><span class="n">binds</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">query</span><span class="p">.</span><span class="w"> </span>
+
+<span class="nl">Example</span><span class="p">:</span><span class="w"></span>
+<span class="err">```</span><span class="n">yaml</span><span class="w"></span>
+<span class="nl">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nl">profiles</span><span class="p">:</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="w">    </span><span class="nl">static_profile_example</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nl">frequency</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="w"></span>
+<span class="w">      </span><span class="nl">varBinds</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="err">&#39;</span><span class="n">SNMPv2</span><span class="o">-</span><span class="n">MIB</span><span class="err">&#39;</span><span class="p">]</span><span class="w"></span>
+<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="err">&#39;</span><span class="n">SNMPv2</span><span class="o">-</span><span class="n">MIB</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="n">sysName</span><span class="err">&#39;</span><span class="p">]</span><span class="w"></span>
+<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="err">&#39;</span><span class="n">SNMPv2</span><span class="o">-</span><span class="n">MIB</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="n">sysUpTime</span><span class="err">&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="w"></span>
+</code></pre></div>
+
+<h4 id="smartprofile-configuration">SmartProfile configuration<a class="headerlink" href="#smartprofile-configuration" title="Permanent link">&para;</a></h4>
+<p>SmartProfile are executed when SmartProfile flag in inventory is set to true and condition defined in profile matching. 
+More information about configuring inventory can be found in <a href="poller-configuration.md/#configure-inventory">Inventory configuration</a></p>
+<p>To configure Static Profile following value need to be set in <code>profiles</code> section:
+- <code>ProfileName</code> - define as subsection key in <code>profiles</code>. 
+    - <code>frequency</code> - define interval between executing SNMP gets in second.
+    - <code>condition</code> - section define conditions to much profile
+        - <code>type</code> - key of <code>condition</code> section which defines type of condition. Allowed value <code>basic</code> and <code>field</code>. 
+            - <code>base</code> type of condition will be executed always when <code>SmartProfile</code> in inventory is set to true.
+            - <code>field</code> type of condition will be executed if match <code>pattern</code> for defined <code>field</code>. Supported fields:
+                -  &ldquo;SNMPv2-MIB.sysDescr&rdquo;
+                -  &ldquo;SNMPv2-MIB.sysObjectID&rdquo;
+        - <code>fild</code> Define filed name for condition type field. 
+        - <code>pattern</code> Define list of regular expression pattern for MIB object field defined in <code>field</code> section.
+    - <code>varBinds</code> - define var binds to query. </p>
+<p>Example of <code>basic</code> type of condition</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+    <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+      <span class="no">SmartProfile_basic_example:</span>
+        <span class="no">frequency: 10</span>
+        <span class="no">condition: </span>
+          <span class="no">typy: &quot;basic&quot;</span>
+        <span class="no">varBinds:</span>
+          <span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
           <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
 </code></pre></div>
 
-<p>frequency - frequency in seconds (how often SNMP connector should ask agent for data)
-patterns - list of regular expressions that will be matched against sysDescr or sysObjectId</p>
-<p>Every change in values.yaml file can be applied with the command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
+<p>Example of <code>field</code> type of condition</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+    <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+      <span class="no">SmartProfile_field_example:</span>
+        <span class="no">frequency: 10</span>
+        <span class="no">condition: </span>
+          <span class="no">typy: &quot;field&quot;</span>
+          <span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span>
+          <span class="no">patterns:</span>
+            <span class="no">- &#39;.*STRING_TO_BE_MATCHED.*&#39;</span>
+        <span class="no">varBinds:</span>
+          <span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
+          <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
 </code></pre></div>
 
               
@@ -501,6 +780,41 @@ patterns - list of regular expressions that will be matched against sysDescr or 
       </main>
       
         <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../trap-configuration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Trap" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Trap
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../worker-configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Worker" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Worker
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -522,10 +836,10 @@ patterns - list of regular expressions that will be matched against sysDescr or 
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.01824240.min.js", "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.cefbb252.min.js", "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e0abf5b0.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f8ea78.min.js"></script>
       
     
   </body>

@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.0.5">
     
     
       
@@ -17,7 +17,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.62128196.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.a617204b.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.9204c3b2.min.css">
@@ -38,7 +38,7 @@
       
     
     
-    <script>function __md_scope(e,t,_){return new URL(_||(t===localStorage?"../..":"../.."),location).pathname+"."+e}function __md_get(e,t=localStorage,_){return JSON.parse(t.getItem(__md_scope(e,t,_)))}function __md_set(e,t,_=localStorage,o){try{_.setItem(__md_scope(e,_,o),JSON.stringify(t))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -389,34 +389,6 @@
 
             
           
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../sc4snmp-configuration.md" class="md-nav__link">
-        Configure Poller and Traps
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../additional-helm-configuration.md" class="md-nav__link">
-        Additional HELM values
-      </a>
-    </li>
-  
-
-            
-          
         </ul>
       </nav>
     </li>
@@ -430,10 +402,141 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Configuration" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../../configuration/" class="md-nav__link">
-        Configuration
+      <a href="../../configuration/deployment-configuration/" class="md-nav__link">
+        Deployment
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/poller-configuration/" class="md-nav__link">
+        Poller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/trap-configuration/" class="md-nav__link">
+        Trap
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/scheduler-configuration/" class="md-nav__link">
+        Scheduler
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/worker-configuration/" class="md-nav__link">
+        Worker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/mongo-configuration/" class="md-nav__link">
+        Mongo DB
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/rabbitMQ-configuration.md" class="md-nav__link">
+        RabbitMQ
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/snmpv3-configuration/" class="md-nav__link">
+        SNMPv3 configuration
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -613,17 +716,47 @@
 </tbody>
 </table>
 <h3 id="install-sc4snmp">Install SC4SNMP<a class="headerlink" href="#install-sc4snmp" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
+<div class="codehilite"><pre><span></span><code>microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace --version &lt;VERSION_TAG&gt;
 </code></pre></div>
 
+<table>
+<thead>
+<tr>
+<th>variable</th>
+<th>description</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VERSION_TAG</td>
+<td>is a tag of build eg. 0.11.0-beta.22</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
 <p>From now on, when editing SC4SNMP configuration, the configuration change must be
-inserted in the corresponding section of <code>config_values.yaml</code>. For more details check <a href="../../configuration/">configuration</a> section.</p>
+inserted in the corresponding section of <code>values.yaml</code>. For more details check <a href="../../configuration/deployment-configuration/">configuration</a> section.</p>
 <p>Use the following command to propagate configuration changes:</p>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace --version &lt;VERSION_TAG&gt;
 </code></pre></div>
 
-<p>| variable | description | default |
-|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|</p>
+<table>
+<thead>
+<tr>
+<th>variable</th>
+<th>description</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VERSION_TAG</td>
+<td>is a tag of build eg. 0.11.0-beta.22</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
 <h3 id="verify-deployment">Verify deployment<a class="headerlink" href="#verify-deployment" title="Permanent link">&para;</a></h3>
 <p>In a few minutes, all pods should be up and running. It can be verified with:</p>
 <div class="codehilite"><pre><span></span><code>microk8s kubectl get pods -n sc4snmp
@@ -643,8 +776,14 @@ inserted in the corresponding section of <code>config_values.yaml</code>. For mo
 
 <h3 id="test-snmp-traps">Test SNMP Traps<a class="headerlink" href="#test-snmp-traps" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Test the trap from a linux system with SNMP installed. Replace the IP address 
-    <code>10.0.101.22</code> with the shared IP address above</li>
+<li>
+<p>Test the Trap by logging into Splunk and confirm the presence of events
+    in snmp <code>netops</code> and metrics in <code>netmetrics</code> index</p>
+</li>
+<li>
+<p>Test the trap from a linux system with SNMP installed. Replace the IP address 
+    <code>10.0.101.22</code> with the shared IP address above</p>
+</li>
 </ul>
 <div class="codehilite"><pre><span></span><code>apt update
 apt-get install snmpd
@@ -660,7 +799,13 @@ snmptrap -v2c -c public <span class="m">10</span>.0.101.22 <span class="m">123</
 
 <h3 id="test-snmp-poller">Test SNMP Poller<a class="headerlink" href="#test-snmp-poller" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Test the trap from a linux system install snmpd.</li>
+<li>
+<p>Test the Poller by logging into Splunk and confirm the presence of events
+    in snmp <code>netops</code> and metrics in <code>netmetrics</code> index</p>
+</li>
+<li>
+<p>Test the trap from a linux system install snmpd.</p>
+</li>
 </ul>
 <div class="codehilite"><pre><span></span><code>apt update
 apt-get install snmpd
@@ -694,8 +839,22 @@ replace the IP address <code>10.0.101.22</code> with the server IP address where
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace --version &lt;VERSION_TAG&gt;
 </code></pre></div>
 
-<p>| variable | description | default |
-|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|</p>
+<table>
+<thead>
+<tr>
+<th>variable</th>
+<th>description</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VERSION_TAG</td>
+<td>is a tag of build eg. 0.11.0-beta.22</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li>Check in Splunk</li>
 </ul>
@@ -735,13 +894,13 @@ replace the IP address <code>10.0.101.22</code> with the server IP address where
       
       
         
-        <a href="../../configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Configuration" rel="next">
+        <a href="../../configuration/deployment-configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Deployment" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Configuration
+              Deployment
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -771,10 +930,10 @@ replace the IP address <code>10.0.101.22</code> with the server IP address where
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.01824240.min.js", "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.cefbb252.min.js", "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e0abf5b0.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f8ea78.min.js"></script>
       
     
   </body>
