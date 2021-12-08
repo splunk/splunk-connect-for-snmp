@@ -224,10 +224,10 @@ class SNMPTask(Task):
 
     # @asyncio.coroutine
     def run_walk(self, kwargs):
-        varbinds_bulk = []
+        varbinds_bulk = set()
         get_mibs = []
         bulk_mibs = []
-        varbinds_get = []
+        varbinds_get = set()
         metrics = {}
         retry = False
 
@@ -247,14 +247,14 @@ class SNMPTask(Task):
 
         # What to do
         if kwargs.get("walk", False):
-            varbinds_bulk.append(ObjectType(ObjectIdentity("1.3.6")))
+            varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
         else:
             needed_mibs = []
             for profile_name in kwargs["varbinds_bulk"]:
                 for mib, entries in kwargs["varbinds_bulk"][profile_name].items():
                     if entries:
                         for entry in entries:
-                            varbinds_bulk.append(ObjectType(ObjectIdentity(mib, entry)))
+                            varbinds_bulk.add(ObjectType(ObjectIdentity(mib, entry)))
                             bulk_mapping[f"{mib}:{entry}"] = profile_name
                         if mib.find(".") == -1 and mib not in needed_mibs:
                             needed_mibs.append(mib)
@@ -264,7 +264,7 @@ class SNMPTask(Task):
                         for name, indexes in names.items():
                             if indexes:
                                 for index in indexes:
-                                    varbinds_get.append(
+                                    varbinds_get.add(
                                         ObjectType(ObjectIdentity(mib, name, index))
                                     )
                                     get_mapping[f"{mib}:{name}:{index}"] = profile_name
