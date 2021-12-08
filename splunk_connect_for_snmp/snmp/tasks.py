@@ -16,8 +16,6 @@
 
 import yaml
 
-from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
-
 try:
     from dotenv import load_dotenv
 
@@ -56,16 +54,8 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 @shared_task(
     bind=True,
     base=Poller,
-    default_retry_delay=60,
-    max_retries=30,
-    autoretry_for=(
-        MongoLockLocked,
-        SnmpActionError,
-    ),
-    throws=(
-        MongoLockLocked,
-        SnmpActionError,
-    ),
+    expires=21000,
+    autoretry_for=[MongoLockLocked],
 )
 def walk(self, **kwargs):
     address = kwargs["address"]

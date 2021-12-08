@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from splunk_connect_for_snmp import customtaskmanager
-
 try:
     from dotenv import load_dotenv
 
@@ -36,16 +34,6 @@ logger = get_task_logger(__name__)
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 
-TRACKED_F = [
-    "SNMPv2-MIB.sysDescr",
-    "SNMPv2-MIB.sysObjectID",
-    "SNMPv2-MIB.sysContact",
-    "SNMPv2-MIB.sysName",
-    "SNMPv2-MIB.sysLocation",
-]
-
-SYS_UP_TIME = "SNMPv2-MIB.sysUpTime"
-
 
 def chunk(it, size):
     it = iter(it)
@@ -56,33 +44,15 @@ class EnrichTask(Task):
     def __init__(self):
         pass
 
-    # check if sysUpTime decreased, if so trigger new walk
-    def check_restart(self, current_target, result, target_id, targets_collection):
-        for group_key, group_dict in result.items():
-            if "metrics" in group_dict and SYS_UP_TIME in group_dict["metrics"]:
-                sysuptime = group_dict["metrics"][SYS_UP_TIME]
-                new_value = sysuptime["value"]
 
-                logger.debug(f"current target = {current_target}")
-                if "sysUpTime" in current_target:
-                    old_value = current_target["sysUpTime"]["value"]
-                    logger.debug(f"new_value = {new_value}  old_value = {old_value}")
-                    if int(new_value) < int(old_value):
-                        task_config = {
-                            "name": f'sc4snmp;{current_target["target"]};walk',
-                            "run_immediately": True,
-                        }
-                        logger.info(f'Detected restart of {current_target["target"]}, triggering walk')
-                        periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
-                        periodic_obj.manage_task(**task_config)
-
-                state = {"value": sysuptime["value"],
-                         "type": sysuptime["type"],
-                         "oid": sysuptime["oid"]}
-
-                targets_collection.update_one({"_id": target_id},
-                                              {"$set": {"sysUpTime": state}},
-                                              upsert=True)
+TRACKED_F = [
+    "SNMPv2-MIB.sysDescr",
+    "SNMPv2-MIB.sysObjectID",
+    "SNMPv2-MIB.sysContact",
+    "SNMPv2-MIB.sysName",
+    "SNMPv2-MIB.sysLocation",
+]
+TRACKED_CC = ["SNMPv2-MIB.sysUpTime"]
 
 
 @shared_task(bind=True, base=EnrichTask)
@@ -93,7 +63,7 @@ def enrich(self, result):
     updates = []
 
     current_target = targets_collection.find_one(
-        {"address": address}, {"attributes": True, "target": True, "sysUpTime": True}
+        {"address": address}, {"attributes": True, "target": True}
     )
     if not current_target:
         logger.info(f"First time for {address}")
@@ -105,7 +75,6 @@ def enrich(self, result):
         current_target["attributes"] = {}
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
-    self.check_restart(current_target, result["result"], target_id, targets_collection)
 
     # First write back to DB new/changed data
     for group_key, group_data in result["result"].items():
