@@ -16,6 +16,7 @@
 from functools import wraps
 
 import yaml
+from pysnmp.smi.error import SmiError
 
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 
@@ -194,7 +195,7 @@ class SNMPTask(Task):
                 for each_row in reader:
                     if len(each_row) == 2:
                         self.mib_map[each_row[1]] = each_row[0]
-            logger.error(f"Loaded {len(self.mib_map.keys())} mib map entries")
+            logger.debug(f"Loaded {len(self.mib_map.keys())} mib map entries")
         else:
             logger.error(
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
@@ -307,7 +308,7 @@ class SNMPTask(Task):
                         varBindTable, metrics, get_mapping
                     )
                     if tmp_mibs:
-                        get_mibs = list(set(bulk_mibs + get_mibs))
+                        get_mibs = list(set(get_mibs + tmp_mibs))
                     if tmp_retry:
                         retry = True
 
@@ -474,12 +475,29 @@ def trap(self, work):
     now = str(time.time())
 
     var_bind_table = []
+    not_translated_oids = []
+    remaining_oids = []
+    remotemibs = set()
     metrics = {}
     for w in work["data"]:
-        translated_var_bind = ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
-            self.mib_view_controller
-        )
-        var_bind_table.append(translated_var_bind)
+        try:
+            var_bind_table.append(ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(self.mib_view_controller))
+        except SmiError:
+            not_translated_oids.append((w[0], w[1]))
+
+    for oid in not_translated_oids:
+        found, mib = self.isMIBKnown(oid[0], oid[0])
+        if found:
+            remotemibs.add(mib)
+            remaining_oids.append((oid[0], oid[1]))
+
+    if remotemibs:
+        self.load_mibs(remotemibs)
+        for w in remaining_oids:
+            try:
+                var_bind_table.append(ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(self.mib_view_controller))
+            except SmiError:
+                logger.warn(f"No translation found for {w[0]}")
 
     self.process_snmp_data(var_bind_table, metrics)
 
