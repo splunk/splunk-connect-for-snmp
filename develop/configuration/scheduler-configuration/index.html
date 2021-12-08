@@ -458,6 +458,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#static-profile-configuration" class="md-nav__link">
+    Static Profile configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#smartprofile-configuration" class="md-nav__link">
     SmartProfile configuration
   </a>
@@ -611,6 +618,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#static-profile-configuration" class="md-nav__link">
+    Static Profile configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#smartprofile-configuration" class="md-nav__link">
     SmartProfile configuration
   </a>
@@ -702,33 +716,35 @@ subsection of each profile. Syntax configuration of <code>varBinds</code> looks 
  INDEX are used to define the SNMP MIB managed objects. </li>
 <li><code>MIB index number</code> - Define index number for given MIB Object eg. <code>0</code>.</li>
 </ul>
-<p>Example:
- ```yaml
-  varBinds:
-  # Syntax: [ &ldquo;MIB-Component&rdquo;, &ldquo;MIB object name&rdquo;[Optional], &ldquo;MIB index number&rdquo;[Optional]]
-    - [&lsquo;SNMPv2-MIB&rsquo;]
-    - [&lsquo;SNMPv2-MIB&rsquo;, &lsquo;sysName&rsquo;]
-    - [&lsquo;SNMPv2-MIB&rsquo;, &lsquo;sysUpTime&rsquo;,0]</p>
-<div class="codehilite"><pre><span></span><code><span class="cp">#### Static Profile configuration</span>
-<span class="n">Static</span><span class="w"> </span><span class="n">Profile</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">they</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">defined</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">profile</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">inventory</span><span class="w"> </span><span class="n">configuration</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="err">`</span><span class="n">poller</span><span class="err">`</span><span class="w"> </span>
-<span class="n">service</span><span class="w"> </span><span class="p">[</span><span class="n">Inventory</span><span class="w"> </span><span class="n">configuration</span><span class="p">](..</span><span class="o">/</span><span class="n">poller</span><span class="o">-</span><span class="n">configuration</span><span class="o">/</span><span class="err">#</span><span class="n">configure</span><span class="o">-</span><span class="n">inventory</span><span class="p">).</span><span class="w"> </span><span class="n">Static</span><span class="w"> </span><span class="n">Profile</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">executed</span><span class="w"> </span>
-<span class="n">even</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">SmartProfile</span><span class="w"> </span><span class="n">flag</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">inventory</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="nb">false</span><span class="p">.</span><span class="w"> </span>
-<span class="n">To</span><span class="w"> </span><span class="n">configure</span><span class="w"> </span><span class="n">Static</span><span class="w"> </span><span class="n">Profile</span><span class="w"> </span><span class="n">following</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="n">need</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="err">`</span><span class="n">profiles</span><span class="err">`</span><span class="w"> </span><span class="nl">section</span><span class="p">:</span><span class="w"></span>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><code>  <span class="nt">varBinds</span><span class="p">:</span>
+    <span class="c1"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">]</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;sysName&#39;</span><span class="p p-Indicator">]</span>
+    <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;sysUpTime&#39;</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]</span>
+</code></pre></div>
 
-<span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="err">`</span><span class="n">ProfileName</span><span class="err">`</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">define</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">subsection</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="err">`</span><span class="n">profiles</span><span class="err">`</span><span class="p">.</span><span class="w"> </span>
-<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="err">`</span><span class="n">frequency</span><span class="err">`</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">define</span><span class="w"> </span><span class="n">interval</span><span class="w"> </span><span class="n">between</span><span class="w"> </span><span class="n">executing</span><span class="w"> </span><span class="n">SNMP</span><span class="w"> </span><span class="n">gets</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">second</span><span class="p">.</span><span class="w">  </span>
-<span class="w">    </span><span class="o">-</span><span class="w">  </span><span class="err">`</span><span class="n">varBinds</span><span class="err">`</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">define</span><span class="w"> </span><span class="n">var</span><span class="w"> </span><span class="n">binds</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">query</span><span class="p">.</span><span class="w"> </span>
-
-<span class="nl">Example</span><span class="p">:</span><span class="w"></span>
-<span class="err">```</span><span class="n">yaml</span><span class="w"></span>
-<span class="nl">scheduler</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nl">profiles</span><span class="p">:</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="w">    </span><span class="nl">static_profile_example</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nl">frequency</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="w"></span>
-<span class="w">      </span><span class="nl">varBinds</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="err">&#39;</span><span class="n">SNMPv2</span><span class="o">-</span><span class="n">MIB</span><span class="err">&#39;</span><span class="p">]</span><span class="w"></span>
-<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="err">&#39;</span><span class="n">SNMPv2</span><span class="o">-</span><span class="n">MIB</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="n">sysName</span><span class="err">&#39;</span><span class="p">]</span><span class="w"></span>
-<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="err">&#39;</span><span class="n">SNMPv2</span><span class="o">-</span><span class="n">MIB</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="n">sysUpTime</span><span class="err">&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="w"></span>
+<h4 id="static-profile-configuration">Static Profile configuration<a class="headerlink" href="#static-profile-configuration" title="Permanent link">&para;</a></h4>
+<p>Static Profile are used when they are defined on list of profile in inventory configuration in <code>poller</code> 
+service <a href="../poller-configuration/#configure-inventory">Inventory configuration</a>. Static Profile are executed 
+even if SmartProfile flag in inventory is set to false. 
+To configure Static Profile following value need to be set in <code>profiles</code> section:</p>
+<ul>
+<li><code>ProfileName</code> - define as subsection key in <code>profiles</code>. <ul>
+<li><code>frequency</code> - define interval between executing SNMP gets in second.  </li>
+<li><code>varBinds</code> - define var binds to query. </li>
+</ul>
+</li>
+</ul>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+  <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+    <span class="no">static_profile_example:</span>
+      <span class="no">frequency: 20</span>
+      <span class="no">varBinds:</span>
+        <span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
+        <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
+        <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysUpTime&#39;,0]</span>
 </code></pre></div>
 
 <h4 id="smartprofile-configuration">SmartProfile configuration<a class="headerlink" href="#smartprofile-configuration" title="Permanent link">&para;</a></h4>
