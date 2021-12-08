@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 
-
 try:
     from dotenv import load_dotenv
 
@@ -77,15 +76,14 @@ def _any_failure_happened(
             f"An error of SNMP isWalk={walk} for a host {address} occurred: {error_indication}"
         )
     elif error_status:
-        result = "error: {} at {}".format(
+        result = "{} at {}".format(
             error_status.prettyPrint(),
             error_index and var_binds[int(error_index) - 1][0] or "?",
         )
         raise SnmpActionError(
             f"An error of SNMP isWalk={walk} for a host {address} occurred: {result}"
         )
-    else:
-        return False
+    return False
 
 
 def isMIBResolved(id):
