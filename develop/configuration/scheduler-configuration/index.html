@@ -711,10 +711,11 @@ subsection of each profile. Syntax configuration of <code>varBinds</code> looks 
           - [&lsquo;SNMPv2-MIB&rsquo;, &lsquo;sysUpTime&rsquo;,0]</p>
 <div class="codehilite"><pre><span></span><code><span class="cp">#### Static Profile configuration</span>
 <span class="n">Static</span><span class="w"> </span><span class="n">Profile</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">they</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">defined</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">profile</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">inventory</span><span class="w"> </span><span class="n">configuration</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="err">`</span><span class="n">poller</span><span class="err">`</span><span class="w"> </span>
-<span class="n">service</span><span class="w"> </span><span class="p">[</span><span class="n">Inventory</span><span class="w"> </span><span class="n">configuration</span><span class="p">](</span><span class="n">poller</span><span class="o">-</span><span class="n">configuration</span><span class="p">.</span><span class="n">md</span><span class="o">/</span><span class="err">#</span><span class="n">configure</span><span class="o">-</span><span class="n">inventory</span><span class="p">).</span><span class="w"> </span><span class="n">Static</span><span class="w"> </span><span class="n">Profile</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">executed</span><span class="w"> </span>
+<span class="n">service</span><span class="w"> </span><span class="p">[</span><span class="n">Inventory</span><span class="w"> </span><span class="n">configuration</span><span class="p">](..</span><span class="o">/</span><span class="n">poller</span><span class="o">-</span><span class="n">configuration</span><span class="o">/</span><span class="err">#</span><span class="n">configure</span><span class="o">-</span><span class="n">inventory</span><span class="p">).</span><span class="w"> </span><span class="n">Static</span><span class="w"> </span><span class="n">Profile</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">executed</span><span class="w"> </span>
 <span class="n">even</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">SmartProfile</span><span class="w"> </span><span class="n">flag</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">inventory</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="nb">false</span><span class="p">.</span><span class="w"> </span>
 <span class="n">To</span><span class="w"> </span><span class="n">configure</span><span class="w"> </span><span class="n">Static</span><span class="w"> </span><span class="n">Profile</span><span class="w"> </span><span class="n">following</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="n">need</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="err">`</span><span class="n">profiles</span><span class="err">`</span><span class="w"> </span><span class="nl">section</span><span class="p">:</span><span class="w"></span>
-<span class="o">-</span><span class="w"> </span><span class="err">`</span><span class="n">ProfileName</span><span class="err">`</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">define</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">subsection</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="err">`</span><span class="n">profiles</span><span class="err">`</span><span class="p">.</span><span class="w"> </span>
+
+<span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="err">`</span><span class="n">ProfileName</span><span class="err">`</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">define</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">subsection</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="err">`</span><span class="n">profiles</span><span class="err">`</span><span class="p">.</span><span class="w"> </span>
 <span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="err">`</span><span class="n">frequency</span><span class="err">`</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">define</span><span class="w"> </span><span class="n">interval</span><span class="w"> </span><span class="n">between</span><span class="w"> </span><span class="n">executing</span><span class="w"> </span><span class="n">SNMP</span><span class="w"> </span><span class="n">gets</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">second</span><span class="p">.</span><span class="w">  </span>
 <span class="w">    </span><span class="o">-</span><span class="w">  </span><span class="err">`</span><span class="n">varBinds</span><span class="err">`</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">define</span><span class="w"> </span><span class="n">var</span><span class="w"> </span><span class="n">binds</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">query</span><span class="p">.</span><span class="w"> </span>
 
@@ -732,19 +733,29 @@ subsection of each profile. Syntax configuration of <code>varBinds</code> looks 
 
 <h4 id="smartprofile-configuration">SmartProfile configuration<a class="headerlink" href="#smartprofile-configuration" title="Permanent link">&para;</a></h4>
 <p>SmartProfile are executed when SmartProfile flag in inventory is set to true and condition defined in profile matching. 
-More information about configuring inventory can be found in <a href="poller-configuration.md/#configure-inventory">Inventory configuration</a></p>
-<p>To configure Static Profile following value need to be set in <code>profiles</code> section:
-- <code>ProfileName</code> - define as subsection key in <code>profiles</code>. 
-    - <code>frequency</code> - define interval between executing SNMP gets in second.
-    - <code>condition</code> - section define conditions to much profile
-        - <code>type</code> - key of <code>condition</code> section which defines type of condition. Allowed value <code>basic</code> and <code>field</code>. 
-            - <code>base</code> type of condition will be executed always when <code>SmartProfile</code> in inventory is set to true.
-            - <code>field</code> type of condition will be executed if match <code>pattern</code> for defined <code>field</code>. Supported fields:
-                -  &ldquo;SNMPv2-MIB.sysDescr&rdquo;
-                -  &ldquo;SNMPv2-MIB.sysObjectID&rdquo;
-        - <code>fild</code> Define filed name for condition type field. 
-        - <code>pattern</code> Define list of regular expression pattern for MIB object field defined in <code>field</code> section.
-    - <code>varBinds</code> - define var binds to query. </p>
+More information about configuring inventory can be found in <a href="../poller-configuration/#configure-inventory">Inventory configuration</a></p>
+<p>To configure Static Profile following value need to be set in <code>profiles</code> section:</p>
+<ul>
+<li><code>ProfileName</code> - define as subsection key in <code>profiles</code>. <ul>
+<li><code>frequency</code> - define interval between executing SNMP gets in second.</li>
+<li><code>condition</code> - section define conditions to much profile<ul>
+<li><code>type</code> - key of <code>condition</code> section which defines type of condition. Allowed value <code>basic</code> and <code>field</code>. <ul>
+<li><code>base</code> type of condition will be executed always when <code>SmartProfile</code> in inventory is set to true.</li>
+<li><code>field</code> type of condition will be executed if match <code>pattern</code> for defined <code>field</code>. Supported fields:<ul>
+<li>&ldquo;SNMPv2-MIB.sysDescr&rdquo;</li>
+<li>&ldquo;SNMPv2-MIB.sysObjectID&rdquo;</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>fild</code> Define filed name for condition type field. </li>
+<li><code>pattern</code> Define list of regular expression pattern for MIB object field defined in <code>field</code> section.</li>
+</ul>
+</li>
+<li><code>varBinds</code> - define var binds to query. </li>
+</ul>
+</li>
+</ul>
 <p>Example of <code>basic</code> type of condition</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
     <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>

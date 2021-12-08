@@ -620,16 +620,18 @@ to enabled monitoring of most important OIDs with high frequency like memory or 
 </code></pre></div>
 
 <h3 id="configure-inventory">Configure inventory<a class="headerlink" href="#configure-inventory" title="Permanent link">&para;</a></h3>
-<p><code>inventory</code> section in <code>poller</code> enable to configure inventory for polling data:
-- <code>address</code> [REQUIRED] - IP address which SC4SNMP should connect to collect data from.
-- <code>version</code> [REQUIRED] - SNMP version, values allowed: 1, 2c, 3
-- <code>community</code> [OPTIONAL] - SNMP community string, filed is required when <code>version</code> is <code>1</code> or <code>2c</code>
-- <code>walk_interval</code> [OPTIONAL] - Define interval in second for SNMP walk, default value <code>42000</code>
-- <code>profiles</code> - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
-separation eg. <code>profiale1;profile2</code>. More about profile in <a href="scheduler-configuration.md/#configure-profile">Profile Configuration</a>
-- <code>SmartProfiles</code> - enabled SmartProfile, default value true. Allowed value: <code>true</code>, <code>false</code>. Default value is <code>true</code> 
-- <code>delete</code> - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
-Allowed value: <code>true</code>, <code>false</code>. Default value is <code>false</code>.</p>
+<p><code>inventory</code> section in <code>poller</code> enable to configure inventory for polling data:</p>
+<ul>
+<li><code>address</code> [REQUIRED] - IP address which SC4SNMP should connect to collect data from.</li>
+<li><code>version</code> [REQUIRED] - SNMP version, values allowed: 1, 2c, 3</li>
+<li><code>community</code> [OPTIONAL] - SNMP community string, filed is required when <code>version</code> is <code>1</code> or <code>2c</code></li>
+<li><code>walk_interval</code> [OPTIONAL] - Define interval in second for SNMP walk, default value <code>42000</code></li>
+<li><code>profiles</code> - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
+separation eg. <code>profiale1;profile2</code>. More about profile in <a href="../scheduler-configuration/#configure-profile">Profile Configuration</a></li>
+<li><code>SmartProfiles</code> - enabled SmartProfile, default value true. Allowed value: <code>true</code>, <code>false</code>. Default value is <code>true</code> </li>
+<li><code>delete</code> - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
+Allowed value: <code>true</code>, <code>false</code>. Default value is <code>false</code>.</li>
+</ul>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
     <span class="nt">inventory</span><span class="p">:</span> <span class="p p-Indicator">|</span>
