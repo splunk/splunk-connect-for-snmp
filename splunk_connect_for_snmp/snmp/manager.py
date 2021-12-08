@@ -42,6 +42,7 @@ from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import GetAuth
 from splunk_connect_for_snmp.snmp.context import getContextData
+from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
@@ -60,7 +61,7 @@ def getInventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-    error_indication, error_status, error_index, var_binds: list
+    error_indication, error_status, error_index, var_binds: list, address, walk
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
@@ -71,17 +72,18 @@ def _any_failure_happened(
     @return: if any failure happened
     """
     if error_indication:
-        result = f"error: {error_indication}"
-        logger.error(result)
+        raise SnmpActionError(
+            f"An error of SNMP isWalk={walk} for a host {address} occurred: {error_indication}"
+        )
     elif error_status:
-        result = "error: {} at {}".format(
+        result = "{} at {}".format(
             error_status.prettyPrint(),
             error_index and var_binds[int(error_index) - 1][0] or "?",
         )
-        logger.error(result)
-    else:
-        return False
-    return True
+        raise SnmpActionError(
+            f"An error of SNMP isWalk={walk} for a host {address} occurred: {result}"
+        )
+    return False
 
 
 def isMIBResolved(id):
@@ -237,7 +239,12 @@ class Poller(Task):
                 lexicographicMode=False,
             ):
                 if _any_failure_happened(
-                    errorIndication, errorStatus, errorIndex, varBindTable
+                    errorIndication,
+                    errorStatus,
+                    errorIndex,
+                    varBindTable,
+                    ir.address,
+                    walk,
                 ):
                     # raise Exception(f"Error happend errorIndication={errorIndication} errorStatus={errorStatus} errorIndex={errorIndex}")
                     break
@@ -386,8 +393,13 @@ class Poller(Task):
 
                 profile = None
                 if mapping:
+                    index_number = index[0]._value
+                    if type(index_number) is tuple:
+                        index_number = index_number[0]
+
                     profile = mapping.get(
-                        f"{mib}:{metric}:{index}", mapping.get(f"{mib}:{metric}")
+                        f"{mib}:{metric}:{index_number}",
+                        mapping.get(f"{mib}:{metric}", mapping.get(mib)),
                     )
 
                 if metric_type in MTYPES and (isinstance(metric_value, float)):
