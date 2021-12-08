@@ -72,17 +72,21 @@ class EnrichTask(Task):
                             "name": f'sc4snmp;{current_target["target"]};walk',
                             "run_immediately": True,
                         }
-                        logger.info(f'Detected restart of {current_target["target"]}, triggering walk')
+                        logger.info(
+                            f'Detected restart of {current_target["target"]}, triggering walk'
+                        )
                         periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
                         periodic_obj.manage_task(**task_config)
 
-                state = {"value": sysuptime["value"],
-                         "type": sysuptime["type"],
-                         "oid": sysuptime["oid"]}
+                state = {
+                    "value": sysuptime["value"],
+                    "type": sysuptime["type"],
+                    "oid": sysuptime["oid"],
+                }
 
-                targets_collection.update_one({"_id": target_id},
-                                              {"$set": {"sysUpTime": state}},
-                                              upsert=True)
+                targets_collection.update_one(
+                    {"_id": target_id}, {"$set": {"sysUpTime": state}}, upsert=True
+                )
 
 
 @shared_task(bind=True, base=EnrichTask)
@@ -105,7 +109,7 @@ def enrich(self, result):
         current_target["attributes"] = {}
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
-    self.check_restart(current_target, result["result"], target_id, targets_collection)
+    self.check_restart(current_target, result["result"], address, targets_collection)
 
     # First write back to DB new/changed data
     for group_key, group_data in result["result"].items():
