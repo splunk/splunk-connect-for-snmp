@@ -35,6 +35,6 @@ nav:
     - Scheduler: "configuration/scheduler-configuration.md"
     - Worker: "configuration/worker-configuration.md"
     - Mongo DB: "configuration/mongo-configuration.md"
-    - RabbitMQ: "configuration/rabbitMQ-configuration.md"
+    - RabbitMQ: "configuration/rabbitmq-configuration.md"
     - SNMPv3 configuration: "configuration/snmpv3-configuration.md"
   - Planning: "planning.md"
