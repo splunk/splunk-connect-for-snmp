@@ -72,13 +72,13 @@ subsection of each profile. Syntax configuration of `varBinds` looks following:
  INDEX are used to define the SNMP MIB managed objects. 
  - `MIB index number` - Define index number for given MIB Object eg. `0`.
  
- Example
+Example:
  ```yaml
-      varBinds:
-          # Syntax: [ "MIB-Component", "MIB object name"[Optional], "MIB index number"[Optional]]
-          - ['SNMPv2-MIB']
-          - ['SNMPv2-MIB', 'sysName']
-          - ['SNMPv2-MIB', 'sysUpTime',0]
+  varBinds:
+  # Syntax: [ "MIB-Component", "MIB object name"[Optional], "MIB index number"[Optional]]
+    - ['SNMPv2-MIB']
+    - ['SNMPv2-MIB', 'sysName']
+    - ['SNMPv2-MIB', 'sysUpTime',0]
 ```
  
 #### Static Profile configuration
