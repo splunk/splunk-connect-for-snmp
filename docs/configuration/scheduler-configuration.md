@@ -56,6 +56,7 @@ scheduler:
           - ['SNMPv2-MIB', 'sysName']
           - ['SNMPv2-MIB', 'sysUpTime',0]
 ```
+
 #### varBinds configuration
 `varBinds` short for "variable binding" in SNMP. The combination of an Object Identifier (OID) and a value. 
 `varBinds` are use for defining in profiles what OIDs should be getting from SNMP Agents. `varBinds` is required 
@@ -82,10 +83,11 @@ subsection of each profile. Syntax configuration of `varBinds` looks following:
  
 #### Static Profile configuration
 Static Profile are used when they are defined on list of profile in inventory configuration in `poller` 
-service [Inventory configuration](poller-configuration.md/#configure-inventory). Static Profile are executed 
+service [Inventory configuration](../poller-configuration/#configure-inventory). Static Profile are executed 
 even if SmartProfile flag in inventory is set to false. 
 To configure Static Profile following value need to be set in `profiles` section:
-- `ProfileName` - define as subsection key in `profiles`. 
+
+ - `ProfileName` - define as subsection key in `profiles`. 
     - `frequency` - define interval between executing SNMP gets in second.  
     -  `varBinds` - define var binds to query. 
 
@@ -103,10 +105,11 @@ scheduler:
 
 #### SmartProfile configuration
 SmartProfile are executed when SmartProfile flag in inventory is set to true and condition defined in profile matching. 
-More information about configuring inventory can be found in [Inventory configuration](poller-configuration.md/#configure-inventory)
+More information about configuring inventory can be found in [Inventory configuration](../poller-configuration/#configure-inventory)
 
 To configure Static Profile following value need to be set in `profiles` section:
-- `ProfileName` - define as subsection key in `profiles`. 
+
+ - `ProfileName` - define as subsection key in `profiles`. 
     - `frequency` - define interval between executing SNMP gets in second.
     - `condition` - section define conditions to much profile
         - `type` - key of `condition` section which defines type of condition. Allowed value `basic` and `field`. 
