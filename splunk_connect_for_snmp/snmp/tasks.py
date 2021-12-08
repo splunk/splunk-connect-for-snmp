@@ -256,8 +256,11 @@ class SNMPTask(Task):
                         for entry in entries:
                             varbinds_bulk.add(ObjectType(ObjectIdentity(mib, entry)))
                             bulk_mapping[f"{mib}:{entry}"] = profile_name
-                        if mib.find(".") == -1 and mib not in needed_mibs:
-                            needed_mibs.append(mib)
+                    else:
+                        varbinds_bulk.add(ObjectType(ObjectIdentity(mib)))
+                        bulk_mapping[f"{mib}"] = profile_name
+                    if mib.find(".") == -1 and mib not in needed_mibs:
+                        needed_mibs.append(mib)
             for profile_name in kwargs["varbinds_get"]:
                 for mib, names in kwargs["varbinds_get"][profile_name].items():
                     if names:
@@ -358,9 +361,8 @@ class SNMPTask(Task):
                     index_number = index[0]._value
                     if type(index_number) is tuple:
                         index_number = index_number[0]
-
                     profile = mapping.get(
-                        f"{mib}:{metric}:{index_number}", mapping.get(f"{mib}:{metric}")
+                        f"{mib}:{metric}:{index_number}", mapping.get(f"{mib}:{metric}", mapping.get(f"{mib}"))
                     )
 
                 if metric_type in MTYPES and (isinstance(metric_value, float)):
