@@ -13,7 +13,7 @@ celery)
         celery -A splunk_connect_for_snmp.poller beat -l "$LOG_LEVEL"
         ;;
     worker)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL"
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" --concurrency=2 -O fair
         ;;
     *)
         celery -A splunk_connect_for_snmp.poller "${@:3}" -l "$LOG_LEVEL"
