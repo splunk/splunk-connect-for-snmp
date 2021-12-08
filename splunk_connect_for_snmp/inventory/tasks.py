@@ -300,17 +300,20 @@ def inventory_setup_poller(self, work):
                             profile["condition"]["field"].replace(".", "|")
                         ]
 
-                        for pattern in profile["condition"]["patterns"]:
+                        if type(profile["condition"]["patterns"]).__name__ != 'list':
+                            logger.warn(f"Patterns for profile {profile_name} must be a list")
+                        else:
+                            for pattern in profile["condition"]["patterns"]:
 
-                            result = re.match(pattern, cs["value"])
-                            if result:
-                                logger.debug(f"Adding smart profile {profile_name}")
-                                if profile["frequency"] not in assigned_profiles:
-                                    assigned_profiles[profile["frequency"]] = []
-                                assigned_profiles[profile["frequency"]].append(
-                                    profile_name
-                                )
-                                continue
+                                result = re.match(pattern, cs["value"])
+                                if result:
+                                    logger.debug(f"Adding smart profile {profile_name}")
+                                    if profile["frequency"] not in assigned_profiles:
+                                        assigned_profiles[profile["frequency"]] = []
+                                    assigned_profiles[profile["frequency"]].append(
+                                        profile_name
+                                    )
+                                    continue
 
     for profile_name in target["config"]["profiles"]["StaticProfiles"]:
         if profile_name in self.profiles:
