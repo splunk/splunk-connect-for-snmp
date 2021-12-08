@@ -40,16 +40,21 @@ Other variables to update in case you want to:
 
 ### Install SC4SNMP
 ``` bash
-microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
+microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version <VERSION_TAG>
 ```
+| variable | description | default |
+|---|---|---|
+|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|
+
 From now on, when editing SC4SNMP configuration, the configuration change must be
-inserted in the corresponding section of `config_values.yaml`. For more details check [configuration](../configuration.md) section.
+inserted in the corresponding section of `values.yaml`. For more details check [configuration](../configuration/deployment-configuration.md) section.
 
 Use the following command to propagate configuration changes:
 ``` bash
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version <VERSION_TAG>
 ```
 | variable | description | default |
+|---|---|---|
 |VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|
 
 ### Verify deployment
@@ -71,6 +76,8 @@ snmp-splunk-connect-for-snmp-traps-54f79b945d-bmbg7       1/1     Running       
 ```
 
 ### Test SNMP Traps
+- Test the Trap by logging into Splunk and confirm the presence of events
+    in snmp `netops` and metrics in `netmetrics` index
 
 -   Test the trap from a linux system with SNMP installed. Replace the IP address 
     `10.0.101.22` with the shared IP address above
@@ -89,6 +96,8 @@ index="netops" sourcetype="sc4snmp:traps"
 ```
 
 ### Test SNMP Poller
+- Test the Poller by logging into Splunk and confirm the presence of events
+    in snmp `netops` and metrics in `netmetrics` index
 
 - Test the trap from a linux system install snmpd.
     
@@ -123,6 +132,7 @@ poller:
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version <VERSION_TAG>
 ```
 | variable | description | default |
+|---|---|---|
 |VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|
 
 -   Check in Splunk

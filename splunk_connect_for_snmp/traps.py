@@ -52,7 +52,9 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 SECURITY_ENGINE_ID = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "8000000903000A397056B8AC")
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
-logging.basicConfig(level=getattr(logging, LOG_LEVEL), format='%(asctime)s %(levelname)s %(message)s')
+logging.basicConfig(
+    level=getattr(logging, LOG_LEVEL), format="%(asctime)s %(levelname)s %(message)s"
+)
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
@@ -90,8 +92,10 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
     transportDomain, transportAddress = snmpEngine.msgAndPduDsp.getTransportInfo(
         stateReference
     )
-    logging.debug('Notification from ContextEngineId "%s", ContextName "%s"' % (
-        contextEngineId.prettyPrint(), contextName.prettyPrint()))
+    logging.debug(
+        'Notification from ContextEngineId "%s", ContextName "%s"'
+        % (contextEngineId.prettyPrint(), contextName.prettyPrint())
+    )
     data = []
     device_ip = snmpEngine.msgAndPduDsp.getTransportInfo(stateReference)[1][0]
 
@@ -163,8 +167,10 @@ def main():
                 privKey=privKey,
                 securityEngineId=v2c.OctetString(hexValue=SECURITY_ENGINE_ID),
             )
-            logging.debug(f"V3 users: {userName} auth {authProtocol} authkey {authKey} privprotocol {privProtocol} "
-                  f"privkey {privKey} securityEngineId {SECURITY_ENGINE_ID}")
+            logging.debug(
+                f"V3 users: {userName} auth {authProtocol} authkey {authKey} privprotocol {privProtocol} "
+                f"privkey {privKey} securityEngineId {SECURITY_ENGINE_ID}"
+            )
 
     # Register SNMP Application at the SNMP engine
     ntfrcv.NotificationReceiver(snmpEngine, cbFun)

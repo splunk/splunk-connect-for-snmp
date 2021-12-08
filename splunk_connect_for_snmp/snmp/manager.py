@@ -29,7 +29,7 @@ from typing import List, Union
 import pymongo
 from celery import Task
 from celery.utils.log import get_task_logger
-from pysnmp.hlapi import SnmpEngine, UdpTransportTarget, bulkCmd
+from pysnmp.hlapi import SnmpEngine, UdpTransportTarget, bulkCmd, getCmd
 from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
@@ -42,6 +42,7 @@ from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import GetAuth
 from splunk_connect_for_snmp.snmp.context import getContextData
+from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
@@ -60,7 +61,7 @@ def getInventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-    error_indication, error_status, error_index, var_binds: list
+    error_indication, error_status, error_index, var_binds: list, address, walk
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
@@ -71,17 +72,18 @@ def _any_failure_happened(
     @return: if any failure happened
     """
     if error_indication:
-        result = f"error: {error_indication}"
-        logger.error(result)
+        raise SnmpActionError(
+            f"An error of SNMP isWalk={walk} for a host {address} occurred: {error_indication}"
+        )
     elif error_status:
-        result = "error: {} at {}".format(
+        result = "{} at {}".format(
             error_status.prettyPrint(),
             error_index and var_binds[int(error_index) - 1][0] or "?",
         )
-        logger.error(result)
-    else:
-        return False
-    return True
+        raise SnmpActionError(
+            f"An error of SNMP isWalk={walk} for a host {address} occurred: {result}"
+        )
+    return False
 
 
 def isMIBResolved(id):
@@ -219,12 +221,12 @@ class Poller(Task):
         transport = UdpTransportTarget((ir.address, ir.port))
 
         metrics = {}
-        bulk_mibs = []
         retry = False
         if len(varbinds_get) == 0 and len(varbinds_bulk) == 0:
             logger.info("No work to do")
             return False, {}
-        elif len(varbinds_bulk) > 0:
+
+        if len(varbinds_bulk) > 0:
 
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
                 self.snmpEngine,
@@ -236,21 +238,56 @@ class Poller(Task):
                 *varbinds_bulk,
                 lexicographicMode=False,
             ):
-                if _any_failure_happened(
-                    errorIndication, errorStatus, errorIndex, varBindTable
+                if not _any_failure_happened(
+                    errorIndication,
+                    errorStatus,
+                    errorIndex,
+                    varBindTable,
+                    ir.address,
+                    walk,
                 ):
-                    # raise Exception(f"Error happend errorIndication={errorIndication} errorStatus={errorStatus} errorIndex={errorIndex}")
-                    break
-                else:
                     tmp_retry, tmp_mibs = self.process_snmp_data(
                         varBindTable, metrics, bulk_mapping
                     )
                     if tmp_mibs:
-                        bulk_mibs = list(set(bulk_mibs + tmp_mibs))
+                        self.load_mibs(tmp_mibs)
                     if tmp_retry:
                         retry = True
+
+        if len(varbinds_get) > 0:
+            for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
+                self.snmpEngine, authData, transport, contextData, *varbinds_get
+            ):
+                if not _any_failure_happened(
+                    errorIndication,
+                    errorStatus,
+                    errorIndex,
+                    varBindTable,
+                    ir.address,
+                    walk,
+                ):
+                    tmp_retry, tmp_mibs = self.process_snmp_data(
+                        varBindTable, metrics, get_mapping
+                    )
+                    if tmp_mibs:
+                        self.load_mibs(tmp_mibs)
+                    if tmp_retry:
+                        retry = True
+
+        for group_key, metric in metrics.items():
+            if "profiles" in metrics[group_key]:
+                metrics[group_key]["profiles"] = ",".join(
+                    metrics[group_key]["profiles"]
+                )
         # logger.debug(f"final metrics {metrics}")
         return retry, metrics
+
+    def load_mibs(self, mibs: List[str]) -> None:
+        logger.info(f"loading mib modules {mibs}")
+        for mib in mibs:
+            if mib:
+                self.builder.loadModules(mib)
+        # logger.debug("Indexing MIB objects..."),
 
     def isMIBKnown(self, id: str, oid: str) -> tuple([bool, str]):
 
@@ -347,6 +384,7 @@ class Poller(Task):
                                         get_mapping[
                                             f"{vb[0]}:{vb[1]}:{vb[2]}"
                                         ] = profile
+            self.load_mibs(needed_mibs)
 
         logger.debug(f"varbinds_get={varbinds_get}")
         logger.debug(f"get_mapping={get_mapping}")
@@ -386,8 +424,13 @@ class Poller(Task):
 
                 profile = None
                 if mapping:
+                    index_number = index[0]._value
+                    if type(index_number) is tuple:
+                        index_number = index_number[0]
+
                     profile = mapping.get(
-                        f"{mib}:{metric}:{index}", mapping.get(f"{mib}:{metric}")
+                        f"{mib}:{metric}:{index_number}",
+                        mapping.get(f"{mib}:{metric}", mapping.get(mib)),
                     )
 
                 if metric_type in MTYPES and (isinstance(metric_value, float)):
