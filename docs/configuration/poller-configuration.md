@@ -35,7 +35,7 @@ poller:
 - `community` [OPTIONAL] - SNMP community string, filed is required when `version` is `1` or `2c`
 - `walk_interval` [OPTIONAL] - Define interval in second for SNMP walk, default value `42000`
 - `profiles` - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
-separation eg. `profiale1;profile2`. More about profile in [Profile Configuration](../scheduler-configuration.md/#configure-profile)
+separation eg. `profiale1;profile2`. More about profile in [Profile Configuration](../scheduler-configuration/#configure-profile)
 - `SmartProfiles` - enabled SmartProfile, default value true. Allowed value: `true`, `false`. Default value is `true` 
 - `delete` - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
 Allowed value: `true`, `false`. Default value is `false`.

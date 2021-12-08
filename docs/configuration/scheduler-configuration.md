@@ -83,7 +83,7 @@ subsection of each profile. Syntax configuration of `varBinds` looks following:
  
 #### Static Profile configuration
 Static Profile are used when they are defined on list of profile in inventory configuration in `poller` 
-service [Inventory configuration](../poller-configuration.md/#configure-inventory). Static Profile are executed 
+service [Inventory configuration](../poller-configuration/#configure-inventory). Static Profile are executed 
 even if SmartProfile flag in inventory is set to false. 
 To configure Static Profile following value need to be set in `profiles` section:
 
@@ -105,7 +105,7 @@ scheduler:
 
 #### SmartProfile configuration
 SmartProfile are executed when SmartProfile flag in inventory is set to true and condition defined in profile matching. 
-More information about configuring inventory can be found in [Inventory configuration](../poller-configuration.md/#configure-inventory)
+More information about configuring inventory can be found in [Inventory configuration](../poller-configuration/#configure-inventory)
 
 To configure Static Profile following value need to be set in `profiles` section:
 
