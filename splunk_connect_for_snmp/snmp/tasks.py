@@ -56,16 +56,11 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 @shared_task(
     bind=True,
     base=Poller,
-    default_retry_delay=60,
-    max_retries=30,
-    autoretry_for=(
-        MongoLockLocked,
-        SnmpActionError,
-    ),
-    throws=(
-        MongoLockLocked,
-        SnmpActionError,
-    ),
+    retry_backoff=True,
+    retry_jitter=True,
+    retry_backoff_max=3600,
+    autoretry_for=(MongoLockLocked, SnmpActionError,),
+    throws=(SnmpActionError, SnmpActionError,)
 )
 def walk(self, **kwargs):
     address = kwargs["address"]

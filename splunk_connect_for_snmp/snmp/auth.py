@@ -32,6 +32,7 @@ from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
+from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 
 def getSecretValue(
@@ -80,7 +81,7 @@ def getSecurityEngineId(logger, ir: InventoryRecord, snmpEngine: SnmpEngine):
     # See if our SNMP engine received REPORT PDU containing securityEngineId
 
     if "securityEngineId" not in observerContext:
-        raise ValueError(
+        raise SnmpActionError(
             f"Can't discover peer EngineID, errorIndication: {errorIndication}"
         )
 
