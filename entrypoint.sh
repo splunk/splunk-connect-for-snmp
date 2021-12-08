@@ -6,6 +6,9 @@ wait-for-dep "${CELERY_BROKER_URL}" "${MONGO_URI}" "${MIB_INDEX}"
 
 case $1 in
 
+inventory)
+    inventory-loader
+    ;;
 
 celery)
     case $2 in
