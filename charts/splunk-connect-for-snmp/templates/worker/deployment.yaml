@@ -41,7 +41,7 @@ spec:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
             - name: WORKER_CONCURRENCY
-              value: {{ .Values.worker.concurrency | default "2" }}
+              value: {{ .Values.worker.concurrency | default "2" | quote }}
             - name: CELERY_BROKER_URL
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
