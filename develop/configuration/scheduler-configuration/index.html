@@ -702,13 +702,13 @@ subsection of each profile. Syntax configuration of <code>varBinds</code> looks 
  INDEX are used to define the SNMP MIB managed objects. </li>
 <li><code>MIB index number</code> - Define index number for given MIB Object eg. <code>0</code>.</li>
 </ul>
-<p>Example
+<p>Example:
  ```yaml
-      varBinds:
-          # Syntax: [ &ldquo;MIB-Component&rdquo;, &ldquo;MIB object name&rdquo;[Optional], &ldquo;MIB index number&rdquo;[Optional]]
-          - [&lsquo;SNMPv2-MIB&rsquo;]
-          - [&lsquo;SNMPv2-MIB&rsquo;, &lsquo;sysName&rsquo;]
-          - [&lsquo;SNMPv2-MIB&rsquo;, &lsquo;sysUpTime&rsquo;,0]</p>
+  varBinds:
+  # Syntax: [ &ldquo;MIB-Component&rdquo;, &ldquo;MIB object name&rdquo;[Optional], &ldquo;MIB index number&rdquo;[Optional]]
+    - [&lsquo;SNMPv2-MIB&rsquo;]
+    - [&lsquo;SNMPv2-MIB&rsquo;, &lsquo;sysName&rsquo;]
+    - [&lsquo;SNMPv2-MIB&rsquo;, &lsquo;sysUpTime&rsquo;,0]</p>
 <div class="codehilite"><pre><span></span><code><span class="cp">#### Static Profile configuration</span>
 <span class="n">Static</span><span class="w"> </span><span class="n">Profile</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">they</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">defined</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">profile</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">inventory</span><span class="w"> </span><span class="n">configuration</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="err">`</span><span class="n">poller</span><span class="err">`</span><span class="w"> </span>
 <span class="n">service</span><span class="w"> </span><span class="p">[</span><span class="n">Inventory</span><span class="w"> </span><span class="n">configuration</span><span class="p">](..</span><span class="o">/</span><span class="n">poller</span><span class="o">-</span><span class="n">configuration</span><span class="o">/</span><span class="err">#</span><span class="n">configure</span><span class="o">-</span><span class="n">inventory</span><span class="p">).</span><span class="w"> </span><span class="n">Static</span><span class="w"> </span><span class="n">Profile</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">executed</span><span class="w"> </span>
