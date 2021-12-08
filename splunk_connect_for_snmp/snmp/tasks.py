@@ -89,7 +89,7 @@ def _any_failure_happened(
             error_index and var_binds[int(error_index) - 1][0] or "?",
         )
         raise SnmpActionError(f"An error of SNMP {operation} for a host {address} occurred: {result}")
-    return True
+    return False
 
 
 MTYPES_CC = tuple(["Counter32", "Counter64", "TimeTicks"])
