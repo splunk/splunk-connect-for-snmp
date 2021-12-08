@@ -147,11 +147,6 @@ scheduler:
           - ['SNMPv2-MIB', 'sysName']
 ``` 
 
-Every change in values.yaml file can be applied with the command:
-``` bash
-microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
-```
-
 
 
 
