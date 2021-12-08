@@ -16,7 +16,6 @@ inventory:
   nameOverride: ""
   fullnameOverride: ""
 
-
   podAnnotations: {}
 
   podSecurityContext:
@@ -42,7 +41,7 @@ inventory:
   nodeSelector: {}
 
   tolerations: []
-  
+
 scheduler:
   nameOverride: ""
   fullnameOverride: ""
@@ -142,8 +141,13 @@ worker:
 
 poller:
   usernameSecrets: []
+  inventory: |
+    address,version,community,walk_interval,profiles,SmartProfiles,delete
+
 traps:
   usernameSecrets: []
+  securityEngineId: "8000000903000A397056B8AC"
+
   communities: {}
   nameOverride: ""
   fullnameOverride: ""
