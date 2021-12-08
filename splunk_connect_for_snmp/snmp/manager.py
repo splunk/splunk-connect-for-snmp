@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 try:
     from dotenv import load_dotenv
@@ -60,7 +61,7 @@ def getInventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-    error_indication, error_status, error_index, var_binds: list
+    error_indication, error_status, error_index, var_binds: list, address, walk
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
@@ -71,17 +72,19 @@ def _any_failure_happened(
     @return: if any failure happened
     """
     if error_indication:
-        result = f"error: {error_indication}"
-        logger.error(result)
+        raise SnmpActionError(
+            f"An error of SNMP isWalk={walk} for a host {address} occurred: {error_indication}"
+        )
     elif error_status:
         result = "error: {} at {}".format(
             error_status.prettyPrint(),
             error_index and var_binds[int(error_index) - 1][0] or "?",
         )
-        logger.error(result)
+        raise SnmpActionError(
+            f"An error of SNMP isWalk={walk} for a host {address} occurred: {result}"
+        )
     else:
         return False
-    return True
 
 
 def isMIBResolved(id):
@@ -237,7 +240,7 @@ class Poller(Task):
                 lexicographicMode=False,
             ):
                 if _any_failure_happened(
-                    errorIndication, errorStatus, errorIndex, varBindTable
+                    errorIndication, errorStatus, errorIndex, varBindTable, address, walk
                 ):
                     # raise Exception(f"Error happend errorIndication={errorIndication} errorStatus={errorStatus} errorIndex={errorIndex}")
                     break
