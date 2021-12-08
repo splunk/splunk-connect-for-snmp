@@ -28,7 +28,6 @@ nav:
         - Install Microk8s: "gettingstarted/k8s-microk8s.md"
         - Install Splunk for Kubernetes: "gettingstarted/sck-installation.md"
       - Install SC4SNMP: "gettingstarted/sc4snmp-installation.md"
-  #- Configuration: "configuration.md"
   - Configuration:
     - Deployment: "configuration/deployment-configuration.md"
     - Poller: "configuration/poller-configuration.md"
