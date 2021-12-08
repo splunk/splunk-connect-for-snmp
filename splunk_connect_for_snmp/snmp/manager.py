@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
+
 
 try:
     from dotenv import load_dotenv
@@ -43,6 +43,7 @@ from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import GetAuth
 from splunk_connect_for_snmp.snmp.context import getContextData
+from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
@@ -240,7 +241,12 @@ class Poller(Task):
                 lexicographicMode=False,
             ):
                 if _any_failure_happened(
-                    errorIndication, errorStatus, errorIndex, varBindTable, address, walk
+                    errorIndication,
+                    errorStatus,
+                    errorIndex,
+                    varBindTable,
+                    ir.address,
+                    walk,
                 ):
                     # raise Exception(f"Error happend errorIndication={errorIndication} errorStatus={errorStatus} errorIndex={errorIndex}")
                     break
@@ -389,8 +395,13 @@ class Poller(Task):
 
                 profile = None
                 if mapping:
+                    index_number = index[0]._value
+                    if type(index_number) is tuple:
+                        index_number = index_number[0]
+
                     profile = mapping.get(
-                        f"{mib}:{metric}:{index}", mapping.get(f"{mib}:{metric}")
+                        f"{mib}:{metric}:{index_number}",
+                        mapping.get(f"{mib}:{metric}", mapping.get(mib)),
                     )
 
                 if metric_type in MTYPES and (isinstance(metric_value, float)):
