@@ -386,8 +386,10 @@ class SNMPTask(Task):
 @shared_task(
     bind=True,
     base=SNMPTask,
+    default_retry_delay=60,
     max_retries=3,
-    autoretry_for=[MongoLockLocked, SnmpActionError],
+    autoretry_for=(MongoLockLocked, SnmpActionError,),
+    throws=(MongoLockLocked, SnmpActionError,)
 )
 def walk(self, **kwargs):
 
