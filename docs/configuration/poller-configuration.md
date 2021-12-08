@@ -27,16 +27,16 @@ poller:
 ```
 
 ### Configure inventory 
-Inventory key in poller enable to configure inventory for polling data:
-address - IP address which SC4SNMP should connect to collect data from.
-version - SNMP version, values allowed: 1, 2c, 3
-community - SNMP community string
-walk_interval - it is interval how often SNMP walk should be executed, default value 600 second <TO_DO check default value>
-profiles - list of SNMP profiles for more information please check <TO_DO add link to profiles configuation>
- default value>
-SmartProfiles - list of SC4SNMP SmartProfiles for more information please check <TO_DO add link to SmartProfiles configuation>
-delete - flags which define if data should be deleted from scheduled tasks for walk and gets. Allowed value true, false.
-default value is false <TO_DO check with Pawel>
+`inventory` section in `poller` enable to configure inventory for polling data:
+- `address` [REQUIRED] - IP address which SC4SNMP should connect to collect data from.
+- `version` [REQUIRED] - SNMP version, values allowed: 1, 2c, 3
+- `community` [OPTIONAL] - SNMP community string, filed is required when `version` is `1` or `2c`
+- `walk_interval` [OPTIONAL] - Define interval in second for SNMP walk, default value `42000`
+- `profiles` - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
+separation eg. `profiale1;profile2`. More about profile in [Profile Configuration](scheduler-configuration.md/#configure-profile)
+- `SmartProfiles` - enabled SmartProfile, default value true. Allowed value: `true`, `false`. Default value is `true` 
+- `delete` - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
+Allowed value: `true`, `false`. Default value is `false`.
 
 Example:
 ```yaml
@@ -49,7 +49,7 @@ poller:
 ### Configure user secrets for SNMPv3 
 usernameSecrets key in poller enable configure SNMPv3 secrets for polling data. usernameSecrets define which secrets 
 in "Secret" objects in k8s should be use, as a value it need to put name of "Secret" objects. 
-More information how to define "Secrets" object for SNMPv3 can be found in <TO_DO link to V3 secrets>
+More information how to define "Secrets" object for SNMPv3 can be found in [SNMPv3 Configuration](snmpv3-configuration.md)
 
 Example:
 ```yaml
