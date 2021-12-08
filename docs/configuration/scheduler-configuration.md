@@ -73,14 +73,14 @@ subsection of each profile. Syntax configuration of `varBinds` looks following:
  - `MIB index number` - Define index number for given MIB Object eg. `0`.
  
 Example:
- ```yaml
+```yaml
   varBinds:
-  # Syntax: [ "MIB-Component", "MIB object name"[Optional], "MIB index number"[Optional]]
+    # Syntax: [ "MIB-Component", "MIB object name"[Optional], "MIB index number"[Optional]]
     - ['SNMPv2-MIB']
     - ['SNMPv2-MIB', 'sysName']
     - ['SNMPv2-MIB', 'sysUpTime',0]
 ```
- 
+
 #### Static Profile configuration
 Static Profile are used when they are defined on list of profile in inventory configuration in `poller` 
 service [Inventory configuration](../poller-configuration/#configure-inventory). Static Profile are executed 
