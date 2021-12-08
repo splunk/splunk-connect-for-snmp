@@ -13,7 +13,7 @@
     
     
       
-        <title>Install Microk8s - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>SNMPv3 configuration - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -62,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#microk8s-installation-on-ubuntu" class="md-skip">
+        <a href="#create-snmp-v3-users" class="md-skip">
           Skip to content
         </a>
       
@@ -101,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Install Microk8s
+              SNMPv3 configuration
             
           </span>
         </div>
@@ -200,14 +200,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
       
       
       
@@ -228,14 +226,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
       
       
       
@@ -258,7 +254,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../splunk-requirements/" class="md-nav__link">
+      <a href="../../gettingstarted/splunk-requirements/" class="md-nav__link">
         Splunk Requirements
       </a>
     </li>
@@ -270,21 +266,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/k8s-microk8s/" class="md-nav__link">
         Install Microk8s
       </a>
-      
     </li>
   
 
@@ -296,7 +282,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sck-installation/" class="md-nav__link">
+      <a href="../../gettingstarted/sck-installation/" class="md-nav__link">
         Install Splunk for Kubernetes
       </a>
     </li>
@@ -317,7 +303,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sc4snmp-installation/" class="md-nav__link">
+      <a href="../../gettingstarted/sc4snmp-installation/" class="md-nav__link">
         Install SC4SNMP
       </a>
     </li>
@@ -337,12 +323,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
       
       
       
@@ -365,7 +353,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/deployment-configuration/" class="md-nav__link">
+      <a href="../deployment-configuration/" class="md-nav__link">
         Deployment
       </a>
     </li>
@@ -379,7 +367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/poller-configuration/" class="md-nav__link">
+      <a href="../poller-configuration/" class="md-nav__link">
         Poller
       </a>
     </li>
@@ -393,7 +381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/trap-configuration/" class="md-nav__link">
+      <a href="../trap-configuration/" class="md-nav__link">
         Trap
       </a>
     </li>
@@ -407,7 +395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/scheduler-configuration/" class="md-nav__link">
+      <a href="../scheduler-configuration/" class="md-nav__link">
         Scheduler
       </a>
     </li>
@@ -421,7 +409,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/worker-configuration/" class="md-nav__link">
+      <a href="../worker-configuration/" class="md-nav__link">
         Worker
       </a>
     </li>
@@ -435,7 +423,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/mongo-configuration/" class="md-nav__link">
+      <a href="../mongo-configuration/" class="md-nav__link">
         Mongo DB
       </a>
     </li>
@@ -449,7 +437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/rabbitMQ-configuration.md" class="md-nav__link">
+      <a href="../rabbitMQ-configuration.md" class="md-nav__link">
         RabbitMQ
       </a>
     </li>
@@ -461,11 +449,48 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../configuration/snmpv3-configuration/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          SNMPv3 configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         SNMPv3 configuration
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-snmp-v3-users" class="md-nav__link">
+    Create SNMP v3 users
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -509,8 +534,21 @@
   
   
   
-    
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-snmp-v3-users" class="md-nav__link">
+    Create SNMP v3 users
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -523,29 +561,30 @@
               
                 
 
-<h1 id="microk8s-installation-on-ubuntu">MicroK8s installation on Ubuntu<a class="headerlink" href="#microk8s-installation-on-ubuntu" title="Permanent link">&para;</a></h1>
-<p>We need to have a normal install of kubectl because of operator scripts</p>
-<div class="codehilite"><pre><span></span><code>sudo snap install microk8s --classic
+  <h1>SNMPv3 configuration</h1>
+
+<h3 id="create-snmp-v3-users">Create SNMP v3 users<a class="headerlink" href="#create-snmp-v3-users" title="Permanent link">&para;</a></h3>
+<p>Configuration of SNMP v3 when supported by the monitored devices is the most secure choice available
+for authentication and data privacy. Each set of credentials will be stored as &ldquo;Secret&rdquo; objects in k8s
+and will be referenced in the values.yaml. This allows the secret to be created once including automation
+by third party password managers then consumed without storing sensitive data in plain text.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with &quot;sc4snmp-&quot;</span>
+<span class="c1"># &lt;namespace&gt;=Namespace used to install sc4snmp</span>
+<span class="c1"># &lt;username&gt;=the SNMPv3 Username</span>
+<span class="c1"># &lt;key&gt;=key note must be at least 8 char long subject to target limitations</span>
+<span class="c1"># &lt;authProtocol&gt;=One of SHA (SHA1) or MD5 </span>
+<span class="c1"># &lt;privProtocol&gt;=One of AES or DES </span>
+<span class="c1"># Note MD5 and DES are considered insecure but must be supported for standards compliance</span>
+kubectl create -n &lt;namespace&gt; secret generic &lt;secretname&gt; <span class="se">\</span>
+  --from-literal<span class="o">=</span><span class="nv">userName</span><span class="o">=</span>&lt;username&gt; <span class="se">\</span>
+  --from-literal<span class="o">=</span><span class="nv">authKey</span><span class="o">=</span>&lt;key&gt; <span class="se">\</span>
+  --from-literal<span class="o">=</span><span class="nv">privKey</span><span class="o">=</span>&lt;key&gt; <span class="se">\</span>
+  --from-literal<span class="o">=</span><span class="nv">authProtocol</span><span class="o">=</span>&lt;authProtocol&gt; <span class="se">\</span>
+  --from-literal<span class="o">=</span><span class="nv">privProtocol</span><span class="o">=</span>&lt;privProtocol&gt; 
 </code></pre></div>
 
-<p>Add user to the microk8s group to no longer have to use the <code>sudo</code> command</p>
-<div class="codehilite"><pre><span></span><code>sudo usermod -a -G microk8s <span class="nv">$USER</span>
-sudo chown -f -R <span class="nv">$USER</span> ~/.kube
-su - <span class="nv">$USER</span>
-</code></pre></div>
-
-<p>Check microk8s status</p>
-<div class="codehilite"><pre><span></span><code>microk8s status --wait-ready
-</code></pre></div>
-
-<p>Install required microk8s dependencies to deploy SC4SNMP.</p>
-<p>Note: when installing metallb you will be prompted for one or more IPs to use as entry points
-Into the cluster. If your plan to enable clustering, this IP should not be assigned to the host (floats)
-If you do not plan to cluster, then this IP may be the same IP as the host</p>
-<p>Note2: a single IP in cidr format is x.x.x.x/32 use CIDR or range syntax</p>
-<div class="codehilite"><pre><span></span><code>microk8s <span class="nb">enable</span> dns metallb rbac storage openebs helm3
-microk8s status --wait-ready
-</code></pre></div>
+<p>Configured credential can be use in <a href="../poller-configuration/">poller</a> and <a href="../trap-configuration/">trap</a> service. 
+In services configuration <code>secretname</code> need to be provided. </p>
 
               
             </article>
@@ -559,7 +598,7 @@ microk8s status --wait-ready
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../splunk-requirements/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Splunk Requirements" rel="prev">
+        <a href="../mongo-configuration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Mongo DB" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -568,20 +607,20 @@ microk8s status --wait-ready
               <span class="md-footer__direction">
                 Previous
               </span>
-              Splunk Requirements
+              Mongo DB
             </div>
           </div>
         </a>
       
       
         
-        <a href="../sck-installation/" class="md-footer__link md-footer__link--next" aria-label="Next: Install Splunk for Kubernetes" rel="next">
+        <a href="../../planning/" class="md-footer__link md-footer__link--next" aria-label="Next: Planning" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Install Splunk for Kubernetes
+              Planning
             </div>
           </div>
           <div class="md-footer__button md-icon">

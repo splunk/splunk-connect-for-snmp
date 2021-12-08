@@ -13,7 +13,7 @@
     
     
       
-        <title>Install Microk8s - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Trap - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -62,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#microk8s-installation-on-ubuntu" class="md-skip">
+        <a href="#trap-configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -101,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Install Microk8s
+              Trap
             
           </span>
         </div>
@@ -200,14 +200,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
       
       
       
@@ -228,14 +226,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
       
       
       
@@ -258,7 +254,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../splunk-requirements/" class="md-nav__link">
+      <a href="../../gettingstarted/splunk-requirements/" class="md-nav__link">
         Splunk Requirements
       </a>
     </li>
@@ -270,21 +266,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/k8s-microk8s/" class="md-nav__link">
         Install Microk8s
       </a>
-      
     </li>
   
 
@@ -296,7 +282,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sck-installation/" class="md-nav__link">
+      <a href="../../gettingstarted/sck-installation/" class="md-nav__link">
         Install Splunk for Kubernetes
       </a>
     </li>
@@ -317,7 +303,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sc4snmp-installation/" class="md-nav__link">
+      <a href="../../gettingstarted/sc4snmp-installation/" class="md-nav__link">
         Install SC4SNMP
       </a>
     </li>
@@ -337,12 +323,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
       
       
       
@@ -365,7 +353,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/deployment-configuration/" class="md-nav__link">
+      <a href="../deployment-configuration/" class="md-nav__link">
         Deployment
       </a>
     </li>
@@ -379,7 +367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/poller-configuration/" class="md-nav__link">
+      <a href="../poller-configuration/" class="md-nav__link">
         Poller
       </a>
     </li>
@@ -391,11 +379,87 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../configuration/trap-configuration/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Trap
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Trap
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#trap-configuration-file" class="md-nav__link">
+    Trap configuration file
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-communities" class="md-nav__link">
+    Define communities
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-user-secrets-for-snmpv3" class="md-nav__link">
+    Configure user secrets for SNMPv3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-load-balancer-ip" class="md-nav__link">
+    Define load balancer IP
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-number-of-traps-server-replica" class="md-nav__link">
+    Define number of traps server replica
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-log-level" class="md-nav__link">
+    Define log level
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -407,7 +471,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/scheduler-configuration/" class="md-nav__link">
+      <a href="../scheduler-configuration/" class="md-nav__link">
         Scheduler
       </a>
     </li>
@@ -421,7 +485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/worker-configuration/" class="md-nav__link">
+      <a href="../worker-configuration/" class="md-nav__link">
         Worker
       </a>
     </li>
@@ -435,7 +499,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/mongo-configuration/" class="md-nav__link">
+      <a href="../mongo-configuration/" class="md-nav__link">
         Mongo DB
       </a>
     </li>
@@ -449,7 +513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/rabbitMQ-configuration.md" class="md-nav__link">
+      <a href="../rabbitMQ-configuration.md" class="md-nav__link">
         RabbitMQ
       </a>
     </li>
@@ -463,7 +527,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/snmpv3-configuration/" class="md-nav__link">
+      <a href="../snmpv3-configuration/" class="md-nav__link">
         SNMPv3 configuration
       </a>
     </li>
@@ -512,6 +576,56 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#trap-configuration-file" class="md-nav__link">
+    Trap configuration file
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-communities" class="md-nav__link">
+    Define communities
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-user-secrets-for-snmpv3" class="md-nav__link">
+    Configure user secrets for SNMPv3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-load-balancer-ip" class="md-nav__link">
+    Define load balancer IP
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-number-of-traps-server-replica" class="md-nav__link">
+    Define number of traps server replica
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-log-level" class="md-nav__link">
+    Define log level
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -523,29 +637,75 @@
               
                 
 
-<h1 id="microk8s-installation-on-ubuntu">MicroK8s installation on Ubuntu<a class="headerlink" href="#microk8s-installation-on-ubuntu" title="Permanent link">&para;</a></h1>
-<p>We need to have a normal install of kubectl because of operator scripts</p>
-<div class="codehilite"><pre><span></span><code>sudo snap install microk8s --classic
+<h1 id="trap-configuration">Trap Configuration<a class="headerlink" href="#trap-configuration" title="Permanent link">&para;</a></h1>
+<p>Trap service is a simple server which can handle SNMP traps sent by SNMP devices like rauter or switches.   </p>
+<h3 id="trap-configuration-file">Trap configuration file<a class="headerlink" href="#trap-configuration-file" title="Permanent link">&para;</a></h3>
+<p>Trap configuration is keep in <code>values.yaml</code> file in section traps.  To downland example file execute command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
 </code></pre></div>
 
-<p>Add user to the microk8s group to no longer have to use the <code>sudo</code> command</p>
-<div class="codehilite"><pre><span></span><code>sudo usermod -a -G microk8s <span class="nv">$USER</span>
-sudo chown -f -R <span class="nv">$USER</span> ~/.kube
-su - <span class="nv">$USER</span>
+<p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
+<p>Trap example configuration:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+  <span class="nt">communities</span><span class="p">:</span>
+    <span class="nt">1</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">public</span> 
+    <span class="nt">2c</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">public</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">homelab</span>
+  <span class="nt">usernameSecrets</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">secretv3</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-des</span>
+
+  <span class="c1"># Overrides the image tag whose default is the chart appVersion.</span>
+  <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;WARN&quot;</span>
+  <span class="c1"># replicas: Number of replicas for trap container should be 2x number of nodes</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="c1">#loadBalancerIP: The IP address in the metallb pool</span>
+  <span class="nt">loadBalancerIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10.202.4.202</span>
 </code></pre></div>
 
-<p>Check microk8s status</p>
-<div class="codehilite"><pre><span></span><code>microk8s status --wait-ready
+<h3 id="define-communities">Define communities<a class="headerlink" href="#define-communities" title="Permanent link">&para;</a></h3>
+<p><code>communities</code> define version of SNMP protocol and SNMP community string which should be use. 
+<code>communities</code> key is split by protocol version, supported values are <code>1</code> and <code>2c</code>. Under version SNMP community string can be defined. </p>
+<p>Example: </p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+  <span class="nt">communities</span><span class="p">:</span>
+    <span class="nt">1</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">public</span> 
+    <span class="nt">2c</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">public</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">homelab</span>
 </code></pre></div>
 
-<p>Install required microk8s dependencies to deploy SC4SNMP.</p>
-<p>Note: when installing metallb you will be prompted for one or more IPs to use as entry points
-Into the cluster. If your plan to enable clustering, this IP should not be assigned to the host (floats)
-If you do not plan to cluster, then this IP may be the same IP as the host</p>
-<p>Note2: a single IP in cidr format is x.x.x.x/32 use CIDR or range syntax</p>
-<div class="codehilite"><pre><span></span><code>microk8s <span class="nb">enable</span> dns metallb rbac storage openebs helm3
-microk8s status --wait-ready
+<h3 id="configure-user-secrets-for-snmpv3">Configure user secrets for SNMPv3<a class="headerlink" href="#configure-user-secrets-for-snmpv3" title="Permanent link">&para;</a></h3>
+<p><code>usernameSecrets</code> key in traps enable configure SNMPv3 secrets for trap messages sent by SNMP device. <code>usernameSecrets</code> define which secrets 
+in &ldquo;Secret&rdquo; objects in k8s should be use, as a value it need to put name of &ldquo;Secret&rdquo; objects. 
+More information how to define &ldquo;Secrets&rdquo; object for SNMPv3 can be found in <TO_DO link to V3 secrets></p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+    <span class="nt">usernameSecrets</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-aes</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-des</span>
 </code></pre></div>
+
+<h3 id="define-load-balancer-ip">Define load balancer IP<a class="headerlink" href="#define-load-balancer-ip" title="Permanent link">&para;</a></h3>
+<p><code>loadBalancerIP</code> is the IP address in the metallb pool. 
+Example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+  <span class="nt">loadBalancerIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10.202.4.202</span>
+</code></pre></div>
+
+<h3 id="define-number-of-traps-server-replica">Define number of traps server replica<a class="headerlink" href="#define-number-of-traps-server-replica" title="Permanent link">&para;</a></h3>
+<p><code>replicas</code> Defines number of replicas for trap container should be 2x number of nodes. Default value is <code>2</code>. 
+Example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+</code></pre></div>
+
+<h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
+<p>Log level for trap can be set by changing value for key <code>logLevel</code>. Allowed value are: <code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code>. 
+Default value is <code>WARN</code></p>
 
               
             </article>
@@ -559,7 +719,7 @@ microk8s status --wait-ready
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../splunk-requirements/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Splunk Requirements" rel="prev">
+        <a href="../poller-configuration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Poller" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -568,20 +728,20 @@ microk8s status --wait-ready
               <span class="md-footer__direction">
                 Previous
               </span>
-              Splunk Requirements
+              Poller
             </div>
           </div>
         </a>
       
       
         
-        <a href="../sck-installation/" class="md-footer__link md-footer__link--next" aria-label="Next: Install Splunk for Kubernetes" rel="next">
+        <a href="../scheduler-configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Scheduler" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Install Splunk for Kubernetes
+              Scheduler
             </div>
           </div>
           <div class="md-footer__button md-icon">
