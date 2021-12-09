@@ -15,6 +15,8 @@
 #
 import time
 
+import typing
+
 from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.snmp.manager import getInventory
 
@@ -24,25 +26,18 @@ try:
     load_dotenv()
 except:
     pass
-import csv
 import os
 import re
-from typing import List
 
 import pymongo
 import urllib3
-import yaml
-from bson.objectid import ObjectId
 from celery import Task, shared_task
-from celery.canvas import chain, group, signature
+from celery.canvas import chain, signature
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.hummanbool import human_bool
-from splunk_connect_for_snmp.common.inventory_record import (
-    InventoryRecord,
-    InventoryRecordEncoder,
-)
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -140,17 +135,20 @@ def inventory_setup_poller(self, work):
                             profile["condition"]["field"].replace(".", "|")
                         ]
 
-                        for pattern in profile["condition"]["patterns"]:
+                        if not isinstance(profile["condition"]["patterns"], typing.List):
+                            logger.warn(f"Patterns for profile {profile_name} must be a list")
+                        else:
+                            for pattern in profile["condition"]["patterns"]:
 
-                            result = re.match(pattern, cs["value"])
-                            if result:
-                                logger.debug(f"Adding smart profile {profile_name}")
-                                if profile["frequency"] not in assigned_profiles:
-                                    assigned_profiles[profile["frequency"]] = []
-                                assigned_profiles[profile["frequency"]].append(
-                                    profile_name
-                                )
-                                continue
+                                result = re.match(pattern, cs["value"])
+                                if result:
+                                    logger.debug(f"Adding smart profile {profile_name}")
+                                    if profile["frequency"] not in assigned_profiles:
+                                        assigned_profiles[profile["frequency"]] = []
+                                    assigned_profiles[profile["frequency"]].append(
+                                        profile_name
+                                    )
+                                    continue
     logger.debug(f"{ir.profiles}")
     for profile_name in ir.profiles:
         if profile_name in self.profiles:
