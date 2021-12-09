@@ -36,7 +36,6 @@ from requests_cache import MongoCache
 
 from splunk_connect_for_snmp.common.inventory_record import (
     InventoryRecord,
-    InventoryRecordEncoder,
 )
 from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
@@ -151,6 +150,22 @@ def map_metric_type(t, snmp_value):
         except:
             metric_type = "te"
     return metric_type
+
+
+def fill_empty_value(index_number, metric_value):
+    if metric_value is None or (isinstance(metric_value, str) and not metric_value):
+        if isinstance(index_number, bytes):
+            metric_value = str(index_number, 'utf-8')
+        else:
+            metric_value = index_number
+    return metric_value
+
+
+def extract_index_number(index):
+    index_number = index[0]._value
+    if type(index_number) is tuple:
+        index_number = index_number[0]
+    return index_number
 
 
 class Poller(Task):
@@ -420,12 +435,11 @@ class Poller(Task):
                 metric_type = map_metric_type(snmp_type, snmp_val)
                 metric_value = valueAsBest(snmp_val.prettyPrint())
 
+                index_number = extract_index_number(index)
+                metric_value = fill_empty_value(index_number, metric_value)
+
                 profile = None
                 if mapping:
-                    index_number = index[0]._value
-                    if type(index_number) is tuple:
-                        index_number = index_number[0]
-
                     profile = mapping.get(
                         f"{mib}:{metric}:{index_number}",
                         mapping.get(f"{mib}:{metric}", mapping.get(mib)),
