@@ -106,7 +106,7 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
     )
 
     data = []
-    device_ip = execContext['transportAddress']
+    device_ip = execContext['transportAddress'][0]
 
     for name, val in varBinds:
         data.append((name.prettyPrint(), val.prettyPrint()))
