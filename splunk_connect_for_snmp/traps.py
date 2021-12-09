@@ -100,8 +100,13 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
         'Notification from ContextEngineId "%s", ContextName "%s"'
         % (contextEngineId.prettyPrint(), contextName.prettyPrint())
     )
+
+    execContext = snmpEngine.observer.getExecutionContext(
+        'rfc3412.receiveMessage:request'
+    )
+
     data = []
-    device_ip = snmpEngine.msgAndPduDsp.getTransportInfo(stateReference)[1][0]
+    device_ip = execContext['transportAddress']
 
     for name, val in varBinds:
         data.append((name.prettyPrint(), val.prettyPrint()))
