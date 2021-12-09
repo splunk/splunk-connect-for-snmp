@@ -15,6 +15,7 @@
 #
 
 import yaml
+from pysnmp.smi.error import SmiError
 
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
@@ -118,22 +119,37 @@ def poll(self, **kwargs):
 
 @shared_task(bind=True, base=Poller)
 def trap(self, work):
-    now = str(time.time())
-
     var_bind_table = []
+    not_translated_oids = []
+    remaining_oids = []
+    remotemibs = set()
     metrics = {}
     for w in work["data"]:
-        translated_var_bind = ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
-            self.mib_view_controller
-        )
-        var_bind_table.append(translated_var_bind)
+        try:
+            var_bind_table.append(ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(self.mib_view_controller))
+        except SmiError:
+            not_translated_oids.append((w[0], w[1]))
+
+    for oid in not_translated_oids:
+        found, mib = self.isMIBKnown(oid[0], oid[0])
+        if found:
+            remotemibs.add(mib)
+            remaining_oids.append((oid[0], oid[1]))
+
+    if remotemibs:
+        self.load_mibs(remotemibs)
+        for w in remaining_oids:
+            try:
+                var_bind_table.append(ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(self.mib_view_controller))
+            except SmiError:
+                logger.warn(f"No translation found for {w[0]}")
 
     self.process_snmp_data(var_bind_table, metrics)
 
     return {
-        "ts": now,
+        "time": time.time(),
         "result": metrics,
-        "host": work["host"],
+        "address": work["host"],
         "detectchange": False,
         "sourcetype": "sc4snmp:traps",
     }
