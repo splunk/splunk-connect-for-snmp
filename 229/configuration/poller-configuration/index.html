@@ -13,7 +13,7 @@
     
     
       
-        <title>Splunk Requirements - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Poller - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -62,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#splunk-requirements" class="md-skip">
+        <a href="#poller-configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -101,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Splunk Requirements
+              Poller
             
           </span>
         </div>
@@ -200,14 +200,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
       
       
       
@@ -228,14 +226,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
       
       
       
@@ -256,72 +252,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Splunk Requirements
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/splunk-requirements/" class="md-nav__link">
         Splunk Requirements
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#prepare-splunk" class="md-nav__link">
-    Prepare Splunk
-  </a>
-  
-    <nav class="md-nav" aria-label="Prepare Splunk">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#requirements-splunk-enterpriseenterprise-cloud" class="md-nav__link">
-    Requirements (Splunk Enterprise/Enterprise Cloud)
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#requirements-splunk-infrastructure-monitoring" class="md-nav__link">
-    Requirements (Splunk Infrastructure Monitoring)
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -333,7 +268,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../k8s-microk8s/" class="md-nav__link">
+      <a href="../../gettingstarted/k8s-microk8s/" class="md-nav__link">
         Install Microk8s
       </a>
     </li>
@@ -347,7 +282,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sck-installation/" class="md-nav__link">
+      <a href="../../gettingstarted/sck-installation/" class="md-nav__link">
         Install Splunk for Kubernetes
       </a>
     </li>
@@ -368,7 +303,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sc4snmp-installation/" class="md-nav__link">
+      <a href="../../gettingstarted/sc4snmp-installation/" class="md-nav__link">
         Install SC4SNMP
       </a>
     </li>
@@ -388,12 +323,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
       
       
       
@@ -416,7 +353,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/deployment-configuration/" class="md-nav__link">
+      <a href="../deployment-configuration/" class="md-nav__link">
         Deployment
       </a>
     </li>
@@ -428,11 +365,66 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../configuration/poller-configuration/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Poller
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Poller
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#poller-configuration-file" class="md-nav__link">
+    Poller configuration file
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-inventory" class="md-nav__link">
+    Configure inventory
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-user-secrets-for-snmpv3" class="md-nav__link">
+    Configure user secrets for SNMPv3
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -444,7 +436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/trap-configuration/" class="md-nav__link">
+      <a href="../trap-configuration/" class="md-nav__link">
         Trap
       </a>
     </li>
@@ -458,7 +450,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/scheduler-configuration/" class="md-nav__link">
+      <a href="../scheduler-configuration/" class="md-nav__link">
         Scheduler
       </a>
     </li>
@@ -472,7 +464,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/worker-configuration/" class="md-nav__link">
+      <a href="../worker-configuration/" class="md-nav__link">
         Worker
       </a>
     </li>
@@ -486,7 +478,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/mongo-configuration/" class="md-nav__link">
+      <a href="../mongo-configuration/" class="md-nav__link">
         Mongo DB
       </a>
     </li>
@@ -500,7 +492,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/rabbitmq-configuration/" class="md-nav__link">
+      <a href="../rabbitmq-configuration/" class="md-nav__link">
         RabbitMQ
       </a>
     </li>
@@ -514,7 +506,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/snmpv3-configuration/" class="md-nav__link">
+      <a href="../snmpv3-configuration/" class="md-nav__link">
         SNMPv3 configuration
       </a>
     </li>
@@ -570,29 +562,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prepare-splunk" class="md-nav__link">
-    Prepare Splunk
-  </a>
-  
-    <nav class="md-nav" aria-label="Prepare Splunk">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#requirements-splunk-enterpriseenterprise-cloud" class="md-nav__link">
-    Requirements (Splunk Enterprise/Enterprise Cloud)
+  <a href="#poller-configuration-file" class="md-nav__link">
+    Poller configuration file
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#requirements-splunk-infrastructure-monitoring" class="md-nav__link">
-    Requirements (Splunk Infrastructure Monitoring)
+      
+        <li class="md-nav__item">
+  <a href="#configure-inventory" class="md-nav__link">
+    Configure inventory
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#configure-user-secrets-for-snmpv3" class="md-nav__link">
+    Configure user secrets for SNMPv3
+  </a>
   
 </li>
       
@@ -609,26 +595,60 @@
               
                 
 
-<h1 id="splunk-requirements">Splunk requirements<a class="headerlink" href="#splunk-requirements" title="Permanent link">&para;</a></h1>
-<h2 id="prepare-splunk">Prepare Splunk<a class="headerlink" href="#prepare-splunk" title="Permanent link">&para;</a></h2>
-<h3 id="requirements-splunk-enterpriseenterprise-cloud">Requirements (Splunk Enterprise/Enterprise Cloud)<a class="headerlink" href="#requirements-splunk-enterpriseenterprise-cloud" title="Permanent link">&para;</a></h3>
-<ol>
-<li>Complete the installation of <a href="https://docs.splunk.com/Documentation/ITE/latest/Work/Overview">Splunk IT Essentials Work</a> OR <a href="https://docs.splunk.com/Documentation/ITSI/4.9.2/Install/About">Splunk IT Service Intelligence</a></li>
-<li>Verify the creation of the following indexes:<ul>
-<li>em_metrics (metrics type)</li>
-<li>em_meta (event type)</li>
-<li>em_logs (event type)</li>
-<li>netmetrics (metrics type)</li>
-<li>netops (event type)</li>
+<h1 id="poller-configuration">Poller Configuration<a class="headerlink" href="#poller-configuration" title="Permanent link">&para;</a></h1>
+<p>Instruction contains configuration documentation for Poller. Poller is a service which is responsible for quering 
+SNMP devices using SNMP GET, SNMP WALK functionality. Poller executes two main type of tasks tasks:
+- Walk task execute SNMP walk. SNMP walk is an SNMP application that uses SNMP GETNEXT requests to 
+collect SNMP data from network and infrastructure SNMP-enabled devices, such as switches and routers. It is time consuming task,
+which may overload SNMP device when execute too often. It is use by SC4SNMP to callect and push all OIDs values which provided ACL has access to. 
+- Get task - It is light weight task which goal is to query subset of OIDs defined by customer. Task is dedicated 
+to enabled monitoring of most important OIDs with high frequency like memory or CPU utilisation.  </p>
+<h3 id="poller-configuration-file">Poller configuration file<a class="headerlink" href="#poller-configuration-file" title="Permanent link">&para;</a></h3>
+<p>Poller configuration is keep in <code>values.yaml</code> file in section poller.  To downland example file execute command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
+</code></pre></div>
+
+<p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
+<p>Poller example configuration:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+  <span class="nt">usernameSecrets</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-aes</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-des</span>
+  <span class="nt">inventory</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+    <span class="no">address,version,community,walk_interval,profiles,SmartProfiles,delete</span>
+    <span class="no">10.202.4.202,2c,public,60,,,</span>
+</code></pre></div>
+
+<h3 id="configure-inventory">Configure inventory<a class="headerlink" href="#configure-inventory" title="Permanent link">&para;</a></h3>
+<p><code>inventory</code> section in <code>poller</code> enable to configure inventory for polling data:</p>
+<ul>
+<li><code>address</code> [REQUIRED] - IP address which SC4SNMP should connect to collect data from.</li>
+<li><code>version</code> [REQUIRED] - SNMP version, values allowed: 1, 2c, 3</li>
+<li><code>community</code> [OPTIONAL] - SNMP community string, filed is required when <code>version</code> is <code>1</code> or <code>2c</code></li>
+<li><code>walk_interval</code> [OPTIONAL] - Define interval in second for SNMP walk, default value <code>42000</code></li>
+<li><code>profiles</code> - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
+separation eg. <code>profiale1;profile2</code>. More about profile in <a href="../scheduler-configuration/#configure-profile">Profile Configuration</a></li>
+<li><code>SmartProfiles</code> - enabled SmartProfile, default value true. Allowed value: <code>true</code>, <code>false</code>. Default value is <code>true</code> </li>
+<li><code>delete</code> - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
+Allowed value: <code>true</code>, <code>false</code>. Default value is <code>false</code>.</li>
 </ul>
-</li>
-<li>Create or obtain a new Splunk HTTP Event Collector token and the correct https endpoint.</li>
-<li>Verify the token using <a href="https://docs.splunk.com/Documentation/Splunk/8.1.3/Data/FormateventsforHTTPEventCollector">curl</a> Note: The endpoint must use a publicly trusted certificate authority.</li>
-<li>The SHARED IP address to be used for SNMP Traps. Note Simple and POC deployments will use the same IP as the host server. If HA deployment will be used, the IP must be in addition to the managment interface of each cluster member.</li>
-<li>Obtain the ip address of an internal DNS server that is able to resolve the Splunk Endpoint.</li>
-</ol>
-<h3 id="requirements-splunk-infrastructure-monitoring">Requirements (Splunk Infrastructure Monitoring)<a class="headerlink" href="#requirements-splunk-infrastructure-monitoring" title="Permanent link">&para;</a></h3>
-<p>Obtain the correct realm and token.</p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+    <span class="nt">inventory</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+      <span class="no">address,version,community,walk_interval,profiles,SmartProfiles,delete</span>
+      <span class="no">10.202.4.202,2c,public,60,,,</span>
+</code></pre></div>
+
+<h3 id="configure-user-secrets-for-snmpv3">Configure user secrets for SNMPv3<a class="headerlink" href="#configure-user-secrets-for-snmpv3" title="Permanent link">&para;</a></h3>
+<p>usernameSecrets key in poller enable configure SNMPv3 secrets for polling data. usernameSecrets define which secrets 
+in &ldquo;Secret&rdquo; objects in k8s should be use, as a value it need to put name of &ldquo;Secret&rdquo; objects. 
+More information how to define &ldquo;Secrets&rdquo; object for SNMPv3 can be found in <a href="../snmpv3-configuration/">SNMPv3 Configuration</a></p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+    <span class="nt">usernameSecrets</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-aes</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-des</span>
+</code></pre></div>
 
               
             </article>
@@ -642,7 +662,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../.." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home" rel="prev">
+        <a href="../deployment-configuration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Deployment" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -651,20 +671,20 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              Home
+              Deployment
             </div>
           </div>
         </a>
       
       
         
-        <a href="../k8s-microk8s/" class="md-footer__link md-footer__link--next" aria-label="Next: Install Microk8s" rel="next">
+        <a href="../trap-configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Trap" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Install Microk8s
+              Trap
             </div>
           </div>
           <div class="md-footer__button md-icon">

@@ -389,34 +389,6 @@
 
             
           
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../sc4snmp-configuration/" class="md-nav__link">
-        Configure Poller and Traps
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../additional-helm-configuration/" class="md-nav__link">
-        Additional HELM values
-      </a>
-    </li>
-  
-
-            
-          
         </ul>
       </nav>
     </li>
@@ -430,10 +402,141 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Configuration" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../../configuration/" class="md-nav__link">
-        Configuration
+      <a href="../../configuration/deployment-configuration/" class="md-nav__link">
+        Deployment
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/poller-configuration/" class="md-nav__link">
+        Poller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/trap-configuration/" class="md-nav__link">
+        Trap
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/scheduler-configuration/" class="md-nav__link">
+        Scheduler
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/worker-configuration/" class="md-nav__link">
+        Worker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/mongo-configuration/" class="md-nav__link">
+        Mongo DB
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/rabbitmq-configuration/" class="md-nav__link">
+        RabbitMQ
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/snmpv3-configuration/" class="md-nav__link">
+        SNMPv3 configuration
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -613,17 +716,47 @@
 </tbody>
 </table>
 <h3 id="install-sc4snmp">Install SC4SNMP<a class="headerlink" href="#install-sc4snmp" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
+<div class="codehilite"><pre><span></span><code>microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace --version &lt;VERSION_TAG&gt;
 </code></pre></div>
 
+<table>
+<thead>
+<tr>
+<th>variable</th>
+<th>description</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VERSION_TAG</td>
+<td>is a tag of build eg. 0.11.0-beta.22</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
 <p>From now on, when editing SC4SNMP configuration, the configuration change must be
-inserted in the corresponding section of <code>config_values.yaml</code>. For more details check <a href="../../configuration/">configuration</a> section.</p>
+inserted in the corresponding section of <code>values.yaml</code>. For more details check <a href="../../configuration/deployment-configuration/">configuration</a> section.</p>
 <p>Use the following command to propagate configuration changes:</p>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace --version &lt;VERSION_TAG&gt;
 </code></pre></div>
 
-<p>| variable | description | default |
-|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|</p>
+<table>
+<thead>
+<tr>
+<th>variable</th>
+<th>description</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VERSION_TAG</td>
+<td>is a tag of build eg. 0.11.0-beta.22</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
 <h3 id="verify-deployment">Verify deployment<a class="headerlink" href="#verify-deployment" title="Permanent link">&para;</a></h3>
 <p>In a few minutes, all pods should be up and running. It can be verified with:</p>
 <div class="codehilite"><pre><span></span><code>microk8s kubectl get pods -n sc4snmp
@@ -643,8 +776,14 @@ inserted in the corresponding section of <code>config_values.yaml</code>. For mo
 
 <h3 id="test-snmp-traps">Test SNMP Traps<a class="headerlink" href="#test-snmp-traps" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Test the trap from a linux system with SNMP installed. Replace the IP address 
-    <code>10.0.101.22</code> with the shared IP address above</li>
+<li>
+<p>Test the Trap by logging into Splunk and confirm the presence of events
+    in snmp <code>netops</code> and metrics in <code>netmetrics</code> index</p>
+</li>
+<li>
+<p>Test the trap from a linux system with SNMP installed. Replace the IP address 
+    <code>10.0.101.22</code> with the shared IP address above</p>
+</li>
 </ul>
 <div class="codehilite"><pre><span></span><code>apt update
 apt-get install snmpd
@@ -660,7 +799,13 @@ snmptrap -v2c -c public <span class="m">10</span>.0.101.22 <span class="m">123</
 
 <h3 id="test-snmp-poller">Test SNMP Poller<a class="headerlink" href="#test-snmp-poller" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Test the trap from a linux system install snmpd.</li>
+<li>
+<p>Test the Poller by logging into Splunk and confirm the presence of events
+    in snmp <code>netops</code> and metrics in <code>netmetrics</code> index</p>
+</li>
+<li>
+<p>Test the trap from a linux system install snmpd.</p>
+</li>
 </ul>
 <div class="codehilite"><pre><span></span><code>apt update
 apt-get install snmpd
@@ -694,8 +839,22 @@ replace the IP address <code>10.0.101.22</code> with the server IP address where
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace --version &lt;VERSION_TAG&gt;
 </code></pre></div>
 
-<p>| variable | description | default |
-|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|</p>
+<table>
+<thead>
+<tr>
+<th>variable</th>
+<th>description</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VERSION_TAG</td>
+<td>is a tag of build eg. 0.11.0-beta.22</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li>Check in Splunk</li>
 </ul>
@@ -735,13 +894,13 @@ replace the IP address <code>10.0.101.22</code> with the server IP address where
       
       
         
-        <a href="../sc4snmp-configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Configure Poller and Traps" rel="next">
+        <a href="../../configuration/deployment-configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Deployment" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Configure Poller and Traps
+              Deployment
             </div>
           </div>
           <div class="md-footer__button md-icon">
