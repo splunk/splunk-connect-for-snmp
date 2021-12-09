@@ -196,7 +196,7 @@ class Poller(Task):
                 for each_row in reader:
                     if len(each_row) == 2:
                         self.mib_map[each_row[1]] = each_row[0]
-            logger.error(f"Loaded {len(self.mib_map.keys())} mib map entries")
+            logger.debug(f"Loaded {len(self.mib_map.keys())} mib map entries")
         else:
             logger.error(
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"

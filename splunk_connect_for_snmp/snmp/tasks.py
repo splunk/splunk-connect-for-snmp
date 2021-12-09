@@ -118,8 +118,6 @@ def poll(self, **kwargs):
 
 @shared_task(bind=True, base=Poller)
 def trap(self, work):
-    now = str(time.time())
-
     var_bind_table = []
     not_translated_oids = []
     remaining_oids = []
@@ -148,9 +146,9 @@ def trap(self, work):
     self.process_snmp_data(var_bind_table, metrics)
 
     return {
-        "ts": now,
+        "time": time.time(),
         "result": metrics,
-        "host": work["host"],
+        "address": work["host"],
         "detectchange": False,
         "sourcetype": "sc4snmp:traps",
     }
