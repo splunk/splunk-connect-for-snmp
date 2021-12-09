@@ -56,9 +56,10 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 @shared_task(
     bind=True,
     base=Poller,
-    retry_backoff=True,
+    retry_backoff=30,
     retry_jitter=True,
     retry_backoff_max=3600,
+    max_retries=50,
     autoretry_for=(MongoLockLocked, SnmpActionError,),
     throws=(SnmpActionError, SnmpActionError,)
 )
