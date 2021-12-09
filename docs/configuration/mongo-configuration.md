@@ -21,4 +21,3 @@ mongodb:
 ```
 
 Recommendation is to do not change this setting. In case of need to change it please follow documentation: [MongoDB on Kubernetes](https://github.com/bitnami/charts/tree/master/bitnami/mongodb/)  
-] 

@@ -18,46 +18,40 @@ curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-fo
 Poller example configuration:
 ```yaml
 poller:
-  usernameSecrets:
-    - sc4snmp-homesecure-sha-aes
-    - sc4snmp-homesecure-sha-des
+  logLevel: "WARN"
   inventory: |
-    address,version,community,walk_interval,profiles,SmartProfiles,delete
-    10.202.4.202,2c,public,60,,,
+    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+    10.202.4.202,,2c,public,,,2000,,,
 ```
+
+### Define log level
+Log level for trap can be set by changing value for key `logLevel`. Allowed value are: `DEBUG`, `INFO`, `WARN`, `ERROR`. 
+Default value is `WARN`
 
 ### Configure inventory 
 `inventory` section in `poller` enable to configure inventory for polling data:
 
  - `address` [REQUIRED] - IP address which SC4SNMP should connect to collect data from.
- - `version` [REQUIRED] - SNMP version, values allowed: 1, 2c, 3
+ - `port` [OPTIONAL] - SNMP listening port. Default value `161`.
+ - `version` [REQUIRED] - SNMP version, allowed values: `1`, `2c` or `3`
  - `community` [OPTIONAL] - SNMP community string, filed is required when `version` is `1` or `2c`
+ - `secret` [OPTIONAL] - usernameSecrets define which secrets in "Secret" objects in k8s should be use, as a value it need to put 
+ name of "Secret" objects. Field is required when `version` is `3`. More information how to define "Secrets" object for SNMPv3 can be found 
+ in [SNMPv3 Configuration](snmpv3-configuration.md)
+ - `securityEngine` [OPTIONAL] - Security engine required by SNMPv3. Field is required when `version` is `3`. 
  - `walk_interval` [OPTIONAL] - Define interval in second for SNMP walk, default value `42000`
- - `profiles` - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
+ - `profiles` [OPTIONAL] - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
 separation eg. `profiale1;profile2`. More about profile in [Profile Configuration](../scheduler-configuration/#configure-profile)
- - `SmartProfiles` - enabled SmartProfile, default value true. Allowed value: `true`, `false`. Default value is `true` 
- - `delete` - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
+ - `SmartProfiles` [OPTIONAL] - enabled SmartProfile, default value true. Allowed value: `true`, `false`. Default value is `true` 
+ - `delete` [OPTIONAL] - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
 Allowed value: `true`, `false`. Default value is `false`.
 
 Example:
 ```yaml
 poller:
     inventory: |
-      address,version,community,walk_interval,profiles,SmartProfiles,delete
-      10.202.4.202,2c,public,60,,,
+      address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+      10.202.4.202,,2c,public,,,2000,,,
 ```
-
-### Configure user secrets for SNMPv3 
-usernameSecrets key in poller enable configure SNMPv3 secrets for polling data. usernameSecrets define which secrets 
-in "Secret" objects in k8s should be use, as a value it need to put name of "Secret" objects. 
-More information how to define "Secrets" object for SNMPv3 can be found in [SNMPv3 Configuration](snmpv3-configuration.md)
-
-Example:
-```yaml
-poller:
-    usernameSecrets:
-      - sc4snmp-homesecure-sha-aes
-      - sc4snmp-homesecure-sha-des
-```   
 
 
