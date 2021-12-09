@@ -6,7 +6,7 @@ splunk:
   port: "8088"
   clusterName: homecluster
 image:
-  tag: "pr-221"
+  tag: "develop"
   pullPolicy: "Always"
 traps:
   # communities:
@@ -14,9 +14,8 @@ traps:
   #     - public
   #     - homelab
   usernameSecrets:
-    - sc4snmp-homesecure-sha-aes
-    #- sc4snmp-homesecure-sha-des
-  securityEngineId: "8000000903000A397056B8AC"
+    - sc4snmp-hlab-sha-aes
+    - sc4snmp-hlab-sha-des
 
   # Overrides the image tag whose default is the chart appVersion.
   #  logLevel: "WARN"
