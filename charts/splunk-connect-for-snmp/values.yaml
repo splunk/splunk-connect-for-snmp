@@ -12,6 +12,36 @@ image:
 
 imagePullSecrets: []
 
+inventory:
+  nameOverride: ""
+  fullnameOverride: ""
+
+  podAnnotations: {}
+
+  podSecurityContext:
+    fsGroup: 10001
+
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
 scheduler:
   nameOverride: ""
   fullnameOverride: ""
@@ -61,6 +91,7 @@ scheduler:
   podAntiAffinity: soft
 
 worker:
+  concurrency: 4
   nameOverride: ""
   fullnameOverride: ""
 
@@ -110,8 +141,13 @@ worker:
 
 poller:
   usernameSecrets: []
+  inventory: |
+    address,version,community,walk_interval,profiles,SmartProfiles,delete
+
 traps:
   usernameSecrets: []
+  securityEngineId: "8000000903000A397056B8AC"
+
   communities: {}
   nameOverride: ""
   fullnameOverride: ""

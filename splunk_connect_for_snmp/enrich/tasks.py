@@ -72,35 +72,44 @@ class EnrichTask(Task):
                             "name": f'sc4snmp;{current_target["target"]};walk',
                             "run_immediately": True,
                         }
-                        logger.info(f'Detected restart of {current_target["target"]}, triggering walk')
+                        logger.info(
+                            f'Detected restart of {current_target["target"]}, triggering walk'
+                        )
                         periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
                         periodic_obj.manage_task(**task_config)
 
-                state = {"value": sysuptime["value"],
-                         "type": sysuptime["type"],
-                         "oid": sysuptime["oid"]}
+                state = {
+                    "value": sysuptime["value"],
+                    "type": sysuptime["type"],
+                    "oid": sysuptime["oid"],
+                }
 
-                targets_collection.update_one({"_id": target_id},
-                                              {"$set": {"sysUpTime": state}},
-                                              upsert=True)
+                targets_collection.update_one(
+                    {"_id": target_id}, {"$set": {"sysUpTime": state}}, upsert=True
+                )
 
 
 @shared_task(bind=True, base=EnrichTask)
 def enrich(self, result):
+    address = result["address"]
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4snmp.targets
     updates = []
-    target_id = ObjectId(result["id"])
+
     current_target = targets_collection.find_one(
-        {"_id": target_id}, {"attributes": True, "target": True, "sysUpTime": True}
+        {"address": address}, {"attributes": True, "target": True, "sysUpTime": True}
     )
     if not current_target:
-        current_target = {}
+        logger.info(f"First time for {address}")
+        current_target = {"address": address}
+    else:
+        logger.info(f"Not first time for {address}")
+
     if "attributes" not in current_target:
         current_target["attributes"] = {}
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
-    self.check_restart(current_target, result["result"], target_id, targets_collection)
+    self.check_restart(current_target, result["result"], address, targets_collection)
 
     # First write back to DB new/changed data
     for group_key, group_data in result["result"].items():
@@ -169,10 +178,12 @@ def enrich(self, result):
                 )
 
             if len(updates) >= 20:
-                targets_collection.update_one({"_id": target_id}, updates, upsert=True)
-                logger.debug(
-                    f"Executing enricher update for target={target_id} with content={updates}"
+                targets_collection.update_one(
+                    {"address": address}, updates, upsert=True
                 )
+                # logger.debug(
+                #    f"Executing enricher update for address={address} with content={updates}"
+                # )
                 updates.clear()
 
         # Now add back any fields we need
@@ -187,6 +198,4 @@ def enrich(self, result):
                             persist_data["name"]
                         ] = persist_data
 
-    if "host" not in result.keys():
-        result["host"] = result["address"].split(":")[0]
     return result

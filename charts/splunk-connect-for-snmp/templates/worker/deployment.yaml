@@ -20,7 +20,7 @@ spec:
       labels:
         {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 8 }}
     spec:
-      {{- with .Values.worker.imagePullSecrets }}
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -40,6 +40,8 @@ spec:
           env:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
+            - name: WORKER_CONCURRENCY
+              value: {{ .Values.worker.concurrency | default "2" | quote }}
             - name: CELERY_BROKER_URL
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
@@ -74,9 +76,6 @@ spec:
           volumeMounts:
             - name: config
               mountPath: "/app/config"
-              readOnly: true
-            - name: inventory
-              mountPath: "/app/inventory"
               readOnly: true
             - name: pysnmp-cache-volume
               mountPath: "/.pysnmp/"
@@ -169,14 +168,6 @@ spec:
             {{- end }}                    
             {{- end }}
         {{- end }}                  
-        - name: inventory
-          configMap:
-            # Provide the name of the ConfigMap you want to mount.
-            name: {{ include "splunk-connect-for-snmp.name" . }}-inventory
-            # An array of keys from the ConfigMap to create as files
-            items:
-              - key: "inventory.csv"
-                path: "inventory.csv"
         - name: pysnmp-cache-volume
           emptyDir: {}    
         - name: tmp

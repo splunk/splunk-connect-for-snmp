@@ -13,5 +13,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-__version__ = "0.11.0-beta.37"
+from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
