@@ -55,6 +55,8 @@ logger = get_task_logger(__name__)
 
 def getInventory(mongo_inventory, address):
     ir_doc = mongo_inventory.find_one({"address": address})
+    if ir_doc is None:
+        raise ValueError(f"Inventory Doc deleted unable to complete task for {address}")
     logger.debug(f"{ir_doc}")
     ir_doc.pop("_id", None)
     return InventoryRecord(**ir_doc)
