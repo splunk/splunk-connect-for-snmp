@@ -112,23 +112,23 @@ To configure Static Profile following value need to be set in `profiles` section
  - `ProfileName` - define as subsection key in `profiles`. 
     - `frequency` - define interval between executing SNMP gets in second.
     - `condition` - section define conditions to much profile
-        - `type` - key of `condition` section which defines type of condition. Allowed value `basic` and `field`. 
+        - `type` - key of `condition` section which defines type of condition. Allowed value `base` and `field`. 
             - `base` type of condition will be executed always when `SmartProfile` in inventory is set to true.
             - `field` type of condition will be executed if match `pattern` for defined `field`. Supported fields:
                 -  "SNMPv2-MIB.sysDescr"
                 -  "SNMPv2-MIB.sysObjectID"
-        - `fild` Define filed name for condition type field. 
-        - `pattern` Define list of regular expression pattern for MIB object field defined in `field` section.
+        - `field` Define field name for condition type field. 
+        - `pattern` Define list of regular expression pattern for MIB object field defined in `field` section. <TO_DO add any :)>
     - `varBinds` - define var binds to query. 
 
-Example of `basic` type of condition
+Example of `base` type of condition
 ```yaml
 scheduler:
     profiles: |
-      SmartProfile_basic_example:
+      SmartProfile_base_example:
         frequency: 10
         condition: 
-          typy: "basic"
+          typy: "base"
         varBinds:
           - ['SNMPv2-MIB']
           - ['SNMPv2-MIB', 'sysName']
