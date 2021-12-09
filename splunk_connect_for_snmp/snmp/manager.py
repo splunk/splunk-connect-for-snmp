@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import typing
 
 try:
     from dotenv import load_dotenv
@@ -163,7 +164,7 @@ def fill_empty_value(index_number, metric_value):
 
 def extract_index_number(index):
     index_number = index[0]._value
-    if type(index_number) is tuple:
+    if isinstance(index_number, typing.Tuple):
         index_number = index_number[0]
     return index_number
 
