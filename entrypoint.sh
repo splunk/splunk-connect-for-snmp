@@ -2,7 +2,7 @@
 set -e
 . /app/.venv/bin/activate
 LOG_LEVEL=${LOG_LEVEL:=INFO}
-WORKER_CONCURRENCY=${WORKER_CONCURRENCY:=2}
+WORKER_CONCURRENCY=${WORKER_CONCURRENCY:=4}
 wait-for-dep "${CELERY_BROKER_URL}" "${MONGO_URI}" "${MIB_INDEX}"
 
 case $1 in
