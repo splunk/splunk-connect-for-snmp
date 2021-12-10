@@ -335,20 +335,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#create-values-file" class="md-nav__link">
-    Create values file
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#values-description" class="md-nav__link">
-    Values description
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#install-sck-with-helm" class="md-nav__link">
     Install SCK with HELM
   </a>
@@ -599,20 +585,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#create-values-file" class="md-nav__link">
-    Create values file
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#values-description" class="md-nav__link">
-    Values description
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#install-sck-with-helm" class="md-nav__link">
     Install SCK with HELM
   </a>
@@ -638,225 +610,24 @@
                 
 
 <h1 id="splunk-for-kubernetes-installation">SPLUNK for Kubernetes installation<a class="headerlink" href="#splunk-for-kubernetes-installation" title="Permanent link">&para;</a></h1>
-<p>The below steps are sufficient for a SCK installation for the SC4SNMP project. In case you want to investigate more, all information about Splunk Connect for Kubernetes is available <a href="https://github.com/splunk/splunk-connect-for-kubernetes">here</a>.</p>
+<p>The below steps are sufficient for a SCK installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud. 
+To learn more about SCK <a href="https://github.com/signalfx/splunk-otel-collector-chart/blob/main/helm-charts/splunk-otel-collector/values.yaml">visit</a>.
+Including configuration with Splunk Observability Cloud.</p>
 <h2 id="instalation-steps">Instalation steps<a class="headerlink" href="#instalation-steps" title="Permanent link">&para;</a></h2>
 <h3 id="add-sck-repository-to-helm">Add SCK repository to HELM<a class="headerlink" href="#add-sck-repository-to-helm" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">repo</span> <span class="nv">add</span> <span class="nv">splunk</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">splunk</span>.<span class="nv">github</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">kubernetes</span>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 repo add splunk-otel-collector-chart https://signalfx.github.io/splunk-otel-collector-chart
 </code></pre></div>
 
-<h3 id="create-values-file">Create values file<a class="headerlink" href="#create-values-file" title="Permanent link">&para;</a></h3>
-<p>In order to connect to SPLUNK instance, you must create a <code>sck_values.yaml</code> file with this structure, populating variables marked with &ldquo;###&rdquo; (as described below):</p>
-<div class="codehilite"><pre><span></span><code><span class="c1">#global settings</span>
-<span class="nt">global</span><span class="p">:</span>
-  <span class="nt">logLevel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">info</span> 
-  <span class="nt">splunk</span><span class="p">:</span>
-    <span class="nt">hec</span><span class="p">:</span>
-      <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https</span>
-      <span class="nt">insecureSSL</span><span class="p">:</span> <span class="s">&quot;false&quot;</span>
-      <span class="nt">host</span><span class="p">:</span> <span class="c1">###SPLUNK_HOST###</span>
-      <span class="nt">token</span><span class="p">:</span> <span class="c1">###SPLUNK_TOKEN###</span>
-      <span class="nt">port</span><span class="p">:</span> <span class="c1">###SPLUNK_PORT###</span>
-  <span class="nt">kubernetes</span><span class="p">:</span>
-    <span class="nt">clusterName</span><span class="p">:</span> <span class="c1">###CLUSTER_NAME###</span>
-
-<span class="c1">#local config for logging chart</span>
-<span class="nt">splunk-kubernetes-logging</span><span class="p">:</span>
-  <span class="c1"># Enable chart</span>
-  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="c1"># Determine logging level per chart</span>
-  <span class="nt">logLevel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">info</span>
-  <span class="nt">containers</span><span class="p">:</span>
-    <span class="nt">logFormatType</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cri</span>
-    <span class="nt">logFormat</span><span class="p">:</span> <span class="s">&quot;%Y-%m-%dT%H:%M:%S.%N%:z&quot;</span>
-  <span class="c1"># Filter on Namespace to reduce log noise from all namespaces</span>
-  <span class="nt">fluentd</span><span class="p">:</span> 
-    <span class="nt">path</span><span class="p">:</span> <span class="s">&quot;/var/log/containers/*_sc4snmp_*.log,/var/log/containers/*_sck_*.log&quot;</span> 
-  <span class="nt">kubernetes</span><span class="p">:</span>
-    <span class="nt">securityContext</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="c1"># Set journald path. Update to reflect MicroK8s systemd services. See MicroK8s Docs. </span>
-  <span class="nt">journalLogPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/var/log/journal</span>
-  <span class="c1"># Review flush intervals for Splunk Cloud vs Self-Managed back off timers</span>
-  <span class="nt">buffer</span><span class="p">:</span>
-    <span class="s">&quot;@type&quot;</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">memory</span>
-    <span class="nt">total_limit_size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">600m</span>
-    <span class="nt">chunk_limit_size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10m</span>
-    <span class="nt">chunk_limit_records</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">100000</span>
-    <span class="nt">flush_interval</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5s</span>
-    <span class="nt">flush_thread_count</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
-    <span class="nt">overflow_action</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">block</span>
-    <span class="nt">retry_max_times</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
-    <span class="nt">retry_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">periodic</span>
-  <span class="nt">k8sMetadata</span><span class="p">:</span>
-  <span class="c1"># Pod labels to collect</span>
-    <span class="nt">podLabels</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">app</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">k8s-app</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">release</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">environment</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">tier</span>
-  <span class="c1"># In case snmp prefix is useful or if you want to remove &quot;kube&quot;</span>
-  <span class="nt">sourcetypePrefix</span><span class="p">:</span> <span class="s">&quot;kube&quot;</span>
-  <span class="nt">splunk</span><span class="p">:</span>
-    <span class="nt">hec</span><span class="p">:</span>
-      <span class="nt">indexName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">em_logs</span>
-  <span class="nt">logs</span><span class="p">:</span>
-    <span class="nt">sck</span><span class="p">:</span>
-      <span class="nt">from</span><span class="p">:</span>
-        <span class="nt">pod</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sck-splunk-kubernetes-</span>
-        <span class="nt">container</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">splunk-fluentd-k8s-</span>
-      <span class="nt">multiline</span><span class="p">:</span>
-        <span class="nt">firstline</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/^\d{4}-\d{2}-\d{2}\s\d{2}\:\d{2}\:\d{2}\s\+\d{4}\s\[\w+\]\:/</span>
-        <span class="nt">separator</span><span class="p">:</span> <span class="s">&quot;\n&quot;</span>
-        <span class="nt">flushInterval</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
-
-<span class="c1">#local config for objects chart</span>
-<span class="nt">splunk-kubernetes-objects</span><span class="p">:</span>
-  <span class="c1"># enable or diable objects</span>
-  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
-  <span class="nt">rbac</span><span class="p">:</span>
-    <span class="nt">create</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">serviceAccount</span><span class="p">:</span>
-    <span class="nt">create</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">splunk-kubernetes-objects</span>
-  <span class="nt">kubernetes</span><span class="p">:</span>
-    <span class="nt">insecureSSL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">objects</span><span class="p">:</span>
-    <span class="nt">core</span><span class="p">:</span>
-      <span class="nt">v1</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pods</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">namespaces</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">component_statuses</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nodes</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">services</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">events</span>
-          <span class="nt">mode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">watch</span>
-  <span class="nt">splunk</span><span class="p">:</span>
-    <span class="nt">hec</span><span class="p">:</span>
-      <span class="nt">indexName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">em_meta</span>
-
-<span class="c1">#local config for metrics chart</span>
-<span class="nt">splunk-kubernetes-metrics</span><span class="p">:</span>
-  <span class="c1"># enable or disbale metrics</span>
-  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
-  <span class="nt">metricsInterval</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">60s</span>
-  <span class="nt">kubernetes</span><span class="p">:</span>
-    <span class="nt">kubeletPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10255</span>
-    <span class="nt">kubeletPortAggregator</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10250</span>
-    <span class="nt">useRestClientSSL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
-    <span class="nt">insecureSSL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">rbac</span><span class="p">:</span>
-    <span class="nt">create</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">serviceAccount</span><span class="p">:</span>
-    <span class="nt">create</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">splunk-kubernetes-metrics</span>
-  <span class="nt">splunk</span><span class="p">:</span>
-    <span class="nt">hec</span><span class="p">:</span>
-      <span class="nt">indexName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">em_metrics</span>
-  <span class="nt">customFilters</span><span class="p">:</span>
-    <span class="nt">node</span><span class="p">:</span>
-      <span class="nt">tag</span><span class="p">:</span> <span class="s">&quot;kube.node.**&quot;</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">record_modifier</span>
-      <span class="nt">body</span><span class="p">:</span> <span class="p p-Indicator">|-</span>
-        <span class="no">&lt;record&gt;</span>
-          <span class="no">entity_type k8s_node</span>
-        <span class="no">&lt;/record&gt;</span>
-    <span class="nt">pod</span><span class="p">:</span>
-      <span class="nt">tag</span><span class="p">:</span> <span class="s">&quot;kube.pod.**&quot;</span>
-      <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">record_modifier</span>
-      <span class="nt">body</span><span class="p">:</span> <span class="p p-Indicator">|-</span>
-        <span class="no">&lt;record&gt;</span>
-          <span class="no">entity_type k8s_pod</span>
-        <span class="no">&lt;/record&gt;</span>
-</code></pre></div>
-
-<h3 id="values-description">Values description<a class="headerlink" href="#values-description" title="Permanent link">&para;</a></h3>
-<p>Values required to be filled:</p>
-<table>
-<thead>
-<tr>
-<th>Placeholder</th>
-<th>Description</th>
-<th>Example</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>###SPLUNK_HOST###</td>
-<td>host address of splunk instance</td>
-<td>&ldquo;i-08c221389a3b9899a.ec2.splunkit.io&rdquo;</td>
-</tr>
-<tr>
-<td>###SPLUNK_PORT###</td>
-<td>port number of splunk instance</td>
-<td>&ldquo;8088&rdquo;</td>
-</tr>
-<tr>
-<td>###SPLUNK_TOKEN###</td>
-<td>Splunk HTTP Event Collector token</td>
-<td>&ldquo;450a69af-16a9-4f87-9628-c26f04ad3785&rdquo;</td>
-</tr>
-<tr>
-<td>###CLUSTER_NAME###</td>
-<td>name of the cluster</td>
-<td>&ldquo;foo&rdquo;</td>
-</tr>
-</tbody>
-</table>
-<p>In case you want to change index names (note that in this case you need to keep consistent names in Splunk instance and SC4SNMP values file), you can override these variables:</p>
-<table>
-<thead>
-<tr>
-<th>Index type</th>
-<th>variable</th>
-<th>description</th>
-<th>default value</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Logs index</td>
-<td>splunk-kubernetes-logging: splunk: hec: indexName:</td>
-<td>name of the logs index</td>
-<td>&ldquo;em_index&rdquo;</td>
-</tr>
-<tr>
-<td>Meta index</td>
-<td>splunk-kubernetes-objects: splunk: hec: indexName:</td>
-<td>name of the meta index</td>
-<td>&ldquo;em_meta&rdquo;</td>
-</tr>
-<tr>
-<td>Metrics index</td>
-<td>splunk-kubernetes-metrics: splunk: hec: indexName:</td>
-<td>name of the metrics index</td>
-<td>&ldquo;em_metrics&rdquo;</td>
-</tr>
-</tbody>
-</table>
-<p>Other variables you can override, if necessary: in case you need it:</p>
-<table>
-<thead>
-<tr>
-<th>variable</th>
-<th>description</th>
-<th>default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>global: splunk: hec: protocol</td>
-<td>port of splunk instance</td>
-<td>&ldquo;8088&rdquo;</td>
-</tr>
-<tr>
-<td>global: splunk: hec: protocol insecure_ssl</td>
-<td>is insecure ssl allowed</td>
-<td>&ldquo;false&rdquo;</td>
-</tr>
-</tbody>
-</table>
 <h3 id="install-sck-with-helm">Install SCK with HELM<a class="headerlink" href="#install-sck-with-helm" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 install sck-for-snmp -f sck_values.yaml splunk/splunk-connect-for-kubernetes</span>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install sck <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;clusterName=my-cluster&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.endpoint=https://endpoint.example.com/services/collector&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.insecureSkipVerify=false&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.token=4d22911c-18d9-4706-ae7b-dd1b976ca6f7&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsEnabled=true&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsIndex=em_metrics&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.index=em_logs&quot;</span> <span class="se">\</span>
+  splunk-otel-collector-chart/splunk-otel-collector
 </code></pre></div>
 
               
