@@ -165,6 +165,8 @@ def fill_empty_value(index_number, metric_value):
 
 
 def extract_index_number(index):
+    if len(index) == 0:
+        return 0
     index_number = index[0]._value
     if isinstance(index_number, typing.Tuple):
         index_number = index_number[0]
@@ -437,7 +439,7 @@ class Poller(Task):
 
                 metric_type = map_metric_type(snmp_type, snmp_val)
                 metric_value = valueAsBest(snmp_val.prettyPrint())
-
+                print(f"index = {index}")
                 index_number = extract_index_number(index)
                 metric_value = fill_empty_value(index_number, metric_value)
 

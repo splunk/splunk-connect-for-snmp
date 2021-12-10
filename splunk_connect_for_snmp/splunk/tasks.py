@@ -157,13 +157,16 @@ def prepare(work):
     #     "metric_name:cpu.idle": 13.34
     #   }
     # }
+    if work["sourcetype"] == "sc4snmp:traps":
+        return prepare_trap_data(work)
+
     for key, data in work["result"].items():
         if len(data["metrics"].keys()) > 0:
             metric = {
                 "time": work["time"],
                 "event": "metric",
                 "source": "sc4snmp",
-                "sourcetype": work.get("sourcetype", "sc4snmp:metric"),
+                "sourcetype": "sc4snmp:metric",
                 "host": work["address"],
                 "index": SPLUNK_HEC_INDEX_METRICS,
                 "fields": {},
@@ -185,10 +188,31 @@ def prepare(work):
                 "time": work["time"],
                 "event": json.dumps(data["fields"]),
                 "source": "sc4snmp",
-                "sourcetype": work.get("sourcetype", "sc4snmp:event"),
+                "sourcetype": "sc4snmp:event",
                 "host": work["address"],
                 "index": SPLUNK_HEC_INDEX_EVENTS,
             }
             splunk_input.append(json.dumps(event, indent=None))
+
+    return splunk_input
+
+
+def prepare_trap_data(work):
+    splunk_input = []
+    for key, data in work["result"].items():
+        processed = {}
+        print(data["metrics"])
+        if data["metrics"]:
+            for k, v in data["metrics"].items():
+                processed[k] = valueAsBest(v["value"])
+        event = {
+            "time": work["time"],
+            "event": json.dumps(data["fields"] | processed),
+            "source": "sc4snmp",
+            "sourcetype": "sc4snmp:traps",
+            "host": work["address"],
+            "index": SPLUNK_HEC_INDEX_EVENTS,
+        }
+        splunk_input.append(json.dumps(event, indent=None))
 
     return splunk_input
