@@ -439,7 +439,7 @@ class Poller(Task):
 
                 metric_type = map_metric_type(snmp_type, snmp_val)
                 metric_value = valueAsBest(snmp_val.prettyPrint())
-                print(f"index = {index}")
+
                 index_number = extract_index_number(index)
                 metric_value = fill_empty_value(index_number, metric_value)
 
