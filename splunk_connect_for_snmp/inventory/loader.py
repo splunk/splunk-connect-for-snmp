@@ -121,7 +121,7 @@ def load():
 
             except Exception as e:
                 inventory_errors = True
-                logger.error(f"Exception raised for {address}: {e}")
+                logger.exception(f"Exception raised for {address}: {e}")
 
     return inventory_errors
 
