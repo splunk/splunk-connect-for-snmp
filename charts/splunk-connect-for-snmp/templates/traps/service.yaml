@@ -8,7 +8,7 @@ metadata:
     metallb.universe.tf/allow-shared-ip: "true"    
 spec:
   type: {{ .Values.traps.service.type }}
-  #externalTrafficPolicy: Local
+  externalTrafficPolicy: Local
   {{- if .Values.traps.loadBalancerIP }}
   loadBalancerIP: {{ .Values.traps.loadBalancerIP }}
   {{- end }}
