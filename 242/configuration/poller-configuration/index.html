@@ -408,15 +408,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-inventory" class="md-nav__link">
-    Configure inventory
+  <a href="#define-log-level" class="md-nav__link">
+    Define log level
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-user-secrets-for-snmpv3" class="md-nav__link">
-    Configure user secrets for SNMPv3
+  <a href="#configure-inventory" class="md-nav__link">
+    Configure inventory
   </a>
   
 </li>
@@ -569,15 +569,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-inventory" class="md-nav__link">
-    Configure inventory
+  <a href="#define-log-level" class="md-nav__link">
+    Define log level
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-user-secrets-for-snmpv3" class="md-nav__link">
-    Configure user secrets for SNMPv3
+  <a href="#configure-inventory" class="md-nav__link">
+    Configure inventory
   </a>
   
 </li>
@@ -611,43 +611,38 @@ to enabled monitoring of most important OIDs with high frequency like memory or 
 <p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
 <p>Poller example configuration:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
-  <span class="nt">usernameSecrets</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-aes</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-des</span>
+  <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;WARN&quot;</span>
   <span class="nt">inventory</span><span class="p">:</span> <span class="p p-Indicator">|</span>
-    <span class="no">address,version,community,walk_interval,profiles,SmartProfiles,delete</span>
-    <span class="no">10.202.4.202,2c,public,60,,,</span>
+    <span class="no">address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete</span>
+    <span class="no">10.202.4.202,,2c,public,,,2000,,,</span>
 </code></pre></div>
 
+<h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
+<p>Log level for trap can be set by changing value for key <code>logLevel</code>. Allowed value are: <code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code>. 
+Default value is <code>WARN</code></p>
 <h3 id="configure-inventory">Configure inventory<a class="headerlink" href="#configure-inventory" title="Permanent link">&para;</a></h3>
 <p><code>inventory</code> section in <code>poller</code> enable to configure inventory for polling data:</p>
 <ul>
 <li><code>address</code> [REQUIRED] - IP address which SC4SNMP should connect to collect data from.</li>
-<li><code>version</code> [REQUIRED] - SNMP version, values allowed: 1, 2c, 3</li>
+<li><code>port</code> [OPTIONAL] - SNMP listening port. Default value <code>161</code>.</li>
+<li><code>version</code> [REQUIRED] - SNMP version, allowed values: <code>1</code>, <code>2c</code> or <code>3</code></li>
 <li><code>community</code> [OPTIONAL] - SNMP community string, filed is required when <code>version</code> is <code>1</code> or <code>2c</code></li>
+<li><code>secret</code> [OPTIONAL] - usernameSecrets define which secrets in &ldquo;Secret&rdquo; objects in k8s should be use, as a value it need to put 
+ name of &ldquo;Secret&rdquo; objects. Field is required when <code>version</code> is <code>3</code>. More information how to define &ldquo;Secrets&rdquo; object for SNMPv3 can be found 
+ in <a href="../snmpv3-configuration/">SNMPv3 Configuration</a></li>
+<li><code>securityEngine</code> [OPTIONAL] - Security engine required by SNMPv3. Field is required when <code>version</code> is <code>3</code>. </li>
 <li><code>walk_interval</code> [OPTIONAL] - Define interval in second for SNMP walk, default value <code>42000</code></li>
-<li><code>profiles</code> - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
+<li><code>profiles</code> [OPTIONAL] - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
 separation eg. <code>profiale1;profile2</code>. More about profile in <a href="../scheduler-configuration/#configure-profile">Profile Configuration</a></li>
-<li><code>SmartProfiles</code> - enabled SmartProfile, default value true. Allowed value: <code>true</code>, <code>false</code>. Default value is <code>true</code> </li>
-<li><code>delete</code> - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
+<li><code>SmartProfiles</code> [OPTIONAL] - enabled SmartProfile, default value true. Allowed value: <code>true</code>, <code>false</code>. Default value is <code>true</code> </li>
+<li><code>delete</code> [OPTIONAL] - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
 Allowed value: <code>true</code>, <code>false</code>. Default value is <code>false</code>.</li>
 </ul>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
     <span class="nt">inventory</span><span class="p">:</span> <span class="p p-Indicator">|</span>
-      <span class="no">address,version,community,walk_interval,profiles,SmartProfiles,delete</span>
-      <span class="no">10.202.4.202,2c,public,60,,,</span>
-</code></pre></div>
-
-<h3 id="configure-user-secrets-for-snmpv3">Configure user secrets for SNMPv3<a class="headerlink" href="#configure-user-secrets-for-snmpv3" title="Permanent link">&para;</a></h3>
-<p>usernameSecrets key in poller enable configure SNMPv3 secrets for polling data. usernameSecrets define which secrets 
-in &ldquo;Secret&rdquo; objects in k8s should be use, as a value it need to put name of &ldquo;Secret&rdquo; objects. 
-More information how to define &ldquo;Secrets&rdquo; object for SNMPv3 can be found in <a href="../snmpv3-configuration/">SNMPv3 Configuration</a></p>
-<p>Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
-    <span class="nt">usernameSecrets</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-aes</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-des</span>
+      <span class="no">address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete</span>
+      <span class="no">10.202.4.202,,2c,public,,,2000,,,</span>
 </code></pre></div>
 
               

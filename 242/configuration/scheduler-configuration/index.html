@@ -755,7 +755,7 @@ More information about configuring inventory can be found in <a href="../poller-
 <li><code>ProfileName</code> - define as subsection key in <code>profiles</code>. <ul>
 <li><code>frequency</code> - define interval between executing SNMP gets in second.</li>
 <li><code>condition</code> - section define conditions to much profile<ul>
-<li><code>type</code> - key of <code>condition</code> section which defines type of condition. Allowed value <code>basic</code> and <code>field</code>. <ul>
+<li><code>type</code> - key of <code>condition</code> section which defines type of condition. Allowed value <code>base</code> and <code>field</code>. <ul>
 <li><code>base</code> type of condition will be executed always when <code>SmartProfile</code> in inventory is set to true.</li>
 <li><code>field</code> type of condition will be executed if match <code>pattern</code> for defined <code>field</code>. Supported fields:<ul>
 <li>&ldquo;SNMPv2-MIB.sysDescr&rdquo;</li>
@@ -764,21 +764,21 @@ More information about configuring inventory can be found in <a href="../poller-
 </li>
 </ul>
 </li>
-<li><code>fild</code> Define filed name for condition type field. </li>
-<li><code>pattern</code> Define list of regular expression pattern for MIB object field defined in <code>field</code> section.</li>
+<li><code>field</code> Define field name for condition type field. </li>
+<li><code>pattern</code> Define list of regular expression pattern for MIB object field defined in <code>field</code> section. <TO_DO add any :)></li>
 </ul>
 </li>
 <li><code>varBinds</code> - define var binds to query. </li>
 </ul>
 </li>
 </ul>
-<p>Example of <code>basic</code> type of condition</p>
+<p>Example of <code>base</code> type of condition</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
     <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>
-      <span class="no">SmartProfile_basic_example:</span>
+      <span class="no">SmartProfile_base_example:</span>
         <span class="no">frequency: 10</span>
         <span class="no">condition: </span>
-          <span class="no">typy: &quot;basic&quot;</span>
+          <span class="no">typy: &quot;base&quot;</span>
         <span class="no">varBinds:</span>
           <span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
           <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
