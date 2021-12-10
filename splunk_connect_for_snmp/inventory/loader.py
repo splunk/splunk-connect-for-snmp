@@ -92,7 +92,6 @@ def load():
         # Dict reader will trust the header of the csv
         ir_reader = DictReader(csv_file)
         for source_record in ir_reader:
-            logger.info(source_record)
             address = source_record["address"]
             if address.startswith("#"):
                 logger.warning(f"Record: {address} is commented out. Skipping...")
