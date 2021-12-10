@@ -92,9 +92,12 @@ def load():
         # Dict reader will trust the header of the csv
         ir_reader = DictReader(csv_file)
         for source_record in ir_reader:
-
-            ir = InventoryRecord(**source_record)
+            address = source_record["address"]
+            if address.startswith("#"):
+                logger.warning(f"Record: {address} is commented out. Skipping...")
+                continue
             try:
+                ir = InventoryRecord(**source_record)
                 if ir.delete:
                     periodic_obj.delete_task(ir.address)
                     inventory_records.delete_one({"address": ir.address})
@@ -116,9 +119,9 @@ def load():
                     task_config = gen_walk_task(ir)
                     periodic_obj.manage_task(**task_config)
 
-            except:
+            except Exception as e:
                 inventory_errors = True
-                logger.exception(f"Exception processing {source_record}")
+                logger.error(f"Exception raised for {address}: {e}")
 
     return inventory_errors
 
