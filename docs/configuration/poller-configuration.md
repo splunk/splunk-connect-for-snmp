@@ -35,16 +35,15 @@ Default value is `WARN`
  - `port` [OPTIONAL] - SNMP listening port. Default value `161`.
  - `version` [REQUIRED] - SNMP version, allowed values: `1`, `2c` or `3`
  - `community` [OPTIONAL] - SNMP community string, filed is required when `version` is `1` or `2c`
- - `secret` [OPTIONAL] - usernameSecrets define which secrets in "Secret" objects in k8s should be use, as a value it need to put 
- name of "Secret" objects. Field is required when `version` is `3`. More information how to define "Secrets" object for SNMPv3 can be found 
+ - `secret` [OPTIONAL] - usernameSecrets define which secrets in "Secret" objects in k8s should be used, as a value it need to put 
+ name of "Secret" objects. This field is required when selected `version` is `3`. More information how to define "Secrets" object for SNMPv3 can be found 
  in [SNMPv3 Configuration](snmpv3-configuration.md)
  - `securityEngine` [OPTIONAL] - Security engine required by SNMPv3. Field is required when `version` is `3`. 
  - `walk_interval` [OPTIONAL] - Define interval in second for SNMP walk, default value `42000`
- - `profiles` [OPTIONAL] - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
-separation eg. `profiale1;profile2`. More about profile in [Profile Configuration](../scheduler-configuration/#configure-profile)
- - `SmartProfiles` [OPTIONAL] - enabled SmartProfile, default value true. Allowed value: `true`, `false`. Default value is `true` 
- - `delete` [OPTIONAL] - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
-Allowed value: `true`, `false`. Default value is `false`.
+ - `profiles` [OPTIONAL] - list of SNMP profiles which need to be used for a device. More than one profile can be added, profiles should be separated by a semicolon 
+ eg. `profile1;profile2`. More about profile in [Profile Configuration](../scheduler-configuration/#configure-profile)
+ - `SmartProfiles` [OPTIONAL] - enables SmartProfiles, allowed values: `true`, `false`. Default value is `true` 
+ - `delete` [OPTIONAL] - flag which defines if inventory should be deleted from scheduler configuration. Allowed value: `true`, `false`. Default value is `false`.
 
 Example:
 ```yaml
