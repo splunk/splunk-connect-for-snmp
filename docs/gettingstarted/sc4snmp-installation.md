@@ -16,8 +16,73 @@ splunk-connect-for-snmp/splunk-connect-for-snmp	0.11.0-beta.22	0.11.0-beta.22	A 
 ```
 
 ### Download and modify values.yaml
-```
-curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
+```yaml
+splunk:
+  protocol: https
+  host: ###SPLUNK_HOST###
+  token: ###SPLUNK_TOKEN###
+  insecureSSL: "false"
+  port: "###SPLUNK_PORT###"
+  clusterName: my-cluster
+image:
+  pullPolicy: "Always"
+traps:
+  communities:
+    2c:
+      - public
+      - homelab
+  #usernameSecrets:
+  #  - sc4snmp-hlab-sha-aes
+  #  - sc4snmp-hlab-sha-des
+
+  #loadBalancerIP: The IP address in the metallb pool
+  loadBalancerIP: 10.1.0.1
+# mib:
+#   tag: "develop"
+#   pullPolicy: Always
+#   # Overrides the image tag whose default is the chart appVersion.
+#   # replicas: Number of replicas for trap container should two or more
+#  replicas: 1
+worker:
+  # replicas: Number of replicas for worker container should two or more
+  #replicaCount: 2
+  logLevel: "DEBUG"
+scheduler:
+  logLevel: "INFO"
+#  profiles: |
+#    generic_switch:
+#      frequency: 60
+#      varBinds:
+#        - ['SNMPv2-MIB', 'sysDescr']
+#        - ['SNMPv2-MIB', 'sysName', 0]
+#        - ['IF-MIB']
+#        - ['TCP-MIB']
+#        - ['UDP-MIB']
+poller:
+ # usernameSecrets:
+ #   - sc4snmp-hlab-sha-aes
+ #   - sc4snmp-hlab-sha-des
+ # inventory: |
+ #   address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+ #   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,600,,,
+ #   10.0.0.199,,2c,public,,,600,,,True
+ #   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,600,,,
+mongodb:
+  pdb:
+    create: true
+  persistence:
+    storageClass: "openebs-hostpath"
+  volumePermissions:
+    enabled: true
+rabbitmq:
+  pdb:
+    create: true
+  replicaCount: 1
+  persistence:
+    enabled: true
+    storageClass: "openebs-hostpath"
+  volumePermissions:
+    enabled: true
 ```
 
 `values.yaml` is being used during the installation process for configuring kubernetes values.
