@@ -57,7 +57,7 @@ class EnrichTask(Task):
         pass
 
     # check if sysUpTime decreased, if so trigger new walk
-    def check_restart(self, current_target, result, targets_collection):
+    def check_restart(self, current_target, result, targets_collection, address):
         for group_key, group_dict in result.items():
             if "metrics" in group_dict and SYS_UP_TIME in group_dict["metrics"]:
                 sysuptime = group_dict["metrics"][SYS_UP_TIME]
@@ -85,7 +85,7 @@ class EnrichTask(Task):
                 }
 
                 targets_collection.update_one(
-                    {"address": current_target["address"]}, {"$set": {"sysUpTime": state}}, upsert=True
+                    {"address": address}, {"$set": {"sysUpTime": state}}, upsert=True
                 )
 
 
@@ -109,7 +109,7 @@ def enrich(self, result):
         current_target["attributes"] = {}
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
-    self.check_restart(current_target, result["result"], targets_collection)
+    self.check_restart(current_target, result["result"], targets_collection, address)
 
     # First write back to DB new/changed data
     for group_key, group_data in result["result"].items():
