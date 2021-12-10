@@ -102,6 +102,7 @@ def load():
                     periodic_obj.delete_task(ir.address)
                     inventory_records.delete_one({"address": ir.address})
                     targets_collection.remove({"address": ir.address})
+                    logger.info(f"Deleting record: {address}")
                 else:
                     status = inventory_records.update_one(
                         {"address": ir.address},
