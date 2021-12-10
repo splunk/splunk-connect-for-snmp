@@ -46,7 +46,6 @@ MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
-import dataclasses
 
 
 def gen_walk_task(ir: InventoryRecord):
@@ -82,6 +81,7 @@ def load():
     path = INVENTORY_PATH
     inventory_errors = False
     mongo_client = pymongo.MongoClient(MONGO_URI)
+    targets_collection = mongo_client.sc4snmp.targets
     mongo_db = mongo_client[MONGO_DB]
     inventory_records = mongo_db.inventory
 
@@ -98,6 +98,7 @@ def load():
                 if ir.delete:
                     periodic_obj.delete_task(ir.address)
                     inventory_records.delete_one({"address": ir.address})
+                    targets_collection.remove({"address": ir.address})
                 else:
                     status = inventory_records.update_one(
                         {"address": ir.address},
