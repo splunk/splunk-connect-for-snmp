@@ -22,6 +22,8 @@ from ipaddress import IPv4Address, IPv6Address
 from typing import Dict, List, Optional, Union
 from urllib.parse import urlparse
 
+from splunk_connect_for_snmp.common.hummanbool import human_bool
+
 
 @dataclass(repr=True)
 class InventoryRecord:
@@ -184,7 +186,7 @@ class InventoryRecord:
         if value == None or (isinstance(value, str) and value.strip() == ""):
             self._SmartProfiles = True
         else:
-            self._SmartProfiles = bool(value)
+            self._SmartProfiles = human_bool(value)
 
     delete: bool = False
     _delete: bool = field(init=False, repr=False)
@@ -198,7 +200,7 @@ class InventoryRecord:
         if value == None or (isinstance(value, str) and value.strip() == ""):
             self._delete = False
         else:
-            self._delete = bool(value)
+            self._delete = human_bool(value)
 
     @staticmethod
     def from_json(ir_json: str):
