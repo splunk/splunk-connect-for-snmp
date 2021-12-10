@@ -165,6 +165,8 @@ def fill_empty_value(index_number, metric_value):
 
 
 def extract_index_number(index):
+    if not index:
+        return 0
     index_number = index[0]._value
     if isinstance(index_number, typing.Tuple):
         index_number = index_number[0]
