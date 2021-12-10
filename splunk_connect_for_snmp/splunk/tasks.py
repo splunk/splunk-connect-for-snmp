@@ -157,7 +157,7 @@ def prepare(work):
     #     "metric_name:cpu.idle": 13.34
     #   }
     # }
-    if work["sourcetype"] == "sc4snmp:traps":
+    if work.get("sourcetype") == "sc4snmp:traps":
         return prepare_trap_data(work)
 
     for key, data in work["result"].items():
