@@ -91,6 +91,7 @@ scheduler:
   podAntiAffinity: soft
 
 worker:
+  replicaCount: 2
   concurrency: 4
   nameOverride: ""
   fullnameOverride: ""
@@ -145,6 +146,7 @@ poller:
     address,version,community,walk_interval,profiles,SmartProfiles,delete
 
 traps:
+  replicaCount: 2
   usernameSecrets: []
   securityEngineId: "8000000903000A397056B8AC"
 
