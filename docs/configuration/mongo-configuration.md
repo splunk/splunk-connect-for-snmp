@@ -12,7 +12,7 @@ curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-fo
 Example:
 ```yaml
 mongodb:
-  #Architecture
+  #Architecture, Architecture for Mongo deployments is immutable to move from standalone to replicaset will require a uninstall.
   # "replicaset" for HA or multi node deployments
   # "standalone" for single node non HA
   #architecture: "standalone"

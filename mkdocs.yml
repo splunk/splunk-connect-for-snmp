@@ -38,3 +38,4 @@ nav:
       - RabbitMQ: "configuration/rabbitmq-configuration.md"
       - SNMPv3 configuration: "configuration/snmpv3-configuration.md"
   - Planning: "planning.md"
+  - Security: "security.md"
