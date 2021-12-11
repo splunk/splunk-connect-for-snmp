@@ -31,9 +31,9 @@ inventory:
     runAsGroup: 10001
 
   resources:
-    limits:
-      cpu: 500m
-      memory: 512Mi
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
     requests:
       cpu: 200m
       memory: 256Mi
@@ -70,9 +70,9 @@ scheduler:
     runAsGroup: 10001
 
   resources:
-    limits:
-      cpu: 1
-      memory: 1Gi
+    # limits:
+    #   cpu: 1
+    #   memory: 1Gi
     requests:
       cpu: 100m
       memory: 256Mi
@@ -199,9 +199,9 @@ traps:
     #      - chart-example.local
 
   resources:
-    limits:
-      cpu: 1
-      memory: 1Gi
+    # limits:
+    #   cpu: 1
+    #   memory: 1Gi
     requests:
       cpu: 200m
       memory: 256Mi
@@ -255,9 +255,9 @@ mongodb:
   rbac:
     create: true
   resources:
-    limits:
-      cpu: 1000m
-      memory: 768Mi
+    # limits:
+    #   cpu: 1000m
+    #   memory: 768Mi
     requests:
       cpu: 250m
       memory: 512Mi
@@ -305,11 +305,11 @@ rabbitmq:
   # ## @param resources.requests The requested resources for RabbitMQ containers
   # ##
   resources:
-    limits:
-      cpu: 1000m
-      memory: 2Gi
+    # limits:
+    #   cpu: 1000m
+    #   memory: 2Gi
     requests:
-      cpu: 500m
+      cpu: 250m
       memory: 1Gi
 
   ## @section Persistence parameters
