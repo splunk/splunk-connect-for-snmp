@@ -227,32 +227,6 @@
   
   
   
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_2_1">
-          Pre-requirements
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Pre-requirements" data-md-level="2">
-        <label class="md-nav__title" for="__nav_2_1">
-          <span class="md-nav__icon md-icon"></span>
-          Pre-requirements
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
     <li class="md-nav__item">
       <a href="../../gettingstarted/splunk-requirements/" class="md-nav__link">
         Splunk Requirements
@@ -268,8 +242,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gettingstarted/k8s-microk8s/" class="md-nav__link">
-        Install Microk8s
+      <a href="../../gettingstarted/mk8s/k8s-microk8s/" class="md-nav__link">
+        Platform Microk8s
       </a>
     </li>
   
@@ -285,13 +259,6 @@
       <a href="../../gettingstarted/sck-installation/" class="md-nav__link">
         Install Splunk for Kubernetes
       </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -438,6 +405,13 @@
         <li class="md-nav__item">
   <a href="#define-log-level" class="md-nav__link">
     Define log level
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-resource-requests-and-limits" class="md-nav__link">
+    Define resource requests and limits
   </a>
   
 </li>
@@ -603,6 +577,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#define-resource-requests-and-limits" class="md-nav__link">
+    Define resource requests and limits
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#configure-profile" class="md-nav__link">
     Configure profile
   </a>
@@ -675,8 +656,21 @@ are store in Mongo DB. </p>
 </code></pre></div>
 
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
-<p>Log level for trap can be set by changing value for key <code>logLevel</code>. Allowed value are: <code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code>. 
-Default value is <code>WARN</code></p>
+<p>Log level for trap can be set by changing value for key <code>logLevel</code>. Allowed value are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
+Default value is <code>WARNING</code></p>
+<h3 id="define-resource-requests-and-limits">Define resource requests and limits<a class="headerlink" href="#define-resource-requests-and-limits" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+  <span class="c1">#The following resource specification is appropriate for most deployments to scale the</span>
+  <span class="c1">#Larger inventories may require more memory but should not require additional cpu</span>
+  <span class="nt">resources</span><span class="p">:</span>
+    <span class="nt">limits</span><span class="p">:</span>
+        <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+        <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1Gi</span>
+    <span class="nt">requests</span><span class="p">:</span>
+      <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">200m</span>
+      <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">128Mi</span>
+</code></pre></div>
+
 <h3 id="configure-profile">Configure profile<a class="headerlink" href="#configure-profile" title="Permanent link">&para;</a></h3>
 <p>Profiles used in inventory can be created in <code>values.yaml</code>, which can be modified in scheduler config in 
 <code>values.yaml</code>, ex.:</p>

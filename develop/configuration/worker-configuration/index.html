@@ -227,32 +227,6 @@
   
   
   
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_2_1">
-          Pre-requirements
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Pre-requirements" data-md-level="2">
-        <label class="md-nav__title" for="__nav_2_1">
-          <span class="md-nav__icon md-icon"></span>
-          Pre-requirements
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
     <li class="md-nav__item">
       <a href="../../gettingstarted/splunk-requirements/" class="md-nav__link">
         Splunk Requirements
@@ -268,8 +242,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gettingstarted/k8s-microk8s/" class="md-nav__link">
-        Install Microk8s
+      <a href="../../gettingstarted/mk8s/k8s-microk8s/" class="md-nav__link">
+        Platform Microk8s
       </a>
     </li>
   
@@ -285,13 +259,6 @@
       <a href="../../gettingstarted/sck-installation/" class="md-nav__link">
         Install Splunk for Kubernetes
       </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -449,20 +416,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#define-number-of-worker-server-replica" class="md-nav__link">
-    Define number of worker server replica
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#define-log-level" class="md-nav__link">
-    Define log level
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -568,20 +521,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#define-number-of-worker-server-replica" class="md-nav__link">
-    Define number of worker server replica
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#define-log-level" class="md-nav__link">
-    Define log level
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -596,7 +535,7 @@
                 
 
 <h1 id="worker-configuration">Worker Configuration<a class="headerlink" href="#worker-configuration" title="Permanent link">&para;</a></h1>
-<p>Worker is a service with is responsible for tasks execution like: SNMP Walk, GET or serve Trap messages.  </p>
+<p>Worker is a service with is responsible for tasks execution like: SNMP Walk, GET or processing trap messages.  </p>
 <h3 id="worker-configuration-file">Worker configuration file<a class="headerlink" href="#worker-configuration-file" title="Permanent link">&para;</a></h3>
 <p>Worker configuration is keep in <code>values.yaml</code> file in section <code>worker</code>.  To downland example file execute command:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
@@ -605,20 +544,19 @@
 <p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
   <span class="c1"># replicas: Number of replicas for worker container should two or more</span>
-  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
-  <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;WARN&quot;</span>
+  <span class="nt">replicaCount</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+  <span class="c1">#Log level one of INFO, WARNING, CRITICAL, DEBUG, ERROR</span>
+  <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;WARNING&quot;</span>
+  <span class="c1">#The following resource specification is appropriate for most deployments to scale the</span>
+  <span class="c1">#Environment increase the number of workers rather than the resources per container</span>
+  <span class="nt">resources</span><span class="p">:</span>
+    <span class="nt">limits</span><span class="p">:</span>
+        <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>        
+        <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">512Mi</span>
+    <span class="nt">requests</span><span class="p">:</span>
+      <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500m</span>
+      <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">128Mi</span>
 </code></pre></div>
-
-<h3 id="define-number-of-worker-server-replica">Define number of worker server replica<a class="headerlink" href="#define-number-of-worker-server-replica" title="Permanent link">&para;</a></h3>
-<p><code>replicas</code> Defines number of replicas for worker container should be 2x number of nodes. Default value is <code>2</code>. 
-Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
-  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
-</code></pre></div>
-
-<h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
-<p>Log level for trap can be set by changing value for key <code>logLevel</code>. Allowed value are: <code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code>. 
-Default value is <code>WARN</code></p>
 
               
             </article>

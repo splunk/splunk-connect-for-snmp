@@ -227,32 +227,6 @@
   
   
   
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_2_1">
-          Pre-requirements
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Pre-requirements" data-md-level="2">
-        <label class="md-nav__title" for="__nav_2_1">
-          <span class="md-nav__icon md-icon"></span>
-          Pre-requirements
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
     <li class="md-nav__item">
       <a href="../../gettingstarted/splunk-requirements/" class="md-nav__link">
         Splunk Requirements
@@ -268,8 +242,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gettingstarted/k8s-microk8s/" class="md-nav__link">
-        Install Microk8s
+      <a href="../../gettingstarted/mk8s/k8s-microk8s/" class="md-nav__link">
+        Platform Microk8s
       </a>
     </li>
   
@@ -285,13 +259,6 @@
       <a href="../../gettingstarted/sck-installation/" class="md-nav__link">
         Install Splunk for Kubernetes
       </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -579,12 +546,22 @@
 <div class="codehilite"><pre><span></span><code><span class="nt">rabbitmq</span><span class="p">:</span>
   <span class="nt">pdb</span><span class="p">:</span>
     <span class="nt">create</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="c1">#For HA configuration at least three replicas should be used</span>
   <span class="nt">replicaCount</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
   <span class="nt">persistence</span><span class="p">:</span>
     <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
     <span class="nt">storageClass</span><span class="p">:</span> <span class="s">&quot;microk8s-hostpath&quot;</span>
   <span class="nt">volumePermissions</span><span class="p">:</span>
     <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="c1">#The following requests and limits are appropriate starting points</span>
+  <span class="c1">#For productions deployments</span>
+  <span class="nt">resources</span><span class="p">:</span> 
+    <span class="nt">limits</span><span class="p">:</span>
+      <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+      <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2Gi</span>
+    <span class="nt">requests</span><span class="p">:</span>
+      <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">750m</span>
+      <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">512Mi</span>    
 </code></pre></div>
 
 <p>Recommendation is to do not change this setting. In case of need to change it please follow documentation: <a href="https://github.com/bitnami/charts/tree/master/bitnami/rabbitmq/">RabbitMQ on Kubernetes</a> </p>

@@ -229,32 +229,6 @@
   
   
   
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_1" type="checkbox" id="__nav_2_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_2_1">
-          Pre-requirements
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Pre-requirements" data-md-level="2">
-        <label class="md-nav__title" for="__nav_2_1">
-          <span class="md-nav__icon md-icon"></span>
-          Pre-requirements
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
     <li class="md-nav__item">
       <a href="../splunk-requirements/" class="md-nav__link">
         Splunk Requirements
@@ -270,8 +244,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../k8s-microk8s/" class="md-nav__link">
-        Install Microk8s
+      <a href="../mk8s/k8s-microk8s/" class="md-nav__link">
+        Platform Microk8s
       </a>
     </li>
   
@@ -287,13 +261,6 @@
       <a href="../sck-installation/" class="md-nav__link">
         Install Splunk for Kubernetes
       </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -638,6 +605,10 @@
                 
 
 <h1 id="sc4snmp-helm-installation">SC4SNMP Helm installation<a class="headerlink" href="#sc4snmp-helm-installation" title="Permanent link">&para;</a></h1>
+<p>The basic installation process and configuration used in this section are typical 
+for single node non HA deployments and do not have resource requests and limits.
+See the configuration sections for mongo, rabbitmq, scheduler, worker, and traps for guidance
+on production configuration.</p>
 <h3 id="add-sc4snmp-repository">Add SC4SNMP repository<a class="headerlink" href="#add-sc4snmp-repository" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">repo</span> <span class="nv">add</span> <span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">splunk</span>.<span class="nv">github</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span>
 <span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">repo</span> <span class="nv">update</span>
@@ -673,12 +644,6 @@
 
   <span class="c1">#loadBalancerIP: The IP address in the metallb pool</span>
   <span class="nt">loadBalancerIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10.1.0.1</span>
-<span class="c1"># mib:</span>
-<span class="c1">#   tag: &quot;develop&quot;</span>
-<span class="c1">#   pullPolicy: Always</span>
-<span class="c1">#   # Overrides the image tag whose default is the chart appVersion.</span>
-<span class="c1">#   # replicas: Number of replicas for trap container should two or more</span>
-<span class="c1">#  replicas: 1</span>
 <span class="nt">worker</span><span class="p">:</span>
   <span class="c1"># replicas: Number of replicas for worker container should two or more</span>
   <span class="c1">#replicaCount: 2</span>
