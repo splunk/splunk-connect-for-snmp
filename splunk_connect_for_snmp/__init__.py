@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-__version__ = "0.11.0-beta.51"
+__version__ = "0.11.0-beta.52"
