@@ -71,10 +71,10 @@ scheduler:
 
   resources:
     limits:
-      cpu: 2
+      cpu: 1
       memory: 1Gi
     requests:
-      cpu: 1
+      cpu: 100m
       memory: 256Mi
 
   autoscaling:
@@ -124,7 +124,7 @@ worker:
       cpu: 2
       memory: 512Mi
     requests:
-      cpu: 1
+      cpu: 200m
       memory: 256Mi
 
   autoscaling:
@@ -200,10 +200,10 @@ traps:
 
   resources:
     limits:
-      cpu: 2
+      cpu: 1
       memory: 1Gi
     requests:
-      cpu: 1
+      cpu: 200m
       memory: 256Mi
 
   autoscaling:
@@ -223,7 +223,6 @@ traps:
 ### Please do not modify below values, unless you know what you're doing! ###
 #############################################################################
 mongodb:
-
   architecture: "standalone"
   ## @section Global parameters
   ## Global Docker image parameters
