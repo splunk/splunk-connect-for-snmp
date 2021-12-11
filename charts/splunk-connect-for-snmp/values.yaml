@@ -30,13 +30,13 @@ inventory:
     runAsUser: 10001
     runAsGroup: 10001
 
-  resources:
+  resources: {}
     # limits:
     #   cpu: 500m
     #   memory: 512Mi
-    requests:
-      cpu: 200m
-      memory: 256Mi
+    # requests:
+    #   cpu: 200m
+    #   memory: 256Mi
 
   nodeSelector: {}
 
@@ -69,13 +69,13 @@ scheduler:
     runAsUser: 10001
     runAsGroup: 10001
 
-  resources:
+  resources: {}
     # limits:
     #   cpu: 1
     #   memory: 1Gi
-    requests:
-      cpu: 100m
-      memory: 256Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 256Mi
 
   autoscaling:
     enabled: false
@@ -119,13 +119,13 @@ worker:
     runAsUser: 10001
     runAsGroup: 10001
 
-  resources:
-    limits:
-      cpu: 2
-      memory: 512Mi
-    requests:
-      cpu: 200m
-      memory: 256Mi
+  resources: {}
+    # limits:
+    #   cpu: 2
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 200m
+    #   memory: 256Mi
 
   autoscaling:
     enabled: false
@@ -198,13 +198,13 @@ traps:
     #    hosts:
     #      - chart-example.local
 
-  resources:
+  resources: {}
     # limits:
     #   cpu: 1
     #   memory: 1Gi
-    requests:
-      cpu: 200m
-      memory: 256Mi
+    # requests:
+    #   cpu: 200m
+    #   memory: 256Mi
 
   autoscaling:
     enabled: false
@@ -254,13 +254,13 @@ mongodb:
   ##
   rbac:
     create: true
-  resources:
+  resources: {}
     # limits:
     #   cpu: 1000m
     #   memory: 768Mi
-    requests:
-      cpu: 250m
-      memory: 512Mi
+    # requests:
+    #   cpu: 250m
+    #   memory: 512Mi
 
   ## @section Volume Permissions parameters
 
@@ -304,13 +304,13 @@ rabbitmq:
   # ## @param resources.limits The resources limits for RabbitMQ containers
   # ## @param resources.requests The requested resources for RabbitMQ containers
   # ##
-  resources:
+  resources: {}
     # limits:
     #   cpu: 1000m
     #   memory: 2Gi
-    requests:
-      cpu: 250m
-      memory: 1Gi
+    # requests:
+    #   cpu: 250m
+    #   memory: 1Gi
 
   ## @section Persistence parameters
 

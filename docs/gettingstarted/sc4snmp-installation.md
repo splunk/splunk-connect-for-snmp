@@ -1,5 +1,10 @@
 # SC4SNMP Helm installation
 
+The basic installation process and configuration used in this section are typical 
+for single node non HA deployments and do not have resource requests and limits.
+See the configuration sections for mongo, rabbitmq, scheduler, worker, and traps for guidance
+on production configuration.
+
 ### Add SC4SNMP repository
 ```
 microk8s helm3 repo add splunk-connect-for-snmp https://splunk.github.io/splunk-connect-for-snmp
@@ -37,12 +42,6 @@ traps:
 
   #loadBalancerIP: The IP address in the metallb pool
   loadBalancerIP: 10.1.0.1
-# mib:
-#   tag: "develop"
-#   pullPolicy: Always
-#   # Overrides the image tag whose default is the chart appVersion.
-#   # replicas: Number of replicas for trap container should two or more
-#  replicas: 1
 worker:
   # replicas: Number of replicas for worker container should two or more
   #replicaCount: 2

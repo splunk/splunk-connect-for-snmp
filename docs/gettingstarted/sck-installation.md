@@ -1,4 +1,4 @@
-# SPLUNK for Kubernetes installation
+# Splunk Connect for Kubernetes installation
 
 The below steps are sufficient for a SCK installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud. 
 To learn more about SCK [visit](https://github.com/signalfx/splunk-otel-collector-chart/blob/main/helm-charts/splunk-otel-collector/values.yaml).

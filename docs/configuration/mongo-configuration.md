@@ -12,8 +12,21 @@ curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-fo
 Example:
 ```yaml
 mongodb:
+  #Architecture
+  # "replicaset" for HA or multi node deployments
+  # "standalone" for single node non HA
+  #architecture: "standalone"
   pdb:
     create: true
+  #The following requests and limits are appropriate starting points
+  #For productions deployments
+  resources: 
+    limits:
+      cpu: 2
+      memory: 2Gi
+    requests:
+      cpu: 750m
+      memory: 512Mi    
   persistence:
     storageClass: "microk8s-hostpath"
   volumePermissions:

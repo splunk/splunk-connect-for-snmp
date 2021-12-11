@@ -25,8 +25,8 @@ poller:
 ```
 
 ### Define log level
-Log level for trap can be set by changing value for key `logLevel`. Allowed value are: `DEBUG`, `INFO`, `WARN`, `ERROR`. 
-Default value is `WARN`
+Log level for trap can be set by changing value for key `logLevel`. Allowed value are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
+Default value is `WARNING`
 
 ### Configure inventory 
 `inventory` section in `poller` enable to configure inventory for polling data:

@@ -28,6 +28,13 @@ traps:
   replicas: 2
   #loadBalancerIP: The IP address in the metallb pool
   loadBalancerIP: 10.202.4.202
+  resources: 
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi  
 ```
 
 ### Define communities 
@@ -70,11 +77,14 @@ traps:
 Example:
 ```yaml
 traps:
-  replicas: 2
+  #For production deployments the value should be 2x the number of nodes
+  # Minimum 2 for single node
+  # Minimum 6 for multi node HA
+  replicaCount: 2
 ```
 
 ### Define log level
-Log level for trap can be set by changing value for key `logLevel`. Allowed value are: `DEBUG`, `INFO`, `WARN`, `ERROR`. 
-Default value is `WARN`
+Log level for trap can be set by changing value for key `logLevel`. Allowed value are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
+Default value is `WARNING`
 
  

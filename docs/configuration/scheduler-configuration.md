@@ -28,9 +28,22 @@ scheduler:
 ```
 
 ### Define log level
-Log level for trap can be set by changing value for key `logLevel`. Allowed value are: `DEBUG`, `INFO`, `WARN`, `ERROR`. 
-Default value is `WARN`
+Log level for trap can be set by changing value for key `logLevel`. Allowed value are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
+Default value is `WARNING`
 
+### Define resource requests and limits
+```yaml
+scheduler:
+  #The following resource specification is appropriate for most deployments to scale the
+  #Larger inventories may require more memory but should not require additional cpu
+  resources:
+    limits:
+        cpu: 1
+        memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 128Mi
+```
 ### Configure profile 
 Profiles used in inventory can be created in `values.yaml`, which can be modified in scheduler config in 
 `values.yaml`, ex.:
