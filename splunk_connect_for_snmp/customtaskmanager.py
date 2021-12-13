@@ -34,15 +34,6 @@ class CustomPeriodicTaskManager:
     def __del__(self):
         disconnect()
 
-    def delete_task(self, address: str):
-        periodic = PeriodicTask.objects(target=address)
-        for p in periodic:
-            logger.debug(p)
-            periodic_document = periodic.get(name=p.name)
-            logger.debug("Got Schedule")
-            periodic_document.delete()
-            logger.debug("Deleting Schedule")
-
     def delete_unused_poll_tasks(self, target: str, activeschedules: List[str]):
         periodic = PeriodicTask.objects(target=target)
         for p in periodic:
@@ -63,6 +54,14 @@ class CustomPeriodicTaskManager:
                 periodic_document.enabled = True
             periodic_document.save()
 
+    def disable_tasks(self, target):
+        periodic = PeriodicTask.objects(target=target)
+        for p in periodic:
+            periodic_document = periodic.get(name=p.name)
+            if periodic_document.enabled:
+                periodic_document.enabled = False
+            periodic_document.save()
+
     def manage_task(self, run_immediately_if_new: bool = False, **task_data) -> None:
         periodic = PeriodicTask.objects(name=task_data["name"])
         if periodic:
@@ -72,7 +71,7 @@ class CustomPeriodicTaskManager:
             for key, value in task_data.items():
                 if key == "interval":
                     if not periodic_document.interval == PeriodicTask.Interval(
-                        **task_data["interval"]
+                            **task_data["interval"]
                     ):
                         periodic_document.interval = PeriodicTask.Interval(
                             **task_data["interval"]
@@ -80,7 +79,7 @@ class CustomPeriodicTaskManager:
                         isChanged = True
                 elif key == "crontab":
                     if not periodic_document.crontab == PeriodicTask.Interval(
-                        **task_data["crontab"]
+                            **task_data["crontab"]
                     ):
                         periodic_document.crontab = PeriodicTask.Interval(
                             **task_data["crontab"]
