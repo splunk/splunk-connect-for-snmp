@@ -113,6 +113,7 @@ def poll(self, **kwargs):
     work["address"] = address
     work["result"] = result
     work["detectchange"] = False
+    work["frequency"] = kwargs["frequency"]
 
     return work
 
