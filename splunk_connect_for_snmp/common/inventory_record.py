@@ -142,7 +142,7 @@ class InventoryRecord:
             self._securityEngine = value
 
     walk_interval: int
-    _walk_interval: int = field(init=False, repr=False, default=4200)
+    _walk_interval: int = field(init=False, repr=False, default=42000)
 
     @property
     def walk_interval(self) -> int:
@@ -150,13 +150,16 @@ class InventoryRecord:
 
     @walk_interval.setter
     def walk_interval(self, value):
-        if value == None:
+        if value is None:
             self._walk_interval = 42000
+            return
         v = int(value)
         if v < 1800:
             self._walk_interval = 1800
-        if v > 42000:
+        elif v > 42000:
             self._walk_interval = 42000
+        else:
+            self._walk_interval = v
 
     profiles: List[str] = []
     _profiles: List[str] = field(init=False, repr=False)
