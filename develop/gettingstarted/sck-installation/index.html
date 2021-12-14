@@ -313,6 +313,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#variables-description" class="md-nav__link">
+    Variables description
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -586,6 +593,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#variables-description" class="md-nav__link">
+    Variables description
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -614,6 +628,51 @@ Including configuration with Splunk Observability Cloud.</p>
 </code></pre></div>
 
 <h3 id="install-sck-with-helm">Install SCK with HELM<a class="headerlink" href="#install-sck-with-helm" title="Permanent link">&para;</a></h3>
+<p>In order to run SCK on your environment, replace <code>&lt;&gt;</code> variables according to the description presented below</p>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install sck <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;clusterName=&lt;cluster_name&gt;&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.endpoint=&lt;splunk_endpoint&gt;&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.insecureSkipVerify=&lt;insecure_skip_verify&gt;&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.token=&lt;splunk_token&gt;&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsEnabled=true&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsIndex=em_metrics&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.index=em_logs&quot;</span> <span class="se">\</span>
+  splunk-otel-collector-chart/splunk-otel-collector
+</code></pre></div>
+
+<h3 id="variables-description">Variables description<a class="headerlink" href="#variables-description" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Placeholder</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>splunk_endpoint</td>
+<td>host address of splunk instance</td>
+<td>https://endpoint.example.com:8088/services/collector</td>
+</tr>
+<tr>
+<td>insecure_skip_verify</td>
+<td>is insecure ssl allowed</td>
+<td>false</td>
+</tr>
+<tr>
+<td>splunk_token</td>
+<td>Splunk HTTP Event Collector token</td>
+<td>450a69af-16a9-4f87-9628-c26f04ad3785</td>
+</tr>
+<tr>
+<td>cluster_name</td>
+<td>name of the cluster</td>
+<td>my-cluster</td>
+</tr>
+</tbody>
+</table>
+<p>An example of filled up command is:</p>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install sck <span class="se">\</span>
   --set<span class="o">=</span><span class="s2">&quot;clusterName=my-cluster&quot;</span> <span class="se">\</span>
   --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.endpoint=https://endpoint.example.com/services/collector&quot;</span> <span class="se">\</span>
