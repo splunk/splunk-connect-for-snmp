@@ -8,3 +8,5 @@ SNMP is a protocol widely considered to be risky and requires threat mitigation 
 * Do not allow SNMPv1 or SNMPv2 connections to cross a network zone where man in the middle interception is possible.
 * Be aware many SNMPv3 devices rely on insecure cryptography including DES, MD5, and SHA. Do not presume SNMPv3 devices and connections are secure by default.
 * When possible use SNMPv3 with the most secure protocol options mutually supported.
+* The default IP of each node should be considered a management interface and should be protected from network
+access by untrusted device by a hardware or software firewall. When possible the IP allocated for SNMP communicate should not be shared by the management interface.
