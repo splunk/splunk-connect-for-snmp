@@ -201,7 +201,6 @@ def prepare_trap_data(work):
     splunk_input = []
     for key, data in work["result"].items():
         processed = {}
-        print(data["metrics"])
         if data["metrics"]:
             for k, v in data["metrics"].items():
                 processed[k] = valueAsBest(v["value"])
