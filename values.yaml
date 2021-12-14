@@ -19,19 +19,19 @@ traps:
 
   # Overrides the image tag whose default is the chart appVersion.
   #  logLevel: "WARN"
-  # replicas: Number of replicas for trap container should be 2x number of nodes
-  replicas: 2
+  # replicaCount: Number of replicas for trap container should be 2x number of nodes
+  replicaCount: 2
   #loadBalancerIP: The IP address in the metallb pool
   loadBalancerIP: 10.1.0.1
 # mib:
 #   tag: "develop"
 #   pullPolicy: Always
 #   # Overrides the image tag whose default is the chart appVersion.
-#   # replicas: Number of replicas for trap container should two or more
-#  replicas: 1
+#   # replicaCount: Number of replicas for trap container should two or more
+#  replicaCount: 1
 worker:
-  # replicas: Number of replicas for worker container should two or more
-  replicas: 2
+  # replicaCount: Number of replicas for worker container should two or more
+  replicaCount: 2
   logLevel: "DEBUG"
 scheduler:
   logLevel: "INFO"
