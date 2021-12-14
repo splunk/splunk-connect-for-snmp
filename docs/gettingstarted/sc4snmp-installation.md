@@ -17,7 +17,7 @@ microk8s helm3 search repo snmp --devel
 Example output:
 ``` 
 NAME                                           	CHART VERSION 	APP VERSION   	DESCRIPTION                           
-splunk-connect-for-snmp/splunk-connect-for-snmp	0.11.0-beta.22	0.11.0-beta.22	A Helm chart for SNMP Connect for SNMP
+splunk-connect-for-snmp/splunk-connect-for-snmp	0.11.0-beta.52	0.11.0-beta.52	A Helm chart for SNMP Connect for SNMP
 ```
 
 ### Download and modify values.yaml
