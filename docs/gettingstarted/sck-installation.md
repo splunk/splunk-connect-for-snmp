@@ -12,6 +12,30 @@ microk8s helm3 repo add splunk-otel-collector-chart https://signalfx.github.io/s
 ```
 ### Install SCK with HELM
 
+In order to run SCK on your environment, replace `<>` variables according to the description presented below
+```bash
+microk8s helm3 upgrade --install sck \
+  --set="clusterName=<cluster_name>" \
+  --set="splunkPlatform.endpoint=<splunk_endpoint>" \
+  --set="splunkPlatform.insecureSkipVerify=<insecure_skip_verify>" \
+  --set="splunkPlatform.token=<splunk_token>" \
+  --set="splunkPlatform.metricsEnabled=true" \
+  --set="splunkPlatform.metricsIndex=em_metrics" \
+  --set="splunkPlatform.index=em_logs" \
+  splunk-otel-collector-chart/splunk-otel-collector
+```
+
+### Variables description
+
+
+| Placeholder   | Description  | Example  | 
+|---|---|---|
+| splunk_endpoint  | host address of splunk instance   | https://endpoint.example.com:8088/services/collector  |
+| insecure_skip_verify  | is insecure ssl allowed | false |
+| splunk_token | Splunk HTTP Event Collector token  | 450a69af-16a9-4f87-9628-c26f04ad3785  |
+| cluster_name | name of the cluster | my-cluster |
+
+An example of filled up command is:
 ```bash
 microk8s helm3 upgrade --install sck \
   --set="clusterName=my-cluster" \
