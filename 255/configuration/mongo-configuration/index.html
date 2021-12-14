@@ -503,6 +503,21 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/" class="md-nav__link">
+        Security
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -559,7 +574,7 @@
 <p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
-  <span class="c1">#Architecture</span>
+  <span class="c1">#Architecture, Architecture for Mongo deployments is immutable to move from standalone to replicaset will require a uninstall.</span>
   <span class="c1"># &quot;replicaset&quot; for HA or multi node deployments</span>
   <span class="c1"># &quot;standalone&quot; for single node non HA</span>
   <span class="c1">#architecture: &quot;standalone&quot;</span>
