@@ -193,3 +193,4 @@ def inventory_setup_poller(self, work):
         }
         periodic_obj.manage_task(**task_config)
     periodic_obj.delete_unused_poll_tasks(f"{address}", activeschedules)
+    periodic_obj.delete_disabled_poll_tasks()

@@ -35,6 +35,7 @@ class CustomPeriodicTaskManager:
         disconnect()
 
     def delete_unused_poll_tasks(self, target: str, activeschedules: List[str]):
+        logger.info(f"activeschedules: {activeschedules}")
         periodic = PeriodicTask.objects(target=target)
         for p in periodic:
             if not p.task == "splunk_connect_for_snmp.snmp.tasks.poll":
@@ -45,6 +46,13 @@ class CustomPeriodicTaskManager:
             if p.name not in activeschedules:
                 periodic_document.delete()
                 logger.debug("Deleting Schedule")
+
+    def delete_disabled_poll_tasks(self):
+        periodic = PeriodicTask.objects(enabled=False)
+        for p in periodic:
+            periodic_document = periodic.get(name=p.name)
+            periodic_document.delete()
+            logger.debug("Deleting Schedule")
 
     def enable_tasks(self, target):
         periodic = PeriodicTask.objects(target=target)
