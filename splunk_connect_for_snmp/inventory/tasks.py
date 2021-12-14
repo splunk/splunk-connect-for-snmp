@@ -140,7 +140,7 @@ def inventory_setup_poller(self, work):
                         else:
                             for pattern in profile["condition"]["patterns"]:
 
-                                result = re.match(pattern, cs["value"])
+                                result = re.search(pattern, cs["value"])
                                 if result:
                                     logger.debug(f"Adding smart profile {profile_name}")
                                     if profile["frequency"] not in assigned_profiles:
