@@ -8,19 +8,19 @@
       
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.0">
     
     
       
-        <title>Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>High Availability - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.82f3c0b9.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.82f3c0b9.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.9204c3b2.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.9204c3b2.min.css">
         
           
           
@@ -38,7 +38,7 @@
       
     
     
-    <script>__md_scope=new URL(".",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -62,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#splunk-connect-for-snmp" class="md-skip">
+        <a href="#high-availability-considerations" class="md-skip">
           Skip to content
         </a>
       
@@ -82,7 +82,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+    <a href=".." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -101,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              High Availability
             
           </span>
         </div>
@@ -168,7 +168,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+    <a href=".." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -185,21 +185,11 @@
 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
         Home
       </a>
-      
     </li>
   
 
@@ -238,7 +228,7 @@
   
   
     <li class="md-nav__item">
-      <a href="gettingstarted/splunk-requirements/" class="md-nav__link">
+      <a href="../gettingstarted/splunk-requirements/" class="md-nav__link">
         Splunk Requirements
       </a>
     </li>
@@ -252,7 +242,7 @@
   
   
     <li class="md-nav__item">
-      <a href="gettingstarted/mk8s/k8s-microk8s/" class="md-nav__link">
+      <a href="../gettingstarted/mk8s/k8s-microk8s/" class="md-nav__link">
         Platform Microk8s
       </a>
     </li>
@@ -266,7 +256,7 @@
   
   
     <li class="md-nav__item">
-      <a href="gettingstarted/sck-installation/" class="md-nav__link">
+      <a href="../gettingstarted/sck-installation/" class="md-nav__link">
         Install Splunk for Kubernetes
       </a>
     </li>
@@ -280,7 +270,7 @@
   
   
     <li class="md-nav__item">
-      <a href="gettingstarted/sc4snmp-installation/" class="md-nav__link">
+      <a href="../gettingstarted/sc4snmp-installation/" class="md-nav__link">
         Install SC4SNMP
       </a>
     </li>
@@ -300,11 +290,48 @@
 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="ha/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          High Availability
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         High Availability
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#high-availability-considerations" class="md-nav__link">
+    High Availability Considerations
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -343,7 +370,7 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/deployment-configuration/" class="md-nav__link">
+      <a href="../configuration/deployment-configuration/" class="md-nav__link">
         Deployment
       </a>
     </li>
@@ -357,7 +384,7 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/poller-configuration/" class="md-nav__link">
+      <a href="../configuration/poller-configuration/" class="md-nav__link">
         Poller
       </a>
     </li>
@@ -371,7 +398,7 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/trap-configuration/" class="md-nav__link">
+      <a href="../configuration/trap-configuration/" class="md-nav__link">
         Trap
       </a>
     </li>
@@ -385,7 +412,7 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/scheduler-configuration/" class="md-nav__link">
+      <a href="../configuration/scheduler-configuration/" class="md-nav__link">
         Scheduler
       </a>
     </li>
@@ -399,7 +426,7 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/worker-configuration/" class="md-nav__link">
+      <a href="../configuration/worker-configuration/" class="md-nav__link">
         Worker
       </a>
     </li>
@@ -413,7 +440,7 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/mongo-configuration/" class="md-nav__link">
+      <a href="../configuration/mongo-configuration/" class="md-nav__link">
         Mongo DB
       </a>
     </li>
@@ -427,7 +454,7 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/rabbitmq-configuration/" class="md-nav__link">
+      <a href="../configuration/rabbitmq-configuration/" class="md-nav__link">
         RabbitMQ
       </a>
     </li>
@@ -441,7 +468,7 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/snmpv3-configuration/" class="md-nav__link">
+      <a href="../configuration/snmpv3-configuration/" class="md-nav__link">
         SNMPv3 configuration
       </a>
     </li>
@@ -463,7 +490,7 @@
   
   
     <li class="md-nav__item">
-      <a href="planning/" class="md-nav__link">
+      <a href="../planning/" class="md-nav__link">
         Planning
       </a>
     </li>
@@ -478,7 +505,7 @@
   
   
     <li class="md-nav__item">
-      <a href="security/" class="md-nav__link">
+      <a href="../security/" class="md-nav__link">
         Security
       </a>
     </li>
@@ -493,7 +520,7 @@
   
   
     <li class="md-nav__item">
-      <a href="releases/" class="md-nav__link">
+      <a href="../releases/" class="md-nav__link">
         Releases
       </a>
     </li>
@@ -508,7 +535,7 @@
   
   
     <li class="md-nav__item">
-      <a href="bestpractices/" class="md-nav__link">
+      <a href="../bestpractices/" class="md-nav__link">
         How to
       </a>
     </li>
@@ -532,8 +559,21 @@
   
   
   
-    
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#high-availability-considerations" class="md-nav__link">
+    High Availability Considerations
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -546,13 +586,19 @@
               
                 
 
-<h1 id="splunk-connect-for-snmp">Splunk Connect for SNMP<a class="headerlink" href="#splunk-connect-for-snmp" title="Permanent link">&para;</a></h1>
-<p><em>THIS IS BETA SOFTWARE</em></p>
-<p>Splunk welcomes your experimentation and feedback. Let your
-account team know you are testing Splunk Connect for SNMP.</p>
-<p>Splunk Connect for SNMP is an edge-deployed, containerized and highly
-available solution for collecting SNMP data for Splunk Enterprise,
-Splunk Enterprise Cloud and Splunk Infrastructure Monitoring.</p>
+  <h1>High Availability</h1>
+
+<h2 id="high-availability-considerations">High Availability Considerations<a class="headerlink" href="#high-availability-considerations" title="Permanent link">&para;</a></h2>
+<p>The SNMP protocol uses UDP as the transport protocol and is subject to network reliability, as
+a cosntraint. Network architecture should be considered when designing for high availability.</p>
+<ul>
+<li>When using a single node collector ensure automatic recovery from virtual infrastructure i.e. VMware, Openstack etc.</li>
+<li>When using a multi node cluster ensure nodes are not located such that a simple majority of nodes can
+be lost for example consider row, rack, network, power, storage</li>
+<li>When determine the placement of clusters the closest location by number of network hops should be utilized.</li>
+<li>For &ldquo;data center&rdquo; applications collection should be local to the data center.</li>
+<li>Consider IP Anycast</li>
+</ul>
 
               
             </article>
@@ -565,15 +611,30 @@ Splunk Enterprise Cloud and Splunk Infrastructure Monitoring.</p>
   
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
+        
+        <a href="../gettingstarted/sc4snmp-installation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Install SC4SNMP" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Install SC4SNMP
+            </div>
+          </div>
+        </a>
+      
       
         
-        <a href="gettingstarted/splunk-requirements/" class="md-footer__link md-footer__link--next" aria-label="Next: Splunk Requirements" rel="next">
+        <a href="../configuration/deployment-configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Deployment" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Splunk Requirements
+              Deployment
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -603,10 +664,10 @@ Splunk Enterprise Cloud and Splunk Infrastructure Monitoring.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": ".", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.cefbb252.min.js", "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.cefbb252.min.js", "version": {"provider": "mike"}}</script>
     
     
-      <script src="assets/javascripts/bundle.17f42bbf.min.js"></script>
+      <script src="../assets/javascripts/bundle.17f42bbf.min.js"></script>
       
     
   </body>
