@@ -203,7 +203,8 @@ def prepare_trap_data(work):
         processed = {}
         if data["metrics"]:
             for k, v in data["metrics"].items():
-                processed[k] = valueAsBest(v["value"])
+                processed[k] = v
+                processed[k]["value"] = valueAsBest(v["value"])
         event = {
             "time": work["time"],
             "event": json.dumps(data["fields"] | processed),
