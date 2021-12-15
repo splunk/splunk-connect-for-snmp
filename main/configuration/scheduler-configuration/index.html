@@ -853,6 +853,9 @@ More information about configuring inventory can be found in <a href="../poller-
           <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
 </code></pre></div>
 
+<p>NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 5 minutes for changes to propagate. 
+There is also 5 minute TTL for an inventory pod. Basically SC4SNMP allows one inventory upgrade and then block updates for next 5 minutes</p>
+
               
             </article>
           </div>
