@@ -1,0 +1,11 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}
+  labels: 
+    {{- include "splunk-connect-for-snmp.worker.labels" . | nindent 4 }}
+spec:
+  minAvailable: 80%
+  selector:
+    matchLabels: 
+    {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 8 }}

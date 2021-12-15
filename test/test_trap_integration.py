@@ -15,10 +15,9 @@
 #   ########################################################################
 import logging
 import time
+from test.splunk_test_utils import splunk_single_search
 
 from pysnmp.hlapi import *
-
-from test.splunk_test_utils import splunk_single_search
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +53,7 @@ def test_integration(request, setup_splunk):
     # wait for the message to be processed
     time.sleep(2)
 
-    search_query = """search index="em_logs" sourcetype="sc4snmp:traps" earliest=-1m
+    search_query = """search index="em_events" sourcetype="sc4snmp:traps" earliest=-1m
                      | head 1"""
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)

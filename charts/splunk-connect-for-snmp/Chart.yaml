@@ -1,0 +1,38 @@
+apiVersion: v2
+name: splunk-connect-for-snmp
+description: A Helm chart for SNMP Connect for SNMP
+# A chart can be either an 'application' or a 'library' chart.
+#
+# Application charts are a collection of templates that can be packaged into versioned archives
+# to be deployed.
+#
+# Library charts provide useful utilities or functions for the chart developer. They're included as
+# a dependency of application charts to inject those utilities and functions into the rendering
+# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+type: application
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.11.0-beta.57
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "0.11.0-beta.57"
+#
+dependencies:
+  - name: mongodb
+    version: ~10.30
+    repository: https://charts.bitnami.com/bitnami
+  - name: rabbitmq
+    version: ~8.24
+    repository: https://charts.bitnami.com/bitnami
+  - name: mibserver
+    version: ~1
+    repository: https://pysnmp.github.io/mibs/charts/
+#    condition: (optional) A yaml path that resolves to a boolean, used for enabling/disabling charts (e.g. subchart1.enabled )
+#    tags: # (optional)
+#      - Tags can be used to group charts for enabling/disabling together
+#    import-values: # (optional)
+#      - ImportValues holds the mapping of source values to parent key to be imported. Each item can be a string or pair of child/parent sublist items.
+#    alias: (optional) Alias to be used for the chart. Useful when you have to add the same chart multiple times

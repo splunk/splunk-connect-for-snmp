@@ -1,0 +1,8 @@
+.git
+.venv
+venv
+test
+docs
+charts
+.github
+.*

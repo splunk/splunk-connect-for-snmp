@@ -13,10 +13,11 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
+import logging
+import time
+
 import pytest
 import splunklib.client as client
-import time
-import logging
 
 logger = logging.getLogger(__name__)
 
