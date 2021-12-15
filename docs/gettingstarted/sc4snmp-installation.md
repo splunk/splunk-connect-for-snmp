@@ -12,12 +12,12 @@ microk8s helm3 repo update
 ```
 Now the package should be visible in `helm3` search command result:
 ``` bash
-microk8s helm3 search repo snmp --devel 
+microk8s helm3 search repo snmp
 ```
 Example output:
 ``` 
 NAME                                           	CHART VERSION 	APP VERSION   	DESCRIPTION                           
-splunk-connect-for-snmp/splunk-connect-for-snmp	0.11.0-beta.52	0.11.0-beta.52	A Helm chart for SNMP Connect for SNMP
+splunk-connect-for-snmp/splunk-connect-for-snmp	    1.0.0	      1.0.0	   A Helm chart for SNMP Connect for SNMP
 ```
 
 ### Download and modify values.yaml
@@ -70,7 +70,7 @@ mongodb:
   pdb:
     create: true
   persistence:
-    storageClass: "openebs-hostpath"
+    storageClass: "microk8s-hostpath"
   volumePermissions:
     enabled: true
 rabbitmq:
@@ -79,7 +79,7 @@ rabbitmq:
   replicaCount: 1
   persistence:
     enabled: true
-    storageClass: "openebs-hostpath"
+    storageClass: "microk8s-hostpath"
   volumePermissions:
     enabled: true
 ```
@@ -104,22 +104,16 @@ Other variables to update in case you want to:
 
 ### Install SC4SNMP
 ``` bash
-microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version <VERSION_TAG>
+microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
-| variable | description | default |
-|---|---|---|
-|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|
 
 From now on, when editing SC4SNMP configuration, the configuration change must be
 inserted in the corresponding section of `values.yaml`. For more details check [configuration](../configuration/deployment-configuration.md) section.
 
 Use the following command to propagate configuration changes:
 ``` bash
-microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version <VERSION_TAG>
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
-| variable | description | default |
-|---|---|---|
-|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|
 
 ### Verify deployment
 In a few minutes, all pods should be up and running. It can be verified with:
