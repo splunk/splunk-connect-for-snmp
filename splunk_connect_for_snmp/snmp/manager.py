@@ -401,14 +401,14 @@ class Poller(Task):
                                         required_get[vb[0]] = {vb[1]: [vb[2]]}
                                     elif vb[1] not in required_get[vb[0]]:
                                         required_get[vb[0]][vb[1]].append(vb[2])
-                                        varbinds_get.add(
-                                            ObjectType(
-                                                ObjectIdentity(vb[0], vb[1], vb[2])
-                                            )
+                                    varbinds_get.add(
+                                        ObjectType(
+                                            ObjectIdentity(vb[0], vb[1], vb[2])
                                         )
-                                        get_mapping[
-                                            f"{vb[0]}:{vb[1]}:{vb[2]}"
-                                        ] = profile
+                                    )
+                                    get_mapping[
+                                        f"{vb[0]}:{vb[1]}:{vb[2]}"
+                                    ] = profile
             self.load_mibs(needed_mibs)
 
         logger.debug(f"varbinds_get={varbinds_get}")
