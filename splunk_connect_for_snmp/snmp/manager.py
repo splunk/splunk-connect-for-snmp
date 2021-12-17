@@ -49,6 +49,7 @@ MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
+PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
 
 logger = get_task_logger(__name__)
 
@@ -190,6 +191,7 @@ class Poller(Task):
         )
 
         self.profiles = load_profiles()
+        self.last_modified = time.time()
 
         self.snmpEngine = SnmpEngine()
         self.builder = self.snmpEngine.getMibBuilder()
@@ -224,6 +226,11 @@ class Poller(Task):
 
     def dowork(self, address: str, walk: bool = False, profiles: List[str] = None):
         result = {}
+
+        if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
+            self.profiles = load_profiles()
+            self.last_modified = time.time()
+            logger.debug(f"Profiles reloaded")
 
         mongo_client = pymongo.MongoClient(MONGO_URI)
         mongo_db = mongo_client[MONGO_DB]
