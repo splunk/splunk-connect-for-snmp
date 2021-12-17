@@ -241,10 +241,6 @@ class Poller(Task):
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.getVarBinds(
             walk=walk, profiles=profiles
         )
-        logger.warn(f"varbinds_get = {varbinds_get}")
-        logger.warn(f"get_mapping = {get_mapping}")
-        logger.warn(f"varbinds_bulk = {varbinds_bulk}")
-        logger.warn(f"bulk_mapping = {bulk_mapping}")
 
         authData = GetAuth(logger, ir, self.snmpEngine)
         contextData = getContextData(logger, ir)
