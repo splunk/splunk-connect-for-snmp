@@ -49,7 +49,7 @@ spec:
             - name: LOG_LEVEL
               value: {{ .Values.worker.logLevel | default "INFO" }}
             - name: UDP_CONNECTION_TIMEOUT
-              value: {{ .Values.worker.udpConnectionTimeout | default "1" }}
+              value: {{ .Values.worker.udpConnectionTimeout | default "1" | quote }}
             - name: MIB_SOURCES
               value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/asn1/@mib@"
             - name: MIB_INDEX
