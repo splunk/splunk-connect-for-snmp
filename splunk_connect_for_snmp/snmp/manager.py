@@ -49,6 +49,7 @@ MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
+UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
 
 logger = get_task_logger(__name__)
 
@@ -238,7 +239,7 @@ class Poller(Task):
         authData = GetAuth(logger, ir, self.snmpEngine)
         contextData = getContextData(logger, ir)
 
-        transport = UdpTransportTarget((ir.address, ir.port))
+        transport = UdpTransportTarget((ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT)
 
         metrics = {}
         retry = False
