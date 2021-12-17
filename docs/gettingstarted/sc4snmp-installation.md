@@ -45,6 +45,8 @@ traps:
 worker:
   # replicas: Number of replicas for worker container should two or more
   #replicaCount: 2
+  # udpConnectionTimeout: timeout in seconds for SNMP operations
+  #udpConnectionTimeout: 5
   logLevel: "DEBUG"
 scheduler:
   logLevel: "INFO"
