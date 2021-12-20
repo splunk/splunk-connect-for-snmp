@@ -23,7 +23,6 @@ except:
 import json
 import os
 from typing import Union
-from urllib.error import URLError
 from urllib.parse import urlunsplit
 
 from celery import Task, shared_task
@@ -168,7 +167,7 @@ def prepare(work):
     #   }
     # }
     if work.get("sourcetype") == "sc4snmp:traps":
-        return {"events": prepare_trap_data(work)}
+        return {"events": prepare_trap_data(work), "metrics": metrics}
 
     for key, data in work["result"].items():
         if len(data["metrics"].keys()) > 0:
