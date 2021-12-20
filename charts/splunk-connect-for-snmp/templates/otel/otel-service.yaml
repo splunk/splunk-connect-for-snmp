@@ -1,0 +1,14 @@
+{{- if .Values.otel.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-service
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8882
+      name: metrics
+  selector:
+    app: sc4snmp-otel
+{{- end }}

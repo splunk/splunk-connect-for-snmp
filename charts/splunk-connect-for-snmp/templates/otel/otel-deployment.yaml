@@ -1,0 +1,49 @@
+{{- if .Values.otel.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sc4snmp-otel
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: sc4snmp-otel
+spec:
+  replicas: {{ .Values.otel.replicas }}
+  selector:
+    matchLabels:
+      app: sc4snmp-otel
+  template:
+    metadata:
+      labels:
+        app: sc4snmp-otel
+    spec:
+      securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          runAsGroup: 1001
+          fsGroup: 2000
+      containers:
+        - name: otel-collector
+          image: {{ .Values.otel.image | default "quay.io/signalfx/splunk-otel-collector" }}:{{ .Values.otel.tag | default "0.37.1" }}
+          imagePullPolicy: {{ .Values.otel.pullPolicy | default "IfNotPresent" }}
+          args: ["--config=/config/otel-collector-config.yaml"]
+          securityContext:
+            allowPrivilegeEscalation: false
+          env:
+            - name: signalfxToken
+              value: {{ .Values.otel.signalfxToken | quote }}
+            - name: signalfxRealm
+              value: {{ .Values.otel.signalfxRealm | quote }}
+          ports:
+            - containerPort: 8882
+          volumeMounts:
+            - name: config
+              mountPath: "/config"
+              readOnly: true
+      volumes:
+         - name: config
+           configMap:
+             name: sc4snmp-otel
+             items:
+               - key: "otel-collector-config.yaml"
+                 path: "otel-collector-config.yaml"
+{{- end }}

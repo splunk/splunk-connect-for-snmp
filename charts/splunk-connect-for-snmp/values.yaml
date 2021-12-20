@@ -145,6 +145,10 @@ poller:
   inventory: |
     address,version,community,walk_interval,profiles,SmartProfiles,delete
 
+otel:
+  enabled: false
+  metricsUrl: ""
+
 traps:
   replicaCount: 2
   usernameSecrets: []

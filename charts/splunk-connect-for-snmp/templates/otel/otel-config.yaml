@@ -1,0 +1,21 @@
+{{- if .Values.otel.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sc4snmp-otel
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  otel-collector-config.yaml: |
+    receivers:
+      splunk_hec/metrics:
+        endpoint: 0.0.0.0:8882
+    exporters:
+      signalfx:
+        access_token: $signalfxToken
+        realm: $signalfxRealm
+    service:
+      pipelines:
+        metrics:
+          receivers: [splunk_hec/metrics]
+          exporters: [splunk_hec]
+{{- end }}
