@@ -23,7 +23,7 @@ spec:
           fsGroup: 2000
       containers:
         - name: otel-collector
-          image: {{ .Values.otel.image | default "quay.io/signalfx/splunk-otel-collector" }}:{{ .Values.otel.tag | default "0.37.1" }}
+          image: {{ .Values.otel.image | default "quay.io/signalfx/splunk-otel-collector" }}:{{ .Values.otel.tag | default "0.41.0" }}
           imagePullPolicy: {{ .Values.otel.pullPolicy | default "IfNotPresent" }}
           args: ["--config=/config/otel-collector-config.yaml"]
           securityContext:
