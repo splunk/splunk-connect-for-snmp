@@ -48,7 +48,7 @@ spec:
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
               {{- if .Values.otel.enabled }}
             - name: OTEL_METRICS_URL
-              value: {{ .Values.otel.metricsUrl }}
+              value: "http://{{ .Release.Name }}-{{ include "splunk-connect-for-snmp.name" . }}-otel:8882"
               {{- end}}
             - name: LOG_LEVEL
               value: {{ .Values.worker.logLevel | default "INFO" }}

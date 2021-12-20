@@ -2,27 +2,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sc4snmp-otel
-  namespace: {{ .Release.Namespace | quote }}
+  name: {{ include "splunk-connect-for-snmp.otel.fullname" . }}
   labels:
-    app: sc4snmp-otel
+    {{- include "splunk-connect-for-snmp.otel.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.otel.replicas }}
+  {{- if not .Values.otel.autoscaling.enabled }}
+  replicas: {{ .Values.otel.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app: sc4snmp-otel
+      {{- include "splunk-connect-for-snmp.otel.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.otel.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        app: sc4snmp-otel
+        {{- include "splunk-connect-for-snmp.otel.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "splunk-connect-for-snmp.otel.serviceAccountName" . }}
       securityContext:
-          runAsNonRoot: true
-          runAsUser: 1001
-          runAsGroup: 1001
-          fsGroup: 2000
+        {{- toYaml .Values.otel.podSecurityContext | nindent 8 }}
       containers:
-        - name: otel-collector
+        - name: {{ .Chart.Name }}-otel
+          securityContext:
+            {{- toYaml .Values.otel.securityContext | nindent 12 }}
           image: {{ .Values.otel.image | default "quay.io/signalfx/splunk-otel-collector" }}:{{ .Values.otel.tag | default "0.41.0" }}
           imagePullPolicy: {{ .Values.otel.pullPolicy | default "IfNotPresent" }}
           args: ["--config=/config/otel-collector-config.yaml"]
@@ -48,7 +57,7 @@ spec:
       volumes:
          - name: config
            configMap:
-             name: sc4snmp-otel
+             name: {{ include "splunk-connect-for-snmp.name" . }}-otel
              items:
                - key: "otel-collector-config.yaml"
                  path: "otel-collector-config.yaml"

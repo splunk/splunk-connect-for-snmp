@@ -2,15 +2,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: sc4snmp-otel
+  name: {{ include "splunk-connect-for-snmp.name" . }}-otel
   namespace: {{ .Release.Namespace | quote }}
 data:
   otel-collector-config.yaml: |
     receivers:
       splunk_hec/metrics:
         endpoint: 0.0.0.0:8882
-      splunk_hec/logs:
-        endpoint: 0.0.0.0:8883
     exporters:
       signalfx:
         access_token: $signalfxToken
@@ -19,8 +17,5 @@ data:
       pipelines:
         metrics:
           receivers: [splunk_hec/metrics]
-          exporters: [signalfx]
-        logs:
-          receivers: [splunk_hec/logs]
           exporters: [signalfx]
 {{- end }}
