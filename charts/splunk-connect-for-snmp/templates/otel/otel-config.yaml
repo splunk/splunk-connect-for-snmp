@@ -17,5 +17,5 @@ data:
       pipelines:
         metrics:
           receivers: [splunk_hec/metrics]
-          exporters: [splunk_hec]
+          exporters: [signalfx]
 {{- end }}
