@@ -72,7 +72,7 @@ spec:
               valueFrom:
                   secretKeyRef:
                     name: {{ include "splunk-connect-for-snmp.name" . }}-splunk
-                    key: hec_token                    
+                    key: hec_token
           ports:
             - name: snmp-udp
               containerPort: 2162

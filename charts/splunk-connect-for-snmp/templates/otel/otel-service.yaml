@@ -9,6 +9,8 @@ spec:
   ports:
     - port: 8882
       name: metrics
+    - port: 8883
+      name: logs
   selector:
     app: sc4snmp-otel
 {{- end }}
