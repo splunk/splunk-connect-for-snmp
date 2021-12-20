@@ -66,6 +66,11 @@ poller:
  #   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,600,,,
  #   10.0.0.199,,2c,public,,,600,,,True
  #   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,600,,,
+otel:
+  # otel must be enabled if you want to use signalFx
+  enabled: false
+#  signalfxToken: BCwaJ_Ands4Xh7Nrg
+#  signalfxRealm: us0
 mongodb:
   pdb:
     create: true
