@@ -30,9 +30,15 @@ spec:
             allowPrivilegeEscalation: false
           env:
             - name: signalfxToken
-              value: {{ .Values.otel.signalfxToken | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "splunk-connect-for-snmp.name" . }}-otel
+                  key: signalfxToken
             - name: signalfxRealm
-              value: {{ .Values.otel.signalfxRealm | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "splunk-connect-for-snmp.name" . }}-otel
+                  key: signalfxRealm
           ports:
             - containerPort: 8882
           volumeMounts:
