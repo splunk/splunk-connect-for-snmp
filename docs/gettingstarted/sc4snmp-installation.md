@@ -109,7 +109,8 @@ Other variables to update in case you want to:
 | splunk: insecure_ssl| is insecure ssl allowed | "true" |
 | splunk: cluster_name | name of the cluster | "foo" |
 
-### Configure Splunk Infrastructure Monitoring
+
+### Configure Splunk Infrastructure Monitoring Connection
 Splunk Infrastructure Monitoring is disabled by default, to enabling Splunk Infrastructure Monitoring it 
 required to change properties: `enabled` to `true` in `otel` section.
 Additionally connection parameter for Splunk Infrastructure Monitoring need to be set in `otel` section:
@@ -118,6 +119,8 @@ Additionally connection parameter for Splunk Infrastructure Monitoring need to b
 | --- | --- | --- |
 |signalfxToken | SIM token which can be use for ingesting date vi API | not set|
 |signalfxRealm | Real of SIM | not set |
+
+For more detail please check [Otel Configuration](../configuration/otel-configuration.md)
 
 ### Install SC4SNMP
 ``` bash
