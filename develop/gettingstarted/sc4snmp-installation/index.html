@@ -320,6 +320,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#configure-splunk-enterprise-or-splunk-cloud-connection" class="md-nav__link">
+    Configure Splunk Enterprise or Splunk Cloud Connection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-splunk-infrastructure-monitoring" class="md-nav__link">
+    Configure Splunk Infrastructure Monitoring
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#install-sc4snmp" class="md-nav__link">
     Install SC4SNMP
   </a>
@@ -561,8 +575,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/" class="md-nav__link">
-        Releases
+      <a href="../../bestpractices/" class="md-nav__link">
+        Troubleshooting
       </a>
     </li>
   
@@ -576,8 +590,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../bestpractices/" class="md-nav__link">
-        How to
+      <a href="../../releases/" class="md-nav__link">
+        Releases
       </a>
     </li>
   
@@ -619,6 +633,20 @@
         <li class="md-nav__item">
   <a href="#download-and-modify-valuesyaml" class="md-nav__link">
     Download and modify values.yaml
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-splunk-enterprise-or-splunk-cloud-connection" class="md-nav__link">
+    Configure Splunk Enterprise or Splunk Cloud Connection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-splunk-infrastructure-monitoring" class="md-nav__link">
+    Configure Splunk Infrastructure Monitoring
   </a>
   
 </li>
@@ -754,6 +782,7 @@ on production configuration.</p>
 </code></pre></div>
 
 <p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
+<h3 id="configure-splunk-enterprise-or-splunk-cloud-connection">Configure Splunk Enterprise or Splunk Cloud Connection<a class="headerlink" href="#configure-splunk-enterprise-or-splunk-cloud-connection" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -809,6 +838,31 @@ on production configuration.</p>
 <td>splunk: cluster_name</td>
 <td>name of the cluster</td>
 <td>&ldquo;foo&rdquo;</td>
+</tr>
+</tbody>
+</table>
+<h3 id="configure-splunk-infrastructure-monitoring">Configure Splunk Infrastructure Monitoring<a class="headerlink" href="#configure-splunk-infrastructure-monitoring" title="Permanent link">&para;</a></h3>
+<p>Splunk Infrastructure Monitoring is disabled by default, to enabling Splunk Infrastructure Monitoring it 
+required to change properties: <code>enabled</code> to <code>true</code> in <code>otel</code> section.
+Additionally connection parameter for Splunk Infrastructure Monitoring need to be set in <code>otel</code> section:</p>
+<table>
+<thead>
+<tr>
+<th>variable</th>
+<th>description</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>signalfxToken</td>
+<td>SIM token which can be use for ingesting date vi API</td>
+<td>not set</td>
+</tr>
+<tr>
+<td>signalfxRealm</td>
+<td>Real of SIM</td>
+<td>not set</td>
 </tr>
 </tbody>
 </table>
