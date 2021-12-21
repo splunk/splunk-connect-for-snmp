@@ -28,3 +28,19 @@ All of the components have the `resources` field for adjusting memory resources:
       memory: 2Gi
 ```
 More information about the concept of `resources` can be found in the [kuberentes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+
+### Update Inventory and Profile
+Inventory and profiles in `valuses.yaml` is quite expensive from Splunk Connect for SNMP perspective. 
+It required several checks before applying changes. SC4SNMP was designed to prevent changes in inventory and profiles 
+task more often than every 5 min. 
+ 
+When changing inventory or profile need to be apply in `valuses.yaml` following steps need to be done:
+1. Apply changes in `values.yaml` 
+2. Check is inventory pod is still running by execute command 
+
+```shell script
+microk8s kubectl -n sc4snmp get pods |grep inventory
+```
+If command do not return any pods than follow next step in other case wait and execute command again till moment when 
+inventory job finish. 
+3. Run upgrade command describe in [Installation Guide](../gettingstarted/sc4snmp-installation/#install-sc4snmp) 

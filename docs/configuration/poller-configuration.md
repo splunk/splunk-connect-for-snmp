@@ -29,6 +29,7 @@ Log level for trap can be set by changing value for key `logLevel`. Allowed valu
 Default value is `WARNING`
 
 ### Configure inventory 
+To update inventory follow instruction: [Update Inventory and Profile](../deployment-configuration/#update-inventory-and-profile) 
 `inventory` section in `poller` enable to configure inventory for polling data:
 
  - `address` [REQUIRED] - IP address which SC4SNMP should connect to collect data from.
