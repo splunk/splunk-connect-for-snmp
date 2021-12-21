@@ -34,6 +34,8 @@ from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
+UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
+
 
 def getSecretValue(
     location: str, key: str, default: str = None, required: bool = False
@@ -55,7 +57,7 @@ def getSecretValue(
 def getSecurityEngineId(logger, ir: InventoryRecord, snmpEngine: SnmpEngine):
     observerContext = {}
 
-    transportTarget = UdpTransportTarget((ir.address, ir.port))
+    transportTarget = UdpTransportTarget((ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT)
 
     # Register a callback to be invoked at specified execution point of
     # SNMP Engine and passed local variables at execution point's local scope
