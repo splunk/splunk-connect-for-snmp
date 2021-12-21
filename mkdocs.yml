@@ -39,5 +39,6 @@ nav:
       - SNMPv3 configuration: "configuration/snmpv3-configuration.md"
   - Planning: "planning.md"
   - Security: "security.md"
+  - Troubleshooting : "bestpractices.md"
   - Releases: "releases.md"
-  - How to: "bestpractices.md"
+

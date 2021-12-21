@@ -93,7 +93,7 @@ rabbitmq:
 
 `values.yaml` is being used during the installation process for configuring kubernetes values.
 
-
+### Configure Splunk Enterprise or Splunk Cloud Connection
 | Placeholder   | Description  | Example  | 
 |---|---|---|
 | ###SPLUNK_HOST###  | host address of splunk instance   | "i-08c221389a3b9899a.ec2.splunkit.io"  | 
@@ -108,6 +108,16 @@ Other variables to update in case you want to:
 | splunk: protocol | port of splunk instance| https |
 | splunk: insecure_ssl| is insecure ssl allowed | "true" |
 | splunk: cluster_name | name of the cluster | "foo" |
+
+### Configure Splunk Infrastructure Monitoring
+Splunk Infrastructure Monitoring is disabled by default, to enabling Splunk Infrastructure Monitoring it 
+required to change properties: `enabled` to `true` in `otel` section.
+Additionally connection parameter for Splunk Infrastructure Monitoring need to be set in `otel` section:
+
+| variable | description | default |
+| --- | --- | --- |
+|signalfxToken | SIM token which can be use for ingesting date vi API | not set|
+|signalfxRealm | Real of SIM | not set |
 
 ### Install SC4SNMP
 ``` bash
@@ -208,4 +218,3 @@ index="netops" sourcetype="sc4snmp:event"
 ``` bash
 | mpreview index="netmetrics" | search sourcetype="sc4snmp:metric"
 ```
-
