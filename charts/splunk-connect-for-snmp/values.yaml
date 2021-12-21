@@ -145,6 +145,48 @@ poller:
   inventory: |
     address,version,community,walk_interval,profiles,SmartProfiles,delete
 
+otel:
+  enabled: false
+  nameOverride: ""
+  fullnameOverride: ""
+
+  podAnnotations: {}
+
+  autoscaling:
+    enabled: false
+
+  podSecurityContext:
+    fsGroup: 10001
+  ingress:
+    enabled: false
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 200m
+    #   memory: 256Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # Annotations to add to the service account
+    annotations: { }
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
 traps:
   replicaCount: 2
   usernameSecrets: []

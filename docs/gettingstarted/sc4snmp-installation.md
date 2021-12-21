@@ -66,6 +66,11 @@ poller:
  #   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,600,,,
  #   10.0.0.199,,2c,public,,,600,,,True
  #   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,600,,,
+otel:
+  # otel must be enabled if you want to use signalFx
+  enabled: false
+#  signalfxToken: BCwaJ_Ands4Xh7Nrg
+#  signalfxRealm: us0
 mongodb:
   pdb:
     create: true
@@ -187,11 +192,8 @@ poller:
 - Load `value.yaml` file in SC4SNMP
 
 ``` bash
-microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version <VERSION_TAG>
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
-| variable | description | default |
-|---|---|---|
-|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|
 
 -   Check in Splunk
  

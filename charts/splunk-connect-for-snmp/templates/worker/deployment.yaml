@@ -46,6 +46,10 @@ spec:
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
+              {{- if .Values.otel.enabled }}
+            - name: OTEL_METRICS_URL
+              value: "http://{{ .Release.Name }}-{{ include "splunk-connect-for-snmp.name" . }}-otel:8882"
+              {{- end}}
             - name: LOG_LEVEL
               value: {{ .Values.worker.logLevel | default "INFO" }}
             - name: MIB_SOURCES
