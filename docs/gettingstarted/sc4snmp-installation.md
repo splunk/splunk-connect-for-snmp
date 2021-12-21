@@ -109,6 +109,7 @@ Other variables to update in case you want to:
 | splunk: insecure_ssl| is insecure ssl allowed | "true" |
 | splunk: cluster_name | name of the cluster | "foo" |
 
+
 ### Configure Splunk Infrastructure Monitoring Connection
 Splunk Infrastructure Monitoring is disabled by default, to enabling Splunk Infrastructure Monitoring it 
 required to change properties: `enabled` to `true` in `otel` section.
