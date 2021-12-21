@@ -64,6 +64,22 @@ traps:
       - sc4snmp-homesecure-sha-aes
       - sc4snmp-homesecure-sha-des
 ```   
+
+### Define security engine ID for SNMPv3
+
+Security engine ID variable is necessary when sending SNMPv3 traps. By default it is set to 
+`8000000903000A397056B8AC`. It has to match the `-e` string in snmptrap.
+
+Example:
+```yaml
+traps:
+    securityEngineId: "8000000903000A397056B8AC"
+```   
+An example of SNMPv3 trap is:
+```yaml
+ snmptrap -v3  -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 '' 1.3.6.1.2.1.2.2.1.1.1
+ ```
+
 ### Define load balancer IP
 `loadBalancerIP` is the IP address in the metallb pool. 
 Example:
