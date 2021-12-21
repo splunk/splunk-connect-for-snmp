@@ -418,8 +418,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#define-load-balancer-ip" class="md-nav__link">
-    Define load balancer IP
+  <a href="#define-security-engine-id-for-snmpv3" class="md-nav__link">
+    Define security engine ID for SNMPv3
   </a>
   
 </li>
@@ -631,8 +631,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#define-load-balancer-ip" class="md-nav__link">
-    Define load balancer IP
+  <a href="#define-security-engine-id-for-snmpv3" class="md-nav__link">
+    Define security engine ID for SNMPv3
   </a>
   
 </li>
@@ -723,10 +723,23 @@ More information how to define &ldquo;Secrets&rdquo; object for SNMPv3 can be fo
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-des</span>
 </code></pre></div>
 
-<h3 id="define-load-balancer-ip">Define load balancer IP<a class="headerlink" href="#define-load-balancer-ip" title="Permanent link">&para;</a></h3>
-<p><code>loadBalancerIP</code> is the IP address in the metallb pool. 
-Example:</p>
+<h3 id="define-security-engine-id-for-snmpv3">Define security engine ID for SNMPv3<a class="headerlink" href="#define-security-engine-id-for-snmpv3" title="Permanent link">&para;</a></h3>
+<p>Security engine ID variable is necessary when sending SNMPv3 traps. By default it is set to 
+<code>8000000903000A397056B8AC</code>. It has to match the <code>-e</code> string in snmptrap.</p>
+<p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+    <span class="nt">securityEngineId</span><span class="p">:</span> <span class="s">&quot;8000000903000A397056B8AC&quot;</span>
+</code></pre></div>
+
+<p>An example of SNMPv3 trap is:</p>
+<div class="codehilite"><pre><span></span><code> <span class="l l-Scalar l-Scalar-Plain">snmptrap -v3  -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 &#39;&#39; 1.3.6.1.2.1.2.2.1.1.1</span>
+ <span class="l l-Scalar l-Scalar-Plain">```</span>
+
+<span class="l l-Scalar l-Scalar-Plain">### Define load balancer IP</span>
+<span class="l l-Scalar l-Scalar-Plain">`loadBalancerIP` is the IP address in the metallb pool.</span> 
+<span class="l l-Scalar l-Scalar-Plain">Example</span><span class="p p-Indicator">:</span>
+<span class="err">```</span><span class="l l-Scalar l-Scalar-Plain">yaml</span>
+<span class="l l-Scalar l-Scalar-Plain">traps</span><span class="p p-Indicator">:</span>
   <span class="nt">loadBalancerIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10.202.4.202</span>
 </code></pre></div>
 
