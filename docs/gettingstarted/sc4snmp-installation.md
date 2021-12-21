@@ -192,11 +192,8 @@ poller:
 - Load `value.yaml` file in SC4SNMP
 
 ``` bash
-microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version <VERSION_TAG>
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
-| variable | description | default |
-|---|---|---|
-|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|
 
 -   Check in Splunk
  

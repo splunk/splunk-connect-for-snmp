@@ -3,17 +3,15 @@
 `values.yaml` are the main point of SC4SNMP management. The most important variables are already there from the very beginning 
 after executing:
 ```
-microk8s helm3 inspect values splunk-connect-for-snmp/splunk-connect-for-snmp --version <VERSION_TAG> > values.yaml
+microk8s helm3 inspect values splunk-connect-for-snmp/splunk-connect-for-snmp > values.yaml
 ```
-| variable | description | default |
-|---|---|---|
-|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|
 
 The whole file is divided into the following components:
 
 1. scheduler - more detail [scheduler configuration](scheduler-configuration.md)
 2. worker - more detail [worker configuration](worker-configuration.md)
 3. poller - more detail [poller configuration](poller-configuration.md)
+3. otel - more detail [otel configuration](otel-configuration.md)
 4. traps - more detail [trap configuration](trap-configuration.md)
 5. mongodb - more detail [mongo configuration](mongo-configuration.md)
 6. rabbitmq - more detail [rabbitmq configuration](rabbitmq-configuration.md)
