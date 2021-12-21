@@ -899,25 +899,9 @@ replace the IP address <code>10.0.101.22</code> with the server IP address where
 <ul>
 <li>Load <code>value.yaml</code> file in SC4SNMP</li>
 </ul>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace --version &lt;VERSION_TAG&gt;
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
 
-<table>
-<thead>
-<tr>
-<th>variable</th>
-<th>description</th>
-<th>default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>VERSION_TAG</td>
-<td>is a tag of build eg. 0.11.0-beta.22</td>
-<td>none</td>
-</tr>
-</tbody>
-</table>
 <ul>
 <li>Check in Splunk</li>
 </ul>
