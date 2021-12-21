@@ -327,8 +327,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-splunk-infrastructure-monitoring" class="md-nav__link">
-    Configure Splunk Infrastructure Monitoring
+  <a href="#configure-splunk-infrastructure-monitoring-connection" class="md-nav__link">
+    Configure Splunk Infrastructure Monitoring Connection
   </a>
   
 </li>
@@ -531,6 +531,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/otel-configuration/" class="md-nav__link">
+        Otel
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -645,8 +659,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-splunk-infrastructure-monitoring" class="md-nav__link">
-    Configure Splunk Infrastructure Monitoring
+  <a href="#configure-splunk-infrastructure-monitoring-connection" class="md-nav__link">
+    Configure Splunk Infrastructure Monitoring Connection
   </a>
   
 </li>
@@ -841,7 +855,7 @@ on production configuration.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="configure-splunk-infrastructure-monitoring">Configure Splunk Infrastructure Monitoring<a class="headerlink" href="#configure-splunk-infrastructure-monitoring" title="Permanent link">&para;</a></h3>
+<h3 id="configure-splunk-infrastructure-monitoring-connection">Configure Splunk Infrastructure Monitoring Connection<a class="headerlink" href="#configure-splunk-infrastructure-monitoring-connection" title="Permanent link">&para;</a></h3>
 <p>Splunk Infrastructure Monitoring is disabled by default, to enabling Splunk Infrastructure Monitoring it 
 required to change properties: <code>enabled</code> to <code>true</code> in <code>otel</code> section.
 Additionally connection parameter for Splunk Infrastructure Monitoring need to be set in <code>otel</code> section:</p>
@@ -866,6 +880,7 @@ Additionally connection parameter for Splunk Infrastructure Monitoring need to b
 </tr>
 </tbody>
 </table>
+<p>For more detail please check <a href="../../configuration/otel-configuration/">Otel Configuration</a></p>
 <h3 id="install-sc4snmp">Install SC4SNMP<a class="headerlink" href="#install-sc4snmp" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
