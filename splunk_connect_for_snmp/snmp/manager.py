@@ -54,7 +54,7 @@ PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
 logger = get_task_logger(__name__)
 
 
-def getInventory(mongo_inventory, address):
+def get_inventory(mongo_inventory, address):
     ir_doc = mongo_inventory.find_one({"address": address})
     if ir_doc is None:
         raise ValueError(f"Inventory Doc deleted unable to complete task for {address}")
@@ -236,7 +236,7 @@ class Poller(Task):
         mongo_db = mongo_client[MONGO_DB]
         mongo_inventory = mongo_db.inventory
 
-        ir = getInventory(mongo_inventory, address)
+        ir = get_inventory(mongo_inventory, address)
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.getVarBinds(
             walk=walk, profiles=profiles

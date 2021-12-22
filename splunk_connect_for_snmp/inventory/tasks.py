@@ -18,7 +18,7 @@ import time
 import typing
 
 from splunk_connect_for_snmp.common.profiles import load_profiles
-from splunk_connect_for_snmp.snmp.manager import getInventory
+from splunk_connect_for_snmp.snmp.manager import get_inventory
 
 try:
     from dotenv import load_dotenv
@@ -71,7 +71,7 @@ def inventory_setup_poller(self, work):
     mongo_inventory = mongo_db.inventory
     targets_collection = mongo_db.targets
 
-    ir = getInventory(mongo_inventory, address)
+    ir = get_inventory(mongo_inventory, address)
 
     target = targets_collection.find_one(
         {"address": address},
@@ -146,17 +146,17 @@ def assign_profiles(ir, profiles, target):
                         cs = target["state"][
                             profile["condition"]["field"].replace(".", "|")
                         ]
-
-                        for pattern in profile["condition"]["patterns"]:
-                            result = re.search(pattern, cs["value"])
-                            if result:
-                                logger.debug(f"Adding smart profile {profile_name}")
-                                if profile["frequency"] not in assigned_profiles:
-                                    assigned_profiles[profile["frequency"]] = []
-                                assigned_profiles[profile["frequency"]].append(
-                                    profile_name
-                                )
-                                continue
+                        if "value" in cs:
+                            for pattern in profile["condition"]["patterns"]:
+                                result = re.search(pattern, cs["value"])
+                                if result:
+                                    logger.debug(f"Adding smart profile {profile_name}")
+                                    if profile["frequency"] not in assigned_profiles:
+                                        assigned_profiles[profile["frequency"]] = []
+                                    assigned_profiles[profile["frequency"]].append(
+                                        profile_name
+                                    )
+                                    continue
 
     logger.debug(f"{ir.profiles}")
     for profile_name in ir.profiles:
