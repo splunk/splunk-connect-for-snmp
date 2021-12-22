@@ -99,8 +99,9 @@ class HECTask(Task):
     retry_jitter=True,
 )
 def send(self, data):
-    do_send(data["events"], SPLUNK_HEC_URI, self)
-    do_send(data["metrics"], SPLUNK_HEC_URI, self)
+    if SPLUNK_HEC_TOKEN:
+        do_send(data["events"], SPLUNK_HEC_URI, self)
+        do_send(data["metrics"], SPLUNK_HEC_URI, self)
     if OTEL_METRICS_URL:
         do_send(data["metrics"], OTEL_METRICS_URL, self)
 
