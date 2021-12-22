@@ -59,6 +59,6 @@ spec:
            configMap:
              name: {{ include "splunk-connect-for-snmp.name" . }}-sim
              items:
-               - key: "sim-collector-config.yaml"
-                 path: "sim-collector-config.yaml"
+               - key: "otel-collector-config.yaml"
+                 path: "otel-collector-config.yaml"
 {{- end }}

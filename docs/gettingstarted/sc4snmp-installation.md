@@ -121,7 +121,7 @@ Additionally connection parameter for Splunk Infrastructure Monitoring need to b
 |signalfxToken | SIM token which can be use for ingesting date vi API | not set|
 |signalfxRealm | Real of SIM | not set |
 
-For more detail please check [Splunk SIM Configuration](../configuration/sim-configuration.md)
+For more detail please check [SIM Configuration](../configuration/sim-configuration.md)
 
 ### Install SC4SNMP
 ``` bash

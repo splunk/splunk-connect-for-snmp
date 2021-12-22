@@ -5,7 +5,7 @@ metadata:
   name: {{ include "splunk-connect-for-snmp.name" . }}-sim
   namespace: {{ .Release.Namespace | quote }}
 data:
-  sim-collector-config.yaml: |
+  otel-collector-config.yaml: |
     receivers:
       splunk_hec/metrics:
         endpoint: 0.0.0.0:8882
