@@ -798,38 +798,16 @@ on production configuration.</p>
 
 <p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
 <h3 id="configure-splunk-enterprise-or-splunk-cloud-connection">Configure Splunk Enterprise or Splunk Cloud Connection<a class="headerlink" href="#configure-splunk-enterprise-or-splunk-cloud-connection" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Placeholder</th>
-<th>Description</th>
-<th>Example</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>###SPLUNK_HOST###</td>
-<td>host address of splunk instance</td>
-<td>&ldquo;i-08c221389a3b9899a.ec2.splunkit.io&rdquo;</td>
-</tr>
-<tr>
-<td>###SPLUNK_PORT###</td>
-<td>port number of splunk instance</td>
-<td>&ldquo;8088&rdquo;</td>
-</tr>
-<tr>
-<td>###SPLUNK_TOKEN###</td>
-<td>Splunk HTTP Event Collector token</td>
-<td>450a69af-16a9-4f87-9628-c26f04ad3785</td>
-</tr>
-<tr>
-<td>###X.X.X.X###</td>
-<td>SHARED IP address used for SNMP Traps</td>
-<td>10.202.18.166</td>
-</tr>
-</tbody>
-</table>
-<p>Other variables to update in case you want to:</p>
+<p>Splunk Enterprise or Splunk Cloud connection is enabled by default, to disabling Splunk Enterprise or Splunk Cloud
+required to change properties: <code>enabled</code> to <code>false</code> in <code>splunk</code> section.
+Additionally connection parameter for Splunk Enterprise or Splunk Cloud need to be set in <code>splunk</code> section: 
+| Placeholder   | Description  | Example  | 
+|&mdash;|&mdash;|&mdash;|
+| ###SPLUNK_HOST###  | host address of splunk instance   | &ldquo;i-08c221389a3b9899a.ec2.splunkit.io&rdquo;  | 
+| ###SPLUNK_PORT###  | port number of splunk instance   | &ldquo;8088&rdquo;  | 
+| ###SPLUNK_TOKEN### | Splunk HTTP Event Collector token  | 450a69af-16a9-4f87-9628-c26f04ad3785  |
+| ###X.X.X.X###  | SHARED IP address used for SNMP Traps   | 10.202.18.166  |</p>
+<p>Other optional variables can be configure:</p>
 <table>
 <thead>
 <tr>
@@ -857,7 +835,7 @@ on production configuration.</p>
 </tbody>
 </table>
 <h3 id="configure-splunk-infrastructure-monitoring-connection">Configure Splunk Infrastructure Monitoring Connection<a class="headerlink" href="#configure-splunk-infrastructure-monitoring-connection" title="Permanent link">&para;</a></h3>
-<p>Splunk Infrastructure Monitoring is disabled by default, to enabling Splunk Infrastructure Monitoring it 
+<p>Splunk Infrastructure Monitoring is disabled by default, to enabling Splunk Infrastructure Monitoring 
 required to change properties: <code>enabled</code> to <code>true</code> in <code>sim</code> section.
 Additionally connection parameter for Splunk Infrastructure Monitoring need to be set in <code>sim</code> section:</p>
 <table>
