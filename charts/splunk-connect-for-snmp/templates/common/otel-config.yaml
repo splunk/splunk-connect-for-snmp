@@ -1,4 +1,4 @@
-{{- if or (eq .Values.mode "both") (eq .Values.mode "sim") }}
+{{- if .Values.splunkSIM.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

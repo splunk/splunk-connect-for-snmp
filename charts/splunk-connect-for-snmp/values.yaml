@@ -12,7 +12,8 @@ image:
 
 imagePullSecrets: []
 
-mode: splunk
+splunk:
+  enabled: true
 
 inventory:
   nameOverride: ""
@@ -147,7 +148,8 @@ poller:
   inventory: |
     address,version,community,walk_interval,profiles,SmartProfiles,delete
 
-otel:
+splunkSIM:
+  enabled: false
   nameOverride: ""
   fullnameOverride: ""
 

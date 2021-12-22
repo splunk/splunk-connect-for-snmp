@@ -1,0 +1,28 @@
+{{- if .Values.splunkSIM.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "splunk-connect-for-snmp.splunkSIM.fullname" . }}
+  labels:
+    {{- include "splunk-connect-for-snmp.splunkSIM.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "splunk-connect-for-snmp.splunkSIM.fullname" . }}
+  minReplicas: {{ .Values.splunkSIM.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.splunkSIM.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.splunkSIM.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.splunkSIM.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.splunkSIM.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.splunkSIM.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

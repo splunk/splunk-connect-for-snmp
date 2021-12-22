@@ -37,7 +37,7 @@ nav:
       - Mongo DB: "configuration/mongo-configuration.md"
       - RabbitMQ: "configuration/rabbitmq-configuration.md"
       - SNMPv3 configuration: "configuration/snmpv3-configuration.md"
-      - Otel: "configuration/otel-configuration.md"
+      - Otel: "configuration/splunkSIM-configuration.md"
   - Planning: "planning.md"
   - Security: "security.md"
   - Troubleshooting : "bestpractices.md"
