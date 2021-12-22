@@ -12,6 +12,9 @@ image:
 
 imagePullSecrets: []
 
+splunk:
+  enabled: true
+
 inventory:
   nameOverride: ""
   fullnameOverride: ""
