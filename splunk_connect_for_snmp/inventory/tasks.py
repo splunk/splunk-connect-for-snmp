@@ -77,49 +77,61 @@ def inventory_setup_poller(self, work):
         {"address": address},
         {"target": True, "state": True, "config": True},
     )
+    assigned_profiles = assign_profiles(ir, self.profiles, target)
+
+    active_schedules: list[str] = []
+    for period in assigned_profiles:
+        task_config = generate_poll_task_definition(active_schedules, address, assigned_profiles, period)
+        periodic_obj.manage_task(**task_config)
+
+    periodic_obj.delete_unused_poll_tasks(f"{address}", active_schedules)
+    periodic_obj.delete_disabled_poll_tasks()
+
+
+def generate_poll_task_definition(active_schedules, address, assigned_profiles, period):
+    run_immediately: bool = False
+    if period > 300:
+        run_immediately = True
+    name = f"sc4snmp;{address};{period};poll"
+    period_profiles = set(assigned_profiles[period])
+    active_schedules.append(name)
+    task_config = {
+        "name": name,
+        "task": "splunk_connect_for_snmp.snmp.tasks.poll",
+        "target": f"{address}",
+        "args": [],
+        "kwargs": {
+            "address": address,
+            "profiles": period_profiles,
+            "frequency": period,
+        },
+        "options": {
+            "link": chain(
+                signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
+                chain(
+                    signature("splunk_connect_for_snmp.splunk.tasks.prepare"),
+                    signature("splunk_connect_for_snmp.splunk.tasks.send"),
+                ),
+            ),
+        },
+        "interval": {"every": period, "period": "seconds"},
+        "enabled": True,
+        "run_immediately": run_immediately,
+    }
+    return task_config
+
+
+def assign_profiles(ir, profiles, target):
     assigned_profiles: dict[int, list[str]] = {}
-
     if ir.SmartProfiles:
-        for profile_name, profile in self.profiles.items():
-            logger.debug(f"Checking match for {profile_name} {profile}")
+        for profile_name, profile in profiles.items():
 
-            # Skip this profile its disabled
-            if human_bool(profile.get("disabled", False), default=False):
-                logger.debug(f"Skipping disabled profile {profile_name}")
-                continue
-
-            if "frequency" not in profile:
-                logger.warn(f"Profile {profile_name} has no frequency")
-                continue
-
-            if "condition" not in profile:
-                continue
-
-            if "type" not in profile["condition"]:
-                logger.warn(f"Profile {profile_name} condition has no type")
-                continue
-
-            if profile["condition"]["type"] not in ("base", "field"):
-                logger.info("Profile is not smart")
-                continue
-
-            if (
-                profile["condition"]["type"] == "field"
-                and "field" not in profile["condition"]
-            ):
-                logger.warn(f"Profile {profile_name} condition has no field")
-                continue
-            if (
-                profile["condition"]["type"] == "field"
-                and "patterns" not in profile["condition"]
-            ):
-                logger.warn(f"Profile {profile_name} condition has no patterns")
+            if not is_smart_profile_valid(profile_name, profile):
                 continue
 
             # skip this profile it is static
             if profile["condition"]["type"] == "base":
                 logger.debug(f"Adding base profile {profile_name}")
-                logger.debug(f"profile is a base {profile_name}")
                 if profile["frequency"] not in assigned_profiles:
                     assigned_profiles[profile["frequency"]] = []
                 assigned_profiles[profile["frequency"]].append(profile_name)
@@ -128,69 +140,76 @@ def inventory_setup_poller(self, work):
                 logger.debug(f"profile is a field condition {profile_name}")
                 if "state" in target:
                     if (
-                        profile["condition"]["field"].replace(".", "|")
-                        in target["state"]
+                            profile["condition"]["field"].replace(".", "|")
+                            in target["state"]
                     ):
                         cs = target["state"][
                             profile["condition"]["field"].replace(".", "|")
                         ]
 
-                        if not isinstance(profile["condition"]["patterns"], typing.List):
-                            logger.warn(f"Patterns for profile {profile_name} must be a list")
-                        else:
-                            for pattern in profile["condition"]["patterns"]:
+                        for pattern in profile["condition"]["patterns"]:
+                            result = re.search(pattern, cs["value"])
+                            if result:
+                                logger.debug(f"Adding smart profile {profile_name}")
+                                if profile["frequency"] not in assigned_profiles:
+                                    assigned_profiles[profile["frequency"]] = []
+                                assigned_profiles[profile["frequency"]].append(
+                                    profile_name
+                                )
+                                continue
 
-                                result = re.search(pattern, cs["value"])
-                                if result:
-                                    logger.debug(f"Adding smart profile {profile_name}")
-                                    if profile["frequency"] not in assigned_profiles:
-                                        assigned_profiles[profile["frequency"]] = []
-                                    assigned_profiles[profile["frequency"]].append(
-                                        profile_name
-                                    )
-                                    continue
     logger.debug(f"{ir.profiles}")
     for profile_name in ir.profiles:
-        if profile_name in self.profiles:
-            profile = self.profiles[profile_name]
+        if profile_name in profiles:
+            profile = profiles[profile_name]
+            if "frequency" not in profile:
+                logger.warning(f"profile {profile_name} does not have frequency")
+                continue
             if profile["frequency"] not in assigned_profiles:
                 assigned_profiles[profile["frequency"]] = []
             assigned_profiles[profile["frequency"]].append(profile_name)
-
     logger.debug(f"Profiles Assigned {assigned_profiles}")
+    return assigned_profiles
 
-    activeschedules: list[str] = []
-    for period in assigned_profiles:
-        run_immediately: bool = False
-        if period > 300:
-            run_immediately = True
-        name = f"sc4snmp;{address};{period};poll"
-        period_profiles = set(assigned_profiles[period])
-        activeschedules.append(name)
 
-        task_config = {
-            "name": name,
-            "task": "splunk_connect_for_snmp.snmp.tasks.poll",
-            "target": f"{address}",
-            "args": [],
-            "kwargs": {
-                "address": address,
-                "profiles": period_profiles,
-                "frequency": period,
-            },
-            "options": {
-                "link": chain(
-                    signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
-                    chain(
-                        signature("splunk_connect_for_snmp.splunk.tasks.prepare"),
-                        signature("splunk_connect_for_snmp.splunk.tasks.send"),
-                    ),
-                ),
-            },
-            "interval": {"every": period, "period": "seconds"},
-            "enabled": True,
-            "run_immediately": run_immediately,
-        }
-        periodic_obj.manage_task(**task_config)
-    periodic_obj.delete_unused_poll_tasks(f"{address}", activeschedules)
-    periodic_obj.delete_disabled_poll_tasks()
+def is_smart_profile_valid(profile_name, profile):
+    logger.debug(f"Checking match for {profile_name} {profile}")
+    # Skip this profile its disabled
+    if human_bool(profile.get("disabled", False), default=False):
+        logger.debug(f"Skipping disabled profile {profile_name}")
+        return False
+
+    if "frequency" not in profile:
+        logger.warning(f"Profile {profile_name} has no frequency")
+        return False
+
+    if "condition" not in profile:
+        return False
+
+    if "type" not in profile["condition"]:
+        logger.warning(f"Profile {profile_name} condition has no type")
+        return False
+
+    if profile["condition"]["type"] not in ("base", "field"):
+        logger.info("Profile is not smart")
+        return False
+
+    if (
+            profile["condition"]["type"] == "field"
+            and "field" not in profile["condition"]
+    ):
+        logger.warning(f"Profile {profile_name} condition has no field")
+        return False
+
+    if (
+            profile["condition"]["type"] == "field"
+            and "patterns" not in profile["condition"]
+    ):
+        logger.warning(f"Profile {profile_name} condition has no patterns")
+        return False
+
+    if (profile["condition"]["type"] == "field"
+            and not isinstance(profile["condition"]["patterns"], typing.List)):
+        logger.warning(f"Patterns for profile {profile_name} must be a list")
+        return False
+    return True
