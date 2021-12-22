@@ -95,9 +95,9 @@ rabbitmq:
 `values.yaml` is being used during the installation process for configuring kubernetes values.
 
 ### Configure Splunk Enterprise or Splunk Cloud Connection
-Splunk Enterprise or Splunk Cloud connection is enabled by default, to disabling Splunk Enterprise or Splunk Cloud
-required to change properties: `enabled` to `false` in `splunk` section.
-Additionally connection parameter for Splunk Enterprise or Splunk Cloud need to be set in `splunk` section: 
+Splunk Enterprise or Splunk Cloud connection is enabled by default, to disable Splunk Enterprise or Splunk Cloud `splunk.enabled` property must be set to `false`.
+Additionally, connection parameter for Splunk Enterprise or Splunk Cloud need to be set in `splunk` section: 
+
 | Placeholder   | Description  | Example  | 
 |---|---|---|
 | ###SPLUNK_HOST###  | host address of splunk instance   | "i-08c221389a3b9899a.ec2.splunkit.io"  | 
@@ -105,26 +105,26 @@ Additionally connection parameter for Splunk Enterprise or Splunk Cloud need to 
 | ###SPLUNK_TOKEN### | Splunk HTTP Event Collector token  | 450a69af-16a9-4f87-9628-c26f04ad3785  |
 | ###X.X.X.X###  | SHARED IP address used for SNMP Traps   | 10.202.18.166  |
 
-Other optional variables can be configure:
+Other optional variables can be configured:
 
 | variable | description | default |
 | --- | --- | --- |
-| splunk: protocol | port of splunk instance| https |
-| splunk: insecure_ssl| is insecure ssl allowed | "true" |
-| splunk: cluster_name | name of the cluster | "foo" |
+| splunk.protocol | port of splunk instance| https |
+| splunk.insecure_ssl| is insecure ssl allowed | "true" |
+| splunk.cluster_name | name of the cluster | "foo" |
 
 
 ### Configure Splunk Infrastructure Monitoring Connection
-Splunk Infrastructure Monitoring is disabled by default, to enabling Splunk Infrastructure Monitoring 
-required to change properties: `enabled` to `true` in `sim` section.
-Additionally connection parameter for Splunk Infrastructure Monitoring need to be set in `sim` section:
+Splunk Infrastructure Monitoring is disabled by default, to enable Splunk Infrastructure Monitoring 
+`sim.enabled` property must be set to `true`.
+Additionally, connection parameters for Splunk Infrastructure Monitoring need to be set in `sim` section:
 
 | variable | description | default |
 | --- | --- | --- |
 |signalfxToken | SIM token which can be use for ingesting date vi API | not set|
 |signalfxRealm | Real of SIM | not set |
 
-For more detail please check [SIM Configuration](../configuration/sim-configuration.md)
+For more details please check [SIM Configuration](../configuration/sim-configuration.md)
 
 ### Install SC4SNMP
 ``` bash
