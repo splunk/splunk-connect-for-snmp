@@ -95,6 +95,9 @@ rabbitmq:
 `values.yaml` is being used during the installation process for configuring kubernetes values.
 
 ### Configure Splunk Enterprise or Splunk Cloud Connection
+Splunk Enterprise or Splunk Cloud connection is enabled by default, to disabling Splunk Enterprise or Splunk Cloud
+required to change properties: `enabled` to `false` in `splunk` section.
+Additionally connection parameter for Splunk Enterprise or Splunk Cloud need to be set in `splunk` section: 
 | Placeholder   | Description  | Example  | 
 |---|---|---|
 | ###SPLUNK_HOST###  | host address of splunk instance   | "i-08c221389a3b9899a.ec2.splunkit.io"  | 
@@ -102,7 +105,7 @@ rabbitmq:
 | ###SPLUNK_TOKEN### | Splunk HTTP Event Collector token  | 450a69af-16a9-4f87-9628-c26f04ad3785  |
 | ###X.X.X.X###  | SHARED IP address used for SNMP Traps   | 10.202.18.166  |
 
-Other variables to update in case you want to:
+Other optional variables can be configure:
 
 | variable | description | default |
 | --- | --- | --- |
@@ -112,7 +115,7 @@ Other variables to update in case you want to:
 
 
 ### Configure Splunk Infrastructure Monitoring Connection
-Splunk Infrastructure Monitoring is disabled by default, to enabling Splunk Infrastructure Monitoring it 
+Splunk Infrastructure Monitoring is disabled by default, to enabling Splunk Infrastructure Monitoring 
 required to change properties: `enabled` to `true` in `sim` section.
 Additionally connection parameter for Splunk Infrastructure Monitoring need to be set in `sim` section:
 
