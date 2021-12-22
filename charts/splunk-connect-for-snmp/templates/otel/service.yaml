@@ -1,4 +1,4 @@
-{{- if .Values.otel.enabled }}
+{{- if or (eq .Values.mode "both") (eq .Values.mode "sim") }}
 apiVersion: v1
 kind: Service
 metadata:
