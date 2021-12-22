@@ -148,7 +148,7 @@ poller:
   inventory: |
     address,version,community,walk_interval,profiles,SmartProfiles,delete
 
-splunkSIM:
+sim:
   enabled: false
   nameOverride: ""
   fullnameOverride: ""
@@ -184,7 +184,7 @@ splunkSIM:
   tolerations: []
   serviceAccount:
     # Specifies whether a service account should be created
-    create: true
+    create: false
     # Annotations to add to the service account
     annotations: { }
     # The name of the service account to use.

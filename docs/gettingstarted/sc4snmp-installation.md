@@ -69,8 +69,8 @@ poller:
  #   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,600,,,
  #   10.0.0.199,,2c,public,,,600,,,True
  #   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,600,,,
-splunkSIM:
-  # splunkSIM must be enabled if you want to use signalFx
+sim:
+  # sim must be enabled if you want to use signalFx
   enabled: false
 #  signalfxToken: BCwaJ_Ands4Xh7Nrg
 #  signalfxRealm: us0
@@ -113,15 +113,15 @@ Other variables to update in case you want to:
 
 ### Configure Splunk Infrastructure Monitoring Connection
 Splunk Infrastructure Monitoring is disabled by default, to enabling Splunk Infrastructure Monitoring it 
-required to change properties: `enabled` to `true` in `splunkSIM` section.
-Additionally connection parameter for Splunk Infrastructure Monitoring need to be set in `splunkSIM` section:
+required to change properties: `enabled` to `true` in `sim` section.
+Additionally connection parameter for Splunk Infrastructure Monitoring need to be set in `sim` section:
 
 | variable | description | default |
 | --- | --- | --- |
 |signalfxToken | SIM token which can be use for ingesting date vi API | not set|
 |signalfxRealm | Real of SIM | not set |
 
-For more detail please check [Splunk SIM Configuration](../configuration/splunkSIM-configuration.md)
+For more detail please check [Splunk SIM Configuration](../configuration/sim-configuration.md)
 
 ### Install SC4SNMP
 ``` bash
