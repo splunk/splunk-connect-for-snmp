@@ -1,39 +1,39 @@
-{{- if .Values.otel.enabled }}
+{{- if .Values.sim.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "splunk-connect-for-snmp.otel.fullname" . }}
+  name: {{ include "splunk-connect-for-snmp.sim.fullname" . }}
   labels:
-    {{- include "splunk-connect-for-snmp.otel.labels" . | nindent 4 }}
+    {{- include "splunk-connect-for-snmp.sim.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.otel.autoscaling.enabled }}
-  replicas: {{ .Values.otel.replicaCount }}
+  {{- if not .Values.sim.autoscaling.enabled }}
+  replicas: {{ .Values.sim.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "splunk-connect-for-snmp.otel.selectorLabels" . | nindent 6 }}
+      {{- include "splunk-connect-for-snmp.sim.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.otel.podAnnotations }}
+      {{- with .Values.sim.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "splunk-connect-for-snmp.otel.selectorLabels" . | nindent 8 }}
+        {{- include "splunk-connect-for-snmp.sim.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "splunk-connect-for-snmp.otel.serviceAccountName" . }}
+      serviceAccountName: {{ include "splunk-connect-for-snmp.sim.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.otel.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.sim.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}-otel
+        - name: {{ .Chart.Name }}-sim
           securityContext:
-            {{- toYaml .Values.otel.securityContext | nindent 12 }}
-          image: {{ .Values.otel.image | default "quay.io/signalfx/splunk-otel-collector" }}:{{ .Values.otel.tag | default "0.41.0" }}
-          imagePullPolicy: {{ .Values.otel.pullPolicy | default "IfNotPresent" }}
+            {{- toYaml .Values.sim.securityContext | nindent 12 }}
+          image: {{ .Values.sim.image | default "quay.io/signalfx/splunk-otel-collector" }}:{{ .Values.sim.tag | default "0.41.0" }}
+          imagePullPolicy: {{ .Values.sim.pullPolicy | default "IfNotPresent" }}
           args: ["--config=/config/otel-collector-config.yaml"]
           securityContext:
             allowPrivilegeEscalation: false
@@ -41,12 +41,12 @@ spec:
             - name: signalfxToken
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "splunk-connect-for-snmp.name" . }}-otel
+                  name: {{ include "splunk-connect-for-snmp.name" . }}-sim
                   key: signalfxToken
             - name: signalfxRealm
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "splunk-connect-for-snmp.name" . }}-otel
+                  name: {{ include "splunk-connect-for-snmp.name" . }}-sim
                   key: signalfxRealm
           ports:
             - containerPort: 8882
@@ -57,7 +57,7 @@ spec:
       volumes:
          - name: config
            configMap:
-             name: {{ include "splunk-connect-for-snmp.name" . }}-otel
+             name: {{ include "splunk-connect-for-snmp.name" . }}-sim
              items:
                - key: "otel-collector-config.yaml"
                  path: "otel-collector-config.yaml"

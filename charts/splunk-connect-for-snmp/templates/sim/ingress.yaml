@@ -1,9 +1,9 @@
-{{- if .Values.otel.ingress.enabled -}}
-{{- $fullName := include "splunk-connect-for-snmp.otel.fullname" . -}}
-{{- $svcPort := .Values.otel.service.port -}}
-{{- if and .Values.otel.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-  {{- if not (hasKey .Values.otel.ingress.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.otel.ingress.annotations "kubernetes.io/ingress.class" .Values.otel.ingress.className}}
+{{- if .Values.sim.ingress.enabled -}}
+{{- $fullName := include "splunk-connect-for-snmp.sim.fullname" . -}}
+{{- $svcPort := .Values.sim.service.port -}}
+{{- if and .Values.sim.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.sim.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.sim.ingress.annotations "kubernetes.io/ingress.class" .Values.sim.ingress.className}}
   {{- end }}
 {{- end }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
@@ -17,18 +17,18 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "splunk-connect-for-snmp.otel.labels" . | nindent 4 }}
-  {{- with .Values.otel.ingress.annotations }}
+    {{- include "splunk-connect-for-snmp.sim.labels" . | nindent 4 }}
+  {{- with .Values.sim.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if and .Values.otel.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
-  ingressClassName: {{ .Values.otel.ingress.className }}
+  {{- if and .Values.sim.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.sim.ingress.className }}
   {{- end }}
-  {{- if .Values.otel.ingress.tls }}
+  {{- if .Values.sim.ingress.tls }}
   tls:
-    {{- range .Values.otel.ingress.tls }}
+    {{- range .Values.sim.ingress.tls }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
@@ -37,7 +37,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.otel.ingress.hosts }}
+    {{- range .Values.sim.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:

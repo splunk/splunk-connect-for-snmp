@@ -99,8 +99,9 @@ class HECTask(Task):
     retry_jitter=True,
 )
 def send(self, data):
-    do_send(data["events"], SPLUNK_HEC_URI, self)
-    do_send(data["metrics"], SPLUNK_HEC_URI, self)
+    if SPLUNK_HEC_TOKEN:
+        do_send(data["events"], SPLUNK_HEC_URI, self)
+        do_send(data["metrics"], SPLUNK_HEC_URI, self)
     if OTEL_METRICS_URL:
         do_send(data["metrics"], OTEL_METRICS_URL, self)
 
@@ -118,7 +119,7 @@ def do_send(data, destination_url, self):
                 timeout=60,
             )
         except ConnectionError:
-            logger.error(f"Unable to communicate with Splunk endpoint")
+            logger.error(f"Unable to communicate with {destination_url} endpoint")
             self.retry(countdown=30)
             raise
         # 200 is good
