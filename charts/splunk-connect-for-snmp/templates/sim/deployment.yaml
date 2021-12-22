@@ -34,7 +34,7 @@ spec:
             {{- toYaml .Values.sim.securityContext | nindent 12 }}
           image: {{ .Values.sim.image | default "quay.io/signalfx/splunk-otel-collector" }}:{{ .Values.sim.tag | default "0.41.0" }}
           imagePullPolicy: {{ .Values.sim.pullPolicy | default "IfNotPresent" }}
-          args: ["--config=/config/sim-collector-config.yaml"]
+          args: ["--config=/config/otel-collector-config.yaml"]
           securityContext:
             allowPrivilegeEscalation: false
           env:
