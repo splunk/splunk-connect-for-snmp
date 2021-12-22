@@ -496,6 +496,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sim-configuration/" class="md-nav__link">
+        Splunk Infrastructure Monitoring
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -540,8 +554,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/" class="md-nav__link">
-        Releases
+      <a href="../../bestpractices/" class="md-nav__link">
+        Troubleshooting
       </a>
     </li>
   
@@ -555,8 +569,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../bestpractices/" class="md-nav__link">
-        How to
+      <a href="../../releases/" class="md-nav__link">
+        Releases
       </a>
     </li>
   
@@ -648,7 +662,8 @@ to enabled monitoring of most important OIDs with high frequency like memory or 
 <p>Log level for trap can be set by changing value for key <code>logLevel</code>. Allowed value are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
 Default value is <code>WARNING</code></p>
 <h3 id="configure-inventory">Configure inventory<a class="headerlink" href="#configure-inventory" title="Permanent link">&para;</a></h3>
-<p><code>inventory</code> section in <code>poller</code> enable to configure inventory for polling data:</p>
+<p>To update inventory follow instruction: <a href="../deployment-configuration/#update-inventory-and-profile">Update Inventory and Profile</a> 
+<code>inventory</code> section in <code>poller</code> enable to configure inventory for polling data:</p>
 <ul>
 <li><code>address</code> [REQUIRED] - IP address which SC4SNMP should connect to collect data from.</li>
 <li><code>port</code> [OPTIONAL] - SNMP listening port. Default value <code>161</code>.</li>

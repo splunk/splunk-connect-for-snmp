@@ -320,6 +320,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#configure-splunk-enterprise-or-splunk-cloud-connection" class="md-nav__link">
+    Configure Splunk Enterprise or Splunk Cloud Connection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-splunk-infrastructure-monitoring-connection" class="md-nav__link">
+    Configure Splunk Infrastructure Monitoring Connection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#install-sc4snmp" class="md-nav__link">
     Install SC4SNMP
   </a>
@@ -517,6 +531,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/sim-configuration/" class="md-nav__link">
+        Splunk Infrastructure Monitoring
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -561,8 +589,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/" class="md-nav__link">
-        Releases
+      <a href="../../bestpractices/" class="md-nav__link">
+        Troubleshooting
       </a>
     </li>
   
@@ -576,8 +604,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../bestpractices/" class="md-nav__link">
-        How to
+      <a href="../../releases/" class="md-nav__link">
+        Releases
       </a>
     </li>
   
@@ -619,6 +647,20 @@
         <li class="md-nav__item">
   <a href="#download-and-modify-valuesyaml" class="md-nav__link">
     Download and modify values.yaml
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-splunk-enterprise-or-splunk-cloud-connection" class="md-nav__link">
+    Configure Splunk Enterprise or Splunk Cloud Connection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-splunk-infrastructure-monitoring-connection" class="md-nav__link">
+    Configure Splunk Infrastructure Monitoring Connection
   </a>
   
 </li>
@@ -685,6 +727,7 @@ on production configuration.</p>
 
 <h3 id="download-and-modify-valuesyaml">Download and modify values.yaml<a class="headerlink" href="#download-and-modify-valuesyaml" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><code><span class="nt">splunk</span><span class="p">:</span>
+  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
   <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https</span>
   <span class="nt">host</span><span class="p">:</span> <span class="c1">###SPLUNK_HOST###</span>
   <span class="nt">token</span><span class="p">:</span> <span class="c1">###SPLUNK_TOKEN###</span>
@@ -730,6 +773,11 @@ on production configuration.</p>
  <span class="c1">#   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,600,,,</span>
  <span class="c1">#   10.0.0.199,,2c,public,,,600,,,True</span>
  <span class="c1">#   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,600,,,</span>
+<span class="nt">sim</span><span class="p">:</span>
+  <span class="c1"># sim must be enabled if you want to use signalFx</span>
+  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="c1">#  signalfxToken: BCwaJ_Ands4Xh7Nrg</span>
+<span class="c1">#  signalfxRealm: us0</span>
 <span class="nt">mongodb</span><span class="p">:</span>
   <span class="nt">pdb</span><span class="p">:</span>
     <span class="nt">create</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -749,6 +797,9 @@ on production configuration.</p>
 </code></pre></div>
 
 <p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
+<h3 id="configure-splunk-enterprise-or-splunk-cloud-connection">Configure Splunk Enterprise or Splunk Cloud Connection<a class="headerlink" href="#configure-splunk-enterprise-or-splunk-cloud-connection" title="Permanent link">&para;</a></h3>
+<p>Splunk Enterprise or Splunk Cloud connection is enabled by default, to disable Splunk Enterprise or Splunk Cloud <code>splunk.enabled</code> property must be set to <code>false</code>.
+Additionally, connection parameter for Splunk Enterprise or Splunk Cloud need to be set in <code>splunk</code> section: </p>
 <table>
 <thead>
 <tr>
@@ -780,7 +831,7 @@ on production configuration.</p>
 </tr>
 </tbody>
 </table>
-<p>Other variables to update in case you want to:</p>
+<p>Other optional variables can be configured:</p>
 <table>
 <thead>
 <tr>
@@ -791,22 +842,48 @@ on production configuration.</p>
 </thead>
 <tbody>
 <tr>
-<td>splunk: protocol</td>
+<td>splunk.protocol</td>
 <td>port of splunk instance</td>
 <td>https</td>
 </tr>
 <tr>
-<td>splunk: insecure_ssl</td>
+<td>splunk.insecure_ssl</td>
 <td>is insecure ssl allowed</td>
 <td>&ldquo;true&rdquo;</td>
 </tr>
 <tr>
-<td>splunk: cluster_name</td>
+<td>splunk.cluster_name</td>
 <td>name of the cluster</td>
 <td>&ldquo;foo&rdquo;</td>
 </tr>
 </tbody>
 </table>
+<h3 id="configure-splunk-infrastructure-monitoring-connection">Configure Splunk Infrastructure Monitoring Connection<a class="headerlink" href="#configure-splunk-infrastructure-monitoring-connection" title="Permanent link">&para;</a></h3>
+<p>Splunk Infrastructure Monitoring is disabled by default, to enable Splunk Infrastructure Monitoring 
+<code>sim.enabled</code> property must be set to <code>true</code>.
+Additionally, connection parameters for Splunk Infrastructure Monitoring need to be set in <code>sim</code> section:</p>
+<table>
+<thead>
+<tr>
+<th>variable</th>
+<th>description</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>signalfxToken</td>
+<td>SIM token which can be use for ingesting date vi API</td>
+<td>not set</td>
+</tr>
+<tr>
+<td>signalfxRealm</td>
+<td>Real of SIM</td>
+<td>not set</td>
+</tr>
+</tbody>
+</table>
+<p>For more details please check <a href="../../configuration/sim-configuration/">SIM Configuration</a></p>
 <h3 id="install-sc4snmp">Install SC4SNMP<a class="headerlink" href="#install-sc4snmp" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
@@ -896,25 +973,9 @@ replace the IP address <code>10.0.101.22</code> with the server IP address where
 <ul>
 <li>Load <code>value.yaml</code> file in SC4SNMP</li>
 </ul>
-<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace --version &lt;VERSION_TAG&gt;
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
 
-<table>
-<thead>
-<tr>
-<th>variable</th>
-<th>description</th>
-<th>default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>VERSION_TAG</td>
-<td>is a tag of build eg. 0.11.0-beta.22</td>
-<td>none</td>
-</tr>
-</tbody>
-</table>
 <ul>
 <li>Check in Splunk</li>
 </ul>

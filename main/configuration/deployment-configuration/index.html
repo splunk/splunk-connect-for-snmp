@@ -375,6 +375,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#update-inventory-and-profile" class="md-nav__link">
+    Update Inventory and Profile
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -482,6 +489,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sim-configuration/" class="md-nav__link">
+        Splunk Infrastructure Monitoring
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -526,8 +547,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/" class="md-nav__link">
-        Releases
+      <a href="../../bestpractices/" class="md-nav__link">
+        Troubleshooting
       </a>
     </li>
   
@@ -541,8 +562,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../bestpractices/" class="md-nav__link">
-        How to
+      <a href="../../releases/" class="md-nav__link">
+        Releases
       </a>
     </li>
   
@@ -581,6 +602,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#update-inventory-and-profile" class="md-nav__link">
+    Update Inventory and Profile
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -597,30 +625,15 @@
 <h1 id="deployment-configuration">Deployment Configuration<a class="headerlink" href="#deployment-configuration" title="Permanent link">&para;</a></h1>
 <p><code>values.yaml</code> are the main point of SC4SNMP management. The most important variables are already there from the very beginning 
 after executing:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">inspect</span> <span class="nv">values</span> <span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span> <span class="o">--</span><span class="nv">version</span> <span class="o">&lt;</span><span class="nv">VERSION_TAG</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="nv">values</span>.<span class="nv">yaml</span>
+<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">inspect</span> <span class="nv">values</span> <span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span> <span class="o">&gt;</span> <span class="nv">values</span>.<span class="nv">yaml</span>
 </code></pre></div>
 
-<table>
-<thead>
-<tr>
-<th>variable</th>
-<th>description</th>
-<th>default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>VERSION_TAG</td>
-<td>is a tag of build eg. 0.11.0-beta.22</td>
-<td>none</td>
-</tr>
-</tbody>
-</table>
 <p>The whole file is divided into the following components:</p>
 <ol>
 <li>scheduler - more detail <a href="../scheduler-configuration/">scheduler configuration</a></li>
 <li>worker - more detail <a href="../worker-configuration/">worker configuration</a></li>
 <li>poller - more detail <a href="../poller-configuration/">poller configuration</a></li>
+<li>sim - more detail <a href="../sim-configuration/">sim configuration</a></li>
 <li>traps - more detail <a href="../trap-configuration/">trap configuration</a></li>
 <li>mongodb - more detail <a href="../mongo-configuration/">mongo configuration</a></li>
 <li>rabbitmq - more detail <a href="../rabbitmq-configuration/">rabbitmq configuration</a></li>
@@ -637,6 +650,20 @@ after executing:</p>
 </code></pre></div>
 
 <p>More information about the concept of <code>resources</code> can be found in the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">kuberentes documentation</a>.</p>
+<h3 id="update-inventory-and-profile">Update Inventory and Profile<a class="headerlink" href="#update-inventory-and-profile" title="Permanent link">&para;</a></h3>
+<p>Inventory and profiles in <code>valuses.yaml</code> is quite expensive from Splunk Connect for SNMP perspective. 
+It required several checks before applying changes. SC4SNMP was designed to prevent changes in inventory and profiles 
+task more often than every 5 min. </p>
+<p>When changing inventory or profile need to be apply in <code>valuses.yaml</code> following steps need to be done:</p>
+<ol>
+<li>Apply changes in <code>values.yaml</code> </li>
+<li>Check is inventory pod is still running by execute command 
+   <code>shell script
+   microk8s kubectl -n sc4snmp get pods |grep inventory</code>
+   If command do not return any pods than follow next step in other case wait and execute command again till moment 
+   when inventory job finish. </li>
+<li>Run upgrade command describe in <a href="../gettingstarted/sc4snmp-installation/#install-sc4snmp">Installation Guide</a> </li>
+</ol>
 
               
             </article>
