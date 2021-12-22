@@ -74,15 +74,18 @@ Example:
 ```yaml
 traps:
     securityEngineId: "8000000903000A397056B8AC"
-```   
+```
+
 An example of SNMPv3 trap is:
 ```yaml
- snmptrap -v3  -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 '' 1.3.6.1.2.1.2.2.1.1.1
- ```
+snmptrap -v3  -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 '' 1.3.6.1.2.1.2.2.1.1.1
+```
 
 ### Define load balancer IP
+
 `loadBalancerIP` is the IP address in the metallb pool. 
 Example:
+
 ```yaml
 traps:
   loadBalancerIP: 10.202.4.202
