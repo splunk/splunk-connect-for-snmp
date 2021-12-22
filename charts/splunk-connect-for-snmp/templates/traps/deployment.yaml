@@ -72,7 +72,7 @@ spec:
               valueFrom:
                   secretKeyRef:
                     name: {{ include "splunk-connect-for-snmp.name" . }}-splunk
-                    key: hec_token                    
+                    key: hec_token
           ports:
             - name: snmp-udp
               containerPort: 2162
@@ -134,45 +134,43 @@ spec:
                 path: "config.yaml"
         {{- if .Values.traps.usernameSecrets }}
         - name: snmpv3-secrets
-          projected:
-            sources:
-            {{- range .Values.traps.usernameSecrets }}
-            {{- $secret := (lookup "v1" "Secret" $.Release.Namespace . ) -}}            
-            {{- if $secret }}
-            - secret:
-                name: {{ . }}
-                items:
-                  {{ if $secret.data.userName -}}
-                  - key: userName
-                    path: {{ . }}/userName                
-                  {{- end }} 
-                  {{ if $secret.data.authKey -}}
-                  - key: authKey
-                    path: {{ . }}/authKey
-                  {{- end }} 
-                  {{ if $secret.data.privKey -}}
-                  - key: privKey
-                    path: {{ . }}/privKey
-                  {{- end }} 
-                  {{ if $secret.data.authProtocol -}}
-                  - key: authProtocol
-                    path: {{ . }}/authProtocol
-                  {{- end }} 
-                  {{ if $secret.data.privProtocol -}}
-                  - key: privProtocol
-                    path: {{ . }}/privProtocol
-                  {{- end }} 
-                  {{ if $secret.data.contextEngineId -}}
-                  - key: contextEngineId
-                    path: {{ . }}/contextEngineId
-                  {{- end }} 
-                  {{ if $secret.data.contextName -}}
-                  - key: contextName
-                    path: {{ . }}/contextName
-                  {{- end }}
-            {{- end }}                    
-            {{- end }}
-        {{- end }}                  
+        {{- range .Values.traps.usernameSecrets }}
+        {{- $secret := (lookup "v1" "Secret" $.Release.Namespace . ) -}}
+        {{- if $secret }}
+          secret:
+            secretName: {{ . }}
+            items:
+              {{ if $secret.data.userName -}}
+              - key: userName
+                path: {{ . }}/userName
+              {{- end }}
+              {{ if $secret.data.authKey -}}
+              - key: authKey
+                path: {{ . }}/authKey
+              {{- end }}
+              {{ if $secret.data.privKey -}}
+              - key: privKey
+                path: {{ . }}/privKey
+              {{- end }}
+              {{ if $secret.data.authProtocol -}}
+              - key: authProtocol
+                path: {{ . }}/authProtocol
+              {{- end }}
+              {{ if $secret.data.privProtocol -}}
+              - key: privProtocol
+                path: {{ . }}/privProtocol
+              {{- end }}
+              {{ if $secret.data.contextEngineId -}}
+              - key: contextEngineId
+                path: {{ . }}/contextEngineId
+              {{- end }}
+              {{ if $secret.data.contextName -}}
+              - key: contextName
+                path: {{ . }}/contextName
+              {{- end }}
+        {{- end }}
+        {{- end }}
+      {{- end }}
         - name: pysnmp-cache-volume
           emptyDir: {}    
         - name: tmp

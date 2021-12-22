@@ -23,6 +23,7 @@ splunk-connect-for-snmp/splunk-connect-for-snmp	    1.0.0	      1.0.0	   A Helm 
 ### Download and modify values.yaml
 ```yaml
 splunk:
+  enabled: true
   protocol: https
   host: ###SPLUNK_HOST###
   token: ###SPLUNK_TOKEN###
@@ -68,6 +69,11 @@ poller:
  #   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,600,,,
  #   10.0.0.199,,2c,public,,,600,,,True
  #   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,600,,,
+sim:
+  # sim must be enabled if you want to use signalFx
+  enabled: false
+#  signalfxToken: BCwaJ_Ands4Xh7Nrg
+#  signalfxRealm: us0
 mongodb:
   pdb:
     create: true
@@ -88,6 +94,9 @@ rabbitmq:
 
 `values.yaml` is being used during the installation process for configuring kubernetes values.
 
+### Configure Splunk Enterprise or Splunk Cloud Connection
+Splunk Enterprise or Splunk Cloud connection is enabled by default, to disable Splunk Enterprise or Splunk Cloud `splunk.enabled` property must be set to `false`.
+Additionally, connection parameter for Splunk Enterprise or Splunk Cloud need to be set in `splunk` section: 
 
 | Placeholder   | Description  | Example  | 
 |---|---|---|
@@ -96,13 +105,26 @@ rabbitmq:
 | ###SPLUNK_TOKEN### | Splunk HTTP Event Collector token  | 450a69af-16a9-4f87-9628-c26f04ad3785  |
 | ###X.X.X.X###  | SHARED IP address used for SNMP Traps   | 10.202.18.166  |
 
-Other variables to update in case you want to:
+Other optional variables can be configured:
 
 | variable | description | default |
 | --- | --- | --- |
-| splunk: protocol | port of splunk instance| https |
-| splunk: insecure_ssl| is insecure ssl allowed | "true" |
-| splunk: cluster_name | name of the cluster | "foo" |
+| splunk.protocol | port of splunk instance| https |
+| splunk.insecure_ssl| is insecure ssl allowed | "true" |
+| splunk.cluster_name | name of the cluster | "foo" |
+
+
+### Configure Splunk Infrastructure Monitoring Connection
+Splunk Infrastructure Monitoring is disabled by default, to enable Splunk Infrastructure Monitoring 
+`sim.enabled` property must be set to `true`.
+Additionally, connection parameters for Splunk Infrastructure Monitoring need to be set in `sim` section:
+
+| variable | description | default |
+| --- | --- | --- |
+|signalfxToken | SIM token which can be use for ingesting date vi API | not set|
+|signalfxRealm | Real of SIM | not set |
+
+For more details please check [SIM Configuration](../configuration/sim-configuration.md)
 
 ### Install SC4SNMP
 ``` bash
@@ -189,11 +211,8 @@ poller:
 - Load `value.yaml` file in SC4SNMP
 
 ``` bash
-microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version <VERSION_TAG>
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
-| variable | description | default |
-|---|---|---|
-|VERSION_TAG| is a tag of build eg. 0.11.0-beta.22 | none|
 
 -   Check in Splunk
  
@@ -206,4 +225,3 @@ index="netops" sourcetype="sc4snmp:event"
 ``` bash
 | mpreview index="netmetrics" | search sourcetype="sc4snmp:metric"
 ```
-

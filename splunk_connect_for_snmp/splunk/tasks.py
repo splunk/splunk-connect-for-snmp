@@ -23,7 +23,6 @@ except:
 import json
 import os
 from typing import Union
-from urllib.error import URLError
 from urllib.parse import urlunsplit
 
 from celery import Task, shared_task
@@ -67,6 +66,8 @@ if human_bool(os.getenv("SPLUNK_HEC_INSECURESSL", "yes"), default=True):
 else:
     SPLUNK_HEC_TLSVERIFY = True
 
+OTEL_METRICS_URL = os.getenv("OTEL_METRICS_URL", None)
+
 logger = get_task_logger(__name__)
 
 # Token is only appropriate if we are working direct with Splunk
@@ -98,6 +99,14 @@ class HECTask(Task):
     retry_jitter=True,
 )
 def send(self, data):
+    if SPLUNK_HEC_TOKEN:
+        do_send(data["events"], SPLUNK_HEC_URI, self)
+        do_send(data["metrics"], SPLUNK_HEC_URI, self)
+    if OTEL_METRICS_URL:
+        do_send(data["metrics"], OTEL_METRICS_URL, self)
+
+
+def do_send(data, destination_url, self):
     # If a device is very large a walk may produce more than 1MB of data.
     # 50 items is a reasonable guess to keep the post under the http post size limit
     # and be reasonable efficient
@@ -105,16 +114,16 @@ def send(self, data):
         # using sessions is important this avoid expensive setup time
         try:
             response = self.session.post(
-                SPLUNK_HEC_URI,
-                data="\n".join(data[i : i + SPLUNK_HEC_CHUNK_SIZE]),
+                destination_url,
+                data="\n".join(data[i: i + SPLUNK_HEC_CHUNK_SIZE]),
                 timeout=60,
             )
         except ConnectionError:
-            logger.error(f"Unable to communicate with Splunk endpoint")
+            logger.error(f"Unable to communicate with {destination_url} endpoint")
             self.retry(countdown=30)
             raise
         # 200 is good
-        if response.status_code == 200:
+        if response.status_code in (200, 202):
             logger.debug(f"Response code is {response.status_code} {response.text}")
             pass
         # These errors can't be retried
@@ -140,7 +149,8 @@ def valueAsBest(value) -> Union[str, float]:
 
 @shared_task()
 def prepare(work):
-    splunk_input = []
+    events = []
+    metrics = []
     #     {
     #   "time": 1486683865,
     #   "event": "metric",
@@ -158,7 +168,7 @@ def prepare(work):
     #   }
     # }
     if work.get("sourcetype") == "sc4snmp:traps":
-        return prepare_trap_data(work)
+        return {"events": prepare_trap_data(work), "metrics": metrics}
 
     for key, data in work["result"].items():
         if len(data["metrics"].keys()) > 0:
@@ -182,7 +192,7 @@ def prepare(work):
                 metric["fields"][f"metric_name:sc4snmp.{field}"] = valueAsBest(
                     values["value"]
                 )
-            splunk_input.append(json.dumps(metric, indent=None))
+            metrics.append(json.dumps(metric, indent=None))
         else:
             event = {
                 "time": work["time"],
@@ -192,13 +202,13 @@ def prepare(work):
                 "host": work["address"],
                 "index": SPLUNK_HEC_INDEX_EVENTS,
             }
-            splunk_input.append(json.dumps(event, indent=None))
+            events.append(json.dumps(event, indent=None))
 
-    return splunk_input
+    return {"metrics": metrics, "events": events}
 
 
 def prepare_trap_data(work):
-    splunk_input = []
+    events = []
     for key, data in work["result"].items():
         processed = {}
         if data["metrics"]:
@@ -213,6 +223,6 @@ def prepare_trap_data(work):
             "host": work["address"],
             "index": SPLUNK_HEC_INDEX_EVENTS,
         }
-        splunk_input.append(json.dumps(event, indent=None))
+        events.append(json.dumps(event, indent=None))
 
-    return splunk_input
+    return events
