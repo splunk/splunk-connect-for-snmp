@@ -45,9 +45,9 @@ scheduler:
       memory: 128Mi
 ```
 ### Configure profile 
-To update profile follow instruction: [Update Inventory and Profile](../deployment-configuration/#update-inventory-and-profile) 
+To update profile follow instruction: [Update Inventory and Profile](../deployment-configuration/#update-inventory-and-profile). 
 Profiles used in inventory can be created in `values.yaml`, which can be modified in scheduler config in 
-`values.yaml`, ex.:
+`values.yaml`, example:
 ```yaml
 scheduler:
     profiles: |

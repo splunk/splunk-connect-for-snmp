@@ -35,12 +35,12 @@ It required several checks before applying changes. SC4SNMP was designed to prev
 task more often than every 5 min. 
  
 When changing inventory or profile need to be apply in `valuses.yaml` following steps need to be done:
+
 1. Apply changes in `values.yaml` 
 2. Check is inventory pod is still running by execute command 
-
-```shell script
-microk8s kubectl -n sc4snmp get pods |grep inventory
-```
-If command do not return any pods than follow next step in other case wait and execute command again till moment when 
-inventory job finish. 
+   ```shell script
+   microk8s kubectl -n sc4snmp get pods |grep inventory
+   ```
+   If command do not return any pods than follow next step in other case wait and execute command again till moment 
+   when inventory job finish. 
 3. Run upgrade command describe in [Installation Guide](../gettingstarted/sc4snmp-installation/#install-sc4snmp) 
