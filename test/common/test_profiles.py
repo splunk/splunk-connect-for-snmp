@@ -4,24 +4,30 @@ import os
 from splunk_connect_for_snmp.common.profiles import load_profiles
 
 
-def return_yaml_profiles(args=None):
-    path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "base_profiles", "base.yaml"
+def return_mocked_path(file_name):
+    return os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "base_profiles", file_name
     )
-    return [path]
+
+
+def return_yaml_profiles(args=None):
+    return [return_mocked_path("base.yaml")]
 
 
 def return_config(*args):
-    path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "base_profiles", "runtime_config.yaml"
-    )
-    return path
+    return return_mocked_path("runtime_config.yaml")
+
+
+def return_not_existing_file(*args):
+    return return_mocked_path("runtime_config_that_doesnt_exist.yaml")
 
 
 class TestProfiles(TestCase):
 
-    def test_file_not_found(self):
-        pass
+    @mock.patch('splunk_connect_for_snmp.common.profiles.os.listdir', return_not_existing_file)
+    @mock.patch('splunk_connect_for_snmp.common.profiles.CONFIG_PATH', return_config())
+    def test_config_file_not_found(self):
+        self.assertEqual(load_profiles(), {})
 
     @mock.patch('splunk_connect_for_snmp.common.profiles.os.listdir', return_yaml_profiles)
     @mock.patch('splunk_connect_for_snmp.common.profiles.CONFIG_PATH', return_config())
