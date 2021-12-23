@@ -15,7 +15,7 @@
 #   ########################################################################
 import logging
 import time
-from test.splunk_test_utils import splunk_single_search
+from integration_tests import splunk_single_search
 
 from pysnmp.hlapi import *
 
