@@ -13,7 +13,7 @@
     
     
       
-        <title>Splunk Infrastructure Monitoring - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Otel - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -101,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Splunk Infrastructure Monitoring
+              Otel
             
           </span>
         </div>
@@ -457,7 +457,7 @@
       
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Splunk Infrastructure Monitoring
+        Otel
       </a>
       
     </li>
@@ -565,13 +565,13 @@
 <h1 id="otel-configuration">Otel configuration<a class="headerlink" href="#otel-configuration" title="Permanent link">&para;</a></h1>
 <p>Splunk OpenTelemetry Collector is a component that provides an option to send metrics to signalFx.
 In order to use it, you must set <code>enabled</code> flag in <code>values.yaml</code> to <code>true</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span>
-  <span class="c1"># sim must be enabled if you want to use signalFx</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">otel</span><span class="p">:</span>
+  <span class="c1"># otel must be enabled if you want to use signalFx</span>
   <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
 
-<p>Also you need to specify signalFx token and realm, so at the end sim element in <code>values.yaml</code> looks like this:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span>
+<p>Also you need to specify signalFx token and realm, so at the end otel element in <code>values.yaml</code> looks like this:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">otel</span><span class="p">:</span>
   <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
   <span class="nt">signalfxToken</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">BCwaJ_Ands4Xh7Nrg</span>
   <span class="nt">signalfxRealm</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">us0</span>
@@ -579,7 +579,7 @@ In order to use it, you must set <code>enabled</code> flag in <code>values.yaml<
 
 <p>After executing 
 <code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</code>, 
-the sim pod should be up and running:</p>
+the otel pod should be up and running:</p>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">splunker@ip-10-202-13-233:~$ microk8s kubectl get pods -n sc4snmp</span>
 <span class="l l-Scalar l-Scalar-Plain">NAME                                                      READY   STATUS    RESTARTS   AGE</span>
 <span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-7496b66947-6hjhl      1/1     Running   0          32s</span>
@@ -589,7 +589,7 @@ the sim pod should be up and running:</p>
 <span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-inventory--1-dxz5d           1/1     Running   0          32s</span>
 <span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-traps-6bbf57497b-v8d7l       1/1     Running   0          32s</span>
 <span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-traps-6bbf57497b-nvxrz       1/1     Running   0          31s</span>
-<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-sim-59b89747f-kn6tf          1/1     Running   0          32s</span>
+<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-otel-59b89747f-kn6tf         1/1     Running   0          32s</span>
 <span class="l l-Scalar l-Scalar-Plain">snmp-rabbitmq-0                                           0/1     Running   0          31s</span>
 <span class="l l-Scalar l-Scalar-Plain">snmp-mongodb-9957b9f4d-f94hv                              2/2     Running   0          32s</span>
 </code></pre></div>
