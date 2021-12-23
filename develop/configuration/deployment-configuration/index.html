@@ -495,8 +495,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../otel-configuration/" class="md-nav__link">
-        Otel
+      <a href="../sim-configuration/" class="md-nav__link">
+        Splunk Infrastructure Monitoring
       </a>
     </li>
   
@@ -633,7 +633,7 @@ after executing:</p>
 <li>scheduler - more detail <a href="../scheduler-configuration/">scheduler configuration</a></li>
 <li>worker - more detail <a href="../worker-configuration/">worker configuration</a></li>
 <li>poller - more detail <a href="../poller-configuration/">poller configuration</a></li>
-<li>otel - more detail <a href="../otel-configuration/">otel configuration</a></li>
+<li>sim - more detail <a href="../sim-configuration/">sim configuration</a></li>
 <li>traps - more detail <a href="../trap-configuration/">trap configuration</a></li>
 <li>mongodb - more detail <a href="../mongo-configuration/">mongo configuration</a></li>
 <li>rabbitmq - more detail <a href="../rabbitmq-configuration/">rabbitmq configuration</a></li>
@@ -654,14 +654,16 @@ after executing:</p>
 <p>Inventory and profiles in <code>valuses.yaml</code> is quite expensive from Splunk Connect for SNMP perspective. 
 It required several checks before applying changes. SC4SNMP was designed to prevent changes in inventory and profiles 
 task more often than every 5 min. </p>
-<p>When changing inventory or profile need to be apply in <code>valuses.yaml</code> following steps need to be done:
-1. Apply changes in <code>values.yaml</code> 
-2. Check is inventory pod is still running by execute command </p>
-<p><code>shell script
-microk8s kubectl -n sc4snmp get pods |grep inventory</code>
-If command do not return any pods than follow next step in other case wait and execute command again till moment when 
-inventory job finish. 
-3. Run upgrade command describe in <a href="../gettingstarted/sc4snmp-installation/#install-sc4snmp">Installation Guide</a> </p>
+<p>When changing inventory or profile need to be apply in <code>valuses.yaml</code> following steps need to be done:</p>
+<ol>
+<li>Apply changes in <code>values.yaml</code> </li>
+<li>Check is inventory pod is still running by execute command 
+   <code>shell script
+   microk8s kubectl -n sc4snmp get pods |grep inventory</code>
+   If command do not return any pods than follow next step in other case wait and execute command again till moment 
+   when inventory job finish. </li>
+<li>Run upgrade command describe in <a href="../gettingstarted/sc4snmp-installation/#install-sc4snmp">Installation Guide</a> </li>
+</ol>
 
               
             </article>
