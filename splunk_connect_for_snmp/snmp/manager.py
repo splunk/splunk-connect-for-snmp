@@ -122,7 +122,6 @@ def get_group_key(mib, oid, index) -> str:
 
 
 MTYPES_CC = tuple(["Counter32", "Counter64", "TimeTicks"])
-MTYPES_C = tuple()
 MTYPES_G = tuple(
     ["Gauge32", "Gauge64", "Integer", "Integer32", "Unsigned32", "Unsigned64"]
 )
@@ -140,15 +139,13 @@ def valueAsBest(value) -> Union[str, float]:
 def map_metric_type(t, snmp_value):
     if t in MTYPES_CC:
         metric_type = "cc"
-    elif t in MTYPES_C:
-        metric_type = "c"
     elif t in MTYPES_G:
         metric_type = "g"
     elif t in MTYPES_R:
         metric_type = "r"
     else:
         metric_type = "f"
-    # If this claims to be a metic type but isn't a number make it a te (type error)
+    # If this claims to be a metric type but isn't a number make it a te (type error)
     if metric_type in MTYPES:
         try:
             float(snmp_value)
@@ -249,7 +246,7 @@ class Poller(Task):
         metrics = {}
         if len(varbinds_get) == 0 and len(varbinds_bulk) == 0:
             logger.info("No work to do")
-            return False, {}
+            return {}
 
         if len(varbinds_bulk) > 0:
 
@@ -292,7 +289,6 @@ class Poller(Task):
                 metrics[group_key]["profiles"] = ",".join(
                     metrics[group_key]["profiles"]
                 )
-        # logger.debug(f"final metrics {metrics}")
         return metrics
 
     def load_mibs(self, mibs: List[str]) -> None:
@@ -300,7 +296,6 @@ class Poller(Task):
         for mib in mibs:
             if mib:
                 self.builder.loadModules(mib)
-        # logger.debug("Indexing MIB objects..."),
 
     def isMIBKnown(self, id: str, oid: str) -> tuple([bool, str]):
 
@@ -313,7 +308,7 @@ class Poller(Task):
                 mib = self.mib_map[oid_to_check]
                 logger.debug(f"found {mib} for {id} based on {oid_to_check}")
                 return True, mib
-        logger.warn(f"no mib found {id} based on {oid}")
+        logger.warning(f"no mib found {id} based on {oid}")
         return False, None
 
     def get_var_binds(self, walk=False, profiles=[]):
@@ -395,8 +390,6 @@ class Poller(Task):
 
             id = varBind[0].prettyPrint()
             oid = str(varBind[0].getOid())
-
-            # logger.debug(f"{mib}.{metric} id={id} oid={oid} index={index}")
 
             if isMIBResolved(id):
                 group_key = get_group_key(mib, oid, index)
