@@ -225,9 +225,7 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
 
-    def dowork(self, address: str, walk: bool = False, profiles: List[str] = None):
-        result = {}
-
+    def do_work(self, address: str, walk: bool = False, profiles: List[str] = None):
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
             self.profiles = load_profiles()
             self.last_modified = time.time()
@@ -239,7 +237,7 @@ class Poller(Task):
 
         ir = get_inventory(mongo_inventory, address)
 
-        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.getVarBinds(
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
             walk=walk, profiles=profiles
         )
 
@@ -249,7 +247,6 @@ class Poller(Task):
         transport = UdpTransportTarget((ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT)
 
         metrics = {}
-        retry = False
         if len(varbinds_get) == 0 and len(varbinds_bulk) == 0:
             logger.info("No work to do")
             return False, {}
@@ -274,13 +271,7 @@ class Poller(Task):
                     ir.address,
                     walk,
                 ):
-                    tmp_retry, tmp_mibs = self.process_snmp_data(
-                        varBindTable, metrics, bulk_mapping
-                    )
-                    if tmp_mibs:
-                        self.load_mibs(tmp_mibs)
-                    if tmp_retry:
-                        retry = True
+                    self.process_snmp_data(varBindTable, metrics, bulk_mapping)
 
         if len(varbinds_get) > 0:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
@@ -294,13 +285,7 @@ class Poller(Task):
                     ir.address,
                     walk,
                 ):
-                    tmp_retry, tmp_mibs = self.process_snmp_data(
-                        varBindTable, metrics, get_mapping
-                    )
-                    if tmp_mibs:
-                        self.load_mibs(tmp_mibs)
-                    if tmp_retry:
-                        retry = True
+                    self.process_snmp_data(varBindTable, metrics, get_mapping)
 
         for group_key, metric in metrics.items():
             if "profiles" in metrics[group_key]:
@@ -308,7 +293,7 @@ class Poller(Task):
                     metrics[group_key]["profiles"]
                 )
         # logger.debug(f"final metrics {metrics}")
-        return retry, metrics
+        return metrics
 
     def load_mibs(self, mibs: List[str]) -> None:
         logger.info(f"loading mib modules {mibs}")
@@ -331,7 +316,7 @@ class Poller(Task):
         logger.warn(f"no mib found {id} based on {oid}")
         return False, None
 
-    def getVarBinds(self, walk=False, profiles=[]):
+    def get_var_binds(self, walk=False, profiles=[]):
         varbinds_bulk = set()
         varbinds_get = set()
         get_mapping = {}
@@ -341,7 +326,6 @@ class Poller(Task):
         else:
             needed_mibs = []
             required_bulk = {}
-            required_get = {}
 
             # First pass we only look at profiles for a full mib walk
             for profile in profiles:
@@ -370,10 +354,9 @@ class Poller(Task):
                             ):
                                 if vb[0] not in required_bulk:
                                     required_bulk[vb[0]] = [vb[1]]
-                                    bulk_mapping[f"{vb[0]}:{vb[1]}"] = profile
                                 else:
                                     required_bulk[vb[0]].append(vb[1])
-                                    bulk_mapping[f"{vb[0]}:{vb[1]}"] = profile
+                                bulk_mapping[f"{vb[0]}:{vb[1]}"] = profile
 
             for mib, entries in required_bulk.items():
                 if entries is None:
@@ -389,27 +372,12 @@ class Poller(Task):
                     profile_varbinds = profile_spec["varBinds"]
                     for vb in profile_varbinds:
                         if len(vb) == 3:
-                            if vb[0] not in required_bulk:
-                                required_get[vb[0]] = {}
-                                required_get[vb[0]][vb[1]] = [vb[2]]
+                            if vb[0] not in required_bulk or (required_bulk[vb[0]] and vb[1] not in required_bulk[vb[0]]):
                                 varbinds_get.add(
                                     ObjectType(ObjectIdentity(vb[0], vb[1], vb[2]))
                                 )
                                 get_mapping[f"{vb[0]}:{vb[1]}:{vb[2]}"] = profile
-                            else:
-                                if not required_bulk[vb[0]] or vb[1] not in required_bulk[vb[0]]:
-                                    if vb[0] not in required_get:
-                                        required_get[vb[0]] = {vb[1]: [vb[2]]}
-                                    elif vb[1] not in required_get[vb[0]]:
-                                        required_get[vb[0]][vb[1]].append(vb[2])
-                                    varbinds_get.add(
-                                        ObjectType(
-                                            ObjectIdentity(vb[0], vb[1], vb[2])
-                                        )
-                                    )
-                                    get_mapping[
-                                        f"{vb[0]}:{vb[1]}:{vb[2]}"
-                                    ] = profile
+
             self.load_mibs(needed_mibs)
 
         logger.debug(f"varbinds_get={varbinds_get}")
@@ -421,8 +389,6 @@ class Poller(Task):
 
     def process_snmp_data(self, varBindTable, metrics, mapping={}):
         i = 0
-        retry = False
-        remotemibs = []
         for varBind in varBindTable:
             i += 1
             mib, metric, index = varBind[0].getMibSymbol()
@@ -474,12 +440,4 @@ class Poller(Task):
                         "value": metric_value,
                         "oid": oid,
                     }
-            else:
-                found, mib = self.isMIBKnown(id, oid)
-                if not mib in remotemibs:
-                    remotemibs.append(mib)
-                if found:
-                    retry = True
-                    break
 
-        return retry, remotemibs

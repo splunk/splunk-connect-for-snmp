@@ -71,10 +71,7 @@ def walk(self, **kwargs):
     lock = MongoLock(client=mongo_client, db="sc4snmp")
 
     with lock(address, self.request.id, expire=300, timeout=300):
-        # retry = True
-        # while retry:
-        retry, result = self.dowork(address, walk=True)
-        # retry, result = self.run_walk(kwargs)
+        result = self.do_work(address, walk=True)
 
     # After a Walk tell schedule to recalc
     work = {}
@@ -102,10 +99,7 @@ def poll(self, **kwargs):
     mongo_client = pymongo.MongoClient(MONGO_URI)
     lock = MongoLock(client=mongo_client, db="sc4snmp")
     with lock(kwargs["address"], self.request.id, expire=90, timeout=20):
-        # retry = True
-        # while retry:
-        retry, result = self.dowork(address, profiles=profiles)
-        # retry, result = self.run_walk(kwargs)
+        retry, result = self.do_work(address, profiles=profiles)
 
     # After a Walk tell schedule to recalc
     work = {}
