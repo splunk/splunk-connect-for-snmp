@@ -1,6 +1,7 @@
 from unittest import TestCase, mock
 from unittest.mock import Mock
 
+from splunk_connect_for_snmp.snmp.context import get_context_data
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 from splunk_connect_for_snmp.snmp.manager import get_inventory, _any_failure_happened, map_metric_type, \
     fill_empty_value, extract_index_number
@@ -112,3 +113,10 @@ class TestUtils(TestCase):
         self.assertEqual(0, extract_index_number(None))
         self.assertEqual(3, extract_index_number((index, None)))
         self.assertEqual(5, extract_index_number((index2, None)))
+
+    def test_get_context_data(self):
+        result = get_context_data()
+
+        self.assertIsNone(result.contextEngineId)
+        self.assertEqual("", result.contextName)
+

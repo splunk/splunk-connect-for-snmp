@@ -41,7 +41,7 @@ from splunk_connect_for_snmp.common.inventory_record import (
 from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import GetAuth
-from splunk_connect_for_snmp.snmp.context import getContextData
+from splunk_connect_for_snmp.snmp.context import get_context_data
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
@@ -239,7 +239,7 @@ class Poller(Task):
         )
 
         authData = GetAuth(logger, ir, self.snmpEngine)
-        contextData = getContextData(logger, ir)
+        contextData = get_context_data()
 
         transport = UdpTransportTarget((ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT)
 
@@ -297,7 +297,7 @@ class Poller(Task):
             if mib:
                 self.builder.loadModules(mib)
 
-    def isMIBKnown(self, id: str, oid: str) -> tuple([bool, str]):
+    def is_mib_known(self, id: str, oid: str) -> tuple([bool, str]):
 
         oid_list = tuple(oid.split("."))
 
@@ -433,4 +433,5 @@ class Poller(Task):
                         "value": metric_value,
                         "oid": oid,
                     }
+        return metrics
 

@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 
-import yaml
 from pysnmp.smi.error import SmiError
 
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
@@ -26,23 +25,15 @@ try:
 except:
     pass
 
-import csv
 import os
 import time
-from io import StringIO
-from typing import List, Union
 
 import pymongo
-from celery import Task, shared_task
+from celery import shared_task
 from celery.utils.log import get_task_logger
 from mongolock import MongoLock, MongoLockLocked
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
-from splunk_connect_for_snmp.common.inventory_record import (
-    InventoryRecord,
-    InventoryRecordEncoder,
-)
-from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.manager import Poller
 
 logger = get_task_logger(__name__)
@@ -78,7 +69,6 @@ def walk(self, **kwargs):
     work["time"] = time.time()
     work["address"] = address
     work["result"] = result
-    # work["reschedule"] = True
 
     return work
 
@@ -99,7 +89,7 @@ def poll(self, **kwargs):
     mongo_client = pymongo.MongoClient(MONGO_URI)
     lock = MongoLock(client=mongo_client, db="sc4snmp")
     with lock(kwargs["address"], self.request.id, expire=90, timeout=20):
-        retry, result = self.do_work(address, profiles=profiles)
+        result = self.do_work(address, profiles=profiles)
 
     # After a Walk tell schedule to recalc
     work = {}
@@ -126,7 +116,7 @@ def trap(self, work):
             not_translated_oids.append((w[0], w[1]))
 
     for oid in not_translated_oids:
-        found, mib = self.isMIBKnown(oid[0], oid[0])
+        found, mib = self.is_mib_known(oid[0], oid[0])
         if found:
             remotemibs.add(mib)
             remaining_oids.append((oid[0], oid[1]))
@@ -139,11 +129,11 @@ def trap(self, work):
             except SmiError:
                 logger.warn(f"No translation found for {w[0]}")
 
-    self.process_snmp_data(var_bind_table, metrics)
+    result = self.process_snmp_data(var_bind_table, metrics)
 
     return {
         "time": time.time(),
-        "result": metrics,
+        "result": result,
         "address": work["host"],
         "detectchange": False,
         "sourcetype": "sc4snmp:traps",

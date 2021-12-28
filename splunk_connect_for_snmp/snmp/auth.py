@@ -37,7 +37,7 @@ from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
 
 
-def getSecretValue(
+def get_secret_value(
     location: str, key: str, default: str = None, required: bool = False
 ) -> str:
     source = os.path.join(location, key)
@@ -54,7 +54,7 @@ def getSecretValue(
 # To discover remote SNMP EngineID we will tap on SNMP engine inner workings
 # by setting up execution point observer setup on INTERNAL class PDU processing
 #
-def getSecurityEngineId(logger, ir: InventoryRecord, snmpEngine: SnmpEngine):
+def get_security_engine_id(logger, ir: InventoryRecord, snmpEngine: SnmpEngine):
     observerContext = {}
 
     transportTarget = UdpTransportTarget((ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT)
@@ -95,31 +95,31 @@ def getSecurityEngineId(logger, ir: InventoryRecord, snmpEngine: SnmpEngine):
 def getAuthV3(logger, ir: InventoryRecord, snmpEngine: SnmpEngine) -> UsmUserData:
     location = os.path.join("secrets/snmpv3", ir.secret)
     if os.path.exists(location):
-        userName = getSecretValue(location, "userName", required=True)
+        userName = get_secret_value(location, "userName", required=True)
 
-        authKey = getSecretValue(location, "authKey", required=False)
-        privKey = getSecretValue(location, "privKey", required=False)
+        authKey = get_secret_value(location, "authKey", required=False)
+        privKey = get_secret_value(location, "privKey", required=False)
 
-        authProtocol = getSecretValue(location, "authProtocol", required=False)
+        authProtocol = get_secret_value(location, "authProtocol", required=False)
         authProtocol = AuthProtocolMap.get(authProtocol.upper(), "NONE")
 
-        privProtocol = getSecretValue(
+        privProtocol = get_secret_value(
             location, "privProtocol", required=False, default="NONE"
         )
         privProtocol = PrivProtocolMap.get(privProtocol.upper(), "NONE")
 
         authKeyType = int(
-            getSecretValue(location, "authKeyType", required=False, default="0")
+            get_secret_value(location, "authKeyType", required=False, default="0")
         )
 
         privKeyType = int(
-            getSecretValue(location, "privKeyType", required=False, default="0")
+            get_secret_value(location, "privKeyType", required=False, default="0")
         )
         if isinstance(ir.securityEngine, str):
             securityEngineId = ir.securityEngine
             logger.debug(f"Security eng from profile {ir.securityEngine}")
         else:
-            securityEngineId = getSecurityEngineId(logger, ir, snmpEngine)
+            securityEngineId = get_security_engine_id(logger, ir, snmpEngine)
             logger.debug(f"Security eng dynamic {securityEngineId}")
 
         securityName = None
