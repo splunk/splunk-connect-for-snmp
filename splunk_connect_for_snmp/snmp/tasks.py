@@ -55,7 +55,10 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
     autoretry_for=(MongoLockLocked, SnmpActionError,),
     throws=(SnmpActionError, SnmpActionError,)
 )
-def walk(self, **kwargs):
+def walk(self, skip_init=False, **kwargs):
+    if not skip_init and not self.initialized:
+        self.initialize()
+
     address = kwargs["address"]
     mongo_client = pymongo.MongoClient(MONGO_URI)
 
@@ -83,7 +86,10 @@ def walk(self, **kwargs):
     retry_jitter=True,
     expires=30,
 )
-def poll(self, **kwargs):
+def poll(self, skip_init=False, **kwargs):
+    if not skip_init and not self.initialized:
+        self.initialize()
+
     address = kwargs["address"]
     profiles = kwargs["profiles"]
     mongo_client = pymongo.MongoClient(MONGO_URI)
@@ -103,7 +109,10 @@ def poll(self, **kwargs):
 
 
 @shared_task(bind=True, base=Poller)
-def trap(self, work):
+def trap(self, work, skip_init=False):
+    if not skip_init and not self.initialized:
+        self.initialize()
+
     var_bind_table = []
     not_translated_oids = []
     remaining_oids = []
@@ -127,7 +136,7 @@ def trap(self, work):
             try:
                 var_bind_table.append(ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(self.mib_view_controller))
             except SmiError:
-                logger.warn(f"No translation found for {w[0]}")
+                logger.warning(f"No translation found for {w[0]}")
 
     result = self.process_snmp_data(var_bind_table, metrics)
 

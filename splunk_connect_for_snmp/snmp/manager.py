@@ -174,6 +174,18 @@ def extract_index_number(index):
 
 class Poller(Task):
     def __init__(self):
+        self.initialized = False
+        self.mongo_client = None
+        self.session = None
+        self.profiles = None
+        self.last_modified = None
+        self.last_modified = None
+        self.snmpEngine = None
+        self.builder = None
+        self.mib_view_controller = None
+        self.mib_map = None
+
+    def initialize(self):
 
         self.mongo_client = pymongo.MongoClient(MONGO_URI)
 

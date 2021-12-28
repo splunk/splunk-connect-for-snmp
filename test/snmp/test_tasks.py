@@ -3,12 +3,7 @@ from unittest.mock import Mock, patch
 
 from pysnmp.smi.error import SmiError
 
-from splunk_connect_for_snmp.snmp.manager import Poller
 from splunk_connect_for_snmp.snmp.tasks import walk, poll, trap
-
-
-def new_init(self, ):
-    self.mib_view_controller = None
 
 
 class TestTasks(TestCase):
@@ -30,7 +25,7 @@ class TestTasks(TestCase):
         kwargs = {"address": "192.168.0.1"}
         m_do_work.return_value = {"test": "value1"}
 
-        result = walk(**kwargs)
+        result = walk(skip_init=True, **kwargs)
 
         m_lock.assert_called()
         m_lock.m_release()
@@ -54,7 +49,7 @@ class TestTasks(TestCase):
         kwargs = {"address": "192.168.0.1", "profiles": ["profile1", "profile2"], "frequency": 20}
         m_do_work.return_value = {"test": "value1"}
 
-        result = poll(**kwargs)
+        result = poll(skip_init=True, **kwargs)
 
         m_lock.assert_called()
         m_lock.m_release()
@@ -73,8 +68,7 @@ class TestTasks(TestCase):
         work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
         m_process_data.return_value = {"test": "value1"}
 
-        with patch.object(Poller, '__init__', new_init):
-            result = trap(work)
+        result = trap(work, skip_init=True)
 
         self.assertEqual({'address': '192.168.0.1',
                           'detectchange': False,
@@ -96,8 +90,7 @@ class TestTasks(TestCase):
         work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
         m_process_data.return_value = {"test": "value1"}
 
-        with patch.object(Poller, '__init__', new_init):
-            result = trap(work)
+        result = trap(work, skip_init=True,)
 
         calls = m_load_mib.call_args_list
         self.assertEqual({'SOME-MIB'}, calls[0][0][0])
@@ -125,8 +118,7 @@ class TestTasks(TestCase):
         work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
         m_process_data.return_value = {"test": "value1"}
 
-        with patch.object(Poller, '__init__', new_init):
-            result = trap(work)
+        result = trap(work, skip_init=True)
 
         calls = m_load_mib.call_args_list
 

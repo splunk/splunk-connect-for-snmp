@@ -1,10 +1,7 @@
-from unittest import TestCase, mock
-from unittest.mock import patch, mock_open, Mock
+from unittest import TestCase
+from unittest.mock import patch, Mock
 
-from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.customtaskmanager import CustomPeriodicTaskManager
-from splunk_connect_for_snmp.inventory.loader import gen_walk_task, load
-from pymongo.results import UpdateResult
 
 
 class TestCustomTaskManager(TestCase):
