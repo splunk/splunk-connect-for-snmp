@@ -14,10 +14,8 @@
 # limitations under the License.
 #
 import os
-import sys
 from typing import Union
 
-from pysnmp.error import PySnmpError
 from pysnmp.hlapi import (
     CommunityData,
     ContextData,
@@ -26,8 +24,6 @@ from pysnmp.hlapi import (
     UsmUserData,
     getCmd,
 )
-from pysnmp.proto.api import v2c
-from pysnmp.proto.rfc1902 import OctetString
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
