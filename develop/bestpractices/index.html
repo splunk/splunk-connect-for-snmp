@@ -531,29 +531,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#advices" class="md-nav__link">
-    Advices
-  </a>
-  
-    <nav class="md-nav" aria-label="Advices">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#check-when-snmp-walk-was-executed-last-time-for-device" class="md-nav__link">
     Check when SNMP WALK was executed last time for device
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#uninstall-splunk-connect-ro-snmp" class="md-nav__link">
-    Uninstall Splunk Connect ro SNMP
+      
+        <li class="md-nav__item">
+  <a href="#uninstall-splunk-connect-for-snmp" class="md-nav__link">
+    Uninstall Splunk Connect for SNMP
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#installing-splunk-connect-for-snmp-on-linux-redhat" class="md-nav__link">
+    Installing Splunk Connect for SNMP on Linux RedHat
+  </a>
   
 </li>
       
@@ -607,29 +601,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#advices" class="md-nav__link">
-    Advices
-  </a>
-  
-    <nav class="md-nav" aria-label="Advices">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#check-when-snmp-walk-was-executed-last-time-for-device" class="md-nav__link">
     Check when SNMP WALK was executed last time for device
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#uninstall-splunk-connect-ro-snmp" class="md-nav__link">
-    Uninstall Splunk Connect ro SNMP
+      
+        <li class="md-nav__item">
+  <a href="#uninstall-splunk-connect-for-snmp" class="md-nav__link">
+    Uninstall Splunk Connect for SNMP
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#installing-splunk-connect-for-snmp-on-linux-redhat" class="md-nav__link">
+    Installing Splunk Connect for SNMP on Linux RedHat
+  </a>
   
 </li>
       
@@ -647,18 +635,20 @@
                 
 
 <h1 id="debug-splunk-connect-for-snmp">Debug Splunk Connect for SNMP<a class="headerlink" href="#debug-splunk-connect-for-snmp" title="Permanent link">&para;</a></h1>
-<h2 id="advices">Advices<a class="headerlink" href="#advices" title="Permanent link">&para;</a></h2>
 <h3 id="check-when-snmp-walk-was-executed-last-time-for-device">Check when SNMP WALK was executed last time for device<a class="headerlink" href="#check-when-snmp-walk-was-executed-last-time-for-device" title="Permanent link">&para;</a></h3>
 <ol>
 <li><a href="../gettingstarted/sck-installation/">Configure SCK</a></li>
 <li>Go to your Splunk and execute search: <code>index="em_logs"   "Sending due task" "sc4snmp;&lt;IP_ADDRESS&gt;;walk"</code> 
 and replace <IP_ADDRESS> by IP Address which you are intrested. </li>
 </ol>
-<h3 id="uninstall-splunk-connect-ro-snmp">Uninstall Splunk Connect ro SNMP<a class="headerlink" href="#uninstall-splunk-connect-ro-snmp" title="Permanent link">&para;</a></h3>
+<h3 id="uninstall-splunk-connect-for-snmp">Uninstall Splunk Connect for SNMP<a class="headerlink" href="#uninstall-splunk-connect-for-snmp" title="Permanent link">&para;</a></h3>
 <p>To uninstall SC4SNMP run following commands:</p>
 <p><code>shell script
-microk8s helm3 uninstall snmp -n sc4snmp
-microk8s kubectl delete pvc --all -n sc4snmp</code></p>
+ microk8s helm3 uninstall snmp -n sc4snmp
+ microk8s kubectl delete pvc --all -n sc4snmp</code></p>
+<h3 id="installing-splunk-connect-for-snmp-on-linux-redhat">Installing Splunk Connect for SNMP on Linux RedHat<a class="headerlink" href="#installing-splunk-connect-for-snmp-on-linux-redhat" title="Permanent link">&para;</a></h3>
+<p>Installation of RedHat may blocking ports required by microk8s. Installing microk8s on RedHat 
+required to check if firewall is not blocking any of <a href="https://microk8s.io/docs/ports">required microk8s ports</a>. </p>
 
               
             </article>
