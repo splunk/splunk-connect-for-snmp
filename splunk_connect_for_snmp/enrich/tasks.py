@@ -52,41 +52,42 @@ def chunk(it, size):
     return iter(lambda: tuple(islice(it, size)), ())
 
 
+# check if sysUpTime decreased, if so trigger new walk
+def check_restart(current_target, result, targets_collection, address):
+    for group_key, group_dict in result.items():
+        if "metrics" in group_dict and SYS_UP_TIME in group_dict["metrics"]:
+            sysuptime = group_dict["metrics"][SYS_UP_TIME]
+            new_value = sysuptime["value"]
+
+            logger.debug(f"current target = {current_target}")
+            if "sysUpTime" in current_target:
+                old_value = current_target["sysUpTime"]["value"]
+                logger.debug(f"new_value = {new_value}  old_value = {old_value}")
+                if int(new_value) < int(old_value):
+                    task_config = {
+                        "name": f'sc4snmp;{address};walk',
+                        "run_immediately": True,
+                    }
+                    logger.info(
+                        f'Detected restart of {address}, triggering walk'
+                    )
+                    periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
+                    periodic_obj.manage_task(**task_config)
+
+            state = {
+                "value": sysuptime["value"],
+                "type": sysuptime["type"],
+                "oid": sysuptime["oid"],
+            }
+
+            targets_collection.update_one(
+                {"address": address}, {"$set": {"sysUpTime": state}}, upsert=True
+            )
+
+
 class EnrichTask(Task):
     def __init__(self):
         pass
-
-    # check if sysUpTime decreased, if so trigger new walk
-    def check_restart(self, current_target, result, targets_collection, address):
-        for group_key, group_dict in result.items():
-            if "metrics" in group_dict and SYS_UP_TIME in group_dict["metrics"]:
-                sysuptime = group_dict["metrics"][SYS_UP_TIME]
-                new_value = sysuptime["value"]
-
-                logger.debug(f"current target = {current_target}")
-                if "sysUpTime" in current_target:
-                    old_value = current_target["sysUpTime"]["value"]
-                    logger.debug(f"new_value = {new_value}  old_value = {old_value}")
-                    if int(new_value) < int(old_value):
-                        task_config = {
-                            "name": f'sc4snmp;{address};walk',
-                            "run_immediately": True,
-                        }
-                        logger.info(
-                            f'Detected restart of {address}, triggering walk'
-                        )
-                        periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
-                        periodic_obj.manage_task(**task_config)
-
-                state = {
-                    "value": sysuptime["value"],
-                    "type": sysuptime["type"],
-                    "oid": sysuptime["oid"],
-                }
-
-                targets_collection.update_one(
-                    {"address": address}, {"$set": {"sysUpTime": state}}, upsert=True
-                )
 
 
 @shared_task(bind=True, base=EnrichTask)
@@ -109,22 +110,17 @@ def enrich(self, result):
         current_target["attributes"] = {}
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
-    self.check_restart(current_target, result["result"], targets_collection, address)
+    check_restart(current_target, result["result"], targets_collection, address)
 
     # First write back to DB new/changed data
     for group_key, group_data in result["result"].items():
         group_key_hash = shake_128(group_key.encode()).hexdigest(255)
 
         if (
-            group_key_hash not in current_target["attributes"]
-            and len(group_data["fields"]) > 0
+                group_key_hash not in current_target["attributes"]
+                and len(group_data["fields"]) > 0
         ):
 
-            # current_target["attributes"][group_key_hash] = {
-            #     "id": group_key,
-            #     "fields": {},
-            #     "metrics": {},
-            # }
             updates.append(
                 {"$set": {"attributes": {group_key_hash: {"id": group_key}}}}
             )
@@ -135,7 +131,7 @@ def enrich(self, result):
             cv = None
 
             if field_key_hash in current_target["attributes"].get(
-                group_key_hash, {}
+                    group_key_hash, {}
             ).get("fields", {}):
                 cv = current_target["attributes"][group_key_hash]["fields"][
                     field_key_hash
@@ -181,9 +177,6 @@ def enrich(self, result):
                 targets_collection.update_one(
                     {"address": address}, updates, upsert=True
                 )
-                # logger.debug(
-                #    f"Executing enricher update for address={address} with content={updates}"
-                # )
                 updates.clear()
 
         # Now add back any fields we need

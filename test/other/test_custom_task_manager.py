@@ -2,9 +2,6 @@ from unittest import TestCase
 from unittest.mock import patch, Mock
 from unittest.mock import MagicMock
 
-import celerybeatmongo
-from celerybeatmongo.models import PeriodicTask
-
 from splunk_connect_for_snmp.customtaskmanager import CustomPeriodicTaskManager
 
 
