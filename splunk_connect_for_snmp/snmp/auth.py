@@ -138,11 +138,11 @@ def getAuthV3(logger, ir: InventoryRecord, snmpEngine: SnmpEngine) -> UsmUserDat
         raise Exception(f"invalid username from secret {ir.secret}")
 
 
-def getAuthV2c(logger, ir: InventoryRecord) -> CommunityData:
+def getAuthV2c(ir: InventoryRecord) -> CommunityData:
     return CommunityData(ir.community, mpModel=1)
 
 
-def getAuthV1(logger, ir: InventoryRecord) -> CommunityData:
+def getAuthV1(ir: InventoryRecord) -> CommunityData:
     return CommunityData(ir.community, mpModel=0)
 
 
@@ -151,9 +151,9 @@ def GetAuth(
 ) -> Union[UsmUserData, CommunityData]:
 
     if ir.version == "1":
-        return getAuthV1(logger, ir)
+        return getAuthV1(ir)
     elif ir.version == "2c":
-        return getAuthV2c(logger, ir)
+        return getAuthV2c(ir)
     elif ir.version == "3":
         return getAuthV3(logger, ir, snmpEngine)
     else:

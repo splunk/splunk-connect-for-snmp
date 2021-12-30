@@ -115,12 +115,12 @@ class TestAuth(TestCase):
         self.assertEqual("invalid username from secret secret_ir", e.exception.args[0])
 
     def test_getAuthV2c(self):
-        result = getAuthV2c(Mock(), ir)
+        result = getAuthV2c(ir)
         self.assertEqual("public", result.communityName)
         self.assertEqual(1, result.mpModel)
 
     def test_getAuthV1(self):
-        result = getAuthV1(Mock(), ir)
+        result = getAuthV1(ir)
         self.assertEqual("public", result.communityName)
         self.assertEqual(0, result.mpModel)
 
