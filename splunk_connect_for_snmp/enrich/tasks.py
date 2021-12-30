@@ -27,7 +27,6 @@ from hashlib import shake_128
 from itertools import islice
 
 import pymongo
-from bson.objectid import ObjectId
 from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 
