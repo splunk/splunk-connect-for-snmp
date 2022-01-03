@@ -19,8 +19,7 @@ import json
 import socket
 from dataclasses import InitVar, dataclass, field
 from ipaddress import IPv4Address, IPv6Address
-from typing import Dict, List, Optional, Union
-from urllib.parse import urlparse
+from typing import List
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 

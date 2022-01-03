@@ -14,21 +14,17 @@
 # limitations under the License.
 #
 
-import json
 import logging
 import os
 import sys
 from csv import DictReader
 
 import pymongo
-from celery import Task, shared_task
 from celery.canvas import chain, group, signature
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import (
     InventoryRecord,
-    InventoryRecordEncoder,
 )
 
 log_level = "DEBUG"

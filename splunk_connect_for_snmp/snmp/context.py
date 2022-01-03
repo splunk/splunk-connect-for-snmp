@@ -13,29 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import os
-import sys
 
-from pysnmp.error import PySnmpError
 from pysnmp.hlapi import ContextData
-from pysnmp.proto.rfc1902 import OctetString
-
-from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 
 
-def getContextData(logger, ir: InventoryRecord) -> ContextData:
-    contextEngineId = None
-    contextName = ""
-    # if ir.version == "3":
-    #     location = os.path.join("secrets/snmpv3", ir.secret)
-    #     if os.path.exists(location):
-    #         contextEngineId = getSecretValue(
-    #             location, "contextEngineId", required=False
-    #         )
-    #         contextName = getSecretValue(
-    #             location, "contextName", required=False, default=""
-    #         )
-    #     logger.debug(
-    #         f"======contextEngineId: {contextEngineId}, contextName: {contextName}============="
-    #     )
-    return ContextData(contextEngineId, contextName)
+def get_context_data() -> ContextData:
+    return ContextData(None, "")

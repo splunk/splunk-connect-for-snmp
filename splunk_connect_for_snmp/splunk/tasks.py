@@ -133,7 +133,7 @@ def do_send(data, destination_url, self):
             )
         # These can be but are not exceptions so we will setup retry ourself
         elif response.status_code in (500, 503):
-            logger.warn(f"Response code is {response.status_code} {response.text}")
+            logger.warning(f"Response code is {response.status_code} {response.text}")
             self.retry(countdown=5)
         # Any other response code is undocumented we have to treat this as fatal
         else:
