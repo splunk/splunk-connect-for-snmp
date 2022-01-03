@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 import os
-import sys
 
 import yaml
 
@@ -63,6 +62,6 @@ def load_profiles():
                     else:
                         active_profiles[key] = profile
     except FileNotFoundError:
-        pass
+        logger.info(f"File: {CONFIG_PATH} not found")
 
     return active_profiles
