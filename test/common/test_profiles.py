@@ -30,6 +30,10 @@ def return_config(*args):
     return return_mocked_path("runtime_config_with_profiles.yaml")
 
 
+def return_disabled_config(*args):
+    return return_mocked_path("runtime_config_enabled.yaml")
+
+
 def return_not_existing_file(*args):
     return [return_mocked_path("runtime_config_that_doesnt_exist.yaml")]
 
@@ -64,4 +68,10 @@ class TestProfiles(TestCase):
     @mock.patch('splunk_connect_for_snmp.common.profiles.CONFIG_PATH', return_config())
     def test_all_profiles(self):
         active_profiles = {'BaseUpTime': {'frequency': 300, 'condition': {'type': 'base'}, 'varBinds': [['IF-MIB', 'ifName'], ['IF-MIB', 'ifAlias'], ['SNMPv2-MIB', 'sysUpTime', 0]]}, 'EnirchIF': {'frequency': 600, 'condition': {'type': 'base'}, 'varBinds': [['IF-MIB', 'ifDescr'], ['IF-MIB', 'ifAdminStatus'], ['IF-MIB', 'ifName'], ['IF-MIB', 'ifAlias']]}, 'test_2': {'frequency': 120, 'varBinds': [['IF-MIB', 'ifInDiscards', 1], ['IF-MIB', 'ifOutErrors'], ['SNMPv2-MIB', 'sysDescr', 0]]}, 'new_profiles': {'frequency': 6, 'varBinds': [['IP-MIB']]}, 'generic_switch': {'frequency': 5, 'varBinds': [['SNMPv2-MIB', 'sysDescr'], ['SNMPv2-MIB', 'sysName', 0], ['IF-MIB'], ['TCP-MIB'], ['UDP-MIB']]}}
+        self.assertEqual(load_profiles(), active_profiles)
+
+    @mock.patch('splunk_connect_for_snmp.common.profiles.os.listdir', return_yaml_profiles)
+    @mock.patch('splunk_connect_for_snmp.common.profiles.CONFIG_PATH', return_disabled_config())
+    def test_disabled_profiles(self):
+        active_profiles = {'EnirchIF': {'frequency': 200, 'condition': {'type': 'base'}, 'varBinds': [['IF-MIB', 'ifDescr'], ['IF-MIB', 'ifAdminStatus'], ['IF-MIB', 'ifName']]}}
         self.assertEqual(load_profiles(), active_profiles)
