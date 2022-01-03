@@ -40,3 +40,6 @@ class TestProfiles(TestCase):
 
     def test_all_profiles(self):
         pass
+
+    def test_both_profiles(self):
+        pass
