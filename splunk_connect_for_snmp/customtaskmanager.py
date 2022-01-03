@@ -101,6 +101,7 @@ class CustomPeriodicTaskManager:
                             isChanged = True
                     else:
                         periodic_document[key] = task_data[key]
+                        isChanged = True
 
         else:
             logger.debug("New Schedule")
