@@ -21,16 +21,15 @@ class TestDoWork(TestCase):
         "delete": False,
     })
 
-
-    @patch('pymongo.MongoClient')
-    @patch('mongolock.MongoLock.__init__')
-    @patch('mongolock.MongoLock.lock')
-    @patch('mongolock.MongoLock.release')
+    @patch('pymongo.MongoClient', MagicMock())
+    @patch('mongolock.MongoLock.__init__', MagicMock())
+    @patch('mongolock.MongoLock.lock', MagicMock())
+    @patch('mongolock.MongoLock.release', MagicMock())
     @patch('splunk_connect_for_snmp.snmp.manager.get_inventory')
     @patch('splunk_connect_for_snmp.snmp.auth.GetAuth', None)
     @patch('splunk_connect_for_snmp.snmp.manager.get_context_data', MagicMock())
     @patch('splunk_connect_for_snmp.snmp.manager.UdpTransportTarget', MagicMock())
-    def test_do_work_no_work_to_do(self, m_get_inventory, m_release, m_lock, m_mongo_lock, m_mongo_client):
+    def test_do_work_no_work_to_do(self, m_get_inventory):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
@@ -44,10 +43,10 @@ class TestDoWork(TestCase):
         result = poller.do_work("192.168.0.1")
         self.assertEqual(result, {})
 
-    @patch('pymongo.MongoClient')
-    @patch('mongolock.MongoLock.__init__')
-    @patch('mongolock.MongoLock.lock')
-    @patch('mongolock.MongoLock.release')
+    @patch('pymongo.MongoClient', MagicMock())
+    @patch('mongolock.MongoLock.__init__', MagicMock())
+    @patch('mongolock.MongoLock.lock', MagicMock())
+    @patch('mongolock.MongoLock.release', MagicMock())
     @patch('splunk_connect_for_snmp.snmp.manager.get_inventory')
     @patch('splunk_connect_for_snmp.snmp.auth.GetAuth', None)
     @patch('splunk_connect_for_snmp.snmp.manager.get_context_data', MagicMock())
@@ -55,7 +54,7 @@ class TestDoWork(TestCase):
     @patch('splunk_connect_for_snmp.snmp.manager.bulkCmd')
     @patch('splunk_connect_for_snmp.snmp.manager.getCmd')
     @patch('splunk_connect_for_snmp.snmp.manager.load_profiles')
-    def test_do_work_bulk(self, load_profiles, getCmd, bulkCmd, m_get_inventory, m_release, m_lock, m_mongo_lock, m_mongo_client):
+    def test_do_work_bulk(self, load_profiles, getCmd, bulkCmd, m_get_inventory):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
@@ -73,10 +72,10 @@ class TestDoWork(TestCase):
         self.assertEqual(getCmd.call_count, 0)
         self.assertEqual(bulkCmd.call_count, 1)
 
-    @patch('pymongo.MongoClient')
-    @patch('mongolock.MongoLock.__init__')
-    @patch('mongolock.MongoLock.lock')
-    @patch('mongolock.MongoLock.release')
+    @patch('pymongo.MongoClient', MagicMock())
+    @patch('mongolock.MongoLock.__init__', MagicMock())
+    @patch('mongolock.MongoLock.lock', MagicMock())
+    @patch('mongolock.MongoLock.release', MagicMock())
     @patch('splunk_connect_for_snmp.snmp.manager.get_inventory')
     @patch('splunk_connect_for_snmp.snmp.auth.GetAuth', None)
     @patch('splunk_connect_for_snmp.snmp.manager.get_context_data', MagicMock())
@@ -84,7 +83,7 @@ class TestDoWork(TestCase):
     @patch('splunk_connect_for_snmp.snmp.manager.bulkCmd')
     @patch('splunk_connect_for_snmp.snmp.manager.getCmd')
     @patch('splunk_connect_for_snmp.snmp.manager.load_profiles')
-    def test_do_work_get(self, load_profiles, getCmd, bulkCmd, m_get_inventory, m_release, m_lock, m_mongo_lock, m_mongo_client):
+    def test_do_work_get(self, load_profiles, getCmd, bulkCmd, m_get_inventory):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
@@ -102,10 +101,10 @@ class TestDoWork(TestCase):
         self.assertEqual(getCmd.call_count, 1)
         self.assertEqual(bulkCmd.call_count, 0)
 
-    @patch('pymongo.MongoClient')
-    @patch('mongolock.MongoLock.__init__')
-    @patch('mongolock.MongoLock.lock')
-    @patch('mongolock.MongoLock.release')
+    @patch('pymongo.MongoClient', MagicMock())
+    @patch('mongolock.MongoLock.__init__', MagicMock())
+    @patch('mongolock.MongoLock.lock', MagicMock())
+    @patch('mongolock.MongoLock.release', MagicMock())
     @patch('splunk_connect_for_snmp.snmp.manager.get_inventory')
     @patch('splunk_connect_for_snmp.snmp.auth.GetAuth', None)
     @patch('splunk_connect_for_snmp.snmp.manager.get_context_data', MagicMock())
@@ -113,7 +112,7 @@ class TestDoWork(TestCase):
     @patch('splunk_connect_for_snmp.snmp.manager.bulkCmd')
     @patch('splunk_connect_for_snmp.snmp.manager.getCmd')
     @patch('splunk_connect_for_snmp.snmp.manager.load_profiles')
-    def test_do_work_errors(self, load_profiles, getCmd, bulkCmd, m_get_inventory, m_release, m_lock, m_mongo_lock, m_mongo_client):
+    def test_do_work_errors(self, load_profiles, getCmd, bulkCmd, m_get_inventory):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
