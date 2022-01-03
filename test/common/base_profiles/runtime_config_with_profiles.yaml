@@ -1,0 +1,19 @@
+profiles:
+  test_2:
+    frequency: 120
+    varBinds:
+      - [ "IF-MIB","ifInDiscards",1 ]
+      - [ "IF-MIB","ifOutErrors" ]
+      - [ "SNMPv2-MIB", "sysDescr",0 ]
+  new_profiles:
+    frequency: 6
+    varBinds:
+      - [ 'IP-MIB' ]
+  generic_switch:
+    frequency: 5
+    varBinds:
+      - ['SNMPv2-MIB', 'sysDescr']
+      - ['SNMPv2-MIB', 'sysName', 0]
+      - ['IF-MIB']
+      - ['TCP-MIB']
+      - ['UDP-MIB']
