@@ -22,11 +22,11 @@ class TestCustomTranslations(TestCase):
     @patch('builtins.open', new_callable=mock_open, read_data=mock_config_empty)
     def test_load_custom_translations_empty(self, m_open):
         result = load_custom_translations()
-        self.assertEqual({}, result)
+        self.assertIsNone(result)
 
     @patch('builtins.open', new_callable=mock_open, read_data=mock_config)
     def test_load_custom_translations_no_file(self, m_open):
         m_open.side_effect = FileNotFoundError()
         result = load_custom_translations()
-        self.assertEqual({}, result)
+        self.assertIsNone({}, result)
 
