@@ -168,24 +168,37 @@ class TestPrepare(TestCase):
         self.assertEqual("stopping", event2["field_four"]["value"])
 
     def test_apply_custom_translation(self):
-        work = {'fields': {'SNMPv2-MIB.sysDescr': {'oid': '9.8.7.6',
-                                                   'time': 1640609779.473053,
-                                                   'type': 'r',
-                                                   'value': 'up and running'}},
-                'metrics': {'IF-MIB.ifInDiscards': {'oid': '1.2.3.4.5.6.7',
-                                                    'time': 1640609779.473053,
-                                                    'type': 'g',
-                                                    'value': 65.0}}}
+        work = {"result": {"SOME_KEY": {'fields': {'SNMPv2-MIB.sysDescr': {'oid': '9.8.7.6',
+                                                                           'time': 1640609779.473053,
+                                                                           'type': 'r',
+                                                                           'value': 'up and running',
+                                                                           "name": 'SNMPv2-MIB.sysDescr'},
+                                                   'SNMPv2-MIB.some_other': {'oid': '9.8.7.6.1',
+                                                                             'time': 1640609779.473053,
+                                                                             'type': 'r',
+                                                                             'value': 'ON',
+                                                                             "name": "SNMPv2-MIB.some_other"}},
+                                        'metrics': {'IF-MIB.ifInDiscards': {'oid': '1.2.3.4.5.6.7',
+                                                                            'time': 1640609779.473053,
+                                                                            'type': 'g',
+                                                                            'value': 65.0}}}}}
 
         translations = {"IF-MIB": {"ifInDiscards": "myCustomName1", "ifOutErrors": "myCustomName2"},
                         "SNMPv2-MIB": {"sysDescr": "myCustomName3"}}
 
         result = apply_custom_translations(work, translations)
-        self.assertEqual({'fields': {'SNMPv2-MIB.myCustomName3': {'oid': '9.8.7.6',
-                                                                  'time': 1640609779.473053,
-                                                                  'type': 'r',
-                                                                  'value': 'up and running'}},
-                          'metrics': {'IF-MIB.myCustomName1': {'oid': '1.2.3.4.5.6.7',
-                                                               'time': 1640609779.473053,
-                                                               'type': 'g',
-                                                               'value': 65.0}}}, result)
+
+        self.assertEqual({"result": {"SOME_KEY": {'fields': {'SNMPv2-MIB.myCustomName3': {'oid': '9.8.7.6',
+                                                                                          'time': 1640609779.473053,
+                                                                                          'type': 'r',
+                                                                                          'value': 'up and running',
+                                                                                          "name": 'SNMPv2-MIB.myCustomName3'},
+                                                             'SNMPv2-MIB.some_other': {'oid': '9.8.7.6.1',
+                                                                                       'time': 1640609779.473053,
+                                                                                       'type': 'r',
+                                                                                       'value': 'ON',
+                                                                                       "name": "SNMPv2-MIB.some_other"}},
+                                                  'metrics': {'IF-MIB.myCustomName1': {'oid': '1.2.3.4.5.6.7',
+                                                                                       'time': 1640609779.473053,
+                                                                                       'type': 'g',
+                                                                                       'value': 65.0}}}}}, result)

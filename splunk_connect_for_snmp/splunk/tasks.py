@@ -158,12 +158,14 @@ def valueAsBest(value) -> Union[str, float]:
     bind=True,
     base=PrepareTask
 )
-def prepare(work):
+def prepare(self, work):
     events = []
     metrics = []
 
     if work.get("sourcetype") == "sc4snmp:traps":
-        return {"events": prepare_trap_data(work), "metrics": metrics}
+        return {"events": prepare_trap_data(apply_custom_translations(work, self.custom_translations)), "metrics": metrics}
+
+    work = apply_custom_translations(work, self.custom_translations)
 
     for key, data in work["result"].items():
         if len(data["metrics"].keys()) > 0:
@@ -226,8 +228,20 @@ def prepare_trap_data(work):
 def apply_custom_translations(work, custom_translations):
     if custom_translations:
         for key, data in work["result"].items():
-            for field, values in data["fields"].items():
-                print(field)
-            for field, values in data["metrics"].items():
-                print(field)
+            apply_custom_translation_to_collection(custom_translations, data, "fields")
+            apply_custom_translation_to_collection(custom_translations, data, "metrics")
+    return work
 
+
+def apply_custom_translation_to_collection(custom_translations, data, key):
+    new_data = {}
+    for field, values in data[key].items():
+        mib, name = field.split(".")
+        ct = custom_translations.get(mib, {}).get(name, None)
+        if ct:
+            if key == "fields":
+                values["name"] = f"{mib}.{ct}"
+            new_data[f"{mib}.{ct}"] = values
+        else:
+            new_data[field] = values
+    data[key] = new_data
