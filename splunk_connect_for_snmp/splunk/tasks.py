@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from splunk_connect_for_snmp.common.custom_translations import load_custom_translations
+
 try:
     from dotenv import load_dotenv
 
@@ -86,6 +88,11 @@ class HECTask(Task):
         self.session.logger = logger
 
 
+class PrepareTask(Task):
+    def __init__(self):
+        self.custom_translations = load_custom_translations()
+
+
 # This tasks is retryable when using otel or local splunk this should be rare but
 # may happen
 @shared_task(
@@ -147,26 +154,14 @@ def valueAsBest(value) -> Union[str, float]:
         return value
 
 
-@shared_task()
+@shared_task(
+    bind=True,
+    base=PrepareTask
+)
 def prepare(work):
     events = []
     metrics = []
-    #     {
-    #   "time": 1486683865,
-    #   "event": "metric",
-    #   "source": "metrics",
-    #   "sourcetype": "perflog",
-    #   "host": "host_1.splunk.com",
-    #   "fields": {
-    #     "service_version": "0",
-    #     "service_environment": "test",
-    #     "path": "/dev/sda1",
-    #     "fstype": "ext3",
-    #     "metric_name:cpu.usr": 11.12,
-    #     "metric_name:cpu.sys": 12.23,
-    #     "metric_name:cpu.idle": 13.34
-    #   }
-    # }
+
     if work.get("sourcetype") == "sc4snmp:traps":
         return {"events": prepare_trap_data(work), "metrics": metrics}
 
@@ -226,3 +221,13 @@ def prepare_trap_data(work):
         events.append(json.dumps(event, indent=None))
 
     return events
+
+
+def apply_custom_translations(work, custom_translations):
+    if custom_translations:
+        for key, data in work["result"].items():
+            for field, values in data["fields"].items():
+                print(field)
+            for field, values in data["metrics"].items():
+                print(field)
+
