@@ -28,5 +28,5 @@ class TestCustomTranslations(TestCase):
     def test_load_custom_translations_no_file(self, m_open):
         m_open.side_effect = FileNotFoundError()
         result = load_custom_translations()
-        self.assertIsNone({}, result)
+        self.assertIsNone(result)
 
