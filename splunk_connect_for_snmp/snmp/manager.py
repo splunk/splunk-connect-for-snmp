@@ -179,7 +179,6 @@ class Poller(Task):
         self.session = None
         self.profiles = None
         self.last_modified = None
-        self.last_modified = None
         self.snmpEngine = None
         self.builder = None
         self.mib_view_controller = None
@@ -194,7 +193,6 @@ class Poller(Task):
             cache_name="cache_http",
             backend=MongoCache(connection=self.mongo_client, db_name=MONGO_DB),
             expire_after=1800,
-            # logger=
             match_headers=False,
             stale_if_error=True,
             allowable_codes=[200],
