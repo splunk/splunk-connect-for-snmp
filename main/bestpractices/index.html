@@ -546,8 +546,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#uninstall-splunk-connect-ro-snmp" class="md-nav__link">
-    Uninstall Splunk Connect ro SNMP
+  <a href="#uninstall-splunk-connect-for-snmp" class="md-nav__link">
+    Uninstall Splunk Connect for SNMP
   </a>
   
 </li>
@@ -622,8 +622,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#uninstall-splunk-connect-ro-snmp" class="md-nav__link">
-    Uninstall Splunk Connect ro SNMP
+  <a href="#uninstall-splunk-connect-for-snmp" class="md-nav__link">
+    Uninstall Splunk Connect for SNMP
   </a>
   
 </li>
@@ -652,13 +652,27 @@
 <ol>
 <li><a href="../gettingstarted/sck-installation/">Configure SCK</a></li>
 <li>Go to your Splunk and execute search: <code>index="em_logs"   "Sending due task" "sc4snmp;&lt;IP_ADDRESS&gt;;walk"</code> 
-and replace <IP_ADDRESS> by IP Address which you are intrested. </li>
+and replace <IP_ADDRESS> by IP Address which you are interested. </li>
 </ol>
-<h3 id="uninstall-splunk-connect-ro-snmp">Uninstall Splunk Connect ro SNMP<a class="headerlink" href="#uninstall-splunk-connect-ro-snmp" title="Permanent link">&para;</a></h3>
+<h3 id="uninstall-splunk-connect-for-snmp">Uninstall Splunk Connect for SNMP<a class="headerlink" href="#uninstall-splunk-connect-for-snmp" title="Permanent link">&para;</a></h3>
 <p>To uninstall SC4SNMP run following commands:</p>
-<p><code>shell script
+<p>```shell script
 microk8s helm3 uninstall snmp -n sc4snmp
-microk8s kubectl delete pvc --all -n sc4snmp</code></p>
+microk8s kubectl delete pvc &ndash;all -n sc4snmp</p>
+<div class="codehilite"><pre><span></span><code>## <span class="nv">Issues</span>
+
+### <span class="s2">&quot;</span><span class="s">Empty SNMP response message</span><span class="s2">&quot;</span> <span class="nv">problem</span>
+<span class="nv">In</span> <span class="nv">case</span> <span class="nv">you</span> <span class="nv">see</span> <span class="nv">the</span> <span class="nv">following</span> <span class="nv">line</span> <span class="nv">in</span> <span class="nv">worker</span><span class="s1">&#39;</span><span class="s">s logs:</span>
+```<span class="nv">log</span>
+[<span class="mi">2022</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span> <span class="mi">11</span>:<span class="mi">44</span>:<span class="mi">22</span>,<span class="mi">553</span>: <span class="nv">INFO</span><span class="o">/</span><span class="nv">ForkPoolWorker</span><span class="o">-</span><span class="mi">1</span>] <span class="nv">Task</span> <span class="nv">splunk_connect_for_snmp</span>.<span class="nv">snmp</span>.<span class="nv">tasks</span>.<span class="nv">walk</span>[<span class="mi">8</span><span class="nv">e62fc62</span><span class="o">-</span><span class="mi">569</span><span class="nv">c</span><span class="o">-</span><span class="mi">473</span><span class="nv">f</span><span class="o">-</span><span class="nv">a765</span><span class="o">-</span><span class="nv">ff92577774e5</span>] <span class="nv">retry</span>: <span class="nv">Retry</span> <span class="nv">in</span> <span class="mi">3489</span><span class="nv">s</span>: <span class="nv">SnmpActionError</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message</span><span class="s1">&#39;</span><span class="ss">)</span>
+</code></pre></div>
+
+<p>that causes infinite retry of walk operation, add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true.</p>
+<p>An example confiuration for worker in <code>values.yaml</code> is:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+  <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;DEBUG&quot;</span>
+  <span class="nt">ignoreEmptyVarbinds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
 
               
             </article>
