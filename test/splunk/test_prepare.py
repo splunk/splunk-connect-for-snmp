@@ -2,7 +2,7 @@ import json
 from unittest import TestCase
 from unittest.mock import patch
 
-from splunk_connect_for_snmp.splunk.tasks import prepare
+from splunk_connect_for_snmp.splunk.tasks import prepare, apply_custom_translations
 
 
 @patch('splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS', 'test_index')
@@ -144,7 +144,6 @@ class TestPrepare(TestCase):
         self.assertEqual(2, len(result["events"]))
         self.assertEqual(0, len(result["metrics"]))
 
-
         item1 = json.loads(result["events"][0])
         event1 = json.loads(item1["event"])
         self.assertEqual(1234567, item1["time"])
@@ -167,3 +166,39 @@ class TestPrepare(TestCase):
         self.assertEqual("192.168.0.1", item2["host"])
         self.assertEqual("OFF", event2["field_three"]["value"])
         self.assertEqual("stopping", event2["field_four"]["value"])
+
+    def test_apply_custom_translation(self):
+        work = {"result": {"SOME_KEY": {'fields': {'SNMPv2-MIB.sysDescr': {'oid': '9.8.7.6',
+                                                                           'time': 1640609779.473053,
+                                                                           'type': 'r',
+                                                                           'value': 'up and running',
+                                                                           "name": 'SNMPv2-MIB.sysDescr'},
+                                                   'SNMPv2-MIB.some_other': {'oid': '9.8.7.6.1',
+                                                                             'time': 1640609779.473053,
+                                                                             'type': 'r',
+                                                                             'value': 'ON',
+                                                                             "name": "SNMPv2-MIB.some_other"}},
+                                        'metrics': {'IF-MIB.ifInDiscards': {'oid': '1.2.3.4.5.6.7',
+                                                                            'time': 1640609779.473053,
+                                                                            'type': 'g',
+                                                                            'value': 65.0}}}}}
+
+        translations = {"IF-MIB": {"ifInDiscards": "myCustomName1", "ifOutErrors": "myCustomName2"},
+                        "SNMPv2-MIB": {"sysDescr": "myCustomName3"}}
+
+        result = apply_custom_translations(work, translations)
+
+        self.assertEqual({"result": {"SOME_KEY": {'fields': {'SNMPv2-MIB.myCustomName3': {'oid': '9.8.7.6',
+                                                                                          'time': 1640609779.473053,
+                                                                                          'type': 'r',
+                                                                                          'value': 'up and running',
+                                                                                          "name": 'SNMPv2-MIB.myCustomName3'},
+                                                             'SNMPv2-MIB.some_other': {'oid': '9.8.7.6.1',
+                                                                                       'time': 1640609779.473053,
+                                                                                       'type': 'r',
+                                                                                       'value': 'ON',
+                                                                                       "name": "SNMPv2-MIB.some_other"}},
+                                                  'metrics': {'IF-MIB.myCustomName1': {'oid': '1.2.3.4.5.6.7',
+                                                                                       'time': 1640609779.473053,
+                                                                                       'type': 'g',
+                                                                                       'value': 65.0}}}}}, result)
