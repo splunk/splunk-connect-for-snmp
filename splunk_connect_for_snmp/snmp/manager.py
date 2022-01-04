@@ -15,6 +15,8 @@
 #
 import typing
 
+from pysnmp.proto.errind import EmptyResponse
+
 try:
     from dotenv import load_dotenv
 
@@ -38,6 +40,7 @@ from requests_cache import MongoCache
 from splunk_connect_for_snmp.common.inventory_record import (
     InventoryRecord,
 )
+from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import GetAuth
@@ -48,6 +51,7 @@ MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
+IGNORE_EMPTY_VARBINDS = human_bool(os.getenv("IGNORE_EMPTY_VARBINDS", False))
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
@@ -76,6 +80,8 @@ def _any_failure_happened(
     @return: if any failure happened
     """
     if error_indication:
+        if isinstance(error_indication, EmptyResponse) and IGNORE_EMPTY_VARBINDS:
+            return False
         raise SnmpActionError(
             f"An error of SNMP isWalk={walk} for a host {address} occurred: {error_indication}"
         )
