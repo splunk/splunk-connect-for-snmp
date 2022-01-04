@@ -15,8 +15,6 @@
 #
 import typing
 
-from splunk_connect_for_snmp.common.custom_translations import load_custom_translations
-
 try:
     from dotenv import load_dotenv
 
