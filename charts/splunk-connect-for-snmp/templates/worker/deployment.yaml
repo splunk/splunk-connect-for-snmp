@@ -65,6 +65,8 @@ spec:
             {{- end}}
             - name: SPLUNK_HEC_HOST
               value: {{ .Values.splunk.host | quote }}
+            - name: IGNORE_EMPTY_VARBINDS
+              value: {{ .Values.worker.ignoreEmptyVarbinds | default "false" | quote }}
             {{- if .Values.splunk.port }}
             - name: SPLUNK_HEC_PORT
               value: {{ .Values.splunk.port | default "" | quote }}
