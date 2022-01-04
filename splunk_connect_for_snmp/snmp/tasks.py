@@ -71,9 +71,10 @@ def walk(self, **kwargs):
     lock = MongoLock(client=mongo_client, db="sc4snmp")
 
     with lock(address, self.request.id, expire=300, timeout=300):
-        # retry = True
-        # while retry:
-        retry, result = self.dowork(address, walk=True)
+        retry = True
+        while retry:
+            retry, result = self.dowork(address, walk=True)
+
         # retry, result = self.run_walk(kwargs)
 
     # After a Walk tell schedule to recalc

@@ -227,6 +227,7 @@ class Poller(Task):
 
     def dowork(self, address: str, walk: bool = False, profiles: List[str] = None):
         result = {}
+        mibs_to_load = set()
 
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
             self.profiles = load_profiles()
@@ -278,9 +279,11 @@ class Poller(Task):
                         varBindTable, metrics, bulk_mapping
                     )
                     if tmp_mibs:
-                        self.load_mibs(tmp_mibs)
+                        mibs_to_load.update(tmp_mibs)
+
                     if tmp_retry:
                         retry = True
+            self.load_mibs(list(mibs_to_load))
 
         if len(varbinds_get) > 0:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
