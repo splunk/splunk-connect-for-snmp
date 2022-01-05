@@ -263,9 +263,10 @@ class Poller(Task):
         transport = UdpTransportTarget((ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT)
 
         metrics = {}
+        retry = False
         if len(varbinds_get) == 0 and len(varbinds_bulk) == 0:
             logger.info("No work to do")
-            return {}
+            return False, {}
 
         if len(varbinds_bulk) > 0:
 
@@ -412,6 +413,8 @@ class Poller(Task):
 
     def process_snmp_data(self, varBindTable, metrics, mapping={}):
         i = 0
+        retry = False
+        remotemibs = []
         for varBind in varBindTable:
             i += 1
             mib, metric, index = varBind[0].getMibSymbol()
@@ -461,4 +464,11 @@ class Poller(Task):
                         "value": metric_value,
                         "oid": oid,
                     }
-        return metrics
+            else:
+                found, mib = self.is_mib_known(id, oid)
+                if mib not in remotemibs:
+                    remotemibs.append(mib)
+                if found:
+                    retry = True
+                    break
+        return retry, remotemibs

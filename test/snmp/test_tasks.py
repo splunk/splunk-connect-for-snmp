@@ -23,7 +23,7 @@ class TestTasks(TestCase):
         m_poller.return_value = None
 
         kwargs = {"address": "192.168.0.1"}
-        m_do_work.return_value = {"test": "value1"}
+        m_do_work.return_value = (False, {"test": "value1"})
 
         result = walk(skip_init=True, **kwargs)
 

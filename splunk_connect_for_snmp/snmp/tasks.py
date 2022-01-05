@@ -99,7 +99,7 @@ def poll(self, skip_init=False, **kwargs):
     mongo_client = pymongo.MongoClient(MONGO_URI)
     lock = MongoLock(client=mongo_client, db="sc4snmp")
     with lock(kwargs["address"], self.request.id, expire=90, timeout=20):
-        result = self.do_work(address, profiles=profiles)
+        _, result = self.do_work(address, profiles=profiles)
 
     # After a Walk tell schedule to recalc
     work = {}
@@ -142,11 +142,11 @@ def trap(self, work, skip_init=False):
             except SmiError:
                 logger.warning(f"No translation found for {w[0]}")
 
-    result = self.process_snmp_data(var_bind_table, metrics)
+    self.process_snmp_data(var_bind_table, metrics)
 
     return {
         "time": time.time(),
-        "result": result,
+        "result": metrics,
         "address": work["host"],
         "detectchange": False,
         "sourcetype": "sc4snmp:traps",
