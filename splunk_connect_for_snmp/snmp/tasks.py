@@ -142,11 +142,11 @@ def trap(self, work, skip_init=False):
             except SmiError:
                 logger.warning(f"No translation found for {w[0]}")
 
-    self.process_snmp_data(var_bind_table, metrics)
+    _, _, result = self.process_snmp_data(var_bind_table, metrics)
 
     return {
         "time": time.time(),
-        "result": metrics,
+        "result": result,
         "address": work["host"],
         "detectchange": False,
         "sourcetype": "sc4snmp:traps",

@@ -40,7 +40,7 @@ class TestDoWork(TestCase):
         poller.get_var_binds = MagicMock()
         poller.get_var_binds.return_value = varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
         m_get_inventory.return_value = TestDoWork.inventory_record
-        result = poller.do_work("192.168.0.1")
+        _, result = poller.do_work("192.168.0.1")
         self.assertEqual(result, {})
 
     @patch('pymongo.MongoClient', MagicMock())
@@ -60,7 +60,7 @@ class TestDoWork(TestCase):
         poller.snmpEngine = None
         poller.builder = MagicMock()
         m_process_data = MagicMock()
-        m_process_data.return_value = (False, [])
+        m_process_data.return_value = (False, [], {})
         poller.process_snmp_data = m_process_data
         requested_profiles = ["profile1", "profile2"]
         load_profiles.return_value = {"profile1": {"frequency": 20,

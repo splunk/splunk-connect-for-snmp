@@ -8,7 +8,8 @@ from splunk_connect_for_snmp.splunk.tasks import prepare, apply_custom_translati
 @patch('splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS', 'test_index')
 @patch('splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_METRICS', 'test_index_2')
 class TestPrepare(TestCase):
-    def test_prepare_trap(self):
+    @patch('splunk_connect_for_snmp.splunk.tasks.apply_custom_translations')
+    def test_prepare_trap(self, m_translate):
         task_input = {
             "sourcetype": "sc4snmp:traps",
             "time": 1234567,
@@ -26,6 +27,7 @@ class TestPrepare(TestCase):
                     },
             }
         }
+        m_translate.return_value = task_input
 
         result = prepare(task_input)
 
@@ -61,7 +63,8 @@ class TestPrepare(TestCase):
         self.assertEqual(67.0, event2["metric_three"]["value"])
         self.assertEqual(90.0, event2["metric_four"]["value"])
 
-    def test_prepare_metrics(self):
+    @patch('splunk_connect_for_snmp.splunk.tasks.apply_custom_translations')
+    def test_prepare_metrics(self, m_custom):
         task_input = {
             "time": 1234567,
             "address": "192.168.0.1",
@@ -82,6 +85,7 @@ class TestPrepare(TestCase):
             }
         }
 
+        m_custom.return_value = task_input
         result = prepare(task_input)
 
         self.assertEqual("list", type(result["metrics"]).__name__)
@@ -119,7 +123,8 @@ class TestPrepare(TestCase):
         self.assertEqual(15, fields2["frequency"])
         self.assertEqual("profile1,profile2", fields2["profiles"])
 
-    def test_prepare_only_events(self):
+    @patch('splunk_connect_for_snmp.splunk.tasks.apply_custom_translations')
+    def test_prepare_only_events(self, m_translate):
         task_input = {
             "time": 1234567,
             "address": "192.168.0.1",
@@ -136,6 +141,8 @@ class TestPrepare(TestCase):
                     },
             }
         }
+
+        m_translate.return_value = task_input
 
         result = prepare(task_input)
 

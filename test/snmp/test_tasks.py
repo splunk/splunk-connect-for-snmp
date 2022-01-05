@@ -47,7 +47,7 @@ class TestTasks(TestCase):
         m_poller.return_value = None
 
         kwargs = {"address": "192.168.0.1", "profiles": ["profile1", "profile2"], "frequency": 20}
-        m_do_work.return_value = {"test": "value1"}
+        m_do_work.return_value = (False, {"test": "value1"})
 
         result = poll(skip_init=True, **kwargs)
 
@@ -66,7 +66,7 @@ class TestTasks(TestCase):
         m_resolved.return_value = None
 
         work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
-        m_process_data.return_value = {"test": "value1"}
+        m_process_data.return_value = (False, [], {"test": "value1"})
 
         result = trap(work, skip_init=True)
 
@@ -88,7 +88,7 @@ class TestTasks(TestCase):
         m_is_mib_known.return_value = (True, "SOME-MIB")
 
         work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
-        m_process_data.return_value = {"test": "value1"}
+        m_process_data.return_value = (False, [], {"test": "value1"})
 
         result = trap(work, skip_init=True,)
 
@@ -116,7 +116,7 @@ class TestTasks(TestCase):
         m_is_mib_known.return_value = (True, "SOME-MIB")
 
         work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
-        m_process_data.return_value = {"test": "value1"}
+        m_process_data.return_value = (False, [], {"test": "value1"})
 
         result = trap(work, skip_init=True)
 

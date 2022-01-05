@@ -158,7 +158,7 @@ class TestInventoryRecord(TestCase):
             "secret": "secret",
             "securityEngine": "ENGINE",
             "walk_interval": 1850,
-            "profiles": 22,
+            "profiles": "",
             "SmartProfiles": True,
             "delete": False,
         }

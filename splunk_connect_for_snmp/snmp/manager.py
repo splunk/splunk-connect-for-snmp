@@ -288,7 +288,7 @@ class Poller(Task):
                         ir.address,
                         walk,
                 ):
-                    tmp_retry, tmp_mibs = self.process_snmp_data(
+                    tmp_retry, tmp_mibs, _ = self.process_snmp_data(
                         varBindTable, metrics, bulk_mapping
                     )
                     if tmp_mibs:
@@ -471,4 +471,4 @@ class Poller(Task):
                 if found:
                     retry = True
                     break
-        return retry, remotemibs
+        return retry, remotemibs, metrics
