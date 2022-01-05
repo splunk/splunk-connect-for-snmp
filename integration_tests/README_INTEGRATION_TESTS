@@ -16,6 +16,9 @@ Right now we support only NOVA.
 - su <user_name>
 - cd ~/splunk-connect-for-snmp
 - sudo microk8s enable helm3
+- microk8s helm3 repo add splunk-connect-for-snmp https://splunk.github.io/splunk-connect-for-snmp
+- microk8s helm3 repo update
+- microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 
 - ./integration_tests/deploy_and_test.sh -u <splunk_url_or_ip> -p <splunk_admin_password>
   - the test will install/deploy everything, will run all the integration tests and it will prompt
