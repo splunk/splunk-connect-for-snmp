@@ -51,15 +51,10 @@ class InventoryRecord:
             if test is None:
                 try:
                     socket.gethostbyname_ex(value)
-                    test = value
                 except socket.gaierror:
                     raise ValueError(
-                        f"field address must be an IP or a resolvable hostname {self}"
+                        f"field address must be an IP or a resolvable hostname {value}"
                     )
-            if test is None:
-                raise ValueError(
-                    f"field address must be an IP or a resolvable hostname {self}"
-                )
 
             self._address = value
 
@@ -72,7 +67,7 @@ class InventoryRecord:
 
     @port.setter
     def port(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._port = 161
         else:
             if not isinstance(value, int):
@@ -91,7 +86,7 @@ class InventoryRecord:
 
     @version.setter
     def version(self, value):
-        if value == None or value.strip() == "":
+        if value is None or value.strip() == "":
             self._version = "2c"
         else:
             if value not in ("2c", "3"):
@@ -107,7 +102,7 @@ class InventoryRecord:
 
     @community.setter
     def community(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._community = None
         else:
             self._community = value
@@ -121,7 +116,7 @@ class InventoryRecord:
 
     @secret.setter
     def secret(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._secret = None
         else:
             self._secret = value
@@ -135,7 +130,7 @@ class InventoryRecord:
 
     @securityEngine.setter
     def securityEngine(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._securityEngine = None
         else:
             self._securityEngine = value
@@ -169,12 +164,12 @@ class InventoryRecord:
 
     @profiles.setter
     def profiles(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._profiles = []
         elif isinstance(value, str):
             self._profiles = value.split(";")
         else:
-            self._profiles = value
+            self._profiles = []
 
     SmartProfiles: bool = True
     _SmartProfiles: bool = field(init=False, repr=False)
@@ -185,7 +180,7 @@ class InventoryRecord:
 
     @SmartProfiles.setter
     def SmartProfiles(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._SmartProfiles = True
         else:
             self._SmartProfiles = human_bool(value)
@@ -199,7 +194,7 @@ class InventoryRecord:
 
     @delete.setter
     def delete(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._delete = False
         else:
             self._delete = human_bool(value)
@@ -209,8 +204,8 @@ class InventoryRecord:
         ir_dict = json.loads(ir_json)
         return InventoryRecord(**ir_dict)
 
-    def tojson(self):
-        return {
+    def to_json(self):
+        return json.dumps({
             "address": self.address,
             "port": self.port,
             "version": self.version,
@@ -221,7 +216,7 @@ class InventoryRecord:
             "profiles": self.profiles,
             "SmartProfiles": self.SmartProfiles,
             "delete": self.delete,
-        }
+        })
 
     @classmethod
     def from_dict(cls, env):
