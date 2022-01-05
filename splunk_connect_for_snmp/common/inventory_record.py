@@ -51,15 +51,10 @@ class InventoryRecord:
             if test is None:
                 try:
                     socket.gethostbyname_ex(value)
-                    test = value
                 except socket.gaierror:
                     raise ValueError(
-                        f"field address must be an IP or a resolvable hostname {self}"
+                        f"field address must be an IP or a resolvable hostname {value}"
                     )
-            if test is None:
-                raise ValueError(
-                    f"field address must be an IP or a resolvable hostname {self}"
-                )
 
             self._address = value
 
@@ -169,12 +164,12 @@ class InventoryRecord:
 
     @profiles.setter
     def profiles(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._profiles = []
         elif isinstance(value, str):
             self._profiles = value.split(";")
         else:
-            self._profiles = value
+            self._profiles = []
 
     SmartProfiles: bool = True
     _SmartProfiles: bool = field(init=False, repr=False)
@@ -209,8 +204,8 @@ class InventoryRecord:
         ir_dict = json.loads(ir_json)
         return InventoryRecord(**ir_dict)
 
-    def tojson(self):
-        return {
+    def to_json(self):
+        return json.dumps({
             "address": self.address,
             "port": self.port,
             "version": self.version,
@@ -221,7 +216,7 @@ class InventoryRecord:
             "profiles": self.profiles,
             "SmartProfiles": self.SmartProfiles,
             "delete": self.delete,
-        }
+        })
 
     @classmethod
     def from_dict(cls, env):
