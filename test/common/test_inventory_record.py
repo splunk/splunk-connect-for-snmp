@@ -1,6 +1,4 @@
-import json
 from unittest import TestCase
-from unittest.mock import patch
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 
@@ -36,7 +34,11 @@ class TestInventoryRecord(TestCase):
     def test_port_too_high(self):
         ir_dict = {
             "address": "192.168.0.1",
-            "port": 123
+            "port": 65537,
+            "version": "2c",
+            "walk_interval": 1850,
+            "SmartProfiles": True,
+            "delete": "",
         }
 
         with self.assertRaises(ValueError) as e:
