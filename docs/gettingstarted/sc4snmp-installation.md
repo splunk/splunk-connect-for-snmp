@@ -48,7 +48,7 @@ worker:
   #replicaCount: 2
   # udpConnectionTimeout: timeout in seconds for SNMP operations
   #udpConnectionTimeout: 5
-  logLevel: "DEBUG"
+  logLevel: "INFO"
 scheduler:
   logLevel: "INFO"
 #  profiles: |
