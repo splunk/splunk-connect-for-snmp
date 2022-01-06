@@ -669,9 +669,9 @@ microk8s kubectl delete pvc &ndash;all -n sc4snmp</p>
 
 <p>that causes infinite retry of walk operation, add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true.</p>
 <p>An example confiuration for worker in <code>values.yaml</code> is:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
-  <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;DEBUG&quot;</span>
-  <span class="nt">ignoreEmptyVarbinds</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;DEBUG&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ignoreEmptyVarbinds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </code></pre></div>
 
               

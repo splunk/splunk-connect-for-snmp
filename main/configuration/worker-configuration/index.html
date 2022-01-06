@@ -616,20 +616,20 @@
 </code></pre></div>
 
 <p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
-  <span class="c1"># replicas: Number of replicas for worker container should two or more</span>
-  <span class="nt">replicaCount</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
-  <span class="c1">#Log level one of INFO, WARNING, CRITICAL, DEBUG, ERROR</span>
-  <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;WARNING&quot;</span>
-  <span class="c1">#The following resource specification is appropriate for most deployments to scale the</span>
-  <span class="c1">#Environment increase the number of workers rather than the resources per container</span>
-  <span class="nt">resources</span><span class="p">:</span>
-    <span class="nt">limits</span><span class="p">:</span>
-        <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>        
-        <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">512Mi</span>
-    <span class="nt">requests</span><span class="p">:</span>
-      <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500m</span>
-      <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">128Mi</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># replicas: Number of replicas for worker container should two or more</span><span class="w"></span>
+<span class="w">  </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+<span class="w">  </span><span class="c1">#Log level one of INFO, WARNING, CRITICAL, DEBUG, ERROR</span><span class="w"></span>
+<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;WARNING&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="c1">#The following resource specification is appropriate for most deployments to scale the</span><span class="w"></span>
+<span class="w">  </span><span class="c1">#Environment increase the number of workers rather than the resources per container</span><span class="w"></span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w">        </span>
+<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512Mi</span><span class="w"></span>
+<span class="w">    </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500m</span><span class="w"></span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">128Mi</span><span class="w"></span>
 </code></pre></div>
 
               

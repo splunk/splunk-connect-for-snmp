@@ -726,74 +726,74 @@ on production configuration.</p>
 </code></pre></div>
 
 <h3 id="download-and-modify-valuesyaml">Download and modify values.yaml<a class="headerlink" href="#download-and-modify-valuesyaml" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nt">splunk</span><span class="p">:</span>
-  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https</span>
-  <span class="nt">host</span><span class="p">:</span> <span class="c1">###SPLUNK_HOST###</span>
-  <span class="nt">token</span><span class="p">:</span> <span class="c1">###SPLUNK_TOKEN###</span>
-  <span class="nt">insecureSSL</span><span class="p">:</span> <span class="s">&quot;false&quot;</span>
-  <span class="nt">port</span><span class="p">:</span> <span class="s">&quot;###SPLUNK_PORT###&quot;</span>
-  <span class="nt">clusterName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-cluster</span>
-<span class="nt">image</span><span class="p">:</span>
-  <span class="nt">pullPolicy</span><span class="p">:</span> <span class="s">&quot;Always&quot;</span>
-<span class="nt">traps</span><span class="p">:</span>
-  <span class="nt">communities</span><span class="p">:</span>
-    <span class="nt">2c</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">public</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">homelab</span>
-  <span class="c1">#usernameSecrets:</span>
-  <span class="c1">#  - sc4snmp-hlab-sha-aes</span>
-  <span class="c1">#  - sc4snmp-hlab-sha-des</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">splunk</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https</span><span class="w"></span>
+<span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="c1">###SPLUNK_HOST###</span><span class="w"></span>
+<span class="w">  </span><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="c1">###SPLUNK_TOKEN###</span><span class="w"></span>
+<span class="w">  </span><span class="nt">insecureSSL</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;false&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;###SPLUNK_PORT###&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">clusterName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-cluster</span><span class="w"></span>
+<span class="nt">image</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Always&quot;</span><span class="w"></span>
+<span class="nt">traps</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">communities</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">2c</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">homelab</span><span class="w"></span>
+<span class="w">  </span><span class="c1">#usernameSecrets:</span><span class="w"></span>
+<span class="w">  </span><span class="c1">#  - sc4snmp-hlab-sha-aes</span><span class="w"></span>
+<span class="w">  </span><span class="c1">#  - sc4snmp-hlab-sha-des</span><span class="w"></span>
 
-  <span class="c1">#loadBalancerIP: The IP address in the metallb pool</span>
-  <span class="nt">loadBalancerIP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10.1.0.1</span>
-<span class="nt">worker</span><span class="p">:</span>
-  <span class="c1"># replicas: Number of replicas for worker container should two or more</span>
-  <span class="c1">#replicaCount: 2</span>
-  <span class="c1"># udpConnectionTimeout: timeout in seconds for SNMP operations</span>
-  <span class="c1">#udpConnectionTimeout: 5</span>
-  <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;DEBUG&quot;</span>
-<span class="nt">scheduler</span><span class="p">:</span>
-  <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;INFO&quot;</span>
-<span class="c1">#  profiles: |</span>
-<span class="c1">#    generic_switch:</span>
-<span class="c1">#      frequency: 60</span>
-<span class="c1">#      varBinds:</span>
-<span class="c1">#        - [&#39;SNMPv2-MIB&#39;, &#39;sysDescr&#39;]</span>
-<span class="c1">#        - [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;, 0]</span>
-<span class="c1">#        - [&#39;IF-MIB&#39;]</span>
-<span class="c1">#        - [&#39;TCP-MIB&#39;]</span>
-<span class="c1">#        - [&#39;UDP-MIB&#39;]</span>
-<span class="nt">poller</span><span class="p">:</span>
- <span class="c1"># usernameSecrets:</span>
- <span class="c1">#   - sc4snmp-hlab-sha-aes</span>
- <span class="c1">#   - sc4snmp-hlab-sha-des</span>
- <span class="c1"># inventory: |</span>
- <span class="c1">#   address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete</span>
- <span class="c1">#   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,600,,,</span>
- <span class="c1">#   10.0.0.199,,2c,public,,,600,,,True</span>
- <span class="c1">#   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,600,,,</span>
-<span class="nt">sim</span><span class="p">:</span>
-  <span class="c1"># sim must be enabled if you want to use signalFx</span>
-  <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="c1">#  signalfxToken: BCwaJ_Ands4Xh7Nrg</span>
-<span class="c1">#  signalfxRealm: us0</span>
-<span class="nt">mongodb</span><span class="p">:</span>
-  <span class="nt">pdb</span><span class="p">:</span>
-    <span class="nt">create</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">persistence</span><span class="p">:</span>
-    <span class="nt">storageClass</span><span class="p">:</span> <span class="s">&quot;microk8s-hostpath&quot;</span>
-  <span class="nt">volumePermissions</span><span class="p">:</span>
-    <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="nt">rabbitmq</span><span class="p">:</span>
-  <span class="nt">pdb</span><span class="p">:</span>
-    <span class="nt">create</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">replicaCount</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
-  <span class="nt">persistence</span><span class="p">:</span>
-    <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="nt">storageClass</span><span class="p">:</span> <span class="s">&quot;microk8s-hostpath&quot;</span>
-  <span class="nt">volumePermissions</span><span class="p">:</span>
-    <span class="nt">enabled</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="c1">#loadBalancerIP: The IP address in the metallb pool</span><span class="w"></span>
+<span class="w">  </span><span class="nt">loadBalancerIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.1.0.1</span><span class="w"></span>
+<span class="nt">worker</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># replicas: Number of replicas for worker container should two or more</span><span class="w"></span>
+<span class="w">  </span><span class="c1">#replicaCount: 2</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># udpConnectionTimeout: timeout in seconds for SNMP operations</span><span class="w"></span>
+<span class="w">  </span><span class="c1">#udpConnectionTimeout: 5</span><span class="w"></span>
+<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;DEBUG&quot;</span><span class="w"></span>
+<span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INFO&quot;</span><span class="w"></span>
+<span class="c1">#  profiles: |</span><span class="w"></span>
+<span class="c1">#    generic_switch:</span><span class="w"></span>
+<span class="c1">#      frequency: 60</span><span class="w"></span>
+<span class="c1">#      varBinds:</span><span class="w"></span>
+<span class="c1">#        - [&#39;SNMPv2-MIB&#39;, &#39;sysDescr&#39;]</span><span class="w"></span>
+<span class="c1">#        - [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;, 0]</span><span class="w"></span>
+<span class="c1">#        - [&#39;IF-MIB&#39;]</span><span class="w"></span>
+<span class="c1">#        - [&#39;TCP-MIB&#39;]</span><span class="w"></span>
+<span class="c1">#        - [&#39;UDP-MIB&#39;]</span><span class="w"></span>
+<span class="nt">poller</span><span class="p">:</span><span class="w"></span>
+<span class="w"> </span><span class="c1"># usernameSecrets:</span><span class="w"></span>
+<span class="w"> </span><span class="c1">#   - sc4snmp-hlab-sha-aes</span><span class="w"></span>
+<span class="w"> </span><span class="c1">#   - sc4snmp-hlab-sha-des</span><span class="w"></span>
+<span class="w"> </span><span class="c1"># inventory: |</span><span class="w"></span>
+<span class="w"> </span><span class="c1">#   address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete</span><span class="w"></span>
+<span class="w"> </span><span class="c1">#   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,600,,,</span><span class="w"></span>
+<span class="w"> </span><span class="c1">#   10.0.0.199,,2c,public,,,600,,,True</span><span class="w"></span>
+<span class="w"> </span><span class="c1">#   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,600,,,</span><span class="w"></span>
+<span class="nt">sim</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># sim must be enabled if you want to use signalFx</span><span class="w"></span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+<span class="c1">#  signalfxToken: BCwaJ_Ands4Xh7Nrg</span><span class="w"></span>
+<span class="c1">#  signalfxRealm: us0</span><span class="w"></span>
+<span class="nt">mongodb</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">pdb</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">create</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">  </span><span class="nt">persistence</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">storageClass</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;microk8s-hostpath&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">volumePermissions</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="nt">rabbitmq</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">pdb</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">create</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">  </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+<span class="w">  </span><span class="nt">persistence</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">storageClass</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;microk8s-hostpath&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">volumePermissions</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </code></pre></div>
 
 <p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
