@@ -456,39 +456,43 @@ class Poller(Task):
                     }
                     if mapping:
                         metrics[group_key]["profiles"] = []
+                try:
 
-                snmp_val = varBind[1]
-                snmp_type = type(snmp_val).__name__
+                    snmp_val = varBind[1]
+                    snmp_type = type(snmp_val).__name__
 
-                metric_type = map_metric_type(snmp_type, snmp_val)
-                metric_value = valueAsBest(snmp_val.prettyPrint())
+                    metric_type = map_metric_type(snmp_type, snmp_val)
+                    metric_value = valueAsBest(snmp_val.prettyPrint())
 
-                index_number = extract_index_number(index)
-                metric_value = fill_empty_value(index_number, metric_value)
+                    index_number = extract_index_number(index)
+                    metric_value = fill_empty_value(index_number, metric_value)
 
-                profile = None
-                if mapping:
-                    profile = mapping.get(
-                        f"{mib}:{metric}:{index_number}",
-                        mapping.get(f"{mib}:{metric}", mapping.get(mib)),
-                    )
+                    profile = None
+                    if mapping:
+                        profile = mapping.get(
+                            f"{mib}:{metric}:{index_number}",
+                            mapping.get(f"{mib}:{metric}", mapping.get(mib)),
+                        )
 
-                if metric_type in MTYPES and (isinstance(metric_value, float)):
-                    metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
-                        "time": time.time(),
-                        "type": metric_type,
-                        "value": metric_value,
-                        "oid": oid,
-                    }
-                    if profile and profile not in metrics[group_key]["profiles"]:
-                        metrics[group_key]["profiles"].append(profile)
-                else:
-                    metrics[group_key]["fields"][f"{mib}.{metric}"] = {
-                        "time": time.time(),
-                        "type": metric_type,
-                        "value": metric_value,
-                        "oid": oid,
-                    }
+                    if metric_type in MTYPES and (isinstance(metric_value, float)):
+                        metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
+                            "time": time.time(),
+                            "type": metric_type,
+                            "value": metric_value,
+                            "oid": oid,
+                        }
+                        if profile and profile not in metrics[group_key]["profiles"]:
+                            metrics[group_key]["profiles"].append(profile)
+                    else:
+                        metrics[group_key]["fields"][f"{mib}.{metric}"] = {
+                            "time": time.time(),
+                            "type": metric_type,
+                            "value": metric_value,
+                            "oid": oid,
+                        }
+                except:
+                    logger.error(f"Exception processing data from {target} {varBind}")
+                    logger.exception("")
             else:
                 found, mib = self.isMIBKnown(id, oid, target)
                 if not mib in remotemibs:
