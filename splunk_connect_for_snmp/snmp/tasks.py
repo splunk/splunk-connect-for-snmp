@@ -61,8 +61,14 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
     retry_jitter=True,
     retry_backoff_max=3600,
     max_retries=50,
-    autoretry_for=(MongoLockLocked, SnmpActionError,),
-    throws=(SnmpActionError, SnmpActionError,)
+    autoretry_for=(
+        MongoLockLocked,
+        SnmpActionError,
+    ),
+    throws=(
+        SnmpActionError,
+        SnmpActionError,
+    ),
 )
 def walk(self, **kwargs):
     address = kwargs["address"]
@@ -128,7 +134,11 @@ def trap(self, work):
     metrics = {}
     for w in work["data"]:
         try:
-            var_bind_table.append(ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(self.mib_view_controller))
+            var_bind_table.append(
+                ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
+                    self.mib_view_controller
+                )
+            )
         except SmiError:
             not_translated_oids.append((w[0], w[1]))
 
@@ -142,11 +152,15 @@ def trap(self, work):
         self.load_mibs(remotemibs)
         for w in remaining_oids:
             try:
-                var_bind_table.append(ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(self.mib_view_controller))
+                var_bind_table.append(
+                    ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
+                        self.mib_view_controller
+                    )
+                )
             except SmiError:
                 logger.warn(f"No translation found for {w[0]}")
 
-    self.process_snmp_data(var_bind_table, metrics)
+    self.process_snmp_data(var_bind_table, metrics, work["host"])
 
     return {
         "time": time.time(),

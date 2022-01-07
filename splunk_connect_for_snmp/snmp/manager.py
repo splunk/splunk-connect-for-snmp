@@ -170,6 +170,7 @@ def fill_empty_value(index_number, metric_value):
                 logger.exception(
                     f"index_number={index_number} metric_value={metric_value}"
                 )
+                logger.error(f"index_number={index_number} metric_value={metric_value}")
                 metric_value = index_number
         else:
             metric_value = index_number
@@ -288,7 +289,7 @@ class Poller(Task):
                     walk,
                 ):
                     tmp_retry, tmp_mibs = self.process_snmp_data(
-                        varBindTable, metrics, bulk_mapping
+                        varBindTable, metrics, address, bulk_mapping
                     )
                     if tmp_mibs:
                         mibs_to_load.update(tmp_mibs)
@@ -310,7 +311,7 @@ class Poller(Task):
                     walk,
                 ):
                     tmp_retry, tmp_mibs = self.process_snmp_data(
-                        varBindTable, metrics, get_mapping
+                        varBindTable, metrics, address, get_mapping
                     )
                     if tmp_mibs:
                         self.load_mibs(tmp_mibs)
@@ -332,7 +333,7 @@ class Poller(Task):
                 self.builder.loadModules(mib)
         # logger.debug("Indexing MIB objects..."),
 
-    def isMIBKnown(self, id: str, oid: str) -> tuple([bool, str]):
+    def isMIBKnown(self, id: str, oid: str, target: str) -> tuple([bool, str]):
 
         oid_list = tuple(oid.split("."))
 
@@ -343,7 +344,7 @@ class Poller(Task):
                 mib = self.mib_map[oid_to_check]
                 logger.debug(f"found {mib} for {id} based on {oid_to_check}")
                 return True, mib
-        logger.warn(f"no mib found {id} based on {oid}")
+        logger.warn(f"no mib found {id} based on {oid} from {target}")
         return False, None
 
     def getVarBinds(self, walk=False, profiles=[]):
@@ -433,7 +434,7 @@ class Poller(Task):
 
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
-    def process_snmp_data(self, varBindTable, metrics, mapping={}):
+    def process_snmp_data(self, varBindTable, metrics, target, mapping={}):
         i = 0
         retry = False
         remotemibs = []
@@ -489,7 +490,7 @@ class Poller(Task):
                         "oid": oid,
                     }
             else:
-                found, mib = self.isMIBKnown(id, oid)
+                found, mib = self.isMIBKnown(id, oid, target)
                 if not mib in remotemibs:
                     remotemibs.append(mib)
                 if found:
