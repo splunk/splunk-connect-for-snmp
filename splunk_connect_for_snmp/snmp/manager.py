@@ -37,10 +37,8 @@ from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
 
-from splunk_connect_for_snmp.common.inventory_record import (
-    InventoryRecord,
-)
 from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import GetAuth
@@ -166,7 +164,13 @@ def map_metric_type(t, snmp_value):
 def fill_empty_value(index_number, metric_value):
     if metric_value is None or (isinstance(metric_value, str) and not metric_value):
         if isinstance(index_number, bytes):
-            metric_value = str(index_number, 'utf-8')
+            try:
+                metric_value = str(index_number, "utf-8")
+            except UnicodeDecodeError:
+                logger.exception(
+                    f"index_number={index_number} metric_value={metric_value}"
+                )
+                metric_value = index_number
         else:
             metric_value = index_number
     return metric_value
@@ -253,7 +257,9 @@ class Poller(Task):
         authData = GetAuth(logger, ir, self.snmpEngine)
         contextData = getContextData(logger, ir)
 
-        transport = UdpTransportTarget((ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT)
+        transport = UdpTransportTarget(
+            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
+        )
 
         metrics = {}
         retry = False
@@ -373,9 +379,9 @@ class Poller(Task):
                     profile_varbinds = profile_spec["varBinds"]
                     for vb in profile_varbinds:
                         if len(vb) == 2:
-                            if (
-                                vb[0] not in required_bulk
-                                or (required_bulk[vb[0]] and vb[1] not in required_bulk[vb[0]])
+                            if vb[0] not in required_bulk or (
+                                required_bulk[vb[0]]
+                                and vb[1] not in required_bulk[vb[0]]
                             ):
                                 if vb[0] not in required_bulk:
                                     required_bulk[vb[0]] = [vb[1]]
@@ -406,19 +412,18 @@ class Poller(Task):
                                 )
                                 get_mapping[f"{vb[0]}:{vb[1]}:{vb[2]}"] = profile
                             else:
-                                if not required_bulk[vb[0]] or vb[1] not in required_bulk[vb[0]]:
+                                if (
+                                    not required_bulk[vb[0]]
+                                    or vb[1] not in required_bulk[vb[0]]
+                                ):
                                     if vb[0] not in required_get:
                                         required_get[vb[0]] = {vb[1]: [vb[2]]}
                                     elif vb[1] not in required_get[vb[0]]:
                                         required_get[vb[0]][vb[1]].append(vb[2])
                                     varbinds_get.add(
-                                        ObjectType(
-                                            ObjectIdentity(vb[0], vb[1], vb[2])
-                                        )
+                                        ObjectType(ObjectIdentity(vb[0], vb[1], vb[2]))
                                     )
-                                    get_mapping[
-                                        f"{vb[0]}:{vb[1]}:{vb[2]}"
-                                    ] = profile
+                                    get_mapping[f"{vb[0]}:{vb[1]}:{vb[2]}"] = profile
             self.load_mibs(needed_mibs)
 
         logger.debug(f"varbinds_get={varbinds_get}")
