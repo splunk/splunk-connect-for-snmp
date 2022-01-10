@@ -19,7 +19,7 @@ class TestMibProcessing(TestCase):
     def test_is_mib_known_when_mib_map_is_empty(self):
         poller = Poller.__new__(Poller)
         poller.mib_map = {}
-        found, mib = poller.is_mib_known("some ID", "1.2.3.4.5.6")
+        found, mib = poller.is_mib_known("some ID", "1.2.3.4.5.6", "address")
 
         self.assertFalse(found)
         self.assertIsNone(mib)
@@ -27,7 +27,7 @@ class TestMibProcessing(TestCase):
     def test_is_mib_known(self):
         poller = Poller.__new__(Poller)
         poller.mib_map = {"1.2.3.4.5.6": "test1"}
-        found, mib = poller.is_mib_known("some ID", "1.2.3.4.5.6.7")
+        found, mib = poller.is_mib_known("some ID", "1.2.3.4.5.6.7", "address")
 
         self.assertTrue(found)
         self.assertEqual("test1", mib)
@@ -35,7 +35,7 @@ class TestMibProcessing(TestCase):
     def test_is_mib_known_prefix_limit(self):
         poller = Poller.__new__(Poller)
         poller.mib_map = {"1.2.3.4.5": "test1"}
-        found, mib = poller.is_mib_known("some ID", "1.2.3.4.5.6.7")
+        found, mib = poller.is_mib_known("some ID", "1.2.3.4.5.6.7", "address")
 
         self.assertFalse(found)
         self.assertIsNone(mib)

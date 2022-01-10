@@ -169,7 +169,7 @@ class InventoryRecord:
         elif isinstance(value, str):
             self._profiles = value.split(";")
         else:
-            self._profiles = []
+            self._profiles = value
 
     SmartProfiles: bool = True
     _SmartProfiles: bool = field(init=False, repr=False)
