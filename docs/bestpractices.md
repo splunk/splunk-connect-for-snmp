@@ -26,7 +26,6 @@ An example confiuration for worker in `values.yaml` is:
 
 ```yaml
 worker:
-  logLevel: "DEBUG"
   ignoreEmptyVarbinds: true
 ```
 

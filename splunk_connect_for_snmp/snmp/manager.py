@@ -37,10 +37,8 @@ from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
 
-from splunk_connect_for_snmp.common.inventory_record import (
-    InventoryRecord,
-)
 from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import GetAuth
@@ -163,7 +161,14 @@ def map_metric_type(t, snmp_value):
 def fill_empty_value(index_number, metric_value):
     if metric_value is None or (isinstance(metric_value, str) and not metric_value):
         if isinstance(index_number, bytes):
-            metric_value = str(index_number, 'utf-8')
+            try:
+                metric_value = str(index_number, "utf-8")
+            except UnicodeDecodeError:
+                logger.exception(
+                    f"index_number={index_number} metric_value={metric_value}"
+                )
+                logger.error(f"index_number={index_number} metric_value={metric_value}")
+                metric_value = index_number
         else:
             metric_value = index_number
     return metric_value
@@ -260,7 +265,9 @@ class Poller(Task):
         authData = GetAuth(logger, ir, self.snmpEngine)
         contextData = get_context_data()
 
-        transport = UdpTransportTarget((ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT)
+        transport = UdpTransportTarget(
+            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
+        )
 
         metrics = {}
         retry = False
@@ -289,7 +296,7 @@ class Poller(Task):
                         walk,
                 ):
                     tmp_retry, tmp_mibs, _ = self.process_snmp_data(
-                        varBindTable, metrics, bulk_mapping
+                        varBindTable, metrics, address, bulk_mapping
                     )
                     if tmp_mibs:
                         mibs_to_load.update(tmp_mibs)
@@ -310,14 +317,17 @@ class Poller(Task):
                         ir.address,
                         walk,
                 ):
-                    self.process_snmp_data(varBindTable, metrics, get_mapping)
+                    self.process_snmp_data(
+                        varBindTable, metrics, address, get_mapping
+                    )
 
         for group_key, metric in metrics.items():
             if "profiles" in metrics[group_key]:
                 metrics[group_key]["profiles"] = ",".join(
                     metrics[group_key]["profiles"]
                 )
-        return metrics
+
+        return retry, metrics
 
     def load_mibs(self, mibs: List[str]) -> None:
         logger.info(f"loading mib modules {mibs}")
@@ -325,7 +335,7 @@ class Poller(Task):
             if mib:
                 self.builder.loadModules(mib)
 
-    def is_mib_known(self, id: str, oid: str) -> tuple([bool, str]):
+    def is_mib_known(self, id: str, oid: str, target: str) -> tuple([bool, str]):
 
         oid_list = tuple(oid.split("."))
 
@@ -336,7 +346,7 @@ class Poller(Task):
                 mib = self.mib_map[oid_to_check]
                 logger.debug(f"found {mib} for {id} based on {oid_to_check}")
                 return True, mib
-        logger.warning(f"no mib found {id} based on {oid}")
+        logger.warning(f"no mib found {id} based on {oid} from {target}")
         return False, None
 
     def get_var_binds(self, walk=False, profiles=[]):
@@ -411,7 +421,7 @@ class Poller(Task):
 
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
-    def process_snmp_data(self, varBindTable, metrics, mapping={}):
+    def process_snmp_data(self, varBindTable, metrics, target, mapping={}):
         i = 0
         retry = False
         remotemibs = []
@@ -431,41 +441,45 @@ class Poller(Task):
                     }
                     if mapping:
                         metrics[group_key]["profiles"] = []
+                try:
 
-                snmp_val = varBind[1]
-                snmp_type = type(snmp_val).__name__
+                    snmp_val = varBind[1]
+                    snmp_type = type(snmp_val).__name__
 
-                metric_type = map_metric_type(snmp_type, snmp_val)
-                metric_value = valueAsBest(snmp_val.prettyPrint())
+                    metric_type = map_metric_type(snmp_type, snmp_val)
+                    metric_value = valueAsBest(snmp_val.prettyPrint())
 
-                index_number = extract_index_number(index)
-                metric_value = fill_empty_value(index_number, metric_value)
+                    index_number = extract_index_number(index)
+                    metric_value = fill_empty_value(index_number, metric_value)
 
-                profile = None
-                if mapping:
-                    profile = mapping.get(
-                        f"{mib}:{metric}:{index_number}",
-                        mapping.get(f"{mib}:{metric}", mapping.get(mib)),
-                    )
+                    profile = None
+                    if mapping:
+                        profile = mapping.get(
+                            f"{mib}:{metric}:{index_number}",
+                            mapping.get(f"{mib}:{metric}", mapping.get(mib)),
+                        )
 
-                if metric_type in MTYPES and (isinstance(metric_value, float)):
-                    metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
-                        "time": time.time(),
-                        "type": metric_type,
-                        "value": metric_value,
-                        "oid": oid,
-                    }
-                    if profile and profile not in metrics[group_key]["profiles"]:
-                        metrics[group_key]["profiles"].append(profile)
-                else:
-                    metrics[group_key]["fields"][f"{mib}.{metric}"] = {
-                        "time": time.time(),
-                        "type": metric_type,
-                        "value": metric_value,
-                        "oid": oid,
-                    }
+                    if metric_type in MTYPES and (isinstance(metric_value, float)):
+                        metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
+                            "time": time.time(),
+                            "type": metric_type,
+                            "value": metric_value,
+                            "oid": oid,
+                        }
+                        if profile and profile not in metrics[group_key]["profiles"]:
+                            metrics[group_key]["profiles"].append(profile)
+                    else:
+                        metrics[group_key]["fields"][f"{mib}.{metric}"] = {
+                            "time": time.time(),
+                            "type": metric_type,
+                            "value": metric_value,
+                            "oid": oid,
+                        }
+                except:
+                    logger.error(f"Exception processing data from {target} {varBind}")
+                    logger.exception("")
             else:
-                found, mib = self.is_mib_known(id, oid)
+                found, mib = self.is_mib_known(id, oid, target)
                 if mib not in remotemibs:
                     remotemibs.append(mib)
                 if found:
