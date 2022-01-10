@@ -88,8 +88,8 @@ class InventoryRecord:
         if value is None or value.strip() == "":
             self._version = "2c"
         else:
-            if value not in ("2c", "3"):
-                raise ValueError(f"version out of range {value} accepted is 2c or 3")
+            if value not in ("1", "2c", "3"):
+                raise ValueError(f"version out of range {value} accepted is 1 or 2c or 3")
             self._version = value
 
     community: str
