@@ -47,7 +47,7 @@ class InventoryRecord:
             with suppress(ValueError):
                 test = IPv4Address(value)
                 test = IPv6Address(value)
-            if test is None:
+            if not test:
                 try:
                     socket.gethostbyname_ex(value)
                 except socket.gaierror:
