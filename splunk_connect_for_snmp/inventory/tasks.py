@@ -39,7 +39,7 @@ from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # nosemgrep
 
 logger = get_task_logger(__name__)
 
