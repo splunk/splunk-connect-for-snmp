@@ -25,4 +25,5 @@ FROM base as final
 
 COPY --from=builder /app/.venv /app/.venv
 COPY entrypoint.sh ./
+USER root
 ENTRYPOINT ["./entrypoint.sh"]
