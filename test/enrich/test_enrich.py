@@ -6,7 +6,6 @@ from splunk_connect_for_snmp.enrich.tasks import enrich
 
 class TestEnrich(TestCase):
 
-    # @patch('pymongo.MongoClient')
     @patch("pymongo.collection.Collection.find_one")
     @patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.enrich.tasks.check_restart")
@@ -24,8 +23,6 @@ class TestEnrich(TestCase):
                             "oid": "1.3.6.1.2.1.1.4.0", "name": "SNMPv2-MIB.sysContact"}}}}
 
         current_target = {"address": "192.168.0.1", "attributes": attributes}
-        # m_mongo_client.sc4snmp.targets.find_one.return_value = current_target
-        # m_find_one.return_value = current_target
         m_find_one.return_value = current_target
 
         input_dict = {"address": "192.168.0.1",
