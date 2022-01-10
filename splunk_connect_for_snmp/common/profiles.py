@@ -37,7 +37,7 @@ def load_profiles():
     )
     for file in os.listdir(pkg_path):
         if file.endswith("yaml"):
-            with open(os.path.join(pkg_path, file)) as of:
+            with open(os.path.join(pkg_path, file), encoding='utf-8') as of:
                 profiles = yaml.safe_load(of)
                 logger.info(
                     f"loading {len(profiles.keys())} profiles from shared profile group {file}"
