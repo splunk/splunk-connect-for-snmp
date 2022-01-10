@@ -244,7 +244,7 @@ class Poller(Task):
             )
 
     def do_work(self, address: str, walk: bool = False, profiles: List[str] = None):
-        result = {}
+        retry = False
         mibs_to_load = set()
 
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
@@ -294,7 +294,7 @@ class Poller(Task):
                         ir.address,
                         walk,
                 ):
-                    tmp_retry, tmp_mibs = self.process_snmp_data(
+                    tmp_retry, tmp_mibs, _ = self.process_snmp_data(
                         varBindTable, metrics, address, bulk_mapping
                     )
                     if tmp_mibs:
@@ -323,7 +323,8 @@ class Poller(Task):
                 metrics[group_key]["profiles"] = ",".join(
                     metrics[group_key]["profiles"]
                 )
-        return metrics
+
+        return retry, metrics
 
     def load_mibs(self, mibs: List[str]) -> None:
         logger.info(f"loading mib modules {mibs}")
@@ -475,11 +476,11 @@ class Poller(Task):
                     logger.error(f"Exception processing data from {target} {varBind}")
                     logger.exception("")
             else:
-                found, mib = self.isMIBKnown(id, oid, target)
+                found, mib = self.is_mib_known(id, oid, target)
                 if not mib in remotemibs:
                     remotemibs.append(mib)
                 if found:
                     retry = True
                     break
 
-        return retry, remotemibs
+        return retry, remotemibs, metrics
