@@ -243,8 +243,7 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
 
-    def dowork(self, address: str, walk: bool = False, profiles: List[str] = None):
-        result = {}
+    def do_work(self, address: str, walk: bool = False, profiles: List[str] = None):
         mibs_to_load = set()
 
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
@@ -442,7 +441,6 @@ class Poller(Task):
                     if mapping:
                         metrics[group_key]["profiles"] = []
                 try:
-
                     snmp_val = varBind[1]
                     snmp_type = type(snmp_val).__name__
 

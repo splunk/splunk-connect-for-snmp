@@ -190,7 +190,7 @@ class TestProcessSnmpData(TestCase):
         metrics = {}
         mapping = {"IF-MIB:some_metric": "profile1", "UDP-MIB:next_metric": "profile2"}
 
-        poller.process_snmp_data(varBindTable, metrics, mapping)
+        poller.process_snmp_data(varBindTable, metrics, "some_address", mapping)
 
         self.assertEqual({'QWERTYUIOP': {'fields': {},
                                          'metrics': {'IF-MIB.some_metric': {'oid': '1.2.3.4.5.6.7',

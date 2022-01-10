@@ -73,7 +73,7 @@ def walk(self, skip_init=False, **kwargs):
     with lock(address, self.request.id, expire=300, timeout=300):
         retry = True
         while retry:
-            retry, result = self.dowork(address, walk=True)
+            retry, result = self.do_work(address, walk=True)
 
         # retry, result = self.run_walk(kwargs)
 
