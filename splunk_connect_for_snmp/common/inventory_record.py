@@ -17,6 +17,7 @@ import dataclasses
 import inspect
 import json
 import socket
+from contextlib import suppress
 from dataclasses import InitVar, dataclass, field
 from ipaddress import IPv4Address, IPv6Address
 from typing import List
@@ -43,12 +44,10 @@ class InventoryRecord:
             raise ValueError(f"field address cannot be commented")
         else:
             test = None
-            try:
+            with suppress(ValueError):
                 test = IPv4Address(value)
                 test = IPv6Address(value)
-            except ValueError:
-                pass
-            if test is None:
+            if not test:
                 try:
                     socket.gethostbyname_ex(value)
                 except socket.gaierror:

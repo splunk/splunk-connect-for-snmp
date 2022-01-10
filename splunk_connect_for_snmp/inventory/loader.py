@@ -84,7 +84,7 @@ def load():
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
     logger.info(f"Loading inventory from {path}")
-    with open(path) as csv_file:
+    with open(path, encoding='utf-8') as csv_file:
         # Dict reader will trust the header of the csv
         ir_reader = DictReader(csv_file)
         for source_record in ir_reader:

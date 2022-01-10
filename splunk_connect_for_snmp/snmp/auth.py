@@ -39,7 +39,7 @@ def get_secret_value(
     source = os.path.join(location, key)
     result = default
     if os.path.exists(source):
-        with open(os.path.join(location, key)) as file:
+        with open(os.path.join(location, key), encoding='utf-8') as file:
             result = file.read().replace("\n", "")
     elif required:
         raise Exception(f"Required secret key {key} not found in {location}")
