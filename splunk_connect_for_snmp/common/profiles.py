@@ -45,7 +45,7 @@ def load_profiles():
                 for key, profile in profiles.items():
                     active_profiles[key] = profile
     try:
-        with open(CONFIG_PATH) as file:
+        with open(CONFIG_PATH, encoding='utf-8') as file:
             config_runtime = yaml.safe_load(file)
             if "profiles" in config_runtime:
                 profiles = config_runtime.get("profiles", {})
