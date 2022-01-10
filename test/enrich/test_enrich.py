@@ -8,8 +8,9 @@ class TestEnrich(TestCase):
 
     # @patch('pymongo.MongoClient')
     @patch("pymongo.collection.Collection.find_one")
+    @patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.enrich.tasks.check_restart")
-    def test_enrich(self, m_check_restart, m_find_one):
+    def test_enrich(self, m_check_restart, m_update_one, m_find_one):
         attributes = {
             "5f6b9ac8904073fcd07cfd4a2e095c7a79756206159682b9fed1333234883e7d0a1ca4c4b726cd37b7e40d3a48ad044c2f02c92d8512751518ba8b5ac579bcdc002e8fa813c83785a01c45c06541d612a05e8d454677f7607f57a7418ee83df7238c3dc8741587afc4d2a025ade13da6b156c6837999c4c6d262e9e95b13a40623da574da4fa8862fac5752d9f874abfc135d1127b2dbf4c32d031e12d22f15b47f8a2f24f0649fe09923e2af5096b8a0c7588a9cf8df7195e8e96a808ef367ef897704e8c65af8b289e855995d9bbbb217d243671cfb8963ced78dd0001b72687068e1aa9c63a9b0b6b3fa372ebdce2cc4244e3451103f04420e8f41b9cdf":
                 {"id": "GROUP1",
