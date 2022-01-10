@@ -72,7 +72,7 @@ class InventoryRecord:
 
     @port.setter
     def port(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._port = 161
         else:
             if not isinstance(value, int):
@@ -91,11 +91,11 @@ class InventoryRecord:
 
     @version.setter
     def version(self, value):
-        if value == None or value.strip() == "":
+        if value is None or value.strip() == "":
             self._version = "2c"
         else:
-            if value not in ("2c", "3"):
-                raise ValueError(f"version out of range {value} accepted is 2c or 3")
+            if value not in ("1", "2c", "3"):
+                raise ValueError(f"version out of range {value} accepted is 1 or 2c or 3")
             self._version = value
 
     community: str
@@ -107,7 +107,7 @@ class InventoryRecord:
 
     @community.setter
     def community(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._community = None
         else:
             self._community = value
@@ -121,7 +121,7 @@ class InventoryRecord:
 
     @secret.setter
     def secret(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._secret = None
         else:
             self._secret = value
@@ -135,7 +135,7 @@ class InventoryRecord:
 
     @securityEngine.setter
     def securityEngine(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._securityEngine = None
         else:
             self._securityEngine = value
@@ -169,7 +169,7 @@ class InventoryRecord:
 
     @profiles.setter
     def profiles(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._profiles = []
         elif isinstance(value, str):
             self._profiles = value.split(";")
@@ -185,7 +185,7 @@ class InventoryRecord:
 
     @SmartProfiles.setter
     def SmartProfiles(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._SmartProfiles = True
         else:
             self._SmartProfiles = human_bool(value)
@@ -199,7 +199,7 @@ class InventoryRecord:
 
     @delete.setter
     def delete(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._delete = False
         else:
             self._delete = human_bool(value)

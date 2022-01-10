@@ -178,6 +178,11 @@ def enrich(self, result):
                 )
                 updates.clear()
 
+        if len(updates) > 0:
+            targets_collection.update_one(
+                {"address": address}, updates, upsert=True
+            )
+
         # Now add back any fields we need
         current_group_data = current_target["attributes"].get(group_key_hash, None)
         if current_group_data:
