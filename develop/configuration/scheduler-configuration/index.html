@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.4">
     
     
       
@@ -17,7 +17,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.edf004c2.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.bb3983ee.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -728,61 +728,61 @@ are store in Mongo DB. </p>
 
 <p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
 <p>Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-  <span class="nt">logLevel</span><span class="p">:</span> <span class="s">&quot;WARN&quot;</span>
-  <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>
-    <span class="no">test_profile:</span>
-      <span class="no">frequency: 5 </span>
-      <span class="no">condition: </span>
-        <span class="no">type: &quot;field&quot; </span>
-        <span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot; </span>
-        <span class="no">patterns: </span>
-          <span class="no">- &quot;^.*&quot;</span>
-      <span class="no">varBinds:</span>
-          <span class="no"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span>
-        <span class="no">- [&quot;SNMPv2-MIB&quot;, &quot;sysDescr&quot;,0]</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;WARN&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">    </span><span class="no">test_profile:</span><span class="w"></span>
+<span class="w">      </span><span class="no">frequency: 5 </span><span class="w"></span>
+<span class="w">      </span><span class="no">condition: </span><span class="w"></span>
+<span class="w">        </span><span class="no">type: &quot;field&quot; </span><span class="w"></span>
+<span class="w">        </span><span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot; </span><span class="w"></span>
+<span class="w">        </span><span class="no">patterns: </span><span class="w"></span>
+<span class="w">          </span><span class="no">- &quot;^.*&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="no">varBinds:</span><span class="w"></span>
+<span class="w">          </span><span class="no"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;SNMPv2-MIB&quot;, &quot;sysDescr&quot;,0]</span><span class="w"></span>
 </code></pre></div>
 
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
 <p>Log level for trap can be set by changing value for key <code>logLevel</code>. Allowed value are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
 Default value is <code>WARNING</code></p>
 <h3 id="define-resource-requests-and-limits">Define resource requests and limits<a class="headerlink" href="#define-resource-requests-and-limits" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-  <span class="c1">#The following resource specification is appropriate for most deployments to scale the</span>
-  <span class="c1">#Larger inventories may require more memory but should not require additional cpu</span>
-  <span class="nt">resources</span><span class="p">:</span>
-    <span class="nt">limits</span><span class="p">:</span>
-        <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
-        <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1Gi</span>
-    <span class="nt">requests</span><span class="p">:</span>
-      <span class="nt">cpu</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">200m</span>
-      <span class="nt">memory</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">128Mi</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1">#The following resource specification is appropriate for most deployments to scale the</span><span class="w"></span>
+<span class="w">  </span><span class="c1">#Larger inventories may require more memory but should not require additional cpu</span><span class="w"></span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1Gi</span><span class="w"></span>
+<span class="w">    </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200m</span><span class="w"></span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">128Mi</span><span class="w"></span>
 </code></pre></div>
 
 <h3 id="configure-profile">Configure profile<a class="headerlink" href="#configure-profile" title="Permanent link">&para;</a></h3>
 <p>To update profile follow instruction: <a href="../deployment-configuration/#update-inventory-and-profile">Update Inventory and Profile</a>. 
 Profiles used in inventory can be created in <code>values.yaml</code>, which can be modified in scheduler config in 
 <code>values.yaml</code>, example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-    <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>
-      <span class="no">#Name of profile</span>
-      <span class="no">basev1:</span>
-        <span class="no"># Define frequency for profile</span>
-        <span class="no">frequency: 10</span>
-        <span class="no">#Define condition</span>
-        <span class="no">condition:</span>
-          <span class="no"># Define type of condition. Allowed value field and base </span>
-          <span class="no">typy: field</span>
-          <span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span>
-          <span class="no"># Define paterns</span>
-          <span class="no">patterns:</span>
-            <span class="no">- &#39;.*STRING_TO_BE_MATCHED.*&#39;</span>
-        <span class="no">#Define varbinds to query</span>
-        <span class="no">varBinds:</span>
-          <span class="no"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span>
-          <span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
-          <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
-          <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysUpTime&#39;,0]</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">      </span><span class="no">#Name of profile</span><span class="w"></span>
+<span class="w">      </span><span class="no">basev1:</span><span class="w"></span>
+<span class="w">        </span><span class="no"># Define frequency for profile</span><span class="w"></span>
+<span class="w">        </span><span class="no">frequency: 10</span><span class="w"></span>
+<span class="w">        </span><span class="no">#Define condition</span><span class="w"></span>
+<span class="w">        </span><span class="no">condition:</span><span class="w"></span>
+<span class="w">          </span><span class="no"># Define type of condition. Allowed value field and base </span><span class="w"></span>
+<span class="w">          </span><span class="no">typy: field</span><span class="w"></span>
+<span class="w">          </span><span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span><span class="w"></span>
+<span class="w">          </span><span class="no"># Define paterns</span><span class="w"></span>
+<span class="w">          </span><span class="no">patterns:</span><span class="w"></span>
+<span class="w">            </span><span class="no">- &#39;.*STRING_TO_BE_MATCHED.*&#39;</span><span class="w"></span>
+<span class="w">        </span><span class="no">#Define varbinds to query</span><span class="w"></span>
+<span class="w">        </span><span class="no">varBinds:</span><span class="w"></span>
+<span class="w">          </span><span class="no"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span><span class="w"></span>
+<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;]</span><span class="w"></span>
+<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span><span class="w"></span>
+<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysUpTime&#39;,0]</span><span class="w"></span>
 </code></pre></div>
 
 <h4 id="varbinds-configuration">varBinds configuration<a class="headerlink" href="#varbinds-configuration" title="Permanent link">&para;</a></h4>
@@ -800,11 +800,11 @@ subsection of each profile. Syntax configuration of <code>varBinds</code> looks 
 <li><code>MIB index number</code> - Define index number for given MIB Object eg. <code>0</code>.</li>
 </ul>
 <p>Example:</p>
-<div class="codehilite"><pre><span></span><code>  <span class="nt">varBinds</span><span class="p">:</span>
-    <span class="c1"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span>
-    <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">]</span>
-    <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;sysName&#39;</span><span class="p p-Indicator">]</span>
-    <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;sysUpTime&#39;</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]</span>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysName&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysUpTime&#39;</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]</span><span class="w"></span>
 </code></pre></div>
 
 <h4 id="static-profile-configuration">Static Profile configuration<a class="headerlink" href="#static-profile-configuration" title="Permanent link">&para;</a></h4>
@@ -820,14 +820,14 @@ To configure Static Profile following value need to be set in <code>profiles</co
 </li>
 </ul>
 <p>Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-  <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>
-    <span class="no">static_profile_example:</span>
-      <span class="no">frequency: 20</span>
-      <span class="no">varBinds:</span>
-        <span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
-        <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
-        <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysUpTime&#39;,0]</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">    </span><span class="no">static_profile_example:</span><span class="w"></span>
+<span class="w">      </span><span class="no">frequency: 20</span><span class="w"></span>
+<span class="w">      </span><span class="no">varBinds:</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&#39;SNMPv2-MIB&#39;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysUpTime&#39;,0]</span><span class="w"></span>
 </code></pre></div>
 
 <h4 id="smartprofile-configuration">SmartProfile configuration<a class="headerlink" href="#smartprofile-configuration" title="Permanent link">&para;</a></h4>
@@ -856,30 +856,30 @@ More information about configuring inventory can be found in <a href="../poller-
 </li>
 </ul>
 <p>Example of <code>base</code> type of condition</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-    <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>
-      <span class="no">SmartProfile_base_example:</span>
-        <span class="no">frequency: 10</span>
-        <span class="no">condition: </span>
-          <span class="no">typy: &quot;base&quot;</span>
-        <span class="no">varBinds:</span>
-          <span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
-          <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">      </span><span class="no">SmartProfile_base_example:</span><span class="w"></span>
+<span class="w">        </span><span class="no">frequency: 10</span><span class="w"></span>
+<span class="w">        </span><span class="no">condition: </span><span class="w"></span>
+<span class="w">          </span><span class="no">typy: &quot;base&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="no">varBinds:</span><span class="w"></span>
+<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;]</span><span class="w"></span>
+<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span><span class="w"></span>
 </code></pre></div>
 
 <p>Example of <code>field</code> type of condition</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-    <span class="nt">profiles</span><span class="p">:</span> <span class="p p-Indicator">|</span>
-      <span class="no">SmartProfile_field_example:</span>
-        <span class="no">frequency: 10</span>
-        <span class="no">condition: </span>
-          <span class="no">typy: &quot;field&quot;</span>
-          <span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span>
-          <span class="no">patterns:</span>
-            <span class="no">- &#39;.*STRING_TO_BE_MATCHED.*&#39;</span>
-        <span class="no">varBinds:</span>
-          <span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
-          <span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">      </span><span class="no">SmartProfile_field_example:</span><span class="w"></span>
+<span class="w">        </span><span class="no">frequency: 10</span><span class="w"></span>
+<span class="w">        </span><span class="no">condition: </span><span class="w"></span>
+<span class="w">          </span><span class="no">typy: &quot;field&quot;</span><span class="w"></span>
+<span class="w">          </span><span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span><span class="w"></span>
+<span class="w">          </span><span class="no">patterns:</span><span class="w"></span>
+<span class="w">            </span><span class="no">- &#39;.*STRING_TO_BE_MATCHED.*&#39;</span><span class="w"></span>
+<span class="w">        </span><span class="no">varBinds:</span><span class="w"></span>
+<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;]</span><span class="w"></span>
+<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span><span class="w"></span>
 </code></pre></div>
 
 <p>NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 5 minutes for changes to propagate. 
@@ -887,13 +887,13 @@ There is also 5 minute TTL for an inventory pod. Basically SC4SNMP allows one in
 <h4 id="custom-translations">Custom translations<a class="headerlink" href="#custom-translations" title="Permanent link">&para;</a></h4>
 <p>If user wants to use custom names/translations of MIB names, it can be configured under customTranslations section under scheduler config.
 Translations are grouped by MIB family. In the example below IF-MIB.ifInDiscards will be translated to IF-MIB.myCustomName1</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-    <span class="nt">customTranslations</span><span class="p">:</span>
-      <span class="nt">IF-MIB</span><span class="p">:</span>
-        <span class="nt">ifInDiscards</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myCustomName1</span>
-        <span class="nt">ifOutErrors</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myCustomName2</span>
-      <span class="nt">SNMPv2-MIB</span><span class="p">:</span>
-        <span class="nt">sysDescr</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myCustomName3</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">customTranslations</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">IF-MIB</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ifInDiscards</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName1</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ifOutErrors</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName2</span><span class="w"></span>
+<span class="w">      </span><span class="nt">SNMPv2-MIB</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">sysDescr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName3</span><span class="w"></span>
 </code></pre></div>
 
               
@@ -960,10 +960,10 @@ Translations are grouped by MIB family. In the example below IF-MIB.ifInDiscards
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.0bbba5b5.min.js", "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.361d90f1.min.js", "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e1a181d9.min.js"></script>
+      <script src="../../assets/javascripts/bundle.289a2a4b.min.js"></script>
       
     
   </body>
