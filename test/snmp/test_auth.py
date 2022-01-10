@@ -4,11 +4,10 @@ from unittest.mock import Mock, patch, mock_open
 from pysnmp.entity.config import usmHMAC128SHA224AuthProtocol, usmAesBlumenthalCfb192Protocol
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-from splunk_connect_for_snmp.snmp.auth import get_secret_value, get_security_engine_id, getAuthV3, getAuthV2c, \
+from splunk_connect_for_snmp.snmp.auth import get_secret_value, getAuthV3, getAuthV2c, \
     getAuthV1, GetAuth
-from splunk_connect_for_snmp.snmp.manager import Poller
 
-mock_secret = """some
+mock_value = """some
 value"""
 
 ir = InventoryRecord.from_dict({
@@ -27,7 +26,7 @@ ir = InventoryRecord.from_dict({
 
 class TestAuth(TestCase):
 
-    @patch('builtins.open', new_callable=mock_open, read_data=mock_secret)
+    @patch('builtins.open', new_callable=mock_open, read_data=mock_value)
     @patch('os.path.exists')
     def test_get_secret_value_exists(self, m_exists, m_open):
         m_exists.return_value = True
