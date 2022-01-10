@@ -126,7 +126,7 @@ def do_send(data, destination_url, self):
                 timeout=60,
             )
         except ConnectionError:
-            logger.error(f"Unable to communicate with {destination_url} endpoint")
+            logger.warning(f"Unable to communicate with {destination_url} endpoint")
             self.retry(countdown=30)
             raise
         # 200 is good
