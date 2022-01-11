@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 # Support use of .env file for developers
-try:
-    from dotenv import load_dotenv
+from contextlib import suppress
 
+with suppress(ImportError):
+    from dotenv import load_dotenv
     load_dotenv()
-except ImportError:
-    pass
+
 
 import os
 

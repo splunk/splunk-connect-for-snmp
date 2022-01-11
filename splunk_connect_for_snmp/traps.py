@@ -83,7 +83,7 @@ def getSecretValue(
     source = os.path.join(location, key)
     result = default
     if os.path.exists(source):
-        with open(os.path.join(location, key)) as file:
+        with open(os.path.join(location, key), encoding='utf-8') as file:
             result = file.read().replace("\n", "")
     elif required:
         raise Exception(f"Required secret key {key} not found in {location}")
@@ -140,7 +140,7 @@ def main():
         udp.domainName,
         udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
     )
-    with open(CONFIG_PATH) as file:
+    with open(CONFIG_PATH, encoding='utf-8') as file:
         config_base = yaml.safe_load(file)
     idx = 0
     if "communities" in config_base:

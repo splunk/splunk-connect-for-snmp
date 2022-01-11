@@ -26,7 +26,7 @@ data:
           tag:
           securityName:
 {{- end -}}
-{{- if (.Values.scheduler).additionalMetricField }}
-      additionalMetricField:
-{{ .Values.scheduler.config.additionalMetricField | indent 8 }}
+{{- if (.Values.scheduler).customTranslations }}
+      customTranslations:
+{{ toYaml .Values.scheduler.customTranslations | indent 8 }}
 {{- end -}}

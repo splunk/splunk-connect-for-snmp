@@ -1,0 +1,11 @@
+profiles:
+  BaseUpTime:
+    enabled: false
+  EnirchIF:
+    frequency: 200
+    condition:
+      type: "base"
+    varBinds:
+      - [ "IF-MIB", "ifDescr" ]
+      - [ "IF-MIB", "ifAdminStatus" ]
+      - [ "IF-MIB", "ifName" ]
