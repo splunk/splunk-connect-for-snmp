@@ -1,0 +1,17 @@
+BaseUpTime:
+  frequency: 300
+  condition:
+    type: "base"
+  varBinds:
+    - [ "IF-MIB", "ifName" ]
+    - [ "IF-MIB", "ifAlias" ]
+    - ["SNMPv2-MIB", "sysUpTime", 0]
+EnirchIF:
+  frequency: 600
+  condition:
+    type: "base"
+  varBinds:
+    - ["IF-MIB", "ifDescr"]
+    - ["IF-MIB", "ifAdminStatus"]
+    - ["IF-MIB", "ifName"]
+    - ["IF-MIB", "ifAlias"]

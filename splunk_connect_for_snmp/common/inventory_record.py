@@ -17,10 +17,10 @@ import dataclasses
 import inspect
 import json
 import socket
+from contextlib import suppress
 from dataclasses import InitVar, dataclass, field
 from ipaddress import IPv4Address, IPv6Address
-from typing import Dict, List, Optional, Union
-from urllib.parse import urlparse
+from typing import List
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 
@@ -44,23 +44,16 @@ class InventoryRecord:
             raise ValueError(f"field address cannot be commented")
         else:
             test = None
-            try:
+            with suppress(ValueError):
                 test = IPv4Address(value)
                 test = IPv6Address(value)
-            except ValueError:
-                pass
-            if test is None:
+            if not test:
                 try:
                     socket.gethostbyname_ex(value)
-                    test = value
                 except socket.gaierror:
                     raise ValueError(
-                        f"field address must be an IP or a resolvable hostname {self}"
+                        f"field address must be an IP or a resolvable hostname {value}"
                     )
-            if test is None:
-                raise ValueError(
-                    f"field address must be an IP or a resolvable hostname {self}"
-                )
 
             self._address = value
 
@@ -73,7 +66,7 @@ class InventoryRecord:
 
     @port.setter
     def port(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._port = 161
         else:
             if not isinstance(value, int):
@@ -92,11 +85,11 @@ class InventoryRecord:
 
     @version.setter
     def version(self, value):
-        if value == None or value.strip() == "":
+        if value is None or value.strip() == "":
             self._version = "2c"
         else:
-            if value not in ("2c", "3"):
-                raise ValueError(f"version out of range {value} accepted is 2c or 3")
+            if value not in ("1", "2c", "3"):
+                raise ValueError(f"version out of range {value} accepted is 1 or 2c or 3")
             self._version = value
 
     community: str
@@ -108,7 +101,7 @@ class InventoryRecord:
 
     @community.setter
     def community(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._community = None
         else:
             self._community = value
@@ -122,7 +115,7 @@ class InventoryRecord:
 
     @secret.setter
     def secret(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._secret = None
         else:
             self._secret = value
@@ -136,7 +129,7 @@ class InventoryRecord:
 
     @securityEngine.setter
     def securityEngine(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._securityEngine = None
         else:
             self._securityEngine = value
@@ -170,7 +163,7 @@ class InventoryRecord:
 
     @profiles.setter
     def profiles(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._profiles = []
         elif isinstance(value, str):
             self._profiles = value.split(";")
@@ -186,7 +179,7 @@ class InventoryRecord:
 
     @SmartProfiles.setter
     def SmartProfiles(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._SmartProfiles = True
         else:
             self._SmartProfiles = human_bool(value)
@@ -200,7 +193,7 @@ class InventoryRecord:
 
     @delete.setter
     def delete(self, value):
-        if value == None or (isinstance(value, str) and value.strip() == ""):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             self._delete = False
         else:
             self._delete = human_bool(value)
@@ -210,8 +203,8 @@ class InventoryRecord:
         ir_dict = json.loads(ir_json)
         return InventoryRecord(**ir_dict)
 
-    def tojson(self):
-        return {
+    def to_json(self):
+        return json.dumps({
             "address": self.address,
             "port": self.port,
             "version": self.version,
@@ -222,7 +215,7 @@ class InventoryRecord:
             "profiles": self.profiles,
             "SmartProfiles": self.SmartProfiles,
             "delete": self.delete,
-        }
+        })
 
     @classmethod
     def from_dict(cls, env):
