@@ -14,7 +14,7 @@
 #    limitations under the License.
 #   ########################################################################
 import logging
-from test.splunk_test_utils import splunk_single_search
+from integration_tests import splunk_single_search
 
 logger = logging.getLogger(__name__)
 

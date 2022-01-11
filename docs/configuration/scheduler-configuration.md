@@ -4,7 +4,7 @@ are store in Mongo DB.
  
 ### Scheduler configuration file
 
-Scheduler configuration is keep in `values.yaml` file in section `scheduler`.  To downland example file execute command:
+Scheduler configuration is kept in `values.yaml` file in section `scheduler`.  To downland example file execute command:
 ```
 curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
 ```
@@ -167,5 +167,16 @@ scheduler:
 NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 5 minutes for changes to propagate. 
 There is also 5 minute TTL for an inventory pod. Basically SC4SNMP allows one inventory upgrade and then block updates for next 5 minutes
 
-
+#### Custom translations
+If user wants to use custom names/translations of MIB names, it can be configured under customTranslations section under scheduler config.
+Translations are grouped by MIB family. In the example below IF-MIB.ifInDiscards will be translated to IF-MIB.myCustomName1
+```yaml
+scheduler:
+    customTranslations:
+      IF-MIB:
+        ifInDiscards: myCustomName1
+        ifOutErrors: myCustomName2
+      SNMPv2-MIB:
+        sysDescr: myCustomName3
+```
 

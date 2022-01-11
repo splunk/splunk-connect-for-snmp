@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from splunk_connect_for_snmp.common.custom_translations import load_custom_translations
+
 try:
     from dotenv import load_dotenv
 
@@ -86,6 +88,11 @@ class HECTask(Task):
         self.session.logger = logger
 
 
+class PrepareTask(Task):
+    def __init__(self):
+        self.custom_translations = load_custom_translations()
+
+
 # This tasks is retryable when using otel or local splunk this should be rare but
 # may happen
 @shared_task(
@@ -119,7 +126,7 @@ def do_send(data, destination_url, self):
                 timeout=60,
             )
         except ConnectionError:
-            logger.error(f"Unable to communicate with {destination_url} endpoint")
+            logger.warning(f"Unable to communicate with {destination_url} endpoint")
             self.retry(countdown=30)
             raise
         # 200 is good
@@ -133,7 +140,7 @@ def do_send(data, destination_url, self):
             )
         # These can be but are not exceptions so we will setup retry ourself
         elif response.status_code in (500, 503):
-            logger.warn(f"Response code is {response.status_code} {response.text}")
+            logger.warning(f"Response code is {response.status_code} {response.text}")
             self.retry(countdown=5)
         # Any other response code is undocumented we have to treat this as fatal
         else:
@@ -147,28 +154,18 @@ def valueAsBest(value) -> Union[str, float]:
         return value
 
 
-@shared_task()
-def prepare(work):
+@shared_task(
+    bind=True,
+    base=PrepareTask
+)
+def prepare(self, work):
     events = []
     metrics = []
-    #     {
-    #   "time": 1486683865,
-    #   "event": "metric",
-    #   "source": "metrics",
-    #   "sourcetype": "perflog",
-    #   "host": "host_1.splunk.com",
-    #   "fields": {
-    #     "service_version": "0",
-    #     "service_environment": "test",
-    #     "path": "/dev/sda1",
-    #     "fstype": "ext3",
-    #     "metric_name:cpu.usr": 11.12,
-    #     "metric_name:cpu.sys": 12.23,
-    #     "metric_name:cpu.idle": 13.34
-    #   }
-    # }
+
     if work.get("sourcetype") == "sc4snmp:traps":
-        return {"events": prepare_trap_data(work), "metrics": metrics}
+        return {"events": prepare_trap_data(apply_custom_translations(work, self.custom_translations)), "metrics": metrics}
+
+    work = apply_custom_translations(work, self.custom_translations)
 
     for key, data in work["result"].items():
         if len(data["metrics"].keys()) > 0:
@@ -226,3 +223,25 @@ def prepare_trap_data(work):
         events.append(json.dumps(event, indent=None))
 
     return events
+
+
+def apply_custom_translations(work, custom_translations):
+    if custom_translations:
+        for key, data in work["result"].items():
+            apply_custom_translation_to_collection(custom_translations, data, "fields")
+            apply_custom_translation_to_collection(custom_translations, data, "metrics")
+    return work
+
+
+def apply_custom_translation_to_collection(custom_translations, data, key):
+    new_data = {}
+    for field, values in data[key].items():
+        mib, name = field.split(".")
+        ct = custom_translations.get(mib, {}).get(name, None)
+        if ct:
+            if key == "fields":
+                values["name"] = f"{mib}.{ct}"
+            new_data[f"{mib}.{ct}"] = values
+        else:
+            new_data[field] = values
+    data[key] = new_data
