@@ -168,7 +168,7 @@ def fill_empty_value(index_number, metric_value):
                     f"index_number={index_number} metric_value={metric_value}"
                 )
                 logger.error(f"index_number={index_number} metric_value={metric_value}")
-                metric_value = index_number
+                metric_value = "sc4snmp:unconvertable"
         else:
             metric_value = index_number
     return metric_value
