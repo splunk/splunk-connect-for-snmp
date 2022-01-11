@@ -552,6 +552,33 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#installing-splunk-connect-for-snmp-on-linux-redhat" class="md-nav__link">
+    Installing Splunk Connect for SNMP on Linux RedHat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#issues" class="md-nav__link">
+    Issues
+  </a>
+  
+    <nav class="md-nav" aria-label="Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#empty-snmp-response-message-problem" class="md-nav__link">
+    "Empty SNMP response message" problem
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -628,6 +655,33 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#installing-splunk-connect-for-snmp-on-linux-redhat" class="md-nav__link">
+    Installing Splunk Connect for SNMP on Linux RedHat
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#issues" class="md-nav__link">
+    Issues
+  </a>
+  
+    <nav class="md-nav" aria-label="Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#empty-snmp-response-message-problem" class="md-nav__link">
+    "Empty SNMP response message" problem
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -656,15 +710,17 @@ and replace <IP_ADDRESS> by IP Address which you are interested. </li>
 </ol>
 <h3 id="uninstall-splunk-connect-for-snmp">Uninstall Splunk Connect for SNMP<a class="headerlink" href="#uninstall-splunk-connect-for-snmp" title="Permanent link">&para;</a></h3>
 <p>To uninstall SC4SNMP run following commands:</p>
-<p>```shell script
-microk8s helm3 uninstall snmp -n sc4snmp
-microk8s kubectl delete pvc &ndash;all -n sc4snmp</p>
-<div class="codehilite"><pre><span></span><code>## <span class="nv">Issues</span>
+<div class="codehilite"><pre><span></span><code> microk8s helm3 uninstall snmp -n sc4snmp
+ microk8s kubectl delete pvc --all -n sc4snmp
+</code></pre></div>
 
-### <span class="s2">&quot;</span><span class="s">Empty SNMP response message</span><span class="s2">&quot;</span> <span class="nv">problem</span>
-<span class="nv">In</span> <span class="nv">case</span> <span class="nv">you</span> <span class="nv">see</span> <span class="nv">the</span> <span class="nv">following</span> <span class="nv">line</span> <span class="nv">in</span> <span class="nv">worker</span><span class="s1">&#39;</span><span class="s">s logs:</span>
-```<span class="nv">log</span>
-[<span class="mi">2022</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span> <span class="mi">11</span>:<span class="mi">44</span>:<span class="mi">22</span>,<span class="mi">553</span>: <span class="nv">INFO</span><span class="o">/</span><span class="nv">ForkPoolWorker</span><span class="o">-</span><span class="mi">1</span>] <span class="nv">Task</span> <span class="nv">splunk_connect_for_snmp</span>.<span class="nv">snmp</span>.<span class="nv">tasks</span>.<span class="nv">walk</span>[<span class="mi">8</span><span class="nv">e62fc62</span><span class="o">-</span><span class="mi">569</span><span class="nv">c</span><span class="o">-</span><span class="mi">473</span><span class="nv">f</span><span class="o">-</span><span class="nv">a765</span><span class="o">-</span><span class="nv">ff92577774e5</span>] <span class="nv">retry</span>: <span class="nv">Retry</span> <span class="nv">in</span> <span class="mi">3489</span><span class="nv">s</span>: <span class="nv">SnmpActionError</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message</span><span class="s1">&#39;</span><span class="ss">)</span>
+<h3 id="installing-splunk-connect-for-snmp-on-linux-redhat">Installing Splunk Connect for SNMP on Linux RedHat<a class="headerlink" href="#installing-splunk-connect-for-snmp-on-linux-redhat" title="Permanent link">&para;</a></h3>
+<p>Installation of RedHat may blocking ports required by microk8s. Installing microk8s on RedHat 
+required to check if firewall is not blocking any of <a href="https://microk8s.io/docs/ports">required microk8s ports</a>. </p>
+<h2 id="issues">Issues<a class="headerlink" href="#issues" title="Permanent link">&para;</a></h2>
+<h3 id="empty-snmp-response-message-problem">&ldquo;Empty SNMP response message&rdquo; problem<a class="headerlink" href="#empty-snmp-response-message-problem" title="Permanent link">&para;</a></h3>
+<p>In case you see the following line in worker&rsquo;s logs:</p>
+<div class="codehilite"><pre><span></span><code>[<span class="mi">2022</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span> <span class="mi">11</span>:<span class="mi">44</span>:<span class="mi">22</span>,<span class="mi">553</span>: <span class="nv">INFO</span><span class="o">/</span><span class="nv">ForkPoolWorker</span><span class="o">-</span><span class="mi">1</span>] <span class="nv">Task</span> <span class="nv">splunk_connect_for_snmp</span>.<span class="nv">snmp</span>.<span class="nv">tasks</span>.<span class="nv">walk</span>[<span class="mi">8</span><span class="nv">e62fc62</span><span class="o">-</span><span class="mi">569</span><span class="nv">c</span><span class="o">-</span><span class="mi">473</span><span class="nv">f</span><span class="o">-</span><span class="nv">a765</span><span class="o">-</span><span class="nv">ff92577774e5</span>] <span class="nv">retry</span>: <span class="nv">Retry</span> <span class="nv">in</span> <span class="mi">3489</span><span class="nv">s</span>: <span class="nv">SnmpActionError</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message</span><span class="s1">&#39;</span><span class="ss">)</span>
 </code></pre></div>
 
 <p>that causes infinite retry of walk operation, add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true.</p>
