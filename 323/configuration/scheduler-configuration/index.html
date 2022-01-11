@@ -460,6 +460,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#custom-translations" class="md-nav__link">
+    Custom translations
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -686,6 +693,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#custom-translations" class="md-nav__link">
+    Custom translations
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -708,7 +722,7 @@
 <p>Scheduler is a service with is responsible for manager schedules for SNMP walks and GETs. Schedules definition 
 are store in Mongo DB. </p>
 <h3 id="scheduler-configuration-file">Scheduler configuration file<a class="headerlink" href="#scheduler-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Scheduler configuration is keep in <code>values.yaml</code> file in section <code>scheduler</code>.  To downland example file execute command:</p>
+<p>Scheduler configuration is kept in <code>values.yaml</code> file in section <code>scheduler</code>.  To downland example file execute command:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
 </code></pre></div>
 
@@ -870,6 +884,17 @@ More information about configuring inventory can be found in <a href="../poller-
 
 <p>NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 5 minutes for changes to propagate. 
 There is also 5 minute TTL for an inventory pod. Basically SC4SNMP allows one inventory upgrade and then block updates for next 5 minutes</p>
+<h4 id="custom-translations">Custom translations<a class="headerlink" href="#custom-translations" title="Permanent link">&para;</a></h4>
+<p>If user wants to use custom names/translations of MIB names, it can be configured under customTranslations section under scheduler config.
+Translations are grouped by MIB family. In the example below IF-MIB.ifInDiscards will be translated to IF-MIB.myCustomName1</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">customTranslations</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">IF-MIB</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ifInDiscards</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName1</span><span class="w"></span>
+<span class="w">        </span><span class="nt">ifOutErrors</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName2</span><span class="w"></span>
+<span class="w">      </span><span class="nt">SNMPv2-MIB</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">sysDescr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName3</span><span class="w"></span>
+</code></pre></div>
 
               
             </article>
