@@ -75,12 +75,33 @@ def gen_walk_task(ir: InventoryRecord):
     }
 
 
-def migrate_database():
-    # fetch current schema version
-    previous_current_schema_version = 0
+def fetch_schema_version():
+    mongo_client = pymongo.MongoClient(MONGO_URI)
+    schema_collection = mongo_client.sc4snmp.schema_version
+    schema_version = schema_collection.find_one()
 
-    for x in range(previous_current_schema_version, CURRENT_SCHEMA_VERSION):
-        eval("migrate_to_version_" + str(x+1) + "()")
+    if schema_version:
+        return schema_version["version"]
+    else:
+        return 0
+
+
+def save_schema_version(version):
+    mongo_client = pymongo.MongoClient(MONGO_URI)
+    schema_collection = mongo_client.sc4snmp.schema_version
+
+    schema_collection.update_one({}, {"$set": {"version": version}}, upsert=True)
+
+
+def migrate_database():
+    previous_schema_version = fetch_schema_version()
+    if previous_schema_version < CURRENT_SCHEMA_VERSION:
+        logger.info(f"Migrating from version {previous_schema_version} to version {CURRENT_SCHEMA_VERSION}")
+
+        for x in range(previous_schema_version, CURRENT_SCHEMA_VERSION):
+            eval("migrate_to_version_" + str(x + 1) + "()")
+
+        save_schema_version(CURRENT_SCHEMA_VERSION)
 
 
 def migrate_to_version_1():
