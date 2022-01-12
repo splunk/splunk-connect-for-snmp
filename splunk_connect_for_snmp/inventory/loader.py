@@ -26,6 +26,7 @@ from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.inventory_record import (
     InventoryRecord,
 )
+from splunk_connect_for_snmp.common.schema_migration import migrate_database
 
 try:
     from dotenv import load_dotenv
@@ -49,8 +50,6 @@ MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
-
-CURRENT_SCHEMA_VERSION = 1
 
 
 def gen_walk_task(ir: InventoryRecord):
@@ -80,47 +79,6 @@ def gen_walk_task(ir: InventoryRecord):
         "enabled": True,
         "run_immediately": True,
     }
-
-
-def fetch_schema_version():
-    mongo_client = pymongo.MongoClient(MONGO_URI)
-    schema_collection = mongo_client.sc4snmp.schema_version
-    schema_version = schema_collection.find_one()
-
-    if schema_version:
-        return schema_version["version"]
-    else:
-        return 0
-
-
-def save_schema_version(version):
-    mongo_client = pymongo.MongoClient(MONGO_URI)
-    schema_collection = mongo_client.sc4snmp.schema_version
-
-    schema_collection.update_one({}, {"$set": {"version": version}}, upsert=True)
-
-
-def migrate_database():
-    previous_schema_version = fetch_schema_version()
-    if previous_schema_version < CURRENT_SCHEMA_VERSION:
-        logger.info(f"Migrating from version {previous_schema_version} to version {CURRENT_SCHEMA_VERSION}")
-
-        for x in range(previous_schema_version, CURRENT_SCHEMA_VERSION):
-            eval("migrate_to_version_" + str(x + 1) + "()")
-
-        save_schema_version(CURRENT_SCHEMA_VERSION)
-
-
-def migrate_to_version_1():
-    logger.info("Migrating database schema to version 1")
-
-    task_manager = customtaskmanager.CustomPeriodicTaskManager()
-    mongo_client = pymongo.MongoClient(MONGO_URI)
-    targets_collection = mongo_client.sc4snmp.targets
-
-    task_manager.delete_all_poll_tasks()
-    targets_collection.update({}, {"$unset": {"attributes": 1}}, False, True)
-    task_manager.rerun_all_walks()
 
 
 def load():
