@@ -79,7 +79,7 @@ class TestInventoryRecord(TestCase):
 
         with self.assertRaises(ValueError) as e:
             InventoryRecord(**ir_dict)
-        self.assertEqual("version out of range 5a accepted is 2c or 3", e.exception.args[0])
+        self.assertEqual("version out of range 5a accepted is 1 or 2c or 3", e.exception.args[0])
 
     def test_empty_community(self):
         ir_dict = {

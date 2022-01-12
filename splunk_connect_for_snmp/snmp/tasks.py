@@ -137,7 +137,7 @@ def trap(self, work, skip_init=False):
             not_translated_oids.append((w[0], w[1]))
 
     for oid in not_translated_oids:
-        found, mib = self.is_mib_known(oid[0], oid[0])
+        found, mib = self.is_mib_known(oid[0], oid[0], work["host"])
         if found:
             remotemibs.add(mib)
             remaining_oids.append((oid[0], oid[1]))

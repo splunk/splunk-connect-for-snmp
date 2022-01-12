@@ -168,7 +168,7 @@ def fill_empty_value(index_number, metric_value):
                     f"index_number={index_number} metric_value={metric_value}"
                 )
                 logger.error(f"index_number={index_number} metric_value={metric_value}")
-                metric_value = index_number
+                metric_value = "sc4snmp:unconvertable"
         else:
             metric_value = index_number
     return metric_value
@@ -378,9 +378,9 @@ class Poller(Task):
                     profile_varbinds = profile_spec["varBinds"]
                     for vb in profile_varbinds:
                         if len(vb) == 2:
-                            if (
-                                    vb[0] not in required_bulk
-                                    or (required_bulk[vb[0]] and vb[1] not in required_bulk[vb[0]])
+                            if vb[0] not in required_bulk or (
+                                required_bulk[vb[0]]
+                                and vb[1] not in required_bulk[vb[0]]
                             ):
                                 if vb[0] not in required_bulk:
                                     required_bulk[vb[0]] = [vb[1]]
@@ -408,7 +408,6 @@ class Poller(Task):
                                     ObjectType(ObjectIdentity(vb[0], vb[1], vb[2]))
                                 )
                                 get_mapping[f"{vb[0]}:{vb[1]}:{vb[2]}"] = profile
-
             self.load_mibs(needed_mibs)
 
         logger.debug(f"varbinds_get={varbinds_get}")
