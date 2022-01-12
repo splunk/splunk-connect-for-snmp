@@ -113,11 +113,9 @@ def enrich(self, result):
     # First write back to DB new/changed data
     for group_key, group_data in result["result"].items():
         group_key_hash = shake_128(group_key.encode()).hexdigest(255)
-        logger.debug(f"@@@@@@@@ group_key_hash={group_key_hash}")
 
         current_attributes = attributes_collection.find_one(
             {"address": address, "group_key_hash": group_key_hash}, {"fields": True, "id": True})
-        logger.debug(f"@@@@@@@@ current_attributes={current_attributes}")
 
         if (not current_attributes
                 and len(group_data["fields"]) > 0):
@@ -169,7 +167,7 @@ def enrich(self, result):
                 updates.clear()
             if len(attribute_updates) >= 20:
                 attributes_collection.update_one(
-                    {"address": address, "group_key_hash": group_key_hash}, attribute_updates, upsert=True
+                    {"address": address, "group_key_hash": group_key_hash, "id": group_key}, attribute_updates, upsert=True
                 )
                 attribute_updates.clear()
 
@@ -177,10 +175,12 @@ def enrich(self, result):
             targets_collection.update_one(
                 {"address": address}, updates, upsert=True
             )
+            updates.clear()
         if len(attribute_updates) > 0:
             attributes_collection.update_one(
                 {"address": address, "group_key_hash": group_key_hash, "id": group_key}, attribute_updates, upsert=True
             )
+            attribute_updates.clear()
 
         # Now add back any fields we need
         if current_attributes:
