@@ -27,6 +27,13 @@ from splunk_connect_for_snmp.common.inventory_record import (
     InventoryRecord,
 )
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except:
+    pass
+
 log_level = "DEBUG"
 log_format = logging.Formatter("[%(asctime)s] [%(levelname)s] - %(message)s")
 logger = logging.getLogger(__name__)
@@ -126,8 +133,6 @@ def load():
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
-    migrate_database()
-
     logger.info(f"Loading inventory from {path}")
     with open(path, encoding='utf-8') as csv_file:
         # Dict reader will trust the header of the csv
@@ -169,6 +174,7 @@ def load():
 
 
 if __name__ == "__main__":
+    migrate_database()
     r = load()
     if r:
         sys.exit(1)
