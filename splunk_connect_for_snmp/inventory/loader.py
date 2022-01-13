@@ -26,6 +26,14 @@ from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.inventory_record import (
     InventoryRecord,
 )
+from splunk_connect_for_snmp.common.schema_migration import migrate_database
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except:
+    pass
 
 log_level = "DEBUG"
 log_format = logging.Formatter("[%(asctime)s] [%(levelname)s] - %(message)s")
@@ -82,6 +90,8 @@ def load():
     inventory_records = mongo_db.inventory
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
+
+    migrate_database(mongo_client, periodic_obj)
 
     logger.info(f"Loading inventory from {path}")
     with open(path, encoding='utf-8') as csv_file:
