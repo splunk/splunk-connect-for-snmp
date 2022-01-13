@@ -144,7 +144,7 @@ worker:
   podAntiAffinity: soft
 
 poller:
-  usernameSecrets: []
+  usernameSecrets: {}
   inventory: |
     address,version,community,walk_interval,profiles,SmartProfiles,delete
 
