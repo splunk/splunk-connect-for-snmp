@@ -117,8 +117,7 @@ def enrich(self, result):
         current_attributes = attributes_collection.find_one(
             {"address": address, "group_key_hash": group_key_hash}, {"fields": True, "id": True})
 
-        if (not current_attributes
-                and len(group_data["fields"]) > 0):
+        if not current_attributes and group_data["fields"]:
             attributes_collection.update_one(
                 {"address": address, "group_key_hash": group_key_hash},
                 {"$set": {"id": group_key}},
@@ -171,12 +170,12 @@ def enrich(self, result):
                 )
                 attribute_updates.clear()
 
-        if len(updates) > 0:
+        if updates:
             targets_collection.update_one(
                 {"address": address}, updates, upsert=True
             )
             updates.clear()
-        if len(attribute_updates) > 0:
+        if attribute_updates:
             attributes_collection.update_one(
                 {"address": address, "group_key_hash": group_key_hash, "id": group_key}, attribute_updates, upsert=True
             )
