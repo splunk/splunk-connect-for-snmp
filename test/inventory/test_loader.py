@@ -57,7 +57,7 @@ class TestLoader(TestCase):
     @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory)
     @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
     @mock.patch("pymongo.collection.Collection.update_one")
-    @patch("splunk_connect_for_snmp.common.schema_migration.migrate_database")
+    @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     def test_load_new_record(self, m_migrate, m_mongo_collection, m_taskManager, m_open, walk_task):
         walk_task.return_value = expected_managed_task
         m_mongo_collection.return_value = UpdateResult({"n": 0, "nModified": 1, "upserted": 1}, True)
@@ -71,7 +71,7 @@ class TestLoader(TestCase):
     @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory)
     @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
     @mock.patch("pymongo.collection.Collection.update_one")
-    @patch("splunk_connect_for_snmp.common.schema_migration.migrate_database")
+    @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     def test_load_modified_record(self, m_migrate, m_mongo_collection, m_taskManager, m_open, walk_task):
         walk_task.return_value = expected_managed_task
         m_mongo_collection.return_value = UpdateResult({"n": 1, "nModified": 1, "upserted": None}, True)
@@ -84,7 +84,7 @@ class TestLoader(TestCase):
     @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory)
     @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
     @mock.patch("pymongo.collection.Collection.update_one")
-    @patch("splunk_connect_for_snmp.common.schema_migration.migrate_database")
+    @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     def test_load_unchanged_record(self, m_migrate, m_mongo_collection, m_taskManager, m_open):
         m_mongo_collection.return_value = UpdateResult({"n": 1, "nModified": 0, "upserted": None}, True)
         periodic_obj_mock = Mock()
@@ -96,7 +96,7 @@ class TestLoader(TestCase):
     @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory_with_comment)
     @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
     @mock.patch("pymongo.collection.Collection.update_one")
-    @patch("splunk_connect_for_snmp.common.schema_migration.migrate_database")
+    @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     def test_ignoring_comment(self, m_migrate, m_mongo_collection, m_taskManager, m_open):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
@@ -109,7 +109,7 @@ class TestLoader(TestCase):
     @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
     @mock.patch("pymongo.collection.Collection.delete_one")
     @mock.patch("pymongo.collection.Collection.remove")
-    @patch("splunk_connect_for_snmp.common.schema_migration.migrate_database")
+    @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     def test_deleting_record(self, m_migrate, m_remove, m_delete, m_taskManager, m_open):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
@@ -123,7 +123,7 @@ class TestLoader(TestCase):
     @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory)
     @mock.patch("pymongo.collection.Collection.update_one")
     @mock.patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager.manage_task")
-    @patch("splunk_connect_for_snmp.common.schema_migration.migrate_database")
+    @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     def test_inventory_errors(self, m_migrate, m_manage_task, m_mongo_collection, m_open, walk_task):
         walk_task.return_value = expected_managed_task
         m_mongo_collection.return_value = UpdateResult({"n": 0, "nModified": 1, "upserted": 1}, True)
