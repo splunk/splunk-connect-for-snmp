@@ -93,7 +93,7 @@ spec:
             - name: tmp
               mountPath: "/tmp/"
               readOnly: false                    
-            {{- if .Values.poller.usernameSecrets }}                 
+            {{- if (.Values.poller).usernameSecrets }}
             - name: snmpv3-secrets
               mountPath: "/app/secrets/snmpv3"
               readOnly: true
@@ -137,7 +137,7 @@ spec:
             items:
               - key: "config.yaml"
                 path: "config.yaml"
-        {{- if .Values.poller.usernameSecrets }}
+        {{- if (.Values.poller).usernameSecrets }}
         - name: snmpv3-secrets
           projected:
             sources:
