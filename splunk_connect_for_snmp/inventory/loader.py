@@ -89,9 +89,9 @@ def load():
     mongo_db = mongo_client[MONGO_DB]
     inventory_records = mongo_db.inventory
 
-    migrate_database()
-
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
+
+    migrate_database(mongo_client, periodic_obj)
 
     logger.info(f"Loading inventory from {path}")
     with open(path, encoding='utf-8') as csv_file:

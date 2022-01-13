@@ -36,8 +36,7 @@ CURRENT_SCHEMA_VERSION = 1
 MONGO_URI = os.getenv("MONGO_URI")
 
 
-def fetch_schema_version():
-    mongo_client = pymongo.MongoClient(MONGO_URI)
+def fetch_schema_version(mongo_client):
     schema_collection = mongo_client.sc4snmp.schema_version
     schema_version = schema_collection.find_one()
 
@@ -47,30 +46,26 @@ def fetch_schema_version():
         return 0
 
 
-def save_schema_version(version):
-    mongo_client = pymongo.MongoClient(MONGO_URI)
+def save_schema_version(mongo_client, version):
     schema_collection = mongo_client.sc4snmp.schema_version
 
     schema_collection.update_one({}, {"$set": {"version": version}}, upsert=True)
 
 
-def migrate_database():
-    previous_schema_version = fetch_schema_version()
+def migrate_database(mongo_client, periodic_obj):
+    previous_schema_version = fetch_schema_version(mongo_client)
     if previous_schema_version < CURRENT_SCHEMA_VERSION:
         logger.info(f"Migrating from version {previous_schema_version} to version {CURRENT_SCHEMA_VERSION}")
 
         for x in range(previous_schema_version, CURRENT_SCHEMA_VERSION):
             fun_name = "migrate_to_version_" + str(x + 1)
-            getattr(sys.modules[__name__], fun_name)()
+            getattr(sys.modules[__name__], fun_name)(mongo_client, periodic_obj)
 
-        save_schema_version(CURRENT_SCHEMA_VERSION)
+        save_schema_version(mongo_client, CURRENT_SCHEMA_VERSION)
 
 
-def migrate_to_version_1():
+def migrate_to_version_1(mongo_client, task_manager):
     logger.info("Migrating database schema to version 1")
-
-    task_manager = customtaskmanager.CustomPeriodicTaskManager()
-    mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4snmp.targets
 
     task_manager.delete_all_poll_tasks()

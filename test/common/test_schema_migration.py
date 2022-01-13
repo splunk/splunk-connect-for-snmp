@@ -1,27 +1,27 @@
 from unittest import TestCase
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, MagicMock
 
 from splunk_connect_for_snmp.common.schema_migration import fetch_schema_version, save_schema_version, migrate_database, \
     migrate_to_version_1
 
 
 class TestSchemaMigration(TestCase):
-    @patch("pymongo.collection.Collection.find_one")
-    def test_fetch_schema_version(self, m_find_one):
-        m_find_one.return_value = {"version": 2}
-        result = fetch_schema_version()
+    def test_fetch_schema_version(self):
+        mc = MagicMock()
+        mc.sc4snmp.schema_version.find_one.return_value = {"version": 2}
+        result = fetch_schema_version(mc)
         self.assertEqual(2, result)
 
-    @patch("pymongo.collection.Collection.find_one")
-    def test_fetch_schema_version_missing(self, m_find_one):
-        m_find_one.return_value = None
-        result = fetch_schema_version()
+    def test_fetch_schema_version_missing(self):
+        mc = MagicMock()
+        mc.sc4snmp.schema_version.find_one.return_value = None
+        result = fetch_schema_version(mc)
         self.assertEqual(0, result)
 
-    @patch("pymongo.collection.Collection.update_one")
-    def test_save_schema_version(self, m_update_one):
-        save_schema_version(7)
-        calls = m_update_one.call_args_list
+    def test_save_schema_version(self):
+        mc = MagicMock()
+        save_schema_version(mc, 7)
+        calls = mc.sc4snmp.schema_version.update_one.call_args_list
 
         self.assertEqual(1, len(calls))
         self.assertEqual(({}, {'$set': {'version': 7}}), calls[0].args)
@@ -30,24 +30,23 @@ class TestSchemaMigration(TestCase):
     @patch("splunk_connect_for_snmp.common.schema_migration.save_schema_version")
     @patch("splunk_connect_for_snmp.common.schema_migration.migrate_to_version_1")
     def test_migrate_database(self, m_version_1, m_save, m_fetch):
+        mc = MagicMock()
         m_fetch.return_value = 0
 
-        migrate_database()
+        migrate_database(mc, MagicMock())
 
         calls = m_save.call_args_list
         self.assertEqual(1, len(calls))
-        self.assertEqual(1, calls[0].args[0])
+        self.assertEqual(1, calls[0].args[1])
 
         m_version_1.assert_called()
 
-    @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
-    @patch("pymongo.collection.Collection.update")
-    def test_migrate_to_version_1(self, m_update, m_task_manager):
+    def test_migrate_to_version_1(self):
         periodic_obj_mock = Mock()
-        m_task_manager.return_value = periodic_obj_mock
-        migrate_to_version_1()
+        mc = MagicMock()
+        migrate_to_version_1(mc, periodic_obj_mock)
 
-        calls = m_update.call_args_list
+        calls = mc.sc4snmp.targets.update.call_args_list
 
         self.assertEqual(1, len(calls))
         self.assertEqual(({}, {'$unset': {'attributes': 1}}, False, True), calls[0].args)
