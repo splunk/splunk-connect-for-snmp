@@ -4,7 +4,7 @@ from unittest.mock import Mock
 from splunk_connect_for_snmp.snmp.context import get_context_data
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 from splunk_connect_for_snmp.snmp.manager import get_inventory, _any_failure_happened, map_metric_type, \
-    fill_empty_value, extract_index_number
+    fill_empty_value, extract_index_number, return_address_and_port
 
 
 class TestUtils(TestCase):
@@ -120,3 +120,7 @@ class TestUtils(TestCase):
         self.assertIsNone(result.contextEngineId)
         self.assertEqual("", result.contextName)
 
+    def test_return_address_and_port(self):
+        self.assertEqual(return_address_and_port("127.0.0.1"), ("127.0.0.1", 161))
+        self.assertEqual(return_address_and_port("168.99.9.9"), ("168.99.9.9", 161))
+        self.assertEqual(return_address_and_port("168.99.9.9:162"), ("168.99.9.9", 162))

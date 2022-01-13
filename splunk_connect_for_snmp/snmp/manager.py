@@ -57,8 +57,17 @@ UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
 logger = get_task_logger(__name__)
 
 
+def return_address_and_port(target):
+    if ":" in target:
+        address_tuple = target.split(":")
+        return address_tuple[0], int(address_tuple[1])
+    else:
+        return target, 161
+
+
 def get_inventory(mongo_inventory, address):
-    ir_doc = mongo_inventory.find_one({"address": address})
+    host, port = return_address_and_port(address)
+    ir_doc = mongo_inventory.find_one({"address": host, "port": port})
     if ir_doc is None:
         raise ValueError(f"Inventory Doc deleted unable to complete task for {address}")
     logger.debug(f"{ir_doc}")
