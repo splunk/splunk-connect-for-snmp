@@ -46,6 +46,28 @@ class CustomPeriodicTaskManager:
                 periodic_document.delete()
                 logger.debug("Deleting Schedule")
 
+    def delete_all_poll_tasks(self):
+        periodic = PeriodicTask.objects()
+        for p in periodic:
+            if not p.task == "splunk_connect_for_snmp.snmp.tasks.poll":
+                continue
+            logger.debug(p)
+            periodic_document = periodic.get(name=p.name)
+            logger.debug("Got Schedule")
+            periodic_document.delete()
+            logger.debug("Deleting Schedule")
+
+    def rerun_all_walks(self):
+        periodic = PeriodicTask.objects()
+        for p in periodic:
+            if not p.task == "splunk_connect_for_snmp.snmp.tasks.walk":
+                continue
+            logger.debug(p)
+            periodic_document = periodic.get(name=p.name)
+            periodic_document.run_immediately = True
+            logger.debug("Got Schedule")
+            periodic_document.save()
+
     def delete_disabled_poll_tasks(self):
         periodic = PeriodicTask.objects(enabled=False)
         for p in periodic:
