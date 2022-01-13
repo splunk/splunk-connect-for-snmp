@@ -83,6 +83,14 @@ spec:
                     name: {{ include "splunk-connect-for-snmp.name" . }}-splunk
                     key: hec_token
             {{- end}}
+            {{- if .Values.splunk.eventIndex }}
+            - name: SPLUNK_HEC_INDEX_EVENTS
+              value: {{ .Values.splunk.eventIndex | default "netops" }}
+            {{- end}}
+            {{- if .Values.splunk.metricsIndex }}
+            - name: SPLUNK_HEC_INDEX_METRICS
+              value: {{ .Values.splunk.metricsIndex | default "netmetrics" }}
+            {{- end}}
           volumeMounts:
             - name: config
               mountPath: "/app/config"

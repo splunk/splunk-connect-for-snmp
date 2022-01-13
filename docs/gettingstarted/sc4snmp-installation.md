@@ -112,6 +112,8 @@ Other optional variables can be configured:
 | splunk.protocol | port of splunk instance| https |
 | splunk.insecure_ssl| is insecure ssl allowed | "true" |
 | splunk.cluster_name | name of the cluster | "foo" |
+| splunk.eventIndex | name of the events index | "netops" |
+| splunk.metricsIndex | name of the metrics index | "netmetrics" |
 
 
 ### Configure Splunk Infrastructure Monitoring Connection
