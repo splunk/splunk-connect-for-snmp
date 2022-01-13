@@ -89,6 +89,8 @@ def load():
     mongo_db = mongo_client[MONGO_DB]
     inventory_records = mongo_db.inventory
 
+    migrate_database()
+
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
     logger.info(f"Loading inventory from {path}")
@@ -132,7 +134,6 @@ def load():
 
 
 if __name__ == "__main__":
-    migrate_database()
     r = load()
     if r:
         sys.exit(1)

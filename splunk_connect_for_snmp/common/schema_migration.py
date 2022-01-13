@@ -13,13 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
+import os
+import sys
 
 import pymongo
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.inventory.loader import MONGO_URI, logger
+
+log_format = logging.Formatter("[%(asctime)s] [%(levelname)s] - %(message)s")
+logger = logging.getLogger(__name__)
+logger.setLevel("DEBUG")
+
+# writing to stdout
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel("DEBUG")
+handler.setFormatter(log_format)
+logger.addHandler(handler)
+
 
 CURRENT_SCHEMA_VERSION = 1
+MONGO_URI = os.getenv("MONGO_URI")
 
 
 def fetch_schema_version():
@@ -46,7 +60,8 @@ def migrate_database():
         logger.info(f"Migrating from version {previous_schema_version} to version {CURRENT_SCHEMA_VERSION}")
 
         for x in range(previous_schema_version, CURRENT_SCHEMA_VERSION):
-            eval("migrate_to_version_" + str(x + 1) + "()")
+            fun_name = "migrate_to_version_" + str(x + 1)
+            getattr(sys.modules[__name__], fun_name)()
 
         save_schema_version(CURRENT_SCHEMA_VERSION)
 
