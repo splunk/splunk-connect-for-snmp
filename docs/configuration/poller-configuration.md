@@ -24,6 +24,8 @@ poller:
     10.202.4.202,,2c,public,,,2000,,,
 ```
 
+NOTE: header's line (`address,port,version,community`) is necessary for the correct execution of SC4SNMP. Do not remove it.
+
 ### Define log level
 Log level for trap can be set by changing value for key `logLevel`. Allowed value are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
 Default value is `WARNING`
