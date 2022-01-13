@@ -242,6 +242,67 @@ class TestCustomTaskManager(TestCase):
 
         doc1.save.assert_called()
 
+    @patch('celerybeatmongo.models.PeriodicTask.objects')
+    def test_delete_all_poll_tasks(self, m_objects):
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+        doc1 = Mock()
+        task1 = Mock()
+        task1.task = "splunk_connect_for_snmp.snmp.tasks.poll"
+        task1.name = "test1"
+
+        doc2 = Mock()
+        task2 = Mock()
+        task2.task = "splunk_connect_for_snmp.snmp.tasks.poll"
+        task2.name = "test2"
+
+        doc3 = Mock()
+        task3 = Mock()
+        task3.task = "splunk_connect_for_snmp.snmp.tasks.walk"
+        task3.name = "test3"
+
+        periodic_list = Mock()
+        periodic_list.__iter__ = Mock(return_value=iter([task1, task2, task3]))
+        periodic_list.get.side_effect = [doc1, doc2, doc3]
+
+        m_objects.return_value = periodic_list
+
+        task_manager.delete_all_poll_tasks()
+
+        calls = periodic_list.get.call_args_list
+
+        self.assertEqual({'name': 'test1'}, calls[0].kwargs)
+        self.assertEqual({'name': 'test2'}, calls[1].kwargs)
+
+        doc1.delete.assert_called()
+        doc2.delete.assert_called()
+        doc3.delete.assert_not_called()
+
+    @patch('celerybeatmongo.models.PeriodicTask.objects')
+    def test_rerun_all_walks(self, m_objects):
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+
+        doc1 = Mock()
+        doc1.run_immediately = False
+        task1 = Mock()
+        task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
+        task1.name = "test1"
+
+        periodic_list = Mock()
+        periodic_list.__iter__ = Mock(return_value=iter([task1]))
+        periodic_list.get.side_effect = [doc1]
+
+        m_objects.return_value = periodic_list
+
+        task_manager.rerun_all_walks()
+
+        calls = periodic_list.get.call_args_list
+
+        self.assertEqual({'name': 'test1'}, calls[0].kwargs)
+
+        self.assertTrue(doc1.run_immediately)
+        doc1.save.assert_called()
+
+
     # TODO check how to mock celerybeatmongo.models.PeriodicTask constructor
     # @patch('celerybeatmongo.models.PeriodicTask')
     # @patch('celerybeatmongo.models.PeriodicTask.objects')
