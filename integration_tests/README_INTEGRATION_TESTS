@@ -10,8 +10,9 @@ Right now we support only NOVA.
 
 
 - git clone https://github.com/splunk/splunk-connect-for-snmp.git
-- cd splunk-connect-for-snmp/integration_tests
+- cd splunk-connect-for-snmp
 - git checkout <target_branch>
+- cd integration_tests
 - chmod u+x install_microk8s.sh
 - sudo ./install_microk8s.sh
 - su <user_name>
