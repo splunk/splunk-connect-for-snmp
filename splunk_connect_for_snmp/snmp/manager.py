@@ -314,7 +314,7 @@ class Poller(Task):
                             retry = True
                 except SnmpActionError:
                     if len(metrics) == 0:
-                        raise
+                        pass
                     else:
                         logger.exception("Exception occurred during session")
             self.load_mibs(list(mibs_to_load))
@@ -337,7 +337,7 @@ class Poller(Task):
                         )
                 except SnmpActionError:
                     if len(metrics) == 0:
-                        raise
+                        pass
                     else:
                         logger.exception("Exception occurred during session")
         for group_key, metric in metrics.items():
