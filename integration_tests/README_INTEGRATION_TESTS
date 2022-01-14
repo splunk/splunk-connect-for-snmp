@@ -10,7 +10,6 @@ Right now we support only NOVA.
 - git clone https://github.com/splunk/splunk-connect-for-snmp.git
 - cd splunk-connect-for-snmp
 - git checkout <target_branch>
-- BUILD the image
 sudo apt -y install docker.io
 sudo docker build -t snmp-local
 - cd integration_tests
@@ -24,7 +23,7 @@ sudo docker save snmp-local > myimage.tar
 sudo microk8s ctr image import myimage.tar
 
 sudo docker pull splunk/splunk:latest
-sudo docker run -d -p 8000:8000 -p 8088:8088 -p 8089:8089 -e SPLUNK_START_ARGS='--accept-license' -e SPLUNK_PASSWORD='changeme' splunk/splunk:latest
+sudo docker run -d -p 8000:8000 -p 8088:8088 -p 8089:8089 -e SPLUNK_START_ARGS='--accept-license' -e SPLUNK_PASSWORD='changeme2' splunk/splunk:latest
 
 add indexes and HEC
 sudo docker run -d -p 161:161/udp tandrup/snmpsim
