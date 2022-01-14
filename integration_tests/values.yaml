@@ -4,7 +4,7 @@ splunk:
   host: localhost
   token: ###SPLUNK_TOKEN###
   insecureSSL: "true"
-  port: 8088
+  port: "8088"
   clusterName: my-cluster
 image:
   repository: "snmp-local"
