@@ -275,7 +275,7 @@ class Poller(Task):
         contextData = get_context_data()
 
         transport = UdpTransportTarget(
-            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
+            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT, retries=5
         )
 
         metrics = {}
