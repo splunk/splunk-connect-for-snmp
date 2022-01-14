@@ -89,7 +89,7 @@ def _any_failure_happened(
     if error_indication:
         if isinstance(error_indication, EmptyResponse) and IGNORE_EMPTY_VARBINDS:
             return False
-        raise SnmpActionError(
+        logger.error(
             f"An error of SNMP isWalk={walk} for a host {address} occurred: {error_indication}"
         )
     elif error_status:
@@ -97,7 +97,7 @@ def _any_failure_happened(
             error_status.prettyPrint(),
             error_index and var_binds[int(error_index) - 1][0] or "?",
         )
-        raise SnmpActionError(
+        logger.error(
             f"An error of SNMP isWalk={walk} for a host {address} occurred: {result}"
         )
     return False
@@ -295,51 +295,37 @@ class Poller(Task):
                 *varbinds_bulk,
                 lexicographicMode=False,
             ):
-                try:
-                    if not _any_failure_happened(
-                        errorIndication,
-                        errorStatus,
-                        errorIndex,
-                        varBindTable,
-                        ir.address,
-                        walk,
-                    ):
-                        tmp_retry, tmp_mibs, _ = self.process_snmp_data(
-                            varBindTable, metrics, address, bulk_mapping
-                        )
-                        if tmp_mibs:
-                            mibs_to_load.update(tmp_mibs)
+                if not _any_failure_happened(
+                    errorIndication,
+                    errorStatus,
+                    errorIndex,
+                    varBindTable,
+                    ir.address,
+                    walk,
+                ):
+                    tmp_retry, tmp_mibs, _ = self.process_snmp_data(
+                        varBindTable, metrics, address, bulk_mapping
+                    )
+                    if tmp_mibs:
+                        mibs_to_load.update(tmp_mibs)
 
-                        if tmp_retry:
-                            retry = True
-                except SnmpActionError:
-                    if len(metrics) == 0:
-                        pass
-                    else:
-                        logger.exception("Exception occurred during session")
+                    if tmp_retry:
+                        retry = True
             self.load_mibs(list(mibs_to_load))
 
         if len(varbinds_get) > 0:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
                 self.snmpEngine, authData, transport, contextData, *varbinds_get
             ):
-                try:
-                    if not _any_failure_happened(
-                        errorIndication,
-                        errorStatus,
-                        errorIndex,
-                        varBindTable,
-                        ir.address,
-                        walk,
-                    ):
-                        self.process_snmp_data(
-                            varBindTable, metrics, address, get_mapping
-                        )
-                except SnmpActionError:
-                    if len(metrics) == 0:
-                        pass
-                    else:
-                        logger.exception("Exception occurred during session")
+                if not _any_failure_happened(
+                    errorIndication,
+                    errorStatus,
+                    errorIndex,
+                    varBindTable,
+                    ir.address,
+                    walk,
+                ):
+                    self.process_snmp_data(varBindTable, metrics, address, get_mapping)
         for group_key, metric in metrics.items():
             if "profiles" in metrics[group_key]:
                 metrics[group_key]["profiles"] = ",".join(

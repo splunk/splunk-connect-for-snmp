@@ -75,6 +75,9 @@ def walk(self, skip_init=False, **kwargs):
         while retry:
             retry, result = self.do_work(address, walk=True)
 
+    if len(result) == 0:
+        raise SnmpActionError("No Data from walk")
+
     # After a Walk tell schedule to recalc
     work = {}
     work["time"] = time.time()
@@ -104,6 +107,9 @@ def poll(self, skip_init=False, **kwargs):
     lock = MongoLock(client=mongo_client, db="sc4snmp")
     with lock(kwargs["address"], self.request.id, expire=90, timeout=20):
         _, result = self.do_work(address, profiles=profiles)
+
+    if len(result) == 0:
+        raise SnmpActionError("No Data from walk")
 
     # After a Walk tell schedule to recalc
     work = {}
