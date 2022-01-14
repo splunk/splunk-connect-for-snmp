@@ -17,6 +17,7 @@ import dataclasses
 import inspect
 import json
 import socket
+from contextlib import suppress
 from dataclasses import InitVar, dataclass, field
 from ipaddress import IPv4Address, IPv6Address
 from typing import List
@@ -43,23 +44,16 @@ class InventoryRecord:
             raise ValueError(f"field address cannot be commented")
         else:
             test = None
-            try:
+            with suppress(ValueError):
                 test = IPv4Address(value)
                 test = IPv6Address(value)
-            except ValueError:
-                pass
-            if test is None:
+            if not test:
                 try:
                     socket.gethostbyname_ex(value)
-                    test = value
                 except socket.gaierror:
                     raise ValueError(
-                        f"field address must be an IP or a resolvable hostname {self}"
+                        f"field address must be an IP or a resolvable hostname {value}"
                     )
-            if test is None:
-                raise ValueError(
-                    f"field address must be an IP or a resolvable hostname {self}"
-                )
 
             self._address = value
 
@@ -209,8 +203,8 @@ class InventoryRecord:
         ir_dict = json.loads(ir_json)
         return InventoryRecord(**ir_dict)
 
-    def tojson(self):
-        return {
+    def to_json(self):
+        return json.dumps({
             "address": self.address,
             "port": self.port,
             "version": self.version,
@@ -221,7 +215,7 @@ class InventoryRecord:
             "profiles": self.profiles,
             "SmartProfiles": self.SmartProfiles,
             "delete": self.delete,
-        }
+        })
 
     @classmethod
     def from_dict(cls, env):

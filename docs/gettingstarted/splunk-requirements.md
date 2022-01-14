@@ -7,7 +7,6 @@
 1. Complete the installation of [Splunk IT Essentials Work](https://docs.splunk.com/Documentation/ITE/latest/Work/Overview) OR [Splunk IT Service Intelligence](https://docs.splunk.com/Documentation/ITSI/4.9.2/Install/About)
 2. Verify the creation of the following indexes:
     * em_metrics (metrics type)
-    * em_meta (event type)
     * em_logs (event type)
     * netmetrics (metrics type)
     * netops (event type)

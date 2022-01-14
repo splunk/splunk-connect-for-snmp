@@ -65,6 +65,8 @@ spec:
             {{- end}}
             - name: SPLUNK_HEC_HOST
               value: {{ .Values.splunk.host | quote }}
+            - name: IGNORE_EMPTY_VARBINDS
+              value: {{ .Values.worker.ignoreEmptyVarbinds | default "false" | quote }}
             {{- if .Values.splunk.port }}
             - name: SPLUNK_HEC_PORT
               value: {{ .Values.splunk.port | default "" | quote }}
@@ -80,6 +82,14 @@ spec:
                   secretKeyRef:
                     name: {{ include "splunk-connect-for-snmp.name" . }}-splunk
                     key: hec_token
+            {{- if .Values.splunk.eventIndex }}
+            - name: SPLUNK_HEC_INDEX_EVENTS
+              value: {{ .Values.splunk.eventIndex | default "netops" }}
+            {{- end}}
+            {{- if .Values.splunk.metricsIndex }}
+            - name: SPLUNK_HEC_INDEX_METRICS
+              value: {{ .Values.splunk.metricsIndex | default "netmetrics" }}
+            {{- end}}
             {{- end}}
           volumeMounts:
             - name: config
@@ -91,7 +101,7 @@ spec:
             - name: tmp
               mountPath: "/tmp/"
               readOnly: false                    
-            {{- if .Values.poller.usernameSecrets }}                 
+            {{- if (.Values.poller).usernameSecrets }}
             - name: snmpv3-secrets
               mountPath: "/app/secrets/snmpv3"
               readOnly: true
@@ -135,7 +145,7 @@ spec:
             items:
               - key: "config.yaml"
                 path: "config.yaml"
-        {{- if .Values.poller.usernameSecrets }}
+        {{- if (.Values.poller).usernameSecrets }}
         - name: snmpv3-secrets
           projected:
             sources:
