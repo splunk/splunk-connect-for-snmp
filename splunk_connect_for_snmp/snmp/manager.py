@@ -291,7 +291,7 @@ class Poller(Task):
                 transport,
                 contextData,
                 0,
-                50,
+                10,
                 *varbinds_bulk,
                 lexicographicMode=False,
             ):
