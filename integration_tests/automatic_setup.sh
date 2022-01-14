@@ -13,7 +13,7 @@ sudo docker run -d -p 8000:8000 -p 8088:8088 -p 8089:8089 -e SPLUNK_START_ARGS='
 
 cd integration_tests
 chmod u+x prepare_splunk.sh
-./prepare.splunk.sh
+./prepare_splunk.sh
 sed -i "s/###SPLUNK_TOKEN###/$(cat hec_token)/" values.yaml
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" values.yaml
 sudo docker run -d -p 161:161/udp tandrup/snmpsim
