@@ -23,9 +23,7 @@ import pymongo
 from celery.canvas import chain, group, signature
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.common.inventory_record import (
-    InventoryRecord,
-)
+from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
 
 try:
@@ -53,7 +51,7 @@ INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
 
 
 def transform_address_to_key(address, port):
-    if int(port) is 161:
+    if int(port) == 161:
         return address
     else:
         return f"{address}:{port}"
@@ -102,7 +100,7 @@ def load():
     migrate_database(mongo_client, periodic_obj)
 
     logger.info(f"Loading inventory from {path}")
-    with open(path, encoding='utf-8') as csv_file:
+    with open(path, encoding="utf-8") as csv_file:
         # Dict reader will trust the header of the csv
         ir_reader = DictReader(csv_file)
         for source_record in ir_reader:
@@ -115,7 +113,9 @@ def load():
                 target = transform_address_to_key(ir.address, ir.port)
                 if ir.delete:
                     periodic_obj.disable_tasks(target)
-                    inventory_records.delete_one({"address": ir.address, "port": ir.port})
+                    inventory_records.delete_one(
+                        {"address": ir.address, "port": ir.port}
+                    )
                     targets_collection.remove({"address": target})
                     logger.info(f"Deleting record: {target}")
                 else:
