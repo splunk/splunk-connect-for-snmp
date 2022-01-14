@@ -10,7 +10,7 @@ create_splunk_indexes() {
 }
 
 create_splunk_hec() {
-  if ! curl -k -u admin:changeme2 https://localhost:8089/servicesNS/admin/splunk_httpinput/data/inputs/http -d name=new_token | grep "token" | cut -c 29-64 > hec_token ; then
+  if ! curl -k -u admin:changeme2 https://localhost:8089/servicesNS/admin/splunk_httpinput/data/inputs/http -d name=some_name | grep "token" | cut -c 29-64 > hec_token ; then
     echo "Error when creating ${index_names[${index}]} of type ${index_types[${index}]}"
   fi
 }
