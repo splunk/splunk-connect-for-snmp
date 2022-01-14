@@ -1,10 +1,10 @@
 splunk:
   enabled: true
   protocol: https
-  host: ###SPLUNK_HOST###
+  host: localhost
   token: ###SPLUNK_TOKEN###
-  insecureSSL: "false"
-  port: "###SPLUNK_PORT###"
+  insecureSSL: "true"
+  port: 8088
   clusterName: my-cluster
 image:
   repository: "snmp-local"
