@@ -11,6 +11,7 @@ image:
   tag: "latest"
   pullPolicy: "Never"
 traps:
+  replicaCount: 1
   communities:
     2c:
       - public
@@ -20,10 +21,10 @@ traps:
   #  - sc4snmp-hlab-sha-des
 
   #loadBalancerIP: The IP address in the metallb pool
-  loadBalancerIP: 10.1.0.1
+  loadBalancerIP: ###LOAD_BALANCER_ID###
 worker:
   # replicas: Number of replicas for worker container should two or more
-  #replicaCount: 2
+  replicaCount: 1
   # udpConnectionTimeout: timeout in seconds for SNMP operations
   #udpConnectionTimeout: 5
   logLevel: "DEBUG"
