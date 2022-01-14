@@ -107,10 +107,10 @@ class CustomPeriodicTaskManager:
                         )
                         isChanged = True
                 elif key == "crontab":
-                    if not periodic_document.crontab == PeriodicTask.Interval(
+                    if not periodic_document.crontab == PeriodicTask.Crontab(
                             **task_data["crontab"]
                     ):
-                        periodic_document.crontab = PeriodicTask.Interval(
+                        periodic_document.crontab = PeriodicTask.Crontab(
                             **task_data["crontab"]
                         )
                     isChanged = True
