@@ -7,7 +7,9 @@ splunk:
   port: "###SPLUNK_PORT###"
   clusterName: my-cluster
 image:
-  pullPolicy: "Always"
+  repository: "snmp-local"
+  tag: "latest"
+  pullPolicy: "Never"
 traps:
   communities:
     2c:
