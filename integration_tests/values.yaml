@@ -1,7 +1,7 @@
 splunk:
   enabled: true
   protocol: https
-  host: localhost
+  host: ###LOAD_BALANCER_ID###
   token: ###SPLUNK_TOKEN###
   insecureSSL: "true"
   port: "8088"

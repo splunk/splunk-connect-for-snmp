@@ -19,6 +19,8 @@ Right now we support only NOVA.
 - cd ~/splunk-connect-for-snmp/integration_tests
 - chmod u+x automatic_setup.sh
 - ./automatic_setup.sh
+- run tests
+- download results
 
 - ./integration_tests/deploy_and_test.sh -u <splunk_url_or_ip> -p <splunk_admin_password>
   - the test will install/deploy everything, will run all the integration tests and it will prompt
