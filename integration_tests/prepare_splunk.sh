@@ -16,3 +16,4 @@ create_splunk_hec() {
 }
 
 create_splunk_indexes
+create_splunk_hec
