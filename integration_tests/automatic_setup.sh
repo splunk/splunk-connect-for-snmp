@@ -20,7 +20,7 @@ function yellow {
 
 wait_for_splunk() {
   while [ "$(sudo docker ps | grep "splunk:latest" | grep healthy)" == "" ] ; do
-    echo $(yellow "Building Docker image")
+    echo $(yellow "Waiting for Splunk initialization")
     sleep 1
   done
 }
@@ -49,7 +49,9 @@ sed -i "s/###SPLUNK_TOKEN###/$(cat hec_token)/" values.yaml
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" values.yaml
 sudo docker run -d -p 161:161/udp tandrup/snmpsim
 
-sudo microk8s enable helm3 storage
+sudo microk8s enable helm3 storage dns rbac openebs
+sudo systemctl enable iscsid
+yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
 
 cd ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp
 microk8s helm3 dep update
