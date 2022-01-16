@@ -451,6 +451,8 @@ class Poller(Task):
                 try:
 
                     snmp_val = varBind[1]
+                    if snmp_val == "No more variables left in this MIB View":
+                        continue
                     snmp_type = type(snmp_val).__name__
 
                     metric_type = map_metric_type(snmp_type, snmp_val)
