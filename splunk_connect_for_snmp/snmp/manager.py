@@ -319,11 +319,9 @@ class Poller(Task):
                         varBindTable, metrics, address, bulk_mapping
                     )
                     if tmp_mibs:
-                        mibs_to_load.update(tmp_mibs)
-
+                        self.load_mibs(tmp_mibs)
                     if tmp_retry:
                         retry = True
-            self.load_mibs(list(mibs_to_load))
 
         if len(varbinds_get) > 0:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
