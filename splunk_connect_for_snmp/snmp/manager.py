@@ -465,6 +465,8 @@ class Poller(Task):
                             f"{mib}:{metric}:{index_number}",
                             mapping.get(f"{mib}:{metric}", mapping.get(mib)),
                         )
+                    if metric_value == "No more variables left in this MIB View":
+                        continue
 
                     if metric_type in MTYPES and (isinstance(metric_value, float)):
                         metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
