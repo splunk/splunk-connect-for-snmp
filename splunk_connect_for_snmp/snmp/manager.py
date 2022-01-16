@@ -67,7 +67,7 @@ def get_inventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-        error_indication, error_status, error_index, var_binds: list, address, walk
+    error_indication, error_status, error_index, var_binds: list, address, walk
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
@@ -96,9 +96,9 @@ def _any_failure_happened(
 
 def isMIBResolved(id):
     if (
-            id.startswith("RFC1213-MIB::")
-            or id.startswith("SNMPv2-SMI::enterprises.")
-            or id.startswith("SNMPv2-SMI::mib-2")
+        id.startswith("RFC1213-MIB::")
+        or id.startswith("SNMPv2-SMI::enterprises.")
+        or id.startswith("SNMPv2-SMI::mib-2")
     ):
         return False
     else:
@@ -277,22 +277,22 @@ class Poller(Task):
         if len(varbinds_bulk) > 0:
 
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
-                    self.snmpEngine,
-                    authData,
-                    transport,
-                    contextData,
-                    0,
-                    50,
-                    *varbinds_bulk,
-                    lexicographicMode=False,
+                self.snmpEngine,
+                authData,
+                transport,
+                contextData,
+                1,
+                10,
+                *varbinds_bulk,
+                lexicographicMode=False,
             ):
                 if not _any_failure_happened(
-                        errorIndication,
-                        errorStatus,
-                        errorIndex,
-                        varBindTable,
-                        ir.address,
-                        walk,
+                    errorIndication,
+                    errorStatus,
+                    errorIndex,
+                    varBindTable,
+                    ir.address,
+                    walk,
                 ):
                     tmp_retry, tmp_mibs, _ = self.process_snmp_data(
                         varBindTable, metrics, address, bulk_mapping
@@ -306,15 +306,15 @@ class Poller(Task):
 
         if len(varbinds_get) > 0:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
-                    self.snmpEngine, authData, transport, contextData, *varbinds_get
+                self.snmpEngine, authData, transport, contextData, *varbinds_get
             ):
                 if not _any_failure_happened(
-                        errorIndication,
-                        errorStatus,
-                        errorIndex,
-                        varBindTable,
-                        ir.address,
-                        walk,
+                    errorIndication,
+                    errorStatus,
+                    errorIndex,
+                    varBindTable,
+                    ir.address,
+                    walk,
                 ):
                     self.process_snmp_data(varBindTable, metrics, address, get_mapping)
 
@@ -403,7 +403,9 @@ class Poller(Task):
                     for vb in profile_varbinds:
                         if len(vb) == 3:
                             if vb[0] not in required_bulk or (
-                                    required_bulk[vb[0]] and vb[1] not in required_bulk[vb[0]]):
+                                required_bulk[vb[0]]
+                                and vb[1] not in required_bulk[vb[0]]
+                            ):
                                 varbinds_get.add(
                                     ObjectType(ObjectIdentity(vb[0], vb[1], vb[2]))
                                 )
