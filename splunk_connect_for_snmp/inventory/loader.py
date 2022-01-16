@@ -23,9 +23,15 @@ import pymongo
 from celery.canvas import chain, group, signature
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.common.inventory_record import (
-    InventoryRecord,
-)
+from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
+from splunk_connect_for_snmp.common.schema_migration import migrate_database
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except:
+    pass
 
 log_level = "DEBUG"
 log_format = logging.Formatter("[%(asctime)s] [%(levelname)s] - %(message)s")
@@ -44,14 +50,22 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
 
 
+def transform_address_to_key(address, port):
+    if int(port) == 161:
+        return address
+    else:
+        return f"{address}:{port}"
+
+
 def gen_walk_task(ir: InventoryRecord):
+    target = transform_address_to_key(ir.address, ir.port)
     return {
-        "name": f"sc4snmp;{ir.address};walk",
+        "name": f"sc4snmp;{target};walk",
         "task": "splunk_connect_for_snmp.snmp.tasks.walk",
-        "target": f"{ir.address}",
+        "target": target,
         "args": [],
         "kwargs": {
-            "address": ir.address,
+            "address": target,
         },
         "options": {
             "link": chain(
@@ -83,8 +97,10 @@ def load():
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
+    migrate_database(mongo_client, periodic_obj)
+
     logger.info(f"Loading inventory from {path}")
-    with open(path, encoding='utf-8') as csv_file:
+    with open(path, encoding="utf-8") as csv_file:
         # Dict reader will trust the header of the csv
         ir_reader = DictReader(csv_file)
         for source_record in ir_reader:
@@ -94,14 +110,17 @@ def load():
                 continue
             try:
                 ir = InventoryRecord(**source_record)
+                target = transform_address_to_key(ir.address, ir.port)
                 if ir.delete:
-                    periodic_obj.disable_tasks(ir.address)
-                    inventory_records.delete_one({"address": ir.address})
-                    targets_collection.remove({"address": ir.address})
-                    logger.info(f"Deleting record: {address}")
+                    periodic_obj.disable_tasks(target)
+                    inventory_records.delete_one(
+                        {"address": ir.address, "port": ir.port}
+                    )
+                    targets_collection.remove({"address": target})
+                    logger.info(f"Deleting record: {target}")
                 else:
                     status = inventory_records.update_one(
-                        {"address": ir.address},
+                        {"address": ir.address, "port": ir.port},
                         {"$set": ir.asdict()},
                         upsert=True,
                     )
@@ -118,7 +137,7 @@ def load():
 
             except Exception as e:
                 inventory_errors = True
-                logger.exception(f"Exception raised for {address}: {e}")
+                logger.exception(f"Exception raised for {target}: {e}")
 
     return inventory_errors
 

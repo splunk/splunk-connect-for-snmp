@@ -94,19 +94,18 @@ def enrich(self, result):
     address = result["address"]
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4snmp.targets
+    attributes_collection = mongo_client.sc4snmp.attributes
     updates = []
+    attribute_updates = []
 
     current_target = targets_collection.find_one(
-        {"address": address}, {"attributes": True, "target": True, "sysUpTime": True}
+        {"address": address}, {"target": True, "sysUpTime": True}
     )
     if not current_target:
         logger.info(f"First time for {address}")
         current_target = {"address": address}
     else:
         logger.info(f"Not first time for {address}")
-
-    if "attributes" not in current_target:
-        current_target["attributes"] = {}
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
     check_restart(current_target, result["result"], targets_collection, address)
@@ -115,13 +114,14 @@ def enrich(self, result):
     for group_key, group_data in result["result"].items():
         group_key_hash = shake_128(group_key.encode()).hexdigest(255)
 
-        if (
-                group_key_hash not in current_target["attributes"]
-                and len(group_data["fields"]) > 0
-        ):
+        current_attributes = attributes_collection.find_one(
+            {"address": address, "group_key_hash": group_key_hash}, {"fields": True, "id": True})
 
-            updates.append(
-                {"$set": {"attributes": {group_key_hash: {"id": group_key}}}}
+        if not current_attributes and group_data["fields"]:
+            attributes_collection.update_one(
+                {"address": address, "group_key_hash": group_key_hash},
+                {"$set": {"id": group_key}},
+                upsert=True,
             )
 
         for field_key, field_value in group_data["fields"].items():
@@ -129,24 +129,15 @@ def enrich(self, result):
             field_value["name"] = field_key
             cv = None
 
-            if field_key_hash in current_target["attributes"].get(
-                    group_key_hash, {}
-            ).get("fields", {}):
-                cv = current_target["attributes"][group_key_hash]["fields"][
-                    field_key_hash
-                ]
+            if current_attributes and field_key_hash in current_attributes.get("fields", {}):
+                cv = current_attributes["fields"][field_key_hash]
 
             if cv and not cv == field_value:
                 # modifed
-
-                updates.append(
+                attribute_updates.append(
                     {
                         "$set": {
-                            "attributes": {
-                                group_key_hash: {
-                                    "fields": {field_key_hash: field_value}
-                                }
-                            }
+                            "fields": {field_key_hash: field_value}
                         }
                     }
                 )
@@ -156,14 +147,10 @@ def enrich(self, result):
                 pass
             else:
                 # new
-                updates.append(
+                attribute_updates.append(
                     {
                         "$set": {
-                            "attributes": {
-                                group_key_hash: {
-                                    "fields": {field_key_hash: field_value}
-                                }
-                            }
+                            "fields": {field_key_hash: field_value}
                         }
                     }
                 )
@@ -177,21 +164,31 @@ def enrich(self, result):
                     {"address": address}, updates, upsert=True
                 )
                 updates.clear()
+            if len(attribute_updates) >= 20:
+                attributes_collection.update_one(
+                    {"address": address, "group_key_hash": group_key_hash, "id": group_key}, attribute_updates, upsert=True
+                )
+                attribute_updates.clear()
 
-        if len(updates) > 0:
+        if updates:
             targets_collection.update_one(
                 {"address": address}, updates, upsert=True
             )
+            updates.clear()
+        if attribute_updates:
+            attributes_collection.update_one(
+                {"address": address, "group_key_hash": group_key_hash, "id": group_key}, attribute_updates, upsert=True
+            )
+            attribute_updates.clear()
 
         # Now add back any fields we need
-        current_group_data = current_target["attributes"].get(group_key_hash, None)
-        if current_group_data:
-            id = current_group_data["id"]
-            fields = current_group_data["fields"]
-            if id in result["result"]:
+        if current_attributes:
+            attribute_group_id = current_attributes["id"]
+            fields = current_attributes["fields"]
+            if attribute_group_id in result["result"]:
                 for persist_data in fields.values():
-                    if persist_data["name"] not in result["result"][id]["fields"]:
-                        result["result"][id]["fields"][
+                    if persist_data["name"] not in result["result"][attribute_group_id]["fields"]:
+                        result["result"][attribute_group_id]["fields"][
                             persist_data["name"]
                         ] = persist_data
 
