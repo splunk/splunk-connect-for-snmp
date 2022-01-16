@@ -18,6 +18,7 @@ from contextlib import suppress
 
 with suppress(ImportError):
     from dotenv import load_dotenv
+
     load_dotenv()
 
 
@@ -39,3 +40,8 @@ mongodb_backend_settings = {"database": MONGO_DB_CELERY_DATABASE}
 beat_scheduler = "celerybeatmongo.schedulers.MongoScheduler"
 mongodb_scheduler_url = MONGO_URI
 mongodb_scheduler_db = MONGO_DB_CELERY_DATABASE
+
+# Optimization for long running tasks
+# https://docs.celeryproject.org/en/stable/userguide/optimizing.html#reserve-one-task-at-a-time
+task_acks_late = True
+worker_prefetch_multiplier = 1
