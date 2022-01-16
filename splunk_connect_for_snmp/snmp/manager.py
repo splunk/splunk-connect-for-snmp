@@ -47,6 +47,7 @@ from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
+MIB_STANDARD = os.getenv("MIB_STANDARD", "https://pysnmp.github.io/mibs/standard.txt")
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 IGNORE_EMPTY_VARBINDS = human_bool(os.getenv("IGNORE_EMPTY_VARBINDS", False))
@@ -54,6 +55,14 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
 
+DEFAULT_STANDARD_MIBS = [
+    "HOST-RESOURCES-MIB",
+    "IF-MIB",
+    "IP-MIB",
+    "SNMPv2-MIB",
+    "TCP-MIB",
+    "UDP-MIB",
+]
 logger = get_task_logger(__name__)
 
 
@@ -225,18 +234,18 @@ class Poller(Task):
         self.builder = self.snmpEngine.getMibBuilder()
         self.mib_view_controller = view.MibViewController(self.builder)
         compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
-        for mib in [
-            "HOST-RESOURCES-MIB",
-            # "IANAifType-MIB",
-            "IF-MIB",
-            "IP-MIB",
-            # "RFC1389-MIB",
-            "SNMPv2-MIB",
-            # "UCD-SNMP-MIB",
-            "TCP-MIB",
-            "UDP-MIB",
-        ]:
-            self.builder.loadModules(mib)
+
+        mib_standard_response = self.session.get(f"{MIB_STANDARD}")
+        if mib_standard_response.status_code == 200:
+            with StringIO(mib_standard_response.text) as standard_raw:
+                mib = standard_raw.readline()
+                while mib:
+                    if mib.strip() != "":
+                        self.builder.loadModules(mib)
+                    mib = standard_raw.readline()
+        else:
+            for mib in DEFAULT_STANDARD_MIBS:
+                self.builder.loadModules(mib)
 
         mib_response = self.session.get(f"{MIB_INDEX}")
         self.mib_map = {}
