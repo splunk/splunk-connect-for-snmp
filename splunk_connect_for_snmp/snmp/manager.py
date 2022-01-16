@@ -212,6 +212,7 @@ class Poller(Task):
         self.builder = None
         self.mib_view_controller = None
         self.mib_map = None
+        self.standard_mibs = []
 
     def initialize(self):
 
@@ -242,9 +243,11 @@ class Poller(Task):
                 while mib:
                     if mib.strip() != "":
                         self.builder.loadModules(mib)
+                        self.standard_mibs.append(mib)
                     mib = standard_raw.readline()
         else:
             for mib in DEFAULT_STANDARD_MIBS:
+                self.standard_mibs.append(mib)
                 self.builder.loadModules(mib)
 
         mib_response = self.session.get(f"{MIB_INDEX}")
