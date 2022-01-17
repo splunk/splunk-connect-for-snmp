@@ -15,6 +15,9 @@ mock_inventory_with_comment = """address,port,version,community,secret,securityE
 mock_inventory_delete = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
 192.168.0.1,,2c,public,,,1805,test_1,False,True"""
 
+mock_inventory_delete_non_default = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+192.168.0.1,345,2c,public,,,1805,test_1,False,True"""
+
 expected_managed_task = {"some": 1, "test": 2, "data": 3}
 
 
@@ -157,6 +160,25 @@ class TestLoader(TestCase):
         self.assertEqual(2, len(calls))
         self.assertEqual(({'address': '192.168.0.1'},), calls[0].args)
         self.assertEqual(({'address': '192.168.0.1'},), calls[1].args)
+
+    @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory_delete_non_default)
+    @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
+    @mock.patch("pymongo.collection.Collection.delete_one")
+    @mock.patch("pymongo.collection.Collection.remove")
+    @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    def test_deleting_record_non_default_port(self, m_migrate, m_remove, m_delete, m_taskManager, m_open):
+        periodic_obj_mock = Mock()
+        m_taskManager.return_value = periodic_obj_mock
+        self.assertEqual(False, load())
+
+        periodic_obj_mock.disable_tasks.assert_called_with("192.168.0.1:345")
+        m_delete.assert_called_with({"address": "192.168.0.1", "port": 345})
+
+        calls = m_remove.call_args_list
+
+        self.assertEqual(2, len(calls))
+        self.assertEqual(({'address': '192.168.0.1:345'},), calls[0].args)
+        self.assertEqual(({'address': '192.168.0.1:345'},), calls[1].args)
 
     @mock.patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
     @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory)
