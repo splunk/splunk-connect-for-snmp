@@ -25,6 +25,22 @@ wait_for_splunk() {
   done
 }
 
+deploy_poetry() {
+  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+  source "$HOME"/.poetry/env
+  poetry install
+  poetry add -D splunk-sdk
+  poetry add -D splunklib
+  poetry add -D pysnmp
+}
+
+wait_for_pod_initialization() {
+  while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep ContainerCreating)" != "" ] ; do
+    echo "Waiting for POD initialization..."
+    sleep 1
+  done
+}
+
 sudo apt -y install docker.io
 cd ~/splunk-connect-for-snmp
 
@@ -59,3 +75,10 @@ cd ~/splunk-connect-for-snmp/integration_tests
 
 echo $(green "Installing SC4SNMP on Kubernetes")
 sudo microk8s helm3 install snmp -f values.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
+
+wait_for_pod_initialization
+
+deploy_poetry
+
+poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" \
+  --trap_external_ip="$(hostname -I | cut -d " " -f1)"
