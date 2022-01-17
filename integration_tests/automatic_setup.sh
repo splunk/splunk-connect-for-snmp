@@ -81,4 +81,4 @@ wait_for_pod_initialization
 deploy_poetry
 
 poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" \
-  --trap_external_ip="$(hostname -I | cut -d " " -f1)"
+  --trap_external_ip="$(hostname -I | cut -d " " -f1)" --junitxml=result.xml
