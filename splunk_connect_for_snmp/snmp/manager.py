@@ -47,6 +47,7 @@ from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
+MIB_STANDARD = os.getenv("MIB_STANDARD", "https://pysnmp.github.io/mibs/standard.txt")
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 IGNORE_EMPTY_VARBINDS = human_bool(os.getenv("IGNORE_EMPTY_VARBINDS", False))
@@ -54,6 +55,14 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
 
+DEFAULT_STANDARD_MIBS = [
+    "HOST-RESOURCES-MIB",
+    "IF-MIB",
+    "IP-MIB",
+    "SNMPv2-MIB",
+    "TCP-MIB",
+    "UDP-MIB",
+]
 logger = get_task_logger(__name__)
 
 
@@ -76,7 +85,7 @@ def get_inventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-        error_indication, error_status, error_index, var_binds: list, address, walk
+    error_indication, error_status, error_index, var_binds: list, address, walk
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
@@ -105,9 +114,9 @@ def _any_failure_happened(
 
 def isMIBResolved(id):
     if (
-            id.startswith("RFC1213-MIB::")
-            or id.startswith("SNMPv2-SMI::enterprises.")
-            or id.startswith("SNMPv2-SMI::mib-2")
+        id.startswith("RFC1213-MIB::")
+        or id.startswith("SNMPv2-SMI::enterprises.")
+        or id.startswith("SNMPv2-SMI::mib-2")
     ):
         return False
     else:
@@ -203,6 +212,7 @@ class Poller(Task):
         self.builder = None
         self.mib_view_controller = None
         self.mib_map = None
+        self.standard_mibs = []
 
     def initialize(self):
 
@@ -225,18 +235,20 @@ class Poller(Task):
         self.builder = self.snmpEngine.getMibBuilder()
         self.mib_view_controller = view.MibViewController(self.builder)
         compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
-        for mib in [
-            "HOST-RESOURCES-MIB",
-            # "IANAifType-MIB",
-            "IF-MIB",
-            "IP-MIB",
-            # "RFC1389-MIB",
-            "SNMPv2-MIB",
-            # "UCD-SNMP-MIB",
-            "TCP-MIB",
-            "UDP-MIB",
-        ]:
-            self.builder.loadModules(mib)
+
+        mib_standard_response = self.session.get(f"{MIB_STANDARD}")
+        if mib_standard_response.status_code == 200:
+            with StringIO(mib_standard_response.text) as standard_raw:
+                mib = standard_raw.readline()
+                while mib:
+                    if mib.strip() != "":
+                        self.builder.loadModules(mib)
+                        self.standard_mibs.append(mib)
+                    mib = standard_raw.readline()
+        else:
+            for mib in DEFAULT_STANDARD_MIBS:
+                self.standard_mibs.append(mib)
+                self.builder.loadModules(mib)
 
         mib_response = self.session.get(f"{MIB_INDEX}")
         self.mib_map = {}
@@ -286,44 +298,42 @@ class Poller(Task):
         if len(varbinds_bulk) > 0:
 
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
-                    self.snmpEngine,
-                    authData,
-                    transport,
-                    contextData,
-                    0,
-                    50,
-                    *varbinds_bulk,
-                    lexicographicMode=False,
+                self.snmpEngine,
+                authData,
+                transport,
+                contextData,
+                1,
+                10,
+                *varbinds_bulk,
+                lexicographicMode=False,
             ):
                 if not _any_failure_happened(
-                        errorIndication,
-                        errorStatus,
-                        errorIndex,
-                        varBindTable,
-                        ir.address,
-                        walk,
+                    errorIndication,
+                    errorStatus,
+                    errorIndex,
+                    varBindTable,
+                    ir.address,
+                    walk,
                 ):
                     tmp_retry, tmp_mibs, _ = self.process_snmp_data(
                         varBindTable, metrics, address, bulk_mapping
                     )
                     if tmp_mibs:
-                        mibs_to_load.update(tmp_mibs)
-
+                        self.load_mibs(tmp_mibs)
                     if tmp_retry:
                         retry = True
-            self.load_mibs(list(mibs_to_load))
 
         if len(varbinds_get) > 0:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
-                    self.snmpEngine, authData, transport, contextData, *varbinds_get
+                self.snmpEngine, authData, transport, contextData, *varbinds_get
             ):
                 if not _any_failure_happened(
-                        errorIndication,
-                        errorStatus,
-                        errorIndex,
-                        varBindTable,
-                        ir.address,
-                        walk,
+                    errorIndication,
+                    errorStatus,
+                    errorIndex,
+                    varBindTable,
+                    ir.address,
+                    walk,
                 ):
                     self.process_snmp_data(varBindTable, metrics, address, get_mapping)
 
@@ -412,7 +422,9 @@ class Poller(Task):
                     for vb in profile_varbinds:
                         if len(vb) == 3:
                             if vb[0] not in required_bulk or (
-                                    required_bulk[vb[0]] and vb[1] not in required_bulk[vb[0]]):
+                                required_bulk[vb[0]]
+                                and vb[1] not in required_bulk[vb[0]]
+                            ):
                                 varbinds_get.add(
                                     ObjectType(ObjectIdentity(vb[0], vb[1], vb[2]))
                                 )
@@ -463,6 +475,8 @@ class Poller(Task):
                             f"{mib}:{metric}:{index_number}",
                             mapping.get(f"{mib}:{metric}", mapping.get(mib)),
                         )
+                    if metric_value == "No more variables left in this MIB View":
+                        continue
 
                     if metric_type in MTYPES and (isinstance(metric_value, float)):
                         metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
