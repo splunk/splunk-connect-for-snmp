@@ -151,7 +151,12 @@ class TestLoader(TestCase):
 
         periodic_obj_mock.disable_tasks.assert_called_with("192.168.0.1")
         m_delete.assert_called_with({"address": "192.168.0.1", "port": 161})
-        m_remove.assert_called_with({"address": "192.168.0.1"})
+
+        calls = m_remove.call_args_list
+
+        self.assertEqual(2, len(calls))
+        self.assertEqual(({'address': '192.168.0.1'},), calls[0].args)
+        self.assertEqual(({'address': '192.168.0.1'},), calls[1].args)
 
     @mock.patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
     @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory)
