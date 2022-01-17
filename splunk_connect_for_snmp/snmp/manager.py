@@ -266,9 +266,10 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
 
+        self.initialized = True
+
     def do_work(self, address: str, walk: bool = False, profiles: List[str] = None):
         retry = False
-        mibs_to_load = set()
 
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
             self.profiles = load_profiles()
