@@ -63,6 +63,23 @@ DEFAULT_STANDARD_MIBS = [
     "TCP-MIB",
     "UDP-MIB",
 ]
+EXCLUDED_MIBS = [
+    "INET-ADDRESS-MIB",
+    "PYSNMP-USM-MIB",
+    "RFC-1212",
+    "RFC-1215",
+    "RFC1065-SMI",
+    "RFC1155-SMI",
+    "RFC1158-MIB",
+    "RFC1213-MIB",
+    "SNMP-FRAMEWORK-MIB",
+    "SNMP-TARGET-MIB",
+    "SNMPv2-CONF",
+    "SNMPv2-SMI",
+    "SNMPv2-TC",
+    "SNMPv2-TM",
+    "TRANSPORT-ADDRESS-MIB",
+]
 logger = get_task_logger(__name__)
 
 
@@ -364,8 +381,9 @@ class Poller(Task):
             oid_to_check = ".".join(oid_list[:i])
             if oid_to_check in self.mib_map:
                 mib = self.mib_map[oid_to_check]
-                logger.debug(f"found {mib} for {id} based on {oid_to_check}")
-                return True, mib
+                if mib not in EXCLUDED_MIBS:
+                    logger.debug(f"found {mib} for {id} based on {oid_to_check}")
+                    return True, mib
         logger.warning(f"no mib found {id} based on {oid} from {target}")
         return False, None
 
