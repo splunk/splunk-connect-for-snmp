@@ -203,21 +203,8 @@ def extract_index_number(index):
 
 class Poller(Task):
 
-    initialized = False
-
     def __init__(self):
-        self.mongo_client = None
-        self.session = None
-        self.profiles = None
-        self.last_modified = None
-        self.snmpEngine = None
-        self.builder = None
-        self.mib_view_controller = None
-        self.mib_map = None
         self.standard_mibs = []
-
-    def initialize(self):
-
         self.mongo_client = pymongo.MongoClient(MONGO_URI)
 
         self.session = CachedLimiterSession(
@@ -232,7 +219,6 @@ class Poller(Task):
 
         self.profiles = load_profiles()
         self.last_modified = time.time()
-
         self.snmpEngine = SnmpEngine()
         self.builder = self.snmpEngine.getMibBuilder()
         self.mib_view_controller = view.MibViewController(self.builder)
@@ -267,11 +253,9 @@ class Poller(Task):
             logger.error(
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
-        Poller.initialized = True
 
     def do_work(self, address: str, walk: bool = False, profiles: List[str] = None):
         retry = False
-        mibs_to_load = set()
 
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
             self.profiles = load_profiles()

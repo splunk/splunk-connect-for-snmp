@@ -1,5 +1,5 @@
 from unittest import TestCase, mock
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
 
 from pysnmp.smi.error import SmiError
 
@@ -25,7 +25,7 @@ class TestTasks(TestCase):
         kwargs = {"address": "192.168.0.1"}
         m_do_work.return_value = (False, {"test": "value1"})
 
-        result = walk(skip_init=True, **kwargs)
+        result = walk(**kwargs)
 
         m_lock.assert_called()
         m_lock.m_release()
@@ -48,8 +48,7 @@ class TestTasks(TestCase):
 
         kwargs = {"address": "192.168.0.1", "profiles": ["profile1", "profile2"], "frequency": 20}
         m_do_work.return_value = (False, {"test": "value1"})
-
-        result = poll(skip_init=True, **kwargs)
+        result = poll(**kwargs)
 
         m_lock.assert_called()
         m_lock.m_release()
@@ -67,8 +66,9 @@ class TestTasks(TestCase):
 
         work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
         m_process_data.return_value = (False, [], {"test": "value1"})
-
-        result = trap(work, skip_init=True)
+        self_obj = MagicMock()
+        self_obj.trap = trap
+        result = self_obj.trap(work)
 
         self.assertEqual({'address': '192.168.0.1',
                           'detectchange': False,
@@ -89,8 +89,9 @@ class TestTasks(TestCase):
 
         work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
         m_process_data.return_value = (False, [], {"test": "value1"})
-
-        result = trap(work, skip_init=True,)
+        self_obj = MagicMock()
+        self_obj.trap = trap
+        result = self_obj.trap(work)
 
         calls = m_load_mib.call_args_list
         self.assertEqual({'SOME-MIB'}, calls[0][0][0])
@@ -117,8 +118,9 @@ class TestTasks(TestCase):
 
         work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
         m_process_data.return_value = (False, [], {"test": "value1"})
-
-        result = trap(work, skip_init=True)
+        self_obj = MagicMock()
+        self_obj.trap = trap
+        result = self_obj.trap(work)
 
         calls = m_load_mib.call_args_list
 
