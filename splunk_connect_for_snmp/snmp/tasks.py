@@ -60,7 +60,7 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
     ),
 )
 def walk(self, skip_init=False, **kwargs):
-    if not skip_init and not self.initialized:
+    if not skip_init and not Poller.initialized:
         self.initialize()
 
     address = kwargs["address"]
@@ -93,7 +93,7 @@ def walk(self, skip_init=False, **kwargs):
     expires=30,
 )
 def poll(self, skip_init=False, **kwargs):
-    if not skip_init and not self.initialized:
+    if not skip_init and not Poller.initialized:
         self.initialize()
 
     address = kwargs["address"]
@@ -116,7 +116,7 @@ def poll(self, skip_init=False, **kwargs):
 
 @shared_task(bind=True, base=Poller)
 def trap(self, work, skip_init=False):
-    if not skip_init and not self.initialized:
+    if not skip_init and not Poller.initialized:
         self.initialize()
 
     var_bind_table = []

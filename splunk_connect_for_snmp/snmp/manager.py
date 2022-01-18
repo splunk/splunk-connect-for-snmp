@@ -202,8 +202,10 @@ def extract_index_number(index):
 
 
 class Poller(Task):
+
+    initialized = False
+
     def __init__(self):
-        self.initialized = False
         self.mongo_client = None
         self.session = None
         self.profiles = None
@@ -263,6 +265,7 @@ class Poller(Task):
             logger.error(
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
+        Poller.initialized = True
 
     def do_work(self, address: str, walk: bool = False, profiles: List[str] = None):
         retry = False
