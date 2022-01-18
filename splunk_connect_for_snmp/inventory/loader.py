@@ -23,9 +23,7 @@ import pymongo
 from celery.canvas import chain, group, signature
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.common.inventory_record import (
-    InventoryRecord,
-)
+from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
 
 try:
@@ -53,7 +51,7 @@ INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
 
 
 def transform_address_to_key(address, port):
-    if int(port) is 161:
+    if int(port) == 161:
         return address
     else:
         return f"{address}:{port}"
@@ -94,6 +92,7 @@ def load():
     inventory_errors = False
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4snmp.targets
+    attributes_collection = mongo_client.sc4snmp.attributes
     mongo_db = mongo_client[MONGO_DB]
     inventory_records = mongo_db.inventory
 
@@ -102,7 +101,7 @@ def load():
     migrate_database(mongo_client, periodic_obj)
 
     logger.info(f"Loading inventory from {path}")
-    with open(path, encoding='utf-8') as csv_file:
+    with open(path, encoding="utf-8") as csv_file:
         # Dict reader will trust the header of the csv
         ir_reader = DictReader(csv_file)
         for source_record in ir_reader:
@@ -115,8 +114,11 @@ def load():
                 target = transform_address_to_key(ir.address, ir.port)
                 if ir.delete:
                     periodic_obj.disable_tasks(target)
-                    inventory_records.delete_one({"address": ir.address, "port": ir.port})
+                    inventory_records.delete_one(
+                        {"address": ir.address, "port": ir.port}
+                    )
                     targets_collection.remove({"address": target})
+                    attributes_collection.remove({"address": target})
                     logger.info(f"Deleting record: {target}")
                 else:
                     status = inventory_records.update_one(

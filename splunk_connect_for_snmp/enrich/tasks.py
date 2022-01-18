@@ -181,11 +181,6 @@ def enrich(self, result):
             )
             attribute_updates.clear()
 
-        if len(updates) > 0:
-            targets_collection.update_one(
-                {"address": address}, updates, upsert=True
-            )
-
         # Now add back any fields we need
         if current_attributes:
             attribute_group_id = current_attributes["id"]

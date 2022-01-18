@@ -48,6 +48,8 @@ spec:
               value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/asn1/@mib@"
             - name: MIB_INDEX
               value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/index.csv"
+            - name: MIB_STANDARD
+              value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/standard.txt"
             - name: LOG_LEVEL
               value: {{ .Values.traps.logLevel | default "INFO" }}
 {{- if .Values.splunk.protocol }}
