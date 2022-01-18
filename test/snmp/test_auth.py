@@ -52,33 +52,33 @@ class TestAuth(TestCase):
 #       @patch('pysnmp.hlapi.asyncore.sync.cmdgen.getCmd')
 #        @patch('pysnmp.hlapi.getCmd')
 
-    @patch('splunk_connect_for_snmp.snmp.auth.getCmd')
-    def test_get_security_engine_id(self, m_get_cmd):
-        ir2 = InventoryRecord.from_dict({
-            "address": "192.168.0.1",
-            "port": "34",
-            "version": "2c",
-            "community": "public",
-            "secret": "secret",
-            "securityEngine": "ENGINE",
-            "walk_interval": 1850,
-            "profiles": "",
-            "SmartProfiles": True,
-            "delete": False,
-        })
-
-        snmpEngine = Mock()
-        logger = Mock()
-
-        m_get_cmd.return_value = [(None, 0, 0, "Oid1"), (None, 0, 0, "Oid2"), (None, 0, 0, "Oid3")]
-
-        get_security_engine_id(logger, ir2, snmpEngine)
-
-        calls = snmpEngine.observer.registerObserver.call_args_list
-
-        m_get_cmd.assert_called()
-
-        self.assertTrue(True)
+    # @patch('splunk_connect_for_snmp.snmp.auth.getCmd')
+    # def test_get_security_engine_id(self, m_get_cmd):
+    #     ir2 = InventoryRecord.from_dict({
+    #         "address": "192.168.0.1",
+    #         "port": "34",
+    #         "version": "2c",
+    #         "community": "public",
+    #         "secret": "secret",
+    #         "securityEngine": "ENGINE",
+    #         "walk_interval": 1850,
+    #         "profiles": "",
+    #         "SmartProfiles": True,
+    #         "delete": False,
+    #     })
+    #
+    #     snmpEngine = Mock()
+    #     logger = Mock()
+    #
+    #     m_get_cmd.return_value = [(None, 0, 0, "Oid1"), (None, 0, 0, "Oid2"), (None, 0, 0, "Oid3")]
+    #
+    #     get_security_engine_id(logger, ir2, snmpEngine)
+    #
+    #     calls = snmpEngine.observer.registerObserver.call_args_list
+    #
+    #     m_get_cmd.assert_called()
+    #
+    #     self.assertTrue(True)
 
     @patch('os.path.exists')
     @patch('splunk_connect_for_snmp.snmp.auth.get_secret_value')
