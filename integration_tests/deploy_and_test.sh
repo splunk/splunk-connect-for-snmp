@@ -29,8 +29,8 @@ create_splunk_secret() {
 create_splunk_indexes() {
   splunk_ip=$1
   splunk_password=$2
-  index_names=("em_metrics" "em_meta" "em_events")
-  index_types=("metric" "event" "event")
+  index_names=("netmetrics" "netops")
+  index_types=("metric" "event")
   for index in "${!index_names[@]}" ; do
     if ! curl -k -u admin:"${splunk_password}" "https://${splunk_ip}:8089/services/data/indexes" \
       -d datatype="${index_types[${index}]}" -d name="${index_names[${index}]}" ; then

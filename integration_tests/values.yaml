@@ -1,0 +1,69 @@
+splunk:
+  enabled: true
+  protocol: https
+  host: ###LOAD_BALANCER_ID###
+  token: ###SPLUNK_TOKEN###
+  insecureSSL: "true"
+  port: "8088"
+  clusterName: my-cluster
+image:
+  repository: "snmp-local"
+  tag: "latest"
+  pullPolicy: "Never"
+traps:
+  replicaCount: 1
+  communities:
+    2c:
+      - public
+      - homelab
+  #usernameSecrets:
+  #  - sc4snmp-hlab-sha-aes
+  #  - sc4snmp-hlab-sha-des
+
+  #loadBalancerIP: The IP address in the metallb pool
+  loadBalancerIP: ###LOAD_BALANCER_ID###
+worker:
+  # replicas: Number of replicas for worker container should two or more
+  replicaCount: 1
+  # udpConnectionTimeout: timeout in seconds for SNMP operations
+  #udpConnectionTimeout: 5
+  logLevel: "DEBUG"
+scheduler:
+  logLevel: "INFO"
+#  profiles: |
+#    generic_switch:
+#      frequency: 60
+#      varBinds:
+#        - ['SNMPv2-MIB', 'sysDescr']
+#        - ['SNMPv2-MIB', 'sysName', 0]
+#        - ['IF-MIB']
+#        - ['TCP-MIB']
+#        - ['UDP-MIB']
+poller:
+ # usernameSecrets:
+ #   - sc4snmp-hlab-sha-aes
+ #   - sc4snmp-hlab-sha-des
+  inventory: |
+    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+    ###LOAD_BALANCER_ID###,,2c,public,,,600,,,
+sim:
+  # sim must be enabled if you want to use signalFx
+  enabled: false
+#  signalfxToken: BCwaJ_Ands4Xh7Nrg
+#  signalfxRealm: us0
+mongodb:
+  pdb:
+    create: true
+  persistence:
+    storageClass: "microk8s-hostpath"
+  volumePermissions:
+    enabled: true
+rabbitmq:
+  pdb:
+    create: true
+  replicaCount: 1
+  persistence:
+    enabled: true
+    storageClass: "microk8s-hostpath"
+  volumePermissions:
+    enabled: true
