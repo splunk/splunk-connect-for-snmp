@@ -3,21 +3,19 @@ How to run an integration test?
 Right now we support only NOVA.
 - login into NOVA: https://splunkit.io/ec2
 - create an EC2 instance with the following specs:
-  - t3.medium
+  - m5.xlarge
   - 50 GB (this is the default value)
-  - ubuntu 18/CentOS 7/CentOS 8
-- create a splunk instance with all the default settings
+  - Ubuntu 20
+
+
+
 - git clone https://github.com/splunk/splunk-connect-for-snmp.git
 - cd splunk-connect-for-snmp
-- git checkout integration_tests
-- cd test
+- git checkout <target_branch>
+- cd integration_tests
 - chmod u+x install_microk8s.sh
-- ./install_microk8s.sh
-- cd splunk-connect-for-snmp
-- ./test/deploy_and_test.sh -u <splunk_url_or_ip> -p <splunk_admin_password>
-  - the test will install/deploy everything, will run all the integration tests and it will prompt
-    you this message:
-    "Press ENTER to undeploy everything"
-    Once you press any key, everything will be undeployed (kubernets, secrets, snmp simulator, ...).
-    In this way you can check your Splunk instance/Kubernetes' containers in order to check
-    that everything is fine.
+- sudo ./install_microk8s.sh
+- su <user_name>
+- cd ~/splunk-connect-for-snmp/integration_tests
+- chmod u+x automatic_setup.sh
+- ./automatic_setup.sh

@@ -92,6 +92,7 @@ def load():
     inventory_errors = False
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4snmp.targets
+    attributes_collection = mongo_client.sc4snmp.attributes
     mongo_db = mongo_client[MONGO_DB]
     inventory_records = mongo_db.inventory
 
@@ -117,6 +118,7 @@ def load():
                         {"address": ir.address, "port": ir.port}
                     )
                     targets_collection.remove({"address": target})
+                    attributes_collection.remove({"address": target})
                     logger.info(f"Deleting record: {target}")
                 else:
                     status = inventory_records.update_one(
