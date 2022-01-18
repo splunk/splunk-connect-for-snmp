@@ -59,9 +59,7 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
         SnmpActionError,
     ),
 )
-def walk(self, skip_init=False, **kwargs):
-    if not skip_init and not self.initialized:
-        self.initialize()
+def walk(self, **kwargs):
 
     address = kwargs["address"]
     mongo_client = pymongo.MongoClient(MONGO_URI)
@@ -92,9 +90,7 @@ def walk(self, skip_init=False, **kwargs):
     retry_jitter=True,
     expires=30,
 )
-def poll(self, skip_init=False, **kwargs):
-    if not skip_init and not self.initialized:
-        self.initialize()
+def poll(self, **kwargs):
 
     address = kwargs["address"]
     profiles = kwargs["profiles"]
@@ -115,9 +111,7 @@ def poll(self, skip_init=False, **kwargs):
 
 
 @shared_task(bind=True, base=Poller)
-def trap(self, work, skip_init=False):
-    if not skip_init and not self.initialized:
-        self.initialize()
+def trap(self, work):
 
     var_bind_table = []
     not_translated_oids = []
