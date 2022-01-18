@@ -85,7 +85,7 @@ def get_inventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-    error_indication, error_status, error_index, var_binds: list, address, walk
+    error_indication, error_status, error_index, var_binds: list, address, walk, count
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
@@ -93,22 +93,30 @@ def _any_failure_happened(
     @param error_status:
     @param error_index: index of varbind where error appeared
     @param var_binds: list of varbinds
+    @param current length of metrics
     @return: if any failure happened
     """
     if error_indication:
         if isinstance(error_indication, EmptyResponse) and IGNORE_EMPTY_VARBINDS:
             return False
-        raise SnmpActionError(
-            f"An error of SNMP isWalk={walk} for a host {address} occurred: {error_indication}"
-        )
+        if count == 0:
+            raise SnmpActionError(
+                f"An error of SNMP isWalk={walk} for a host {address} occurred: {error_indication}"
+            )
+        else:
+            return True
     elif error_status:
         result = "{} at {}".format(
             error_status.prettyPrint(),
             error_index and var_binds[int(error_index) - 1][0] or "?",
         )
-        raise SnmpActionError(
-            f"An error of SNMP isWalk={walk} for a host {address} occurred: {result}"
-        )
+        if count == 0:
+            raise SnmpActionError(
+                f"An error of SNMP isWalk={walk} for a host {address} occurred: {result}"
+            )
+        else:
+            return True
+
     return False
 
 
@@ -316,6 +324,7 @@ class Poller(Task):
                     varBindTable,
                     ir.address,
                     walk,
+                    len(metrics),
                 ):
                     tmp_retry, tmp_mibs, _ = self.process_snmp_data(
                         varBindTable, metrics, address, bulk_mapping
@@ -336,6 +345,7 @@ class Poller(Task):
                     varBindTable,
                     ir.address,
                     walk,
+                    len(metrics),
                 ):
                     self.process_snmp_data(varBindTable, metrics, address, get_mapping)
 
