@@ -12,26 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-import os
+import logging
 
-import yaml
-
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except:
-    pass
-
-CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
+import json_log_formatter
 
 
-def load_custom_translations():
-    try:
-        with open(CONFIG_PATH, encoding='utf-8') as file:
-            config_runtime = yaml.safe_load(file)
-            return config_runtime.get("customTranslations")
-
-    except FileNotFoundError:
-        return None
+class CustomisedJSONFormatter(json_log_formatter.JSONFormatter):
+    def json_record(self, message: str, extra: dict, record: logging.LogRecord) -> dict:
+        super().json_record(message, extra, record)
+        extra['level'] = record.levelname
+        return extra

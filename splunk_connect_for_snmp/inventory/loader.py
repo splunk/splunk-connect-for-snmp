@@ -20,9 +20,12 @@ import sys
 from csv import DictReader
 
 import pymongo
+import json_log_formatter
+
 from celery.canvas import chain, group, signature
 
 from splunk_connect_for_snmp import customtaskmanager
+from splunk_connect_for_snmp.common.customised_json_formatter import CustomisedJSONFormatter
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
 
@@ -33,15 +36,16 @@ try:
 except:
     pass
 
+formatter = CustomisedJSONFormatter()
+
 log_level = "DEBUG"
-log_format = logging.Formatter("[%(asctime)s] [%(levelname)s] - %(message)s")
 logger = logging.getLogger(__name__)
 logger.setLevel(log_level)
 
 # writing to stdout
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel(log_level)
-handler.setFormatter(log_format)
+handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 MONGO_URI = os.getenv("MONGO_URI")
@@ -95,6 +99,11 @@ def load():
     attributes_collection = mongo_client.sc4snmp.attributes
     mongo_db = mongo_client[MONGO_DB]
     inventory_records = mongo_db.inventory
+
+    try:
+        raise Exception("asdasdadadad")
+    except Exception as e:
+        logger.exception(e)
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 

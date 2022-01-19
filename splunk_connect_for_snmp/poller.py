@@ -17,6 +17,8 @@
 # Support use of .env file for developers
 from contextlib import suppress
 
+from splunk_connect_for_snmp.common.customised_json_formatter import CustomisedJSONFormatter
+
 with suppress(ImportError):
     from dotenv import load_dotenv
     load_dotenv()
@@ -32,12 +34,11 @@ from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from splunk_connect_for_snmp import customtaskmanager
-
 provider = TracerProvider()
 processor = BatchSpanProcessor(JaegerExporter())
 provider.add_span_processor(processor)
 trace.set_tracer_provider(provider)
+formatter = CustomisedJSONFormatter()
 
 logger = get_task_logger(__name__)
 
@@ -60,6 +61,12 @@ def init_celery_tracing(*args, **kwargs):
 def init_celery_beat_tracing(*args, **kwargs):
     CeleryInstrumentor().instrument()
     LoggingInstrumentor().instrument()
+
+
+@signals.after_setup_task_logger.connect
+def setup_task_logger(logger, *args, **kwargs):
+    for handler in logger.handlers:
+        handler.setFormatter(formatter)
 
 
 app.autodiscover_tasks(
