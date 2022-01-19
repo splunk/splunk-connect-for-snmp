@@ -17,9 +17,6 @@ import logging
 import os
 import sys
 
-import pymongo
-
-from splunk_connect_for_snmp import customtaskmanager
 
 log_format = logging.Formatter("[%(asctime)s] [%(levelname)s] - %(message)s")
 logger = logging.getLogger(__name__)
