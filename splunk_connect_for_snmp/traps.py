@@ -15,7 +15,10 @@
 #
 import logging
 
+import json_log_formatter
 from pysnmp.proto.api import v2c
+
+from splunk_connect_for_snmp.common.customised_json_formatter import CustomisedJSONFormatter
 
 try:
     from dotenv import load_dotenv
@@ -55,6 +58,8 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 logging.basicConfig(
     level=getattr(logging, LOG_LEVEL), format="%(asctime)s %(levelname)s %(message)s"
 )
+
+formatter = CustomisedJSONFormatter()
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
@@ -77,8 +82,14 @@ def init_celery_beat_tracing(*args, **kwargs):
     LoggingInstrumentor().instrument()
 
 
+@signals.after_setup_task_logger.connect
+def setup_task_logger(logger, *args, **kwargs):
+    for handler in logger.handlers:
+        handler.setFormatter(formatter)
+
+
 def getSecretValue(
-    location: str, key: str, default: str = None, required: bool = False
+        location: str, key: str, default: str = None, required: bool = False
 ) -> str:
     source = os.path.join(location, key)
     result = default

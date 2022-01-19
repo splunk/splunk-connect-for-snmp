@@ -42,6 +42,7 @@ wait-for-dep = { extras = ["rabbitmq"], git="https://github.com/rfaircloth-splun
 flower = "^1.0.0"
 mongolock = "^1.3.4"
 pika = "^1.2.0"
+JSON-log-formatter ="^0.5.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"
