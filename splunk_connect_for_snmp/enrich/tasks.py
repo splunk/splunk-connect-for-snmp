@@ -24,7 +24,6 @@ except:
 
 import os
 from hashlib import shake_128
-from itertools import islice
 
 import pymongo
 from celery import Task, shared_task
@@ -45,10 +44,7 @@ TRACKED_F = [
 
 SYS_UP_TIME = "SNMPv2-MIB.sysUpTime"
 
-
-def chunk(it, size):
-    it = iter(it)
-    return iter(lambda: tuple(islice(it, size)), ())
+MONGO_UPDATE_BATCH_THRESHOLD = 20
 
 
 # check if sysUpTime decreased, if so trigger new walk
@@ -159,12 +155,12 @@ def enrich(self, result):
                     {"$set": {"state": {field_key.replace(".", "|"): field_value}}}
                 )
 
-            if len(updates) >= 20:
+            if len(updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
                 targets_collection.update_one(
                     {"address": address}, updates, upsert=True
                 )
                 updates.clear()
-            if len(attribute_updates) >= 20:
+            if len(attribute_updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
                 attributes_collection.update_one(
                     {"address": address, "group_key_hash": group_key_hash, "id": group_key}, attribute_updates, upsert=True
                 )
