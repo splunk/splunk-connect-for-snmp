@@ -40,7 +40,9 @@ class TestTraps(TestCase):
     @patch('builtins.open', new_callable=mock_open, read_data=mock_config)
     @patch('splunk_connect_for_snmp.traps.get_secret_value')
     @patch('splunk_connect_for_snmp.snmp.manager.Poller.__init__')
-    def test_main(self, m_init, m_secret, m_open, m_add_v3_user, m_add_transport, m_engine, m_set_loop, m_loop):
+    @patch('splunk_connect_for_snmp.snmp.tasks.trap')
+    def test_main(self, m_trap, m_init, m_secret, m_open, m_add_v3_user, m_add_transport, m_engine, m_set_loop, m_loop):
+        m_init.return_value = MagicMock()
         my_loop = MagicMock()
         m_engine.return_value = MagicMock()
         m_secret.side_effect = ["secret1", "secret2", "secret3", "SHA224", "AES192BLMT", "1", "2"]
