@@ -19,7 +19,6 @@ class TestPoller(TestCase):
         m_instr1.assert_called()
         m_instr2.assert_called()
 
-    @patch('opentelemetry.instrumentation.logging.LoggingInstrumentor.instrument')
     def test_setup_task_logger(self):
         logger = MagicMock()
         handler1 = MagicMock()
