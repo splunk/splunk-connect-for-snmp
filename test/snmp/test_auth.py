@@ -2,10 +2,12 @@ from unittest import TestCase
 from unittest.mock import Mock, patch, mock_open
 
 from pysnmp.entity.config import usmHMAC128SHA224AuthProtocol, usmAesBlumenthalCfb192Protocol
+from pysnmp.entity.engine import SnmpEngine
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.auth import get_secret_value, getAuthV3, getAuthV2c, \
-    getAuthV1, GetAuth, get_security_engine_id
+    getAuthV1, GetAuth, get_security_engine_id, fetch_security_engine_id
+from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 mock_value = """some
 value"""
@@ -48,37 +50,77 @@ class TestAuth(TestCase):
         value = get_secret_value("/location", "key", default="default value")
         self.assertEqual("default value", value)
 
-    #    @patch('pysnmp.hlapi.asyncore.sync.compat.cmdgen.getCmd')
-#       @patch('pysnmp.hlapi.asyncore.sync.cmdgen.getCmd')
-#        @patch('pysnmp.hlapi.getCmd')
+    @patch('splunk_connect_for_snmp.snmp.auth.getCmd')
+    @patch('splunk_connect_for_snmp.snmp.auth.fetch_security_engine_id')
+    def test_get_security_engine_id_not_present(self, m_fetch, m_get_cmd):
+        ir2 = InventoryRecord.from_dict({
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "2c",
+            "community": "public",
+            "secret": "secret",
+            "securityEngine": "ENGINE",
+            "walk_interval": 1850,
+            "profiles": "",
+            "SmartProfiles": True,
+            "delete": False,
+        })
 
-    # @patch('splunk_connect_for_snmp.snmp.auth.getCmd')
-    # def test_get_security_engine_id(self, m_get_cmd):
-    #     ir2 = InventoryRecord.from_dict({
-    #         "address": "192.168.0.1",
-    #         "port": "34",
-    #         "version": "2c",
-    #         "community": "public",
-    #         "secret": "secret",
-    #         "securityEngine": "ENGINE",
-    #         "walk_interval": 1850,
-    #         "profiles": "",
-    #         "SmartProfiles": True,
-    #         "delete": False,
-    #     })
-    #
-    #     snmpEngine = Mock()
-    #     logger = Mock()
-    #
-    #     m_get_cmd.return_value = [(None, 0, 0, "Oid1"), (None, 0, 0, "Oid2"), (None, 0, 0, "Oid3")]
-    #
-    #     get_security_engine_id(logger, ir2, snmpEngine)
-    #
-    #     calls = snmpEngine.observer.registerObserver.call_args_list
-    #
-    #     m_get_cmd.assert_called()
-    #
-    #     self.assertTrue(True)
+        snmpEngine = Mock()
+        logger = Mock()
+
+        m_get_cmd.return_value = iter([(None, 0, 0, "Oid1"), (None, 0, 0, "Oid2"), (None, 0, 0, "Oid3")])
+        m_fetch.side_effect = Exception("boom")
+
+        with self.assertRaises(Exception) as e:
+            get_security_engine_id(logger, ir2, snmpEngine)
+        self.assertEqual("boom", e.exception.args[0])
+
+        calls = snmpEngine.observer.registerObserver.call_args_list
+
+        self.assertEqual("rfc3412.prepareDataElements:internal", calls[0].args[1])
+
+        m_get_cmd.assert_called()
+
+    @patch('splunk_connect_for_snmp.snmp.auth.getCmd')
+    @patch('splunk_connect_for_snmp.snmp.auth.fetch_security_engine_id')
+    def test_get_security_engine_id(self, m_fetch, m_get_cmd):
+        ir2 = InventoryRecord.from_dict({
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "2c",
+            "community": "public",
+            "secret": "secret",
+            "securityEngine": "ENGINE",
+            "walk_interval": 1850,
+            "profiles": "",
+            "SmartProfiles": True,
+            "delete": False,
+        })
+
+        snmpEngine = Mock()
+        logger = Mock()
+        m_fetch.return_value = "My test value"
+
+        m_get_cmd.return_value = iter([(None, 0, 0, "Oid1"), (None, 0, 0, "Oid2"), (None, 0, 0, "Oid3")])
+
+        result = get_security_engine_id(logger, ir2, snmpEngine)
+
+        calls = snmpEngine.observer.registerObserver.call_args_list
+
+        self.assertEqual("rfc3412.prepareDataElements:internal", calls[0].args[1])
+
+        m_get_cmd.assert_called()
+        self.assertEqual(result, "My test value")
+
+    def test_fetch_security_engine_id(self):
+        result = fetch_security_engine_id({"securityEngineId": "some_value"}, None)
+        self.assertEqual(result, "some_value")
+
+    def test_fetch_security_engine_id_missing(self):
+        with self.assertRaises(SnmpActionError) as e:
+            fetch_security_engine_id({}, "Some error")
+        self.assertEqual("Can't discover peer EngineID, errorIndication: Some error", e.exception.args[0])
 
     @patch('os.path.exists')
     @patch('splunk_connect_for_snmp.snmp.auth.get_secret_value')
@@ -102,6 +144,43 @@ class TestAuth(TestCase):
 
     @patch('os.path.exists')
     @patch('splunk_connect_for_snmp.snmp.auth.get_secret_value')
+    @patch('splunk_connect_for_snmp.snmp.auth.get_security_engine_id')
+    def test_getAuthV3_security_engine_not_str(self, m_get_security_engine_id, m_get_secret_value, m_exists):
+        m_exists.return_value = True
+        m_get_secret_value.side_effect = ["secret1", "secret2", "secret3", "SHA224", "AES192BLMT", "1", "2"]
+        m_get_security_engine_id.return_value = "ENGINE123"
+        logger = Mock()
+        snmpEngine = Mock()
+
+        ir2 = InventoryRecord.from_dict({
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "2c",
+            "community": "public",
+            "secret": "secret_ir",
+            "securityEngine": 123,
+            "walk_interval": 1850,
+            "profiles": "",
+            "SmartProfiles": True,
+            "delete": False,
+        })
+
+        result = getAuthV3(logger, ir2, snmpEngine)
+
+        m_get_security_engine_id.assert_called()
+
+        self.assertEqual("secret1", result.userName)
+        self.assertEqual("secret2", result.authKey)
+        self.assertEqual("secret3", result.privKey)
+        self.assertEqual(usmHMAC128SHA224AuthProtocol, result.authProtocol)
+        self.assertEqual(usmAesBlumenthalCfb192Protocol, result.privProtocol)
+        self.assertEqual("ENGINE123", result.securityEngineId)
+        self.assertEqual("secret1", result.securityName)
+        self.assertEqual(1, result.authKeyType)
+        self.assertEqual(2, result.privKeyType)
+
+    @patch('os.path.exists')
+    @patch('splunk_connect_for_snmp.snmp.auth.get_secret_value')
     def test_getAuthV3_exception(self, m_get_secret_value, m_exists):
         m_exists.return_value = False
         m_get_secret_value.side_effect = ["secret1", "secret2", "secret3", "SHA224", "AES192BLMT", "1", "2"]
@@ -110,7 +189,7 @@ class TestAuth(TestCase):
         snmpEngine = Mock()
 
         with self.assertRaises(Exception) as e:
-            result = getAuthV3(logger, ir, snmpEngine)
+            getAuthV3(logger, ir, snmpEngine)
         self.assertEqual("invalid username from secret secret_ir", e.exception.args[0])
 
     def test_getAuthV2c(self):
@@ -123,21 +202,20 @@ class TestAuth(TestCase):
         self.assertEqual("public", result.communityName)
         self.assertEqual(0, result.mpModel)
 
-    # version 1 is not supported in
-    # @patch('splunk_connect_for_snmp.snmp.auth.getAuthV1')
-    # def test_getAuth1(self, m_get_auth):
-    #     ir.version = "1"
-    #     result = GetAuth(Mock(), ir, Mock())
-    #     m_get_auth.assert_called()
+    @patch('splunk_connect_for_snmp.snmp.auth.getAuthV1')
+    def test_getAuth1(self, m_get_auth):
+        ir.version = "1"
+        GetAuth(Mock(), ir, Mock())
+        m_get_auth.assert_called()
 
     @patch('splunk_connect_for_snmp.snmp.auth.getAuthV2c')
     def test_getAuth2(self, m_get_auth):
         ir.version = "2c"
-        result = GetAuth(Mock(), ir, Mock())
+        GetAuth(Mock(), ir, Mock())
         m_get_auth.assert_called()
 
     @patch('splunk_connect_for_snmp.snmp.auth.getAuthV3')
     def test_getAuth3(self, m_get_auth):
         ir.version = "3"
-        result = GetAuth(Mock(), ir, Mock())
+        GetAuth(Mock(), ir, Mock())
         m_get_auth.assert_called()

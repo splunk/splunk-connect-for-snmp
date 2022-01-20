@@ -77,15 +77,18 @@ def get_security_engine_id(logger, ir: InventoryRecord, snmpEngine: SnmpEngine):
     )
 
     # See if our SNMP engine received REPORT PDU containing securityEngineId
+    securityEngineId = fetch_security_engine_id(observerContext, errorIndication)
+    logger.debug(f"securityEngineId={securityEngineId}")
+    return securityEngineId
 
-    if "securityEngineId" not in observerContext:
+
+def fetch_security_engine_id(observer_context, errorIndication):
+    if "securityEngineId" in observer_context:
+        return observer_context["securityEngineId"]
+    else:
         raise SnmpActionError(
             f"Can't discover peer EngineID, errorIndication: {errorIndication}"
         )
-
-    securityEngineId = observerContext["securityEngineId"]
-    logger.debug(f"securityEngineId={securityEngineId}")
-    return securityEngineId
 
 
 def getAuthV3(logger, ir: InventoryRecord, snmpEngine: SnmpEngine) -> UsmUserData:
@@ -156,5 +159,4 @@ def GetAuth(
         return getAuthV2c(ir)
     elif ir.version == "3":
         return getAuthV3(logger, ir, snmpEngine)
-    else:
-        raise ValueError(f"Invalid version unable to generate auth {ir.version}")
+
