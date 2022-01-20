@@ -1,28 +1,33 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from splunk_connect_for_snmp.traps import init_celery_tracing, init_celery_beat_tracing, setup_task_logger
-
 mock_config = """usernameSecrets:
   - sc4snmp-homesecure-sha-des2"""
 
 
+@patch('splunk_connect_for_snmp.snmp.manager.Poller.__init__')
 class TestTraps(TestCase):
     @patch('opentelemetry.instrumentation.celery.CeleryInstrumentor.instrument')
     @patch('opentelemetry.instrumentation.logging.LoggingInstrumentor.instrument')
-    def test_init_celery_tracing(self, m_instr1, m_instr2):
+    def test_init_celery_tracing(self, m_instr1, m_instr2, m_init):
+        m_init.return_value = None
+        from splunk_connect_for_snmp.traps import init_celery_tracing
         init_celery_tracing()
         m_instr1.assert_called()
         m_instr2.assert_called()
 
     @patch('opentelemetry.instrumentation.celery.CeleryInstrumentor.instrument')
     @patch('opentelemetry.instrumentation.logging.LoggingInstrumentor.instrument')
-    def test_init_celery_beat_tracing(self, m_instr1, m_instr2):
+    def test_init_celery_beat_tracing(self, m_instr1, m_instr2, m_init):
+        m_init.return_value = None
+        from splunk_connect_for_snmp.traps import init_celery_beat_tracing
         init_celery_beat_tracing()
         m_instr1.assert_called()
         m_instr2.assert_called()
 
-    def test_setup_task_logger(self):
+    def test_setup_task_logger(self, m_init):
+        m_init.return_value = None
+        from splunk_connect_for_snmp.traps import setup_task_logger
         logger = MagicMock()
         handler1 = MagicMock()
         handler2 = MagicMock()
