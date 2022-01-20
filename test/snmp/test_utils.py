@@ -99,8 +99,8 @@ class TestUtils(TestCase):
         self.assertEqual(1, fill_empty_value(1, ""))
         self.assertEqual('asd', fill_empty_value(b'asd', None))
         self.assertEqual('asd', fill_empty_value(b'asd', ""))
-
         self.assertEqual("asd", fill_empty_value(1, "asd"))
+        self.assertEqual('sc4snmp:unconvertable', fill_empty_value(b'\xde\xad\xbe\xef', ""))
 
     def test_extract_index_number(self):
 

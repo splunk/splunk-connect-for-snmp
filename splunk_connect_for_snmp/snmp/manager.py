@@ -182,9 +182,6 @@ def fill_empty_value(index_number, metric_value):
             try:
                 metric_value = str(index_number, "utf-8")
             except UnicodeDecodeError:
-                logger.exception(
-                    f"index_number={index_number} metric_value={metric_value}"
-                )
                 logger.error(f"index_number={index_number} metric_value={metric_value}")
                 metric_value = "sc4snmp:unconvertable"
         else:
@@ -484,8 +481,7 @@ class Poller(Task):
                             "oid": oid,
                         }
                 except:
-                    logger.error(f"Exception processing data from {target} {varBind}")
-                    logger.exception("")
+                    logger.exception(f"Exception processing data from {target} {varBind}")
             else:
                 found, mib = self.is_mib_known(id, oid, target)
                 if not mib in remotemibs:
