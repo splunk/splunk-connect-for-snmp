@@ -64,11 +64,7 @@ formatter = CustomisedJSONFormatter()
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
-# app.conf.update(**config)
 
-trap_task_signature = trap.s
-prepare_task_signature = prepare.s
-send_task_signature = send.s
 
 
 @signals.worker_process_init.connect(weak=False)
@@ -109,6 +105,10 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
 
     for name, val in varBinds:
         data.append((name.prettyPrint(), val.prettyPrint()))
+
+    trap_task_signature = trap.s
+    prepare_task_signature = prepare.s
+    send_task_signature = send.s
 
     work = {"data": data, "host": device_ip}
     my_chain = chain(trap_task_signature(work), prepare_task_signature(), send_task_signature())
