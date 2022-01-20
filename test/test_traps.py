@@ -1,7 +1,7 @@
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, mock_open
+from unittest.mock import MagicMock, patch
 
-from splunk_connect_for_snmp.traps import init_celery_tracing, init_celery_beat_tracing, setup_task_logger, main
+from splunk_connect_for_snmp.traps import init_celery_tracing, init_celery_beat_tracing, setup_task_logger
 
 mock_config = """usernameSecrets:
   - sc4snmp-homesecure-sha-des2"""
