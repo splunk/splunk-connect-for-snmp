@@ -17,6 +17,8 @@ import typing
 
 from pysnmp.proto.errind import EmptyResponse
 
+from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
+
 try:
     from dotenv import load_dotenv
 
@@ -251,19 +253,14 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
 
-    def do_work(self, address: str, walk: bool = False, profiles: List[str] = None):
+    def do_work(self, ir: InventoryRecord, walk: bool = False, profiles: List[str] = None):
         retry = False
+        address = transform_address_to_key(ir.address, ir.port)
 
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
             self.profiles = load_profiles()
             self.last_modified = time.time()
             logger.debug(f"Profiles reloaded")
-
-        mongo_client = pymongo.MongoClient(MONGO_URI)
-        mongo_db = mongo_client[MONGO_DB]
-        mongo_inventory = mongo_db.inventory
-
-        ir = get_inventory(mongo_inventory, address)
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
             walk=walk, profiles=profiles
