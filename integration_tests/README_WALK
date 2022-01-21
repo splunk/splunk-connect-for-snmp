@@ -1,0 +1,12 @@
+git clone https://github.com/splunk/splunk-connect-for-snmp.git
+cd splunk-connect-for-snmp
+git checkout <target_branch>
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+source "$HOME"/.poetry/env
+poetry install
+<create inventory.csv file>
+
+If you want to walk SNMP V3 device place "test" value as secret in inventory.csv, copy sample_v3_values from integration tests
+into working directory, rename to secrets and edit 7 filed under secrets/snmpv3/test directory
+
+poetry run run-walk
