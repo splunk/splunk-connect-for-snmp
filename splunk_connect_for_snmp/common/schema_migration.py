@@ -17,15 +17,17 @@ import logging
 import os
 import sys
 
+from splunk_connect_for_snmp.common.customised_json_formatter import CustomisedJSONFormatter
 
-log_format = logging.Formatter("[%(asctime)s] [%(levelname)s] - %(message)s")
+formatter = CustomisedJSONFormatter()
+
 logger = logging.getLogger(__name__)
 logger.setLevel("DEBUG")
 
 # writing to stdout
 handler = logging.StreamHandler(sys.stdout)
 handler.setLevel("DEBUG")
-handler.setFormatter(log_format)
+handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 

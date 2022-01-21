@@ -10,6 +10,7 @@ include = ["splunk_connect_for_snmp/profiles/*.yaml"]
 [tool.poetry.scripts]
 traps = 'splunk_connect_for_snmp.traps:main'
 inventory-loader = 'splunk_connect_for_snmp.inventory.loader:load'
+run-walk = 'splunk_connect_for_snmp.walk:run_walk'
 
 [tool.pytest.ini_options]
 log_cli = true
