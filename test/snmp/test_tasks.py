@@ -10,12 +10,13 @@ from pysnmp.smi.error import SmiError
 @patch('mongolock.MongoLock.release')
 class TestTasks(TestCase):
 
+    @patch("splunk_connect_for_snmp.snmp.tasks.get_inventory")
     @patch('splunk_connect_for_snmp.snmp.manager.Poller.__init__')
     @patch('splunk_connect_for_snmp.snmp.manager.Poller.do_work')
     @patch('time.time')
-    def test_walk(self, m_time, m_do_work, m_poller, m_release, m_lock, m_mongo_lock, m_mongo_client):
+    def test_walk(self, m_time, m_do_work, m_poller, m_get_inventory, m_release, m_lock, m_mongo_lock, m_mongo_client):
         from splunk_connect_for_snmp.snmp.tasks import walk
-        m_mongo_client.return_value = Mock()
+        m_mongo_client.return_value = MagicMock()
         m_mongo_lock.return_value = None
         m_time.return_value = 1640692955.365186
 

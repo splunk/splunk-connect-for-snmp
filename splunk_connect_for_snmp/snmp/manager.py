@@ -15,7 +15,11 @@
 #
 import typing
 
+import requests
 from pysnmp.proto.errind import EmptyResponse
+from requests import Session
+
+from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
 
 try:
     from dotenv import load_dotenv
@@ -182,9 +186,6 @@ def fill_empty_value(index_number, metric_value):
             try:
                 metric_value = str(index_number, "utf-8")
             except UnicodeDecodeError:
-                logger.exception(
-                    f"index_number={index_number} metric_value={metric_value}"
-                )
                 logger.error(f"index_number={index_number} metric_value={metric_value}")
                 metric_value = "sc4snmp:unconvertable"
         else:
@@ -203,19 +204,22 @@ def extract_index_number(index):
 
 class Poller(Task):
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.standard_mibs = []
         self.mongo_client = pymongo.MongoClient(MONGO_URI)
 
-        self.session = CachedLimiterSession(
-            per_second=120,
-            cache_name="cache_http",
-            backend=MongoCache(connection=self.mongo_client, db_name=MONGO_DB),
-            expire_after=1800,
-            match_headers=False,
-            stale_if_error=True,
-            allowable_codes=[200],
-        )
+        if kwargs.get("no_mongo"):
+            self.session = Session()
+        else:
+            self.session = CachedLimiterSession(
+                per_second=120,
+                cache_name="cache_http",
+                backend=MongoCache(connection=self.mongo_client, db_name=MONGO_DB),
+                expire_after=1800,
+                match_headers=False,
+                stale_if_error=True,
+                allowable_codes=[200],
+            )
 
         self.profiles = load_profiles()
         self.last_modified = time.time()
@@ -254,19 +258,14 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
 
-    def do_work(self, address: str, walk: bool = False, profiles: List[str] = None):
+    def do_work(self, ir: InventoryRecord, walk: bool = False, profiles: List[str] = None):
         retry = False
+        address = transform_address_to_key(ir.address, ir.port)
 
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
             self.profiles = load_profiles()
             self.last_modified = time.time()
             logger.debug(f"Profiles reloaded")
-
-        mongo_client = pymongo.MongoClient(MONGO_URI)
-        mongo_db = mongo_client[MONGO_DB]
-        mongo_inventory = mongo_db.inventory
-
-        ir = get_inventory(mongo_inventory, address)
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
             walk=walk, profiles=profiles
@@ -484,8 +483,7 @@ class Poller(Task):
                             "oid": oid,
                         }
                 except:
-                    logger.error(f"Exception processing data from {target} {varBind}")
-                    logger.exception("")
+                    logger.exception(f"Exception processing data from {target} {varBind}")
             else:
                 found, mib = self.is_mib_known(id, oid, target)
                 if not mib in remotemibs:

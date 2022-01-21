@@ -34,7 +34,7 @@ from celery.utils.log import get_task_logger
 from mongolock import MongoLock, MongoLockLocked
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
-from splunk_connect_for_snmp.snmp.manager import Poller
+from splunk_connect_for_snmp.snmp.manager import Poller, get_inventory
 
 logger = get_task_logger(__name__)
 
@@ -63,13 +63,16 @@ def walk(self, **kwargs):
 
     address = kwargs["address"]
     mongo_client = pymongo.MongoClient(MONGO_URI)
+    mongo_db = mongo_client[MONGO_DB]
+    mongo_inventory = mongo_db.inventory
 
     lock = MongoLock(client=mongo_client, db="sc4snmp")
 
     with lock(address, self.request.id, expire=300, timeout=300):
+        ir = get_inventory(mongo_inventory, address)
         retry = True
         while retry:
-            retry, result = self.do_work(address, walk=True)
+            retry, result = self.do_work(ir, walk=True)
 
     # After a Walk tell schedule to recalc
     work = {}
@@ -95,9 +98,13 @@ def poll(self, **kwargs):
     address = kwargs["address"]
     profiles = kwargs["profiles"]
     mongo_client = pymongo.MongoClient(MONGO_URI)
+    mongo_db = mongo_client[MONGO_DB]
+    mongo_inventory = mongo_db.inventory
     lock = MongoLock(client=mongo_client, db="sc4snmp")
+
     with lock(kwargs["address"], self.request.id, expire=90, timeout=20):
-        _, result = self.do_work(address, profiles=profiles)
+        ir = get_inventory(mongo_inventory, address)
+        _, result = self.do_work(ir, profiles=profiles)
 
     # After a Walk tell schedule to recalc
     work = {}

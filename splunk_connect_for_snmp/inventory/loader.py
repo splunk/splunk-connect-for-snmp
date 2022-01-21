@@ -20,7 +20,6 @@ import sys
 from csv import DictReader
 
 import pymongo
-import json_log_formatter
 
 from celery.canvas import chain, group, signature
 
@@ -99,11 +98,6 @@ def load():
     attributes_collection = mongo_client.sc4snmp.attributes
     mongo_db = mongo_client[MONGO_DB]
     inventory_records = mongo_db.inventory
-
-    try:
-        raise Exception("asdasdadadad")
-    except Exception as e:
-        logger.exception(e)
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 

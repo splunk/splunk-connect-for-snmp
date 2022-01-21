@@ -19,6 +19,7 @@ import json_log_formatter
 from pysnmp.proto.api import v2c
 
 from splunk_connect_for_snmp.common.customised_json_formatter import CustomisedJSONFormatter
+from splunk_connect_for_snmp.snmp.auth import get_secret_value
 
 try:
     from dotenv import load_dotenv
@@ -63,7 +64,6 @@ formatter = CustomisedJSONFormatter()
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
-# app.conf.update(**config)
 
 trap_task_signature = trap.s
 prepare_task_signature = prepare.s
@@ -86,19 +86,6 @@ def init_celery_beat_tracing(*args, **kwargs):
 def setup_task_logger(logger, *args, **kwargs):
     for handler in logger.handlers:
         handler.setFormatter(formatter)
-
-
-def getSecretValue(
-        location: str, key: str, default: str = None, required: bool = False
-) -> str:
-    source = os.path.join(location, key)
-    result = default
-    if os.path.exists(source):
-        with open(os.path.join(location, key), encoding='utf-8') as file:
-            result = file.read().replace("\n", "")
-    elif required:
-        raise Exception(f"Required secret key {key} not found in {location}")
-    return result
 
 
 # Callback function for receiving notifications
@@ -163,16 +150,16 @@ def main():
     if "usernameSecrets" in config_base:
         for secret in config_base["usernameSecrets"]:
             location = os.path.join("secrets/snmpv3", secret)
-            userName = getSecretValue(location, "userName", required=True, default=None)
+            userName = get_secret_value(location, "userName", required=True, default=None)
 
-            authKey = getSecretValue(location, "authKey", required=False)
-            privKey = getSecretValue(location, "privKey", required=False)
+            authKey = get_secret_value(location, "authKey", required=False)
+            privKey = get_secret_value(location, "privKey", required=False)
 
-            authProtocol = getSecretValue(location, "authProtocol", required=False)
+            authProtocol = get_secret_value(location, "authProtocol", required=False)
             logging.debug(f"authProtocol: {authProtocol}")
             authProtocol = AuthProtocolMap.get(authProtocol.upper(), "NONE")
 
-            privProtocol = getSecretValue(
+            privProtocol = get_secret_value(
                 location, "privProtocol", required=False, default="NONE"
             )
             logging.debug(f"privProtocol: {privProtocol}")
