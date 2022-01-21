@@ -15,7 +15,9 @@
 #
 import typing
 
+import requests
 from pysnmp.proto.errind import EmptyResponse
+from requests import Session
 
 from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
 
@@ -202,19 +204,22 @@ def extract_index_number(index):
 
 class Poller(Task):
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.standard_mibs = []
         self.mongo_client = pymongo.MongoClient(MONGO_URI)
 
-        self.session = CachedLimiterSession(
-            per_second=120,
-            cache_name="cache_http",
-            backend=MongoCache(connection=self.mongo_client, db_name=MONGO_DB),
-            expire_after=1800,
-            match_headers=False,
-            stale_if_error=True,
-            allowable_codes=[200],
-        )
+        if kwargs.get("no_mongo"):
+            self.session = Session()
+        else:
+            self.session = CachedLimiterSession(
+                per_second=120,
+                cache_name="cache_http",
+                backend=MongoCache(connection=self.mongo_client, db_name=MONGO_DB),
+                expire_after=1800,
+                match_headers=False,
+                stale_if_error=True,
+                allowable_codes=[200],
+            )
 
         self.profiles = load_profiles()
         self.last_modified = time.time()

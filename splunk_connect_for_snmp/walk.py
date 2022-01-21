@@ -32,7 +32,7 @@ logger.addHandler(handler)
 
 
 def run_walk():
-    poller = Poller()
+    poller = Poller(no_mongo=True)
 
     with open("inventory.csv", encoding="utf-8") as csv_file:
         # Dict reader will trust the header of the csv
