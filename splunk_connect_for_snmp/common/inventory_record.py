@@ -104,7 +104,7 @@ class InventoryRecord(BaseModel):
 
     @validator("walk_interval", pre=True)
     def walk_interval_validator(cls, value):
-        if value is None:
+        if not value:
             return 42000
         v = int(value)
         if v < 1800:
