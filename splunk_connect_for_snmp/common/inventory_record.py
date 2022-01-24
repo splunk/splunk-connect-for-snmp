@@ -45,13 +45,12 @@ class InventoryRecord(BaseModel):
             try:
                 ip_address(value)
             except ValueError:
-                raise ValueError(f"IP address: {value} is not correct")
-            try:
-                socket.gethostbyname_ex(value)
-            except socket.gaierror:
-                raise ValueError(
-                    f"field address must be an IP or a resolvable hostname {value}"
-                )
+                try:
+                    socket.gethostbyname_ex(value)
+                except socket.gaierror:
+                    raise ValueError(
+                        f"field address must be an IP or a resolvable hostname {value}"
+                    )
 
             return value
 

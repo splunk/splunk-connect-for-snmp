@@ -28,7 +28,7 @@ class TestInventoryRecord(TestCase):
         with self.assertRaises(ValueError) as e:
             InventoryRecord(**ir_dict)
         self.assertEqual(
-            "IP address: 12313sdfsf is not correct",
+            "field address must be an IP or a resolvable hostname 12313sdfsf",
             e.exception.args[0][0].exc.args[0],
         )
 
