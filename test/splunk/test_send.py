@@ -1,9 +1,10 @@
+from typing import Dict, List
 from unittest import TestCase
 from unittest.mock import patch
 
 from splunk_connect_for_snmp.splunk.tasks import do_send, send
 
-test_data = {"events": [], "metrics": []}
+test_data: Dict[str, List] = {"events": [], "metrics": []}
 for j in range(1, 3):
     test_data["events"].append(str(j))
     test_data["metrics"].append(str(j + 100))

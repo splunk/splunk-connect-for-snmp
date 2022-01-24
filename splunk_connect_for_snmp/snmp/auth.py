@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 import os
-from typing import Union
+from typing import Any, Dict, Union
 
 from pysnmp.hlapi import (
     CommunityData,
@@ -34,7 +34,7 @@ UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
 
 
 def get_secret_value(
-    location: str, key: str, default: str = None, required: bool = False
+    location: str, key: str, default: str = "", required: bool = False
 ) -> str:
     source = os.path.join(location, key)
     result = default
@@ -51,7 +51,7 @@ def get_secret_value(
 # by setting up execution point observer setup on INTERNAL class PDU processing
 #
 def get_security_engine_id(logger, ir: InventoryRecord, snmpEngine: SnmpEngine):
-    observerContext = {}
+    observerContext: Dict[Any, Any] = {}
 
     transportTarget = UdpTransportTarget(
         (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
@@ -116,7 +116,11 @@ def getAuthV3(logger, ir: InventoryRecord, snmpEngine: SnmpEngine) -> UsmUserDat
         privKeyType = int(
             get_secret_value(location, "privKeyType", required=False, default="0")
         )
-        if isinstance(ir.securityEngine, str):
+        if (
+            isinstance(ir.securityEngine, str)
+            and ir.securityEngine != ""
+            and not ir.securityEngine.isdigit()
+        ):
             securityEngineId = ir.securityEngine
             logger.debug(f"Security eng from profile {ir.securityEngine}")
         else:
@@ -159,5 +163,5 @@ def GetAuth(
         return getAuthV1(ir)
     elif ir.version == "2c":
         return getAuthV2c(ir)
-    elif ir.version == "3":
+    else:
         return getAuthV3(logger, ir, snmpEngine)

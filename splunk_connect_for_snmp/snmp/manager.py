@@ -31,7 +31,7 @@ import csv
 import os
 import time
 from io import StringIO
-from typing import List, Union
+from typing import Any, Dict, List, Union
 
 import pymongo
 from celery import Task
@@ -186,7 +186,9 @@ def fill_empty_value(index_number, metric_value):
             try:
                 metric_value = str(index_number, "utf-8")
             except UnicodeDecodeError:
-                logger.error(f"index_number={index_number} metric_value={metric_value}")
+                logger.error(
+                    f"index_number={str(index_number)} metric_value={metric_value}"
+                )
                 metric_value = "sc4snmp:unconvertable"
         else:
             metric_value = index_number
@@ -279,12 +281,12 @@ class Poller(Task):
             (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
         )
 
-        metrics = {}
-        if len(varbinds_get) == 0 and len(varbinds_bulk) == 0:
+        metrics: Dict[str, Any] = {}
+        if not varbinds_get and not varbinds_bulk:
             logger.info("No work to do")
             return False, {}
 
-        if len(varbinds_bulk) > 0:
+        if varbinds_bulk:
 
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
                 self.snmpEngine,
@@ -312,7 +314,7 @@ class Poller(Task):
                     if tmp_retry:
                         retry = True
 
-        if len(varbinds_get) > 0:
+        if varbinds_get:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
                 self.snmpEngine, authData, transport, contextData, *varbinds_get
             ):
@@ -340,7 +342,7 @@ class Poller(Task):
             if mib:
                 self.builder.loadModules(mib)
 
-    def is_mib_known(self, id: str, oid: str, target: str) -> tuple([bool, str]):
+    def is_mib_known(self, id: str, oid: str, target: str) -> tuple[bool, str]:
 
         oid_list = tuple(oid.split("."))
 
@@ -352,7 +354,7 @@ class Poller(Task):
                 logger.debug(f"found {mib} for {id} based on {oid_to_check}")
                 return True, mib
         logger.warning(f"no mib found {id} based on {oid} from {target}")
-        return False, None
+        return False, ""
 
     def get_var_binds(self, walk=False, profiles=[]):
         varbinds_bulk = set()
@@ -489,7 +491,7 @@ class Poller(Task):
                     )
             else:
                 found, mib = self.is_mib_known(id, oid, target)
-                if not mib in remotemibs:
+                if mib not in remotemibs:
                     remotemibs.append(mib)
                 if found:
                     retry = True

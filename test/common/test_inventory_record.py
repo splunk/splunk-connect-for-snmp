@@ -9,14 +9,18 @@ class TestInventoryRecord(TestCase):
 
         with self.assertRaises(ValueError) as e:
             InventoryRecord(**ir_dict)
-        self.assertEqual("field address cannot be null", e.exception.args[0])
+        self.assertEqual(
+            "field address cannot be null", e.exception.args[0][0].exc.args[0]
+        )
 
     def test_address_not_commented(self):
         ir_dict = {"address": "#asd"}
 
         with self.assertRaises(ValueError) as e:
             InventoryRecord(**ir_dict)
-        self.assertEqual("field address cannot be commented", e.exception.args[0])
+        self.assertEqual(
+            "field address cannot be commented", e.exception.args[0][0].exc.args[0]
+        )
 
     def test_address_not_resolvable(self):
         ir_dict = {"address": "12313sdfsf"}
@@ -24,8 +28,8 @@ class TestInventoryRecord(TestCase):
         with self.assertRaises(ValueError) as e:
             InventoryRecord(**ir_dict)
         self.assertEqual(
-            "field address must be an IP or a resolvable hostname 12313sdfsf",
-            e.exception.args[0],
+            "IP address: 12313sdfsf is not correct",
+            e.exception.args[0][0].exc.args[0],
         )
 
     def test_port_too_high(self):
@@ -40,7 +44,7 @@ class TestInventoryRecord(TestCase):
 
         with self.assertRaises(ValueError) as e:
             InventoryRecord(**ir_dict)
-        self.assertEqual("Port out of range 65537", e.exception.args[0])
+        self.assertEqual("Port out of range 65537", e.exception.args[0][0].exc.args[0])
 
     def test_version_none(self):
         ir_dict = {
@@ -77,7 +81,8 @@ class TestInventoryRecord(TestCase):
         with self.assertRaises(ValueError) as e:
             InventoryRecord(**ir_dict)
         self.assertEqual(
-            "version out of range 5a accepted is 1 or 2c or 3", e.exception.args[0]
+            "version out of range 5a accepted is 1 or 2c or 3",
+            e.exception.args[0][0].exc.args[0],
         )
 
     def test_empty_community(self):
@@ -95,7 +100,7 @@ class TestInventoryRecord(TestCase):
         }
 
         ir = InventoryRecord(**ir_dict)
-        self.assertIsNone(ir.community)
+        self.assertEqual(ir.community, "")
 
     def test_empty_walk_interval(self):
         ir_dict = {
