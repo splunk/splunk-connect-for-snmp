@@ -122,7 +122,7 @@ def do_send(data, destination_url, self):
         try:
             response = self.session.post(
                 destination_url,
-                data="\n".join(data[i: i + SPLUNK_HEC_CHUNK_SIZE]),
+                data="\n".join(data[i : i + SPLUNK_HEC_CHUNK_SIZE]),
                 timeout=60,
             )
         except ConnectionError:
@@ -154,16 +154,18 @@ def valueAsBest(value) -> Union[str, float]:
         return value
 
 
-@shared_task(
-    bind=True,
-    base=PrepareTask
-)
+@shared_task(bind=True, base=PrepareTask)
 def prepare(self, work):
     events = []
     metrics = []
 
     if work.get("sourcetype") == "sc4snmp:traps":
-        return {"events": prepare_trap_data(apply_custom_translations(work, self.custom_translations)), "metrics": metrics}
+        return {
+            "events": prepare_trap_data(
+                apply_custom_translations(work, self.custom_translations)
+            ),
+            "metrics": metrics,
+        }
 
     work = apply_custom_translations(work, self.custom_translations)
 

@@ -39,7 +39,7 @@ def get_secret_value(
     source = os.path.join(location, key)
     result = default
     if os.path.exists(source):
-        with open(os.path.join(location, key), encoding='utf-8') as file:
+        with open(os.path.join(location, key), encoding="utf-8") as file:
             result = file.read().replace("\n", "")
     elif required:
         raise Exception(f"Required secret key {key} not found in {location}")
@@ -53,7 +53,9 @@ def get_secret_value(
 def get_security_engine_id(logger, ir: InventoryRecord, snmpEngine: SnmpEngine):
     observerContext = {}
 
-    transportTarget = UdpTransportTarget((ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT)
+    transportTarget = UdpTransportTarget(
+        (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
+    )
 
     # Register a callback to be invoked at specified execution point of
     # SNMP Engine and passed local variables at execution point's local scope
@@ -159,4 +161,3 @@ def GetAuth(
         return getAuthV2c(ir)
     elif ir.version == "3":
         return getAuthV3(logger, ir, snmpEngine)
-

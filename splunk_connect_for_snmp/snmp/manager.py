@@ -203,7 +203,6 @@ def extract_index_number(index):
 
 
 class Poller(Task):
-
     def __init__(self, **kwargs):
         self.standard_mibs = []
         self.mongo_client = pymongo.MongoClient(MONGO_URI)
@@ -258,7 +257,9 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
 
-    def do_work(self, ir: InventoryRecord, walk: bool = False, profiles: List[str] = None):
+    def do_work(
+        self, ir: InventoryRecord, walk: bool = False, profiles: List[str] = None
+    ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
 
@@ -483,7 +484,9 @@ class Poller(Task):
                             "oid": oid,
                         }
                 except:
-                    logger.exception(f"Exception processing data from {target} {varBind}")
+                    logger.exception(
+                        f"Exception processing data from {target} {varBind}"
+                    )
             else:
                 found, mib = self.is_mib_known(id, oid, target)
                 if not mib in remotemibs:

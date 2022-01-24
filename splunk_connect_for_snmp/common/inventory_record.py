@@ -88,7 +88,9 @@ class InventoryRecord:
             self._version = "2c"
         else:
             if value not in ("1", "2c", "3"):
-                raise ValueError(f"version out of range {value} accepted is 1 or 2c or 3")
+                raise ValueError(
+                    f"version out of range {value} accepted is 1 or 2c or 3"
+                )
             self._version = value
 
     community: str
@@ -203,18 +205,20 @@ class InventoryRecord:
         return InventoryRecord(**ir_dict)
 
     def to_json(self):
-        return json.dumps({
-            "address": self.address,
-            "port": self.port,
-            "version": self.version,
-            "community": self.community,
-            "secret": self.secret,
-            "securityEngine": self.securityEngine,
-            "walk_interval": self.walk_interval,
-            "profiles": self.profiles,
-            "SmartProfiles": self.SmartProfiles,
-            "delete": self.delete,
-        })
+        return json.dumps(
+            {
+                "address": self.address,
+                "port": self.port,
+                "version": self.version,
+                "community": self.community,
+                "secret": self.secret,
+                "securityEngine": self.securityEngine,
+                "walk_interval": self.walk_interval,
+                "profiles": self.profiles,
+                "SmartProfiles": self.SmartProfiles,
+                "delete": self.delete,
+            }
+        )
 
     @classmethod
     def from_dict(cls, env):

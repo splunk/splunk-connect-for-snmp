@@ -20,7 +20,6 @@ from csv import DictReader
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.manager import Poller
 
-
 log_level = "DEBUG"
 logger = logging.getLogger(__name__)
 logger.setLevel(log_level)

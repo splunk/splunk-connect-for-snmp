@@ -5,7 +5,6 @@ from splunk_connect_for_snmp.snmp.manager import Poller, isMIBResolved
 
 
 class TestMibProcessing(TestCase):
-
     def test_load_mib(self):
         poller = Poller.__new__(Poller)
         poller.builder = Mock()

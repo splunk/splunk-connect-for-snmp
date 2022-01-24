@@ -1,19 +1,23 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from splunk_connect_for_snmp.poller import init_celery_tracing, init_celery_beat_tracing, setup_task_logger
+from splunk_connect_for_snmp.poller import (
+    init_celery_beat_tracing,
+    init_celery_tracing,
+    setup_task_logger,
+)
 
 
 class TestPoller(TestCase):
-    @patch('opentelemetry.instrumentation.celery.CeleryInstrumentor.instrument')
-    @patch('opentelemetry.instrumentation.logging.LoggingInstrumentor.instrument')
+    @patch("opentelemetry.instrumentation.celery.CeleryInstrumentor.instrument")
+    @patch("opentelemetry.instrumentation.logging.LoggingInstrumentor.instrument")
     def test_init_celery_tracing(self, m_instr1, m_instr2):
         init_celery_tracing()
         m_instr1.assert_called()
         m_instr2.assert_called()
 
-    @patch('opentelemetry.instrumentation.celery.CeleryInstrumentor.instrument')
-    @patch('opentelemetry.instrumentation.logging.LoggingInstrumentor.instrument')
+    @patch("opentelemetry.instrumentation.celery.CeleryInstrumentor.instrument")
+    @patch("opentelemetry.instrumentation.logging.LoggingInstrumentor.instrument")
     def test_init_celery_beat_tracing(self, m_instr1, m_instr2):
         init_celery_beat_tracing()
         m_instr1.assert_called()
