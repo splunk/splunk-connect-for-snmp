@@ -32,7 +32,7 @@ class InventoryRecord(BaseModel):
     port: InventoryInt = 161
     version: InventoryStr
     community: InventoryStr
-    secret: InventoryStr = ""
+    secret: InventoryStr
     securityEngine: InventoryStr = ""
     walk_interval: InventoryInt = 42000
     profiles: List
