@@ -100,7 +100,7 @@ class TestInventoryRecord(TestCase):
         }
 
         ir = InventoryRecord(**ir_dict)
-        self.assertEqual(ir.community, "")
+        self.assertIsNone(ir.community)
 
     def test_empty_walk_interval(self):
         ir_dict = {

@@ -94,7 +94,7 @@ def fetch_security_engine_id(observer_context, errorIndication):
 
 
 def getAuthV3(logger, ir: InventoryRecord, snmpEngine: SnmpEngine) -> UsmUserData:
-    location = os.path.join("secrets/snmpv3", ir.secret)
+    location = os.path.join("secrets/snmpv3", ir.secret)  # type: ignore
     if os.path.exists(location):
         userName = get_secret_value(location, "userName", required=True)
 

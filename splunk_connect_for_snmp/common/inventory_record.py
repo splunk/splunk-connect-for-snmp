@@ -16,24 +16,28 @@ import inspect
 import json
 import socket
 from ipaddress import ip_address
-from typing import List
+from typing import List, Union
 
 from pydantic import BaseModel, validator
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 
+InventoryStr = Union[None, str]
+InventoryInt = Union[None, int]
+InventoryBool = Union[None, bool]
+
 
 class InventoryRecord(BaseModel):
-    address: str
-    port: int
-    version: str
-    community: str
-    secret: str
-    securityEngine: str
-    walk_interval: int
+    address: InventoryStr
+    port: InventoryInt = 161
+    version: InventoryStr
+    community: InventoryStr
+    secret: InventoryStr = ""
+    securityEngine: InventoryStr = ""
+    walk_interval: InventoryInt = 42000
     profiles: List
-    SmartProfiles: bool
-    delete: bool
+    SmartProfiles: InventoryBool
+    delete: InventoryBool
 
     @validator("address", pre=True)
     def address_validator(cls, value):
@@ -80,21 +84,21 @@ class InventoryRecord(BaseModel):
     @validator("community", pre=True)
     def community_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
-            return ""
+            return None
         else:
             return value
 
     @validator("secret", pre=True)
     def secret_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
-            return ""
+            return None
         else:
             return value
 
     @validator("securityEngine", pre=True)
     def securityEngine_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
-            return ""
+            return None
         else:
             return value
 
