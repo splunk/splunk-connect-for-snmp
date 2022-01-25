@@ -15,7 +15,6 @@
 #
 import typing
 
-import requests
 from pysnmp.proto.errind import EmptyResponse
 from requests import Session
 
@@ -31,7 +30,7 @@ import csv
 import os
 import time
 from io import StringIO
-from typing import List, Union
+from typing import Any, Dict, List, Union
 
 import pymongo
 from celery import Task
@@ -180,13 +179,15 @@ def map_metric_type(t, snmp_value):
     return metric_type
 
 
-def fill_empty_value(index_number, metric_value):
+def fill_empty_value(index_number, metric_value, target):
     if metric_value is None or (isinstance(metric_value, str) and not metric_value):
         if isinstance(index_number, bytes):
             try:
                 metric_value = str(index_number, "utf-8")
             except UnicodeDecodeError:
-                logger.error(f"index_number={index_number} metric_value={metric_value}")
+                logger.error(
+                    f"index_number={str(index_number)} metric_value={metric_value} target={target}"
+                )
                 metric_value = "sc4snmp:unconvertable"
         else:
             metric_value = index_number
@@ -203,7 +204,6 @@ def extract_index_number(index):
 
 
 class Poller(Task):
-
     def __init__(self, **kwargs):
         self.standard_mibs = []
         self.mongo_client = pymongo.MongoClient(MONGO_URI)
@@ -258,7 +258,9 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
 
-    def do_work(self, ir: InventoryRecord, walk: bool = False, profiles: List[str] = None):
+    def do_work(
+        self, ir: InventoryRecord, walk: bool = False, profiles: List[str] = None
+    ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
 
@@ -268,7 +270,7 @@ class Poller(Task):
             logger.debug(f"Profiles reloaded")
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
-            walk=walk, profiles=profiles
+            address, walk=walk, profiles=profiles
         )
 
         authData = GetAuth(logger, ir, self.snmpEngine)
@@ -278,12 +280,12 @@ class Poller(Task):
             (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
         )
 
-        metrics = {}
-        if len(varbinds_get) == 0 and len(varbinds_bulk) == 0:
-            logger.info("No work to do")
+        metrics: Dict[str, Any] = {}
+        if not varbinds_get and not varbinds_bulk:
+            logger.info("No work to do for {address}")
             return False, {}
 
-        if len(varbinds_bulk) > 0:
+        if varbinds_bulk:
 
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
                 self.snmpEngine,
@@ -311,7 +313,7 @@ class Poller(Task):
                     if tmp_retry:
                         retry = True
 
-        if len(varbinds_get) > 0:
+        if varbinds_get:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
                 self.snmpEngine, authData, transport, contextData, *varbinds_get
             ):
@@ -339,7 +341,7 @@ class Poller(Task):
             if mib:
                 self.builder.loadModules(mib)
 
-    def is_mib_known(self, id: str, oid: str, target: str) -> tuple([bool, str]):
+    def is_mib_known(self, id: str, oid: str, target: str) -> tuple[bool, str]:
 
         oid_list = tuple(oid.split("."))
 
@@ -351,9 +353,9 @@ class Poller(Task):
                 logger.debug(f"found {mib} for {id} based on {oid_to_check}")
                 return True, mib
         logger.warning(f"no mib found {id} based on {oid} from {target}")
-        return False, None
+        return False, ""
 
-    def get_var_binds(self, walk=False, profiles=[]):
+    def get_var_binds(self, address, walk=False, profiles=[]):
         varbinds_bulk = set()
         varbinds_get = set()
         get_mapping = {}
@@ -419,10 +421,10 @@ class Poller(Task):
                                 get_mapping[f"{vb[0]}:{vb[1]}:{vb[2]}"] = profile
             self.load_mibs(needed_mibs)
 
-        logger.debug(f"varbinds_get={varbinds_get}")
-        logger.debug(f"get_mapping={get_mapping}")
-        logger.debug(f"varbinds_bulk={varbinds_bulk}")
-        logger.debug(f"bulk_mapping={bulk_mapping}")
+        logger.debug(f"host={address} varbinds_get={varbinds_get}")
+        logger.debug(f"host={address} get_mapping={get_mapping}")
+        logger.debug(f"host={address} varbinds_bulk={varbinds_bulk}")
+        logger.debug(f"host={address} bulk_mapping={bulk_mapping}")
 
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
@@ -455,7 +457,7 @@ class Poller(Task):
                     metric_value = valueAsBest(snmp_val.prettyPrint())
 
                     index_number = extract_index_number(index)
-                    metric_value = fill_empty_value(index_number, metric_value)
+                    metric_value = fill_empty_value(index_number, metric_value, target)
 
                     profile = None
                     if mapping:
@@ -483,10 +485,12 @@ class Poller(Task):
                             "oid": oid,
                         }
                 except:
-                    logger.exception(f"Exception processing data from {target} {varBind}")
+                    logger.exception(
+                        f"Exception processing data from {target} {varBind}"
+                    )
             else:
                 found, mib = self.is_mib_known(id, oid, target)
-                if not mib in remotemibs:
+                if mib not in remotemibs:
                     remotemibs.append(mib)
                 if found:
                     retry = True

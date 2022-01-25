@@ -2,30 +2,40 @@ import json
 from unittest import TestCase
 from unittest.mock import patch
 
-from splunk_connect_for_snmp.splunk.tasks import prepare, apply_custom_translations
+from splunk_connect_for_snmp.splunk.tasks import apply_custom_translations, prepare
 
 
-@patch('splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS', 'test_index')
-@patch('splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_METRICS', 'test_index_2')
+@patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS", "test_index")
+@patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_METRICS", "test_index_2")
 class TestPrepare(TestCase):
-    @patch('splunk_connect_for_snmp.splunk.tasks.apply_custom_translations')
+    @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_trap(self, m_custom):
         task_input = {
             "sourcetype": "sc4snmp:traps",
             "time": 1234567,
             "address": "192.168.0.1",
             "result": {
-                "SOME_GROUP_KEY1":
-                    {
-                        "metrics": {"metric_one": {"value": 23}, "metric_two": {"value": 26}},
-                        "fields": {"field_one": {"value": "on"}, "field_two": {"value": "listening"}},
+                "SOME_GROUP_KEY1": {
+                    "metrics": {
+                        "metric_one": {"value": 23},
+                        "metric_two": {"value": 26},
                     },
-                "SOME_GROUP_KEY2":
-                    {
-                        "metrics": {"metric_three": {"value": 67}, "metric_four": {"value": 90}},
-                        "fields": {"field_three": {"value": "OFF"}, "field_four": {"value": "stopping"}},
+                    "fields": {
+                        "field_one": {"value": "on"},
+                        "field_two": {"value": "listening"},
                     },
-            }
+                },
+                "SOME_GROUP_KEY2": {
+                    "metrics": {
+                        "metric_three": {"value": 67},
+                        "metric_four": {"value": 90},
+                    },
+                    "fields": {
+                        "field_three": {"value": "OFF"},
+                        "field_four": {"value": "stopping"},
+                    },
+                },
+            },
         }
 
         m_custom.return_value = task_input
@@ -63,26 +73,36 @@ class TestPrepare(TestCase):
         self.assertEqual(67.0, event2["metric_three"]["value"])
         self.assertEqual(90.0, event2["metric_four"]["value"])
 
-    @patch('splunk_connect_for_snmp.splunk.tasks.apply_custom_translations')
+    @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_metrics(self, m_custom):
         task_input = {
             "time": 1234567,
             "address": "192.168.0.1",
             "frequency": 15,
             "result": {
-                "SOME_GROUP_KEY1":
-                    {
-                        "metrics": {"metric_one": {"value": 23}, "metric_two": {"value": 26}},
-                        "fields": {"field_one": {"value": "on"}, "field_two": {"value": "listening"}},
-                        "profiles": "profile1,profile2",
+                "SOME_GROUP_KEY1": {
+                    "metrics": {
+                        "metric_one": {"value": 23},
+                        "metric_two": {"value": 26},
                     },
-                "SOME_GROUP_KEY2":
-                    {
-                        "metrics": {"metric_three": {"value": 67}, "metric_four": {"value": 90}},
-                        "fields": {"field_three": {"value": "OFF"}, "field_four": {"value": "stopping"}},
-                        "profiles": "profile1,profile2",
+                    "fields": {
+                        "field_one": {"value": "on"},
+                        "field_two": {"value": "listening"},
                     },
-            }
+                    "profiles": "profile1,profile2",
+                },
+                "SOME_GROUP_KEY2": {
+                    "metrics": {
+                        "metric_three": {"value": 67},
+                        "metric_four": {"value": 90},
+                    },
+                    "fields": {
+                        "field_three": {"value": "OFF"},
+                        "field_four": {"value": "stopping"},
+                    },
+                    "profiles": "profile1,profile2",
+                },
+            },
         }
 
         m_custom.return_value = task_input
@@ -123,23 +143,27 @@ class TestPrepare(TestCase):
         self.assertEqual(15, fields2["frequency"])
         self.assertEqual("profile1,profile2", fields2["profiles"])
 
-    @patch('splunk_connect_for_snmp.splunk.tasks.apply_custom_translations')
+    @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_only_events(self, m_custom):
         task_input = {
             "time": 1234567,
             "address": "192.168.0.1",
             "result": {
-                "SOME_GROUP_KEY1":
-                    {
-                        "fields": {"field_one": {"value": "on"}, "field_two": {"value": "listening"}},
-                        "metrics": {},
+                "SOME_GROUP_KEY1": {
+                    "fields": {
+                        "field_one": {"value": "on"},
+                        "field_two": {"value": "listening"},
                     },
-                "SOME_GROUP_KEY2":
-                    {
-                        "fields": {"field_three": {"value": "OFF"}, "field_four": {"value": "stopping"}},
-                        "metrics": {},
+                    "metrics": {},
+                },
+                "SOME_GROUP_KEY2": {
+                    "fields": {
+                        "field_three": {"value": "OFF"},
+                        "field_four": {"value": "stopping"},
                     },
-            }
+                    "metrics": {},
+                },
+            },
         }
 
         m_custom.return_value = task_input
@@ -174,37 +198,74 @@ class TestPrepare(TestCase):
         self.assertEqual("stopping", event2["field_four"]["value"])
 
     def test_apply_custom_translation(self):
-        work = {"result": {"SOME_KEY": {'fields': {'SNMPv2-MIB.sysDescr': {'oid': '9.8.7.6',
-                                                                           'time': 1640609779.473053,
-                                                                           'type': 'r',
-                                                                           'value': 'up and running',
-                                                                           "name": 'SNMPv2-MIB.sysDescr'},
-                                                   'SNMPv2-MIB.some_other': {'oid': '9.8.7.6.1',
-                                                                             'time': 1640609779.473053,
-                                                                             'type': 'r',
-                                                                             'value': 'ON',
-                                                                             "name": "SNMPv2-MIB.some_other"}},
-                                        'metrics': {'IF-MIB.ifInDiscards': {'oid': '1.2.3.4.5.6.7',
-                                                                            'time': 1640609779.473053,
-                                                                            'type': 'g',
-                                                                            'value': 65.0}}}}}
+        work = {
+            "result": {
+                "SOME_KEY": {
+                    "fields": {
+                        "SNMPv2-MIB.sysDescr": {
+                            "oid": "9.8.7.6",
+                            "time": 1640609779.473053,
+                            "type": "r",
+                            "value": "up and running",
+                            "name": "SNMPv2-MIB.sysDescr",
+                        },
+                        "SNMPv2-MIB.some_other": {
+                            "oid": "9.8.7.6.1",
+                            "time": 1640609779.473053,
+                            "type": "r",
+                            "value": "ON",
+                            "name": "SNMPv2-MIB.some_other",
+                        },
+                    },
+                    "metrics": {
+                        "IF-MIB.ifInDiscards": {
+                            "oid": "1.2.3.4.5.6.7",
+                            "time": 1640609779.473053,
+                            "type": "g",
+                            "value": 65.0,
+                        }
+                    },
+                }
+            }
+        }
 
-        translations = {"IF-MIB": {"ifInDiscards": "myCustomName1", "ifOutErrors": "myCustomName2"},
-                        "SNMPv2-MIB": {"sysDescr": "myCustomName3"}}
+        translations = {
+            "IF-MIB": {"ifInDiscards": "myCustomName1", "ifOutErrors": "myCustomName2"},
+            "SNMPv2-MIB": {"sysDescr": "myCustomName3"},
+        }
 
         result = apply_custom_translations(work, translations)
 
-        self.assertEqual({"result": {"SOME_KEY": {'fields': {'SNMPv2-MIB.myCustomName3': {'oid': '9.8.7.6',
-                                                                                          'time': 1640609779.473053,
-                                                                                          'type': 'r',
-                                                                                          'value': 'up and running',
-                                                                                          "name": 'SNMPv2-MIB.myCustomName3'},
-                                                             'SNMPv2-MIB.some_other': {'oid': '9.8.7.6.1',
-                                                                                       'time': 1640609779.473053,
-                                                                                       'type': 'r',
-                                                                                       'value': 'ON',
-                                                                                       "name": "SNMPv2-MIB.some_other"}},
-                                                  'metrics': {'IF-MIB.myCustomName1': {'oid': '1.2.3.4.5.6.7',
-                                                                                       'time': 1640609779.473053,
-                                                                                       'type': 'g',
-                                                                                       'value': 65.0}}}}}, result)
+        self.assertEqual(
+            {
+                "result": {
+                    "SOME_KEY": {
+                        "fields": {
+                            "SNMPv2-MIB.myCustomName3": {
+                                "oid": "9.8.7.6",
+                                "time": 1640609779.473053,
+                                "type": "r",
+                                "value": "up and running",
+                                "name": "SNMPv2-MIB.myCustomName3",
+                            },
+                            "SNMPv2-MIB.some_other": {
+                                "oid": "9.8.7.6.1",
+                                "time": 1640609779.473053,
+                                "type": "r",
+                                "value": "ON",
+                                "name": "SNMPv2-MIB.some_other",
+                            },
+                        },
+                        "metrics": {
+                            "IF-MIB.myCustomName1": {
+                                "oid": "1.2.3.4.5.6.7",
+                                "time": 1640609779.473053,
+                                "type": "g",
+                                "value": 65.0,
+                            }
+                        },
+                    }
+                }
+            },
+            result,
+        )

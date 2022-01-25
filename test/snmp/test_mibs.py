@@ -5,7 +5,6 @@ from splunk_connect_for_snmp.snmp.manager import Poller, isMIBResolved
 
 
 class TestMibProcessing(TestCase):
-
     def test_load_mib(self):
         poller = Poller.__new__(Poller)
         poller.builder = Mock()
@@ -22,7 +21,7 @@ class TestMibProcessing(TestCase):
         found, mib = poller.is_mib_known("some ID", "1.2.3.4.5.6", "address")
 
         self.assertFalse(found)
-        self.assertIsNone(mib)
+        self.assertEqual(mib, "")
 
     def test_is_mib_known(self):
         poller = Poller.__new__(Poller)
@@ -38,7 +37,7 @@ class TestMibProcessing(TestCase):
         found, mib = poller.is_mib_known("some ID", "1.2.3.4.5.6.7", "address")
 
         self.assertFalse(found)
-        self.assertIsNone(mib)
+        self.assertEqual(mib, "")
 
     def test_is_mib_resolved(self):
         self.assertFalse(isMIBResolved("RFC1213-MIB::"))
