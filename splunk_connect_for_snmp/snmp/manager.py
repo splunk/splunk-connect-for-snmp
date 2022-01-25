@@ -15,7 +15,6 @@
 #
 import typing
 
-import requests
 from pysnmp.proto.errind import EmptyResponse
 from requests import Session
 
@@ -180,14 +179,14 @@ def map_metric_type(t, snmp_value):
     return metric_type
 
 
-def fill_empty_value(index_number, metric_value):
+def fill_empty_value(index_number, metric_value, target):
     if metric_value is None or (isinstance(metric_value, str) and not metric_value):
         if isinstance(index_number, bytes):
             try:
                 metric_value = str(index_number, "utf-8")
             except UnicodeDecodeError:
                 logger.error(
-                    f"index_number={str(index_number)} metric_value={metric_value}"
+                    f"index_number={str(index_number)} metric_value={metric_value} target={target}"
                 )
                 metric_value = "sc4snmp:unconvertable"
         else:
@@ -271,7 +270,7 @@ class Poller(Task):
             logger.debug(f"Profiles reloaded")
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
-            walk=walk, profiles=profiles
+            address, walk=walk, profiles=profiles
         )
 
         authData = GetAuth(logger, ir, self.snmpEngine)
@@ -283,7 +282,7 @@ class Poller(Task):
 
         metrics: Dict[str, Any] = {}
         if not varbinds_get and not varbinds_bulk:
-            logger.info("No work to do")
+            logger.info("No work to do for {address}")
             return False, {}
 
         if varbinds_bulk:
@@ -356,7 +355,7 @@ class Poller(Task):
         logger.warning(f"no mib found {id} based on {oid} from {target}")
         return False, ""
 
-    def get_var_binds(self, walk=False, profiles=[]):
+    def get_var_binds(self, address, walk=False, profiles=[]):
         varbinds_bulk = set()
         varbinds_get = set()
         get_mapping = {}
@@ -422,10 +421,10 @@ class Poller(Task):
                                 get_mapping[f"{vb[0]}:{vb[1]}:{vb[2]}"] = profile
             self.load_mibs(needed_mibs)
 
-        logger.debug(f"varbinds_get={varbinds_get}")
-        logger.debug(f"get_mapping={get_mapping}")
-        logger.debug(f"varbinds_bulk={varbinds_bulk}")
-        logger.debug(f"bulk_mapping={bulk_mapping}")
+        logger.debug(f"host={address} varbinds_get={varbinds_get}")
+        logger.debug(f"host={address} get_mapping={get_mapping}")
+        logger.debug(f"host={address} varbinds_bulk={varbinds_bulk}")
+        logger.debug(f"host={address} bulk_mapping={bulk_mapping}")
 
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
@@ -458,7 +457,7 @@ class Poller(Task):
                     metric_value = valueAsBest(snmp_val.prettyPrint())
 
                     index_number = extract_index_number(index)
-                    metric_value = fill_empty_value(index_number, metric_value)
+                    metric_value = fill_empty_value(index_number, metric_value, target)
 
                     profile = None
                     if mapping:

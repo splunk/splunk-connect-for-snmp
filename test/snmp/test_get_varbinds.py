@@ -8,7 +8,7 @@ class TestGetVarbinds(TestCase):
     def test_get_varbinds_for_walk(self):
         poller = Poller.__new__(Poller)
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
-            walk=True
+            "192.168.0.1", walk=True
         )
 
         self.assertEqual(0, len(varbinds_get))
@@ -33,7 +33,7 @@ class TestGetVarbinds(TestCase):
 
         profiles_requested = ["profile1", "profile2"]
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
-            profiles=profiles_requested
+            "192.168.0.1", profiles=profiles_requested
         )
 
         self.assertEqual(0, len(varbinds_get))
@@ -69,7 +69,7 @@ class TestGetVarbinds(TestCase):
         profiles_requested = ["profile1", "profile2"]
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
-            profiles=profiles_requested
+            "192.168.0.1", profiles=profiles_requested
         )
 
         self.assertEqual(0, len(varbinds_get))
@@ -120,7 +120,7 @@ class TestGetVarbinds(TestCase):
         profiles_requested = ["profile1", "profile2"]
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
-            profiles=profiles_requested
+            "192.168.0.1", profiles=profiles_requested
         )
 
         self.assertEqual(3, len(varbinds_get))
@@ -180,7 +180,7 @@ class TestGetVarbinds(TestCase):
         profiles_requested = ["profile1", "profile2"]
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
-            profiles=profiles_requested
+            "192.168.0.1", profiles=profiles_requested
         )
 
         self.assertEqual(0, len(varbinds_get))
@@ -219,7 +219,7 @@ class TestGetVarbinds(TestCase):
         profiles_requested = ["profile1"]
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
-            profiles=profiles_requested
+            "192.168.0.1", profiles=profiles_requested
         )
 
         self.assertEqual(0, len(varbinds_get))
