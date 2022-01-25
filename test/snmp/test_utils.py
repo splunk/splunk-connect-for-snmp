@@ -118,7 +118,8 @@ class TestUtils(TestCase):
         self.assertEqual("asd", fill_empty_value(b"asd", "", "192.168.0.1"))
         self.assertEqual("asd", fill_empty_value(1, "asd", "192.168.0.1"))
         self.assertEqual(
-            "sc4snmp:unconvertable", fill_empty_value(b"\xde\xad\xbe\xef", "", "192.168.0.1")
+            "sc4snmp:unconvertable",
+            fill_empty_value(b"\xde\xad\xbe\xef", "", "192.168.0.1"),
         )
 
     def test_extract_index_number(self):

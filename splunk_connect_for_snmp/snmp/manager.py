@@ -269,8 +269,8 @@ class Poller(Task):
             self.last_modified = time.time()
             logger.debug(f"Profiles reloaded")
 
-        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(address,
-            walk=walk, profiles=profiles
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
+            address, walk=walk, profiles=profiles
         )
 
         authData = GetAuth(logger, ir, self.snmpEngine)
