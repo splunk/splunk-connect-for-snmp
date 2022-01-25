@@ -95,12 +95,12 @@ class TestUtils(TestCase):
         self.assertEqual("te", map_metric_type("Counter32", "asd"))
 
     def test_fill_empty_value(self):
-        self.assertEqual(1, fill_empty_value(1, None))
-        self.assertEqual(1, fill_empty_value(1, ""))
-        self.assertEqual('asd', fill_empty_value(b'asd', None))
-        self.assertEqual('asd', fill_empty_value(b'asd', ""))
-        self.assertEqual("asd", fill_empty_value(1, "asd"))
-        self.assertEqual('sc4snmp:unconvertable', fill_empty_value(b'\xde\xad\xbe\xef', ""))
+        self.assertEqual(1, fill_empty_value(1, None, "192.168.0.1"))
+        self.assertEqual(1, fill_empty_value(1, "", "192.168.0.1"))
+        self.assertEqual('asd', fill_empty_value(b'asd', None, "192.168.0.1"))
+        self.assertEqual('asd', fill_empty_value(b'asd', "", "192.168.0.1"))
+        self.assertEqual("asd", fill_empty_value(1, "asd", "192.168.0.1"))
+        self.assertEqual('sc4snmp:unconvertable', fill_empty_value(b'\xde\xad\xbe\xef', "", "192.168.0.1"))
 
     def test_extract_index_number(self):
 

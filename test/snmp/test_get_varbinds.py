@@ -7,7 +7,7 @@ from splunk_connect_for_snmp.snmp.manager import Poller
 class TestGetVarbinds(TestCase):
     def test_get_varbinds_for_walk(self):
         poller = Poller.__new__(Poller)
-        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(walk=True)
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds("192.168.0.1", walk=True)
 
         self.assertEqual(0, len(varbinds_get))
         self.assertEqual(1, len(varbinds_bulk))
@@ -28,7 +28,7 @@ class TestGetVarbinds(TestCase):
         poller.load_mibs = Mock()
 
         profiles_requested = ["profile1", "profile2"]
-        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(profiles=profiles_requested)
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds("192.168.0.1", profiles=profiles_requested)
 
         self.assertEqual(0, len(varbinds_get))
         self.assertEqual(2, len(varbinds_bulk))
@@ -53,7 +53,7 @@ class TestGetVarbinds(TestCase):
         poller.load_mibs = Mock()
         profiles_requested = ["profile1", "profile2"]
 
-        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(profiles=profiles_requested)
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds("192.168.0.1", profiles=profiles_requested)
 
         self.assertEqual(0, len(varbinds_get))
         self.assertEqual(3, len(varbinds_bulk))
@@ -80,7 +80,7 @@ class TestGetVarbinds(TestCase):
         poller.load_mibs = Mock()
         profiles_requested = ["profile1", "profile2"]
 
-        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(profiles=profiles_requested)
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds("192.168.0.1", profiles=profiles_requested)
 
         self.assertEqual(3, len(varbinds_get))
         self.assertEqual(0, len(varbinds_bulk))
@@ -113,7 +113,7 @@ class TestGetVarbinds(TestCase):
         poller.load_mibs = Mock()
         profiles_requested = ["profile1", "profile2"]
 
-        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(profiles=profiles_requested)
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds("192.168.0.1", profiles=profiles_requested)
 
         self.assertEqual(0, len(varbinds_get))
         self.assertEqual(2, len(varbinds_bulk))
@@ -137,7 +137,7 @@ class TestGetVarbinds(TestCase):
         poller.load_mibs = Mock()
         profiles_requested = ["profile1"]
 
-        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(profiles=profiles_requested)
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds("192.168.0.1", profiles=profiles_requested)
 
         self.assertEqual(0, len(varbinds_get))
         self.assertEqual(1, len(varbinds_bulk))
