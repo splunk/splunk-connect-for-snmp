@@ -1,13 +1,11 @@
 from unittest import TestCase
-from unittest.mock import patch, Mock
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, Mock, patch
 
 from splunk_connect_for_snmp.customtaskmanager import CustomPeriodicTaskManager
 
 
 class TestCustomTaskManager(TestCase):
-
-    @patch('celerybeatmongo.models.PeriodicTask.objects')
+    @patch("celerybeatmongo.models.PeriodicTask.objects")
     def test_delete_unused_poll_tasks(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
         doc1 = Mock()
@@ -41,16 +39,16 @@ class TestCustomTaskManager(TestCase):
         m_objects.assert_called_with(target="192.168.0.1")
         calls = periodic_list.get.call_args_list
 
-        self.assertEqual({'name': 'test1'}, calls[0].kwargs)
-        self.assertEqual({'name': 'test2'}, calls[1].kwargs)
-        self.assertEqual({'name': 'name1'}, calls[2].kwargs)
+        self.assertEqual({"name": "test1"}, calls[0].kwargs)
+        self.assertEqual({"name": "test2"}, calls[1].kwargs)
+        self.assertEqual({"name": "name1"}, calls[2].kwargs)
 
         doc1.delete.assert_called()
         doc2.delete.assert_called()
         doc3.delete.assert_not_called()
         doc4.delete.assert_not_called()
 
-    @patch('celerybeatmongo.models.PeriodicTask.objects')
+    @patch("celerybeatmongo.models.PeriodicTask.objects")
     def test_delete_disabled_poll_tasks(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
@@ -81,17 +79,17 @@ class TestCustomTaskManager(TestCase):
         m_objects.assert_called_with(enabled=False)
         calls = periodic_list.get.call_args_list
 
-        self.assertEqual({'name': 'test1'}, calls[0].kwargs)
-        self.assertEqual({'name': 'test2'}, calls[1].kwargs)
-        self.assertEqual({'name': 'test3'}, calls[2].kwargs)
-        self.assertEqual({'name': 'test4'}, calls[3].kwargs)
+        self.assertEqual({"name": "test1"}, calls[0].kwargs)
+        self.assertEqual({"name": "test2"}, calls[1].kwargs)
+        self.assertEqual({"name": "test3"}, calls[2].kwargs)
+        self.assertEqual({"name": "test4"}, calls[3].kwargs)
 
         doc1.delete.assert_called()
         doc2.delete.assert_called()
         doc3.delete.assert_called()
         doc4.delete.assert_called()
 
-    @patch('celerybeatmongo.models.PeriodicTask.objects')
+    @patch("celerybeatmongo.models.PeriodicTask.objects")
     def test_enable_tasks(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
@@ -116,8 +114,8 @@ class TestCustomTaskManager(TestCase):
 
         calls = periodic_list.get.call_args_list
 
-        self.assertEqual({'name': 'test1'}, calls[0].kwargs)
-        self.assertEqual({'name': 'test2'}, calls[1].kwargs)
+        self.assertEqual({"name": "test1"}, calls[0].kwargs)
+        self.assertEqual({"name": "test2"}, calls[1].kwargs)
 
         self.assertTrue(doc1.enabled)
         self.assertTrue(doc2.enabled)
@@ -125,7 +123,7 @@ class TestCustomTaskManager(TestCase):
         doc1.save.assert_called()
         doc2.save.assert_called()
 
-    @patch('celerybeatmongo.models.PeriodicTask.objects')
+    @patch("celerybeatmongo.models.PeriodicTask.objects")
     def test_disable_tasks(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
@@ -150,8 +148,8 @@ class TestCustomTaskManager(TestCase):
 
         calls = periodic_list.get.call_args_list
 
-        self.assertEqual({'name': 'test1'}, calls[0].kwargs)
-        self.assertEqual({'name': 'test2'}, calls[1].kwargs)
+        self.assertEqual({"name": "test1"}, calls[0].kwargs)
+        self.assertEqual({"name": "test2"}, calls[1].kwargs)
 
         self.assertFalse(doc1.enabled)
         self.assertFalse(doc2.enabled)
@@ -159,7 +157,7 @@ class TestCustomTaskManager(TestCase):
         doc1.save.assert_called()
         doc2.save.assert_called()
 
-    @patch('celerybeatmongo.models.PeriodicTask.objects')
+    @patch("celerybeatmongo.models.PeriodicTask.objects")
     def test_manage_task_existing_interval(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
@@ -188,7 +186,7 @@ class TestCustomTaskManager(TestCase):
         self.assertEqual("seconds", doc1.interval.period)
         doc1.save.assert_called_with()
 
-    @patch('celerybeatmongo.models.PeriodicTask.objects')
+    @patch("celerybeatmongo.models.PeriodicTask.objects")
     def test_manage_task_existing_crontab(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
@@ -216,7 +214,7 @@ class TestCustomTaskManager(TestCase):
         self.assertEqual("30 10 * * * (m/h/d/dM/MY)", str(doc1.crontab))
         doc1.save.assert_called_with()
 
-    @patch('celerybeatmongo.models.PeriodicTask.objects')
+    @patch("celerybeatmongo.models.PeriodicTask.objects")
     def test_manage_task_existing_target(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
@@ -243,7 +241,7 @@ class TestCustomTaskManager(TestCase):
 
         doc1.save.assert_not_called()
 
-    @patch('celerybeatmongo.models.PeriodicTask.objects')
+    @patch("celerybeatmongo.models.PeriodicTask.objects")
     def test_manage_task_existing_only_props(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
@@ -263,14 +261,14 @@ class TestCustomTaskManager(TestCase):
 
         task_manager.manage_task(**task_data)
 
-        self.assertEqual({'name': 'test1', 'prop1': 'value1', 'prop2': 'value2'}, d)
+        self.assertEqual({"name": "test1", "prop1": "value1", "prop2": "value2"}, d)
 
         m_objects.assert_called_with(name="test1")
         task1.get.assert_called_with(name="test1")
 
         doc1.save.assert_called()
 
-    @patch('celerybeatmongo.models.PeriodicTask.objects')
+    @patch("celerybeatmongo.models.PeriodicTask.objects")
     def test_delete_all_poll_tasks(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
         doc1 = Mock()
@@ -298,14 +296,14 @@ class TestCustomTaskManager(TestCase):
 
         calls = periodic_list.get.call_args_list
 
-        self.assertEqual({'name': 'test1'}, calls[0].kwargs)
-        self.assertEqual({'name': 'test2'}, calls[1].kwargs)
+        self.assertEqual({"name": "test1"}, calls[0].kwargs)
+        self.assertEqual({"name": "test2"}, calls[1].kwargs)
 
         doc1.delete.assert_called()
         doc2.delete.assert_called()
         doc3.delete.assert_not_called()
 
-    @patch('celerybeatmongo.models.PeriodicTask.objects')
+    @patch("celerybeatmongo.models.PeriodicTask.objects")
     def test_rerun_all_walks(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
@@ -325,24 +323,28 @@ class TestCustomTaskManager(TestCase):
 
         calls = periodic_list.get.call_args_list
 
-        self.assertEqual({'name': 'test1'}, calls[0].kwargs)
+        self.assertEqual({"name": "test1"}, calls[0].kwargs)
 
         self.assertTrue(doc1.run_immediately)
         doc1.save.assert_called()
 
-    @patch('celerybeatmongo.models.PeriodicTask.objects')
-    @patch('celerybeatmongo.models.PeriodicTask.save')
+    @patch("celerybeatmongo.models.PeriodicTask.objects")
+    @patch("celerybeatmongo.models.PeriodicTask.save")
     def test_manage_task_new(self, m_save, m_objects):
         m_objects.return_value = None
 
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
         m_objects.return_value = None
-        task_data = {"task": "task1", "name": "test1", "args": {"arg1": "val1", "arg2": "val2"},
-                     "kwargs": {"karg1": "val1", "karg2": "val2"},
-                     "interval": {"every": 60, "period": "seconds"},
-                     "target": "some_target",
-                     "options": "some+option",
-                     "enabled": True}
+        task_data = {
+            "task": "task1",
+            "name": "test1",
+            "args": {"arg1": "val1", "arg2": "val2"},
+            "kwargs": {"karg1": "val1", "karg2": "val2"},
+            "interval": {"every": 60, "period": "seconds"},
+            "target": "some_target",
+            "options": "some+option",
+            "enabled": True,
+        }
 
         task_manager.manage_task(**task_data)
 

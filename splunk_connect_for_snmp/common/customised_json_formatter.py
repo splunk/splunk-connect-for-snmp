@@ -20,5 +20,5 @@ import json_log_formatter
 class CustomisedJSONFormatter(json_log_formatter.JSONFormatter):
     def json_record(self, message: str, extra: dict, record: logging.LogRecord) -> dict:
         super().json_record(message, extra, record)
-        extra['level'] = record.levelname
+        extra["level"] = record.levelname
         return extra

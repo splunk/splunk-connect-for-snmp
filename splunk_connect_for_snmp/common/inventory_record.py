@@ -12,41 +12,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import dataclasses
 import inspect
 import json
 import socket
-from contextlib import suppress
-from dataclasses import InitVar, dataclass, field
-from ipaddress import IPv4Address, IPv6Address
-from typing import List
+from ipaddress import ip_address
+from typing import List, Union
+
+from pydantic import BaseModel, validator
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 
+InventoryStr = Union[None, str]
+InventoryInt = Union[None, int]
+InventoryBool = Union[None, bool]
 
-@dataclass(repr=True)
-class InventoryRecord:
-    # address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
-    _id: InitVar[int] = field(init=False, repr=False, default=0)
-    address: str
-    _address: str = field(init=False, repr=False)
 
-    @property
-    def address(self) -> str:
-        return self._address
+class InventoryRecord(BaseModel):
+    address: InventoryStr
+    port: InventoryInt = 161
+    version: InventoryStr
+    community: InventoryStr
+    secret: InventoryStr
+    securityEngine: InventoryStr = ""
+    walk_interval: InventoryInt = 42000
+    profiles: List
+    SmartProfiles: InventoryBool
+    delete: InventoryBool
 
-    @address.setter
-    def address(self, value: str):
+    @validator("address", pre=True)
+    def address_validator(cls, value):
         if value is None:
             raise ValueError(f"field address cannot be null")
         if value.startswith("#"):
             raise ValueError(f"field address cannot be commented")
         else:
-            test = None
-            with suppress(ValueError):
-                test = IPv4Address(value)
-                test = IPv6Address(value)
-            if not test:
+            try:
+                ip_address(value)
+            except ValueError:
                 try:
                     socket.gethostbyname_ex(value)
                 except socket.gaierror:
@@ -54,148 +56,86 @@ class InventoryRecord:
                         f"field address must be an IP or a resolvable hostname {value}"
                     )
 
-            self._address = value
+            return value
 
-    port: int
-    _port: int = field(init=False, repr=False)
-
-    @property
-    def port(self) -> int:
-        return self._port
-
-    @port.setter
-    def port(self, value):
+    @validator("port", pre=True)
+    def port_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
-            self._port = 161
+            return 161
         else:
             if not isinstance(value, int):
                 value = int(value)
 
             if value < 1 or value > 65535:
                 raise ValueError(f"Port out of range {value}")
-            self._port = value
+            return value
 
-    version: str
-    _version: str = field(init=False, repr=False)
-
-    @property
-    def version(self) -> str:
-        return self._version
-
-    @version.setter
-    def version(self, value):
+    @validator("version", pre=True)
+    def version_validator(cls, value):
         if value is None or value.strip() == "":
-            self._version = "2c"
+            return "2c"
         else:
             if value not in ("1", "2c", "3"):
-                raise ValueError(f"version out of range {value} accepted is 1 or 2c or 3")
-            self._version = value
+                raise ValueError(
+                    f"version out of range {value} accepted is 1 or 2c or 3"
+                )
+            return value
 
-    community: str
-    _community: str = field(init=False, repr=False)
-
-    @property
-    def community(self) -> str:
-        return self._community
-
-    @community.setter
-    def community(self, value):
+    @validator("community", pre=True)
+    def community_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
-            self._community = None
+            return None
         else:
-            self._community = value
+            return value
 
-    secret: str
-    _secret: str = field(init=False, repr=False)
-
-    @property
-    def secret(self) -> str:
-        return self._secret
-
-    @secret.setter
-    def secret(self, value):
+    @validator("secret", pre=True)
+    def secret_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
-            self._secret = None
+            return None
         else:
-            self._secret = value
+            return value
 
-    securityEngine: str
-    _securityEngine: str = field(init=False, repr=False, default=None)
-
-    @property
-    def securityEngine(self) -> str:
-        return self._securityEngine
-
-    @securityEngine.setter
-    def securityEngine(self, value):
+    @validator("securityEngine", pre=True)
+    def securityEngine_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
-            self._securityEngine = None
+            return None
         else:
-            self._securityEngine = value
+            return value
 
-    walk_interval: int
-    _walk_interval: int = field(init=False, repr=False, default=42000)
-
-    @property
-    def walk_interval(self) -> int:
-        return self._walk_interval
-
-    @walk_interval.setter
-    def walk_interval(self, value):
-        if value is None:
-            self._walk_interval = 42000
-            return
+    @validator("walk_interval", pre=True)
+    def walk_interval_validator(cls, value):
+        if not value:
+            return 42000
         v = int(value)
         if v < 1800:
-            self._walk_interval = 1800
+            return 1800
         elif v > 42000:
-            self._walk_interval = 42000
+            return 42000
         else:
-            self._walk_interval = v
+            return v
 
-    profiles: List[str] = []
-    _profiles: List[str] = field(init=False, repr=False)
-
-    @property
-    def profiles(self) -> List[str]:
-        return self._profiles
-
-    @profiles.setter
-    def profiles(self, value):
+    @validator("profiles", pre=True)
+    def profiles_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
-            self._profiles = []
+            return []
         elif isinstance(value, str):
-            self._profiles = value.split(";")
+            return value.split(";")
         else:
-            self._profiles = value
+            return value
 
-    SmartProfiles: bool = True
-    _SmartProfiles: bool = field(init=False, repr=False)
-
-    @property
-    def SmartProfiles(self) -> bool:
-        return self._SmartProfiles
-
-    @SmartProfiles.setter
-    def SmartProfiles(self, value):
+    @validator("SmartProfiles", pre=True)
+    def SmartProfiles_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
-            self._SmartProfiles = True
+            return True
         else:
-            self._SmartProfiles = human_bool(value)
+            return human_bool(value)
 
-    delete: bool = False
-    _delete: bool = field(init=False, repr=False)
-
-    @property
-    def delete(self) -> bool:
-        return self._delete
-
-    @delete.setter
-    def delete(self, value):
+    @validator("delete", pre=True)
+    def delete_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
-            self._delete = False
+            return False
         else:
-            self._delete = human_bool(value)
+            return human_bool(value)
 
     @staticmethod
     def from_json(ir_json: str):
@@ -203,18 +143,20 @@ class InventoryRecord:
         return InventoryRecord(**ir_dict)
 
     def to_json(self):
-        return json.dumps({
-            "address": self.address,
-            "port": self.port,
-            "version": self.version,
-            "community": self.community,
-            "secret": self.secret,
-            "securityEngine": self.securityEngine,
-            "walk_interval": self.walk_interval,
-            "profiles": self.profiles,
-            "SmartProfiles": self.SmartProfiles,
-            "delete": self.delete,
-        })
+        return json.dumps(
+            {
+                "address": self.address,
+                "port": self.port,
+                "version": self.version,
+                "community": self.community,
+                "secret": self.secret,
+                "securityEngine": self.securityEngine,
+                "walk_interval": self.walk_interval,
+                "profiles": self.profiles,
+                "SmartProfiles": self.SmartProfiles,
+                "delete": self.delete,
+            }
+        )
 
     @classmethod
     def from_dict(cls, env):
@@ -223,14 +165,7 @@ class InventoryRecord:
         )
 
     def asdict(self) -> dict:
-        newDict = dict()
-        # Iterate over all the items in dictionary and filter items which has even keys
-        for (key, value) in dataclasses.asdict(self).items():
-            # Check if key is even then add pair to new dictionary
-            if not key.startswith("_") and value is not None:
-                newDict[key] = value
-
-        return newDict
+        return self.dict()
 
 
 class InventoryRecordEncoder(json.JSONEncoder):

@@ -5,31 +5,32 @@ from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 
 class TestInventoryRecord(TestCase):
     def test_address_not_none(self):
-        ir_dict = {
-            "address": None
-        }
+        ir_dict = {"address": None}
 
         with self.assertRaises(ValueError) as e:
             InventoryRecord(**ir_dict)
-        self.assertEqual("field address cannot be null", e.exception.args[0])
+        self.assertEqual(
+            "field address cannot be null", e.exception.args[0][0].exc.args[0]
+        )
 
     def test_address_not_commented(self):
-        ir_dict = {
-            "address": "#asd"
-        }
+        ir_dict = {"address": "#asd"}
 
         with self.assertRaises(ValueError) as e:
             InventoryRecord(**ir_dict)
-        self.assertEqual("field address cannot be commented", e.exception.args[0])
+        self.assertEqual(
+            "field address cannot be commented", e.exception.args[0][0].exc.args[0]
+        )
 
     def test_address_not_resolvable(self):
-        ir_dict = {
-            "address": "12313sdfsf"
-        }
+        ir_dict = {"address": "12313sdfsf"}
 
         with self.assertRaises(ValueError) as e:
             InventoryRecord(**ir_dict)
-        self.assertEqual("field address must be an IP or a resolvable hostname 12313sdfsf", e.exception.args[0])
+        self.assertEqual(
+            "field address must be an IP or a resolvable hostname 12313sdfsf",
+            e.exception.args[0][0].exc.args[0],
+        )
 
     def test_port_too_high(self):
         ir_dict = {
@@ -43,7 +44,7 @@ class TestInventoryRecord(TestCase):
 
         with self.assertRaises(ValueError) as e:
             InventoryRecord(**ir_dict)
-        self.assertEqual("Port out of range 65537", e.exception.args[0])
+        self.assertEqual("Port out of range 65537", e.exception.args[0][0].exc.args[0])
 
     def test_version_none(self):
         ir_dict = {
@@ -79,7 +80,10 @@ class TestInventoryRecord(TestCase):
 
         with self.assertRaises(ValueError) as e:
             InventoryRecord(**ir_dict)
-        self.assertEqual("version out of range 5a accepted is 1 or 2c or 3", e.exception.args[0])
+        self.assertEqual(
+            "version out of range 5a accepted is 1 or 2c or 3",
+            e.exception.args[0][0].exc.args[0],
+        )
 
     def test_empty_community(self):
         ir_dict = {
@@ -201,9 +205,11 @@ class TestInventoryRecord(TestCase):
         self.assertFalse(ir.delete)
 
     def test_from_json(self):
-        ir = InventoryRecord.from_json('{"address": "192.168.0.1", "port": "34", "version": "3", "community": '
-                                       '"public", "secret": "secret", "securityEngine": "ENGINE", "walk_interval": '
-                                       '1850, "profiles": "", "SmartProfiles": true, "delete": ""}')
+        ir = InventoryRecord.from_json(
+            '{"address": "192.168.0.1", "port": "34", "version": "3", "community": '
+            '"public", "secret": "secret", "securityEngine": "ENGINE", "walk_interval": '
+            '1850, "profiles": "", "SmartProfiles": true, "delete": ""}'
+        )
 
         self.assertEqual(ir.address, "192.168.0.1")
         self.assertEqual(ir.port, 34)
@@ -232,6 +238,9 @@ class TestInventoryRecord(TestCase):
 
         ir = InventoryRecord(**ir_dict)
 
-        self.assertEqual('{"address": "192.168.0.1", "port": 34, "version": "3", "community": '
-                         '"public", "secret": "secret", "securityEngine": "ENGINE", "walk_interval": '
-                         '1850, "profiles": [], "SmartProfiles": true, "delete": false}', ir.to_json())
+        self.assertEqual(
+            '{"address": "192.168.0.1", "port": 34, "version": "3", "community": '
+            '"public", "secret": "secret", "securityEngine": "ENGINE", "walk_interval": '
+            '1850, "profiles": [], "SmartProfiles": true, "delete": false}',
+            ir.to_json(),
+        )

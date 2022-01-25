@@ -20,11 +20,12 @@ import sys
 from csv import DictReader
 
 import pymongo
-
 from celery.canvas import chain, group, signature
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.common.customised_json_formatter import CustomisedJSONFormatter
+from splunk_connect_for_snmp.common.customised_json_formatter import (
+    CustomisedJSONFormatter,
+)
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
 

@@ -37,7 +37,7 @@ def load_profiles():
     )
     for file in os.listdir(pkg_path):
         if file.endswith("yaml"):
-            with open(os.path.join(pkg_path, file), encoding='utf-8') as of:
+            with open(os.path.join(pkg_path, file), encoding="utf-8") as of:
                 profiles = yaml.safe_load(of)
                 logger.info(
                     f"loading {len(profiles.keys())} profiles from shared profile group {file}"
@@ -45,7 +45,7 @@ def load_profiles():
                 for key, profile in profiles.items():
                     active_profiles[key] = profile
     try:
-        with open(CONFIG_PATH, encoding='utf-8') as file:
+        with open(CONFIG_PATH, encoding="utf-8") as file:
             config_runtime = yaml.safe_load(file)
             if "profiles" in config_runtime:
                 profiles = config_runtime.get("profiles", {})

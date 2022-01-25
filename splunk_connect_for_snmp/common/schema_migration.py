@@ -17,7 +17,9 @@ import logging
 import os
 import sys
 
-from splunk_connect_for_snmp.common.customised_json_formatter import CustomisedJSONFormatter
+from splunk_connect_for_snmp.common.customised_json_formatter import (
+    CustomisedJSONFormatter,
+)
 
 formatter = CustomisedJSONFormatter()
 
@@ -54,7 +56,9 @@ def save_schema_version(mongo_client, version):
 def migrate_database(mongo_client, periodic_obj):
     previous_schema_version = fetch_schema_version(mongo_client)
     if previous_schema_version < CURRENT_SCHEMA_VERSION:
-        logger.info(f"Migrating from version {previous_schema_version} to version {CURRENT_SCHEMA_VERSION}")
+        logger.info(
+            f"Migrating from version {previous_schema_version} to version {CURRENT_SCHEMA_VERSION}"
+        )
 
         for x in range(previous_schema_version, CURRENT_SCHEMA_VERSION):
             fun_name = "migrate_to_version_" + str(x + 1)

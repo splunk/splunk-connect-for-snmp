@@ -1,10 +1,14 @@
 from unittest import TestCase, mock
-from unittest.mock import patch, mock_open, Mock
+from unittest.mock import Mock, mock_open, patch
 
+from pymongo.results import UpdateResult
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-from splunk_connect_for_snmp.inventory.loader import gen_walk_task, load, transform_address_to_key
-from pymongo.results import UpdateResult
+from splunk_connect_for_snmp.inventory.loader import (
+    gen_walk_task,
+    load,
+    transform_address_to_key,
+)
 
 mock_inventory = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
 192.168.0.1,,2c,public,,,1805,test_1,False,False"""
@@ -43,16 +47,25 @@ class TestLoader(TestCase):
         self.assertEqual("splunk_connect_for_snmp.snmp.tasks.walk", result["task"])
         self.assertEqual("192.68.0.1:456", result["target"])
         self.assertEqual([], result["args"])
-        self.assertEqual({'address': '192.68.0.1:456'}, result["kwargs"])
+        self.assertEqual({"address": "192.68.0.1:456"}, result["kwargs"])
         self.assertEqual("_chain", type(result["options"]["link"]).__name__)
-        self.assertEqual("splunk_connect_for_snmp.enrich.tasks.enrich", result["options"]["link"].tasks[0].name)
-        self.assertEqual("splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller",
-                         result["options"]["link"].tasks[1].tasks[0].name)
-        self.assertEqual("splunk_connect_for_snmp.splunk.tasks.prepare",
-                         result["options"]["link"].tasks[1].tasks[1].tasks[0].name)
-        self.assertEqual("splunk_connect_for_snmp.splunk.tasks.send",
-                         result["options"]["link"].tasks[1].tasks[1].tasks[1].name)
-        self.assertEqual({'every': 3456, 'period': 'seconds'}, result["interval"])
+        self.assertEqual(
+            "splunk_connect_for_snmp.enrich.tasks.enrich",
+            result["options"]["link"].tasks[0].name,
+        )
+        self.assertEqual(
+            "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller",
+            result["options"]["link"].tasks[1].tasks[0].name,
+        )
+        self.assertEqual(
+            "splunk_connect_for_snmp.splunk.tasks.prepare",
+            result["options"]["link"].tasks[1].tasks[1].tasks[0].name,
+        )
+        self.assertEqual(
+            "splunk_connect_for_snmp.splunk.tasks.send",
+            result["options"]["link"].tasks[1].tasks[1].tasks[1].name,
+        )
+        self.assertEqual({"every": 3456, "period": "seconds"}, result["interval"])
         self.assertTrue(result["enabled"])
         self.assertTrue(result["run_immediately"])
 
@@ -77,27 +90,40 @@ class TestLoader(TestCase):
         self.assertEqual("splunk_connect_for_snmp.snmp.tasks.walk", result["task"])
         self.assertEqual("192.68.0.1", result["target"])
         self.assertEqual([], result["args"])
-        self.assertEqual({'address': '192.68.0.1'}, result["kwargs"])
+        self.assertEqual({"address": "192.68.0.1"}, result["kwargs"])
         self.assertEqual("_chain", type(result["options"]["link"]).__name__)
-        self.assertEqual("splunk_connect_for_snmp.enrich.tasks.enrich", result["options"]["link"].tasks[0].name)
-        self.assertEqual("splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller",
-                         result["options"]["link"].tasks[1].tasks[0].name)
-        self.assertEqual("splunk_connect_for_snmp.splunk.tasks.prepare",
-                         result["options"]["link"].tasks[1].tasks[1].tasks[0].name)
-        self.assertEqual("splunk_connect_for_snmp.splunk.tasks.send",
-                         result["options"]["link"].tasks[1].tasks[1].tasks[1].name)
-        self.assertEqual({'every': 3456, 'period': 'seconds'}, result["interval"])
+        self.assertEqual(
+            "splunk_connect_for_snmp.enrich.tasks.enrich",
+            result["options"]["link"].tasks[0].name,
+        )
+        self.assertEqual(
+            "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller",
+            result["options"]["link"].tasks[1].tasks[0].name,
+        )
+        self.assertEqual(
+            "splunk_connect_for_snmp.splunk.tasks.prepare",
+            result["options"]["link"].tasks[1].tasks[1].tasks[0].name,
+        )
+        self.assertEqual(
+            "splunk_connect_for_snmp.splunk.tasks.send",
+            result["options"]["link"].tasks[1].tasks[1].tasks[1].name,
+        )
+        self.assertEqual({"every": 3456, "period": "seconds"}, result["interval"])
         self.assertTrue(result["enabled"])
         self.assertTrue(result["run_immediately"])
 
     @mock.patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
-    @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory)
-    @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
+    @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
+    @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    def test_load_new_record(self, m_migrate, m_mongo_collection, m_taskManager, m_open, walk_task):
+    def test_load_new_record(
+        self, m_migrate, m_mongo_collection, m_taskManager, m_open, walk_task
+    ):
         walk_task.return_value = expected_managed_task
-        m_mongo_collection.return_value = UpdateResult({"n": 0, "nModified": 1, "upserted": 1}, True)
+        m_mongo_collection.return_value = UpdateResult(
+            {"n": 0, "nModified": 1, "upserted": 1}, True
+        )
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         self.assertEqual(False, load())
@@ -105,36 +131,48 @@ class TestLoader(TestCase):
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
     @mock.patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
-    @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory)
-    @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
+    @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
+    @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    def test_load_modified_record(self, m_migrate, m_mongo_collection, m_taskManager, m_open, walk_task):
+    def test_load_modified_record(
+        self, m_migrate, m_mongo_collection, m_taskManager, m_open, walk_task
+    ):
         walk_task.return_value = expected_managed_task
-        m_mongo_collection.return_value = UpdateResult({"n": 1, "nModified": 1, "upserted": None}, True)
+        m_mongo_collection.return_value = UpdateResult(
+            {"n": 1, "nModified": 1, "upserted": None}, True
+        )
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         self.assertEqual(False, load())
 
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
-    @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory)
-    @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
+    @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
+    @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    def test_load_unchanged_record(self, m_migrate, m_mongo_collection, m_taskManager, m_open):
-        m_mongo_collection.return_value = UpdateResult({"n": 1, "nModified": 0, "upserted": None}, True)
+    def test_load_unchanged_record(
+        self, m_migrate, m_mongo_collection, m_taskManager, m_open
+    ):
+        m_mongo_collection.return_value = UpdateResult(
+            {"n": 1, "nModified": 0, "upserted": None}, True
+        )
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         self.assertEqual(False, load())
 
         periodic_obj_mock.manage_task.assert_not_called()
 
-    @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory_with_comment)
-    @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
+    @patch(
+        "builtins.open", new_callable=mock_open, read_data=mock_inventory_with_comment
+    )
+    @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    def test_ignoring_comment(self, m_migrate, m_mongo_collection, m_taskManager, m_open):
+    def test_ignoring_comment(
+        self, m_migrate, m_mongo_collection, m_taskManager, m_open
+    ):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         self.assertEqual(False, load())
@@ -142,12 +180,14 @@ class TestLoader(TestCase):
         m_mongo_collection.assert_not_called()
         periodic_obj_mock.manage_task.assert_not_called()
 
-    @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory_delete)
-    @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
+    @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory_delete)
+    @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.delete_one")
     @mock.patch("pymongo.collection.Collection.remove")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    def test_deleting_record(self, m_migrate, m_remove, m_delete, m_taskManager, m_open):
+    def test_deleting_record(
+        self, m_migrate, m_remove, m_delete, m_taskManager, m_open
+    ):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         self.assertEqual(False, load())
@@ -158,15 +198,21 @@ class TestLoader(TestCase):
         calls = m_remove.call_args_list
 
         self.assertEqual(2, len(calls))
-        self.assertEqual(({'address': '192.168.0.1'},), calls[0].args)
-        self.assertEqual(({'address': '192.168.0.1'},), calls[1].args)
+        self.assertEqual(({"address": "192.168.0.1"},), calls[0].args)
+        self.assertEqual(({"address": "192.168.0.1"},), calls[1].args)
 
-    @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory_delete_non_default)
-    @patch('splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager')
+    @patch(
+        "builtins.open",
+        new_callable=mock_open,
+        read_data=mock_inventory_delete_non_default,
+    )
+    @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.delete_one")
     @mock.patch("pymongo.collection.Collection.remove")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    def test_deleting_record_non_default_port(self, m_migrate, m_remove, m_delete, m_taskManager, m_open):
+    def test_deleting_record_non_default_port(
+        self, m_migrate, m_remove, m_delete, m_taskManager, m_open
+    ):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         self.assertEqual(False, load())
@@ -177,18 +223,24 @@ class TestLoader(TestCase):
         calls = m_remove.call_args_list
 
         self.assertEqual(2, len(calls))
-        self.assertEqual(({'address': '192.168.0.1:345'},), calls[0].args)
-        self.assertEqual(({'address': '192.168.0.1:345'},), calls[1].args)
+        self.assertEqual(({"address": "192.168.0.1:345"},), calls[0].args)
+        self.assertEqual(({"address": "192.168.0.1:345"},), calls[1].args)
 
     @mock.patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
-    @patch('builtins.open', new_callable=mock_open, read_data=mock_inventory)
+    @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @mock.patch("pymongo.collection.Collection.update_one")
-    @mock.patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager.manage_task")
+    @mock.patch(
+        "splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager.manage_task"
+    )
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    def test_inventory_errors(self, m_migrate, m_manage_task, m_mongo_collection, m_open, walk_task):
+    def test_inventory_errors(
+        self, m_migrate, m_manage_task, m_mongo_collection, m_open, walk_task
+    ):
         walk_task.return_value = expected_managed_task
-        m_mongo_collection.return_value = UpdateResult({"n": 0, "nModified": 1, "upserted": 1}, True)
-        m_manage_task.side_effect = Exception('Boom!')
+        m_mongo_collection.return_value = UpdateResult(
+            {"n": 0, "nModified": 1, "upserted": 1}, True
+        )
+        m_manage_task.side_effect = Exception("Boom!")
 
         self.assertEqual(True, load())
 

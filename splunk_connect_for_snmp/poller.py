@@ -17,10 +17,13 @@
 # Support use of .env file for developers
 from contextlib import suppress
 
-from splunk_connect_for_snmp.common.customised_json_formatter import CustomisedJSONFormatter
+from splunk_connect_for_snmp.common.customised_json_formatter import (
+    CustomisedJSONFormatter,
+)
 
 with suppress(ImportError):
     from dotenv import load_dotenv
+
     load_dotenv()
 
 import os
