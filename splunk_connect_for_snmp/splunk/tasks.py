@@ -38,16 +38,17 @@ SPLUNK_HEC_HOST = os.getenv("SPLUNK_HEC_HOST", "127.0.0.1")
 SPLUNK_HEC_PORT = os.getenv("SPLUNK_HEC_PORT", None)
 SPLUNK_HEC_PATH = os.getenv("SPLUNK_HEC_PATH", "services/collector")
 
-url = {}
-url["scheme"] = SPLUNK_HEC_SCHEME
-url["hostn_enc"] = SPLUNK_HEC_HOST
-url["path"] = SPLUNK_HEC_PATH
+url = {
+    "scheme": SPLUNK_HEC_SCHEME,
+    "hostn_enc": SPLUNK_HEC_HOST,
+    "path": SPLUNK_HEC_PATH,
+}
 if SPLUNK_HEC_PORT:
     url["port"] = ":" + SPLUNK_HEC_PORT
 else:
     url["port"] = ""
-url["query"] = None
-url["frag"] = None
+url["query"] = ""
+url["frag"] = ""
 
 SPLUNK_HEC_URI = urlunsplit(
     (
@@ -76,7 +77,7 @@ logger = get_task_logger(__name__)
 if SPLUNK_HEC_TOKEN:
     SPLUNK_HEC_HEADERS = {"Authorization": f"Splunk {SPLUNK_HEC_TOKEN}"}
 else:
-    SPLUNK_HEC_HEADERS = None
+    SPLUNK_HEC_HEADERS = {}
 SPLUNK_HEC_CHUNK_SIZE = int(os.getenv("SPLUNK_HEC_CHUNK_SIZE", "50"))
 
 
@@ -122,7 +123,7 @@ def do_send(data, destination_url, self):
         try:
             response = self.session.post(
                 destination_url,
-                data="\n".join(data[i: i + SPLUNK_HEC_CHUNK_SIZE]),
+                data="\n".join(data[i : i + SPLUNK_HEC_CHUNK_SIZE]),
                 timeout=60,
             )
         except ConnectionError:
@@ -154,16 +155,18 @@ def valueAsBest(value) -> Union[str, float]:
         return value
 
 
-@shared_task(
-    bind=True,
-    base=PrepareTask
-)
+@shared_task(bind=True, base=PrepareTask)
 def prepare(self, work):
     events = []
     metrics = []
 
     if work.get("sourcetype") == "sc4snmp:traps":
-        return {"events": prepare_trap_data(apply_custom_translations(work, self.custom_translations)), "metrics": metrics}
+        return {
+            "events": prepare_trap_data(
+                apply_custom_translations(work, self.custom_translations)
+            ),
+            "metrics": metrics,
+        }
 
     work = apply_custom_translations(work, self.custom_translations)
 

@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 import time
-
 import typing
 
 from splunk_connect_for_snmp.common.profiles import load_profiles
@@ -37,7 +36,6 @@ from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.hummanbool import human_bool
-
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # nosemgrep
 
@@ -81,7 +79,9 @@ def inventory_setup_poller(self, work):
 
     active_schedules: list[str] = []
     for period in assigned_profiles:
-        task_config = generate_poll_task_definition(active_schedules, address, assigned_profiles, period)
+        task_config = generate_poll_task_definition(
+            active_schedules, address, assigned_profiles, period
+        )
         periodic_obj.manage_task(**task_config)
 
     periodic_obj.delete_unused_poll_tasks(f"{address}", active_schedules)
@@ -140,8 +140,8 @@ def assign_profiles(ir, profiles, target):
                 logger.debug(f"profile is a field condition {profile_name}")
                 if "state" in target:
                     if (
-                            profile["condition"]["field"].replace(".", "|")
-                            in target["state"]
+                        profile["condition"]["field"].replace(".", "|")
+                        in target["state"]
                     ):
                         cs = target["state"][
                             profile["condition"]["field"].replace(".", "|")
@@ -194,22 +194,20 @@ def is_smart_profile_valid(profile_name, profile):
         logger.info("Profile is not smart")
         return False
 
-    if (
-            profile["condition"]["type"] == "field"
-            and "field" not in profile["condition"]
-    ):
+    if profile["condition"]["type"] == "field" and "field" not in profile["condition"]:
         logger.warning(f"Profile {profile_name} condition has no field")
         return False
 
     if (
-            profile["condition"]["type"] == "field"
-            and "patterns" not in profile["condition"]
+        profile["condition"]["type"] == "field"
+        and "patterns" not in profile["condition"]
     ):
         logger.warning(f"Profile {profile_name} condition has no patterns")
         return False
 
-    if (profile["condition"]["type"] == "field"
-            and not isinstance(profile["condition"]["patterns"], typing.List)):
+    if profile["condition"]["type"] == "field" and not isinstance(
+        profile["condition"]["patterns"], typing.List
+    ):
         logger.warning(f"Patterns for profile {profile_name} must be a list")
         return False
     return True

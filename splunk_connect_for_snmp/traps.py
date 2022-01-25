@@ -18,7 +18,9 @@ import logging
 import json_log_formatter
 from pysnmp.proto.api import v2c
 
-from splunk_connect_for_snmp.common.customised_json_formatter import CustomisedJSONFormatter
+from splunk_connect_for_snmp.common.customised_json_formatter import (
+    CustomisedJSONFormatter,
+)
 from splunk_connect_for_snmp.snmp.auth import get_secret_value
 
 try:
@@ -100,17 +102,19 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
     )
 
     execContext = snmpEngine.observer.getExecutionContext(
-        'rfc3412.receiveMessage:request'
+        "rfc3412.receiveMessage:request"
     )
 
     data = []
-    device_ip = execContext['transportAddress'][0]
+    device_ip = execContext["transportAddress"][0]
 
     for name, val in varBinds:
         data.append((name.prettyPrint(), val.prettyPrint()))
 
     work = {"data": data, "host": device_ip}
-    my_chain = chain(trap_task_signature(work), prepare_task_signature(), send_task_signature())
+    my_chain = chain(
+        trap_task_signature(work), prepare_task_signature(), send_task_signature()
+    )
     result = my_chain.apply_async()
 
 
@@ -138,7 +142,7 @@ def main():
         udp.domainName,
         udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
     )
-    with open(CONFIG_PATH, encoding='utf-8') as file:
+    with open(CONFIG_PATH, encoding="utf-8") as file:
         config_base = yaml.safe_load(file)
     idx = 0
     if "communities" in config_base:
@@ -150,7 +154,9 @@ def main():
     if "usernameSecrets" in config_base:
         for secret in config_base["usernameSecrets"]:
             location = os.path.join("secrets/snmpv3", secret)
-            userName = get_secret_value(location, "userName", required=True, default=None)
+            userName = get_secret_value(
+                location, "userName", required=True, default=None
+            )
 
             authKey = get_secret_value(location, "authKey", required=False)
             privKey = get_secret_value(location, "privKey", required=False)

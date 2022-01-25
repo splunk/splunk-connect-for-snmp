@@ -1,16 +1,17 @@
+from typing import Dict, List
 from unittest import TestCase
 from unittest.mock import patch
 
 from splunk_connect_for_snmp.splunk.tasks import do_send, send
 
-test_data = {"events": [], "metrics": []}
+test_data: Dict[str, List] = {"events": [], "metrics": []}
 for j in range(1, 3):
     test_data["events"].append(str(j))
     test_data["metrics"].append(str(j + 100))
 
 
 class TestSend(TestCase):
-    @patch('splunk_connect_for_snmp.splunk.tasks.HECTask')
+    @patch("splunk_connect_for_snmp.splunk.tasks.HECTask")
     def test_chunking(self, m_hec_task):
         data = []
         for i in range(1, 180):
@@ -40,11 +41,11 @@ class TestSend(TestCase):
         self.assertEqual(expected4, calls[3][1]["data"])
         self.assertEqual(60, calls[3][1]["timeout"])
 
-    @patch('splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_TOKEN', 'some_token')
-    @patch('splunk_connect_for_snmp.splunk.tasks.OTEL_METRICS_URL', None)
-    @patch('splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_URI', "my_test_uri")
-    @patch('splunk_connect_for_snmp.splunk.tasks.HECTask')
-    @patch('splunk_connect_for_snmp.splunk.tasks.do_send')
+    @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_TOKEN", "some_token")
+    @patch("splunk_connect_for_snmp.splunk.tasks.OTEL_METRICS_URL", None)
+    @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_URI", "my_test_uri")
+    @patch("splunk_connect_for_snmp.splunk.tasks.HECTask")
+    @patch("splunk_connect_for_snmp.splunk.tasks.do_send")
     def test_send_only_splunk(self, m_do_send, m_hec_task):
         send(test_data)
 
@@ -52,17 +53,17 @@ class TestSend(TestCase):
 
         self.assertEqual(2, len(calls))
 
-        self.assertEqual(['1', '2'], calls[0][0][0])
+        self.assertEqual(["1", "2"], calls[0][0][0])
         self.assertEqual("my_test_uri", calls[0][0][1])
 
-        self.assertEqual(['101', '102'], calls[1][0][0])
+        self.assertEqual(["101", "102"], calls[1][0][0])
         self.assertEqual("my_test_uri", calls[1][0][1])
 
-    @patch('splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_TOKEN', None)
-    @patch('splunk_connect_for_snmp.splunk.tasks.OTEL_METRICS_URL', "my_otel_uri")
-    @patch('splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_URI', "my_test_uri")
-    @patch('splunk_connect_for_snmp.splunk.tasks.HECTask')
-    @patch('splunk_connect_for_snmp.splunk.tasks.do_send')
+    @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_TOKEN", None)
+    @patch("splunk_connect_for_snmp.splunk.tasks.OTEL_METRICS_URL", "my_otel_uri")
+    @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_URI", "my_test_uri")
+    @patch("splunk_connect_for_snmp.splunk.tasks.HECTask")
+    @patch("splunk_connect_for_snmp.splunk.tasks.do_send")
     def test_send_only_sim(self, m_do_send, m_hec_task):
         send(test_data)
 
@@ -70,14 +71,14 @@ class TestSend(TestCase):
 
         self.assertEqual(1, len(calls))
 
-        self.assertEqual(['101', '102'], calls[0][0][0])
+        self.assertEqual(["101", "102"], calls[0][0][0])
         self.assertEqual("my_otel_uri", calls[0][0][1])
 
-    @patch('splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_TOKEN', "some_token")
-    @patch('splunk_connect_for_snmp.splunk.tasks.OTEL_METRICS_URL', "my_otel_uri")
-    @patch('splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_URI', "my_test_uri")
-    @patch('splunk_connect_for_snmp.splunk.tasks.HECTask')
-    @patch('splunk_connect_for_snmp.splunk.tasks.do_send')
+    @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_TOKEN", "some_token")
+    @patch("splunk_connect_for_snmp.splunk.tasks.OTEL_METRICS_URL", "my_otel_uri")
+    @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_URI", "my_test_uri")
+    @patch("splunk_connect_for_snmp.splunk.tasks.HECTask")
+    @patch("splunk_connect_for_snmp.splunk.tasks.do_send")
     def test_send_splunk_and_sim(self, m_do_send, m_hec_task):
         send(test_data)
 
@@ -85,11 +86,11 @@ class TestSend(TestCase):
 
         self.assertEqual(3, len(calls))
 
-        self.assertEqual(['1', '2'], calls[0][0][0])
+        self.assertEqual(["1", "2"], calls[0][0][0])
         self.assertEqual("my_test_uri", calls[0][0][1])
 
-        self.assertEqual(['101', '102'], calls[1][0][0])
+        self.assertEqual(["101", "102"], calls[1][0][0])
         self.assertEqual("my_test_uri", calls[1][0][1])
 
-        self.assertEqual(['101', '102'], calls[2][0][0])
+        self.assertEqual(["101", "102"], calls[2][0][0])
         self.assertEqual("my_otel_uri", calls[2][0][1])

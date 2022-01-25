@@ -60,12 +60,10 @@ def check_restart(current_target, result, targets_collection, address):
                 logger.debug(f"new_value = {new_value}  old_value = {old_value}")
                 if int(new_value) < int(old_value):
                     task_config = {
-                        "name": f'sc4snmp;{address};walk',
+                        "name": f"sc4snmp;{address};walk",
                         "run_immediately": True,
                     }
-                    logger.info(
-                        f'Detected restart of {address}, triggering walk'
-                    )
+                    logger.info(f"Detected restart of {address}, triggering walk")
                     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
                     periodic_obj.manage_task(**task_config)
 
@@ -111,7 +109,9 @@ def enrich(self, result):
         group_key_hash = shake_128(group_key.encode()).hexdigest(255)
 
         current_attributes = attributes_collection.find_one(
-            {"address": address, "group_key_hash": group_key_hash}, {"fields": True, "id": True})
+            {"address": address, "group_key_hash": group_key_hash},
+            {"fields": True, "id": True},
+        )
 
         if not current_attributes and group_data["fields"]:
             attributes_collection.update_one(
@@ -125,17 +125,15 @@ def enrich(self, result):
             field_value["name"] = field_key
             cv = None
 
-            if current_attributes and field_key_hash in current_attributes.get("fields", {}):
+            if current_attributes and field_key_hash in current_attributes.get(
+                "fields", {}
+            ):
                 cv = current_attributes["fields"][field_key_hash]
 
             if cv and not cv == field_value:
                 # modifed
                 attribute_updates.append(
-                    {
-                        "$set": {
-                            "fields": {field_key_hash: field_value}
-                        }
-                    }
+                    {"$set": {"fields": {field_key_hash: field_value}}}
                 )
 
             elif cv:
@@ -144,11 +142,7 @@ def enrich(self, result):
             else:
                 # new
                 attribute_updates.append(
-                    {
-                        "$set": {
-                            "fields": {field_key_hash: field_value}
-                        }
-                    }
+                    {"$set": {"fields": {field_key_hash: field_value}}}
                 )
             if field_key in TRACKED_F:
                 updates.append(
@@ -162,18 +156,24 @@ def enrich(self, result):
                 updates.clear()
             if len(attribute_updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
                 attributes_collection.update_one(
-                    {"address": address, "group_key_hash": group_key_hash, "id": group_key}, attribute_updates, upsert=True
+                    {
+                        "address": address,
+                        "group_key_hash": group_key_hash,
+                        "id": group_key,
+                    },
+                    attribute_updates,
+                    upsert=True,
                 )
                 attribute_updates.clear()
 
         if updates:
-            targets_collection.update_one(
-                {"address": address}, updates, upsert=True
-            )
+            targets_collection.update_one({"address": address}, updates, upsert=True)
             updates.clear()
         if attribute_updates:
             attributes_collection.update_one(
-                {"address": address, "group_key_hash": group_key_hash, "id": group_key}, attribute_updates, upsert=True
+                {"address": address, "group_key_hash": group_key_hash, "id": group_key},
+                attribute_updates,
+                upsert=True,
             )
             attribute_updates.clear()
 
@@ -183,7 +183,10 @@ def enrich(self, result):
             fields = current_attributes["fields"]
             if attribute_group_id in result["result"]:
                 for persist_data in fields.values():
-                    if persist_data["name"] not in result["result"][attribute_group_id]["fields"]:
+                    if (
+                        persist_data["name"]
+                        not in result["result"][attribute_group_id]["fields"]
+                    ):
                         result["result"][attribute_group_id]["fields"][
                             persist_data["name"]
                         ] = persist_data
