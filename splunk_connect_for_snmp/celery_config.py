@@ -45,3 +45,5 @@ mongodb_scheduler_db = MONGO_DB_CELERY_DATABASE
 # https://docs.celeryproject.org/en/stable/userguide/optimizing.html#reserve-one-task-at-a-time
 task_acks_late = True
 worker_prefetch_multiplier = 1
+
+task_ignore_result = True
