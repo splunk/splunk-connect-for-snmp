@@ -310,8 +310,9 @@ class Poller(Task):
                     )
                     if tmp_mibs:
                         self.load_mibs(tmp_mibs)
-                    if tmp_retry:
-                        retry = True
+                        self.process_snmp_data(
+                            varBindTable, metrics, address, bulk_mapping
+                        )
 
         if varbinds_get:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
