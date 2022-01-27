@@ -491,7 +491,7 @@ class Poller(Task):
                     )
             else:
                 found, mib = self.is_mib_known(id, oid, target)
-                if mib not in remotemibs:
+                if mib and mib not in remotemibs:
                     remotemibs.append(mib)
                 if found:
                     retry = True
