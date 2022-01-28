@@ -738,7 +738,7 @@ required to check if firewall is not blocking any of <a href="https://microk8s.i
 </code></pre></div>
 
 <p>that causes infinite retry of walk operation, add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true.</p>
-<p>An example confiuration for worker in <code>values.yaml</code> is:</p>
+<p>An example configuration for worker in <code>values.yaml</code> is:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">ignoreEmptyVarbinds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </code></pre></div>
@@ -749,7 +749,7 @@ required to check if firewall is not blocking any of <a href="https://microk8s.i
 </code></pre></div>
 
 <p>that causes infinite retry of walk operation, add <code>worker.ignoreNotIncreasingOid</code> array to <code>values.yaml</code> and fill with the addresses of hosts where the problem appears.</p>
-<p>An example confiuration for worker in <code>values.yaml</code> is:</p>
+<p>An example configuration for worker in <code>values.yaml</code> is:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">ignoreNotIncreasingOid</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;127.0.0.1:164&quot;</span><span class="w"></span>
@@ -757,7 +757,7 @@ required to check if firewall is not blocking any of <a href="https://microk8s.i
 </code></pre></div>
 
 <p>If you put only ip address (ex. <code>127.0.0.1</code>), then errors will be ignored for all of its devices (like <code>127.0.0.1:161</code>, 
-<code>127.0.0.1:163</code>&hellip;). If you put ip address and host structured as: <code>{host}:{port</code> that means the error will be ignored only for this device.</p>
+<code>127.0.0.1:163</code>&hellip;). If you put ip address and host structured as: <code>{host}:{port}</code> that means the error will be ignored only for this device.</p>
 
               
             </article>
