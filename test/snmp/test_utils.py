@@ -8,6 +8,7 @@ from splunk_connect_for_snmp.snmp.manager import (
     extract_index_number,
     fill_empty_value,
     get_inventory,
+    is_increasing_oids_ignored,
     map_metric_type,
     return_address_and_port,
 )
@@ -144,3 +145,29 @@ class TestUtils(TestCase):
         self.assertEqual(return_address_and_port("127.0.0.1"), ("127.0.0.1", 161))
         self.assertEqual(return_address_and_port("168.99.9.9"), ("168.99.9.9", 161))
         self.assertEqual(return_address_and_port("168.99.9.9:162"), ("168.99.9.9", 162))
+
+    @mock.patch(
+        "splunk_connect_for_snmp.snmp.manager.HOSTS_TO_IGNORE_NOT_INCREASING_OIDS",
+        ["127.0.0.1"],
+    )
+    def test_is_increasing_oids_ignored_only_host(self):
+        self.assertTrue(is_increasing_oids_ignored("127.0.0.1", "161"))
+        self.assertFalse(is_increasing_oids_ignored("127.0.0.2", "161"))
+        self.assertTrue(is_increasing_oids_ignored("127.0.0.1", "162"))
+
+    @mock.patch(
+        "splunk_connect_for_snmp.snmp.manager.HOSTS_TO_IGNORE_NOT_INCREASING_OIDS",
+        ["127.0.0.1:162"],
+    )
+    def test_is_increasing_oids_ignored(self):
+        self.assertFalse(is_increasing_oids_ignored("127.0.0.1", "161"))
+        self.assertFalse(is_increasing_oids_ignored("127.0.0.2", "161"))
+        self.assertTrue(is_increasing_oids_ignored("127.0.0.1", "162"))
+
+    @mock.patch(
+        "splunk_connect_for_snmp.snmp.manager.HOSTS_TO_IGNORE_NOT_INCREASING_OIDS", []
+    )
+    def test_is_increasing_oids_ignored_empty(self):
+        self.assertFalse(is_increasing_oids_ignored("127.0.0.1", "161"))
+        self.assertFalse(is_increasing_oids_ignored("127.0.0.2", "161"))
+        self.assertFalse(is_increasing_oids_ignored("127.0.0.1", "162"))
