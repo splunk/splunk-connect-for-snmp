@@ -35,3 +35,23 @@ An example confiuration for worker in `values.yaml` is:
 worker:
   ignoreEmptyVarbinds: true
 ```
+
+### "OID not increasing" problem
+In case you see the following line in worker's logs:
+
+```log
+[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing')
+```
+that causes infinite retry of walk operation, add `worker.ignoreNotIncreasingOid` array to `values.yaml` and fill with the addresses of hosts where the problem appears.
+
+An example confiuration for worker in `values.yaml` is:
+
+```yaml
+worker:
+  ignoreNotIncreasingOid:
+    - "127.0.0.1:164"
+    - "127.0.0.6"
+```
+
+If you put only ip address (ex. `127.0.0.1`), then errors will be ignored for all of its devices (like `127.0.0.1:161`, 
+`127.0.0.1:163`...). If you put ip address and host structured as: `{host}:{port` that means the error will be ignored only for this device.
