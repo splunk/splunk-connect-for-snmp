@@ -29,7 +29,7 @@ In case you see the following line in worker's logs:
 ```
 that causes infinite retry of walk operation, add `worker.ignoreEmptyVarbinds` parameter to `values.yaml` and set it to true.
 
-An example confiuration for worker in `values.yaml` is:
+An example configuration for worker in `values.yaml` is:
 
 ```yaml
 worker:
@@ -44,7 +44,7 @@ In case you see the following line in worker's logs:
 ```
 that causes infinite retry of walk operation, add `worker.ignoreNotIncreasingOid` array to `values.yaml` and fill with the addresses of hosts where the problem appears.
 
-An example confiuration for worker in `values.yaml` is:
+An example configuration for worker in `values.yaml` is:
 
 ```yaml
 worker:
@@ -54,4 +54,4 @@ worker:
 ```
 
 If you put only ip address (ex. `127.0.0.1`), then errors will be ignored for all of its devices (like `127.0.0.1:161`, 
-`127.0.0.1:163`...). If you put ip address and host structured as: `{host}:{port` that means the error will be ignored only for this device.
+`127.0.0.1:163`...). If you put ip address and host structured as: `{host}:{port}` that means the error will be ignored only for this device.
