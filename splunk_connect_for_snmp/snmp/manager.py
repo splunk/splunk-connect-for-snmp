@@ -51,6 +51,9 @@ from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
 MIB_STANDARD = os.getenv("MIB_STANDARD", "https://pysnmp.github.io/mibs/standard.txt")
+HOSTS_TO_IGNORE_NOT_INCREASING_OIDS = os.getenv("IGNORE_NOT_INCREASING_OIDS", "").split(
+    ","
+)
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 IGNORE_EMPTY_VARBINDS = human_bool(os.getenv("IGNORE_EMPTY_VARBINDS", False))
@@ -75,6 +78,15 @@ def return_address_and_port(target):
         return address_tuple[0], int(address_tuple[1])
     else:
         return target, 161
+
+
+def is_increasing_oids_ignored(host, port):
+    if (
+        host in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
+        or f"{host}:{port}" in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
+    ):
+        return True
+    return False
 
 
 def get_inventory(mongo_inventory, address):
@@ -296,6 +308,7 @@ class Poller(Task):
                 10,
                 *varbinds_bulk,
                 lexicographicMode=False,
+                ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
             ):
                 if not _any_failure_happened(
                     errorIndication,
