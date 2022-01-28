@@ -579,6 +579,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#oid-not-increasing-problem" class="md-nav__link">
+    "OID not increasing" problem
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -682,6 +689,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#oid-not-increasing-problem" class="md-nav__link">
+    "OID not increasing" problem
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -724,10 +738,26 @@ required to check if firewall is not blocking any of <a href="https://microk8s.i
 </code></pre></div>
 
 <p>that causes infinite retry of walk operation, add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true.</p>
-<p>An example confiuration for worker in <code>values.yaml</code> is:</p>
+<p>An example configuration for worker in <code>values.yaml</code> is:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">ignoreEmptyVarbinds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </code></pre></div>
+
+<h3 id="oid-not-increasing-problem">&ldquo;OID not increasing&rdquo; problem<a class="headerlink" href="#oid-not-increasing-problem" title="Permanent link">&para;</a></h3>
+<p>In case you see the following line in worker&rsquo;s logs:</p>
+<div class="codehilite"><pre><span></span><code>[<span class="mi">2022</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span> <span class="mi">11</span>:<span class="mi">44</span>:<span class="mi">22</span>,<span class="mi">553</span>: <span class="nv">INFO</span><span class="o">/</span><span class="nv">ForkPoolWorker</span><span class="o">-</span><span class="mi">1</span>] <span class="nv">Task</span> <span class="nv">splunk_connect_for_snmp</span>.<span class="nv">snmp</span>.<span class="nv">tasks</span>.<span class="nv">walk</span>[<span class="mi">8</span><span class="nv">e62fc62</span><span class="o">-</span><span class="mi">569</span><span class="nv">c</span><span class="o">-</span><span class="mi">473</span><span class="nv">f</span><span class="o">-</span><span class="nv">a765</span><span class="o">-</span><span class="nv">ff92577774e5</span>] <span class="nv">retry</span>: <span class="nv">Retry</span> <span class="nv">in</span> <span class="mi">3489</span><span class="nv">s</span>: <span class="nv">SnmpActionError</span><span class="ss">(</span><span class="s1">&#39;</span><span class="s">An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing</span><span class="s1">&#39;</span><span class="ss">)</span>
+</code></pre></div>
+
+<p>that causes infinite retry of walk operation, add <code>worker.ignoreNotIncreasingOid</code> array to <code>values.yaml</code> and fill with the addresses of hosts where the problem appears.</p>
+<p>An example configuration for worker in <code>values.yaml</code> is:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ignoreNotIncreasingOid</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;127.0.0.1:164&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;127.0.0.6&quot;</span><span class="w"></span>
+</code></pre></div>
+
+<p>If you put only ip address (ex. <code>127.0.0.1</code>), then errors will be ignored for all of its devices (like <code>127.0.0.1:161</code>, 
+<code>127.0.0.1:163</code>&hellip;). If you put ip address and host structured as: <code>{host}:{port}</code> that means the error will be ignored only for this device.</p>
 
               
             </article>
