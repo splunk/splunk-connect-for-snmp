@@ -43,7 +43,9 @@ install_dependencies() {
     exit 4
   fi
 
-  setup_kube_roles
+  if [ -z "${ANSIBLE_RUN}" ]; then
+    setup_kube_roles
+  fi
 }
 
 install_dependencies

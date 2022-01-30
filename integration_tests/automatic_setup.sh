@@ -25,8 +25,19 @@ wait_for_splunk() {
   done
 }
 
+function define_python() {
+  if command -v python &> /dev/null; then
+      PYTHON=python
+  elif command -v python3 &> /dev/null; then
+      PYTHON=python3
+  else
+    echo $(red "Cannot find python command")
+    exit 1
+  fi
+}
+
 deploy_poetry() {
-  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | $PYTHON -
   source "$HOME"/.poetry/env
   poetry install
   poetry add -D splunk-sdk
@@ -78,7 +89,14 @@ sudo microk8s helm3 install snmp -f values.yaml ~/splunk-connect-for-snmp/charts
 
 wait_for_pod_initialization
 
+define_python
+
 deploy_poetry
 
 poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" \
-  --trap_external_ip="$(hostname -I | cut -d " " -f1)" --junitxml=result.xml
+  --trap_external_ip="$(hostname -I | cut -d " " -f1)" --junitxml=result.xml > pytest.log
+
+if [ ! -z "${S3_PATH}" ]; then
+  aws s3 cp /home/ubuntu/splunk-connect-for-snmp/integration_tests/result.xml s3://snmp-integration-tests/$S3_PATH/
+  aws s3 cp /home/ubuntu/splunk-connect-for-snmp/integration_tests/pytest.log s3://snmp-integration-tests/$S3_PATH/
+fi
