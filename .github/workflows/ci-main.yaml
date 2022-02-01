@@ -21,7 +21,7 @@ on:
       - "main"
       - "develop"
       - "next"
-      - "test/adding-integration-tests"
+      - "test/integration-tests"
     tags-ignore:
       - "v*"
   pull_request:
