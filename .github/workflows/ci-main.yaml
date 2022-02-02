@@ -115,7 +115,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         working-directory: ./integration_tests/scripts
       - name: Run integration tests
-        run: sleep 30 && timeout 25m ansible-playbook -vvvv playbook.yml || true
+        run: sleep 30 && timeout 25m ansible-playbook -v playbook.yml || true
         working-directory: ./integration_tests/scripts
       - name: Download and analyze logs
         run: |

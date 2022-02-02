@@ -47,9 +47,9 @@ def test_integration(request, setup_splunk):
 
     time.sleep(2)
     # send trap
-    # varbind1 = ("1.3.6.1.6.3.1.1.4.3.0", "1.3.6.1.4.1.20408.4.1.1.2")
-    # varbind2 = ("1.3.6.1.2.1.1.1.0", OctetString("my system"))
-    # send_trap(trap_external_ip, 162, "1.3.6.1.6.3.1.1.5.2", varbind1, varbind2)
+    varbind1 = ("1.3.6.1.6.3.1.1.4.3.0", "1.3.6.1.4.1.20408.4.1.1.2")
+    varbind2 = ("1.3.6.1.2.1.1.1.0", OctetString("my system"))
+    send_trap(trap_external_ip, 162, "1.3.6.1.6.3.1.1.5.2", varbind1, varbind2)
 
     # wait for the message to be processed
     time.sleep(2)
