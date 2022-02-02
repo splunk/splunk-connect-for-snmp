@@ -18,5 +18,6 @@ Right now we support only NOVA.
 - ./automatic_setup.sh
 
 Run with terraform and ansible. Use local_run.sh script. It has some prerequisites - AWS env variables and
-ansible, terraform commands. It will return error and information if you are missing something. To execute:
+ansible, terraform commands. It will return error and information if you are missing something. You should
+define env variables in set_env.sh script. It is sourced in local_run.sh. To execute:
 - ./local_run.sh

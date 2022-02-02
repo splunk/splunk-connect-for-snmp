@@ -33,7 +33,7 @@ setup_environment_and_run_tests() {
 }
 
 desstroy_environment() {
-  setup_environment_and_run_tests
+  terraform destroy -auto-approve
 }
 
 source ./set_env.sh
