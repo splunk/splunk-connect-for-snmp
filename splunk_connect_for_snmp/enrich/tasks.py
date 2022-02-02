@@ -94,7 +94,6 @@ def enrich(self, result):
     targets_collection = mongo_client.sc4snmp.targets
     attributes_collection = mongo_client.sc4snmp.attributes
     attributes_bulk_write_operations = []
-    target_bulk_write_operations = []
     updates = []
     attribute_updates = []
 
@@ -130,19 +129,17 @@ def enrich(self, result):
             current_attributes = None
 
         if not current_attributes and group_data["fields"]:
-            attributes_bulk_write_operations.append(
-                UpdateOne(
+            attributes_collection.update_one(
                     {"address": address, "group_key_hash": group_key_hash},
                     {"$set": {"id": group_key}},
                     upsert=True,
-                )
             )
 
+        fields = {}
         for field_key, field_value in group_data["fields"].items():
             field_key_hash = field_key.replace(".", "|")
             field_value["name"] = field_key
             cv = None
-
             if current_attributes and field_key_hash in current_attributes.get(
                 "fields", {}
             ):
@@ -150,63 +147,52 @@ def enrich(self, result):
 
             if cv and not cv == field_value:
                 # modifed
-                attribute_updates.append(
-                    {"$set": {"fields": {field_key_hash: field_value}}}
-                )
+                fields[field_key_hash] = field_value
+                # attribute_updates.append(
+                #     {"$set": {"fields": {field_key_hash: field_value}}}
+                # )
 
             elif cv:
                 # unchanged
                 pass
             else:
                 # new
-                attribute_updates.append(
-                    {"$set": {"fields": {field_key_hash: field_value}}}
-                )
+                fields[field_key_hash] = field_value
+                # attribute_updates.append(
+                #     {"$set": {"fields": {field_key_hash: field_value}}}
+                # )
             if field_key in TRACKED_F:
                 updates.append(
                     {"$set": {"state": {field_key.replace(".", "|"): field_value}}}
                 )
 
             if len(updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
-                target_bulk_write_operations.append(UpdateOne(
-                    {"address": address}, updates.copy(), upsert=True
-                ))
+                targets_collection.update_one(
+                    {"address": address}, updates, upsert=True
+                )
                 updates.clear()
-            if len(attribute_updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
-                attributes_bulk_write_operations.append(UpdateOne(
-                    {
-                        "address": address,
-                        "group_key_hash": group_key_hash,
-                        "id": group_key,
-                    },
-                    attribute_updates.copy(),
-                    upsert=True,
-                ))
-                attribute_updates.clear()
 
-            if len(attributes_bulk_write_operations) >= 50:
-                # logger.info("!!!!!!!!!!! INSERTING ATTRIBUTES TO DATABASE !!!!!!!!!!!!!!!!!")
-                bulk_result = attributes_collection.bulk_write(attributes_bulk_write_operations)
-                # logger.info(f"result api: {bulk_result.bulk_api_result}")
-                attributes_bulk_write_operations = []
-            if len(target_bulk_write_operations) >= 50:
-                # logger.info("!!!!!!!!!!! INSERTING TARGET TO DATABASE !!!!!!!!!!!!!!!!!")
-                bulk_result = targets_collection.bulk_write(target_bulk_write_operations)
-                # logger.info(f"result api: {bulk_result.bulk_api_result}")
-                target_bulk_write_operations = []
+        if fields:
+            attributes_bulk_write_operations.append(UpdateOne(
+                {
+                    "address": address,
+                    "group_key_hash": group_key_hash
+                },
+                {"$set": {"fields": fields.copy()}},
+            ))
+            fields.clear()
 
         if updates:
-            target_bulk_write_operations.append(UpdateOne({"address": address}, updates.copy(), upsert=True))
+            logger.info(f"We have updates for  {address}")
+            targets_collection.update_one({"address": address}, updates, upsert=True)
             updates.clear()
-        if attribute_updates:
-            attributes_bulk_write_operations.append(
-                UpdateOne(
-                    {"address": address, "group_key_hash": group_key_hash, "id": group_key},
-                    attribute_updates.copy(),
-                    upsert=True,
-                )
-            )
-            attribute_updates.clear()
+        if len(attributes_bulk_write_operations) >= 1000:
+            start = time.time()
+            bulk_result = attributes_collection.bulk_write(attributes_bulk_write_operations, ordered=False)
+            end = time.time()
+            logger.info(f"ELAPSED TIME OF BULK: {end - start}")
+            logger.info(f"result api: {bulk_result.bulk_api_result}")
+            attributes_bulk_write_operations = []
 
         # Now add back any fields we need
         if current_attributes:
@@ -222,14 +208,11 @@ def enrich(self, result):
                             persist_data["name"]
                         ] = persist_data
     if attributes_bulk_write_operations:
-        # logger.info("!!!!!!!!!!! INSERTING ATTRIBUTES TO DATABASE !!!!!!!!!!!!!!!!!")
+        logger.info(f"Start of bulk_write")
+        start = time.time()
         bulk_result = attributes_collection.bulk_write(attributes_bulk_write_operations)
-        # logger.info(f"result api: {bulk_result.bulk_api_result}")
-    if target_bulk_write_operations:
-        # logger.info("!!!!!!!!!!! INSERTING TARGET TO DATABASE !!!!!!!!!!!!!!!!!")
-        bulk_result = targets_collection.bulk_write(target_bulk_write_operations)
-        # logger.info(f"result api: {bulk_result.bulk_api_result}")
+        end = time.time()
+        logger.info(f"ELAPSED TIME OF BULK: {end - start}")
+        logger.info(f"result api: {bulk_result.bulk_api_result}")
     logger.info(f"End of enrich task: {address}")
-    end = time.time()
-    logger.info(f"ELAPSED TIME: {end-start}")
     return result
