@@ -1,7 +1,6 @@
 from junitparser import JUnitXml
 
-
-xml = JUnitXml.fromfile('./result.xml')
+xml = JUnitXml.fromfile("./result.xml")
 
 for suite in xml:
     assert suite.tests > 0, "Suite does not contain any tests"
