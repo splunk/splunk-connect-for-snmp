@@ -48,5 +48,5 @@ worker_prefetch_multiplier = 1
 task_acks_on_failure_or_timeout = True
 task_reject_on_worker_lost = True
 task_track_started = True
-# task_time_limit = 300
+task_time_limit = 1800
 task_ignore_result = True
