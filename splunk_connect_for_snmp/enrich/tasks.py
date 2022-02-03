@@ -148,7 +148,7 @@ def enrich(self, result):
             if cv and not cv == field_value:
                 # modifed
                 attribute_updates.append(
-                    {"$set": {"fields": {field_key_hash: field_value}}}
+                    {"$set": {f"fields.{field_key_hash}": field_value}}
                 )
 
             elif cv:
