@@ -167,7 +167,9 @@ def enrich(self, result):
 
             if len(attribute_updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
                 attributes_collection.update_one(
-                    {"address": address, "group_key_hash": group_key_hash}, attribute_updates, upsert=True
+                    {"address": address, "group_key_hash": group_key_hash},
+                    attribute_updates,
+                    upsert=True,
                 )
                 attribute_updates.clear()
 
@@ -207,9 +209,13 @@ def enrich(self, result):
     if attributes_bulk_write_operations:
         logger.debug(f"Start of bulk_write")
         start = time.time()
-        bulk_result = attributes_collection.bulk_write(attributes_bulk_write_operations, ordered=False)
+        bulk_result = attributes_collection.bulk_write(
+            attributes_bulk_write_operations, ordered=False
+        )
         end = time.time()
-        logger.debug(f"ELAPSED TIME OF BULK: {end - start} for {len(attributes_bulk_write_operations)} operations")
+        logger.debug(
+            f"ELAPSED TIME OF BULK: {end - start} for {len(attributes_bulk_write_operations)} operations"
+        )
         logger.debug(f"result api: {bulk_result.bulk_api_result}")
     logger.debug(f"End of enrich task: {address}")
     return result
