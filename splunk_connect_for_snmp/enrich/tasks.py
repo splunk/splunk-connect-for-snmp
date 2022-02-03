@@ -90,7 +90,6 @@ class EnrichTask(Task):
 @shared_task(bind=True, base=EnrichTask)
 def enrich(self, result):
     address = result["address"]
-    logger.info(f"Start of enrich task: {address}")
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4snmp.targets
     attributes_collection = mongo_client.sc4snmp.attributes
@@ -117,8 +116,6 @@ def enrich(self, result):
     )
 
     for group_key, group_data in result["result"].items():
-        # logger.info(f"Group key {group_key}")
-        # logger.info(f"Group data {group_data}")
         group_key_hash = group_key.replace(".", "|")
 
         if is_any_address_in_attributes_collection:
@@ -175,7 +172,6 @@ def enrich(self, result):
                 attribute_updates.clear()
 
         if fields:
-            logger.info(f"fields for: {group_key_hash}: {fields}")
             attributes_bulk_write_operations.append(
                 UpdateOne(
                     {"address": address, "group_key_hash": group_key_hash},
@@ -186,7 +182,6 @@ def enrich(self, result):
             fields.clear()
 
         if updates:
-            logger.info(f"We have updates for  {address}")
             targets_collection.update_one({"address": address}, updates, upsert=True)
             updates.clear()
         if attribute_updates:
@@ -210,11 +205,11 @@ def enrich(self, result):
                             persist_data["name"]
                         ] = persist_data
     if attributes_bulk_write_operations:
-        logger.info(f"Start of bulk_write")
+        logger.debug(f"Start of bulk_write")
         start = time.time()
         bulk_result = attributes_collection.bulk_write(attributes_bulk_write_operations, ordered=False)
         end = time.time()
-        logger.info(f"ELAPSED TIME OF BULK: {end - start} for {len(attributes_bulk_write_operations)} operations")
-        logger.info(f"result api: {bulk_result.bulk_api_result}")
-    logger.info(f"End of enrich task: {address}")
+        logger.debug(f"ELAPSED TIME OF BULK: {end - start} for {len(attributes_bulk_write_operations)} operations")
+        logger.debug(f"result api: {bulk_result.bulk_api_result}")
+    logger.debug(f"End of enrich task: {address}")
     return result
