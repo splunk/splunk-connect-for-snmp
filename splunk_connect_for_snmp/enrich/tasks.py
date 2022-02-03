@@ -148,7 +148,7 @@ def enrich(self, result):
             if cv and not cv == field_value:
                 # modifed
                 attribute_updates.append(
-                    {"$set": {f"fields.{field_key_hash}": field_value}}
+                    {"$set": {"fields": {field_key_hash: field_value}}}
                 )
 
             elif cv:
@@ -193,7 +193,6 @@ def enrich(self, result):
             attributes_collection.update_one(
                 {"address": address, "group_key_hash": group_key_hash},
                 attribute_updates,
-                upsert=True,
             )
             attribute_updates.clear()
 
