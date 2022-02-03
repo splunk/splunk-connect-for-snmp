@@ -33,7 +33,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-CURRENT_SCHEMA_VERSION = 1
+CURRENT_SCHEMA_VERSION = 2
 MONGO_URI = os.getenv("MONGO_URI")
 
 
@@ -73,4 +73,13 @@ def migrate_to_version_1(mongo_client, task_manager):
 
     task_manager.delete_all_poll_tasks()
     targets_collection.update({}, {"$unset": {"attributes": 1}}, False, True)
+    task_manager.rerun_all_walks()
+
+
+def migrate_to_version_2(mongo_client, task_manager):
+    logger.info("Migrating database schema to version 2")
+    attributes_collection = mongo_client.sc4snmp.attributes
+
+    task_manager.delete_all_poll_tasks()
+    attributes_collection.drop()
     task_manager.rerun_all_walks()
