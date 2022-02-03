@@ -130,7 +130,9 @@ class TestEnrich(TestCase):
     @patch("pymongo.collection.Collection.update_one")
     @patch("pymongo.collection.Collection.bulk_write")
     @patch("splunk_connect_for_snmp.enrich.tasks.check_restart")
-    def test_enrich_no_target(self, m_check_restart, bulk_write, m_update_one, m_find_one):
+    def test_enrich_no_target(
+        self, m_check_restart, bulk_write, m_update_one, m_find_one
+    ):
         m_find_one.side_effect = [None, False]
         result = enrich(input_dict)
 
@@ -145,16 +147,16 @@ class TestEnrich(TestCase):
             result["result"]["GROUP1"]["fields"]["SNMPv2-MIB.sysDescr"],
         )
 
-        self.assertEqual({
-                    'name': 'UDP-MIB.field2',
-                    "oid": "9.8.7.6",
-                    "time": 1640609779.473053,
-                    "type": "g",
-                    "value": "some_value2",
-        },
+        self.assertEqual(
+            {
+                "name": "UDP-MIB.field2",
+                "oid": "9.8.7.6",
+                "time": 1640609779.473053,
+                "type": "g",
+                "value": "some_value2",
+            },
             result["result"]["GROUP2"]["fields"]["UDP-MIB.field2"],
         )
-
 
         bulk_write.assert_called()
         self.assertEqual("192.168.0.1", result["address"])
