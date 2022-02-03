@@ -2,6 +2,26 @@ apiVersion: v1
 entries:
   splunk-connect-for-snmp:
   - apiVersion: v2
+    appVersion: 1.5.6-beta.1
+    created: "2022-02-03T16:22:29.676364048Z"
+    dependencies:
+    - name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: ~10.30
+    - name: rabbitmq
+      repository: https://charts.bitnami.com/bitnami
+      version: ~8.24
+    - name: mibserver
+      repository: https://pysnmp.github.io/mibs/charts/
+      version: ~1.14.0
+    description: A Helm chart for SNMP Connect for SNMP
+    digest: 16b64cbe8bd76cea335820831b91b5a394377b1e38ffcd8eff77d579ab46d809
+    name: splunk-connect-for-snmp
+    type: application
+    urls:
+    - https://github.com/splunk/splunk-connect-for-snmp/releases/download/v1.5.6-beta.1/splunk-connect-for-snmp-1.5.6-beta.1.tgz
+    version: 1.5.6-beta.1
+  - apiVersion: v2
     appVersion: 1.5.5
     created: "2022-01-28T12:35:02.54424536Z"
     dependencies:
@@ -2081,4 +2101,4 @@ entries:
     urls:
     - https://github.com/splunk/splunk-connect-for-snmp/releases/download/v0.10.5-beta.1/splunk-connect-for-snmp-0.10.5-beta.1.tgz
     version: 0.10.5-beta.1
-generated: "2022-01-28T12:35:02.528217778Z"
+generated: "2022-02-03T16:22:29.663427218Z"
