@@ -43,7 +43,10 @@ mongodb_scheduler_db = MONGO_DB_CELERY_DATABASE
 
 # Optimization for long running tasks
 # https://docs.celeryproject.org/en/stable/userguide/optimizing.html#reserve-one-task-at-a-time
-task_acks_late = False
+task_acks_late = True
 worker_prefetch_multiplier = 1
-
+task_acks_on_failure_or_timeout = True
+task_reject_on_worker_lost = True
+task_track_started = True
+# task_time_limit = 300
 task_ignore_result = True

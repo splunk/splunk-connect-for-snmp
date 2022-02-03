@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import time
+
 from pymongo import UpdateOne
 
 from splunk_connect_for_snmp import customtaskmanager
-import time
+
 try:
     from dotenv import load_dotenv
 
@@ -87,7 +89,6 @@ class EnrichTask(Task):
 
 @shared_task(bind=True, base=EnrichTask)
 def enrich(self, result):
-    start = time.time()
     address = result["address"]
     logger.info(f"Start of enrich task: {address}")
     mongo_client = pymongo.MongoClient(MONGO_URI)
@@ -130,11 +131,10 @@ def enrich(self, result):
 
         if not current_attributes and group_data["fields"]:
             attributes_collection.update_one(
-                    {"address": address, "group_key_hash": group_key_hash},
-                    {"$set": {"id": group_key}},
-                    upsert=True,
+                {"address": address, "group_key_hash": group_key_hash},
+                {"$set": {"id": group_key}},
+                upsert=True,
             )
-
         fields = {}
         for field_key, field_value in group_data["fields"].items():
             field_key_hash = field_key.replace(".", "|")
@@ -147,10 +147,9 @@ def enrich(self, result):
 
             if cv and not cv == field_value:
                 # modifed
-                fields[field_key_hash] = field_value
-                # attribute_updates.append(
-                #     {"$set": {"fields": {field_key_hash: field_value}}}
-                # )
+                attribute_updates.append(
+                    {"$set": {"fields": {field_key_hash: field_value}}}
+                )
 
             elif cv:
                 # unchanged
@@ -158,9 +157,6 @@ def enrich(self, result):
             else:
                 # new
                 fields[field_key_hash] = field_value
-                # attribute_updates.append(
-                #     {"$set": {"fields": {field_key_hash: field_value}}}
-                # )
             if field_key in TRACKED_F:
                 updates.append(
                     {"$set": {"state": {field_key.replace(".", "|"): field_value}}}
@@ -172,27 +168,33 @@ def enrich(self, result):
                 )
                 updates.clear()
 
+            if len(attribute_updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
+                attributes_collection.update_one(
+                    {"address": address, "group_key_hash": group_key_hash}, attribute_updates, upsert=True
+                )
+                attribute_updates.clear()
+
         if fields:
-            attributes_bulk_write_operations.append(UpdateOne(
-                {
-                    "address": address,
-                    "group_key_hash": group_key_hash
-                },
-                {"$set": {"fields": fields.copy()}},
-            ))
+            attributes_bulk_write_operations.append(
+                UpdateOne(
+                    {"address": address, "group_key_hash": group_key_hash},
+                    {"$set": {"fields": fields.copy()}},
+                    upsert=True,
+                )
+            )
             fields.clear()
 
         if updates:
             logger.info(f"We have updates for  {address}")
             targets_collection.update_one({"address": address}, updates, upsert=True)
             updates.clear()
-        if len(attributes_bulk_write_operations) >= 1000:
-            start = time.time()
-            bulk_result = attributes_collection.bulk_write(attributes_bulk_write_operations, ordered=False)
-            end = time.time()
-            logger.info(f"ELAPSED TIME OF BULK: {end - start}")
-            logger.info(f"result api: {bulk_result.bulk_api_result}")
-            attributes_bulk_write_operations = []
+        if attribute_updates:
+            attributes_collection.update_one(
+                {"address": address, "group_key_hash": group_key_hash},
+                attribute_updates,
+                upsert=True,
+            )
+            attribute_updates.clear()
 
         # Now add back any fields we need
         if current_attributes:
@@ -210,9 +212,9 @@ def enrich(self, result):
     if attributes_bulk_write_operations:
         logger.info(f"Start of bulk_write")
         start = time.time()
-        bulk_result = attributes_collection.bulk_write(attributes_bulk_write_operations)
+        bulk_result = attributes_collection.bulk_write(attributes_bulk_write_operations, ordered=False)
         end = time.time()
-        logger.info(f"ELAPSED TIME OF BULK: {end - start}")
+        logger.info(f"ELAPSED TIME OF BULK: {end - start} for {len(attributes_bulk_write_operations)} operations")
         logger.info(f"result api: {bulk_result.bulk_api_result}")
     logger.info(f"End of enrich task: {address}")
     return result
