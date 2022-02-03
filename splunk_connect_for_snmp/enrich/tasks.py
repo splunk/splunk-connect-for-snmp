@@ -175,6 +175,7 @@ def enrich(self, result):
                 attribute_updates.clear()
 
         if fields:
+            logger.info(f"fields for: {group_key_hash}: {fields}")
             attributes_bulk_write_operations.append(
                 UpdateOne(
                     {"address": address, "group_key_hash": group_key_hash},
