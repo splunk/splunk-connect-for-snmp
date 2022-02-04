@@ -1,0 +1,59 @@
+- hosts: snmp_machine
+  vars:
+    user: ubuntu
+    dir: /home/ubuntu
+    s3_path: "{{ lookup('env', 'GITHUB_RUN_ID') }}"
+  tasks:
+  - name: Wait 600 seconds, but only start checking after 120 seconds
+    wait_for_connection:
+      delay: 120
+      timeout: 600
+  - name: Update and upgrade apt packages
+    become: yes
+    apt:
+      update_cache: yes
+      upgrade: "yes"
+  - name: ensure gcc is at the latest version
+    become: yes
+    apt:
+      name: gcc
+      state: latest
+  - name: ensure awscli is at the latest version
+    become: yes
+    apt:
+      name: awscli
+      state: latest
+  - name: Copying the Directory and its contents
+    copy:
+      src: splunk-connect-for-snmp.tgz
+      dest: "{{ dir }}"
+  - name: Extract splunk-connect-for-snmp.tgz into /tmp/splunk-connect-for-snmp
+    ansible.builtin.unarchive:
+      src: "{{ dir }}/splunk-connect-for-snmp.tgz"
+      dest: "{{ dir }}"
+      remote_src: yes
+  - name: Run install_microk8s.sh
+    command: ./install_microk8s.sh
+    args:
+      chdir: "{{ dir }}/splunk-connect-for-snmp/integration_tests/"
+    environment:
+      - ANSIBLE_RUN: yes
+  - name: Ensure group "docker" exists
+    become: yes
+    group:
+      name: microk8s
+      state: present
+  - name: Add ansible user to docker group
+    become: yes
+    user:
+      name: "{{ user }}"
+      groups: microk8s
+      append: yes
+  - name: reset ssh connection
+    meta: reset_connection
+  - name: Run automatic_setup.sh
+    command: ./automatic_setup.sh
+    args:
+      chdir: "{{ dir }}/splunk-connect-for-snmp/integration_tests/"
+    environment:
+      S3_PATH: "{{ s3_path }}"

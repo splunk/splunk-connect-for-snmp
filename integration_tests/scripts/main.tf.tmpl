@@ -1,0 +1,73 @@
+provider "aws" {
+  region = local.region
+}
+
+locals {
+  region = "us-east-1"
+  availability_zone = "${local.region}a"
+
+  user_data = <<-EOT
+  #!/bin/bash
+  echo "Hello Terraform!"
+  EOT
+  
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+    Owner       = "Lukasz Loboda"
+    Name        = "snmp-tests"
+  }
+
+}
+
+resource "tls_private_key" "key" {
+ algorithm = "RSA"
+ rsa_bits  = 4096
+}
+ 
+resource "aws_key_pair" "aws_key" {
+ key_name   = "snmp-tests-ssh-key-$GITHUB_RUN_ID"
+ public_key = tls_private_key.key.public_key_openssh
+}
+
+resource "aws_instance" "snmp-test" {
+  ami                         = "ami-04505e74c0741db8d"
+  instance_type               = "m5.xlarge"
+  key_name                    = aws_key_pair.aws_key.key_name
+  monitoring                  = true
+  iam_instance_profile        = aws_iam_instance_profile.snmp_profile.name
+  vpc_security_group_ids      = ["$AWS_SECURITY_GROUP"]
+  subnet_id                   = "$AWS_SUBNET"
+  associate_public_ip_address = true
+
+  ebs_block_device {
+    device_name = "/dev/sda1"
+    volume_size = 50
+  }
+  
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+    Owner       = "Lukasz Loboda"
+    Name        = "snmp-tests"
+  }
+}
+
+resource "aws_iam_instance_profile" "snmp_profile" {
+  name = "snmp-$GITHUB_RUN_ID"
+  role = "snmp-integration-tests"
+}
+
+resource "local_file" "private_key" {
+  sensitive_content = tls_private_key.key.private_key_pem
+  filename          = format("%s/%s/%s", abspath(path.root), ".ssh", "snmp-ssh-key.pem")
+  file_permission   = "0600"
+}
+
+resource "local_file" "ansible_inventory" {
+  content = templatefile("inventory.tmpl", {
+      ip          = aws_instance.snmp-test.public_ip,
+      ssh_keyfile = local_file.private_key.filename
+  })
+  filename = format("%s/%s", abspath(path.root), "inventory.yaml")
+}
