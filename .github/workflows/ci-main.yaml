@@ -21,6 +21,7 @@ on:
       - "main"
       - "develop"
       - "next"
+      - "fix/setting-secrets"
     tags-ignore:
       - "v*"
   pull_request:
