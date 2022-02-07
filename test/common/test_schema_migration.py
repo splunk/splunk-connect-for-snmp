@@ -32,8 +32,9 @@ class TestSchemaMigration(TestCase):
 
     @patch("splunk_connect_for_snmp.common.schema_migration.fetch_schema_version")
     @patch("splunk_connect_for_snmp.common.schema_migration.save_schema_version")
+    @patch("splunk_connect_for_snmp.common.schema_migration.migrate_to_version_2")
     @patch("splunk_connect_for_snmp.common.schema_migration.migrate_to_version_1")
-    def test_migrate_database(self, m_version_1, m_save, m_fetch):
+    def test_migrate_database(self, m_version_1, m_version_2, m_save, m_fetch):
         mc = MagicMock()
         m_fetch.return_value = 0
 
@@ -41,9 +42,10 @@ class TestSchemaMigration(TestCase):
 
         calls = m_save.call_args_list
         self.assertEqual(1, len(calls))
-        self.assertEqual(1, calls[0].args[1])
+        self.assertEqual(2, calls[0].args[1])
 
         m_version_1.assert_called()
+        m_version_2.assert_called()
 
     def test_migrate_to_version_1(self):
         periodic_obj_mock = Mock()
