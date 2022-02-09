@@ -52,4 +52,3 @@ class TestMibProcessing(TestCase):
         poller.builder = Mock()
         poller.builder.loadModules.side_effect = error.MibLoadError()
         poller.load_mibs(["a"])
-
