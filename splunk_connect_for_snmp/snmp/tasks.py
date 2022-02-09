@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import re
+from contextlib import suppress
 
 from pysnmp.smi.error import SmiError
 
@@ -41,6 +43,7 @@ logger = get_task_logger(__name__)
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
+OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
 
 
 @shared_task(
@@ -123,9 +126,18 @@ def trap(self, work):
     var_bind_table = []
     not_translated_oids = []
     remaining_oids = []
+    oid_values = set()
     remotemibs = set()
     metrics = {}
     for w in work["data"]:
+
+        if OID_VALIDATOR.match(w[1]):
+            with suppress(Exception):
+                found, mib = self.is_mib_known(w[1], w[1], work["host"])
+                if found and mib not in oid_values:
+                    self.load_mibs(self.builder, [mib])
+                    oid_values.add(mib)
+
         try:
             var_bind_table.append(
                 ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
