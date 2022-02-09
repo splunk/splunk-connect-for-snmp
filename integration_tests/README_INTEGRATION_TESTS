@@ -8,14 +8,16 @@ Right now we support only NOVA.
   - Ubuntu 20
 
 
-
 - git clone https://github.com/splunk/splunk-connect-for-snmp.git
 - cd splunk-connect-for-snmp
 - git checkout <target_branch>
 - cd integration_tests
-- chmod u+x install_microk8s.sh
 - sudo ./install_microk8s.sh
 - su <user_name>
 - cd ~/splunk-connect-for-snmp/integration_tests
-- chmod u+x automatic_setup.sh
 - ./automatic_setup.sh
+
+Run with terraform and ansible. Use local_run.sh script. It has some prerequisites - AWS env variables and
+ansible, terraform commands. It will return error and information if you are missing something. You should
+define env variables in set_env.sh script. It is sourced in local_run.sh. To execute:
+- ./local_run.sh

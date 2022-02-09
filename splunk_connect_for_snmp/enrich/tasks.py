@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import time
+
+from pymongo import UpdateOne
+
 from splunk_connect_for_snmp import customtaskmanager
 
 try:
@@ -89,6 +93,7 @@ def enrich(self, result):
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4snmp.targets
     attributes_collection = mongo_client.sc4snmp.attributes
+    attributes_bulk_write_operations = []
     updates = []
     attribute_updates = []
 
@@ -103,15 +108,23 @@ def enrich(self, result):
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
     check_restart(current_target, result["result"], targets_collection, address)
-
+    logger.info(f"After check_restart for {address}")
     # First write back to DB new/changed data
-    for group_key, group_data in result["result"].items():
-        group_key_hash = shake_128(group_key.encode()).hexdigest(255)
 
-        current_attributes = attributes_collection.find_one(
-            {"address": address, "group_key_hash": group_key_hash},
-            {"fields": True, "id": True},
-        )
+    is_any_address_in_attributes_collection = attributes_collection.find_one(
+        {"address": address},
+    )
+
+    for group_key, group_data in result["result"].items():
+        group_key_hash = group_key.replace(".", "|")
+
+        if is_any_address_in_attributes_collection:
+            current_attributes = attributes_collection.find_one(
+                {"address": address, "group_key_hash": group_key_hash},
+                {"fields": True, "id": True},
+            )
+        else:
+            current_attributes = None
 
         if not current_attributes and group_data["fields"]:
             attributes_collection.update_one(
@@ -119,12 +132,11 @@ def enrich(self, result):
                 {"$set": {"id": group_key}},
                 upsert=True,
             )
-
+        fields = {}
         for field_key, field_value in group_data["fields"].items():
-            field_key_hash = shake_128(field_key.encode()).hexdigest(255)
+            field_key_hash = field_key.replace(".", "|")
             field_value["name"] = field_key
             cv = None
-
             if current_attributes and field_key_hash in current_attributes.get(
                 "fields", {}
             ):
@@ -141,9 +153,7 @@ def enrich(self, result):
                 pass
             else:
                 # new
-                attribute_updates.append(
-                    {"$set": {"fields": {field_key_hash: field_value}}}
-                )
+                fields[field_key_hash] = field_value
             if field_key in TRACKED_F:
                 updates.append(
                     {"$set": {"state": {field_key.replace(".", "|"): field_value}}}
@@ -154,26 +164,32 @@ def enrich(self, result):
                     {"address": address}, updates, upsert=True
                 )
                 updates.clear()
+
             if len(attribute_updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
                 attributes_collection.update_one(
-                    {
-                        "address": address,
-                        "group_key_hash": group_key_hash,
-                        "id": group_key,
-                    },
+                    {"address": address, "group_key_hash": group_key_hash},
                     attribute_updates,
                     upsert=True,
                 )
                 attribute_updates.clear()
+
+        if fields:
+            attributes_bulk_write_operations.append(
+                UpdateOne(
+                    {"address": address, "group_key_hash": group_key_hash},
+                    {"$set": {"fields": fields.copy()}},
+                    upsert=True,
+                )
+            )
+            fields.clear()
 
         if updates:
             targets_collection.update_one({"address": address}, updates, upsert=True)
             updates.clear()
         if attribute_updates:
             attributes_collection.update_one(
-                {"address": address, "group_key_hash": group_key_hash, "id": group_key},
+                {"address": address, "group_key_hash": group_key_hash},
                 attribute_updates,
-                upsert=True,
             )
             attribute_updates.clear()
 
@@ -190,5 +206,16 @@ def enrich(self, result):
                         result["result"][attribute_group_id]["fields"][
                             persist_data["name"]
                         ] = persist_data
-
+    if attributes_bulk_write_operations:
+        logger.debug(f"Start of bulk_write")
+        start = time.time()
+        bulk_result = attributes_collection.bulk_write(
+            attributes_bulk_write_operations, ordered=False
+        )
+        end = time.time()
+        logger.debug(
+            f"ELAPSED TIME OF BULK: {end - start} for {len(attributes_bulk_write_operations)} operations"
+        )
+        logger.debug(f"result api: {bulk_result.bulk_api_result}")
+    logger.debug(f"End of enrich task: {address}")
     return result

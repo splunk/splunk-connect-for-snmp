@@ -94,6 +94,7 @@ scheduler:
   podAntiAffinity: soft
 
 worker:
+  ignoreNotIncreasingOid: []
   replicaCount: 2
   concurrency: 4
   nameOverride: ""
