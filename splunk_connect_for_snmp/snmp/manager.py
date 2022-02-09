@@ -16,8 +16,8 @@
 import typing
 
 from pysnmp.proto.errind import EmptyResponse
-from requests import Session
 from pysnmp.smi import error
+from requests import Session
 
 from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
 

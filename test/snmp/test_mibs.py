@@ -1,5 +1,6 @@
 from unittest import TestCase
 from unittest.mock import Mock
+
 from pysnmp.smi import error
 
 from splunk_connect_for_snmp.snmp.manager import Poller, isMIBResolved
