@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from contextlib import suppress
 import re
+from contextlib import suppress
 
 from pysnmp.smi.error import SmiError
 
@@ -43,7 +43,7 @@ logger = get_task_logger(__name__)
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
-OID_VALIDATOR = re.compile("^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
+OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
 
 
 @shared_task(
