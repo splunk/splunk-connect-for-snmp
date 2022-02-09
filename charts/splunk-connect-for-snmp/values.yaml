@@ -327,6 +327,8 @@ mongodb:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9216"
 rabbitmq:
+  extraConfiguration: |
+    consumer_timeout =  2400000
   replicaCount: 1
   pdb:
     create: true
