@@ -17,6 +17,7 @@ import typing
 
 from pysnmp.proto.errind import EmptyResponse
 from requests import Session
+from pysnmp.smi import error
 
 from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
 
@@ -353,7 +354,10 @@ class Poller(Task):
         logger.info(f"loading mib modules {mibs}")
         for mib in mibs:
             if mib:
-                self.builder.loadModules(mib)
+                try:
+                    self.builder.loadModules(mib)
+                except error.MibLoadError as e:
+                    logger.exception(f"Error loading mib for {mib}, e")
 
     def is_mib_known(self, id: str, oid: str, target: str) -> tuple[bool, str]:
 
