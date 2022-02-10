@@ -86,6 +86,7 @@ jobs:
           path: test-results/*
   
   integration-tests-check:
+    name: Check if run integration tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project
