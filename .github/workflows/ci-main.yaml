@@ -106,13 +106,11 @@ jobs:
 
   test-integration:
     name: Run integration tests
+    needs: 
+      - integration-tests-check
     runs-on: ubuntu-latest
     if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
     steps:
-      - uses: actions/checkout@v2
-      - id: log
-        run: echo "::set-output name=message::$(git log --no-merges -1 --oneline)"
-      - if: "!contains(steps.log.outputs.message, '[run-int-tests]')"
       - name: Archieve repository
         working-directory: /home/runner/work/splunk-connect-for-snmp
         run: tar -czf splunk-connect-for-snmp.tgz splunk-connect-for-snmp
