@@ -106,11 +106,12 @@ jobs:
 
   test-integration:
     name: Run integration tests
-    needs: 
+    needs:
       - integration-tests-check
     runs-on: ubuntu-latest
     if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
     steps:
+      - uses: actions/checkout@v2
       - name: Archieve repository
         working-directory: /home/runner/work/splunk-connect-for-snmp
         run: tar -czf splunk-connect-for-snmp.tgz splunk-connect-for-snmp
