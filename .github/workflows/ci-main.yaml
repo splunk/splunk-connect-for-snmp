@@ -84,13 +84,35 @@ jobs:
         with:
           name: test-results-unit-python_${{ matrix.python-version }}
           path: test-results/*
+  
+  integration-tests-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - name: Get commit message
+        id: get_commit_message
+        run: |
+          if [[ '${{ github.event_name }}' == 'push' ]]; then
+            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD)
+          elif [[ '${{ github.event_name }}' == 'pull_request' ]]; then
+            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD^2)
+          fi
+    outputs:
+      commit_message:
+        echo "${{ steps.get_commit_message.outputs.commit_message }}"
 
   test-integration:
     name: Run integration tests
     runs-on: ubuntu-latest
-    if: "contains(github.event.head_commit.message, '[run-int-tests]')"
+    if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
     steps:
       - uses: actions/checkout@v2
+      - id: log
+        run: echo "::set-output name=message::$(git log --no-merges -1 --oneline)"
+      - if: "!contains(steps.log.outputs.message, '[run-int-tests]')"
       - name: Archieve repository
         working-directory: /home/runner/work/splunk-connect-for-snmp
         run: tar -czf splunk-connect-for-snmp.tgz splunk-connect-for-snmp
