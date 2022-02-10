@@ -224,6 +224,8 @@ traps:
     runAsGroup: 10001
 
   service:
+    usemetallb: true
+    metallbsharingkey: "splunk-connect"
     type: LoadBalancer
     port: 162
 
