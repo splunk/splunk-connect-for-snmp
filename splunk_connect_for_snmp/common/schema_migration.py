@@ -17,6 +17,8 @@ import logging
 import os
 import sys
 
+from pymongo import ASCENDING
+
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
@@ -33,7 +35,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-CURRENT_SCHEMA_VERSION = 2
+CURRENT_SCHEMA_VERSION = 3
 MONGO_URI = os.getenv("MONGO_URI")
 
 
@@ -83,3 +85,12 @@ def migrate_to_version_2(mongo_client, task_manager):
     task_manager.delete_all_poll_tasks()
     attributes_collection.drop()
     task_manager.rerun_all_walks()
+
+
+def migrate_to_version_3(mongo_client, task_manager):
+    logger.info("Migrating database schema to version 3")
+    attributes_collection = mongo_client.sc4snmp.attributes
+
+    attributes_collection.create_index(
+        [("address", ASCENDING), ("group_key_hash", ASCENDING)]
+    )
