@@ -91,4 +91,6 @@ def migrate_to_version_3(mongo_client, task_manager):
     logger.info("Migrating database schema to version 3")
     attributes_collection = mongo_client.sc4snmp.attributes
 
-    attributes_collection.create_index([("address", ASCENDING), ("group_key_hash", ASCENDING)])
+    attributes_collection.create_index(
+        [("address", ASCENDING), ("group_key_hash", ASCENDING)]
+    )
