@@ -29,7 +29,6 @@ splunk:
   token: ###SPLUNK_TOKEN###
   insecureSSL: "false"
   port: "###SPLUNK_PORT###"
-  clusterName: my-cluster
 image:
   pullPolicy: "Always"
 traps:
