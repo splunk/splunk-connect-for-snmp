@@ -13,7 +13,7 @@
     
     
       
-        <title>Security - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Request MIB - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -62,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#security-considerations" class="md-skip">
+        <a href="#mib-submission-process" class="md-skip">
           Skip to content
         </a>
       
@@ -101,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Security
+              Request MIB
             
           </span>
         </div>
@@ -480,6 +480,21 @@
 
   
   
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        Security
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
     
   
   
@@ -491,25 +506,41 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Request MIB
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
-        Security
-      </a>
-      
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../mib-request/" class="md-nav__link">
         Request MIB
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#submit-a-new-mib-file" class="md-nav__link">
+    Submit a new MIB file
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -564,6 +595,21 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#submit-a-new-mib-file" class="md-nav__link">
+    Submit a new MIB file
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -575,17 +621,34 @@
               
                 
 
-<h1 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h1>
-<p>The SC4SNMP solution implements SNMP in a compatible mode for current and legacy network device gear.
-SNMP is a protocol widely considered to be risky and requires threat mitigation at the network level.</p>
-<ul>
-<li>Do not expose SNMP endpoints untrusted connections such as the internet or general LAN network of a typical enterprise.</li>
-<li>Do not allow SNMPv1 or SNMPv2 connections to cross a network zone where man in the middle interception is possible.</li>
-<li>Be aware many SNMPv3 devices rely on insecure cryptography including DES, MD5, and SHA. Do not presume SNMPv3 devices and connections are secure by default.</li>
-<li>When possible use SNMPv3 with the most secure protocol options mutually supported.</li>
-<li>The default IP of each node should be considered a management interface and should be protected from network
-access by untrusted device by a hardware or software firewall. When possible the IP allocated for SNMP communicate should not be shared by the management interface.</li>
-</ul>
+<h1 id="mib-submission-process">MIB submission process<a class="headerlink" href="#mib-submission-process" title="Permanent link">&para;</a></h1>
+<p>In order to achieve human-readable OIDs,the corresponding MIB files are necessary.
+They are being stored in one of the components of SC4SNMP - the MIB server. </p>
+<p>The lis of currently available MIBs is here:
+<a href="https://pysnmp.github.io/mibs/index.csv">https://pysnmp.github.io/mibs/index.csv</a></p>
+<p>An alternative way to check if the MIB you&rsquo;re interested in is being served is to check the link:
+<code>https://pysnmp.github.io/mibs/asn1/@mib@</code> where <code>@mib@</code> is the name of MIB (for example <code>IF-MIB</code>). If the file 
+is downloading, that means the MIB file exists in the mib server.</p>
+<h2 id="submit-a-new-mib-file">Submit a new MIB file<a class="headerlink" href="#submit-a-new-mib-file" title="Permanent link">&para;</a></h2>
+<p>In case you want to add a new MIB file to the MIB server, follow the steps:</p>
+<ol>
+<li>
+<p>Create a fork of the <a href="https://github.com/pysnmp/mibs">https://github.com/pysnmp/mibs</a> repository </p>
+</li>
+<li>
+<p>Put MIB file/s under <code>src/vendor/@vendor_name@</code> where <code>@vendor_name@</code> is the name of the MIB file&rsquo;s vendor (in case
+there is no directory of vendor you need, create it by yourself)</p>
+</li>
+<li>
+<p>Create a pull request to a <code>main</code> branch</p>
+</li>
+<li>
+<p>Name the pull request the following way: <code>feat: add @vendor_name@ MIB files</code></p>
+</li>
+</ol>
+<p>An alternative way of adding MIBs to MIB server is to create an issue on 
+<a href="https://github.com/pysnmp/mibs">https://github.com/pysnmp/mibs</a> repository, attaching the files and information about 
+the vendor.</p>
 
               
             </article>
@@ -599,7 +662,7 @@ access by untrusted device by a hardware or software firewall. When possible the
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../planning/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Planning" rel="prev">
+        <a href="../security/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Security" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -608,20 +671,20 @@ access by untrusted device by a hardware or software firewall. When possible the
               <span class="md-footer__direction">
                 Previous
               </span>
-              Planning
+              Security
             </div>
           </div>
         </a>
       
       
         
-        <a href="../mib-request/" class="md-footer__link md-footer__link--next" aria-label="Next: Request MIB" rel="next">
+        <a href="../bestpractices/" class="md-footer__link md-footer__link--next" aria-label="Next: Troubleshooting" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Request MIB
+              Troubleshooting
             </div>
           </div>
           <div class="md-footer__button md-icon">
