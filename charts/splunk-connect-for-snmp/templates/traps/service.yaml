@@ -5,7 +5,10 @@ metadata:
   labels:
     {{- include "splunk-connect-for-snmp.traps.labels" . | nindent 4 }}
   annotations:
-    metallb.universe.tf/allow-shared-ip: "true"    
+  {{- if .Values.traps.service.usemetallb }}
+    metallb.universe.tf/allow-shared-ip: {{ .Values.traps.service.metallbsharingkey | default "splunk-connect" | quote }}
+  {{- end }}
+    
 spec:
   type: {{ .Values.traps.service.type }}
   externalTrafficPolicy: Local

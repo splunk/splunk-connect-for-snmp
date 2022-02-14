@@ -5,7 +5,6 @@ splunk:
   token: ###SPLUNK_TOKEN###
   insecureSSL: "true"
   port: "8088"
-  clusterName: my-cluster
 image:
   repository: "snmp-local"
   tag: "latest"

@@ -224,6 +224,8 @@ traps:
     runAsGroup: 10001
 
   service:
+    usemetallb: true
+    metallbsharingkey: "splunk-connect"
     type: LoadBalancer
     port: 162
 
@@ -327,6 +329,8 @@ mongodb:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9216"
 rabbitmq:
+  extraConfiguration: |
+    consumer_timeout =  2400000
   replicaCount: 1
   pdb:
     create: true

@@ -42,7 +42,7 @@ class TestSchemaMigration(TestCase):
 
         calls = m_save.call_args_list
         self.assertEqual(1, len(calls))
-        self.assertEqual(2, calls[0].args[1])
+        self.assertEqual(3, calls[0].args[1])
 
         m_version_1.assert_called()
         m_version_2.assert_called()
