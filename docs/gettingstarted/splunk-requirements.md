@@ -17,4 +17,6 @@
 
 ### Requirements (Splunk Infrastructure Monitoring)
 
-Obtain the correct realm and token.
+Obtain the following from your Splunk Observability Cloud environment:
+1. Realm
+2. Token
