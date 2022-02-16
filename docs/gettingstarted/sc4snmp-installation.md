@@ -41,7 +41,7 @@ traps:
   #  - sc4snmp-hlab-sha-des
 
   #loadBalancerIP: The IP address in the metallb pool
-  loadBalancerIP: 10.1.0.1
+  loadBalancerIP: ###X.X.X.X###
 worker:
   # replicas: Number of replicas for worker container should two or more
   #replicaCount: 2
