@@ -47,7 +47,7 @@ microk8s helm3 upgrade --install sck \
   splunk-otel-collector-chart/splunk-otel-collector
 ```
 
-## Install Splunk OpenTelemetry Collector with HELM for Splunk Observability
+## Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes
 
 In order to run Splunk OpenTelemetry Collector on your environment, replace `<>` variables according to the description presented below
 
