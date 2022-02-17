@@ -25,7 +25,7 @@ nav:
   - Getting Started:
       - Splunk Requirements: "gettingstarted/splunk-requirements.md"
       - Platform Microk8s: "gettingstarted/mk8s/k8s-microk8s.md"
-      - Install Splunk for Kubernetes: "gettingstarted/sck-installation.md"
+      - Install Splunk OpenTelemetry Collector for Kubernetes: "gettingstarted/sck-installation.md"
       - Install SC4SNMP: "gettingstarted/sc4snmp-installation.md"
   - High Availability: ha.md  
   - Configuration:
