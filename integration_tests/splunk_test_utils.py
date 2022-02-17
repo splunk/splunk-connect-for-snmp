@@ -13,7 +13,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
+import os
 import time
+
+import yaml
 
 
 def splunk_single_search(service, search):
@@ -45,3 +48,68 @@ def splunk_single_search(service, search):
             tried += 1
             time.sleep(5)
     return result_count, event_count
+
+
+inventory_template = """poller:
+  inventory: |
+    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+"""
+
+profiles_template = """scheduler:
+  profiles: |
+"""
+
+
+def l_pad_string(s):
+    lines = s.splitlines()
+    result = '\n'.join(str.rjust(" ", 4) + line for line in lines)
+    return result
+
+
+def update_inventory(entries):
+    result = ""
+    for e in entries:
+        result += (str.rjust(" ", 4) + e + "\n")
+
+    result = inventory_template + result
+    with open('inventory.yaml', 'w') as fp:
+        fp.write(result)
+
+    os.system("sudo microk8s helm3 upgrade --install snmp -f inventory.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace")
+
+
+def update_profiles(profiles):
+    with open('profiles.yaml', 'w') as fp:
+        result = l_pad_string(yaml.dump(profiles, default_flow_style=None))
+        fp.write(profiles_template + result)
+
+    os.system("sudo microk8s helm3 upgrade --install snmp -f profiles.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace")
+
+
+if __name__ == "__main__":
+    update_inventory(['192.168.0.1,,2c,public,,,600,,,',
+                      '192.168.0.2,,2c,public,,,602,,,'])
+
+    active_profiles = {
+        "test_2": {
+            "frequency": 120,
+            "varBinds": [
+                ["IF-MIB", "ifInDiscards", 1],
+                ["IF-MIB", "ifOutErrors"],
+                ["SNMPv2-MIB", "sysDescr", 0],
+            ],
+        },
+        "new_profiles": {"frequency": 6, "varBinds": [["IP-MIB"]]},
+        "generic_switch": {
+            "frequency": 5,
+            "varBinds": [
+                ["SNMPv2-MIB", "sysDescr"],
+                ["SNMPv2-MIB", "sysName", 0],
+                ["IF-MIB"],
+                ["TCP-MIB"],
+                ["UDP-MIB"],
+            ],
+        },
+    }
+
+    update_profiles(active_profiles)
