@@ -86,30 +86,30 @@ def update_profiles(profiles):
     os.system("sudo microk8s helm3 upgrade --install snmp -f profiles.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace")
 
 
-if __name__ == "__main__":
-    update_inventory(['192.168.0.1,,2c,public,,,600,,,',
-                      '192.168.0.2,,2c,public,,,602,,,'])
-
-    active_profiles = {
-        "test_2": {
-            "frequency": 120,
-            "varBinds": [
-                ["IF-MIB", "ifInDiscards", 1],
-                ["IF-MIB", "ifOutErrors"],
-                ["SNMPv2-MIB", "sysDescr", 0],
-            ],
-        },
-        "new_profiles": {"frequency": 6, "varBinds": [["IP-MIB"]]},
-        "generic_switch": {
-            "frequency": 5,
-            "varBinds": [
-                ["SNMPv2-MIB", "sysDescr"],
-                ["SNMPv2-MIB", "sysName", 0],
-                ["IF-MIB"],
-                ["TCP-MIB"],
-                ["UDP-MIB"],
-            ],
-        },
-    }
-
-    update_profiles(active_profiles)
+# if __name__ == "__main__":
+#     update_inventory(['192.168.0.1,,2c,public,,,600,,,',
+#                       '192.168.0.2,,2c,public,,,602,,,'])
+#
+#     active_profiles = {
+#         "test_2": {
+#             "frequency": 120,
+#             "varBinds": [
+#                 ["IF-MIB", "ifInDiscards", 1],
+#                 ["IF-MIB", "ifOutErrors"],
+#                 ["SNMPv2-MIB", "sysDescr", 0],
+#             ],
+#         },
+#         "new_profiles": {"frequency": 6, "varBinds": [["IP-MIB"]]},
+#         "generic_switch": {
+#             "frequency": 5,
+#             "varBinds": [
+#                 ["SNMPv2-MIB", "sysDescr"],
+#                 ["SNMPv2-MIB", "sysName", 0],
+#                 ["IF-MIB"],
+#                 ["TCP-MIB"],
+#                 ["UDP-MIB"],
+#             ],
+#         },
+#     }
+#
+#     update_profiles(active_profiles)
