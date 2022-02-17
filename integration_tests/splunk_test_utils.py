@@ -62,28 +62,32 @@ profiles_template = """scheduler:
 
 def l_pad_string(s):
     lines = s.splitlines()
-    result = '\n'.join(str.rjust(" ", 4) + line for line in lines)
+    result = "\n".join(str.rjust(" ", 4) + line for line in lines)
     return result
 
 
 def update_inventory(entries):
     result = ""
     for e in entries:
-        result += (str.rjust(" ", 4) + e + "\n")
+        result += str.rjust(" ", 4) + e + "\n"
 
     result = inventory_template + result
-    with open('inventory.yaml', 'w') as fp:
+    with open("inventory.yaml", "w") as fp:
         fp.write(result)
 
-    os.system("sudo microk8s helm3 upgrade --install snmp -f inventory.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace")
+    os.system(
+        "sudo microk8s helm3 upgrade --install snmp -f inventory.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+    )
 
 
 def update_profiles(profiles):
-    with open('profiles.yaml', 'w') as fp:
+    with open("profiles.yaml", "w") as fp:
         result = l_pad_string(yaml.dump(profiles, default_flow_style=None))
         fp.write(profiles_template + result)
 
-    os.system("sudo microk8s helm3 upgrade --install snmp -f profiles.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace")
+    os.system(
+        "sudo microk8s helm3 upgrade --install snmp -f profiles.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+    )
 
 
 # if __name__ == "__main__":
