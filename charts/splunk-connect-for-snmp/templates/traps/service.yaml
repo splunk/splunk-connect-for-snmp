@@ -11,7 +11,7 @@ metadata:
     
 spec:
   type: {{ .Values.traps.service.type }}
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: {{ .Values.traps.service.externalTrafficPolicy | default "Local" }}
   {{- if .Values.traps.loadBalancerIP }}
   loadBalancerIP: {{ .Values.traps.loadBalancerIP }}
   {{- end }}
