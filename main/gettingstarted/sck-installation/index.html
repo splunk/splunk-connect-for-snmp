@@ -13,7 +13,7 @@
     
     
       
-        <title>Install Splunk for Kubernetes - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Install Splunk OpenTelemetry Collector for Kubernetes - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -62,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#splunk-connect-for-kubernetes-installation" class="md-skip">
+        <a href="#splunk-opentelemetry-collector-for-kubernetes-installation" class="md-skip">
           Skip to content
         </a>
       
@@ -101,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Install Splunk for Kubernetes
+              Install Splunk OpenTelemetry Collector for Kubernetes
             
           </span>
         </div>
@@ -268,12 +268,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Install Splunk for Kubernetes
+          Install Splunk OpenTelemetry Collector for Kubernetes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Install Splunk for Kubernetes
+        Install Splunk OpenTelemetry Collector for Kubernetes
       </a>
       
         
@@ -292,29 +292,42 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#instalation-steps" class="md-nav__link">
-    Instalation steps
+  <a href="#add-splunk-opentelemetry-collector-repository-to-helm" class="md-nav__link">
+    Add Splunk OpenTelemetry Collector repository to HELM
   </a>
   
-    <nav class="md-nav" aria-label="Instalation steps">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-splunk-opentelemetry-collector-with-helm-for-a-splunk-platform" class="md-nav__link">
+    Install Splunk OpenTelemetry Collector with HELM for a Splunk Platform
+  </a>
+  
+    <nav class="md-nav" aria-label="Install Splunk OpenTelemetry Collector with HELM for a Splunk Platform">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#add-sck-repository-to-helm" class="md-nav__link">
-    Add SCK repository to HELM
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#install-sck-with-helm" class="md-nav__link">
-    Install SCK with HELM
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#variables-description" class="md-nav__link">
+    Variables description
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" class="md-nav__link">
+    Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes
+  </a>
+  
+    <nav class="md-nav" aria-label="Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variables-description_1" class="md-nav__link">
     Variables description
   </a>
   
@@ -631,29 +644,42 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#instalation-steps" class="md-nav__link">
-    Instalation steps
+  <a href="#add-splunk-opentelemetry-collector-repository-to-helm" class="md-nav__link">
+    Add Splunk OpenTelemetry Collector repository to HELM
   </a>
   
-    <nav class="md-nav" aria-label="Instalation steps">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-splunk-opentelemetry-collector-with-helm-for-a-splunk-platform" class="md-nav__link">
+    Install Splunk OpenTelemetry Collector with HELM for a Splunk Platform
+  </a>
+  
+    <nav class="md-nav" aria-label="Install Splunk OpenTelemetry Collector with HELM for a Splunk Platform">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#add-sck-repository-to-helm" class="md-nav__link">
-    Add SCK repository to HELM
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#install-sck-with-helm" class="md-nav__link">
-    Install SCK with HELM
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#variables-description" class="md-nav__link">
+    Variables description
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" class="md-nav__link">
+    Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes
+  </a>
+  
+    <nav class="md-nav" aria-label="Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variables-description_1" class="md-nav__link">
     Variables description
   </a>
   
@@ -677,17 +703,15 @@
               
                 
 
-<h1 id="splunk-connect-for-kubernetes-installation">Splunk Connect for Kubernetes installation<a class="headerlink" href="#splunk-connect-for-kubernetes-installation" title="Permanent link">&para;</a></h1>
-<p>The below steps are sufficient for a SCK installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud. 
-To learn more about SCK <a href="https://github.com/signalfx/splunk-otel-collector-chart/blob/main/helm-charts/splunk-otel-collector/values.yaml">visit</a>.
-Including configuration with Splunk Observability Cloud.</p>
-<h2 id="instalation-steps">Instalation steps<a class="headerlink" href="#instalation-steps" title="Permanent link">&para;</a></h2>
-<h3 id="add-sck-repository-to-helm">Add SCK repository to HELM<a class="headerlink" href="#add-sck-repository-to-helm" title="Permanent link">&para;</a></h3>
+<h1 id="splunk-opentelemetry-collector-for-kubernetes-installation">Splunk OpenTelemetry Collector for Kubernetes installation<a class="headerlink" href="#splunk-opentelemetry-collector-for-kubernetes-installation" title="Permanent link">&para;</a></h1>
+<p>The below steps are sufficient for a Splunk OpenTelemetry Collector installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud.
+In order to learn more about Splunk OpenTelemetry Collector visit <a href="https://github.com/signalfx/splunk-otel-collector-chart">Splunk OpenTelemetry Collector</a>.</p>
+<h3 id="add-splunk-opentelemetry-collector-repository-to-helm">Add Splunk OpenTelemetry Collector repository to HELM<a class="headerlink" href="#add-splunk-opentelemetry-collector-repository-to-helm" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 repo add splunk-otel-collector-chart https://signalfx.github.io/splunk-otel-collector-chart
 </code></pre></div>
 
-<h3 id="install-sck-with-helm">Install SCK with HELM<a class="headerlink" href="#install-sck-with-helm" title="Permanent link">&para;</a></h3>
-<p>In order to run SCK on your environment, replace <code>&lt;&gt;</code> variables according to the description presented below</p>
+<h2 id="install-splunk-opentelemetry-collector-with-helm-for-a-splunk-platform">Install Splunk OpenTelemetry Collector with HELM for a Splunk Platform<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-a-splunk-platform" title="Permanent link">&para;</a></h2>
+<p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the description presented below</p>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install sck <span class="se">\</span>
   --set<span class="o">=</span><span class="s2">&quot;clusterName=&lt;cluster_name&gt;&quot;</span> <span class="se">\</span>
   --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.endpoint=&lt;splunk_endpoint&gt;&quot;</span> <span class="se">\</span>
@@ -741,6 +765,70 @@ Including configuration with Splunk Observability Cloud.</p>
   --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsIndex=em_metrics&quot;</span> <span class="se">\</span>
   --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.index=em_logs&quot;</span> <span class="se">\</span>
   splunk-otel-collector-chart/splunk-otel-collector
+</code></pre></div>
+
+<h2 id="install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes">Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" title="Permanent link">&para;</a></h2>
+<p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the description presented below</p>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install sck
+--set<span class="o">=</span><span class="s2">&quot;clusterName=&lt;cluster_name&gt;&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.realm=&lt;realm&gt;&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.accessToken=&lt;token&gt;&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.ingestUrl=&lt;ingest_url&gt;&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.apiUrl=&lt;api_url&gt;&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.metricsEnabled=true&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.tracesEnabled=false&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.logsEnabled=false&quot;</span>
+splunk-otel-collector-chart/splunk-otel-collector
+</code></pre></div>
+
+<h3 id="variables-description_1">Variables description<a class="headerlink" href="#variables-description_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Placeholder</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cluster_name</td>
+<td>name of the cluster</td>
+<td>my_cluster</td>
+</tr>
+<tr>
+<td>realm</td>
+<td>Realm obtained from the Splunk Observability Cloud environment</td>
+<td>us0</td>
+</tr>
+<tr>
+<td>token</td>
+<td>Token obtained from the Splunk Observability Cloud environment</td>
+<td>BCwaJ_Ands4Xh7Nrg</td>
+</tr>
+<tr>
+<td>ingest_url</td>
+<td>Ingest url from the Splunk Observability Cloud environment</td>
+<td>https://ingest..signalfx.com</td>
+</tr>
+<tr>
+<td>api_url</td>
+<td>Api url from the Splunk Observability Cloud environment</td>
+<td>https://api..signalfx.com</td>
+</tr>
+</tbody>
+</table>
+<p>An example of filled up command is:</p>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install sck
+--set<span class="o">=</span><span class="s2">&quot;clusterName=my_cluster&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.realm=us0&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.accessToken=BCwaJ_Ands4Xh7Nrg&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.ingestUrl=https://ingest..signalfx.com&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.apiUrl=https://api..signalfx.com&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.metricsEnabled=true&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.tracesEnabled=false&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.logsEnabled=false&quot;</span>
+splunk-otel-collector-chart/splunk-otel-collector
 </code></pre></div>
 
               
