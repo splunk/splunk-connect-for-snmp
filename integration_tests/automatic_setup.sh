@@ -37,8 +37,7 @@ function define_python() {
 }
 
 deploy_poetry() {
-  curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | $PYTHON -
-  source "$HOME"/.poetry/env
+  curl -sSL https://install.python-poetry.org | $PYTHON -
   poetry install
   poetry add -D splunk-sdk
   poetry add -D splunklib

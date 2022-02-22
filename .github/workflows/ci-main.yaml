@@ -58,16 +58,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Poetry
-        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
-      - name: Install Code
         run: |
-          # shellcheck disable=SC1090
-          source "$HOME/.poetry/env"
+          curl -sSL https://install.python-poetry.org | python3 -
           poetry install
       - name: Run Pytest with coverage
         run: |
-          # shellcheck disable=SC1090
-          source "$HOME/.poetry/env"
           poetry run pytest --cov=./splunk_connect_for_snmp --cov-report=xml --junitxml=test-results/junit.xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2

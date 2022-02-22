@@ -1,8 +1,7 @@
 git clone https://github.com/splunk/splunk-connect-for-snmp.git
 cd splunk-connect-for-snmp
 git checkout <target_branch>
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-source "$HOME"/.poetry/env
+curl -sSL https://install.python-poetry.org | python -
 poetry install
 <create inventory.csv file>
 
