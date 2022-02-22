@@ -15,7 +15,6 @@
 #
 import logging
 
-import json_log_formatter
 from pysnmp.proto.api import v2c
 
 from splunk_connect_for_snmp.common.customised_json_formatter import (
@@ -115,7 +114,7 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
     my_chain = chain(
         trap_task_signature(work), prepare_task_signature(), send_task_signature()
     )
-    result = my_chain.apply_async()
+    _ = my_chain.apply_async()
 
 
 app.autodiscover_tasks(
