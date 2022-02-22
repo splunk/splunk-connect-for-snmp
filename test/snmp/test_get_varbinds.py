@@ -25,13 +25,14 @@ class TestGetVarbinds(TestCase):
     def test_get_varbinds_for_walk_first_time(self):
         poller = Poller.__new__(Poller)
 
-        profiles = {"test1": {"type": "walk"},
-                            "varBinds": [
-                                ["IF-MIB", "ifInDiscards", 1],
-                                ["IF-MIB", "ifOutErrors"],
-                                ["SNMPv2-MIB", "sysDescr", 0],
-                            ],
-                            }
+        profiles = {
+            "test1": {"type": "walk"},
+            "varBinds": [
+                ["IF-MIB", "ifInDiscards", 1],
+                ["IF-MIB", "ifOutErrors"],
+                ["SNMPv2-MIB", "sysDescr", 0],
+            ],
+        }
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
             "192.168.0.1", walk=True, run_count=0, profiles=profiles
@@ -75,7 +76,6 @@ class TestGetVarbinds(TestCase):
         poller = Poller.__new__(Poller)
         poller.profiles = profiles
         poller.load_mibs = Mock()
-
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
             "192.168.0.1", walk=True, run_count=10, profiles=profiles

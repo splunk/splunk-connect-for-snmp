@@ -133,10 +133,16 @@ def load():
                         {"$set": ir.asdict()},
                         upsert=True,
                     )
-                    profiles = source_record["profiles"].split(';')
+                    profiles = source_record["profiles"].split(";")
                     profile = None
                     if profiles:
-                        profiles = list(filter(lambda p: p in config_profiles and config_profiles[p].get("type") == "walk", profiles))
+                        profiles = list(
+                            filter(
+                                lambda p: p in config_profiles
+                                and config_profiles[p].get("type") == "walk",
+                                profiles,
+                            )
+                        )
                         if profiles:
                             profile = profiles[-1]
                     if status.matched_count == 0:

@@ -272,7 +272,11 @@ class Poller(Task):
             )
 
     def do_work(
-        self, ir: InventoryRecord, walk: bool = False, profiles: List[str] = None, run_count=0
+        self,
+        ir: InventoryRecord,
+        walk: bool = False,
+        profiles: List[str] = None,
+        run_count=0,
     ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
