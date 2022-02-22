@@ -24,6 +24,13 @@ mock_inventory_delete_non_default = """address,port,version,community,secret,sec
 
 expected_managed_task = {"some": 1, "test": 2, "data": 3}
 
+default_profiles = {"test1": {"type": "walk"},
+                                        "varBinds": [
+                                            ["IF-MIB", "ifInDiscards", 1],
+                                            ["IF-MIB", "ifOutErrors"],
+                                            ["SNMPv2-MIB", "sysDescr", 0],
+                                        ],
+                                        }
 
 class TestLoader(TestCase):
     def test_walk_task(self):
@@ -47,7 +54,7 @@ class TestLoader(TestCase):
         self.assertEqual("splunk_connect_for_snmp.snmp.tasks.walk", result["task"])
         self.assertEqual("192.68.0.1:456", result["target"])
         self.assertEqual([], result["args"])
-        self.assertEqual({"address": "192.68.0.1:456"}, result["kwargs"])
+        self.assertEqual({"address": "192.68.0.1:456", "profile": None}, result["kwargs"])
         self.assertEqual("_chain", type(result["options"]["link"]).__name__)
         self.assertEqual(
             "splunk_connect_for_snmp.enrich.tasks.enrich",
@@ -90,7 +97,7 @@ class TestLoader(TestCase):
         self.assertEqual("splunk_connect_for_snmp.snmp.tasks.walk", result["task"])
         self.assertEqual("192.68.0.1", result["target"])
         self.assertEqual([], result["args"])
-        self.assertEqual({"address": "192.68.0.1"}, result["kwargs"])
+        self.assertEqual({"address": "192.68.0.1", "profile": None}, result["kwargs"])
         self.assertEqual("_chain", type(result["options"]["link"]).__name__)
         self.assertEqual(
             "splunk_connect_for_snmp.enrich.tasks.enrich",
@@ -117,8 +124,9 @@ class TestLoader(TestCase):
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
     def test_load_new_record(
-        self, m_migrate, m_mongo_collection, m_taskManager, m_open, walk_task
+        self, m_load_profiles, m_migrate, m_mongo_collection, m_taskManager, m_open, walk_task
     ):
         walk_task.return_value = expected_managed_task
         m_mongo_collection.return_value = UpdateResult(
@@ -126,6 +134,7 @@ class TestLoader(TestCase):
         )
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
+        m_load_profiles.return_value = default_profiles
         self.assertEqual(False, load())
 
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
@@ -135,8 +144,9 @@ class TestLoader(TestCase):
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
     def test_load_modified_record(
-        self, m_migrate, m_mongo_collection, m_taskManager, m_open, walk_task
+        self, m_load_profiles, m_migrate, m_mongo_collection, m_taskManager, m_open, walk_task
     ):
         walk_task.return_value = expected_managed_task
         m_mongo_collection.return_value = UpdateResult(
@@ -144,6 +154,7 @@ class TestLoader(TestCase):
         )
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
+        m_load_profiles.return_value = default_profiles
         self.assertEqual(False, load())
 
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
@@ -152,29 +163,31 @@ class TestLoader(TestCase):
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
     def test_load_unchanged_record(
-        self, m_migrate, m_mongo_collection, m_taskManager, m_open
+        self, m_load_profiles, m_migrate, m_mongo_collection, m_taskManager, m_open
     ):
         m_mongo_collection.return_value = UpdateResult(
             {"n": 1, "nModified": 0, "upserted": None}, True
         )
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
+        m_load_profiles.return_value = default_profiles
         self.assertEqual(False, load())
 
         periodic_obj_mock.manage_task.assert_not_called()
 
-    @patch(
-        "builtins.open", new_callable=mock_open, read_data=mock_inventory_with_comment
-    )
+    @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory_with_comment)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
     def test_ignoring_comment(
-        self, m_migrate, m_mongo_collection, m_taskManager, m_open
+        self, m_load_profiles, m_migrate, m_mongo_collection, m_taskManager, m_open
     ):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
+        m_load_profiles.return_value = default_profiles
         self.assertEqual(False, load())
 
         m_mongo_collection.assert_not_called()
@@ -185,11 +198,13 @@ class TestLoader(TestCase):
     @mock.patch("pymongo.collection.Collection.delete_one")
     @mock.patch("pymongo.collection.Collection.remove")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
     def test_deleting_record(
-        self, m_migrate, m_remove, m_delete, m_taskManager, m_open
+        self, m_load_profiles, m_migrate, m_remove, m_delete, m_taskManager, m_open
     ):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
+        m_load_profiles.return_value = default_profiles
         self.assertEqual(False, load())
 
         periodic_obj_mock.disable_tasks.assert_called_with("192.168.0.1")
@@ -210,11 +225,13 @@ class TestLoader(TestCase):
     @mock.patch("pymongo.collection.Collection.delete_one")
     @mock.patch("pymongo.collection.Collection.remove")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
     def test_deleting_record_non_default_port(
-        self, m_migrate, m_remove, m_delete, m_taskManager, m_open
+        self, m_load_profiles, m_migrate, m_remove, m_delete, m_taskManager, m_open
     ):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
+        m_load_profiles.return_value = default_profiles
         self.assertEqual(False, load())
 
         periodic_obj_mock.disable_tasks.assert_called_with("192.168.0.1:345")
@@ -226,21 +243,21 @@ class TestLoader(TestCase):
         self.assertEqual(({"address": "192.168.0.1:345"},), calls[0].args)
         self.assertEqual(({"address": "192.168.0.1:345"},), calls[1].args)
 
-    @mock.patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
+    @patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
-    @mock.patch("pymongo.collection.Collection.update_one")
-    @mock.patch(
-        "splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager.manage_task"
-    )
+    @patch("pymongo.collection.Collection.update_one")
+    @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager.manage_task")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
     def test_inventory_errors(
-        self, m_migrate, m_manage_task, m_mongo_collection, m_open, walk_task
+        self, m_load_profiles, m_migrate, m_manage_task, m_mongo_collection, m_open, walk_task
     ):
         walk_task.return_value = expected_managed_task
         m_mongo_collection.return_value = UpdateResult(
             {"n": 0, "nModified": 1, "upserted": 1}, True
         )
         m_manage_task.side_effect = Exception("Boom!")
+        m_load_profiles.return_value = default_profiles
 
         self.assertEqual(True, load())
 

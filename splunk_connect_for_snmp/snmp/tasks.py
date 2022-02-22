@@ -65,9 +65,15 @@ OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
 def walk(self, **kwargs):
 
     address = kwargs["address"]
+    profile = kwargs.get("profile")
     mongo_client = pymongo.MongoClient(MONGO_URI)
     mongo_db = mongo_client[MONGO_DB]
     mongo_inventory = mongo_db.inventory
+    mongo_schedules = mongo_db.schedules
+
+    walk_def = mongo_schedules.find_one({"name": "sc4snmp;" + address + ";walk"})
+    logger.warning(walk_def)
+    run_count = walk_def["total_run_count"]
 
     lock = MongoLock(client=mongo_client, db="sc4snmp")
 
@@ -75,7 +81,7 @@ def walk(self, **kwargs):
         ir = get_inventory(mongo_inventory, address)
         retry = True
         while retry:
-            retry, result = self.do_work(ir, walk=True)
+            retry, result = self.do_work(ir, walk=True, profiles=[profile], run_count=run_count)
 
     # After a Walk tell schedule to recalc
     work = {}
