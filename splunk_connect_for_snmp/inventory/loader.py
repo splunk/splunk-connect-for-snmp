@@ -139,7 +139,8 @@ def load():
                         profiles = list(
                             filter(
                                 lambda p: p in config_profiles
-                                and config_profiles[p].get("condition", {}).get("type") == "walk",
+                                and config_profiles[p].get("condition", {}).get("type")
+                                == "walk",
                                 profiles,
                             )
                         )
