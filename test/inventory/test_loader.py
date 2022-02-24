@@ -22,15 +22,18 @@ mock_inventory_delete = """address,port,version,community,secret,securityEngine,
 mock_inventory_delete_non_default = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
 192.168.0.1,345,2c,public,,,1805,test_1,False,True"""
 
+mock_inventory_small_walk = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+192.168.0.1,,2c,public,,,1805,test_1;walk1;walk2,False,False"""
+
 expected_managed_task = {"some": 1, "test": 2, "data": 3}
 
 default_profiles = {
-    "test1": {"type": "walk"},
+    "test1": {"type": "walk",
     "varBinds": [
         ["IF-MIB", "ifInDiscards", 1],
         ["IF-MIB", "ifOutErrors"],
         ["SNMPv2-MIB", "sysDescr", 0],
-    ],
+    ],}
 }
 
 
@@ -122,6 +125,44 @@ class TestLoader(TestCase):
         self.assertEqual({"every": 3456, "period": "seconds"}, result["interval"])
         self.assertTrue(result["enabled"])
         self.assertTrue(result["run_immediately"])
+
+    @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory_small_walk)
+    @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
+    @mock.patch("pymongo.collection.Collection.update_one")
+    @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
+    def test_load_new_record_small_walk(
+        self,
+        m_load_profiles,
+        m_migrate,
+        m_mongo_collection,
+        m_taskManager,
+        m_open,
+    ):
+        profiles = {
+            "walk1": {"condition": {"type": "walk"},
+                      "varBinds": [
+                          ["IF-MIB", "ifInDiscards", 1],
+                          ["IF-MIB", "ifOutErrors"],
+                          ["SNMPv2-MIB", "sysDescr", 0],
+                      ], },
+            "walk2": {"condition": {"type": "walk"},
+                      "varBinds": [
+                          ["IF-MIB", "ifInDiscards", 1],
+                          ["IF-MIB", "ifOutErrors"],
+                          ["SNMPv2-MIB", "sysDescr", 0],
+                      ], },
+        }
+
+        m_mongo_collection.return_value = UpdateResult(
+            {"n": 0, "nModified": 1, "upserted": 1}, True
+        )
+        periodic_obj_mock = Mock()
+        m_taskManager.return_value = periodic_obj_mock
+        m_load_profiles.return_value = profiles
+        self.assertEqual(False, load())
+        self.assertEqual({'address': '192.168.0.1', 'profile': 'walk2'}, periodic_obj_mock.manage_task.call_args.kwargs["kwargs"])
+
 
     @mock.patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)

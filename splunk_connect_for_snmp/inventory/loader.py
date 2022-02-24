@@ -136,14 +136,7 @@ def load():
                     profiles = source_record["profiles"].split(";")
                     profile = None
                     if profiles:
-                        profiles = list(
-                            filter(
-                                lambda p: p in config_profiles
-                                and config_profiles[p].get("condition", {}).get("type")
-                                == "walk",
-                                profiles,
-                            )
-                        )
+                        profiles = [p for p in profiles if config_profiles.get(p, {}).get("condition", {}).get("type") == "walk"]
                         if profiles:
                             profile = profiles[-1]
                     if status.matched_count == 0:
