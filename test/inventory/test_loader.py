@@ -28,12 +28,14 @@ mock_inventory_small_walk = """address,port,version,community,secret,securityEng
 expected_managed_task = {"some": 1, "test": 2, "data": 3}
 
 default_profiles = {
-    "test1": {"type": "walk",
-    "varBinds": [
-        ["IF-MIB", "ifInDiscards", 1],
-        ["IF-MIB", "ifOutErrors"],
-        ["SNMPv2-MIB", "sysDescr", 0],
-    ],}
+    "test1": {
+        "type": "walk",
+        "varBinds": [
+            ["IF-MIB", "ifInDiscards", 1],
+            ["IF-MIB", "ifOutErrors"],
+            ["SNMPv2-MIB", "sysDescr", 0],
+        ],
+    }
 }
 
 
@@ -140,18 +142,22 @@ class TestLoader(TestCase):
         m_open,
     ):
         profiles = {
-            "walk1": {"condition": {"type": "walk"},
-                      "varBinds": [
-                          ["IF-MIB", "ifInDiscards", 1],
-                          ["IF-MIB", "ifOutErrors"],
-                          ["SNMPv2-MIB", "sysDescr", 0],
-                      ], },
-            "walk2": {"condition": {"type": "walk"},
-                      "varBinds": [
-                          ["IF-MIB", "ifInDiscards", 1],
-                          ["IF-MIB", "ifOutErrors"],
-                          ["SNMPv2-MIB", "sysDescr", 0],
-                      ], },
+            "walk1": {
+                "condition": {"type": "walk"},
+                "varBinds": [
+                    ["IF-MIB", "ifInDiscards", 1],
+                    ["IF-MIB", "ifOutErrors"],
+                    ["SNMPv2-MIB", "sysDescr", 0],
+                ],
+            },
+            "walk2": {
+                "condition": {"type": "walk"},
+                "varBinds": [
+                    ["IF-MIB", "ifInDiscards", 1],
+                    ["IF-MIB", "ifOutErrors"],
+                    ["SNMPv2-MIB", "sysDescr", 0],
+                ],
+            },
         }
 
         m_mongo_collection.return_value = UpdateResult(
@@ -161,8 +167,10 @@ class TestLoader(TestCase):
         m_taskManager.return_value = periodic_obj_mock
         m_load_profiles.return_value = profiles
         self.assertEqual(False, load())
-        self.assertEqual({'address': '192.168.0.1', 'profile': 'walk2'}, periodic_obj_mock.manage_task.call_args.kwargs["kwargs"])
-
+        self.assertEqual(
+            {"address": "192.168.0.1", "profile": "walk2"},
+            periodic_obj_mock.manage_task.call_args.kwargs["kwargs"],
+        )
 
     @mock.patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
