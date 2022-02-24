@@ -42,9 +42,9 @@ class InventoryRecord(BaseModel):
     @validator("address", pre=True)
     def address_validator(cls, value):
         if value is None:
-            raise ValueError(f"field address cannot be null")
+            raise ValueError("field address cannot be null")
         if value.startswith("#"):
-            raise ValueError(f"field address cannot be commented")
+            raise ValueError("field address cannot be commented")
         else:
             try:
                 ip_address(value)
