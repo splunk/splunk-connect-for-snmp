@@ -27,7 +27,6 @@ except:
     pass
 
 import os
-from hashlib import shake_128
 
 import pymongo
 from celery import Task, shared_task
@@ -207,7 +206,7 @@ def enrich(self, result):
                             persist_data["name"]
                         ] = persist_data
     if attributes_bulk_write_operations:
-        logger.debug(f"Start of bulk_write")
+        logger.debug("Start of bulk_write")
         start = time.time()
         bulk_result = attributes_collection.bulk_write(
             attributes_bulk_write_operations, ordered=False

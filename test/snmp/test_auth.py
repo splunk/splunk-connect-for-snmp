@@ -5,7 +5,6 @@ from pysnmp.entity.config import (
     usmAesBlumenthalCfb192Protocol,
     usmHMAC128SHA224AuthProtocol,
 )
-from pysnmp.entity.engine import SnmpEngine
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.auth import (

@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import mock_open, patch
 
 from splunk_connect_for_snmp.walk import run_walk
 
