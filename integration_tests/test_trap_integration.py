@@ -74,7 +74,7 @@ def test_added_varbind(request, setup_splunk):
     # wait for the message to be processed
     time.sleep(2)
 
-    search_query = """search index="netops" "SNMPv2-MIB.sysContact.value"="test_added_varbind"""
+    search_query = """search index="netops" "SNMPv2-MIB.sysContact.value"="test_added_varbind" """
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
 
@@ -94,7 +94,7 @@ def test_many_traps(request, setup_splunk):
     # wait for the message to be processed
     time.sleep(2)
 
-    search_query = """search index="netops" "SNMPv2-MIB.sysContact.value"="test_many_traps"""
+    search_query = """search index="netops" "SNMPv2-MIB.sysContact.value"="test_many_traps" """
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
 
