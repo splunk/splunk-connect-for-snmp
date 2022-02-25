@@ -68,13 +68,13 @@ def test_added_varbind(request, setup_splunk):
 
     time.sleep(2)
     # send trap
-    varbind1 = ('1.3.6.1.2.1.1.1', OctetString('test_added_varbind'))
-    send_trap(trap_external_ip, 162, "1.3.6.1.6.3.1.1.5.2", "SNMPv2-MIB", varbind1)
+    varbind1 = ('1.3.6.1.2.1.1.1.0', OctetString('test_added_varbind'))
+    send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1)
 
     # wait for the message to be processed
     time.sleep(2)
 
-    search_query = """index="netops" "SNMPv2-MIB.sysContact.value"=test_added_varbind"""
+    search_query = """search index="netops" "SNMPv2-MIB.sysDescr.value"="test_added_varbind" """
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
 
@@ -87,15 +87,36 @@ def test_many_traps(request, setup_splunk):
 
     time.sleep(2)
     # send trap
-    varbind1 = ('1.3.6.1.2.1.1.1', OctetString('test_many_traps'))
+    varbind1 = ('1.3.6.1.2.1.1.1.0', OctetString('test_many_traps'))
     for _ in range(5):
-        send_trap(trap_external_ip, 162, "1.3.6.1.6.3.1.1.5.2", "SNMPv2-MIB", varbind1)
+        send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1)
 
     # wait for the message to be processed
     time.sleep(2)
 
-    search_query = """index="netops" "SNMPv2-MIB.sysContact.value"=test_many_traps"""
+    search_query = """search index="netops" "SNMPv2-MIB.sysDescr.value"="test_many_traps" """
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
 
     assert result_count == 5
+
+
+def test_more_than_one_varbind(request, setup_splunk):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    logger.info(f"I have: {trap_external_ip}")
+
+    time.sleep(2)
+    # send trap
+    varbind1 = ('1.3.6.1.2.1.1.4.0', OctetString('test_more_than_one_varbind_contact'))
+    varbind2 = ('1.3.6.1.2.1.1.1.0', OctetString('test_more_than_one_varbind'))
+    send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1, varbind2)
+
+    # wait for the message to be processed
+    time.sleep(2)
+
+    search_query = """search index="netops" | search "SNMPv2-MIB.sysDescr.value"="test_more_than_one_varbind" 
+    "SNMPv2-MIB.sysContact.value"=test_more_than_one_varbind_contact """
+
+    result_count, events_count = splunk_single_search(setup_splunk, search_query)
+
+    assert result_count == 1
