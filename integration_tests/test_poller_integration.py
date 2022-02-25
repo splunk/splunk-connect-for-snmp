@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 def test_poller_integration_event(setup_splunk):
     logger.info("Integration test for poller event")
-    search_string = 'search index="netops" sourcetype="sc4snmp:event" earliest=-3m'
+    search_string = """search index="netops" sourcetype="sc4snmp:event" earliest=-5m"""
     result_count, events_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
     assert events_count > 0
@@ -30,7 +30,7 @@ def test_poller_integration_event(setup_splunk):
 
 def test_poller_integration_metric(setup_splunk):
     logger.info("Integration test for poller metric")
-    search_string = "| mcatalog values(metric_name) where index=netmetrics AND metric_name=sc4snmp.* earliest=-3m"
+    search_string = "| mcatalog values(metric_name) where index=netmetrics AND metric_name=sc4snmp.* earliest=-5m"
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
     assert metric_count > 0
