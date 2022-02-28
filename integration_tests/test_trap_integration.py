@@ -68,8 +68,8 @@ def test_added_varbind(request, setup_splunk):
 
     time.sleep(2)
     # send trap
-    varbind1 = ('1.3.6.1.2.1.1.1', OctetString('test_added_varbind'))
-    send_trap(trap_external_ip, 162, "1.3.6.1.6.3.1.1.5.2", "SNMPv2-MIB", varbind1)
+    varbind1 = ('1.3.6.1.2.1.1.1.0', OctetString('test_added_varbind'))
+    send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1)
 
     # wait for the message to be processed
     time.sleep(2)
@@ -87,9 +87,9 @@ def test_many_traps(request, setup_splunk):
 
     time.sleep(2)
     # send trap
-    varbind1 = ('1.3.6.1.2.1.1.1', OctetString('test_many_traps'))
+    varbind1 = ('1.3.6.1.2.1.1.1.0', OctetString('test_many_traps'))
     for _ in range(5):
-        send_trap(trap_external_ip, 162, "1.3.6.1.6.3.1.1.5.2", "SNMPv2-MIB", varbind1)
+        send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1)
 
     # wait for the message to be processed
     time.sleep(2)
