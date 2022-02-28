@@ -168,6 +168,7 @@ def trap(self, work):
 
     logger.info(f"var_bind_table: {var_bind_table}")
     _, _, result = self.process_snmp_data(var_bind_table, metrics, work["host"])
+    logger.info(f"result: {result}")
 
     return {
         "time": time.time(),
