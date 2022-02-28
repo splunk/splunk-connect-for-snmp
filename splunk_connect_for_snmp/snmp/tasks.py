@@ -130,11 +130,12 @@ def trap(self, work):
     remotemibs = set()
     metrics = {}
     for w in work["data"]:
-
+        logger.info(f'Inside trap loop: {work["data"]}')
         if OID_VALIDATOR.match(w[1]):
             with suppress(Exception):
                 found, mib = self.is_mib_known(w[1], w[1], work["host"])
                 if found and mib not in oid_values:
+                    logger.info(f"New mib required for trap: {mib}")
                     self.load_mibs(self.builder, [mib])
                     oid_values.add(mib)
 
