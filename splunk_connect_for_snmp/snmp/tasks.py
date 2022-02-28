@@ -130,11 +130,12 @@ def trap(self, work):
     remotemibs = set()
     metrics = {}
     for w in work["data"]:
-
+        logger.info(f'Inside trap loop: {work["data"]}')
         if OID_VALIDATOR.match(w[1]):
             with suppress(Exception):
                 found, mib = self.is_mib_known(w[1], w[1], work["host"])
                 if found and mib not in oid_values:
+                    logger.info(f"New mib required for trap: {mib}")
                     self.load_mibs(self.builder, [mib])
                     oid_values.add(mib)
 
@@ -165,7 +166,9 @@ def trap(self, work):
             except SmiError:
                 logger.warning(f"No translation found for {w[0]}")
 
+    logger.info(f"var_bind_table: {var_bind_table}")
     _, _, result = self.process_snmp_data(var_bind_table, metrics, work["host"])
+    logger.info(f"result: {result}")
 
     return {
         "time": time.time(),
