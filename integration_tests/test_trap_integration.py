@@ -99,3 +99,24 @@ def test_many_traps(request, setup_splunk):
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
 
     assert result_count == 5
+
+
+def test_more_than_one_varbind(request, setup_splunk):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    logger.info(f"I have: {trap_external_ip}")
+
+    time.sleep(2)
+    # send trap
+    varbind1 = ('1.3.6.1.2.1.1.4.0', OctetString('test_more_than_one_varbind_contact'))
+    varbind2 = ('1.3.6.1.2.1.1.1.0', OctetString('test_more_than_one_varbind'))
+    send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1, varbind2)
+
+    # wait for the message to be processed
+    time.sleep(2)
+
+    search_query = """search index="netops" | search "SNMPv2-MIB.sysDescr.value"="test_more_than_one_varbind" 
+    "SNMPv2-MIB.sysContact.value"=test_more_than_one_varbind_contact """
+
+    result_count, events_count = splunk_single_search(setup_splunk, search_query)
+
+    assert result_count == 1
