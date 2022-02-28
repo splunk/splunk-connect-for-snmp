@@ -166,6 +166,7 @@ def trap(self, work):
             except SmiError:
                 logger.warning(f"No translation found for {w[0]}")
 
+    logger.info(f"var_bind_table: {var_bind_table}")
     _, _, result = self.process_snmp_data(var_bind_table, metrics, work["host"])
 
     return {
