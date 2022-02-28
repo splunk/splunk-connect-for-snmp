@@ -136,7 +136,7 @@ def trap(self, work):
                 found, mib = self.is_mib_known(w[1], w[1], work["host"])
                 if found and mib not in oid_values:
                     logger.info(f"New mib required for trap: {mib}")
-                    self.load_mibs(self.builder, [mib])
+                    self.load_mibs([mib])
                     oid_values.add(mib)
 
         try:
