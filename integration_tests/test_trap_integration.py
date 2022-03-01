@@ -23,7 +23,7 @@ from integration_tests.splunk_test_utils import splunk_single_search, create_v3_
 logger = logging.getLogger(__name__)
 
 
-def send_trap(host, port, object_identity, mib_to_load, *var_binds, auth_data=None):
+def send_trap(host, port, object_identity, mib_to_load, auth_data, *var_binds):
     if not auth_data:
         auth_data = CommunityData("public", mpModel=0)
     iterator = sendNotification(
@@ -71,7 +71,7 @@ def test_added_varbind(request, setup_splunk):
     time.sleep(2)
     # send trap
     varbind1 = ('1.3.6.1.2.1.1.1.0', OctetString('test_added_varbind'))
-    send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1)
+    send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", None, varbind1)
 
     # wait for the message to be processed
     time.sleep(2)
@@ -91,7 +91,7 @@ def test_many_traps(request, setup_splunk):
     # send trap
     varbind1 = ('1.3.6.1.2.1.1.1.0', OctetString('test_many_traps'))
     for _ in range(5):
-        send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1)
+        send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", None, varbind1)
 
     # wait for the message to be processed
     time.sleep(2)
@@ -111,7 +111,7 @@ def test_more_than_one_varbind(request, setup_splunk):
     # send trap
     varbind1 = ('1.3.6.1.2.1.1.4.0', OctetString('test_more_than_one_varbind_contact'))
     varbind2 = ('1.3.6.1.2.1.1.1.0', OctetString('test_more_than_one_varbind'))
-    send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1, varbind2)
+    send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", None, varbind1, varbind2)
 
     # wait for the message to be processed
     time.sleep(2)
@@ -131,7 +131,7 @@ def test_loading_mibs(request, setup_splunk):
     time.sleep(2)
     # send trap
     varbind1 = ('1.3.6.1.6.3.1.1.4.1.0', '1.3.6.1.4.1.15597.1.1.1.1.0.1')
-    send_trap(trap_external_ip, 162, "1.3.6.1.4.1.15597.1.1.1.1", "SNMPv2-MIB", varbind1)
+    send_trap(trap_external_ip, 162, "1.3.6.1.4.1.15597.1.1.1.1", "SNMPv2-MIB", None, varbind1)
 
     # wait for the message to be processed
     time.sleep(2)
@@ -151,8 +151,7 @@ def test_trap_v3(request, setup_splunk):
     time.sleep(2)
     # send trap
     varbind1 = ('1.3.6.1.2.1.1.1.0', OctetString('test_trap_v3'))
-    send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1,
-              UsmUserData('snmp-poller', 'PASSWORD1', 'PASSWORD1'))
+    send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", UsmUserData('snmp-poller', 'PASSWORD1', 'PASSWORD1'), varbind1)
 
     # wait for the message to be processed
     time.sleep(2)
