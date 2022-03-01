@@ -90,6 +90,15 @@ def update_profiles(profiles):
     )
 
 
+def create_v3_secrets():
+    os.system(
+      "sudo microk8s kubectl create -n sc4snmp secret generic secretv4 \
+      --from-literal=userName=snmp-poller \
+      --from-literal=authKey=PASSWORD1 \
+      --from-literal=privKey=PASSWORD1 \
+      --from-literal=authProtocol=SHA \
+      --from-literal=privProtocol=AES")
+
 # if __name__ == "__main__":
 #     update_inventory(['192.168.0.1,,2c,public,,,600,,,',
 #                       '192.168.0.2,,2c,public,,,602,,,'])

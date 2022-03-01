@@ -18,15 +18,17 @@ import time
 
 from pysnmp.hlapi import *
 
-from integration_tests.splunk_test_utils import splunk_single_search
+from integration_tests.splunk_test_utils import splunk_single_search, create_v3_secrets
 
 logger = logging.getLogger(__name__)
 
 
-def send_trap(host, port, object_identity, mib_to_load, *var_binds):
+def send_trap(host, port, object_identity, mib_to_load, *var_binds, auth_data=None):
+    if not auth_data:
+        auth_data = CommunityData("public", mpModel=0)
     iterator = sendNotification(
         SnmpEngine(),
-        CommunityData("public", mpModel=0),
+        auth_data,
         UdpTransportTarget((host, port)),
         ContextData(),
         "trap",
@@ -135,6 +137,27 @@ def test_loading_mibs(request, setup_splunk):
     time.sleep(2)
 
     search_query = """search index=netops "SNMPv2-MIB.snmpTrapOID.value"="AVAMAR-MCS-MIB::eventTrap"  """
+
+    result_count, events_count = splunk_single_search(setup_splunk, search_query)
+
+    assert result_count == 1
+
+
+def test_trap_v3(request, setup_splunk):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    create_v3_secrets()
+    logger.info(f"I have: {trap_external_ip}")
+
+    time.sleep(2)
+    # send trap
+    varbind1 = ('1.3.6.1.2.1.1.1.0', OctetString('test_trap_v3'))
+    send_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1,
+              UsmUserData('snmp-poller', 'PASSWORD1', 'PASSWORD1'))
+
+    # wait for the message to be processed
+    time.sleep(2)
+
+    search_query = """search index=netops "SNMPv2-MIB.sysDescr.value"="test_trap_v3"  """
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
 
