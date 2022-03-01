@@ -59,11 +59,29 @@ profiles_template = """scheduler:
   profiles: |
 """
 
+traps_secrets_template = """traps:
+  usernameSecrets:
+"""
+
 
 def l_pad_string(s):
     lines = s.splitlines()
     result = "\n".join(str.rjust(" ", 4) + line for line in lines)
     return result
+
+
+def update_traps(entries):
+    result = ""
+    for e in entries:
+        result += str.rjust(" ", 4) + "- " + e + "\n"
+
+    result = inventory_template + result
+    with open("traps.yaml", "w") as fp:
+        fp.write(result)
+
+    os.system(
+        "sudo microk8s helm3 upgrade --install snmp -f traps.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+    )
 
 
 def update_inventory(entries):
@@ -97,7 +115,8 @@ def create_v3_secrets():
       --from-literal=authKey=PASSWORD1 \
       --from-literal=privKey=PASSWORD1 \
       --from-literal=authProtocol=SHA \
-      --from-literal=privProtocol=AES")
+      --from-literal=privProtocol=AES \
+      --from-literal=securityEngineId=8000000903000A397056B8AC")
 
 # if __name__ == "__main__":
 #     update_inventory(['192.168.0.1,,2c,public,,,600,,,',
