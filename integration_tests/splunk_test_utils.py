@@ -119,13 +119,24 @@ def update_profiles(profiles):
 
 def create_v3_secrets():
     os.system(
-      "sudo microk8s kubectl create -n sc4snmp secret generic secretv4 \
+        "sudo microk8s kubectl create -n sc4snmp secret generic secretv4 \
       --from-literal=userName=snmp-poller \
       --from-literal=authKey=PASSWORD1 \
       --from-literal=privKey=PASSWORD1 \
       --from-literal=authProtocol=SHA \
       --from-literal=privProtocol=AES \
       --from-literal=securityEngineId=8000000903000A397056B8AC")
+
+
+def wait_for_pod_initialization():
+    script_body = f""" 
+    while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep traps | grep Running | wc -l)" != "1" ] ; do
+        echo "Waiting for POD initialization..."
+        sleep 1
+    done """
+    with open("check_for_pods.sh", "w") as fp:
+        fp.write(script_body)
+    os.system("./check_for_pods.sh")
 
 # if __name__ == "__main__":
 #     update_inventory(['192.168.0.1,,2c,public,,,600,,,',
