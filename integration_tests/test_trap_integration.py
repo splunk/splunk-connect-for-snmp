@@ -168,13 +168,13 @@ def test_trap_v3(request, setup_splunk):
     time.sleep(2)
     wait_for_pod_initialization()
     # send trap
-    varbind1 = ('1.3.6.1.2.1.1.1.0', OctetString('test_trap_v3'))
-    send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1)
+    varbind1 = ('1.3.6.1.2.1.1.4.0', OctetString('test_trap_v3'))
+    send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.1.0", "SNMPv2-MIB", varbind1)
 
     # wait for the message to be processed
     time.sleep(2)
 
-    search_query = """search index=netops "SNMPv2-MIB.sysDescr.value"="test_trap_v3"  """
+    search_query = """search index=netops "SNMPv2-MIB.sysContact.value"="test_trap_v3"  """
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
 
