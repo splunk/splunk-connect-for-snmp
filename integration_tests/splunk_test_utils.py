@@ -80,7 +80,10 @@ def update_traps(entries):
         fp.write(result)
 
     os.system(
-        "sudo microk8s helm3 upgrade --install snmp -f traps.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+        "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
+    )
+    os.system(
+        "sudo microk8s helm3 upgrade --install snmp -f values.yaml -f traps.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
     )
 
 
@@ -94,7 +97,10 @@ def update_inventory(entries):
         fp.write(result)
 
     os.system(
-        "sudo microk8s helm3 upgrade --install snmp -f inventory.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+        "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
+    )
+    os.system(
+        "sudo microk8s helm3 upgrade --install snmp -f values.yaml -f inventory.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
     )
 
 
@@ -104,7 +110,10 @@ def update_profiles(profiles):
         fp.write(profiles_template + result)
 
     os.system(
-        "sudo microk8s helm3 upgrade --install snmp -f profiles.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+        "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
+    )
+    os.system(
+        "sudo microk8s helm3 upgrade --install snmp -f values.yaml -f profiles.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
     )
 
 
