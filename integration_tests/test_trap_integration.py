@@ -18,7 +18,8 @@ import time
 
 from pysnmp.hlapi import *
 
-from integration_tests.splunk_test_utils import splunk_single_search, create_v3_secrets, update_traps
+from integration_tests.splunk_test_utils import splunk_single_search, create_v3_secrets, update_traps, \
+    wait_for_pod_initialization
 
 logger = logging.getLogger(__name__)
 
@@ -164,8 +165,8 @@ def test_trap_v3(request, setup_splunk):
     create_v3_secrets()
     update_traps(["secretv4"])
     logger.info(f"I have: {trap_external_ip}")
-
     time.sleep(2)
+    wait_for_pod_initialization()
     # send trap
     varbind1 = ('1.3.6.1.2.1.1.1.0', OctetString('test_trap_v3'))
     send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", varbind1)
