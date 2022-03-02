@@ -136,7 +136,7 @@ def wait_for_pod_initialization():
     done """
     with open("check_for_pods.sh", "w") as fp:
         fp.write(script_body)
-    os.system("./check_for_pods.sh")
+    os.system("chmod a+x check_for_pods.sh && ./check_for_pods.sh")
 
 # if __name__ == "__main__":
 #     update_inventory(['192.168.0.1,,2c,public,,,600,,,',
