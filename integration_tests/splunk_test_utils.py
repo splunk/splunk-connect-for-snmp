@@ -75,7 +75,7 @@ def update_traps(entries):
     for e in entries:
         result += str.rjust(" ", 4) + "- " + e + "\n"
 
-    result = inventory_template + result
+    result = traps_secrets_template + result
     with open("traps.yaml", "w") as fp:
         fp.write(result)
 
