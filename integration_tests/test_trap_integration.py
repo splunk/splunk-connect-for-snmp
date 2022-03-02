@@ -42,7 +42,7 @@ def send_trap(host, port, object_identity, mib_to_load, *var_binds):
         logger.error(f"{error_indication}")
 
 
-def send_v3_trap(host, port, object_identity, mib_to_load, *var_binds):
+def send_v3_trap(host, port, object_identity, *var_binds):
     iterator = sendNotification(
         SnmpEngine(OctetString(hexValue='80003a8c04')),
         UsmUserData('snmp-poller', 'PASSWORD1', 'PASSWORD1', authProtocol=(1, 3, 6, 1, 6, 3, 10, 1, 1, 3), privProtocol=(1, 3, 6, 1, 6, 3, 10, 1, 2, 4)),
@@ -51,7 +51,6 @@ def send_v3_trap(host, port, object_identity, mib_to_load, *var_binds):
         "trap",
         NotificationType(ObjectIdentity(object_identity))
         .addVarBinds(*var_binds)
-        .loadMibs(mib_to_load),
     )
 
     error_indication, error_status, error_index, var_binds = next(iterator)
@@ -169,7 +168,7 @@ def test_trap_v3(request, setup_splunk):
     wait_for_pod_initialization()
     # send trap
     varbind1 = ('1.3.6.1.2.1.1.4.0', OctetString('test_trap_v3'))
-    send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.1.0", "SNMPv2-MIB", varbind1)
+    send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.1.0", varbind1)
 
     # wait for the message to be processed
     time.sleep(2)
