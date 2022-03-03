@@ -34,3 +34,13 @@ def test_poller_integration_metric(setup_splunk):
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
     assert metric_count > 0
+
+
+def test_enrich_works_for_IFMIB(setup_splunk):
+    logger.info("Integration test for enrichment")
+    search_string = """| mpreview index=netmetrics | search sourcetype="sc4snmp:metric" 
+    | search "metric_name:sc4snmp.IF-MIB*if" 
+    | search "ifDescr" AND "ifAdminStatus" AND "ifName" AND "ifOperStatus" AND "ifPhysAddress" AND "ifIndex" """
+    result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+    assert result_count > 0
+    assert metric_count > 0
