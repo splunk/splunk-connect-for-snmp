@@ -44,3 +44,30 @@ def test_enrich_works_for_IFMIB(setup_splunk):
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
     assert metric_count > 0
+
+
+def test_default_profiles_metrics(setup_splunk):
+    logger.info("Integration test for metric profiles")
+    search_string_base_if = """| mpreview index=netmetrics | search profiles=BaseIF """
+    search_string_base_uptime = (
+        """| mpreview index=netmetrics | search profiles=BaseUpTime """
+    )
+    result_count_if, metric_count_if = splunk_single_search(
+        setup_splunk, search_string_base_if
+    )
+    result_count_uptime, metric_count_uptime = splunk_single_search(
+        setup_splunk, search_string_base_uptime
+    )
+    assert result_count_if > 0
+    assert result_count_uptime > 0
+    assert metric_count_if > 0
+    assert metric_count_uptime > 0
+
+
+def test_default_profiles_events(setup_splunk):
+    logger.info("Integration test for enrichment")
+    search_string = """search index=netops | search "IF-MIB.ifAlias" AND "IF-MIB.ifAdminStatus" 
+    AND "IF-MIB.ifDescr" AND "IF-MIB.ifName" sourcetype="sc4snmp:event" """
+    result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+    assert result_count > 0
+    assert metric_count > 0
