@@ -52,7 +52,7 @@ pytest = "^6.2.2"
 pytest-cov = "^3.0.0"
 mike = "^1.0.1"
 mkdocs = "^1.2.2"
-mkdocs-material = "^8.2.3"
+mkdocs-material = "^8.2.4"
 python-dotenv = "^0.19.2"
 
 [build-system]
