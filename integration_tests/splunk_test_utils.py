@@ -125,7 +125,8 @@ def create_v3_secrets():
       --from-literal=privKey=PASSWORD1 \
       --from-literal=authProtocol=SHA \
       --from-literal=privProtocol=AES \
-      --from-literal=securityEngineId=8000000903000A397056B8AC")
+      --from-literal=securityEngineId=8000000903000A397056B8AC"
+    )
 
 
 def wait_for_pod_initialization():
@@ -137,6 +138,7 @@ def wait_for_pod_initialization():
     with open("check_for_pods.sh", "w") as fp:
         fp.write(script_body)
     os.system("chmod a+x check_for_pods.sh && ./check_for_pods.sh")
+
 
 # if __name__ == "__main__":
 #     update_inventory(['192.168.0.1,,2c,public,,,600,,,',
