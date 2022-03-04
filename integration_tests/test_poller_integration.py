@@ -14,8 +14,9 @@
 #    limitations under the License.
 #   ########################################################################
 import logging
+import time
 
-from integration_tests.splunk_test_utils import splunk_single_search
+from integration_tests.splunk_test_utils import splunk_single_search, update_inventory, update_profiles
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,42 @@ def test_default_profiles_events(setup_splunk):
     logger.info("Integration test for enrichment")
     search_string = """search index=netops | search "IF-MIB.ifAlias" AND "IF-MIB.ifAdminStatus" 
     AND "IF-MIB.ifDescr" AND "IF-MIB.ifName" sourcetype="sc4snmp:event" """
+    result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+    assert result_count > 0
+    assert metric_count > 0
+
+
+def test_static_profiles_metrics(request, setup_splunk):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    logger.info("Integration test for enrichment")
+    update_inventory([f"{trap_external_ip},,2c,public,,,600,generic_switch,,"])
+    time.sleep(30)
+    search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch 
+    | search "TCP-MIB" """
+    result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+    assert result_count > 0
+    assert metric_count > 0
+
+
+def test_static_profiles_event(setup_splunk):
+    search_string = """search index=netops sourcetype="sc4snmp:event" "IF-MIB.ifType" AND NOT "IF-MIB.ifAdminStatus" """
+    result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+    assert result_count > 0
+    assert metric_count > 0
+
+
+def test_add_new_profile_and_reload(request, setup_splunk):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    logger.info("Integration test for enrichment")
+    update_profiles(["""    
+    new_profile:
+      frequency: 5
+      varBinds:
+        - ['TCP-MIB']
+    """])
+    update_inventory([f"{trap_external_ip},,2c,public,,,600,new_profile,,"])
+    time.sleep(30)
+    search_string = """search index=netops sourcetype="sc4snmp:event" "IF-MIB.ifType" AND NOT "IF-MIB.ifAdminStatus" """
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
     assert metric_count > 0
