@@ -97,8 +97,17 @@ def update_inventory(entries):
 
 def update_profiles(profiles):
     yaml = ruamel.yaml.YAML()
-    with open("profiles.yaml", "w") as fp:
+    with open("profiles_tmp.yaml", "w") as fp:
         yaml.dump(profiles, fp)
+
+    with open("profiles.yaml", "w") as fp:
+        fp.write(profiles_template)
+        with open("profiles_tmp.yaml", "r") as fp2:
+            line = fp2.readline()
+            while line != '':
+                new_line = str.rjust(" ", 4) + line
+                fp.write(new_line)
+                line = fp2.readline()
 
 
 def upgrade_helm(yaml_files):

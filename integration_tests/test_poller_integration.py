@@ -87,14 +87,15 @@ def test_static_profiles_event(setup_splunk):
 def test_add_new_profile_and_reload(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info("Integration test for enrichment")
+    time.sleep(30)
     profile = {
         "new_profile": {"frequency": 5, "varBinds": [yaml_escape_list(sq("TCP-MIB"))]}
     }
     update_profiles(profile)
     update_inventory([f"{trap_external_ip},,2c,public,,,600,new_profile,,"])
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(60)
-    search_string = """search index=netops sourcetype="sc4snmp:event" "IF-MIB.ifType" AND NOT "IF-MIB.ifAdminStatus" """
+    time.sleep(200)
+    search_string = """| mpreview index=netmetrics| spath profiles | search profiles=new_profile """
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
     assert metric_count > 0
