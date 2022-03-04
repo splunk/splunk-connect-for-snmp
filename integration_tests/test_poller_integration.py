@@ -16,7 +16,15 @@
 import logging
 import time
 
-from integration_tests.splunk_test_utils import splunk_single_search, update_inventory, update_profiles
+from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
+
+from integration_tests.splunk_test_utils import (
+    splunk_single_search,
+    update_inventory,
+    update_profiles,
+    upgrade_helm,
+    yaml_escape_list,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +68,7 @@ def test_static_profiles_metrics(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info("Integration test for enrichment")
     update_inventory([f"{trap_external_ip},,2c,public,,,600,generic_switch,,"])
+    upgrade_helm(["inventory.yaml"])
     time.sleep(30)
     search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch 
     | search "TCP-MIB" """
@@ -78,14 +87,13 @@ def test_static_profiles_event(setup_splunk):
 def test_add_new_profile_and_reload(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info("Integration test for enrichment")
-    update_profiles(["""    
-    new_profile:
-      frequency: 5
-      varBinds:
-        - ['TCP-MIB']
-    """])
+    profile = {
+        "new_profile": {"frequency": 5, "varBinds": [yaml_escape_list(sq("TCP-MIB"))]}
+    }
+    update_profiles(profile)
     update_inventory([f"{trap_external_ip},,2c,public,,,600,new_profile,,"])
-    time.sleep(30)
+    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    time.sleep(60)
     search_string = """search index=netops sourcetype="sc4snmp:event" "IF-MIB.ifType" AND NOT "IF-MIB.ifAdminStatus" """
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0

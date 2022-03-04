@@ -15,8 +15,7 @@
 #   ########################################################################
 import os
 import time
-
-import yaml
+import ruamel
 
 
 def splunk_single_search(service, search):
@@ -79,12 +78,11 @@ def update_traps(entries):
     with open("traps.yaml", "w") as fp:
         fp.write(result)
 
-    os.system(
-        "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
-    )
-    os.system(
-        "sudo microk8s helm3 upgrade --install snmp -f values.yaml -f traps.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
-    )
+
+def yaml_escape_list(*l):
+    ret = ruamel.yaml.comments.CommentedSeq(l)
+    ret.fa.set_flow_style()
+    return ret
 
 
 def update_inventory(entries):
@@ -96,24 +94,22 @@ def update_inventory(entries):
     with open("inventory.yaml", "w") as fp:
         fp.write(result)
 
-    os.system(
-        "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
-    )
-    os.system(
-        "sudo microk8s helm3 upgrade --install snmp -f values.yaml -f inventory.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
-    )
-
 
 def update_profiles(profiles):
+    yaml = ruamel.yaml.YAML()
     with open("profiles.yaml", "w") as fp:
-        result = l_pad_string(yaml.dump(profiles, default_flow_style=None))
-        fp.write(profiles_template + result)
+        yaml.dump(profiles, fp)
 
+
+def upgrade_helm(yaml_files):
+    files_string = "-f values.yaml "
+    for file in yaml_files:
+        files_string += f"-f {file} "
     os.system(
         "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
     )
     os.system(
-        "sudo microk8s helm3 upgrade --install snmp -f values.yaml -f profiles.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+        f"sudo microk8s helm3 upgrade --install snmp {files_string} ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
     )
 
 
