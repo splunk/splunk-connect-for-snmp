@@ -37,7 +37,9 @@ function define_python() {
 }
 
 deploy_poetry() {
+  sudo apt -y install python3-venv
   curl -sSL https://install.python-poetry.org | $PYTHON -
+  export PATH="/home/ubuntu/.local/bin:$PATH"
   poetry install
   poetry add -D splunk-sdk
   poetry add -D splunklib
