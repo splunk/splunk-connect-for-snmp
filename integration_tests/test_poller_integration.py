@@ -89,12 +89,14 @@ def test_add_new_profile_and_reload(request, setup_splunk):
     logger.info("Integration test for enrichment")
     time.sleep(30)
     profile = {
-        "new_profile": {"frequency": 5, "varBinds": [yaml_escape_list(sq("TCP-MIB"))]}
+        "new_profile": {"frequency": 7, "varBinds": [yaml_escape_list(sq("IP-MIB"))]}
     }
     update_profiles(profile)
+    upgrade_helm(["profiles.yaml"])
+    time.sleep(30)
     update_inventory([f"{trap_external_ip},,2c,public,,,600,new_profile,,"])
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(200)
+    time.sleep(30)
     search_string = """| mpreview index=netmetrics| spath profiles | search profiles=new_profile """
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
