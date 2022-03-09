@@ -43,11 +43,9 @@ class CustomPeriodicTaskManager:
             periodic_document = periodic.get(name=p.name)
             logger.debug("Got Schedule")
             if p.name not in activeschedules:
-                if p.enabled:
-                    p.enabled = False
-                    p.save()
-                # periodic_document.delete()
-                logger.debug(f"Deleting Schedule: {p.name}")
+                if periodic_document.enabled:
+                    periodic_document.enabled = False
+                logger.debug(f"Deleting Schedule: {periodic_document.name}")
 
     def delete_all_poll_tasks(self):
         periodic = PeriodicTask.objects()

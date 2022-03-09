@@ -9,21 +9,25 @@ class TestCustomTaskManager(TestCase):
     def test_delete_unused_poll_tasks(self, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
         doc1 = Mock()
+        doc1.enabled = True
         task1 = Mock()
         task1.task = "splunk_connect_for_snmp.snmp.tasks.poll"
         task1.name = "test1"
 
         doc2 = Mock()
+        doc2.enabled = True
         task2 = Mock()
         task2.task = "splunk_connect_for_snmp.snmp.tasks.poll"
         task2.name = "test2"
 
         doc3 = Mock()
+        doc3.enabled = True
         task3 = Mock()
         task3.task = "splunk_connect_for_snmp.snmp.tasks.walk"
         task3.name = "test3"
 
         doc4 = Mock()
+        doc4.enabled = True
         task4 = Mock()
         task4.task = "splunk_connect_for_snmp.snmp.tasks.poll"
         task4.name = "name1"
@@ -43,10 +47,10 @@ class TestCustomTaskManager(TestCase):
         self.assertEqual({"name": "test2"}, calls[1].kwargs)
         self.assertEqual({"name": "name1"}, calls[2].kwargs)
 
-        doc1.delete.assert_called()
-        doc2.delete.assert_called()
-        doc3.delete.assert_not_called()
-        doc4.delete.assert_not_called()
+        self.assertFalse(doc1.enabled)
+        self.assertFalse(doc2.enabled)
+        self.assertTrue(doc3.enabled)
+        self.assertTrue(doc4.enabled)
 
     @patch("celerybeatmongo.models.PeriodicTask.objects")
     def test_delete_disabled_poll_tasks(self, m_objects):

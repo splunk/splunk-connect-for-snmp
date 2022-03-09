@@ -37,6 +37,7 @@ scheduler:
         - ['SNMPv2-MIB', 'sysDescr']
         - ['SNMPv2-MIB', 'sysName', 0]
         - ['IF-MIB', 'ifType', 1]
+        - ['TCP-MIB']
 poller:
  # usernameSecrets:
  #   - sc4snmp-hlab-sha-aes

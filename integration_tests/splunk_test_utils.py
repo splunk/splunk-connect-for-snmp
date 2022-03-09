@@ -15,6 +15,7 @@
 #   ########################################################################
 import os
 import time
+
 import ruamel
 
 
@@ -102,9 +103,9 @@ def update_profiles(profiles):
 
     with open("profiles.yaml", "w") as fp:
         fp.write(profiles_template)
-        with open("profiles_tmp.yaml", "r") as fp2:
+        with open("profiles_tmp.yaml") as fp2:
             line = fp2.readline()
-            while line != '':
+            while line != "":
                 new_line = str.rjust(" ", 4) + line
                 fp.write(new_line)
                 line = fp2.readline()
