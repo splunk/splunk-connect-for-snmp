@@ -59,7 +59,7 @@ def inventory_setup_poller(self, work):
     if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
         self.profiles = load_profiles()
         self.last_modified = time.time()
-        logger.debug(f"Profiles reloaded")
+        logger.debug("Profiles reloaded")
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 

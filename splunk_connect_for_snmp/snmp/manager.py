@@ -284,7 +284,7 @@ class Poller(Task):
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
             self.profiles = load_profiles()
             self.last_modified = time.time()
-            logger.debug(f"Profiles reloaded")
+            logger.debug("Profiles reloaded")
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
             address, walk=walk, profiles=profiles, run_count=run_count
@@ -361,7 +361,7 @@ class Poller(Task):
                 try:
                     self.builder.loadModules(mib)
                 except error.MibLoadError as e:
-                    logger.exception(f"Error loading mib for {mib}, e")
+                    logger.exception(f"Error loading mib for {mib}, {e}")
 
     def is_mib_known(self, id: str, oid: str, target: str) -> tuple[bool, str]:
 

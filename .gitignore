@@ -138,3 +138,6 @@ charts.old
 charts/splunk-connect-for-snmp/charts/*.tgz
 .config.yaml
 secrets
+
+integration_tests/scripts/set_env.sh
+
