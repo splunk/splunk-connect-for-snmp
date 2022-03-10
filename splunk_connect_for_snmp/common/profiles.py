@@ -46,12 +46,9 @@ def load_profiles():
                     active_profiles[key] = profile
     try:
         with open(CONFIG_PATH, encoding="utf-8") as file:
-            logger.info("LOADING profiles for config_runtime")
             config_runtime = yaml.safe_load(file)
-            logger.info(f"config_runtime: {config_runtime}")
             if "profiles" in config_runtime:
                 profiles = config_runtime.get("profiles", {})
-                logger.info(f"Profiles: {profiles}")
                 logger.info(
                     f"loading {len(profiles.keys())} profiles from runtime profile group"
                 )
