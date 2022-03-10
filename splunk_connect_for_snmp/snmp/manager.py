@@ -299,7 +299,7 @@ class Poller(Task):
 
         metrics: Dict[str, Any] = {}
         if not varbinds_get and not varbinds_bulk:
-            logger.info("No work to do for {address}")
+            logger.info(f"No work to do for {address}")
             return False, {}
 
         if varbinds_bulk:
