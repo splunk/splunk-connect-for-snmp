@@ -186,7 +186,7 @@ def test_trap_v3(request, setup_splunk):
     upgrade_helm(["traps.yaml"])
     logger.info(f"I have: {trap_external_ip}")
     wait_for_pod_initialization()
-    time.sleep(5)
+    time.sleep(15)
     # send trap
     varbind1 = ("1.3.6.1.2.1.1.4.0", OctetString("test_trap_v3"))
     send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.1.0", varbind1)
