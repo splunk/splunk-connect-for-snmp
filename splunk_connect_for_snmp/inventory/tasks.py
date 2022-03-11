@@ -60,6 +60,7 @@ def inventory_setup_poller(self, work):
         self.profiles = load_profiles()
         self.last_modified = time.time()
         logger.debug("Profiles reloaded")
+        logger.debug(f"self.profiles: {self.profiles}")
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
