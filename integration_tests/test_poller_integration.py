@@ -21,7 +21,9 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 from integration_tests.splunk_test_utils import (
     splunk_single_search,
     update_inventory,
-    upgrade_helm, update_profiles, yaml_escape_list,
+    update_profiles,
+    upgrade_helm,
+    yaml_escape_list,
 )
 
 logger = logging.getLogger(__name__)
@@ -65,8 +67,18 @@ def test_default_profiles_events(setup_splunk):
 def test_static_profiles_metrics(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info("Integration test static profile - metrics")
+    profile = {
+        "generic_switch": {
+            "frequency": 5,
+            "varBinds": [
+                yaml_escape_list(sq("TCP-MIB")),
+                yaml_escape_list(sq("IF-MIB"), sq("ifType"), 1),
+            ],
+        }
+    }
+    update_profiles(profile)
     update_inventory([f"{trap_external_ip},,2c,public,,,600,generic_switch,,"])
-    upgrade_helm(["inventory.yaml"])
+    upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(50)
     search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch 
     | search "TCP-MIB" """
@@ -88,10 +100,15 @@ def test_add_new_profile_and_reload(request, setup_splunk):
     logger.info("Integration test for adding new profile and reloading")
     profile = {
         "new_profile": {"frequency": 7, "varBinds": [yaml_escape_list(sq("IP-MIB"))]},
-        "generic_switch": {"frequency": 5, "varBinds": [yaml_escape_list(sq("UDP-MIB"))]}
+        "generic_switch": {
+            "frequency": 5,
+            "varBinds": [yaml_escape_list(sq("UDP-MIB"))],
+        },
     }
     update_profiles(profile)
-    update_inventory([f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"])
+    update_inventory(
+        [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"]
+    )
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(70)
     search_string = (
@@ -112,9 +129,7 @@ def test_disable_one_profile_and_reload(request, setup_splunk):
     update_inventory([f"{trap_external_ip},,2c,public,,,600,new_profile,,"])
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(70)
-    search_string = (
-        """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch earliest=-20s """
-    )
+    search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch earliest=-20s """
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
     assert result_count == 0
     assert metric_count == 0

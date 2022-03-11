@@ -30,14 +30,14 @@ worker:
   logLevel: "DEBUG"
 scheduler:
   logLevel: "INFO"
-  profiles: |
-    generic_switch:
-      frequency: 5
-      varBinds:
-        - ['SNMPv2-MIB', 'sysDescr']
-        - ['SNMPv2-MIB', 'sysName', 0]
-        - ['IF-MIB', 'ifType', 1]
-        - ['TCP-MIB']
+#  profiles: |
+#    generic_switch:
+#      frequency: 60
+#      varBinds:
+#        - ['SNMPv2-MIB', 'sysDescr']
+#        - ['SNMPv2-MIB', 'sysName', 0]
+#        - ['IF-MIB']
+#        - ['TCP-MIB']
 poller:
  # usernameSecrets:
  #   - sc4snmp-hlab-sha-aes
