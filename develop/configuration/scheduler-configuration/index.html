@@ -789,7 +789,7 @@ Profiles used in inventory can be created in <code>values.yaml</code>, which can
 <span class="w">        </span><span class="no">#Define condition</span><span class="w"></span>
 <span class="w">        </span><span class="no">condition:</span><span class="w"></span>
 <span class="w">          </span><span class="no"># Define type of condition. Allowed value field and base </span><span class="w"></span>
-<span class="w">          </span><span class="no">typy: field</span><span class="w"></span>
+<span class="w">          </span><span class="no">type: field</span><span class="w"></span>
 <span class="w">          </span><span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span><span class="w"></span>
 <span class="w">          </span><span class="no"># Define paterns</span><span class="w"></span>
 <span class="w">          </span><span class="no">patterns:</span><span class="w"></span>
@@ -856,7 +856,8 @@ More information about configuring inventory can be found in <a href="../poller-
 <li><code>frequency</code> - define interval between executing SNMP gets in second.</li>
 <li><code>condition</code> - section define conditions to much profile<ul>
 <li><code>type</code> - key of <code>condition</code> section which defines type of condition. Allowed value <code>base</code> and <code>field</code>. <ul>
-<li><code>base</code> type of condition will be executed always when <code>SmartProfile</code> in inventory is set to true.</li>
+<li><code>base</code> type of condition will be executed when <code>SmartProfile</code> in inventory is set to true.</li>
+<li><code>walk</code> such profile will be executed instead of full walk</li>
 <li><code>field</code> type of condition will be executed if match <code>pattern</code> for defined <code>field</code>. Supported fields:<ul>
 <li>&ldquo;SNMPv2-MIB.sysDescr&rdquo;</li>
 <li>&ldquo;SNMPv2-MIB.sysObjectID&rdquo;</li>
@@ -878,7 +879,7 @@ More information about configuring inventory can be found in <a href="../poller-
 <span class="w">      </span><span class="no">SmartProfile_base_example:</span><span class="w"></span>
 <span class="w">        </span><span class="no">frequency: 10</span><span class="w"></span>
 <span class="w">        </span><span class="no">condition: </span><span class="w"></span>
-<span class="w">          </span><span class="no">typy: &quot;base&quot;</span><span class="w"></span>
+<span class="w">          </span><span class="no">type: &quot;base&quot;</span><span class="w"></span>
 <span class="w">        </span><span class="no">varBinds:</span><span class="w"></span>
 <span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;]</span><span class="w"></span>
 <span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span><span class="w"></span>
@@ -890,7 +891,7 @@ More information about configuring inventory can be found in <a href="../poller-
 <span class="w">      </span><span class="no">SmartProfile_field_example:</span><span class="w"></span>
 <span class="w">        </span><span class="no">frequency: 10</span><span class="w"></span>
 <span class="w">        </span><span class="no">condition: </span><span class="w"></span>
-<span class="w">          </span><span class="no">typy: &quot;field&quot;</span><span class="w"></span>
+<span class="w">          </span><span class="no">type: &quot;field&quot;</span><span class="w"></span>
 <span class="w">          </span><span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span><span class="w"></span>
 <span class="w">          </span><span class="no">patterns:</span><span class="w"></span>
 <span class="w">            </span><span class="no">- &#39;.*STRING_TO_BE_MATCHED.*&#39;</span><span class="w"></span>

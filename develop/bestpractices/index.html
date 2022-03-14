@@ -602,6 +602,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#walking-a-device-takes-much-time" class="md-nav__link">
+    Walking a device takes much time
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -712,6 +719,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#walking-a-device-takes-much-time" class="md-nav__link">
+    Walking a device takes much time
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -775,6 +789,24 @@ required to check if firewall is not blocking any of <a href="https://microk8s.i
 
 <p>If you put only ip address (ex. <code>127.0.0.1</code>), then errors will be ignored for all of its devices (like <code>127.0.0.1:161</code>, 
 <code>127.0.0.1:163</code>&hellip;). If you put ip address and host structured as: <code>{host}:{port}</code> that means the error will be ignored only for this device.</p>
+<h3 id="walking-a-device-takes-much-time">Walking a device takes much time<a class="headerlink" href="#walking-a-device-takes-much-time" title="Permanent link">&para;</a></h3>
+<p>If you would like to limit the scope of walk, you should set one of the profiles in the inventory to point to profile definition of type <code>walk</code></p>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">      </span><span class="no">small_walk:</span><span class="w"></span>
+<span class="w">        </span><span class="no">condition: </span><span class="w"></span>
+<span class="w">          </span><span class="no">type: &quot;walk&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="no">varBinds:</span><span class="w"></span>
+<span class="w">          </span><span class="no">- [&#39;UDP-MIB&#39;]</span><span class="w"></span>
+</code></pre></div>
+
+<p>Such profile should be placed in profiles section of inventory definition. It will be executed with frequency defined in walk_interval.
+In case of multiple profiles of type <code>walk</code> will be placed in profiles, the last one will be used.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">    </span><span class="no">address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete</span><span class="w"></span>
+<span class="w">    </span><span class="no">10.202.4.202,,2c,public,,,2000,small_walk,,</span><span class="w"></span>
+</code></pre></div>
 
               
             </article>
