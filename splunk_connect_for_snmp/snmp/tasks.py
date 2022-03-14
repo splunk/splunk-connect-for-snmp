@@ -65,7 +65,7 @@ OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
 def walk(self, **kwargs):
 
     address = kwargs["address"]
-    profile = kwargs.get("profile")
+    profile = kwargs.get("profile", [])
     mongo_client = pymongo.MongoClient(MONGO_URI)
     mongo_db = mongo_client[MONGO_DB]
     mongo_inventory = mongo_db.inventory
@@ -82,7 +82,7 @@ def walk(self, **kwargs):
         retry = True
         while retry:
             retry, result = self.do_work(
-                ir, walk=True, profiles=[profile], run_count=run_count
+                ir, walk=True, profiles=profile, run_count=run_count
             )
 
     # After a Walk tell schedule to recalc
