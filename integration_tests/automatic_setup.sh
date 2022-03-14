@@ -53,6 +53,13 @@ wait_for_pod_initialization() {
   done
 }
 
+wait_for_rabbitmq_to_be_up() {
+  while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep 0/1)" != "" ] ; do
+    echo "Waiting for RabbitMQ POD initialization..."
+    sleep 1
+  done
+}
+
 sudo apt -y install docker.io
 cd ~/splunk-connect-for-snmp
 
@@ -89,6 +96,7 @@ echo $(green "Installing SC4SNMP on Kubernetes")
 sudo microk8s helm3 install snmp -f values.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 
 wait_for_pod_initialization
+wait_for_rabbitmq_to_be_up
 
 define_python
 
