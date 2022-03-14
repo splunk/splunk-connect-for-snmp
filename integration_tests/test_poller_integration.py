@@ -107,12 +107,12 @@ def test_add_new_profile_and_reload(request, setup_splunk):
     }
     update_profiles(profile)
     upgrade_helm(["profiles.yaml"])
-    time.sleep(20)
+    time.sleep(60)
     update_inventory(
         [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"]
     )
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(90)
+    time.sleep(20)
     search_string = (
         """| mpreview index=netmetrics| spath profiles | search profiles=new_profile """
     )
