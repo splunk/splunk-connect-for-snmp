@@ -106,6 +106,8 @@ def test_add_new_profile_and_reload(request, setup_splunk):
         },
     }
     update_profiles(profile)
+    upgrade_helm(["profiles.yaml"])
+    time.sleep(20)
     update_inventory(
         [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"]
     )
