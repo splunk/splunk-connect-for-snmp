@@ -272,7 +272,11 @@ class Poller(Task):
             )
 
     def do_work(
-        self, ir: InventoryRecord, walk: bool = False, profiles: List[str] = None
+        self,
+        ir: InventoryRecord,
+        walk: bool = False,
+        profiles: List[str] = None,
+        run_count=0,
     ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
@@ -283,7 +287,7 @@ class Poller(Task):
             logger.debug("Profiles reloaded")
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
-            address, walk=walk, profiles=profiles
+            address, walk=walk, profiles=profiles, run_count=run_count
         )
 
         authData = GetAuth(logger, ir, self.snmpEngine)
@@ -373,12 +377,12 @@ class Poller(Task):
         logger.warning(f"no mib found {id} based on {oid} from {target}")
         return False, ""
 
-    def get_var_binds(self, address, walk=False, profiles=[]):
+    def get_var_binds(self, address, walk=False, profiles=[], run_count=0):
         varbinds_bulk = set()
         varbinds_get = set()
         get_mapping = {}
         bulk_mapping = {}
-        if walk:
+        if walk and (run_count == 0 or not profiles):
             varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
         else:
             needed_mibs = []
@@ -394,7 +398,8 @@ class Poller(Task):
                         if len(vb) == 1:
                             if vb[0] not in required_bulk:
                                 required_bulk[vb[0]] = None
-                                bulk_mapping[f"{vb[0]}"] = profile
+                                if not walk:
+                                    bulk_mapping[f"{vb[0]}"] = profile
                         if vb[0] not in needed_mibs:
                             needed_mibs.append(vb[0])
 
@@ -413,7 +418,8 @@ class Poller(Task):
                                     required_bulk[vb[0]] = [vb[1]]
                                 else:
                                     required_bulk[vb[0]].append(vb[1])
-                                bulk_mapping[f"{vb[0]}:{vb[1]}"] = profile
+                                if not walk:
+                                    bulk_mapping[f"{vb[0]}:{vb[1]}"] = profile
 
             for mib, entries in required_bulk.items():
                 if entries is None:
@@ -436,7 +442,8 @@ class Poller(Task):
                                 varbinds_get.add(
                                     ObjectType(ObjectIdentity(vb[0], vb[1], vb[2]))
                                 )
-                                get_mapping[f"{vb[0]}:{vb[1]}:{vb[2]}"] = profile
+                                if not walk:
+                                    get_mapping[f"{vb[0]}:{vb[1]}:{vb[2]}"] = profile
             self.load_mibs(needed_mibs)
 
         logger.debug(f"host={address} varbinds_get={varbinds_get}")

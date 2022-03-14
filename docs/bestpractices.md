@@ -55,3 +55,24 @@ worker:
 
 If you put only ip address (ex. `127.0.0.1`), then errors will be ignored for all of its devices (like `127.0.0.1:161`, 
 `127.0.0.1:163`...). If you put ip address and host structured as: `{host}:{port}` that means the error will be ignored only for this device.
+
+### Walking a device takes much time
+If you would like to limit the scope of walk, you should set one of the profiles in the inventory to point to profile definition of type `walk`
+```yaml
+scheduler:
+    profiles: |
+      small_walk:
+        condition: 
+          type: "walk"
+        varBinds:
+          - ['UDP-MIB']
+``` 
+Such profile should be placed in profiles section of inventory definition. It will be executed with frequency defined in walk_interval.
+In case of multiple profiles of type `walk` will be placed in profiles, the last one will be used.
+
+```yaml
+poller:
+  inventory: |
+    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+    10.202.4.202,,2c,public,,,2000,small_walk,,
+```
