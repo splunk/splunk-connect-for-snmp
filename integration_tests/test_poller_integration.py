@@ -112,7 +112,7 @@ def test_add_new_profile_and_reload(request, setup_splunk):
         [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"]
     )
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(70)
+    time.sleep(90)
     search_string = (
         """| mpreview index=netmetrics| spath profiles | search profiles=new_profile """
     )
@@ -132,6 +132,18 @@ def test_disable_one_profile_and_reload(request, setup_splunk):
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(70)
     search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch earliest=-20s """
+    result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+    assert result_count == 0
+    assert metric_count == 0
+
+
+def test_delete_inventory_line(request, setup_splunk):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    logger.info("Integration test for deleting one profile and reloading")
+    update_inventory([f"{trap_external_ip},,2c,public,,,600,new_profile,,t"])
+    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    time.sleep(40)
+    search_string = """| mpreview index=netmetrics earliest=-20s """
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
     assert result_count == 0
     assert metric_count == 0
