@@ -30,6 +30,9 @@ worker:
   logLevel: "DEBUG"
 scheduler:
   logLevel: "INFO"
+  customTranslations:
+    IP-MIB:
+      icmpOutEchoReps: myCustomName1
 #  profiles: |
 #    generic_switch:
 #      frequency: 60

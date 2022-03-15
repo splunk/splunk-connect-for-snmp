@@ -160,7 +160,10 @@ def test_smart_profiles_field(request, setup_splunk):
                 "field": "SNMPv2-MIB.sysDescr",
                 "patterns": [".*zeus.*"],
             },
-            "varBinds": [yaml_escape_list(sq("IP-MIB"), sq("icmpOutDestUnreachs"), 0)],
+            "varBinds": [
+                yaml_escape_list(sq("IP-MIB"), sq("icmpOutDestUnreachs"), 0),
+                yaml_escape_list(sq("IP-MIB"), sq("icmpOutEchoReps"), 0),
+            ],
         }
     }
     update_profiles(profile)
@@ -169,21 +172,37 @@ def test_smart_profiles_field(request, setup_splunk):
     update_inventory([f"{trap_external_ip},,2c,public,,,600,,t,"])
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(20)
-    search_string = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field """
+    search_string = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field | search icmpOutDestUnreachs """
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+    assert result_count > 0
+    assert metric_count > 0
+
+
+def test_smart_profiles_custom_translations(setup_splunk):
+    logger.info(
+        "Integration test for fields base smart profiles with custom translations"
+    )
+    search_string_base = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field | search myCustomName1 """
+    result_count, metric_count = splunk_single_search(setup_splunk, search_string_base)
     assert result_count > 0
     assert metric_count > 0
 
 
 def test_smart_profiles_base(setup_splunk):
     logger.info("Integration test for fields base smart profiles")
-    search_string_baseIF = """| mpreview index=netmetrics| spath profiles | search profiles=BaseIF """
-    search_string_baseUpTime = """| mpreview index=netmetrics| spath profiles | search profiles=BaseUpTime """
-    result_count, metric_count = splunk_single_search(setup_splunk, search_string_baseIF)
+    search_string_baseIF = (
+        """| mpreview index=netmetrics| spath profiles | search profiles=BaseIF """
+    )
+    search_string_baseUpTime = (
+        """| mpreview index=netmetrics| spath profiles | search profiles=BaseUpTime """
+    )
+    result_count, metric_count = splunk_single_search(
+        setup_splunk, search_string_baseIF
+    )
     assert result_count > 0
     assert metric_count > 0
-    result_count, metric_count = splunk_single_search(setup_splunk, search_string_baseUpTime)
+    result_count, metric_count = splunk_single_search(
+        setup_splunk, search_string_baseUpTime
+    )
     assert result_count > 0
     assert metric_count > 0
-
-
