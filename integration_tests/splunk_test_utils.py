@@ -59,9 +59,20 @@ profiles_template = """scheduler:
   profiles: |
 """
 
+poller_secrets_template = """scheduler:
+  usernameSecrets:
+"""
+
 traps_secrets_template = """traps:
   usernameSecrets:
 """
+
+TEMPLATE_MAPPING = {
+    "inventory.csv": inventory_template,
+    "profiles.yaml": profiles_template,
+    "scheduler_secrets.yaml": poller_secrets_template,
+    "traps_secrets.yaml": traps_secrets_template
+}
 
 
 def l_pad_string(s):
@@ -70,29 +81,20 @@ def l_pad_string(s):
     return result
 
 
-def update_traps(entries):
-    result = ""
-    for e in entries:
-        result += str.rjust(" ", 4) + "- " + e + "\n"
-
-    result = traps_secrets_template + result
-    with open("traps.yaml", "w") as fp:
-        fp.write(result)
-
-
 def yaml_escape_list(*l):
     ret = ruamel.yaml.comments.CommentedSeq(l)
     ret.fa.set_flow_style()
     return ret
 
 
-def update_inventory(entries):
+def update_file(entries, fieldname):
     result = ""
     for e in entries:
         result += str.rjust(" ", 4) + e + "\n"
 
-    result = inventory_template + result
-    with open("inventory.yaml", "w") as fp:
+    template = TEMPLATE_MAPPING.get(fieldname, "")
+    result = template + result
+    with open(fieldname, "w") as fp:
         fp.write(result)
 
 
