@@ -164,7 +164,7 @@ def test_smart_profiles_field(request, setup_splunk):
         }
     }
     update_profiles(profile)
-    upgrade_helm(["profiles.yaml"])
+    upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(60)
     update_inventory([f"{trap_external_ip},,2c,public,,,600,,t,"])
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
@@ -173,3 +173,17 @@ def test_smart_profiles_field(request, setup_splunk):
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
     assert result_count > 0
     assert metric_count > 0
+
+
+def test_smart_profiles_base(setup_splunk):
+    logger.info("Integration test for fields base smart profiles")
+    search_string_baseIF = """| mpreview index=netmetrics| spath profiles | search profiles=BaseIF """
+    search_string_baseUpTime = """| mpreview index=netmetrics| spath profiles | search profiles=BaseUpTime """
+    result_count, metric_count = splunk_single_search(setup_splunk, search_string_baseIF)
+    assert result_count > 0
+    assert metric_count > 0
+    result_count, metric_count = splunk_single_search(setup_splunk, search_string_baseUpTime)
+    assert result_count > 0
+    assert metric_count > 0
+
+
