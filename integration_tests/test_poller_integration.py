@@ -77,7 +77,7 @@ def test_static_profiles_metrics(request, setup_splunk):
         }
     }
     update_profiles(profile)
-    update_file([f"{trap_external_ip},,2c,public,,,600,generic_switch,,"], "inventory.csv")
+    update_file([f"{trap_external_ip},,2c,public,,,600,generic_switch,,"], "inventory.yaml")
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(50)
     search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch 
@@ -109,7 +109,7 @@ def test_add_new_profile_and_reload(request, setup_splunk):
     upgrade_helm(["profiles.yaml"])
     time.sleep(60)
     update_file(
-        [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"], "inventory.csv"
+        [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"], "inventory.yaml"
     )
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(20)
@@ -128,7 +128,7 @@ def test_disable_one_profile_and_reload(request, setup_splunk):
         "new_profile": {"frequency": 7, "varBinds": [yaml_escape_list(sq("IP-MIB"))]}
     }
     update_profiles(profile)
-    update_file([f"{trap_external_ip},,2c,public,,,600,new_profile,,"], "inventory.csv")
+    update_file([f"{trap_external_ip},,2c,public,,,600,new_profile,,"], "inventory.yaml")
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(70)
     search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch earliest=-20s """
@@ -140,7 +140,7 @@ def test_disable_one_profile_and_reload(request, setup_splunk):
 def test_delete_inventory_line(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info("Integration test for deleting one profile and reloading")
-    update_file([f"{trap_external_ip},,2c,public,,,600,new_profile,,t"], "inventory.csv")
+    update_file([f"{trap_external_ip},,2c,public,,,600,new_profile,,t"], "inventory.yaml")
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(40)
     search_string = """| mpreview index=netmetrics earliest=-20s """
@@ -169,7 +169,7 @@ def test_smart_profiles_field(request, setup_splunk):
     update_profiles(profile)
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(60)
-    update_file([f"{trap_external_ip},,2c,public,,,600,,t,"], "inventory.csv")
+    update_file([f"{trap_external_ip},,2c,public,,,600,,t,"], "inventory.yaml")
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(20)
     search_string = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field | search icmpOutDestUnreachs """
@@ -213,7 +213,7 @@ def test_pooling_v3(request, setup_splunk):
     logger.info("Integration test for v3 version of SNMP")
     create_v3_secrets()
     update_file(["- secretv4"], "scheduler_secrets.yaml")
-    update_file([f"{trap_external_ip},,3,public,secretv4,,600,,,"], "inventory.csv")
+    update_file([f"{trap_external_ip},,3,public,secretv4,,600,,,"], "inventory.yaml")
     upgrade_helm(["inventory.yaml",  "scheduler_secrets.yaml"])
     time.sleep(40)
     search_string = """| mpreview index=netmetrics earliest=-20s"""
