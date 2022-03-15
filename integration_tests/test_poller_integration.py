@@ -158,7 +158,7 @@ def test_smart_profiles_field(request, setup_splunk):
             "condition": {
                 "type": "field",
                 "field": "SNMPv2-MIB.sysDescr",
-                "patterns": ["*zeus*"],
+                "patterns": [".*zeus.*"],
             },
             "varBinds": [yaml_escape_list(sq("IP-MIB"), sq("icmpOutDestUnreachs"), 0)],
         }
