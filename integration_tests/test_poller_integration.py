@@ -164,6 +164,7 @@ def test_smart_profiles_field(request, setup_splunk):
         }
     }
     update_profiles(profile)
+    upgrade_helm(["profiles.yaml"])
     time.sleep(60)
     update_inventory([f"{trap_external_ip},,2c,public,,,600,,t,"])
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
