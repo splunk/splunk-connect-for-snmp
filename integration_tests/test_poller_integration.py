@@ -171,5 +171,5 @@ def test_smart_profiles_field(request, setup_splunk):
     time.sleep(20)
     search_string = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field """
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
-    assert result_count == 0
-    assert metric_count == 0
+    assert result_count > 0
+    assert metric_count > 0
