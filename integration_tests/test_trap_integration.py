@@ -21,8 +21,9 @@ from pysnmp.hlapi import *
 from integration_tests.splunk_test_utils import (
     create_v3_secrets,
     splunk_single_search,
+    update_file,
     upgrade_helm,
-    wait_for_pod_initialization, update_file,
+    wait_for_pod_initialization,
 )
 
 logger = logging.getLogger(__name__)

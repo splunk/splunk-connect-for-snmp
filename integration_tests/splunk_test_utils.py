@@ -71,7 +71,7 @@ TEMPLATE_MAPPING = {
     "inventory.yaml": inventory_template,
     "profiles.yaml": profiles_template,
     "scheduler_secrets.yaml": poller_secrets_template,
-    "traps_secrets.yaml": traps_secrets_template
+    "traps_secrets.yaml": traps_secrets_template,
 }
 
 
