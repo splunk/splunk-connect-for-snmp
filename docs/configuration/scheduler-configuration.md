@@ -58,7 +58,7 @@ scheduler:
         #Define condition
         condition:
           # Define type of condition. Allowed value field and base 
-          typy: field
+          type: field
           field: "SNMPv2-MIB.sysDescr"
           # Define paterns
           patterns:
@@ -127,7 +127,8 @@ To configure Static Profile following value need to be set in `profiles` section
     - `frequency` - define interval between executing SNMP gets in second.
     - `condition` - section define conditions to much profile
         - `type` - key of `condition` section which defines type of condition. Allowed value `base` and `field`. 
-            - `base` type of condition will be executed always when `SmartProfile` in inventory is set to true.
+            - `base` type of condition will be executed when `SmartProfile` in inventory is set to true.
+            - `walk` such profile will be executed instead of full walk
             - `field` type of condition will be executed if match `pattern` for defined `field`. Supported fields:
                 -  "SNMPv2-MIB.sysDescr"
                 -  "SNMPv2-MIB.sysObjectID"
@@ -142,7 +143,7 @@ scheduler:
       SmartProfile_base_example:
         frequency: 10
         condition: 
-          typy: "base"
+          type: "base"
         varBinds:
           - ['SNMPv2-MIB']
           - ['SNMPv2-MIB', 'sysName']
@@ -155,7 +156,7 @@ scheduler:
       SmartProfile_field_example:
         frequency: 10
         condition: 
-          typy: "field"
+          type: "field"
           field: "SNMPv2-MIB.sysDescr"
           patterns:
             - '.*STRING_TO_BE_MATCHED.*'
