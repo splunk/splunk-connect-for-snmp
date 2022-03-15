@@ -61,7 +61,6 @@ def inventory_setup_poller(self, work):
         self.last_modified = time.time()
         logger.debug("Profiles reloaded")
 
-
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
     mongo_client = pymongo.MongoClient(MONGO_URI)
