@@ -182,7 +182,7 @@ def test_trap_v3(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     create_v3_secrets()
     update_file(["- secretv4"], "traps_secrets.yaml")
-    upgrade_helm(["traps.yaml"])
+    upgrade_helm(["traps_secrets.yaml"])
     logger.info(f"I have: {trap_external_ip}")
     wait_for_pod_initialization()
     time.sleep(15)
