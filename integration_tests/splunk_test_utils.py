@@ -68,7 +68,7 @@ traps_secrets_template = """traps:
 """
 
 TEMPLATE_MAPPING = {
-    "inventory.csv": inventory_template,
+    "inventory.yaml": inventory_template,
     "profiles.yaml": profiles_template,
     "scheduler_secrets.yaml": poller_secrets_template,
     "traps_secrets.yaml": traps_secrets_template
