@@ -147,3 +147,28 @@ def test_delete_inventory_line(request, setup_splunk):
     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
     assert result_count == 0
     assert metric_count == 0
+
+
+def test_smart_profiles_field(request, setup_splunk):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    logger.info("Integration test for fields smart profiles")
+    profile = {
+        "smart_profile_field": {
+            "frequency": 3,
+            "condition": {
+                "type": "field",
+                "field": "SNMPv2-MIB.sysDescr",
+                "patterns": ["*zeus*"],
+            },
+            "varBinds": [yaml_escape_list(sq("IP-MIB"), sq("icmpOutDestUnreachs"), 0)],
+        }
+    }
+    update_profiles(profile)
+    time.sleep(60)
+    update_inventory([f"{trap_external_ip},,2c,public,,,600,,t,"])
+    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    time.sleep(20)
+    search_string = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field """
+    result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+    assert result_count == 0
+    assert metric_count == 0
