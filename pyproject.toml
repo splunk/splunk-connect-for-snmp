@@ -48,7 +48,7 @@ JSON-log-formatter ="^0.5.1"
 "ruamel.yaml" = "^0.17.21"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2.2"
+pytest = "^7.1.0"
 pytest-cov = "^3.0.0"
 mike = "^1.0.1"
 mkdocs = "^1.2.2"
