@@ -21,7 +21,7 @@ from pysnmp.hlapi import *
 from integration_tests.splunk_test_utils import (
     create_v3_secrets,
     splunk_single_search,
-    update_traps,
+    update_file,
     upgrade_helm,
     wait_for_pod_initialization,
 )
@@ -182,8 +182,8 @@ def test_loading_mibs(request, setup_splunk):
 def test_trap_v3(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     create_v3_secrets()
-    update_traps(["secretv4"])
-    upgrade_helm(["traps.yaml"])
+    update_file(["- secretv4"], "traps_secrets.yaml")
+    upgrade_helm(["traps_secrets.yaml"])
     logger.info(f"I have: {trap_external_ip}")
     wait_for_pod_initialization()
     time.sleep(15)
