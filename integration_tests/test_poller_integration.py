@@ -79,13 +79,15 @@ def setup_profile(request):
         }
     }
     update_profiles(profile)
+    upgrade_helm(["profiles.yaml"])
+    time.sleep(60)
     update_file(
         [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"], "inventory.yaml"
     )
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(50)
+    time.sleep(20)
     yield
-    upgrade_helm([])
+    upgrade_helm([f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"])
     time.sleep(20)
 
 
