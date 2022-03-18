@@ -366,7 +366,7 @@ def setup_small_walk(request):
         [f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml"
     )
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(20)
+    time.sleep(30)
     yield
     update_file(
         [f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml"
@@ -375,15 +375,15 @@ def setup_small_walk(request):
     time.sleep(20)
 
 
-@pytest.mark.usefixtures("setup_modify_profile")
+@pytest.mark.usefixtures("setup_small_walk")
 class TestSmallWalk:
     def test_sanity_small_walk(self, setup_splunk):
-        search_string = """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
+        search_string = """| mpreview index=netmetrics earliest=-30s | search "TCP-MIB" """
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         assert result_count > 0
         assert metric_count > 0
 
-    def test_modify_frequency_field(self, setup_splunk):
+    def test_check_if_walk_scope_was_smaller(self, setup_splunk):
         time.sleep(20)
         search_string = """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
