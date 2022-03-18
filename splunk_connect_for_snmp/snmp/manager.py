@@ -382,7 +382,7 @@ class Poller(Task):
         varbinds_get = set()
         get_mapping = {}
         bulk_mapping = {}
-        if walk and (run_count == 0 or not profiles):
+        if walk and (run_count <= 1 or not profiles):
             varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
         else:
             needed_mibs = []
