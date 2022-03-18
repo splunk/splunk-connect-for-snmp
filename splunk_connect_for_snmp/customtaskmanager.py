@@ -117,6 +117,8 @@ class CustomPeriodicTaskManager:
                     isChanged = True
                 elif key == "target":
                     pass
+                elif key == "total_run_count":
+                    periodic_document[key] = task_data[key]
                 else:
                     if key in periodic_document:
                         if not periodic_document[key] == task_data[key]:
