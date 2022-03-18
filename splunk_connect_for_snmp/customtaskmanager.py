@@ -150,6 +150,6 @@ class CustomPeriodicTaskManager:
             if "options" in task_data:
                 periodic_document["options"] = task_data["options"]
 
-        logger.info(f"Periodic document to save: {periodic_document}")
+        logger.info(f"Periodic document to save: {periodic_document.__dict__}")
         if isChanged:
             periodic_document.save()
