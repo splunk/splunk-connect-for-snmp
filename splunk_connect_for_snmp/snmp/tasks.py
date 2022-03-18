@@ -66,6 +66,8 @@ def walk(self, **kwargs):
 
     address = kwargs["address"]
     profile = kwargs.get("profile", [])
+    if profile:
+        profile = [profile]
     mongo_client = pymongo.MongoClient(MONGO_URI)
     mongo_db = mongo_client[MONGO_DB]
     mongo_inventory = mongo_db.inventory
