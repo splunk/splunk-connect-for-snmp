@@ -276,7 +276,7 @@ class Poller(Task):
         ir: InventoryRecord,
         walk: bool = False,
         profiles: List[str] = None,
-        run_count=0,
+        walked_first_time=True,
     ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
@@ -287,7 +287,7 @@ class Poller(Task):
             logger.debug("Profiles reloaded")
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
-            address, walk=walk, profiles=profiles, run_count=run_count
+            address, walk=walk, profiles=profiles, walked_first_time=walked_first_time
         )
 
         authData = GetAuth(logger, ir, self.snmpEngine)
@@ -377,12 +377,12 @@ class Poller(Task):
         logger.warning(f"no mib found {id} based on {oid} from {target}")
         return False, ""
 
-    def get_var_binds(self, address, walk=False, profiles=[], run_count=0):
+    def get_var_binds(self, address, walk=False, profiles=[], walked_first_time=True):
         varbinds_bulk = set()
         varbinds_get = set()
         get_mapping = {}
         bulk_mapping = {}
-        if walk and (run_count <= 1 or not profiles):
+        if walk and (not walked_first_time or not profiles):
             varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
         else:
             needed_mibs = []
