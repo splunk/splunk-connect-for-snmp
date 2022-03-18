@@ -71,11 +71,10 @@ def walk(self, **kwargs):
     mongo_client = pymongo.MongoClient(MONGO_URI)
     mongo_db = mongo_client[MONGO_DB]
     mongo_inventory = mongo_db.inventory
-    mongo_schedules = mongo_db.schedules
+    mongo_targets = mongo_db.targets
 
-    walk_def = mongo_schedules.find_one({"name": "sc4snmp;" + address + ";walk"})
-    logger.warning(walk_def)
-    walked_first_time = walk_def.get("last_run_at")
+    walked_first_time = mongo_targets.find_one({"address": address})
+    logger.warning(walked_first_time)
 
     lock = MongoLock(client=mongo_client, db="sc4snmp")
 
