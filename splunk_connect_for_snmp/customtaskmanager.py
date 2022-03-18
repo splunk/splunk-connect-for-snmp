@@ -143,6 +143,8 @@ class CustomPeriodicTaskManager:
             periodic_document.run_immediately = task_data.get(
                 "run_immediately", run_immediately_if_new
             )
+            if "total_run_count" in task_data:
+                periodic_document["total_run_count"] = task_data["total_run_count"]
             if "target" in task_data:
                 periodic_document["target"] = task_data["target"]
             if "options" in task_data:

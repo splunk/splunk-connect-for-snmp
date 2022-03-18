@@ -89,6 +89,7 @@ def gen_walk_task(ir: InventoryRecord, profile=None):
         },
         "interval": {"every": ir.walk_interval, "period": "seconds"},
         "enabled": True,
+        "total_run_count": 0,
         "run_immediately": True,
     }
 
