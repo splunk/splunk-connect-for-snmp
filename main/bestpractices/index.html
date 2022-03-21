@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.8">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.5">
     
     
       
@@ -17,7 +17,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.6e60f8b8.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.2d9f7617.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
@@ -32,8 +32,9 @@
     
       
         
+        
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
@@ -546,11 +547,11 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#advices" class="md-nav__link">
-    Advices
+  <a href="#pieces-of-advice" class="md-nav__link">
+    Pieces of Advice
   </a>
   
-    <nav class="md-nav" aria-label="Advices">
+    <nav class="md-nav" aria-label="Pieces of Advice">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -597,6 +598,13 @@
           <li class="md-nav__item">
   <a href="#oid-not-increasing-problem" class="md-nav__link">
     "OID not increasing" problem
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#walking-a-device-takes-much-time" class="md-nav__link">
+    Walking a device takes much time
   </a>
   
 </li>
@@ -656,11 +664,11 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#advices" class="md-nav__link">
-    Advices
+  <a href="#pieces-of-advice" class="md-nav__link">
+    Pieces of Advice
   </a>
   
-    <nav class="md-nav" aria-label="Advices">
+    <nav class="md-nav" aria-label="Pieces of Advice">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -711,6 +719,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#walking-a-device-takes-much-time" class="md-nav__link">
+    Walking a device takes much time
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -729,8 +744,9 @@
               
                 
 
+
 <h1 id="debug-splunk-connect-for-snmp">Debug Splunk Connect for SNMP<a class="headerlink" href="#debug-splunk-connect-for-snmp" title="Permanent link">&para;</a></h1>
-<h2 id="advices">Advices<a class="headerlink" href="#advices" title="Permanent link">&para;</a></h2>
+<h2 id="pieces-of-advice">Pieces of Advice<a class="headerlink" href="#pieces-of-advice" title="Permanent link">&para;</a></h2>
 <h3 id="check-when-snmp-walk-was-executed-last-time-for-device">Check when SNMP WALK was executed last time for device<a class="headerlink" href="#check-when-snmp-walk-was-executed-last-time-for-device" title="Permanent link">&para;</a></h3>
 <ol>
 <li><a href="../gettingstarted/sck-installation/">Configure SCK</a></li>
@@ -738,14 +754,14 @@
 and replace <IP_ADDRESS> by IP Address which you are interested. </li>
 </ol>
 <h3 id="uninstall-splunk-connect-for-snmp">Uninstall Splunk Connect for SNMP<a class="headerlink" href="#uninstall-splunk-connect-for-snmp" title="Permanent link">&para;</a></h3>
-<p>To uninstall SC4SNMP run following commands:</p>
+<p>To uninstall SC4SNMP run the following commands:</p>
 <div class="codehilite"><pre><span></span><code> microk8s helm3 uninstall snmp -n sc4snmp
  microk8s kubectl delete pvc --all -n sc4snmp
 </code></pre></div>
 
 <h3 id="installing-splunk-connect-for-snmp-on-linux-redhat">Installing Splunk Connect for SNMP on Linux RedHat<a class="headerlink" href="#installing-splunk-connect-for-snmp-on-linux-redhat" title="Permanent link">&para;</a></h3>
-<p>Installation of RedHat may blocking ports required by microk8s. Installing microk8s on RedHat 
-required to check if firewall is not blocking any of <a href="https://microk8s.io/docs/ports">required microk8s ports</a>. </p>
+<p>Installation of RedHat may be blocking ports required by microk8s. Installing microk8s on RedHat 
+required checking if the firewall is not blocking any of <a href="https://microk8s.io/docs/ports">required microk8s ports</a>. </p>
 <h2 id="issues">Issues<a class="headerlink" href="#issues" title="Permanent link">&para;</a></h2>
 <h3 id="empty-snmp-response-message-problem">&ldquo;Empty SNMP response message&rdquo; problem<a class="headerlink" href="#empty-snmp-response-message-problem" title="Permanent link">&para;</a></h3>
 <p>In case you see the following line in worker&rsquo;s logs:</p>
@@ -753,7 +769,7 @@ required to check if firewall is not blocking any of <a href="https://microk8s.i
 </code></pre></div>
 
 <p>that causes infinite retry of walk operation, add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true.</p>
-<p>An example configuration for worker in <code>values.yaml</code> is:</p>
+<p>An example configuration for a worker in <code>values.yaml</code> is:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">ignoreEmptyVarbinds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </code></pre></div>
@@ -764,15 +780,33 @@ required to check if firewall is not blocking any of <a href="https://microk8s.i
 </code></pre></div>
 
 <p>that causes infinite retry of walk operation, add <code>worker.ignoreNotIncreasingOid</code> array to <code>values.yaml</code> and fill with the addresses of hosts where the problem appears.</p>
-<p>An example configuration for worker in <code>values.yaml</code> is:</p>
+<p>An example configuration for a worker in <code>values.yaml</code> is:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">ignoreNotIncreasingOid</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;127.0.0.1:164&quot;</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;127.0.0.6&quot;</span><span class="w"></span>
 </code></pre></div>
 
-<p>If you put only ip address (ex. <code>127.0.0.1</code>), then errors will be ignored for all of its devices (like <code>127.0.0.1:161</code>, 
-<code>127.0.0.1:163</code>&hellip;). If you put ip address and host structured as: <code>{host}:{port}</code> that means the error will be ignored only for this device.</p>
+<p>If you put only IP address (ex. <code>127.0.0.1</code>), then errors will be ignored for all of its devices (like <code>127.0.0.1:161</code>, 
+<code>127.0.0.1:163</code>&hellip;). If you put IP address and host structured as <code>{host}:{port}</code> that means the error will be ignored only for this device.</p>
+<h3 id="walking-a-device-takes-much-time">Walking a device takes much time<a class="headerlink" href="#walking-a-device-takes-much-time" title="Permanent link">&para;</a></h3>
+<p>If you would like to limit the scope of the walk, you should set one of the profiles in the inventory to point to the profile definition of type <code>walk</code></p>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">      </span><span class="no">small_walk:</span><span class="w"></span>
+<span class="w">        </span><span class="no">condition: </span><span class="w"></span>
+<span class="w">          </span><span class="no">type: &quot;walk&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="no">varBinds:</span><span class="w"></span>
+<span class="w">          </span><span class="no">- [&#39;UDP-MIB&#39;]</span><span class="w"></span>
+</code></pre></div>
+
+<p>Such profile should be placed in the profiles section of inventory definition. It will be executed with the frequency defined in walk_interval.
+In case of multiple profiles of type <code>walk</code> will be placed in profiles, the last one will be used.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">    </span><span class="no">address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete</span><span class="w"></span>
+<span class="w">    </span><span class="no">10.202.4.202,,2c,public,,,2000,small_walk,,</span><span class="w"></span>
+</code></pre></div>
 
               
             </article>
@@ -838,10 +872,10 @@ required to check if firewall is not blocking any of <a href="https://microk8s.i
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.22074ed6.min.js", "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.960e086b.min.js"></script>
+      <script src="../assets/javascripts/bundle.467223ff.min.js"></script>
       
     
   </body>

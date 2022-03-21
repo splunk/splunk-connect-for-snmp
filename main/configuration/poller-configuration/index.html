@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.8">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.5">
     
     
       
@@ -17,7 +17,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.6e60f8b8.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2d9f7617.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -32,8 +32,9 @@
     
       
         
+        
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
@@ -651,20 +652,20 @@
               
                 
 
+
 <h1 id="poller-configuration">Poller Configuration<a class="headerlink" href="#poller-configuration" title="Permanent link">&para;</a></h1>
-<p>Instruction contains configuration documentation for Poller. Poller is a service which is responsible for quering 
-SNMP devices using SNMP GET, SNMP WALK functionality. Poller executes two main type of tasks tasks:
+<p>The instruction contains configuration documentation for Poller. Poller is a service which is responsible for querying 
+SNMP devices using SNMP GET, SNMP WALK functionality. Poller executes two main types of tasks:
 - Walk task execute SNMP walk. SNMP walk is an SNMP application that uses SNMP GETNEXT requests to 
-collect SNMP data from network and infrastructure SNMP-enabled devices, such as switches and routers. It is time consuming task,
-which may overload SNMP device when execute too often. It is use by SC4SNMP to callect and push all OIDs values which provided ACL has access to. 
-- Get task - It is light weight task which goal is to query subset of OIDs defined by customer. Task is dedicated 
-to enabled monitoring of most important OIDs with high frequency like memory or CPU utilisation.  </p>
+collect SNMP data from network and infrastructure SNMP-enabled devices, such as switches and routers. It is a time-consuming task,
+which may overload the SNMP device when executing too often. It is used by SC4SNMP to collect and push all OIDs values which provided ACL has access to. 
+- Get task - It is a lightweight task whose goal is to query a subset of OIDs defined by the customer. The task is dedicated to enabling monitoring of the most important OIDs with high frequency like memory or CPU utilization.  </p>
 <h3 id="poller-configuration-file">Poller configuration file<a class="headerlink" href="#poller-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Poller configuration is keep in <code>values.yaml</code> file in section poller.  To downland example file execute command:</p>
+<p>Poller configuration is kept in <code>values.yaml</code> file in section poller.  To downland example file execute the command:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
 </code></pre></div>
 
-<p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
+<p><code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
 <p>Poller example configuration:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;WARN&quot;</span><span class="w"></span>
@@ -675,8 +676,8 @@ to enabled monitoring of most important OIDs with high frequency like memory or 
 
 <p>NOTE: header&rsquo;s line (<code>address,port,version,community</code>) is necessary for the correct execution of SC4SNMP. Do not remove it.</p>
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
-<p>Log level for trap can be set by changing value for key <code>logLevel</code>. Allowed value are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
-Default value is <code>WARNING</code></p>
+<p>Log level for trap can be set by changing the value for key <code>logLevel</code>. Allowed values are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
+The default value is <code>WARNING</code></p>
 <h3 id="configure-inventory">Configure inventory<a class="headerlink" href="#configure-inventory" title="Permanent link">&para;</a></h3>
 <p>To update inventory follow instruction: <a href="../deployment-configuration/#update-inventory-and-profile">Update Inventory and Profile</a> 
 <code>inventory</code> section in <code>poller</code> enable to configure inventory for polling data:</p>
@@ -767,10 +768,10 @@ Allowed value: <code>true</code>, <code>false</code>. Default value is <code>fal
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.22074ed6.min.js", "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js", "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.960e086b.min.js"></script>
+      <script src="../../assets/javascripts/bundle.467223ff.min.js"></script>
       
     
   </body>

@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.8">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.5">
     
     
       
@@ -17,7 +17,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.6e60f8b8.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2d9f7617.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -32,8 +32,9 @@
     
       
         
+        
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
@@ -721,10 +722,11 @@
               
                 
 
+
 <h1 id="sc4snmp-helm-installation">SC4SNMP Helm installation<a class="headerlink" href="#sc4snmp-helm-installation" title="Permanent link">&para;</a></h1>
 <p>The basic installation process and configuration used in this section are typical 
 for single node non HA deployments and do not have resource requests and limits.
-See the configuration sections for mongo, rabbitmq, scheduler, worker, and traps for guidance
+See the configuration sections for mongo, Rabbitmq, scheduler, worker, and traps for guidance
 on production configuration.</p>
 <h3 id="add-sc4snmp-repository">Add SC4SNMP repository<a class="headerlink" href="#add-sc4snmp-repository" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">repo</span> <span class="nv">add</span> <span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">splunk</span>.<span class="nv">github</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span>
@@ -736,8 +738,8 @@ on production configuration.</p>
 </code></pre></div>
 
 <p>Example output:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span>                                            <span class="nv">CHART</span> <span class="nv">VERSION</span>   <span class="nv">APP</span> <span class="nv">VERSION</span>     <span class="nv">DESCRIPTION</span>                           
-<span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span>     <span class="mi">1</span>.<span class="mi">0</span>.<span class="mi">0</span>         <span class="mi">1</span>.<span class="mi">0</span>.<span class="mi">0</span>    <span class="nv">A</span> <span class="nv">Helm</span> <span class="nv">chart</span> <span class="k">for</span> <span class="nv">SNMP</span> <span class="k">Connect</span> <span class="k">for</span> <span class="nv">SNMP</span>
+<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span>                                               <span class="nv">CHART</span> <span class="nv">VERSION</span>  <span class="nv">APP</span> <span class="nv">VERSION</span>    <span class="nv">DESCRIPTION</span>                           
+<span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span>        <span class="mi">1</span>.<span class="mi">0</span>.<span class="mi">0</span>        <span class="mi">1</span>.<span class="mi">0</span>.<span class="mi">0</span>       <span class="nv">A</span> <span class="nv">Helm</span> <span class="nv">chart</span> <span class="k">for</span> <span class="nv">SNMP</span> <span class="k">Connect</span> <span class="k">for</span> <span class="nv">SNMP</span>
 </code></pre></div>
 
 <h3 id="download-and-modify-valuesyaml">Download and modify values.yaml<a class="headerlink" href="#download-and-modify-valuesyaml" title="Permanent link">&para;</a></h3>
@@ -810,10 +812,10 @@ on production configuration.</p>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </code></pre></div>
 
-<p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
+<p><code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
 <h3 id="configure-splunk-enterprise-or-splunk-cloud-connection">Configure Splunk Enterprise or Splunk Cloud Connection<a class="headerlink" href="#configure-splunk-enterprise-or-splunk-cloud-connection" title="Permanent link">&para;</a></h3>
 <p>Splunk Enterprise or Splunk Cloud connection is enabled by default, to disable Splunk Enterprise or Splunk Cloud <code>splunk.enabled</code> property must be set to <code>false</code>.
-Additionally, connection parameter for Splunk Enterprise or Splunk Cloud need to be set in <code>splunk</code> section: </p>
+Additionally, connection parameters for Splunk Enterprise or Splunk Cloud needs to be set in <code>splunk</code> section: </p>
 <table>
 <thead>
 <tr>
@@ -933,11 +935,11 @@ inserted in the corresponding section of <code>values.yaml</code>. For more deta
 <h3 id="test-snmp-traps">Test SNMP Traps<a class="headerlink" href="#test-snmp-traps" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p>Test the Trap by logging into Splunk and confirm the presence of events
+<p>Test the Trap by logging into Splunk and confirming the presence of events
     in snmp <code>netops</code> and metrics in <code>netmetrics</code> index</p>
 </li>
 <li>
-<p>Test the trap from a linux system with SNMP installed. Replace the IP address 
+<p>Test the trap from a Linux system with SNMP installed. Replace the IP address 
     <code>10.0.101.22</code> with the shared IP address above</p>
 </li>
 </ul>
@@ -956,11 +958,11 @@ snmptrap -v2c -c public <span class="m">10</span>.0.101.22 <span class="m">123</
 <h3 id="test-snmp-poller">Test SNMP Poller<a class="headerlink" href="#test-snmp-poller" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p>Test the Poller by logging into Splunk and confirm the presence of events
+<p>Test the Poller by logging into Splunk and confirming the presence of events
     in snmp <code>netops</code> and metrics in <code>netmetrics</code> index</p>
 </li>
 <li>
-<p>Test the trap from a linux system install snmpd.</p>
+<p>Test the trap from a Linux system install snmpd.</p>
 </li>
 </ul>
 <div class="codehilite"><pre><span></span><code>apt update
@@ -968,7 +970,7 @@ apt-get install snmpd
 </code></pre></div>
 
 <ul>
-<li>To test snmp poller, snmpd need to be configure to listening on external IP. To enabled listening snmpd to external IP, 
+<li>To test SNMP poller, snmpd needs to be configured to listen on external IP. To enabled listening snmpd to external IP, 
 in configuration file: <code>/etc/snmp/snmpd.conf</code> replace the IP address  <code>10.0.101.22</code> with the server IP address where snmpd is configured
 <code>agentaddress  10.0.101.22,127.0.0.1,[::1]</code>. Restart snmpd by execute command:</li>
 </ul>
@@ -996,7 +998,7 @@ replace the IP address <code>10.0.101.22</code> with the server IP address where
 </code></pre></div>
 
 <ul>
-<li>Check in Splunk</li>
+<li>Check-in Splunk</li>
 </ul>
 <p>Up to 1 min events appear in Splunk:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">&quot;netops&quot;</span> <span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:event&quot;</span>
@@ -1070,10 +1072,10 @@ replace the IP address <code>10.0.101.22</code> with the server IP address where
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.22074ed6.min.js", "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js", "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.960e086b.min.js"></script>
+      <script src="../../assets/javascripts/bundle.467223ff.min.js"></script>
       
     
   </body>
