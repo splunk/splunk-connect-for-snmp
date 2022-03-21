@@ -34,13 +34,15 @@ Inventory and profiles in `values.yaml` is quite expensive from Splunk Connect f
 It required several checks before applying changes. SC4SNMP was designed to prevent changes in inventory and profiles 
 task more often than every 5 min. 
  
-When changing inventory or profile need to be apply in `values.yaml` following steps need to be done:
+When changing inventory or profile need to be applied in `values.yaml` following steps need to be done:
 
 1. Apply changes in `values.yaml` 
-2. Check is inventory pod is still running by execute command 
-   ```shell script
+2. Check is inventory pod is still running by an execute command
+   
+   ```shell
    microk8s kubectl -n sc4snmp get pods | grep inventory
    ```
-   If command do not return any pods than follow next step in other case wait and execute command again till moment 
-   when inventory job finish. 
+   
+   If the command does not return any pods, follow the next step. In another case, wait and execute the command again until the moment 
+   when inventory job finishes. 
 3. Run upgrade command describe in [Installation Guide](../gettingstarted/sc4snmp-installation/#install-sc4snmp) 

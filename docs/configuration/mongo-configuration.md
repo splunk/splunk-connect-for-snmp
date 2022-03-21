@@ -1,5 +1,5 @@
 #Mongo DB Configuration
-Mongo DB is used as database for keeping schedules.
+Mongo DB is used as the database for keeping schedules.
 
 ### Mongo DB configuration file
 
@@ -33,4 +33,4 @@ mongodb:
     enabled: true
 ```
 
-Recommendation is to do not change this setting. In case of need to change it please follow documentation: [MongoDB on Kubernetes](https://github.com/bitnami/charts/tree/master/bitnami/mongodb/)  
+The recommendation is to do not change this setting. In case of need to change it please follow documentation: [MongoDB on Kubernetes](https://github.com/bitnami/charts/tree/master/bitnami/mongodb/)  

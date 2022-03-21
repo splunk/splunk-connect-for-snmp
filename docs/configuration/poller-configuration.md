@@ -1,19 +1,18 @@
 #Poller Configuration
-Instruction contains configuration documentation for Poller. Poller is a service which is responsible for quering 
-SNMP devices using SNMP GET, SNMP WALK functionality. Poller executes two main type of tasks tasks:
+The instruction contains configuration documentation for Poller. Poller is a service which is responsible for querying 
+SNMP devices using SNMP GET, SNMP WALK functionality. Poller executes two main types of tasks:
 - Walk task execute SNMP walk. SNMP walk is an SNMP application that uses SNMP GETNEXT requests to 
-collect SNMP data from network and infrastructure SNMP-enabled devices, such as switches and routers. It is time consuming task,
-which may overload SNMP device when execute too often. It is use by SC4SNMP to callect and push all OIDs values which provided ACL has access to. 
-- Get task - It is light weight task which goal is to query subset of OIDs defined by customer. Task is dedicated 
-to enabled monitoring of most important OIDs with high frequency like memory or CPU utilisation.  
+collect SNMP data from network and infrastructure SNMP-enabled devices, such as switches and routers. It is a time-consuming task,
+which may overload the SNMP device when executing too often. It is used by SC4SNMP to collect and push all OIDs values which provided ACL has access to. 
+- Get task - It is a lightweight task whose goal is to query a subset of OIDs defined by the customer. The task is dedicated to enabling monitoring of the most important OIDs with high frequency like memory or CPU utilization.  
 
 ### Poller configuration file
 
-Poller configuration is keep in `values.yaml` file in section poller.  To downland example file execute command:
+Poller configuration is kept in `values.yaml` file in section poller.  To downland example file execute the command:
 ```
 curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
 ```
-`values.yaml` is being used during the installation process for configuring kubernetes values.
+`values.yaml` is being used during the installation process for configuring Kubernetes values.
 
 Poller example configuration:
 ```yaml
@@ -27,8 +26,8 @@ poller:
 NOTE: header's line (`address,port,version,community`) is necessary for the correct execution of SC4SNMP. Do not remove it.
 
 ### Define log level
-Log level for trap can be set by changing value for key `logLevel`. Allowed value are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
-Default value is `WARNING`
+Log level for trap can be set by changing the value for key `logLevel`. Allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
+The default value is `WARNING`
 
 ### Configure inventory 
 To update inventory follow instruction: [Update Inventory and Profile](../deployment-configuration/#update-inventory-and-profile) 

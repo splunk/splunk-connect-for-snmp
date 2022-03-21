@@ -1,13 +1,13 @@
 #Trap Configuration
-Trap service is a simple server which can handle SNMP traps sent by SNMP devices like rauter or switches.   
+A trap service is a simple server that can handle SNMP traps sent by SNMP devices like routers or switches.   
 
 ### Trap configuration file
 
-Trap configuration is keep in `values.yaml` file in section traps.  To downland example file execute command:
+Trap configuration is kept in `values.yaml` file in section traps.  To downland example file execute the command:
 ```
 curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
 ```
-`values.yaml` is being used during the installation process for configuring kubernetes values.
+`values.yaml` is being used during the installation process for configuring Kubernetes values.
 
 Trap example configuration:
 ```yaml
@@ -38,8 +38,8 @@ traps:
 ```
 
 ### Define communities 
-`communities` define version of SNMP protocol and SNMP community string which should be use. 
-`communities` key is split by protocol version, supported values are `1` and `2c`. Under version SNMP community string can be defined. 
+`communities` define a version of SNMP protocol and SNMP community string which should be used. 
+`communities` key is split by protocol version, supported values are `1` and `2c`. Under `version` section, SNMP community string can be defined. 
 
 Example: 
 ```yaml
@@ -53,9 +53,9 @@ traps:
 ```
 
 ### Configure user secrets for SNMPv3 
-`usernameSecrets` key in traps enable configure SNMPv3 secrets for trap messages sent by SNMP device. `usernameSecrets` define which secrets 
-in "Secret" objects in k8s should be use, as a value it need to put name of "Secret" objects. 
-More information how to define "Secrets" object for SNMPv3 can be found in [SNMPv3 Configuration](snmpv3-configuration.md)
+`usernameSecrets` key in the `traps` section define SNMPv3 secrets for trap messages sent by SNMP device. `usernameSecrets` define which secrets 
+in "Secret" objects in k8s should be used, as a value it needs to put the name of "Secret" objects. 
+More information on how to define the "Secret" object for SNMPv3 can be found in [SNMPv3 Configuration](snmpv3-configuration.md)
 
 Example:
 ```yaml
@@ -67,7 +67,7 @@ traps:
 
 ### Define security engine ID for SNMPv3
 
-Security engine ID variable is necessary when sending SNMPv3 traps. By default it is set to 
+Security engine ID variable is necessary when sending SNMPv3 traps. By default, it is set to 
 `8000000903000A397056B8AC`. It has to match the `-e` string in snmptrap.
 
 Example:
@@ -92,18 +92,16 @@ traps:
 ```
 
 ### Define number of traps server replica
-`replicas` Defines number of replicas for trap container should be 2x number of nodes. Default value is `2`. 
+`replicas` Defines the number of replicas for trap container should be 2x number of nodes. The default value is `2`. 
 Example:
 ```yaml
 traps:
   #For production deployments the value should be 2x the number of nodes
-  # Minimum 2 for single node
-  # Minimum 6 for multi node HA
+  # Minimum 2 for a single node
+  # Minimum 6 for multi-node HA
   replicaCount: 2
 ```
 
 ### Define log level
-Log level for trap can be set by changing value for key `logLevel`. Allowed value are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
-Default value is `WARNING`
-
- 
+Log level for trap can be set by changing the value for key `logLevel`. Allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
+The default value is `WARNING`
