@@ -353,24 +353,18 @@ def setup_small_walk(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     profile = {
         "walk1": {
-            "condition": {
-                "type": "walk"
-            },
+            "condition": {"type": "walk"},
             "varBinds": [yaml_escape_list(sq("IP-MIB"))],
         },
     }
     update_profiles(profile)
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(60)
-    update_file(
-        [f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml"
-    )
+    update_file([f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml")
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(30)
     yield
-    update_file(
-        [f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml"
-    )
+    update_file([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml")
     upgrade_helm(["inventory.yaml"])
     time.sleep(20)
 
@@ -378,18 +372,24 @@ def setup_small_walk(request):
 @pytest.mark.usefixtures("setup_small_walk")
 class TestSmallWalk:
     def test_sanity_small_walk(self, setup_splunk):
-        search_string = """| mpreview index=netmetrics earliest=-30s | search "TCP-MIB" """
+        search_string = (
+            """| mpreview index=netmetrics earliest=-30s | search "TCP-MIB" """
+        )
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         assert result_count > 0
         assert metric_count > 0
 
     def test_check_if_walk_scope_was_smaller(self, setup_splunk):
         time.sleep(20)
-        search_string = """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
+        search_string = (
+            """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
+        )
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         assert result_count == 0
         assert metric_count == 0
-        search_string = """| mpreview index=netmetrics earliest=-20s | search "IP-MIB" """
+        search_string = (
+            """| mpreview index=netmetrics earliest=-20s | search "IP-MIB" """
+        )
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         assert result_count > 0
         assert metric_count > 0
