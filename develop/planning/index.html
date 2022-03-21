@@ -657,9 +657,9 @@ to "get" data from network devices and appliances when a more feature-complete s
 available.</p>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
 <p>SC4SNMP is deployed using a Kubernetes distribution, typically MicroK8s,
-that&rsquo;s deseigned to be a low-touch experience for integration with sensitive
+that&rsquo;s designed to be a low-touch experience for integration with sensitive
 edge network devices. It will typically be deployed in the same network
-management zone as the monitored devices and seperated from Splunk by an
+management zone as the monitored devices and separated from Splunk by an
 existing firewall.</p>
 <p><img alt="image" src="../images/sc4snmp_deployment.png" /></p>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
@@ -679,30 +679,34 @@ existing firewall.</p>
 <p>100 GB root mount</p>
 </li>
 <li>
-<p>http access (non proxy) allowed for the HTTP(s) connection from
+<p>HTTP access (non-proxy) allowed for the HTTP(s) connection from
     SC4SNMP to the Splunk destination.</p>
 </li>
 <li>
 <p>Splunk Enterprise/Cloud 8.x and or Splunk Infrastructure Monitoring
-    (SignalFX)</p>
+    (SignalFx)</p>
 </li>
 <li>
-<p>Splunk Enterprise/Cloud specific Requirements</p>
-<p>:   -   Splunk ITSI or Splunk IT Work
-    -   Ability to create a HEC token
-    -   Ability to create event and metrics indexes (or use
-        existing)</p>
+<p>Splunk Enterprise/Cloud specific Requirements:</p>
+<ul>
+<li>Splunk ITSI or Splunk IT Work</li>
+<li>Ability to create a HEC token</li>
+<li>Ability to create event and metrics indexes (or use
+        existing)</li>
+</ul>
 </li>
 <li>
-<p>Splunk Infrastructure Monitoring specific requirements</p>
-<p>:   -   Ability to create or obtain real and token</p>
+<p>Splunk Infrastructure Monitoring specific requirements:   </p>
+<ul>
+<li>Ability to create or obtain real and token</li>
+</ul>
 </li>
 </ul>
 <h2 id="planning-infrastructure">Planning Infrastructure<a class="headerlink" href="#planning-infrastructure" title="Permanent link">&para;</a></h2>
-<p>Single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
+<p>A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
 16 Core/32 threads x64 and 12 GB ram will be able to handle up to 1300
 SNMP TRAPs per sec.</p>
-<p>Single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
+<p>A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
 16 Core/32 threads x64 and 64 GB ram will be able to handle up to 1300
 SNMP GETs per sec.</p>
 <p>When planning infrastructure for Splunk Connect for SNMP, (SC4SNMP) note the limitations highlighted above.</p>

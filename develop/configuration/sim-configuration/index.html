@@ -580,23 +580,21 @@
 
 
 <h1 id="otel-configuration">Otel configuration<a class="headerlink" href="#otel-configuration" title="Permanent link">&para;</a></h1>
-<p>Splunk OpenTelemetry Collector is a component that provides an option to send metrics to signalFx.
+<p>Splunk OpenTelemetry Collector is a component that provides an option to send metrics to SignalFx.
 In order to use it, you must set <code>enabled</code> flag in <code>values.yaml</code> to <code>true</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># sim must be enabled if you want to use signalFx</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># sim must be enabled if you want to use SignalFx</span><span class="w"></span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </code></pre></div>
 
-<p>Also you need to specify signalFx token and realm, so at the end sim element in <code>values.yaml</code> looks like this:</p>
+<p>Also, you need to specify SignalFx token and realm, so at the end sim element in <code>values.yaml</code> looks like this:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 <span class="w">  </span><span class="nt">signalfxToken</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BCwaJ_Ands4Xh7Nrg</span><span class="w"></span>
 <span class="w">  </span><span class="nt">signalfxRealm</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us0</span><span class="w"></span>
 </code></pre></div>
 
-<p>After executing 
-<code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</code>, 
-the sim pod should be up and running:</p>
+<p>After executing <code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</code>, the sim pod should be up and running:</p>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">splunker@ip-10-202-13-233:~$ microk8s kubectl get pods -n sc4snmp</span><span class="w"></span>
 <span class="l l-Scalar l-Scalar-Plain">NAME                                                      READY   STATUS    RESTARTS   AGE</span><span class="w"></span>
 <span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-7496b66947-6hjhl      1/1     Running   0          32s</span><span class="w"></span>

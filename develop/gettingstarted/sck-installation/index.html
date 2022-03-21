@@ -770,7 +770,7 @@ In order to learn more about Splunk OpenTelemetry Collector visit <a href="https
 </code></pre></div>
 
 <h2 id="install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes">Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" title="Permanent link">&para;</a></h2>
-<p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the description presented below</p>
+<p>To run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the description presented below</p>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install sck
 --set<span class="o">=</span><span class="s2">&quot;clusterName=&lt;cluster_name&gt;&quot;</span>
 --set<span class="o">=</span><span class="s2">&quot;splunkObservability.realm=&lt;realm&gt;&quot;</span>
@@ -810,12 +810,12 @@ splunk-otel-collector-chart/splunk-otel-collector
 </tr>
 <tr>
 <td>ingest_url</td>
-<td>Ingest url from the Splunk Observability Cloud environment</td>
+<td>Ingest URL from the Splunk Observability Cloud environment</td>
 <td>https://ingest..signalfx.com</td>
 </tr>
 <tr>
 <td>api_url</td>
-<td>Api url from the Splunk Observability Cloud environment</td>
+<td>API URL from the Splunk Observability Cloud environment</td>
 <td>https://api..signalfx.com</td>
 </tr>
 </tbody>

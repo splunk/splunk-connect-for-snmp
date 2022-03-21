@@ -710,13 +710,13 @@
 
 
 <h1 id="trap-configuration">Trap Configuration<a class="headerlink" href="#trap-configuration" title="Permanent link">&para;</a></h1>
-<p>Trap service is a simple server which can handle SNMP traps sent by SNMP devices like rauter or switches.   </p>
+<p>A trap service is a simple server that can handle SNMP traps sent by SNMP devices like routers or switches.   </p>
 <h3 id="trap-configuration-file">Trap configuration file<a class="headerlink" href="#trap-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Trap configuration is keep in <code>values.yaml</code> file in section traps.  To downland example file execute command:</p>
+<p>Trap configuration is kept in <code>values.yaml</code> file in section traps.  To downland example file execute the command:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
 </code></pre></div>
 
-<p><code>values.yaml</code> is being used during the installation process for configuring kubernetes values.</p>
+<p><code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
 <p>Trap example configuration:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">communities</span><span class="p">:</span><span class="w"></span>
@@ -745,8 +745,8 @@
 </code></pre></div>
 
 <h3 id="define-communities">Define communities<a class="headerlink" href="#define-communities" title="Permanent link">&para;</a></h3>
-<p><code>communities</code> define version of SNMP protocol and SNMP community string which should be use. 
-<code>communities</code> key is split by protocol version, supported values are <code>1</code> and <code>2c</code>. Under version SNMP community string can be defined. </p>
+<p><code>communities</code> define a version of SNMP protocol and SNMP community string which should be used. 
+<code>communities</code> key is split by protocol version, supported values are <code>1</code> and <code>2c</code>. Under <code>version</code> section, SNMP community string can be defined. </p>
 <p>Example: </p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">communities</span><span class="p">:</span><span class="w"></span>
@@ -758,9 +758,9 @@
 </code></pre></div>
 
 <h3 id="configure-user-secrets-for-snmpv3">Configure user secrets for SNMPv3<a class="headerlink" href="#configure-user-secrets-for-snmpv3" title="Permanent link">&para;</a></h3>
-<p><code>usernameSecrets</code> key in traps enable configure SNMPv3 secrets for trap messages sent by SNMP device. <code>usernameSecrets</code> define which secrets 
-in &ldquo;Secret&rdquo; objects in k8s should be use, as a value it need to put name of &ldquo;Secret&rdquo; objects. 
-More information how to define &ldquo;Secrets&rdquo; object for SNMPv3 can be found in <a href="../snmpv3-configuration/">SNMPv3 Configuration</a></p>
+<p><code>usernameSecrets</code> key in the <code>traps</code> section define SNMPv3 secrets for trap messages sent by SNMP device. <code>usernameSecrets</code> define which secrets 
+in &ldquo;Secret&rdquo; objects in k8s should be used, as a value it needs to put the name of &ldquo;Secret&rdquo; objects. 
+More information on how to define the &ldquo;Secret&rdquo; object for SNMPv3 can be found in <a href="../snmpv3-configuration/">SNMPv3 Configuration</a></p>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">usernameSecrets</span><span class="p">:</span><span class="w"></span>
@@ -769,7 +769,7 @@ More information how to define &ldquo;Secrets&rdquo; object for SNMPv3 can be fo
 </code></pre></div>
 
 <h3 id="define-security-engine-id-for-snmpv3">Define security engine ID for SNMPv3<a class="headerlink" href="#define-security-engine-id-for-snmpv3" title="Permanent link">&para;</a></h3>
-<p>Security engine ID variable is necessary when sending SNMPv3 traps. By default it is set to 
+<p>Security engine ID variable is necessary when sending SNMPv3 traps. By default, it is set to 
 <code>8000000903000A397056B8AC</code>. It has to match the <code>-e</code> string in snmptrap.</p>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
@@ -788,18 +788,18 @@ Example:</p>
 </code></pre></div>
 
 <h3 id="define-number-of-traps-server-replica">Define number of traps server replica<a class="headerlink" href="#define-number-of-traps-server-replica" title="Permanent link">&para;</a></h3>
-<p><code>replicas</code> Defines number of replicas for trap container should be 2x number of nodes. Default value is <code>2</code>. 
+<p><code>replicas</code> Defines the number of replicas for trap container should be 2x number of nodes. The default value is <code>2</code>. 
 Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1">#For production deployments the value should be 2x the number of nodes</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Minimum 2 for single node</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Minimum 6 for multi node HA</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Minimum 2 for a single node</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Minimum 6 for multi-node HA</span><span class="w"></span>
 <span class="w">  </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
 </code></pre></div>
 
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
-<p>Log level for trap can be set by changing value for key <code>logLevel</code>. Allowed value are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
-Default value is <code>WARNING</code></p>
+<p>Log level for trap can be set by changing the value for key <code>logLevel</code>. Allowed values are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
+The default value is <code>WARNING</code></p>
 
               
             </article>

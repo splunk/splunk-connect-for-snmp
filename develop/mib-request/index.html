@@ -624,9 +624,9 @@
 
 
 <h1 id="mib-submission-process">MIB submission process<a class="headerlink" href="#mib-submission-process" title="Permanent link">&para;</a></h1>
-<p>In order to achieve human-readable OIDs,the corresponding MIB files are necessary.
+<p>To achieve human-readable OIDs, the corresponding MIB files are necessary.
 They are being stored in one of the components of SC4SNMP - the MIB server. </p>
-<p>The lis of currently available MIBs is here:
+<p>The list of currently available MIBs is here:
 <a href="https://pysnmp.github.io/mibs/index.csv">https://pysnmp.github.io/mibs/index.csv</a></p>
 <p>An alternative way to check if the MIB you&rsquo;re interested in is being served is to check the link:
 <code>https://pysnmp.github.io/mibs/asn1/@mib@</code> where <code>@mib@</code> is the name of MIB (for example <code>IF-MIB</code>). If the file 
@@ -639,7 +639,7 @@ is downloading, that means the MIB file exists in the mib server.</p>
 </li>
 <li>
 <p>Put MIB file/s under <code>src/vendor/@vendor_name@</code> where <code>@vendor_name@</code> is the name of the MIB file&rsquo;s vendor (in case
-there is no directory of vendor you need, create it by yourself)</p>
+there is no directory of vendors you need, create it by yourself)</p>
 </li>
 <li>
 <p>Create a pull request to a <code>main</code> branch</p>
@@ -648,7 +648,7 @@ there is no directory of vendor you need, create it by yourself)</p>
 <p>Name the pull request the following way: <code>feat: add @vendor_name@ MIB files</code></p>
 </li>
 </ol>
-<p>An alternative way of adding MIBs to MIB server is to create an issue on 
+<p>An alternative way of adding MIBs to the MIB server is to create an issue on 
 <a href="https://github.com/pysnmp/mibs">https://github.com/pysnmp/mibs</a> repository, attaching the files and information about 
 the vendor.</p>
 
