@@ -1,9 +1,9 @@
 ### Create SNMP v3 users
 
-Configuration of SNMP v3 when supported by the monitored devices is the most secure choice available
+Configuration of SNMP v3, when supported by the monitored devices, is the most secure choice available
 for authentication and data privacy. Each set of credentials will be stored as "Secret" objects in k8s
-and will be referenced in the values.yaml. This allows the secret to be created once including automation
-by third party password managers then consumed without storing sensitive data in plain text.
+and will be referenced in the values.yaml. This allows the secret to being created once including automation
+by third-party password managers then consumed without storing sensitive data in plain text.
 
 ```bash
 # <secretname>=Arbitrary name of the secret often the same as the username or prefixed with "sc4snmp-"
@@ -22,4 +22,4 @@ kubectl create -n <namespace> secret generic <secretname> \
 ```
 
 Configured credential can be use in [poller](poller-configuration.md) and [trap](trap-configuration.md) services. 
-In services configuration `secretname` need to be provided. 
+In services configuration, `secretname` need to be provided. 

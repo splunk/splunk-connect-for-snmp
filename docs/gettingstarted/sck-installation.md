@@ -49,7 +49,7 @@ microk8s helm3 upgrade --install sck \
 
 ## Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes
 
-In order to run Splunk OpenTelemetry Collector on your environment, replace `<>` variables according to the description presented below
+To run Splunk OpenTelemetry Collector on your environment, replace `<>` variables according to the description presented below
 
 ```bash
 microk8s helm3 upgrade --install sck
@@ -72,8 +72,8 @@ splunk-otel-collector-chart/splunk-otel-collector
 | cluster_name  | name of the cluster | my_cluster |
 | realm | Realm obtained from the Splunk Observability Cloud environment  | us0  |
 | token | Token obtained from the Splunk Observability Cloud environment  | BCwaJ_Ands4Xh7Nrg |
-| ingest_url | Ingest url from the Splunk Observability Cloud environment | https://ingest..signalfx.com |
-| api_url | Api url from the Splunk Observability Cloud environment  | https://api..signalfx.com |
+| ingest_url | Ingest URL from the Splunk Observability Cloud environment | https://ingest..signalfx.com |
+| api_url | API URL from the Splunk Observability Cloud environment  | https://api..signalfx.com |
 
 An example of filled up command is:
 ```bash

@@ -7,9 +7,9 @@ available.
 ## Architecture
 
 SC4SNMP is deployed using a Kubernetes distribution, typically MicroK8s,
-that's deseigned to be a low-touch experience for integration with sensitive
+that's designed to be a low-touch experience for integration with sensitive
 edge network devices. It will typically be deployed in the same network
-management zone as the monitored devices and seperated from Splunk by an
+management zone as the monitored devices and separated from Splunk by an
 existing firewall.
 
 ![image](images/sc4snmp_deployment.png)
@@ -26,34 +26,29 @@ existing firewall.
 
 -   100 GB root mount
 
--   http access (non proxy) allowed for the HTTP(s) connection from
+-   HTTP access (non-proxy) allowed for the HTTP(s) connection from
     SC4SNMP to the Splunk destination.
 
 -   Splunk Enterprise/Cloud 8.x and or Splunk Infrastructure Monitoring
-    (SignalFX)
+    (SignalFx)
 
--   
+- Splunk Enterprise/Cloud specific Requirements:
 
-    Splunk Enterprise/Cloud specific Requirements
-
-    :   -   Splunk ITSI or Splunk IT Work
-        -   Ability to create a HEC token
-        -   Ability to create event and metrics indexes (or use
+    *  Splunk ITSI or Splunk IT Work
+    *  Ability to create a HEC token
+    *  Ability to create event and metrics indexes (or use
             existing)
 
--   
-
-    Splunk Infrastructure Monitoring specific requirements
-
-    :   -   Ability to create or obtain real and token
+- Splunk Infrastructure Monitoring specific requirements:   
+    * Ability to create or obtain real and token
 
 ## Planning Infrastructure
 
-Single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
+A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
 16 Core/32 threads x64 and 12 GB ram will be able to handle up to 1300
 SNMP TRAPs per sec.
 
-Single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
+A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
 16 Core/32 threads x64 and 64 GB ram will be able to handle up to 1300
 SNMP GETs per sec.
 
