@@ -32,18 +32,15 @@ existing firewall.
 -   Splunk Enterprise/Cloud 8.x and or Splunk Infrastructure Monitoring
     (SignalFx)
 
--   
+- Splunk Enterprise/Cloud specific Requirements:
 
-    Splunk Enterprise/Cloud specific Requirements:   
-    -   Splunk ITSI or Splunk IT Work
-        -   Ability to create an HEC token
-        -   Ability to create event and metrics indexes (or use
+    *  Splunk ITSI or Splunk IT Work
+    *  Ability to create a HEC token
+    *  Ability to create event and metrics indexes (or use
             existing)
 
--   
-
-    Splunk Infrastructure Monitoring specific requirements:   
-    -   Ability to create or obtain real and token
+- Splunk Infrastructure Monitoring specific requirements:   
+    * Ability to create or obtain real and token
 
 ## Planning Infrastructure
 
