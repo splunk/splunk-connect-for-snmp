@@ -22,6 +22,7 @@ traps:
   #loadBalancerIP: The IP address in the metallb pool
   loadBalancerIP: ###LOAD_BALANCER_ID###
 worker:
+  profilesReloadDelay: 1
   # replicas: Number of replicas for worker container should two or more
   replicaCount: 1
   # udpConnectionTimeout: timeout in seconds for SNMP operations
@@ -29,6 +30,9 @@ worker:
   logLevel: "DEBUG"
 scheduler:
   logLevel: "INFO"
+  customTranslations:
+    IP-MIB:
+      icmpOutEchoReps: myCustomName1
 #  profiles: |
 #    generic_switch:
 #      frequency: 60
@@ -37,7 +41,6 @@ scheduler:
 #        - ['SNMPv2-MIB', 'sysName', 0]
 #        - ['IF-MIB']
 #        - ['TCP-MIB']
-#        - ['UDP-MIB']
 poller:
  # usernameSecrets:
  #   - sc4snmp-hlab-sha-aes

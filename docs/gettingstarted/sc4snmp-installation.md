@@ -2,7 +2,7 @@
 
 The basic installation process and configuration used in this section are typical 
 for single node non HA deployments and do not have resource requests and limits.
-See the configuration sections for mongo, rabbitmq, scheduler, worker, and traps for guidance
+See the configuration sections for mongo, Rabbitmq, scheduler, worker, and traps for guidance
 on production configuration.
 
 ### Add SC4SNMP repository
@@ -16,8 +16,8 @@ microk8s helm3 search repo snmp
 ```
 Example output:
 ``` 
-NAME                                           	CHART VERSION 	APP VERSION   	DESCRIPTION                           
-splunk-connect-for-snmp/splunk-connect-for-snmp	    1.0.0	      1.0.0	   A Helm chart for SNMP Connect for SNMP
+NAME                                               CHART VERSION  APP VERSION    DESCRIPTION                           
+splunk-connect-for-snmp/splunk-connect-for-snmp        1.0.0        1.0.0       A Helm chart for SNMP Connect for SNMP
 ```
 
 ### Download and modify values.yaml
@@ -91,11 +91,11 @@ rabbitmq:
     enabled: true
 ```
 
-`values.yaml` is being used during the installation process for configuring kubernetes values.
+`values.yaml` is being used during the installation process for configuring Kubernetes values.
 
 ### Configure Splunk Enterprise or Splunk Cloud Connection
 Splunk Enterprise or Splunk Cloud connection is enabled by default, to disable Splunk Enterprise or Splunk Cloud `splunk.enabled` property must be set to `false`.
-Additionally, connection parameter for Splunk Enterprise or Splunk Cloud need to be set in `splunk` section: 
+Additionally, connection parameters for Splunk Enterprise or Splunk Cloud needs to be set in `splunk` section: 
 
 | Placeholder   | Description  | Example  | 
 |---|---|---|
@@ -158,10 +158,10 @@ snmp-splunk-connect-for-snmp-traps-54f79b945d-bmbg7       1/1     Running       
 ```
 
 ### Test SNMP Traps
-- Test the Trap by logging into Splunk and confirm the presence of events
+- Test the Trap by logging into Splunk and confirming the presence of events
     in snmp `netops` and metrics in `netmetrics` index
 
--   Test the trap from a linux system with SNMP installed. Replace the IP address 
+-   Test the trap from a Linux system with SNMP installed. Replace the IP address 
     `10.0.101.22` with the shared IP address above
 
 ``` bash
@@ -178,17 +178,17 @@ index="netops" sourcetype="sc4snmp:traps"
 ```
 
 ### Test SNMP Poller
-- Test the Poller by logging into Splunk and confirm the presence of events
+- Test the Poller by logging into Splunk and confirming the presence of events
     in snmp `netops` and metrics in `netmetrics` index
 
-- Test the trap from a linux system install snmpd.
+- Test the trap from a Linux system install snmpd.
     
 ``` bash
 apt update
 apt-get install snmpd
 ```
 
-- To test snmp poller, snmpd need to be configure to listening on external IP. To enabled listening snmpd to external IP, 
+- To test SNMP poller, snmpd needs to be configured to listen on external IP. To enabled listening snmpd to external IP, 
 in configuration file: `/etc/snmp/snmpd.conf` replace the IP address  `10.0.101.22` with the server IP address where snmpd is configured
 `agentaddress  10.0.101.22,127.0.0.1,[::1]`. Restart snmpd by execute command:
 ``` bash
@@ -214,7 +214,7 @@ poller:
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
 
--   Check in Splunk
+-   Check-in Splunk
  
  Up to 1 min events appear in Splunk:
 

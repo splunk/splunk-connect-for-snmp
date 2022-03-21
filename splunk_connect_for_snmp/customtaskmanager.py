@@ -43,8 +43,9 @@ class CustomPeriodicTaskManager:
             periodic_document = periodic.get(name=p.name)
             logger.debug("Got Schedule")
             if p.name not in activeschedules:
-                periodic_document.delete()
-                logger.debug("Deleting Schedule")
+                if periodic_document.enabled:
+                    periodic_document.enabled = False
+                logger.debug(f"Deleting Schedule: {periodic_document.name}")
 
     def delete_all_poll_tasks(self):
         periodic = PeriodicTask.objects()
@@ -116,6 +117,8 @@ class CustomPeriodicTaskManager:
                     isChanged = True
                 elif key == "target":
                     pass
+                elif key == "total_run_count":
+                    periodic_document[key] = task_data[key]
                 else:
                     if key in periodic_document:
                         if not periodic_document[key] == task_data[key]:
@@ -142,10 +145,13 @@ class CustomPeriodicTaskManager:
             periodic_document.run_immediately = task_data.get(
                 "run_immediately", run_immediately_if_new
             )
+            if "total_run_count" in task_data:
+                periodic_document["total_run_count"] = task_data["total_run_count"]
             if "target" in task_data:
                 periodic_document["target"] = task_data["target"]
             if "options" in task_data:
                 periodic_document["options"] = task_data["options"]
 
+        logger.info(f"Periodic document to save: {periodic_document.to_json()}")
         if isChanged:
             periodic_document.save()

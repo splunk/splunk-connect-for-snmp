@@ -1,14 +1,14 @@
 # Scheduler configuration
-Scheduler is a service with is responsible for manager schedules for SNMP walks and GETs. Schedules definition 
-are store in Mongo DB. 
+The scheduler is a service with is responsible for managing schedules for SNMP walks and GETs. Schedules definition 
+are stored in Mongo DB. 
  
 ### Scheduler configuration file
 
-Scheduler configuration is kept in `values.yaml` file in section `scheduler`.  To downland example file execute command:
+Scheduler configuration is kept in `values.yaml` file in section `scheduler`.  To downland example file execute the command:
 ```
 curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
 ```
-`values.yaml` is being used during the installation process for configuring kubernetes values.
+`values.yaml` is being used during the installation process for configuring Kubernetes values.
 
 Example:
 ```yaml
@@ -28,8 +28,8 @@ scheduler:
 ```
 
 ### Define log level
-Log level for trap can be set by changing value for key `logLevel`. Allowed value are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
-Default value is `WARNING`
+Log level for trap can be set by changing the value for key `logLevel`. Allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
+The default value is `WARNING`
 
 ### Define resource requests and limits
 ```yaml
@@ -58,7 +58,7 @@ scheduler:
         #Define condition
         condition:
           # Define type of condition. Allowed value field and base 
-          typy: field
+          type: field
           field: "SNMPv2-MIB.sysDescr"
           # Define paterns
           patterns:
@@ -73,17 +73,17 @@ scheduler:
 
 #### varBinds configuration
 `varBinds` short for "variable binding" in SNMP. The combination of an Object Identifier (OID) and a value. 
-`varBinds` are use for defining in profiles what OIDs should be getting from SNMP Agents. `varBinds` is required 
+`varBinds` are used for defining in profiles what OIDs should be getting from SNMP Agents. `varBinds` is a required 
 subsection of each profile. Syntax configuration of `varBinds` looks following:
 
  [ "MIB-Component", "MIB object"[Optional], "MIB index number"[Optional]]
  
  - `MIB-Component` - The SNMP MIB, itself, consists of distinct component MIBs, each of which refers to a specific 
  defined collection of management information that is part of the overall SNMP MIB eg. `SNMPv2-MIB`. 
- If only `MIB-Component` is set than all whole sub tree is getting.
+ If only `MIB-Component` is set then all whole subtree is getting.
  - `MIB object` -  The SNMP MIB stores only simple data types: scalars and two-dimensional arrays of scalars, 
  called tables. Keywords SYNTAX, ACCESS, and DESCRIPTION as well as other keywords such as STATUS and 
- INDEX are used to define the SNMP MIB managed objects. 
+ INDEX is used to define the SNMP MIB managed objects. 
  - `MIB index number` - Define index number for given MIB Object eg. `0`.
  
 Example:
@@ -96,10 +96,10 @@ Example:
 ```
 
 #### Static Profile configuration
-Static Profile are used when they are defined on list of profile in inventory configuration in `poller` 
-service [Inventory configuration](../poller-configuration/#configure-inventory). Static Profile are executed 
-even if SmartProfile flag in inventory is set to false. 
-To configure Static Profile following value need to be set in `profiles` section:
+Static Profile are used when they are defined on a list of profiles in inventory configuration in `poller` 
+service [Inventory configuration](../poller-configuration/#configure-inventory). Static Profiles are executed 
+even if the SmartProfile flag in inventory is set to false. 
+To configure Static Profile following value needs to be set in `profiles` section:
 
  - `ProfileName` - define as subsection key in `profiles`. 
     - `frequency` - define interval between executing SNMP gets in second.  
@@ -118,16 +118,17 @@ scheduler:
 ```
 
 #### SmartProfile configuration
-SmartProfile are executed when SmartProfile flag in inventory is set to true and condition defined in profile matching. 
+SmartProfile is executed when the SmartProfile flag in inventory is set to true and the condition defined in profile matching. 
 More information about configuring inventory can be found in [Inventory configuration](../poller-configuration/#configure-inventory)
 
-To configure Static Profile following value need to be set in `profiles` section:
+To configure Static Profile following value needs to be set in `profiles` section:
 
  - `ProfileName` - define as subsection key in `profiles`. 
     - `frequency` - define interval between executing SNMP gets in second.
     - `condition` - section define conditions to much profile
         - `type` - key of `condition` section which defines type of condition. Allowed value `base` and `field`. 
-            - `base` type of condition will be executed always when `SmartProfile` in inventory is set to true.
+            - `base` type of condition will be executed when `SmartProfile` in inventory is set to true.
+            - `walk` such profile will be executed instead of full walk
             - `field` type of condition will be executed if match `pattern` for defined `field`. Supported fields:
                 -  "SNMPv2-MIB.sysDescr"
                 -  "SNMPv2-MIB.sysObjectID"
@@ -142,7 +143,7 @@ scheduler:
       SmartProfile_base_example:
         frequency: 10
         condition: 
-          typy: "base"
+          type: "base"
         varBinds:
           - ['SNMPv2-MIB']
           - ['SNMPv2-MIB', 'sysName']
@@ -155,7 +156,7 @@ scheduler:
       SmartProfile_field_example:
         frequency: 10
         condition: 
-          typy: "field"
+          type: "field"
           field: "SNMPv2-MIB.sysDescr"
           patterns:
             - '.*STRING_TO_BE_MATCHED.*'
@@ -165,10 +166,10 @@ scheduler:
 ``` 
 
 NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 5 minutes for changes to propagate. 
-There is also 5 minute TTL for an inventory pod. Basically SC4SNMP allows one inventory upgrade and then block updates for next 5 minutes
+There is also 5 minute TTL for an inventory pod. Basically, SC4SNMP allows one inventory upgrade and then block updates for the next 5 minutes
 
 #### Custom translations
-If user wants to use custom names/translations of MIB names, it can be configured under customTranslations section under scheduler config.
+If the user wants to use custom names/translations of MIB names, it can be configured under customTranslations section under scheduler config.
 Translations are grouped by MIB family. In the example below IF-MIB.ifInDiscards will be translated to IF-MIB.myCustomName1
 ```yaml
 scheduler:

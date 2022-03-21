@@ -1,23 +1,26 @@
 # Otel configuration
 
-Splunk OpenTelemetry Collector is a component that provides an option to send metrics to signalFx.
+Splunk OpenTelemetry Collector is a component that provides an option to send metrics to SignalFx.
 In order to use it, you must set `enabled` flag in `values.yaml` to `true`:
+
 ```yaml
 sim:
-  # sim must be enabled if you want to use signalFx
+  # sim must be enabled if you want to use SignalFx
   enabled: true
 ```
-Also you need to specify signalFx token and realm, so at the end sim element in `values.yaml` looks like this:
+
+Also, you need to specify SignalFx token and realm, so at the end sim element in `values.yaml` looks like this:
+
 ```yaml
 sim:
   enabled: true
   signalfxToken: BCwaJ_Ands4Xh7Nrg
   signalfxRealm: us0
 ```
-After executing 
-`microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
-`, 
-the sim pod should be up and running:
+
+After executing `microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
+`, the sim pod should be up and running:
+
 ```yaml
 splunker@ip-10-202-13-233:~$ microk8s kubectl get pods -n sc4snmp
 NAME                                                      READY   STATUS    RESTARTS   AGE

@@ -158,7 +158,8 @@ def assign_profiles(ir, profiles, target):
                                     )
                                     continue
 
-    logger.debug(f"{ir.profiles}")
+    logger.debug(f"ir.profiles {ir.profiles}")
+    logger.debug(f"profiles {profiles}")
     for profile_name in ir.profiles:
         if profile_name in profiles:
             profile = profiles[profile_name]

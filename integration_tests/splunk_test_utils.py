@@ -16,7 +16,7 @@
 import os
 import time
 
-import yaml
+import ruamel
 
 
 def splunk_single_search(service, search):
@@ -59,6 +59,21 @@ profiles_template = """scheduler:
   profiles: |
 """
 
+poller_secrets_template = """scheduler:
+  usernameSecrets:
+"""
+
+traps_secrets_template = """traps:
+  usernameSecrets:
+"""
+
+TEMPLATE_MAPPING = {
+    "inventory.yaml": inventory_template,
+    "profiles.yaml": profiles_template,
+    "scheduler_secrets.yaml": poller_secrets_template,
+    "traps_secrets.yaml": traps_secrets_template,
+}
+
 
 def l_pad_string(s):
     lines = s.splitlines()
@@ -66,28 +81,71 @@ def l_pad_string(s):
     return result
 
 
-def update_inventory(entries):
+def yaml_escape_list(*l):
+    ret = ruamel.yaml.comments.CommentedSeq(l)
+    ret.fa.set_flow_style()
+    return ret
+
+
+def update_file(entries, fieldname):
     result = ""
     for e in entries:
         result += str.rjust(" ", 4) + e + "\n"
 
-    result = inventory_template + result
-    with open("inventory.yaml", "w") as fp:
+    template = TEMPLATE_MAPPING.get(fieldname, "")
+    result = template + result
+    with open(fieldname, "w") as fp:
         fp.write(result)
-
-    os.system(
-        "sudo microk8s helm3 upgrade --install snmp -f inventory.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
-    )
 
 
 def update_profiles(profiles):
-    with open("profiles.yaml", "w") as fp:
-        result = l_pad_string(yaml.dump(profiles, default_flow_style=None))
-        fp.write(profiles_template + result)
+    yaml = ruamel.yaml.YAML()
+    with open("profiles_tmp.yaml", "w") as fp:
+        yaml.dump(profiles, fp)
 
+    with open("profiles.yaml", "w") as fp:
+        fp.write(profiles_template)
+        with open("profiles_tmp.yaml") as fp2:
+            line = fp2.readline()
+            while line != "":
+                new_line = str.rjust(" ", 4) + line
+                fp.write(new_line)
+                line = fp2.readline()
+
+
+def upgrade_helm(yaml_files):
+    files_string = "-f values.yaml "
+    for file in yaml_files:
+        files_string += f"-f {file} "
     os.system(
-        "sudo microk8s helm3 upgrade --install snmp -f profiles.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+        "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
     )
+    os.system(
+        f"sudo microk8s helm3 upgrade --install snmp {files_string} ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+    )
+
+
+def create_v3_secrets():
+    os.system(
+        "sudo microk8s kubectl create -n sc4snmp secret generic secretv4 \
+      --from-literal=userName=snmp-poller \
+      --from-literal=authKey=PASSWORD1 \
+      --from-literal=privKey=PASSWORD1 \
+      --from-literal=authProtocol=SHA \
+      --from-literal=privProtocol=AES \
+      --from-literal=securityEngineId=8000000903000A397056B8AC"
+    )
+
+
+def wait_for_pod_initialization():
+    script_body = f""" 
+    while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep traps | grep Running | wc -l)" != "1" ] ; do
+        echo "Waiting for POD initialization..."
+        sleep 1
+    done """
+    with open("check_for_pods.sh", "w") as fp:
+        fp.write(script_body)
+    os.system("chmod a+x check_for_pods.sh && ./check_for_pods.sh")
 
 
 # if __name__ == "__main__":

@@ -1,13 +1,13 @@
 #RabbitMQ configuration
-RabbitMQ is a service with is used as queue service for SC4SNMP. It is queuing tasks like SNMP Walk and GETs.  
+RabbitMQ is a service with is used as a queue service for SC4SNMP. It is queuing tasks like SNMP Walk and GETs.  
 
 ### RabbitMQ configuration file
 
-RabbitMQ configuration is keep in `values.yaml` file in section `rabbitmq`.  To downland example file execute command:
+RabbitMQ configuration is keep in `values.yaml` file in section `rabbitmq`.  To downland example file execute the command:
 ```
 curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
 ```
-`values.yaml` is being used during the installation process for configuring kubernetes values.
+`values.yaml` is being used during the installation process for configuring Kubernetes values.
 
 Example:
 ```yaml
@@ -32,4 +32,4 @@ rabbitmq:
       memory: 512Mi    
 ```
 
-Recommendation is to do not change this setting. In case of need to change it please follow documentation: [RabbitMQ on Kubernetes](https://github.com/bitnami/charts/tree/master/bitnami/rabbitmq/) 
+The recommendation is to do not to change this setting. In case of need to change it please follow documentation: [RabbitMQ on Kubernetes](https://github.com/bitnami/charts/tree/master/bitnami/rabbitmq/) 

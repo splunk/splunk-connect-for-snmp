@@ -27,6 +27,7 @@ from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
+from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
 
 try:
@@ -61,7 +62,7 @@ def transform_address_to_key(address, port):
         return f"{address}:{port}"
 
 
-def gen_walk_task(ir: InventoryRecord):
+def gen_walk_task(ir: InventoryRecord, profile=None):
     target = transform_address_to_key(ir.address, ir.port)
     return {
         "name": f"sc4snmp;{target};walk",
@@ -70,6 +71,7 @@ def gen_walk_task(ir: InventoryRecord):
         "args": [],
         "kwargs": {
             "address": target,
+            "profile": profile,
         },
         "options": {
             "link": chain(
@@ -87,6 +89,7 @@ def gen_walk_task(ir: InventoryRecord):
         },
         "interval": {"every": ir.walk_interval, "period": "seconds"},
         "enabled": True,
+        "total_run_count": 0,
         "run_immediately": True,
     }
 
@@ -103,6 +106,7 @@ def load():
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
     migrate_database(mongo_client, periodic_obj)
+    config_profiles = load_profiles()
 
     logger.info(f"Loading inventory from {path}")
     with open(path, encoding="utf-8") as csv_file:
@@ -130,6 +134,20 @@ def load():
                         {"$set": ir.asdict()},
                         upsert=True,
                     )
+                    profiles = source_record["profiles"].split(";")
+                    profile = None
+                    if profiles:
+                        profiles = [
+                            p
+                            for p in profiles
+                            if config_profiles.get(p, {})
+                            .get("condition", {})
+                            .get("type")
+                            == "walk"
+                        ]
+                        if profiles:
+                            profile = profiles[-1]
+                            ir.walk_interval = source_record["walk_interval"]
                     if status.matched_count == 0:
                         logger.info(f"New Record {ir} {status.upserted_id}")
                     elif status.modified_count == 1 and status.upserted_id is None:
@@ -138,7 +156,7 @@ def load():
                         logger.debug(f"Unchanged Record {ir}")
                         continue
 
-                    task_config = gen_walk_task(ir)
+                    task_config = gen_walk_task(ir, profile)
                     periodic_obj.manage_task(**task_config)
 
             except Exception as e:

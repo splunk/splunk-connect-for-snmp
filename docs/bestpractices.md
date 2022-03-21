@@ -1,6 +1,6 @@
 # Debug Splunk Connect for SNMP
 
-## Advices
+## Pieces of Advice
 
 ### Check when SNMP WALK was executed last time for device
 1. [Configure SCK](gettingstarted/sck-installation.md)
@@ -8,7 +8,7 @@
 and replace <IP_ADDRESS> by IP Address which you are interested. 
 
 ### Uninstall Splunk Connect for SNMP
-To uninstall SC4SNMP run following commands:
+To uninstall SC4SNMP run the following commands:
 
 ```
  microk8s helm3 uninstall snmp -n sc4snmp
@@ -16,8 +16,8 @@ To uninstall SC4SNMP run following commands:
 ```
 
 ### Installing Splunk Connect for SNMP on Linux RedHat 
-Installation of RedHat may blocking ports required by microk8s. Installing microk8s on RedHat 
-required to check if firewall is not blocking any of [required microk8s ports](https://microk8s.io/docs/ports). 
+Installation of RedHat may be blocking ports required by microk8s. Installing microk8s on RedHat 
+required checking if the firewall is not blocking any of [required microk8s ports](https://microk8s.io/docs/ports). 
 
 ## Issues
 
@@ -29,7 +29,7 @@ In case you see the following line in worker's logs:
 ```
 that causes infinite retry of walk operation, add `worker.ignoreEmptyVarbinds` parameter to `values.yaml` and set it to true.
 
-An example configuration for worker in `values.yaml` is:
+An example configuration for a worker in `values.yaml` is:
 
 ```yaml
 worker:
@@ -44,7 +44,7 @@ In case you see the following line in worker's logs:
 ```
 that causes infinite retry of walk operation, add `worker.ignoreNotIncreasingOid` array to `values.yaml` and fill with the addresses of hosts where the problem appears.
 
-An example configuration for worker in `values.yaml` is:
+An example configuration for a worker in `values.yaml` is:
 
 ```yaml
 worker:
@@ -53,5 +53,26 @@ worker:
     - "127.0.0.6"
 ```
 
-If you put only ip address (ex. `127.0.0.1`), then errors will be ignored for all of its devices (like `127.0.0.1:161`, 
-`127.0.0.1:163`...). If you put ip address and host structured as: `{host}:{port}` that means the error will be ignored only for this device.
+If you put only IP address (ex. `127.0.0.1`), then errors will be ignored for all of its devices (like `127.0.0.1:161`, 
+`127.0.0.1:163`...). If you put IP address and host structured as `{host}:{port}` that means the error will be ignored only for this device.
+
+### Walking a device takes much time
+If you would like to limit the scope of the walk, you should set one of the profiles in the inventory to point to the profile definition of type `walk`
+```yaml
+scheduler:
+    profiles: |
+      small_walk:
+        condition: 
+          type: "walk"
+        varBinds:
+          - ['UDP-MIB']
+``` 
+Such profile should be placed in the profiles section of inventory definition. It will be executed with the frequency defined in walk_interval.
+In case of multiple profiles of type `walk` will be placed in profiles, the last one will be used.
+
+```yaml
+poller:
+  inventory: |
+    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+    10.202.4.202,,2c,public,,,2000,small_walk,,
+```

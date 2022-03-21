@@ -37,7 +37,9 @@ function define_python() {
 }
 
 deploy_poetry() {
+  sudo apt -y install python3-venv
   curl -sSL https://install.python-poetry.org | $PYTHON -
+  export PATH="/home/ubuntu/.local/bin:$PATH"
   poetry install
   poetry add -D splunk-sdk
   poetry add -D splunklib
@@ -47,6 +49,13 @@ deploy_poetry() {
 wait_for_pod_initialization() {
   while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep ContainerCreating)" != "" ] ; do
     echo "Waiting for POD initialization..."
+    sleep 1
+  done
+}
+
+wait_for_rabbitmq_to_be_up() {
+  while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep 0/1)" != "" ] ; do
+    echo "Waiting for RabbitMQ POD initialization..."
     sleep 1
   done
 }
@@ -87,6 +96,7 @@ echo $(green "Installing SC4SNMP on Kubernetes")
 sudo microk8s helm3 install snmp -f values.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 
 wait_for_pod_initialization
+wait_for_rabbitmq_to_be_up
 
 define_python
 

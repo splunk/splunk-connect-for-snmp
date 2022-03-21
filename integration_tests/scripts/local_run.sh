@@ -28,15 +28,27 @@ check_prerequisites() {
 }
 
 setup_environment_and_run_tests() {
+  export GITHUB_RUN_ID=$RANDOM
+  envsubst < main.tf.tmpl > main.tf
+  terraform init
   terraform apply -auto-approve
+  echo "Removing old tgz package"
+  rm splunk-connect-for-snmp.tgz
+  cd ../../..
+  echo "Creating tgz of the SC4SNMP repository"
+  tar -czf splunk-connect-for-snmp.tgz splunk-connect-for-snmp
+  echo "Moving tgz to the final directory"
+  mv splunk-connect-for-snmp.tgz splunk-connect-for-snmp/integration_tests/scripts
+  cd splunk-connect-for-snmp/integration_tests/scripts
+  echo "Running ansible playbook"
   ansible-playbook -v playbook.yml || echo "Test run was unsuccessful"
 }
 
-desstroy_environment() {
+destroy_environment() {
   terraform destroy -auto-approve
 }
 
 source ./set_env.sh
 check_prerequisites
 setup_environment_and_run_tests
-desstroy_environment
+destroy_environment
