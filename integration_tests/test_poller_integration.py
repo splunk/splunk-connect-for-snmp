@@ -261,7 +261,7 @@ def setup_modify_profile(request):
         [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
     )
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(20)
+    time.sleep(30)
     yield
     update_file(
         [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"], "inventory.yaml"
@@ -273,7 +273,7 @@ def setup_modify_profile(request):
 @pytest.mark.usefixtures("setup_modify_profile")
 class TestModifyProfilesFrequency:
     def test_sanity_frequency_field(self, setup_splunk):
-        search_string = """| mpreview index=netmetrics earliest=-15s | search profiles=test_modify frequency=5 """
+        search_string = """| mpreview index=netmetrics earliest=-30s | search profiles=test_modify frequency=5 """
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         assert result_count > 0
         assert metric_count > 0
