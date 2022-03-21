@@ -35,7 +35,7 @@ class TestGetVarbinds(TestCase):
         }
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
-            "192.168.0.1", walk=True, run_count=0, profiles=profiles
+            "192.168.0.1", walk=True, walked_first_time=False, profiles=profiles
         )
 
         self.assertEqual(0, len(varbinds_get))
@@ -53,7 +53,7 @@ class TestGetVarbinds(TestCase):
         poller = Poller.__new__(Poller)
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
-            "192.168.0.1", walk=True, run_count=20, profiles=[]
+            "192.168.0.1", walk=True, walked_first_time=True, profiles=[]
         )
 
         self.assertEqual(0, len(varbinds_get))
@@ -78,7 +78,7 @@ class TestGetVarbinds(TestCase):
         poller.load_mibs = Mock()
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
-            "192.168.0.1", walk=True, run_count=10, profiles=profiles
+            "192.168.0.1", walk=True, walked_first_time=True, profiles=profiles
         )
 
         self.assertEqual(0, len(varbinds_get))

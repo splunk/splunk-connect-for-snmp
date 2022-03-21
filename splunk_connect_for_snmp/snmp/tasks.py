@@ -66,14 +66,15 @@ def walk(self, **kwargs):
 
     address = kwargs["address"]
     profile = kwargs.get("profile", [])
+    if profile:
+        profile = [profile]
     mongo_client = pymongo.MongoClient(MONGO_URI)
     mongo_db = mongo_client[MONGO_DB]
     mongo_inventory = mongo_db.inventory
-    mongo_schedules = mongo_db.schedules
+    mongo_targets = mongo_db.targets
 
-    walk_def = mongo_schedules.find_one({"name": "sc4snmp;" + address + ";walk"})
-    logger.warning(walk_def)
-    run_count = walk_def["total_run_count"]
+    walked_first_time = mongo_targets.find_one({"address": address})
+    logger.warning(walked_first_time)
 
     lock = MongoLock(client=mongo_client, db="sc4snmp")
 
@@ -82,7 +83,7 @@ def walk(self, **kwargs):
         retry = True
         while retry:
             retry, result = self.do_work(
-                ir, walk=True, profiles=profile, run_count=run_count
+                ir, walk=True, profiles=profile, walked_first_time=walked_first_time
             )
 
     # After a Walk tell schedule to recalc
