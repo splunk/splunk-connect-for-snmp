@@ -64,6 +64,7 @@ SPLUNK_HEC_URI = urlunsplit(
 SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN", None)
 SPLUNK_HEC_INDEX_EVENTS = os.getenv("SPLUNK_HEC_INDEX_EVENTS", "netops")
 SPLUNK_HEC_INDEX_METRICS = os.getenv("SPLUNK_HEC_INDEX_METRICS", "netmetrics")
+SC4SNMP_VERSION = os.getenv("SC4SNMP_VERSION", "0.0.0")
 if human_bool(os.getenv("SPLUNK_HEC_INSECURESSL", "yes"), default=True):
     SPLUNK_HEC_TLSVERIFY = False
 else:
@@ -75,7 +76,11 @@ logger = get_task_logger(__name__)
 
 # Token is only appropriate if we are working direct with Splunk
 if SPLUNK_HEC_TOKEN:
-    SPLUNK_HEC_HEADERS = {"Authorization": f"Splunk {SPLUNK_HEC_TOKEN}"}
+    SPLUNK_HEC_HEADERS = {
+        "Authorization": f"Splunk {SPLUNK_HEC_TOKEN}",
+        "__splunk_app_name": "sc4snmp",
+        "__splunk_app_version": SC4SNMP_VERSION,
+    }
 else:
     SPLUNK_HEC_HEADERS = {}
 SPLUNK_HEC_CHUNK_SIZE = int(os.getenv("SPLUNK_HEC_CHUNK_SIZE", "50"))

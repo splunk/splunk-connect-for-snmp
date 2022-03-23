@@ -85,7 +85,7 @@ def setup_profile(request):
         [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"], "inventory.yaml"
     )
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(20)
+    time.sleep(30)
     yield
     upgrade_helm([f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"])
     time.sleep(20)
@@ -130,7 +130,7 @@ def setup_profiles(request):
         "inventory.yaml",
     )
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(20)
+    time.sleep(30)
     yield
     update_file(
         [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,t"],
@@ -211,7 +211,7 @@ def setup_smart_profiles(request):
     time.sleep(60)
     update_file([f"{trap_external_ip},,2c,public,,,600,,t,"], "inventory.yaml")
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(20)
+    time.sleep(30)
     yield
     update_file([f"{trap_external_ip},,2c,public,,,600,,t,t"], "inventory.yaml")
     upgrade_helm(["inventory.yaml"])
