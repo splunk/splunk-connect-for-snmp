@@ -135,9 +135,9 @@ pymongo = "*"
 
 [package.source]
 type = "git"
-url = "https://github.com/rfaircloth-splunk/celerybeat-mongo"
+url = "https://github.com/splunk/celerybeat-mongo"
 reference = "main"
-resolved_reference = "2885863f796244404a0f97fd4fa78ff2f2fe922a"
+resolved_reference = "68b7afe958ccb59a1a1095e2a51c1fd26f1f7ecb"
 
 [[package]]
 name = "certifi"
