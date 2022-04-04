@@ -9,7 +9,7 @@ of components.
 
 # Documentation
 
-For deployment and user documentation [see](https://github.com/splunk/splunk-connect-for-snmp/)
+For deployment and user documentation [see](https://splunk.github.io/splunk-connect-for-snmp/)
 
 #
 #
