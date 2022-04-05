@@ -732,7 +732,7 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pyrate-limiter"
-version = "2.6.0"
+version = "2.6.3"
 description = "Python Rate-Limiter using Leaky-Bucket Algorimth Family"
 category = "main"
 optional = false
@@ -1108,7 +1108,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "6338fce65f966fc376f0eab215c69f8b841db3a8db9f5ac8e28afff26482f219"
+content-hash = "90ba8b712abe13e4419d44fcbdc495348f53e90a00d3bedc78ecc316f7cd36fa"
 
 [metadata.files]
 amqp = [
@@ -1606,7 +1606,7 @@ pyparsing = [
     {file = "pyparsing-3.0.7.tar.gz", hash = "sha256:18ee9022775d270c55187733956460083db60b37d0d0fb357445f3094eed3eea"},
 ]
 pyrate-limiter = [
-    {file = "pyrate-limiter-2.6.0.tar.gz", hash = "sha256:0fa186ee8ad84e8af73a264d416b3682a8dc39e0c58c3e27cf7850617269128b"},
+    {file = "pyrate-limiter-2.6.3.tar.gz", hash = "sha256:c702bf93f810b233db167b8ee75ce96195055c349dee543c179e725da702a72c"},
 ]
 pysnmp-pyasn1 = [
     {file = "pysnmp-pyasn1-1.1.2.tar.gz", hash = "sha256:b3345370fcb49e03ecc78b336a3f940e0c0c1409d702f64af1fe165b61e37b35"},
