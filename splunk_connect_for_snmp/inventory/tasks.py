@@ -107,10 +107,10 @@ def generate_poll_task_definition(active_schedules, address, assigned_profiles, 
         },
         "options": {
             "link": chain(
-                signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
+                signature("splunk_connect_for_snmp.enrich.tasks.enrich").set(queue='poll'),
                 chain(
-                    signature("splunk_connect_for_snmp.splunk.tasks.prepare"),
-                    signature("splunk_connect_for_snmp.splunk.tasks.send"),
+                    signature("splunk_connect_for_snmp.splunk.tasks.prepare").set(queue='poll'),
+                    signature("splunk_connect_for_snmp.splunk.tasks.send").set(queue='poll'),
                 ),
             ),
         },

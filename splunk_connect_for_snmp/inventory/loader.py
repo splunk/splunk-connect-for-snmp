@@ -75,14 +75,14 @@ def gen_walk_task(ir: InventoryRecord, profile=None):
         },
         "options": {
             "link": chain(
-                signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
+                signature("splunk_connect_for_snmp.enrich.tasks.enrich").set(queue='poll'),
                 group(
                     signature(
                         "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller"
-                    ),
+                    ).set(queue='poll'),
                     chain(
-                        signature("splunk_connect_for_snmp.splunk.tasks.prepare"),
-                        signature("splunk_connect_for_snmp.splunk.tasks.send"),
+                        signature("splunk_connect_for_snmp.splunk.tasks.prepare").set(queue='poll'),
+                        signature("splunk_connect_for_snmp.splunk.tasks.send").set(queue='poll'),
                     ),
                 ),
             ),
