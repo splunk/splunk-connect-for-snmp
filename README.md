@@ -5,11 +5,11 @@ of components.
 
 # Badges
 
-[![codecov](https://codecov.io/gh/splunk/splunk-connect-for-snmp/branch/develop/graph/badge.svg?token=8EALM9BT38)](https://codecov.io/gh/splunk/splunk-connect-for-snmp)
+[![codecov](https://codecov.io/gh/splunk/splunk-connect-for-snmp/branch/main/graph/badge.svg?token=8EALM9BT38)](https://codecov.io/gh/splunk/splunk-connect-for-snmp)
 
 # Documentation
 
-For deployment and user documentation [see](https://splunk-connect-for-snmp.readthedocs.io/)
+For deployment and user documentation [see](https://splunk.github.io/splunk-connect-for-snmp/)
 
 #
 #
