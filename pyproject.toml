@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "splunk-connect-for-snmp"
-version = "1.6.0"
+version = "1.6.1-beta.4"
 description = ""
 authors = ["rfaircloth-splunk <rfaircloth@splunk.com>"]
 license = "Apache-2.0"
@@ -34,9 +34,9 @@ opentelemetry-exporter-jaeger-thrift = "^1.10.0"
 pyrate-limiter = "^2.4.7"
 requests-cache = "^0.9.3"
 requests-ratelimiter = "^0.2.1"
-mongoengine = "^0.23.1"
+mongoengine = "^0.24.1"
 #celerybeat-mongo = "^0.2.0"
-celerybeat-mongo = {git="https://github.com/rfaircloth-splunk/celerybeat-mongo", branch="main"}
+celerybeat-mongo = {git="https://github.com/splunk/celerybeat-mongo", branch="main"}
 pysnmplib = "^5.0.5"
 PyYAML = "^6.0"
 #Note this is temporary PR to upstream project is issued
@@ -52,7 +52,7 @@ pytest = "^7.1.1"
 pytest-cov = "^3.0.0"
 mike = "^1.0.1"
 mkdocs = "^1.2.2"
-mkdocs-material = "^8.2.5"
+mkdocs-material = "^8.2.6"
 python-dotenv = "^0.19.2"
 
 [build-system]
