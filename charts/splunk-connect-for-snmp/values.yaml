@@ -15,6 +15,14 @@ imagePullSecrets: []
 splunk:
   enabled: true
 
+workers:
+  - name: worker-poller
+    entrypoint: worker-poller
+    replicas: 2
+  - name: worker-trap
+    entrypoint: worker-trap
+    replicas: 2
+
 inventory:
   nameOverride: ""
   fullnameOverride: ""

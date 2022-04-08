@@ -1,194 +1,105 @@
+{{ range $worker := .Values.workers -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" $ }}
   labels:
-    {{- include "splunk-connect-for-snmp.worker.labels" . | nindent 4 }}
+    {{- include "splunk-connect-for-snmp.worker.labels" $ | nindent 4 }}
 spec:
-  {{- if not .Values.worker.autoscaling.enabled }}
-  replicas: {{ .Values.worker.replicaCount }}
+  {{- if not $.Values.worker.autoscaling.enabled }}
+  replicas: {{ $worker.replicas }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 6 }}
+      {{- include "splunk-connect-for-snmp.worker.selectorLabels" $ | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.worker.podAnnotations }}
+      {{- with $.Values.worker.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 8 }}
+        {{- include "splunk-connect-for-snmp.worker.selectorLabels" $ | nindent 8 }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "splunk-connect-for-snmp.worker.serviceAccountName" . }}
+      serviceAccountName: {{ include "splunk-connect-for-snmp.worker.serviceAccountName" $ }}
       securityContext:
-        {{- toYaml .Values.worker.podSecurityContext | nindent 8 }}
+        {{- toYaml $.Values.worker.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}-worker-poller
+        - name: "{{ $.Chart.Name }}-{{ $worker.name }}"
           securityContext:
-            {{- toYaml .Values.worker.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml $.Values.worker.securityContext | nindent 12 }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
           args:
             [
-              "celery", "worker-poller",
-            ]           
-          env:
-            - name: CONFIG_PATH
-              value: /app/config/config.yaml
-            - name: SC4SNMP_VERSION
-              value: {{ .Chart.Version | default "0.0.0" }}
-            - name: WORKER_CONCURRENCY
-              value: {{ .Values.worker.concurrency | default "2" | quote }}
-            - name: CELERY_BROKER_URL
-              value: {{ include "splunk-connect-for-snmp.celery_url" . }}
-            - name: MONGO_URI
-              value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
-            {{- if .Values.worker.ignoreNotIncreasingOid }}
-            - name: IGNORE_NOT_INCREASING_OIDS
-              value: {{ join "," .Values.worker.ignoreNotIncreasingOid }}
-            {{- end}}
-            {{- if .Values.sim.enabled }}
-            - name: OTEL_METRICS_URL
-              value: "http://{{ .Release.Name }}-{{ include "splunk-connect-for-snmp.name" . }}-sim:8882"
-              {{- end}}
-            - name: LOG_LEVEL
-              value: {{ .Values.worker.logLevel | default "INFO" }}
-            - name: UDP_CONNECTION_TIMEOUT
-              value: {{ .Values.worker.udpConnectionTimeout | default "3" | quote }}
-            - name: PROFILES_RELOAD_DELAY
-              value: {{ .Values.worker.profilesReloadDelay | default "300" | quote }}
-            - name: MIB_SOURCES
-              value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/asn1/@mib@"
-            - name: MIB_INDEX
-              value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/index.csv"
-            - name: MIB_STANDARD
-              value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/standard.txt"
-            {{- if .Values.splunk.enabled }}
-            {{- if .Values.splunk.protocol }}
-            - name: SPLUNK_HEC_SCHEME
-              value: {{ .Values.splunk.protocol | default "https" | quote }}
-            {{- end}}
-            - name: SPLUNK_HEC_HOST
-              value: {{ .Values.splunk.host | quote }}
-            - name: IGNORE_EMPTY_VARBINDS
-              value: {{ .Values.worker.ignoreEmptyVarbinds | default "false" | quote }}
-            {{- if .Values.splunk.port }}
-            - name: SPLUNK_HEC_PORT
-              value: {{ .Values.splunk.port | default "" | quote }}
-            {{- end}}
-            {{- if .Values.splunk.path }}
-            - name: SPLUNK_HEC_PATH
-              value: {{ .Values.splunk.path | default "/services/collector" | quote }}
-            {{- end}}
-            - name: SPLUNK_HEC_INSECURESSL
-              value: {{ .Values.splunk.insecureSSL | default "false" | quote }}
-            - name: SPLUNK_HEC_TOKEN
-              valueFrom:
-                  secretKeyRef:
-                    name: {{ include "splunk-connect-for-snmp.name" . }}-splunk
-                    key: hec_token
-            {{- if .Values.splunk.eventIndex }}
-            - name: SPLUNK_HEC_INDEX_EVENTS
-              value: {{ .Values.splunk.eventIndex | default "netops" }}
-            {{- end}}
-            {{- if .Values.splunk.metricsIndex }}
-            - name: SPLUNK_HEC_INDEX_METRICS
-              value: {{ .Values.splunk.metricsIndex | default "netmetrics" }}
-            {{- end}}
-            {{- end}}
-          volumeMounts:
-            - name: config
-              mountPath: "/app/config"
-              readOnly: true
-            - name: pysnmp-cache-volume
-              mountPath: "/.pysnmp/"
-              readOnly: false                    
-            - name: tmp
-              mountPath: "/tmp/"
-              readOnly: false                    
-            {{- if (.Values.poller).usernameSecrets }}
-            - name: snmpv3-secrets
-              mountPath: "/app/secrets/snmpv3"
-              readOnly: true
-            {{- end }}                    
-          resources:
-            {{- toYaml .Values.worker.resources | nindent 12 }}
-        - name: {{ .Chart.Name }}-traps
-          securityContext:
-            {{- toYaml .Values.worker.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args:
-            [
-              "celery", "worker-trap",
+              "celery", {{ $worker.entrypoint | quote }}
             ]
           env:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
             - name: SC4SNMP_VERSION
-              value: {{ .Chart.Version | default "0.0.0" }}
+              value: {{ $.Chart.Version | default "0.0.0" }}
             - name: WORKER_CONCURRENCY
-              value: {{ .Values.worker.concurrency | default "2" | quote }}
+              value: {{ $.Values.worker.concurrency | default "2" | quote }}
             - name: CELERY_BROKER_URL
-              value: {{ include "splunk-connect-for-snmp.celery_url" . }}
+              value: {{ include "splunk-connect-for-snmp.celery_url" $ }}
             - name: MONGO_URI
-              value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
-            {{- if .Values.worker.ignoreNotIncreasingOid }}
+              value: {{ include "splunk-connect-for-snmp.mongo_uri" $ }}
+            {{- if $.Values.worker.ignoreNotIncreasingOid }}
             - name: IGNORE_NOT_INCREASING_OIDS
-              value: {{ join "," .Values.worker.ignoreNotIncreasingOid }}
+              value: {{ join "," $.Values.worker.ignoreNotIncreasingOid }}
             {{- end}}
-            {{- if .Values.sim.enabled }}
+            {{- if $.Values.sim.enabled }}
             - name: OTEL_METRICS_URL
-              value: "http://{{ .Release.Name }}-{{ include "splunk-connect-for-snmp.name" . }}-sim:8882"
-              {{- end}}
+              value: "http://{{ $.Release.Name }}-{{ include "splunk-connect-for-snmp.name" $ }}-sim:8882"
+            {{- end}}
             - name: LOG_LEVEL
-              value: {{ .Values.worker.logLevel | default "INFO" }}
+              value: {{ $.Values.worker.logLevel | default "INFO" }}
             - name: UDP_CONNECTION_TIMEOUT
-              value: {{ .Values.worker.udpConnectionTimeout | default "3" | quote }}
+              value: {{ $.Values.worker.udpConnectionTimeout | default "3" | quote }}
             - name: PROFILES_RELOAD_DELAY
-              value: {{ .Values.worker.profilesReloadDelay | default "300" | quote }}
+              value: {{ $.Values.worker.profilesReloadDelay | default "300" | quote }}
             - name: MIB_SOURCES
-              value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/asn1/@mib@"
+              value: "http://{{ printf "%s-%s" $.Release.Name "mibserver" }}/asn1/@mib@"
             - name: MIB_INDEX
-              value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/index.csv"
+              value: "http://{{ printf "%s-%s" $.Release.Name "mibserver" }}/index.csv"
             - name: MIB_STANDARD
-              value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/standard.txt"
-            {{- if .Values.splunk.enabled }}
-            {{- if .Values.splunk.protocol }}
+              value: "http://{{ printf "%s-%s" $.Release.Name "mibserver" }}/standard.txt"
+            {{- if $.Values.splunk.enabled }}
+            {{- if $.Values.splunk.protocol }}
             - name: SPLUNK_HEC_SCHEME
-              value: {{ .Values.splunk.protocol | default "https" | quote }}
+              value: {{ $.Values.splunk.protocol | default "https" | quote }}
             {{- end}}
             - name: SPLUNK_HEC_HOST
-              value: {{ .Values.splunk.host | quote }}
+              value: {{ $.Values.splunk.host | quote }}
             - name: IGNORE_EMPTY_VARBINDS
-              value: {{ .Values.worker.ignoreEmptyVarbinds | default "false" | quote }}
-            {{- if .Values.splunk.port }}
+              value: {{ $.Values.worker.ignoreEmptyVarbinds | default "false" | quote }}
+            {{- if $.Values.splunk.port }}
             - name: SPLUNK_HEC_PORT
-              value: {{ .Values.splunk.port | default "" | quote }}
+              value: {{ $.Values.splunk.port | default "" | quote }}
             {{- end}}
-            {{- if .Values.splunk.path }}
+            {{- if $.Values.splunk.path }}
             - name: SPLUNK_HEC_PATH
-              value: {{ .Values.splunk.path | default "/services/collector" | quote }}
+              value: {{ $.Values.splunk.path | default "/services/collector" | quote }}
             {{- end}}
             - name: SPLUNK_HEC_INSECURESSL
-              value: {{ .Values.splunk.insecureSSL | default "false" | quote }}
+              value: {{ $.Values.splunk.insecureSSL | default "false" | quote }}
             - name: SPLUNK_HEC_TOKEN
               valueFrom:
-                  secretKeyRef:
-                    name: {{ include "splunk-connect-for-snmp.name" . }}-splunk
-                    key: hec_token
-            {{- if .Values.splunk.eventIndex }}
+                secretKeyRef:
+                  name: {{ include "splunk-connect-for-snmp.name" $ }}-splunk
+                  key: hec_token
+            {{- if $.Values.splunk.eventIndex }}
             - name: SPLUNK_HEC_INDEX_EVENTS
-              value: {{ .Values.splunk.eventIndex | default "netops" }}
+              value: {{ $.Values.splunk.eventIndex | default "netops" }}
             {{- end}}
-            {{- if .Values.splunk.metricsIndex }}
+            {{- if $.Values.splunk.metricsIndex }}
             - name: SPLUNK_HEC_INDEX_METRICS
-              value: {{ .Values.splunk.metricsIndex | default "netmetrics" }}
+              value: {{ $.Values.splunk.metricsIndex | default "netmetrics" | quote }}
             {{- end}}
             {{- end}}
           volumeMounts:
@@ -201,26 +112,26 @@ spec:
             - name: tmp
               mountPath: "/tmp/"
               readOnly: false
-            {{- if (.Values.poller).usernameSecrets }}
+            {{- if ($.Values.poller).usernameSecrets }}
             - name: snmpv3-secrets
               mountPath: "/app/secrets/snmpv3"
               readOnly: true
             {{- end }}
           resources:
-            {{- toYaml .Values.worker.resources | nindent 12 }}
-      {{- with .Values.worker.nodeSelector }}
+            {{- toYaml $.Values.worker.resources | nindent 12 }}
+      {{- with $.Values.worker.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if eq .Values.worker.podAntiAffinity "hard" }}
+      {{- if eq $.Values.worker.podAntiAffinity "hard" }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - topologyKey: "kubernetes.io/hostname"
               labelSelector:
                 matchLabels:
-                    {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 22 }}
-      {{- else if eq .Values.worker.podAntiAffinity "soft" }}
+                    {{- include "splunk-connect-for-snmp.worker.selectorLabels" $ | nindent 22 }}
+      {{- else if eq $.Values.worker.podAntiAffinity "soft" }}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -229,64 +140,65 @@ spec:
                 topologyKey: kubernetes.io/hostname
                 labelSelector:
                   matchLabels:
-                    {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 22 }}
+                    {{- include "splunk-connect-for-snmp.worker.selectorLabels" $ | nindent 22 }}
       {{- end }}
-      {{- with .Values.worker.tolerations }}
+      {{- with $.Values.worker.tolerations }}
       tolerations:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml $ | nindent 8 }}
       {{- end }}
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config
           configMap:
             # Provide the name of the ConfigMap you want to mount.
-            name: {{ include "splunk-connect-for-snmp.name" . }}-config
+            name: {{ include "splunk-connect-for-snmp.name" $ }}-config
             # An array of keys from the ConfigMap to create as files
             items:
               - key: "config.yaml"
                 path: "config.yaml"
-        {{- if (.Values.poller).usernameSecrets }}
+        {{- if ($.Values.poller).usernameSecrets }}
         - name: snmpv3-secrets
           projected:
             sources:
-            {{- range .Values.poller.usernameSecrets }}
-            {{- $secret := (lookup "v1" "Secret" $.Release.Namespace . ) -}}            
+            {{- range $.Values.poller.usernameSecrets }}
+            {{- $secret := (lookup "v1" "Secret" .Release.Namespace $ ) -}}
             {{- if $secret }}
             - secret:
                 name: {{ . }}
                 items:
                   {{ if $secret.data.userName -}}
                   - key: userName
-                    path: {{ . }}/userName                
-                  {{- end }} 
+                    path: {{ . }}/userName
+                  {{- end }}
                   {{ if $secret.data.authKey -}}
                   - key: authKey
                     path: {{ . }}/authKey
-                  {{- end }} 
+                  {{- end }}
                   {{ if $secret.data.privKey -}}
                   - key: privKey
                     path: {{ . }}/privKey
-                  {{- end }} 
+                  {{- end }}
                   {{ if $secret.data.authProtocol -}}
                   - key: authProtocol
                     path: {{ . }}/authProtocol
-                  {{- end }} 
+                  {{- end }}
                   {{ if $secret.data.privProtocol -}}
                   - key: privProtocol
                     path: {{ . }}/privProtocol
-                  {{- end }} 
+                  {{- end }}
                   {{ if $secret.data.contextEngineId -}}
                   - key: contextEngineId
                     path: {{ . }}/contextEngineId
-                  {{- end }} 
+                  {{- end }}
                   {{ if $secret.data.contextName -}}
                   - key: contextName
                     path: {{ . }}/contextName
-                  {{- end }} 
-            {{- end }}                    
+                  {{- end }}
             {{- end }}
-        {{- end }}                  
+            {{- end }}
+        {{- end }}
         - name: pysnmp-cache-volume
-          emptyDir: {}    
+          emptyDir: {}
         - name: tmp
           emptyDir: {}
+{{ end }}
