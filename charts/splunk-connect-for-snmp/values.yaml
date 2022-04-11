@@ -95,8 +95,12 @@ scheduler:
 
 worker:
   ignoreNotIncreasingOid: []
-  replicaCount: 2
-  concurrency: 4
+  poller:
+    replicaCount: 2
+    concurrency: 4
+  trap:
+    replicaCount: 2
+    concurrency: 4
   nameOverride: ""
   fullnameOverride: ""
 

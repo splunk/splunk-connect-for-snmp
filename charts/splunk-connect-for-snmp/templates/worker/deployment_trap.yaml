@@ -6,7 +6,7 @@ metadata:
     {{- include "splunk-connect-for-snmp.worker.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.worker.autoscaling.enabled }}
-  replicas: {{ .Values.worker.replicaCount }}
+  replicas: {{ .Values.worker.trap.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
@@ -43,7 +43,7 @@ spec:
             - name: SC4SNMP_VERSION
               value: {{ .Chart.Version | default "0.0.0" }}
             - name: WORKER_CONCURRENCY
-              value: {{ .Values.worker.concurrency | default "2" | quote }}
+              value: {{ .Values.worker.trap.concurrency | default "2" | quote }}
             - name: CELERY_BROKER_URL
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
