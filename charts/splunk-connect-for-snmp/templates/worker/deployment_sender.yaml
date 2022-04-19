@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             [
-              "celery", "worker-poller",
+              "celery", "worker-sender",
             ]
           env:
             - name: CONFIG_PATH
