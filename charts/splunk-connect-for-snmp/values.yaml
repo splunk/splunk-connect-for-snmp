@@ -98,9 +98,15 @@ worker:
   poller:
     replicaCount: 2
     concurrency: 4
+    prefetch: 1
   trap:
     replicaCount: 2
     concurrency: 4
+    prefetch: 30
+  sender:
+    replicaCount: 2
+    concurrency: 4
+    prefetch: 30
   nameOverride: ""
   fullnameOverride: ""
 

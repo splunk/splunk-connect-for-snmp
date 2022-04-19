@@ -112,7 +112,7 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
 
     work = {"data": data, "host": device_ip}
     my_chain = chain(
-        trap_task_signature(work).set(queue='traps'), prepare_task_signature().set(queue='traps'), send_task_signature().set(queue='traps')
+        trap_task_signature(work).set(queue='traps').set(priority=5), prepare_task_signature().set(queue='send').set(priority=9), send_task_signature().set(queue='send').set(priority=10)
     )
     _ = my_chain.apply_async()
 

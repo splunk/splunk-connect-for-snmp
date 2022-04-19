@@ -28,6 +28,7 @@ import os
 
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 MONGO_DB_SCHEDULES = os.getenv("MONGO_DB_SCHEDULES", "schedules")
+PREFETCH_COUNT = int(os.getenv("PREFETCH_COUNT", 1))
 
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB_CELERY_DATABASE = os.getenv("MONGO_DB_CELERY_DATABASE", MONGO_DB)
@@ -46,7 +47,7 @@ mongodb_scheduler_db = MONGO_DB_CELERY_DATABASE
 # Optimization for long running tasks
 # https://docs.celeryproject.org/en/stable/userguide/optimizing.html#reserve-one-task-at-a-time
 task_acks_late = True
-worker_prefetch_multiplier = 30
+worker_prefetch_multiplier = PREFETCH_COUNT
 task_acks_on_failure_or_timeout = True
 task_reject_on_worker_lost = True
 task_time_limit = 2400
@@ -54,8 +55,10 @@ task_create_missing_queues = False
 task_ignore_result = True
 result_persistent = False
 result_expires = 60
+task_default_priority = 5
 task_default_queue = 'poll'
 task_queues = (
-    Queue('traps', durable=False),
-    Queue('poll', durable=False),
+    Queue('traps', routing_key='traps', durable=False, max_priority=10),
+    Queue('poll', routing_key='poll', durable=False, max_priority=10),
+    Queue('send', routing_key='send', durable=False, max_priority=10),
 )

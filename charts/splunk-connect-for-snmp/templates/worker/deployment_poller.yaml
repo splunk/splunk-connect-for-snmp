@@ -44,6 +44,8 @@ spec:
               value: {{ .Chart.Version | default "0.0.0" }}
             - name: WORKER_CONCURRENCY
               value: {{ .Values.worker.poller.concurrency | default "2" | quote }}
+            - name: PREFETCH_COUNT
+              value: {{ .Values.worker.poller.prefetch | default "1" | quote }}
             - name: CELERY_BROKER_URL
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI

@@ -17,10 +17,13 @@ celery)
         celery -A splunk_connect_for_snmp.poller beat -l "$LOG_LEVEL"
         ;;
     worker-trap)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" --concurrency="$WORKER_CONCURRENCY" -O fair --queues=traps
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" --concurrency="$WORKER_CONCURRENCY" -O fair -Q traps
         ;;
     worker-poller)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" --concurrency="$WORKER_CONCURRENCY" -O fair --queues=poll
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" --concurrency="$WORKER_CONCURRENCY" -O fair -Q poll
+        ;;
+    worker-sender)
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" --concurrency="$WORKER_CONCURRENCY" -O fair -Q send
         ;;
     *)
         celery -A splunk_connect_for_snmp.poller "${@:3}" -l "$LOG_LEVEL"

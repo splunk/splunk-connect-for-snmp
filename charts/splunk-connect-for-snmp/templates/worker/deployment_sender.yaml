@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-trap
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-poller
   labels:
     {{- include "splunk-connect-for-snmp.worker.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.worker.autoscaling.enabled }}
-  replicas: {{ .Values.worker.trap.replicaCount }}
+  replicas: {{ .Values.worker.poller.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
@@ -28,14 +28,14 @@ spec:
       securityContext:
         {{- toYaml .Values.worker.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}-worker-trap
+        - name: {{ .Chart.Name }}-worker-poller
           securityContext:
             {{- toYaml .Values.worker.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             [
-              "celery", "worker-trap",
+              "celery", "worker-poller",
             ]
           env:
             - name: CONFIG_PATH
@@ -43,9 +43,9 @@ spec:
             - name: SC4SNMP_VERSION
               value: {{ .Chart.Version | default "0.0.0" }}
             - name: WORKER_CONCURRENCY
-              value: {{ .Values.worker.trap.concurrency | default "2" | quote }}
+              value: {{ .Values.worker.sender.concurrency | default "2" | quote }}
             - name: PREFETCH_COUNT
-              value: {{ .Values.worker.trap.prefetch | default "30" | quote }}
+              value: {{ .Values.worker.sender.prefetch | default "30" | quote }}
             - name: CELERY_BROKER_URL
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
