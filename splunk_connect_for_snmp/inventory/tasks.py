@@ -30,6 +30,8 @@ import re
 
 import pymongo
 import urllib3
+from ..poller import app
+from celery.schedules import schedule
 from celery import Task, shared_task
 from celery.canvas import chain, signature
 from celery.utils.log import get_task_logger
@@ -102,7 +104,7 @@ def generate_poll_task_definition(active_schedules, address, assigned_profiles, 
         "args": [],
         "kwargs": {
             "address": address,
-            "profiles": period_profiles,
+            "profiles": list(period_profiles),
             "frequency": period,
         },
         "options": {
@@ -114,9 +116,10 @@ def generate_poll_task_definition(active_schedules, address, assigned_profiles, 
                 ),
             ),
         },
-        "interval": {"every": period, "period": "seconds"},
+        "schedule": schedule(period),
         "enabled": True,
         "run_immediately": run_immediately,
+        "app": app
     }
     return task_config
 

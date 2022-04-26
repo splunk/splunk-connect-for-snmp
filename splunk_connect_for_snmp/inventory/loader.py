@@ -19,6 +19,9 @@ import os
 import sys
 from csv import DictReader
 
+from celery.schedules import schedule
+
+from ..poller import app
 import pymongo
 from celery.canvas import chain, group, signature
 
@@ -87,10 +90,10 @@ def gen_walk_task(ir: InventoryRecord, profile=None):
                 ),
             ),
         },
-        "interval": {"every": ir.walk_interval, "period": "seconds"},
+        "schedule": schedule(ir.walk_interval),
         "enabled": True,
-        "total_run_count": 0,
         "run_immediately": True,
+        "app": app,
     }
 
 

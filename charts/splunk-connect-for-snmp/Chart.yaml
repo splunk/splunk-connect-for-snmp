@@ -28,6 +28,9 @@ dependencies:
   - name: rabbitmq
     version: ~8.24
     repository: https://charts.bitnami.com/bitnami
+  - name: redis
+    version: ~16.8
+    repository: https://charts.bitnami.com/bitnami
   - name: mibserver
     version: ~1.14.0
     repository: https://pysnmp.github.io/mibs/charts/

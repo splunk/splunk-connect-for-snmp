@@ -26,23 +26,14 @@ with suppress(ImportError):
 
 import os
 
-MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
-MONGO_DB_SCHEDULES = os.getenv("MONGO_DB_SCHEDULES", "schedules")
+
 PREFETCH_COUNT = int(os.getenv("PREFETCH_COUNT", 1))
-
-MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB_CELERY_DATABASE = os.getenv("MONGO_DB_CELERY_DATABASE", MONGO_DB)
-
+redbeat_redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/1")
 # broker
-broker_url = os.getenv("CELERY_BROKER_URL")
-# results config
-result_backend = MONGO_URI
+broker_url = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672//")
 result_extended = True
-mongodb_backend_settings = {"database": MONGO_DB_CELERY_DATABASE}
-
-beat_scheduler = "celerybeatmongo.schedulers.MongoScheduler"
-mongodb_scheduler_url = MONGO_URI
-mongodb_scheduler_db = MONGO_DB_CELERY_DATABASE
+beat_scheduler = "redbeat.RedBeatScheduler"
+redbeat_lock_key = None
 
 # Optimization for long running tasks
 # https://docs.celeryproject.org/en/stable/userguide/optimizing.html#reserve-one-task-at-a-time

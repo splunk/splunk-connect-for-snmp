@@ -40,6 +40,8 @@ spec:
           env:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
+            - name: REDIS_URL
+              value: {{ include "splunk-connect-for-snmp.redis_url" . }}
             - name: SC4SNMP_VERSION
               value: {{ .Chart.Version | default "0.0.0" }}
             - name: WORKER_CONCURRENCY

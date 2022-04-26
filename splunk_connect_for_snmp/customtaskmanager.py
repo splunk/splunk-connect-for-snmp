@@ -16,9 +16,9 @@
 import logging
 from typing import List
 
-from celerybeatmongo.models import PeriodicTask
-from mongoengine.connection import connect, disconnect
-
+from redbeat.schedulers import RedBeatSchedulerEntry
+from .poller import app
+from celery.schedules import schedule
 import splunk_connect_for_snmp.celery_config
 
 logger = logging.getLogger(__name__)
@@ -26,21 +26,16 @@ logger = logging.getLogger(__name__)
 
 class CustomPeriodicTaskManager:
     def __init__(self):
-        connect(
-            host=splunk_connect_for_snmp.celery_config.mongodb_scheduler_url,
-            db=splunk_connect_for_snmp.celery_config.mongodb_scheduler_db,
-        )
+        pass
 
     def __del__(self):
-        disconnect()
+        pass
 
     def delete_unused_poll_tasks(self, target: str, activeschedules: List[str]):
-        periodic = PeriodicTask.objects(target=target)
-        for p in periodic:
-            if not p.task == "splunk_connect_for_snmp.snmp.tasks.poll":
+        periodic_tasks = RedBeatSchedulerEntry.get_schedules_by_target(target, app=app)
+        for periodic_document in periodic_tasks:
+            if not periodic_document.task == "splunk_connect_for_snmp.snmp.tasks.poll":
                 continue
-            logger.debug(p)
-            periodic_document = periodic.get(name=p.name)
             logger.debug("Got Schedule")
             if p.name not in activeschedules:
                 if periodic_document.enabled:
@@ -48,77 +43,62 @@ class CustomPeriodicTaskManager:
                 logger.debug(f"Deleting Schedule: {periodic_document.name}")
 
     def delete_all_poll_tasks(self):
-        periodic = PeriodicTask.objects()
-        for p in periodic:
-            if not p.task == "splunk_connect_for_snmp.snmp.tasks.poll":
+        periodic_tasks = RedBeatSchedulerEntry.get_schedules()
+        for periodic_document in periodic_tasks:
+            if not periodic_document.task == "splunk_connect_for_snmp.snmp.tasks.poll":
                 continue
-            logger.debug(p)
-            periodic_document = periodic.get(name=p.name)
             logger.debug("Got Schedule")
             periodic_document.delete()
             logger.debug("Deleting Schedule")
 
     def rerun_all_walks(self):
-        periodic = PeriodicTask.objects()
-        for p in periodic:
-            if not p.task == "splunk_connect_for_snmp.snmp.tasks.walk":
+        periodic_tasks = RedBeatSchedulerEntry.get_schedules()
+        for periodic_document in periodic_tasks:
+            if not periodic_document.task == "splunk_connect_for_snmp.snmp.tasks.walk":
                 continue
-            logger.debug(p)
-            periodic_document = periodic.get(name=p.name)
             periodic_document.run_immediately = True
             logger.debug("Got Schedule")
             periodic_document.save()
+            periodic_document.reschedule()
 
     def delete_disabled_poll_tasks(self):
-        periodic = PeriodicTask.objects(enabled=False)
-        for p in periodic:
-            periodic_document = periodic.get(name=p.name)
+        periodic_tasks = RedBeatSchedulerEntry.get_schedules()
+        for periodic_document in periodic_tasks:
             periodic_document.delete()
             logger.debug("Deleting Schedule")
 
     def enable_tasks(self, target):
-        periodic = PeriodicTask.objects(target=target)
-        for p in periodic:
-            periodic_document = periodic.get(name=p.name)
+        periodic_tasks = RedBeatSchedulerEntry.get_schedules_by_target(target["target"], app=app)
+        for periodic_document in periodic_tasks:
             if not periodic_document.enabled:
                 periodic_document.enabled = True
             periodic_document.save()
+            periodic_document.reschedule()
 
     def disable_tasks(self, target):
-        periodic = PeriodicTask.objects(target=target)
-        for p in periodic:
-            periodic_document = periodic.get(name=p.name)
+        periodic_tasks = RedBeatSchedulerEntry.get_schedules_by_target(target["target"], app=app)
+        for periodic_document in periodic_tasks:
             if periodic_document.enabled:
                 periodic_document.enabled = False
             periodic_document.save()
+            periodic_document.reschedule()
 
     def manage_task(self, run_immediately_if_new: bool = False, **task_data) -> None:
-        periodic = PeriodicTask.objects(name=task_data["name"])
+        try:
+            periodic = RedBeatSchedulerEntry.from_key(f"redbeat:{task_data['name']}", app=app)
+        except KeyError:
+            periodic = None
         if periodic:
             logger.debug("Existing Schedule")
             isChanged = False
-            periodic_document = periodic.get(name=task_data["name"])
+            periodic_document = periodic
             for key, value in task_data.items():
-                if key == "interval":
-                    if not periodic_document.interval == PeriodicTask.Interval(
-                        **task_data["interval"]
-                    ):
-                        periodic_document.interval = PeriodicTask.Interval(
-                            **task_data["interval"]
-                        )
+                if key == "schedule":
+                    if not periodic_document.schedule == task_data["schedule"]:
+                        periodic_document.schedule = task_data["schedule"]
                         isChanged = True
-                elif key == "crontab":
-                    if not periodic_document.crontab == PeriodicTask.Crontab(
-                        **task_data["crontab"]
-                    ):
-                        periodic_document.crontab = PeriodicTask.Crontab(
-                            **task_data["crontab"]
-                        )
-                    isChanged = True
                 elif key == "target":
                     pass
-                elif key == "total_run_count":
-                    periodic_document[key] = task_data[key]
                 else:
                     if key in periodic_document:
                         if not periodic_document[key] == task_data[key]:
@@ -131,27 +111,12 @@ class CustomPeriodicTaskManager:
         else:
             logger.debug("New Schedule")
             isChanged = True
-            periodic_document = PeriodicTask(task=task_data["task"])
-            periodic_document.name = task_data["name"]
-            periodic_document.args = task_data["args"]
-            periodic_document.kwargs = task_data["kwargs"]
-            if "interval" in task_data:
-                periodic_document.interval = PeriodicTask.Interval(
-                    **task_data["interval"]
-                )
-            else:
-                periodic_document.crontab = PeriodicTask.Crontab(**task_data["crontab"])
-            periodic_document.enabled = task_data["enabled"]
-            periodic_document.run_immediately = task_data.get(
-                "run_immediately", run_immediately_if_new
-            )
-            if "total_run_count" in task_data:
-                periodic_document["total_run_count"] = task_data["total_run_count"]
+            periodic_document = RedBeatSchedulerEntry(**task_data)
             if "target" in task_data:
-                periodic_document["target"] = task_data["target"]
+                periodic_document.target = task_data["target"]
             if "options" in task_data:
-                periodic_document["options"] = task_data["options"]
+                periodic_document.options = task_data["options"]
 
-        logger.info(f"Periodic document to save: {periodic_document.to_json()}")
         if isChanged:
             periodic_document.save()
+            periodic_document.reschedule()
