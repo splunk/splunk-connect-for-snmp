@@ -28,7 +28,7 @@ import os
 
 
 PREFETCH_COUNT = int(os.getenv("PREFETCH_COUNT", 1))
-redbeat_redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/1")
+redbeat_redis_url = os.getenv("REDIS_URL")
 # broker
 broker_url = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672//")
 result_extended = True

@@ -124,7 +124,7 @@ def load():
                 ir = InventoryRecord(**source_record)
                 target = transform_address_to_key(ir.address, ir.port)
                 if ir.delete:
-                    periodic_obj.disable_tasks(target)
+                    periodic_obj.delete_all_tasks_of_host(target)
                     inventory_records.delete_one(
                         {"address": ir.address, "port": ir.port}
                     )

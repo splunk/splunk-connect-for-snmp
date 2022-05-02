@@ -14,16 +14,16 @@ inventory)
 celery)
     case $2 in
     beat)
-        celery -A splunk_connect_for_snmp.poller beat -l "$LOG_LEVEL" --max-interval=30
+        celery -A splunk_connect_for_snmp.poller beat -l "$LOG_LEVEL" --max-interval=5
         ;;
     worker-trap)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" --concurrency="$WORKER_CONCURRENCY" -O fair -Q traps
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q traps --autoscale=10,"$WORKER_CONCURRENCY"
         ;;
     worker-poller)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" --concurrency="$WORKER_CONCURRENCY" -O fair -Q poll
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL"  -O fair -Q poll --autoscale=10,"$WORKER_CONCURRENCY"
         ;;
     worker-sender)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" --concurrency="$WORKER_CONCURRENCY" -O fair -Q send
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q send --autoscale=10,"$WORKER_CONCURRENCY"
         ;;
     *)
         celery -A splunk_connect_for_snmp.poller "${@:3}" -l "$LOG_LEVEL"
