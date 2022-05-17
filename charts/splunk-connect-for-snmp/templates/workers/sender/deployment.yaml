@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-poller
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-sender
   labels:
     {{- include "splunk-connect-for-snmp.worker.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.worker.autoscaling.enabled }}
-  replicas: {{ .Values.worker.poller.replicaCount }}
+  {{- if not .Values.worker.sender.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
       {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.worker.podAnnotations }}
+      {{- with .Values.worker.sender.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -26,16 +26,16 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "splunk-connect-for-snmp.worker.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.worker.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.worker.sender.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}-worker-poller
+        - name: {{ .Chart.Name }}-worker-sender
           securityContext:
-            {{- toYaml .Values.worker.securityContext | nindent 12 }}
+            {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             [
-              "celery", "worker-poller",
+              "celery", "worker-sender",
             ]
           env:
             - name: CONFIG_PATH
@@ -45,14 +45,14 @@ spec:
             - name: SC4SNMP_VERSION
               value: {{ .Chart.Version | default "0.0.0" }}
             - name: WORKER_CONCURRENCY
-              value: {{ .Values.worker.poller.concurrency | default "2" | quote }}
+              value: {{ .Values.worker.sender.concurrency | default "2" | quote }}
             - name: PREFETCH_COUNT
-              value: {{ .Values.worker.poller.prefetch | default "1" | quote }}
+              value: {{ .Values.worker.sender.prefetch | default "30" | quote }}
             - name: CELERY_BROKER_URL
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
-            {{- if .Values.worker.ignoreNotIncreasingOid }}
+            {{- if Values.worker.ignoreNotIncreasingOid }}
             - name: IGNORE_NOT_INCREASING_OIDS
               value: {{ join "," .Values.worker.ignoreNotIncreasingOid }}
             {{- end}}
@@ -121,12 +121,12 @@ spec:
               readOnly: true
             {{- end }}
           resources:
-            {{- toYaml .Values.worker.resources | nindent 12 }}
-      {{- with .Values.worker.nodeSelector }}
+            {{- toYaml .Values.worker.sender.resources | nindent 12 }}
+      {{- with .Values.worker.sender.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if eq .Values.worker.podAntiAffinity "hard" }}
+      {{- if eq Values.worker.sender.podAntiAffinity "hard" }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -134,7 +134,7 @@ spec:
               labelSelector:
                 matchLabels:
                     {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 22 }}
-      {{- else if eq .Values.worker.podAntiAffinity "soft" }}
+      {{- else if eq Values.worker.sender.podAntiAffinity "soft" }}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -145,7 +145,7 @@ spec:
                   matchLabels:
                     {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 22 }}
       {{- end }}
-      {{- with .Values.worker.tolerations }}
+      {{- with Values.worker.sender.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -204,3 +204,4 @@ spec:
           emptyDir: {}
         - name: tmp
           emptyDir: {}
+

@@ -1,0 +1,28 @@
+{{- if .Values.worker.sender.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-sender
+  labels:
+    {{- include "splunk-connect-for-snmp.worker.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-sender
+  minReplicas: {{ .Values.worker.sender.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.worker.sender.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.worker.sender.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.worker.sender.autoscaling.targetCPUUtilizationPercentage | default 80 }}
+    {{- end }}
+    {{- if .Values.worker.sender.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.worker.sender.autoscaling.targetMemoryUtilizationPercentage | default 0 }}
+    {{- end }}
+{{- end }}
