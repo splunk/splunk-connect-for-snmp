@@ -19,12 +19,6 @@ spec:
         name: cpu
         targetAverageUtilization: {{ .Values.worker.trap.autoscaling.targetCPUUtilizationPercentage | default 80 }}
     {{- end }}
-    {{- if .Values.worker.trap.autoscaling.targetMemoryUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: memory
-        targetAverageUtilization: {{ .Values.worker.trap.autoscaling.targetMemoryUtilizationPercentage | default 0 }}
-    {{- end }}
 status:
   observedGeneration: 1
   currentReplicas: 1
