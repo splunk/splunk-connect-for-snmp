@@ -13,7 +13,7 @@ spec:
       {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.worker.sender.podAnnotations }}
+      {{- with .Values.worker.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
