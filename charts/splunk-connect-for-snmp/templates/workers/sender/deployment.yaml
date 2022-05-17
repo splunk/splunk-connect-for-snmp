@@ -52,7 +52,7 @@ spec:
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
-            {{- if Values.worker.ignoreNotIncreasingOid }}
+            {{- if .Values.worker.ignoreNotIncreasingOid }}
             - name: IGNORE_NOT_INCREASING_OIDS
               value: {{ join "," .Values.worker.ignoreNotIncreasingOid }}
             {{- end}}
