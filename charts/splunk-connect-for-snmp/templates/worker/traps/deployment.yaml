@@ -121,7 +121,7 @@ spec:
               readOnly: true
             {{- end }}
           resources:
-            {{- toYaml .Values.worker.traps.resources | nindent 12 }}
+            {{- toYaml .Values.worker.trap.resources | nindent 12 }}
       {{- with .Values.worker.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
