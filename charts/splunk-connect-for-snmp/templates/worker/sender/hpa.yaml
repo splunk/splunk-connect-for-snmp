@@ -1,5 +1,5 @@
 {{- if .Values.worker.sender.autoscaling.enabled }}
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-sender
@@ -25,4 +25,15 @@ spec:
         name: memory
         targetAverageUtilization: {{ .Values.worker.sender.autoscaling.targetMemoryUtilizationPercentage | default 0 }}
     {{- end }}
+status:
+  observedGeneration: 1
+  currentReplicas: 1
+  desiredReplicas: 1
+  currentMetrics:
+  - type: Resource
+    resource:
+      name: cpu
+      current:
+        averageUtilization: 0
+        averageValue: 0
 {{- end }}
