@@ -105,6 +105,13 @@ worker:
       maxReplicas: 40
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
+    resources:
+      limits:
+        cpu: 500m
+        memory: 5128Mi
+      requests:
+        cpu: 300m
+        memory: 256Mi
   trap:
     replicaCount: 2
     concurrency: 4
@@ -115,6 +122,13 @@ worker:
       maxReplicas: 40
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
+    resources:
+      limits:
+        cpu: 500m
+        memory: 5128Mi
+      requests:
+        cpu: 300m
+        memory: 256Mi
   sender:
     replicaCount: 2
     concurrency: 4
@@ -125,6 +139,13 @@ worker:
       maxReplicas: 40
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
+    resources:
+      limits:
+        cpu: 500m
+        memory: 5128Mi
+      requests:
+        cpu: 300m
+        memory: 256Mi
   nameOverride: ""
   fullnameOverride: ""
 
@@ -153,11 +174,11 @@ worker:
 
   resources:
      limits:
-       cpu: 250m
-       memory: 128
+       cpu: 500m
+       memory: 5128Mi
      requests:
-       cpu: 800m
-       memory: 1024Mi
+       cpu: 300m
+       memory: 256Mi
 
   autoscaling:
     enabled: false
