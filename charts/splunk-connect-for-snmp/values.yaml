@@ -109,6 +109,12 @@ worker:
     replicaCount: 2
     concurrency: 4
     prefetch: 30
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 40
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
   sender:
     replicaCount: 2
     concurrency: 4
