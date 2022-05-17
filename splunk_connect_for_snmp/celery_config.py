@@ -48,8 +48,13 @@ result_persistent = False
 result_expires = 60
 task_default_priority = 5
 task_default_queue = 'poll'
+broker_transport_options = {
+    'priority_steps': list(range(10)),
+    'sep': ':',
+    'queue_order_strategy': 'priority',
+}
 task_queues = (
-    Queue('traps', routing_key='traps', durable=False, max_priority=10),
-    Queue('poll', routing_key='poll', durable=False, max_priority=10),
-    Queue('send', routing_key='send', durable=False, max_priority=10),
+    Queue('traps', exchange='traps'),
+    Queue('poll', exchange='poll'),
+    Queue('send', exchange='send'),
 )

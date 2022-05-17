@@ -106,13 +106,14 @@ def generate_poll_task_definition(active_schedules, address, assigned_profiles, 
             "address": address,
             "profiles": list(period_profiles),
             "frequency": period,
+            "priority": 2,
         },
         "options": {
             "link": chain(
-                signature("splunk_connect_for_snmp.enrich.tasks.enrich").set(queue='poll'),
+                signature("splunk_connect_for_snmp.enrich.tasks.enrich").set(queue='poll').set(priority=4),
                 chain(
-                    signature("splunk_connect_for_snmp.splunk.tasks.prepare").set(queue='send').set(priority=9),
-                    signature("splunk_connect_for_snmp.splunk.tasks.send").set(queue='send').set(priority=10),
+                    signature("splunk_connect_for_snmp.splunk.tasks.prepare").set(queue='send').set(priority=1),
+                    signature("splunk_connect_for_snmp.splunk.tasks.send").set(queue='send').set(priority=0),
                 ),
             ),
         },

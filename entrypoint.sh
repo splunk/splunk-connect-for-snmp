@@ -20,7 +20,7 @@ celery)
         celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q traps --autoscale=10,"$WORKER_CONCURRENCY"
         ;;
     worker-poller)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL"  -O fair -Q poll --autoscale=10,"$WORKER_CONCURRENCY"
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL"  -O fair -Q poll --autoscale=8,"$WORKER_CONCURRENCY"
         ;;
     worker-sender)
         celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q send --autoscale=10,"$WORKER_CONCURRENCY"
