@@ -1,28 +1,28 @@
-{{- if .Values.worker.traps.autoscaling.enabled }}
+{{- if .Values.worker.trap.autoscaling.enabled }}
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-traps
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-trap
   labels:
     {{- include "splunk-connect-for-snmp.worker.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-traps
-  minReplicas: {{ .Values.worker.traps.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.worker.traps.autoscaling.maxReplicas }}
+    name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-trap
+  minReplicas: {{ .Values.worker.trap.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.worker.trap.autoscaling.maxReplicas }}
   metrics:
-    {{- if .Values.worker.traps.autoscaling.targetCPUUtilizationPercentage }}
+    {{- if .Values.worker.trap.autoscaling.targetCPUUtilizationPercentage }}
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.worker.traps.autoscaling.targetCPUUtilizationPercentage | default 80 }}
+        targetAverageUtilization: {{ .Values.worker.trap.autoscaling.targetCPUUtilizationPercentage | default 80 }}
     {{- end }}
     {{- if .Values.worker.traps.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.worker.traps.autoscaling.targetMemoryUtilizationPercentage | default 0 }}
+        targetAverageUtilization: {{ .Values.worker.trap.autoscaling.targetMemoryUtilizationPercentage | default 0 }}
     {{- end }}
 {{- end }}

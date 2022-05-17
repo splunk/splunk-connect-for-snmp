@@ -99,6 +99,12 @@ worker:
     replicaCount: 2
     concurrency: 4
     prefetch: 1
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 40
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
   trap:
     replicaCount: 2
     concurrency: 4
@@ -107,6 +113,12 @@ worker:
     replicaCount: 2
     concurrency: 4
     prefetch: 30
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 40
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
   nameOverride: ""
   fullnameOverride: ""
 
