@@ -120,6 +120,8 @@ spec:
               mountPath: "/app/secrets/snmpv3"
               readOnly: true
             {{- end }}
+          resources:
+            {{- toYaml .Values.worker.poller.resources | nindent 12 }}
       {{- with .Values.worker.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
