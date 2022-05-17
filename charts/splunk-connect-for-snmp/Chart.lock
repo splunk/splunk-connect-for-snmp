@@ -2,9 +2,6 @@ dependencies:
 - name: mongodb
   repository: https://charts.bitnami.com/bitnami
   version: 10.30.12
-- name: rabbitmq
-  repository: https://charts.bitnami.com/bitnami
-  version: 8.24.13
 - name: redis
   repository: https://charts.bitnami.com/bitnami
   version: 16.8.7
