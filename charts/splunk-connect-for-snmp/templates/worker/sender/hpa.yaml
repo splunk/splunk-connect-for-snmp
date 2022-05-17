@@ -17,12 +17,8 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.worker.sender.autoscaling.targetCPUUtilizationPercentage | default 80 }}
-    {{- end }}
-    {{- if .Values.worker.sender.autoscaling.targetMemoryUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: memory
-        targetAverageUtilization: {{ .Values.worker.sender.autoscaling.targetMemoryUtilizationPercentage | default 0 }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.worker.sender.autoscaling.targetCPUUtilizationPercentage | default 80 }}
     {{- end }}
 {{- end }}

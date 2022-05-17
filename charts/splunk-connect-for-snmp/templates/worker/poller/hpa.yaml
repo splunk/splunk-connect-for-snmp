@@ -17,18 +17,8 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        type: Utilization
-        averageUtilization: {{ .Values.worker.poller.autoscaling.targetCPUUtilizationPercentage | default 80 }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.worker.poller.autoscaling.targetCPUUtilizationPercentage | default 80 }}
     {{- end }}
-status:
-  observedGeneration: 1
-  currentReplicas: 1
-  desiredReplicas: 1
-  currentMetrics:
-  - type: Resource
-    resource:
-      name: cpu
-      current:
-        averageUtilization: 0
-        averageValue: 0
 {{- end }}
