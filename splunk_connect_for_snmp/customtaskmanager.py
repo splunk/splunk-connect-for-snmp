@@ -31,7 +31,6 @@ class CustomPeriodicTaskManager:
                 continue
             logger.debug(f"Got Schedule: {periodic_document.name}")
             if periodic_document.name not in activeschedules:
-                #     if periodic_document.enabled:
                 periodic_document.delete()
                 logger.debug(f"Deleting Schedule: {periodic_document.name} delete_unused_poll_tasks")
 
@@ -54,38 +53,12 @@ class CustomPeriodicTaskManager:
             periodic_document.save()
             periodic_document.reschedule()
 
-    # def delete_disabled_poll_tasks(self):
-    #     periodic_tasks = RedBeatSchedulerEntry.get_schedules()
-    #     for periodic_document in periodic_tasks:
-    #         periodic_document.delete()
-    #         logger.debug("Deleting Schedule")
-
     def delete_all_tasks_of_host(self, target):
         periodic_tasks = RedBeatSchedulerEntry.get_schedules_by_target(target, app=app)
         for periodic_document in periodic_tasks:
             periodic_document.delete()
-            # periodic_document.save()
-            # periodic_document.reschedule()
 
-    def manage_task(self, run_immediately_if_new: bool = False, **task_data) -> None:
-        # try:
-        #     periodic_document = RedBeatSchedulerEntry.from_key(f"redbeat:{task_data['name']}", app=app)
-        # except KeyError:
-        #     periodic_document = None
-        # if periodic_document:
-        #     logger.debug("Existing Schedule")
-        #     isChanged = False
-        #     periodic_document = RedBeatSchedulerEntry(**task_data)
-        # else:
-        #     logger.debug("New Schedule")
-        #     isChanged = True
-        #     periodic_document = RedBeatSchedulerEntry(**task_data)
-        #     # if "target" in task_data:
-        #     #     periodic_document.target = task_data["target"]
-        #     # if "options" in task_data:
-        #     #     periodic_document.options = task_data["options"]
-        #
-        # if isChanged:
+    def manage_task(self, **task_data) -> None:
         periodic_document = RedBeatSchedulerEntry(**task_data)
         periodic_document.save()
         periodic_document.reschedule()

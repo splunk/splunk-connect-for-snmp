@@ -11,7 +11,7 @@
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.redis_url" -}}
-{{- printf "redis://%s-redis-headless:6379/" .Release.Name }}
+{{- printf "redis://%s-redis-headless:6379/1" .Release.Name }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.name" -}}
