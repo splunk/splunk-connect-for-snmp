@@ -3,10 +3,7 @@ RabbitMQ is a service with is used as a queue service for SC4SNMP. It is queuing
 
 ### RabbitMQ configuration file
 
-RabbitMQ configuration is keep in `values.yaml` file in section `rabbitmq`.  To downland example file execute the command:
-```
-curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
-```
+RabbitMQ configuration is keep in `values.yaml` file in section `rabbitmq`.
 `values.yaml` is being used during the installation process for configuring Kubernetes values.
 
 Example:
