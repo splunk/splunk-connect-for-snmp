@@ -52,7 +52,12 @@ The following commands can be issued from any one node in a cluster
 
 ```bash
 sudo systemctl enable iscsid
-microk8s enable rbac storage openebs helm3
+sudo microk8s enable helm3
+sudo microk8s enable storage
+sudo microk8s enable dns
+sudo microk8s enable rbac
+sudo microk8s enable community
+sudo microk8s enable openebs
 microk8s status --wait-ready
 ```
 
