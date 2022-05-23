@@ -71,15 +71,6 @@ mongodb:
     storageClass: "microk8s-hostpath"
   volumePermissions:
     enabled: true
-rabbitmq:
-  pdb:
-    create: true
-  replicaCount: 1
-  persistence:
-    enabled: true
-    storageClass: "microk8s-hostpath"
-  volumePermissions:
-    enabled: true
 redis:
   architecture: standalone
   auth:

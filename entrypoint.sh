@@ -26,7 +26,7 @@ celery)
         celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q send --autoscale=10,"$WORKER_CONCURRENCY"
         ;;
     *)
-        celery -A splunk_connect_for_snmp.poller "${@:3}" -l "$LOG_LEVEL"
+        celery "$2"
         ;;
     esac
     ;;
