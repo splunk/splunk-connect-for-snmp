@@ -661,8 +661,11 @@ collect SNMP data from network and infrastructure SNMP-enabled devices, such as 
 which may overload the SNMP device when executing too often. It is used by SC4SNMP to collect and push all OIDs values which provided ACL has access to. 
 - Get task - It is a lightweight task whose goal is to query a subset of OIDs defined by the customer. The task is dedicated to enabling monitoring of the most important OIDs with high frequency like memory or CPU utilization.  </p>
 <h3 id="poller-configuration-file">Poller configuration file<a class="headerlink" href="#poller-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Poller configuration is kept in <code>values.yaml</code> file in section poller.
-<code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
+<p>Poller configuration is kept in <code>values.yaml</code> file in section poller.  To downland example file execute the command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
+</code></pre></div>
+
+<p><code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
 <p>Poller example configuration:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;WARN&quot;</span><span class="w"></span>

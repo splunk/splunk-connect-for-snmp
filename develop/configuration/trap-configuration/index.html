@@ -712,8 +712,11 @@
 <h1 id="trap-configuration">Trap Configuration<a class="headerlink" href="#trap-configuration" title="Permanent link">&para;</a></h1>
 <p>A trap service is a simple server that can handle SNMP traps sent by SNMP devices like routers or switches.   </p>
 <h3 id="trap-configuration-file">Trap configuration file<a class="headerlink" href="#trap-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Trap configuration is kept in <code>values.yaml</code> file in section traps.
-<code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
+<p>Trap configuration is kept in <code>values.yaml</code> file in section traps.  To downland example file execute the command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
+</code></pre></div>
+
+<p><code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
 <p>Trap example configuration:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">communities</span><span class="p">:</span><span class="w"></span>

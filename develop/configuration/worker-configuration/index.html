@@ -628,8 +628,11 @@
 <h1 id="worker-configuration">Worker Configuration<a class="headerlink" href="#worker-configuration" title="Permanent link">&para;</a></h1>
 <p>The worker is a service with is responsible for tasks execution like SNMP Walk, GET, or processing trap messages.  </p>
 <h3 id="worker-configuration-file">Worker configuration file<a class="headerlink" href="#worker-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Worker configuration is kept in <code>values.yaml</code> file in section <code>worker</code>.
-<code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
+<p>Worker configuration is kept in <code>values.yaml</code> file in section <code>worker</code>.  To downland example file execute the command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
+</code></pre></div>
+
+<p><code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># replicas: The number of replicas for worker containers should be two or more</span><span class="w"></span>
 <span class="w">  </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>

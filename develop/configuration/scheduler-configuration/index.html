@@ -739,8 +739,11 @@
 <p>The scheduler is a service with is responsible for managing schedules for SNMP walks and GETs. Schedules definition 
 are stored in Mongo DB. </p>
 <h3 id="scheduler-configuration-file">Scheduler configuration file<a class="headerlink" href="#scheduler-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Scheduler configuration is kept in <code>values.yaml</code> file in section <code>scheduler</code>.
-<code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
+<p>Scheduler configuration is kept in <code>values.yaml</code> file in section <code>scheduler</code>.  To downland example file execute the command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">curl</span> <span class="o">-</span><span class="nv">o</span> <span class="o">~/</span><span class="nv">values</span>.<span class="nv">yaml</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">raw</span>.<span class="nv">githubusercontent</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">splunk</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">develop</span><span class="o">/</span><span class="nv">values</span>.<span class="nv">yaml</span>
+</code></pre></div>
+
+<p><code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;WARN&quot;</span><span class="w"></span>
