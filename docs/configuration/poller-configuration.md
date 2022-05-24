@@ -8,10 +8,7 @@ which may overload the SNMP device when executing too often. It is used by SC4SN
 
 ### Poller configuration file
 
-Poller configuration is kept in `values.yaml` file in section poller.  To downland example file execute the command:
-```
-curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
-```
+Poller configuration is kept in `values.yaml` file in section poller.
 `values.yaml` is being used during the installation process for configuring Kubernetes values.
 
 Poller example configuration:
