@@ -3,10 +3,7 @@ The worker is a service with is responsible for tasks execution like SNMP Walk, 
 
 ### Worker configuration file
 
-Worker configuration is kept in `values.yaml` file in section `worker`.  To downland example file execute the command:
-```
-curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
-```
+Worker configuration is kept in `values.yaml` file in section `worker`.
 `values.yaml` is being used during the installation process for configuring Kubernetes values.
 
 ```yaml

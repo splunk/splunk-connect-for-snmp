@@ -3,10 +3,7 @@ A trap service is a simple server that can handle SNMP traps sent by SNMP device
 
 ### Trap configuration file
 
-Trap configuration is kept in `values.yaml` file in section traps.  To downland example file execute the command:
-```
-curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
-```
+Trap configuration is kept in `values.yaml` file in section traps.
 `values.yaml` is being used during the installation process for configuring Kubernetes values.
 
 Trap example configuration:
