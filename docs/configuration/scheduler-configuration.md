@@ -4,10 +4,7 @@ are stored in Mongo DB.
  
 ### Scheduler configuration file
 
-Scheduler configuration is kept in `values.yaml` file in section `scheduler`.  To downland example file execute the command:
-```
-curl -o ~/values.yaml https://raw.githubusercontent.com/splunk/splunk-connect-for-snmp/develop/values.yaml
-```
+Scheduler configuration is kept in `values.yaml` file in section `scheduler`.
 `values.yaml` is being used during the installation process for configuring Kubernetes values.
 
 Example:
