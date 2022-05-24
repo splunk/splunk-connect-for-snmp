@@ -97,7 +97,7 @@ class TestProfiles:
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch 
         | search "TCP-MIB" """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 5
+            setup_splunk, search_string, 2
         )
         assert result_count > 0
         assert metric_count > 0
@@ -106,7 +106,7 @@ class TestProfiles:
         search_string = """search index=netops sourcetype="sc4snmp:event" "IF-MIB.ifType" AND NOT "IF-MIB.ifAdminStatus" """
         logger.info("Integration test static profile - events")
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 5
+            setup_splunk, search_string, 2
         )
         assert result_count > 0
         assert metric_count > 0
@@ -145,7 +145,7 @@ class TestProfilesWorkflow:
     def test_add_new_profile_and_reload(self, setup_splunk):
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=new_profile """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 5
+            setup_splunk, search_string, 2
         )
         assert result_count > 0
         assert metric_count > 0
@@ -167,7 +167,7 @@ class TestProfilesWorkflow:
         time.sleep(70)
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch earliest=-20s """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 3
+            setup_splunk, search_string, 2
         )
         assert result_count == 0
         assert metric_count == 0
@@ -182,7 +182,7 @@ class TestProfilesWorkflow:
         time.sleep(40)
         search_string = """| mpreview index=netmetrics earliest=-20s """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 3
+            setup_splunk, search_string, 2
         )
         assert result_count == 0
         assert metric_count == 0
@@ -223,7 +223,7 @@ class TestSmartProfiles:
     def test_smart_profiles_field(self, setup_splunk):
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field | search icmpOutDestUnreachs """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 5
+            setup_splunk, search_string, 2
         )
         assert result_count > 0
         assert metric_count > 0
@@ -234,7 +234,7 @@ class TestSmartProfiles:
         )
         search_string_base = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field | search myCustomName1 """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string_base, 5
+            setup_splunk, search_string_base, 2
         )
         assert result_count > 0
         assert metric_count > 0
@@ -287,7 +287,7 @@ class TestModifyProfilesFrequency:
     def test_sanity_frequency_field(self, setup_splunk):
         search_string = """| mpreview index=netmetrics earliest=-30s | search profiles=test_modify frequency=5 """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 8
+            setup_splunk, search_string, 3
         )
         assert result_count > 0
         assert metric_count > 0
@@ -324,7 +324,7 @@ class TestModifyProfilesVarBinds:
     def test_sanity_varBinds_field(self, setup_splunk):
         search_string = """| mpreview index=netmetrics earliest=-30s | search profiles=test_modify UDP-MIB"""
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 8
+            setup_splunk, search_string, 2
         )
         assert result_count > 0
         assert metric_count > 0
@@ -354,19 +354,19 @@ class TestModifyProfilesVarBinds:
         time.sleep(20)
         search_string = """| mpreview index=netmetrics earliest=-15s | search profiles=test_modify TCP-MIB """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 3
+            setup_splunk, search_string, 2
         )
         assert result_count > 0
         assert metric_count > 0
         search_string = """| mpreview index=netmetrics  earliest=-15s | search profiles=test_modify | search icmpOutDestUnreachs """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 3
+            setup_splunk, search_string, 2
         )
         assert result_count > 0
         assert metric_count > 0
         search_string = """| mpreview index=netmetrics earliest=-20s | search  laIndex | dedup metric_name:sc4snmp.UCD-SNMP-MIB.laIndex """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 3
+            setup_splunk, search_string, 2
         )
         assert result_count == 3
         assert metric_count == 3
@@ -400,7 +400,7 @@ class TestSmallWalk:
             """| mpreview index=netmetrics earliest=-30s | search "TCP-MIB" """
         )
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 8
+            setup_splunk, search_string, 3
         )
         assert result_count > 0
         assert metric_count > 0
@@ -411,7 +411,7 @@ class TestSmallWalk:
             """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
         )
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 5
+            setup_splunk, search_string, 2
         )
         assert result_count == 0
         assert metric_count == 0
@@ -419,7 +419,7 @@ class TestSmallWalk:
             """| mpreview index=netmetrics earliest=-20s | search "IP-MIB" """
         )
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 8
+            setup_splunk, search_string, 2
         )
         assert result_count > 0
         assert metric_count > 0
@@ -438,7 +438,7 @@ class TestPoolingV3:
         time.sleep(40)
         search_string = """| mpreview index=netmetrics earliest=-20s"""
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 3
+            setup_splunk, search_string, 2
         )
         assert result_count == 0
         assert metric_count == 0

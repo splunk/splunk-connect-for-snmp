@@ -84,7 +84,12 @@ sed -i "s/###SPLUNK_TOKEN###/$(cat hec_token)/" values.yaml
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" values.yaml
 sudo docker run -d -p 161:161/udp tandrup/snmpsim
 
-sudo microk8s enable helm3 storage dns rbac openebs
+sudo microk8s enable helm3
+sudo microk8s enable storage
+sudo microk8s enable dns
+sudo microk8s enable rbac
+sudo microk8s enable community
+sudo microk8s enable openebs
 sudo systemctl enable iscsid
 yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
 
