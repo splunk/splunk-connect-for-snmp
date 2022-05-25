@@ -26,7 +26,7 @@ import os
 
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 MONGO_DB_SCHEDULES = os.getenv("MONGO_DB_SCHEDULES", "schedules")
-
+CELERY_TASK_TIMEOUT = int(os.getenv("CELERY_TASK_TIMEOUT", "2400"))
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB_CELERY_DATABASE = os.getenv("MONGO_DB_CELERY_DATABASE", MONGO_DB)
 
@@ -48,5 +48,5 @@ worker_prefetch_multiplier = 1
 task_acks_on_failure_or_timeout = True
 task_reject_on_worker_lost = True
 task_track_started = True
-task_time_limit = 2400
+task_time_limit = CELERY_TASK_TIMEOUT
 task_ignore_result = True

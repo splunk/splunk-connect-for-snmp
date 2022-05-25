@@ -97,6 +97,7 @@ worker:
   ignoreNotIncreasingOid: []
   replicaCount: 2
   concurrency: 4
+  taskTimeout: 2400
   nameOverride: ""
   fullnameOverride: ""
 
@@ -330,7 +331,7 @@ mongodb:
         prometheus.io/port: "9216"
 rabbitmq:
   extraConfiguration: |
-    consumer_timeout =  2400000
+    consumer_timeout =  7200000
   replicaCount: 1
   pdb:
     create: true
