@@ -620,12 +620,11 @@ su - <span class="nv">$USER</span>
 <h2 id="install-basic-services-required-for-sc4snmp">Install basic services required for sc4snmp<a class="headerlink" href="#install-basic-services-required-for-sc4snmp" title="Permanent link">&para;</a></h2>
 <p>The following commands can be issued from any one node in a cluster</p>
 <div class="codehilite"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> iscsid
-sudo microk8s <span class="nb">enable</span> helm3
-sudo microk8s <span class="nb">enable</span> storage
-sudo microk8s <span class="nb">enable</span> dns
-sudo microk8s <span class="nb">enable</span> rbac
-sudo microk8s <span class="nb">enable</span> community
-sudo microk8s <span class="nb">enable</span> openebs
+microk8s <span class="nb">enable</span> helm3
+microk8s <span class="nb">enable</span> storage
+microk8s <span class="nb">enable</span> rbac
+microk8s <span class="nb">enable</span> community
+microk8s <span class="nb">enable</span> openebs
 microk8s status --wait-ready
 </code></pre></div>
 
