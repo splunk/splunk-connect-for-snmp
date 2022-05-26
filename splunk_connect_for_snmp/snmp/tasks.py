@@ -78,9 +78,7 @@ def walk(self, **kwargs):
         ir = get_inventory(mongo_inventory, address)
         retry = True
         while retry:
-            retry, result = self.do_work(
-                ir, walk=True, profiles=profile
-            )
+            retry, result = self.do_work(ir, walk=True, profiles=profile)
 
     # After a Walk tell schedule to recalc
     work = {}

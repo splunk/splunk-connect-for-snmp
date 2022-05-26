@@ -26,14 +26,16 @@ class TestGetVarbinds(TestCase):
         poller = Poller.__new__(Poller)
 
         profiles = {
-            "test1": {"condition": {"type": "walk"},
-            "varBinds": [
-                ["IF-MIB", "ifInDiscards", 1],
-                ["IF-MIB", "ifOutErrors"],
-                ["SNMPv2-MIB", "sysDescr", 0],
-                ["IP-MIB"]
-            ],
-        }}
+            "test1": {
+                "condition": {"type": "walk"},
+                "varBinds": [
+                    ["IF-MIB", "ifInDiscards", 1],
+                    ["IF-MIB", "ifOutErrors"],
+                    ["SNMPv2-MIB", "sysDescr", 0],
+                    ["IP-MIB"],
+                ],
+            }
+        }
 
         Poller.profiles = profiles
         Poller.load_mibs = Mock()
@@ -48,19 +50,23 @@ class TestGetVarbinds(TestCase):
         walk_var_bind = list(varbinds_bulk)
 
         self.assertEqual(
-            {walk_var_bind[0]._ObjectType__args[0]._ObjectIdentity__args[0],
-             walk_var_bind[1]._ObjectType__args[0]._ObjectIdentity__args[0],
-             walk_var_bind[2]._ObjectType__args[0]._ObjectIdentity__args[0]}, {"SNMPv2-MIB", "IF-MIB", "IP-MIB"}
+            {
+                walk_var_bind[0]._ObjectType__args[0]._ObjectIdentity__args[0],
+                walk_var_bind[1]._ObjectType__args[0]._ObjectIdentity__args[0],
+                walk_var_bind[2]._ObjectType__args[0]._ObjectIdentity__args[0],
+            },
+            {"SNMPv2-MIB", "IF-MIB", "IP-MIB"},
         )
 
     def test_get_varbinds_for_walk_none(self):
         poller = Poller.__new__(Poller)
 
         profiles = {
-            "test1": {"condition": {"type": "walk"},
-                      "varBinds": [
-                      ],
-                      }}
+            "test1": {
+                "condition": {"type": "walk"},
+                "varBinds": [],
+            }
+        }
 
         Poller.profiles = profiles
         Poller.load_mibs = Mock()
@@ -75,18 +81,22 @@ class TestGetVarbinds(TestCase):
         walk_var_bind = list(varbinds_bulk)
 
         self.assertEqual(
-            {walk_var_bind[0]._ObjectType__args[0]._ObjectIdentity__args[0],
-             walk_var_bind[1]._ObjectType__args[0]._ObjectIdentity__args[0]}, {"SNMPv2-MIB", "IF-MIB"}
+            {
+                walk_var_bind[0]._ObjectType__args[0]._ObjectIdentity__args[0],
+                walk_var_bind[1]._ObjectType__args[0]._ObjectIdentity__args[0],
+            },
+            {"SNMPv2-MIB", "IF-MIB"},
         )
 
-    def test_get_varbinds_for_walk(self):
+    def test_get_varbinds_for_walk_with_three_profiles(self):
         poller = Poller.__new__(Poller)
 
         profiles = {
-            "test1": {"condition": {"type": "walk"},
-                      "varBinds": [["IP-MIB"], ["TCP-MIB"], ["UDP-MIB"]
-                      ],
-                      }}
+            "test1": {
+                "condition": {"type": "walk"},
+                "varBinds": [["IP-MIB"], ["TCP-MIB"], ["UDP-MIB"]],
+            }
+        }
 
         Poller.profiles = profiles
         Poller.load_mibs = Mock()
@@ -101,11 +111,14 @@ class TestGetVarbinds(TestCase):
         walk_var_bind = list(varbinds_bulk)
 
         self.assertEqual(
-            {walk_var_bind[0]._ObjectType__args[0]._ObjectIdentity__args[0],
-            walk_var_bind[1]._ObjectType__args[0]._ObjectIdentity__args[0],
-            walk_var_bind[2]._ObjectType__args[0]._ObjectIdentity__args[0],
-            walk_var_bind[3]._ObjectType__args[0]._ObjectIdentity__args[0],
-             walk_var_bind[4]._ObjectType__args[0]._ObjectIdentity__args[0]}, {"SNMPv2-MIB", "IF-MIB", "UDP-MIB", "IP-MIB", "TCP-MIB"}
+            {
+                walk_var_bind[0]._ObjectType__args[0]._ObjectIdentity__args[0],
+                walk_var_bind[1]._ObjectType__args[0]._ObjectIdentity__args[0],
+                walk_var_bind[2]._ObjectType__args[0]._ObjectIdentity__args[0],
+                walk_var_bind[3]._ObjectType__args[0]._ObjectIdentity__args[0],
+                walk_var_bind[4]._ObjectType__args[0]._ObjectIdentity__args[0],
+            },
+            {"SNMPv2-MIB", "IF-MIB", "UDP-MIB", "IP-MIB", "TCP-MIB"},
         )
 
     def test_get_varbinds_for_walk_next_time_no_profiles(self):

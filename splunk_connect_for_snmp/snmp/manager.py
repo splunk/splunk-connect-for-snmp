@@ -388,10 +388,7 @@ class Poller(Task):
             needed_mibs = []
             if walk and profiles:
                 # as we have base profile configured, we need to make sure that those two MIB families are walked
-                required_bulk = {
-                    "IF-MIB": None,
-                    "SNMPv2-MIB": None
-                }
+                required_bulk = {"IF-MIB": None, "SNMPv2-MIB": None}
             else:
                 required_bulk = {}
 
