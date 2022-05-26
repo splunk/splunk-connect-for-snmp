@@ -22,38 +22,97 @@ class TestGetVarbinds(TestCase):
             "1.3.6", walk_var_bind._ObjectType__args[0]._ObjectIdentity__args[0]
         )
 
-    def test_get_varbinds_for_walk_first_time(self):
+    def test_get_varbinds_for_walk_redundant(self):
         poller = Poller.__new__(Poller)
 
         profiles = {
-            "test1": {"type": "walk"},
+            "test1": {"condition": {"type": "walk"},
             "varBinds": [
                 ["IF-MIB", "ifInDiscards", 1],
                 ["IF-MIB", "ifOutErrors"],
                 ["SNMPv2-MIB", "sysDescr", 0],
+                ["IP-MIB"]
             ],
-        }
+        }}
 
+        Poller.profiles = profiles
+        Poller.load_mibs = Mock()
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
-            "192.168.0.1", walk=True, walked_first_time=False, profiles=profiles
+            "192.168.0.1", walk=True, profiles=["test1"]
         )
-
         self.assertEqual(0, len(varbinds_get))
-        self.assertEqual(1, len(varbinds_bulk))
+        self.assertEqual(3, len(varbinds_bulk))
         self.assertEqual(0, len(get_mapping))
         self.assertEqual(0, len(bulk_mapping))
 
-        walk_var_bind = next(iter(varbinds_bulk))
+        walk_var_bind = list(varbinds_bulk)
 
         self.assertEqual(
-            "1.3.6", walk_var_bind._ObjectType__args[0]._ObjectIdentity__args[0]
+            {walk_var_bind[0]._ObjectType__args[0]._ObjectIdentity__args[0],
+             walk_var_bind[1]._ObjectType__args[0]._ObjectIdentity__args[0],
+             walk_var_bind[2]._ObjectType__args[0]._ObjectIdentity__args[0]}, {"SNMPv2-MIB", "IF-MIB", "IP-MIB"}
+        )
+
+    def test_get_varbinds_for_walk_none(self):
+        poller = Poller.__new__(Poller)
+
+        profiles = {
+            "test1": {"condition": {"type": "walk"},
+                      "varBinds": [
+                      ],
+                      }}
+
+        Poller.profiles = profiles
+        Poller.load_mibs = Mock()
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
+            "192.168.0.1", walk=True, profiles=["test1"]
+        )
+        self.assertEqual(0, len(varbinds_get))
+        self.assertEqual(2, len(varbinds_bulk))
+        self.assertEqual(0, len(get_mapping))
+        self.assertEqual(0, len(bulk_mapping))
+
+        walk_var_bind = list(varbinds_bulk)
+
+        self.assertEqual(
+            {walk_var_bind[0]._ObjectType__args[0]._ObjectIdentity__args[0],
+             walk_var_bind[1]._ObjectType__args[0]._ObjectIdentity__args[0]}, {"SNMPv2-MIB", "IF-MIB"}
+        )
+
+    def test_get_varbinds_for_walk(self):
+        poller = Poller.__new__(Poller)
+
+        profiles = {
+            "test1": {"condition": {"type": "walk"},
+                      "varBinds": [["IP-MIB"], ["TCP-MIB"], ["UDP-MIB"]
+                      ],
+                      }}
+
+        Poller.profiles = profiles
+        Poller.load_mibs = Mock()
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
+            "192.168.0.1", walk=True, profiles=["test1"]
+        )
+        self.assertEqual(0, len(varbinds_get))
+        self.assertEqual(5, len(varbinds_bulk))
+        self.assertEqual(0, len(get_mapping))
+        self.assertEqual(0, len(bulk_mapping))
+
+        walk_var_bind = list(varbinds_bulk)
+
+        self.assertEqual(
+            {walk_var_bind[0]._ObjectType__args[0]._ObjectIdentity__args[0],
+            walk_var_bind[1]._ObjectType__args[0]._ObjectIdentity__args[0],
+            walk_var_bind[2]._ObjectType__args[0]._ObjectIdentity__args[0],
+            walk_var_bind[3]._ObjectType__args[0]._ObjectIdentity__args[0],
+             walk_var_bind[4]._ObjectType__args[0]._ObjectIdentity__args[0]}, {"SNMPv2-MIB", "IF-MIB", "UDP-MIB", "IP-MIB", "TCP-MIB"}
         )
 
     def test_get_varbinds_for_walk_next_time_no_profiles(self):
         poller = Poller.__new__(Poller)
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
-            "192.168.0.1", walk=True, walked_first_time=True, profiles=[]
+            "192.168.0.1", walk=True, profiles=[]
         )
 
         self.assertEqual(0, len(varbinds_get))
@@ -78,7 +137,7 @@ class TestGetVarbinds(TestCase):
         poller.load_mibs = Mock()
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
-            "192.168.0.1", walk=True, walked_first_time=True, profiles=profiles
+            "192.168.0.1", walk=True, profiles=["profile1"]
         )
 
         self.assertEqual(0, len(varbinds_get))
@@ -96,7 +155,39 @@ class TestGetVarbinds(TestCase):
         )
 
         self.assertEqual("IF-MIB", names[0])
-        self.assertEqual("UDP-MIB", names[1])
+        self.assertEqual("SNMPv2-MIB", names[1])
+
+    def test_get_varbinds_for_walk_with_profiles_changed_sequence(self):
+        profiles = {
+            "profile1": {"frequency": 20, "varBinds": [["IF-MIB"]]},
+            "profile2": {"frequency": 20, "varBinds": [["UDP-MIB"]]},
+        }
+
+        poller = Poller.__new__(Poller)
+        poller.profiles = profiles
+        poller.load_mibs = Mock()
+
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
+            "192.168.0.1", walk=True, profiles=["profile2"]
+        )
+
+        self.assertEqual(0, len(varbinds_get))
+        self.assertEqual(3, len(varbinds_bulk))
+        self.assertEqual(0, len(get_mapping))
+        self.assertEqual(0, len(bulk_mapping))
+
+        names = sorted(
+            list(
+                map(
+                    lambda x: x._ObjectType__args[0]._ObjectIdentity__args[0],
+                    varbinds_bulk,
+                )
+            )
+        )
+
+        self.assertEqual("IF-MIB", names[0])
+        self.assertEqual("SNMPv2-MIB", names[1])
+        self.assertEqual("UDP-MIB", names[2])
 
     def test_get_varbinds_for_poll_family_only(self):
         poller = Poller.__new__(Poller)
