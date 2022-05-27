@@ -18,6 +18,7 @@ microk8s helm3 upgrade --install sck \
   --set="splunkPlatform.endpoint=<splunk_endpoint>" \
   --set="splunkPlatform.insecureSkipVerify=<insecure_skip_verify>" \
   --set="splunkPlatform.token=<splunk_token>" \
+  --set="logsEngine=otel" \
   --set="splunkPlatform.metricsEnabled=true" \
   --set="splunkPlatform.metricsIndex=em_metrics" \
   --set="splunkPlatform.index=em_logs" \
