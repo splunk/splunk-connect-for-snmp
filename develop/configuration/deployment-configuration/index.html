@@ -668,8 +668,8 @@ after executing:</p>
 
 <p>More information about the concept of <code>resources</code> can be found in the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">kuberentes documentation</a>.</p>
 <h3 id="update-inventory-and-profile">Update Inventory and Profile<a class="headerlink" href="#update-inventory-and-profile" title="Permanent link">&para;</a></h3>
-<p>Inventory and profiles in <code>values.yaml</code> is quite expensive from Splunk Connect for SNMP perspective. 
-It required several checks before applying changes. SC4SNMP was designed to prevent changes in inventory and profiles 
+<p>Inventory and profiles in <code>values.yaml</code> is quite expensive from the Splunk Connect for SNMP perspective. 
+It requires several checks before applying changes. SC4SNMP was designed to prevent changes in inventory and profiles 
 task more often than every 5 min. </p>
 <p>When changing inventory or profile need to be applied in <code>values.yaml</code> following steps need to be done:</p>
 <ol>
@@ -679,8 +679,12 @@ task more often than every 5 min. </p>
 <p><code>shell
    microk8s kubectl -n sc4snmp get pods | grep inventory</code></p>
 <p>If the command does not return any pods, follow the next step. In another case, wait and execute the command again until the moment 
-   when inventory job finishes. 
-3. Run upgrade command describe in <a href="../gettingstarted/sc4snmp-installation/#install-sc4snmp">Installation Guide</a> </p>
+   when inventory job finishes. </p>
+<ol start="3">
+<li>Run upgrade command describe in <a href="../../gettingstarted/sc4snmp-installation#install-sc4snmp">Installation Guide</a> </li>
+</ol>
+<p>NOTE: If you decide to change existing profile scope without changing inventory data, the change will be reflected after 
+next walk process for the host. Walk happens every <code>walk_interval</code> or on any change in inventory.</p>
 
               
             </article>

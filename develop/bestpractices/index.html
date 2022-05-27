@@ -749,7 +749,7 @@
 <h2 id="pieces-of-advice">Pieces of Advice<a class="headerlink" href="#pieces-of-advice" title="Permanent link">&para;</a></h2>
 <h3 id="check-when-snmp-walk-was-executed-last-time-for-device">Check when SNMP WALK was executed last time for device<a class="headerlink" href="#check-when-snmp-walk-was-executed-last-time-for-device" title="Permanent link">&para;</a></h3>
 <ol>
-<li><a href="../gettingstarted/sck-installation/">Configure SCK</a></li>
+<li><a href="../gettingstarted/sck-installation/">Configure Splunk OpenTelemetry Collector for Kubernetes</a></li>
 <li>Go to your Splunk and execute search: <code>index="em_logs"   "Sending due task" "sc4snmp;&lt;IP_ADDRESS&gt;;walk"</code> 
 and replace <IP_ADDRESS> by IP Address which you are interested. </li>
 </ol>
@@ -807,6 +807,10 @@ In case of multiple profiles of type <code>walk</code> will be placed in profile
 <span class="w">    </span><span class="no">address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete</span><span class="w"></span>
 <span class="w">    </span><span class="no">10.202.4.202,,2c,public,,,2000,small_walk,,</span><span class="w"></span>
 </code></pre></div>
+
+<p>NOTE: When small walk is configured, you can set up polling only of OIDs belonging to walk profile varBinds. 
+Additionally, there are two MIB families that are enabled by default (we need them to create state of the device in the database and poll base profiles): <code>IF-MIB</code> and <code>SNMPv2-MIB</code>.
+For example, if you&rsquo;ve decided to use <code>small_walk</code> from the example above, you&rsquo;ll be able to poll only <code>UDP-MIB</code>, <code>IF-MIB</code> and <code>SNMPv2-MIB</code> OIDs.</p>
 
               
             </article>
