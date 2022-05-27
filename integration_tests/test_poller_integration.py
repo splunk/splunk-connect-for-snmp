@@ -395,7 +395,6 @@ def setup_small_walk(request):
 
 @pytest.mark.usefixtures("setup_small_walk")
 class TestSmallWalk:
-
     def test_check_if_walk_scope_was_smaller(self, setup_splunk):
         time.sleep(20)
         search_string = (
