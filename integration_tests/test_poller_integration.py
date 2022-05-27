@@ -395,15 +395,6 @@ def setup_small_walk(request):
 
 @pytest.mark.usefixtures("setup_small_walk")
 class TestSmallWalk:
-    def test_sanity_small_walk(self, setup_splunk):
-        search_string = (
-            """| mpreview index=netmetrics earliest=-30s | search "TCP-MIB" """
-        )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 3
-        )
-        assert result_count > 0
-        assert metric_count > 0
 
     def test_check_if_walk_scope_was_smaller(self, setup_splunk):
         time.sleep(20)
