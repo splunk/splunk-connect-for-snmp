@@ -46,6 +46,11 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 
+{{- define "splunk-connect-for-snmp.worker.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
 {{- define "splunk-connect-for-snmp.worker.poller.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-poller
 app.kubernetes.io/instance: {{ .Release.Name }}
