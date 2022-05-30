@@ -94,6 +94,7 @@ scheduler:
   podAntiAffinity: soft
 
 worker:
+  taskTimeout: 2400
   ignoreNotIncreasingOid: []
   poller:
     replicaCount: 2

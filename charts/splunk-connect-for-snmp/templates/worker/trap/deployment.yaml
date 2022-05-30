@@ -52,6 +52,8 @@ spec:
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
+            - name: CELERY_TASK_TIMEOUT
+              value: {{ .Values.worker.taskTimeout | default "2400" | quote }}
             {{- if .Values.worker.ignoreNotIncreasingOid }}
             - name: IGNORE_NOT_INCREASING_OIDS
               value: {{ join "," .Values.worker.ignoreNotIncreasingOid }}

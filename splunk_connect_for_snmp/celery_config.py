@@ -26,7 +26,7 @@ with suppress(ImportError):
 
 import os
 
-
+CELERY_TASK_TIMEOUT = int(os.getenv("CELERY_TASK_TIMEOUT", "2400"))
 PREFETCH_COUNT = int(os.getenv("PREFETCH_COUNT", 1))
 redbeat_redis_url = os.getenv("REDIS_URL")
 # broker
@@ -41,7 +41,7 @@ task_acks_late = True
 worker_prefetch_multiplier = PREFETCH_COUNT
 task_acks_on_failure_or_timeout = True
 task_reject_on_worker_lost = True
-task_time_limit = 2400
+task_time_limit = CELERY_TASK_TIMEOUT
 task_create_missing_queues = False
 task_ignore_result = True
 result_persistent = False
