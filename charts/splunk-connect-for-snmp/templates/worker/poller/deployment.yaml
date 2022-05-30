@@ -133,7 +133,7 @@ spec:
             - topologyKey: "kubernetes.io/hostname"
               labelSelector:
                 matchLabels:
-                    {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 22 }}
+                    {{- include "splunk-connect-for-snmp.worker.poller.selectorLabels" . | nindent 22 }}
       {{- else if eq .Values.worker.podAntiAffinity "soft" }}
       affinity:
         podAntiAffinity:
@@ -143,7 +143,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
                 labelSelector:
                   matchLabels:
-                    {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 22 }}
+                    {{- include "splunk-connect-for-snmp.worker.poller.selectorLabels" . | nindent 22 }}
       {{- end }}
       {{- with .Values.worker.tolerations }}
       tolerations:
