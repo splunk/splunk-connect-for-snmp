@@ -10,7 +10,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 6 }}
+      {{- include "splunk-connect-for-snmp.worker.sender.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.worker.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "splunk-connect-for-snmp.worker.selectorLabels" . | nindent 8 }}
+        {{- include "splunk-connect-for-snmp.worker.sender.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
