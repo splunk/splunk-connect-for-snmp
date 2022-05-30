@@ -3,6 +3,7 @@ from unittest.mock import Mock, mock_open, patch
 
 from pymongo.results import UpdateResult
 
+from celery.schedules import schedule
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.inventory.loader import (
     gen_walk_task,
@@ -81,7 +82,7 @@ class TestLoader(TestCase):
             "splunk_connect_for_snmp.splunk.tasks.send",
             result["options"]["link"].tasks[1].tasks[1].tasks[1].name,
         )
-        self.assertEqual({"every": 3456, "period": "seconds"}, result["interval"])
+        self.assertEqual(schedule(3456), result["schedule"])
         self.assertTrue(result["enabled"])
         self.assertTrue(result["run_immediately"])
 
@@ -124,7 +125,7 @@ class TestLoader(TestCase):
             "splunk_connect_for_snmp.splunk.tasks.send",
             result["options"]["link"].tasks[1].tasks[1].tasks[1].name,
         )
-        self.assertEqual({"every": 3456, "period": "seconds"}, result["interval"])
+        self.assertEqual(schedule(3456), result["schedule"])
         self.assertTrue(result["enabled"])
         self.assertTrue(result["run_immediately"])
 
@@ -274,7 +275,7 @@ class TestLoader(TestCase):
         m_load_profiles.return_value = default_profiles
         self.assertEqual(False, load())
 
-        periodic_obj_mock.disable_tasks.assert_called_with("192.168.0.1")
+        periodic_obj_mock.delete_all_tasks_of_host.assert_called_with("192.168.0.1")
         m_delete.assert_called_with({"address": "192.168.0.1", "port": 161})
 
         calls = m_remove.call_args_list
@@ -301,7 +302,7 @@ class TestLoader(TestCase):
         m_load_profiles.return_value = default_profiles
         self.assertEqual(False, load())
 
-        periodic_obj_mock.disable_tasks.assert_called_with("192.168.0.1:345")
+        periodic_obj_mock.delete_all_tasks_of_host.assert_called_with("192.168.0.1:345")
         m_delete.assert_called_with({"address": "192.168.0.1", "port": 345})
 
         calls = m_remove.call_args_list
