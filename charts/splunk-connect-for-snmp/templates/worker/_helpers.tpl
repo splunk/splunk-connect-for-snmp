@@ -45,6 +45,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
+
 {{- define "splunk-connect-for-snmp.worker.poller.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-poller
 app.kubernetes.io/instance: {{ .Release.Name }}
@@ -58,6 +59,33 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "splunk-connect-for-snmp.worker.trap.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-trap
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{- define "splunk-connect-for-snmp.worker.trap.labels" -}}
+helm.sh/chart: {{ include "splunk-connect-for-snmp.worker.chart" . }}
+{{ include "splunk-connect-for-snmp.worker.trap.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{- define "splunk-connect-for-snmp.worker.poller.labels" -}}
+helm.sh/chart: {{ include "splunk-connect-for-snmp.worker.chart" . }}
+{{ include "splunk-connect-for-snmp.worker.poller.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{- define "splunk-connect-for-snmp.worker.sender.labels" -}}
+helm.sh/chart: {{ include "splunk-connect-for-snmp.worker.chart" . }}
+{{ include "splunk-connect-for-snmp.worker.sender.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 {{/*
 Create the name of the service account to use
