@@ -150,7 +150,7 @@ def load():
                         ]
                         if profiles:
                             profile = profiles[-1]
-                            ir.walk_interval = source_record["walk_interval"]
+                            ir.walk_interval = int(source_record["walk_interval"])
                     if status.matched_count == 0:
                         logger.info(f"New Record {ir} {status.upserted_id}")
                     elif status.modified_count == 1 and status.upserted_id is None:
