@@ -322,7 +322,6 @@ class Poller(Task):
                     ir.address,
                     walk,
                 ):
-                    logger.debug(f"Currently processing: {varBindTable}")
                     tmp_retry, tmp_mibs, _ = self.process_snmp_data(
                         varBindTable, metrics, address, bulk_mapping
                     )
