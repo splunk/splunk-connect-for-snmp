@@ -415,23 +415,23 @@ class TestSmallWalk:
         assert metric_count > 0
 
 
-class TestPoolingV3:
-    def test_pooling_v3(self, request, setup_splunk):
-        trap_external_ip = request.config.getoption("trap_external_ip")
-        logger.info("Integration test for v3 version of SNMP")
-        create_v3_secrets()
-        update_file(["- secretv4"], "scheduler_secrets.yaml")
-        update_file(
-            [f"{trap_external_ip},,3,snmp-poller,secretv4,,600,,,"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "scheduler_secrets.yaml"])
-        time.sleep(40)
-        search_string = """| mpreview index=netmetrics earliest=-20s"""
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count == 0
-        assert metric_count == 0
+# class TestPoolingV3:
+#     def test_pooling_v3(self, request, setup_splunk):
+#         trap_external_ip = request.config.getoption("trap_external_ip")
+#         logger.info("Integration test for v3 version of SNMP")
+#         create_v3_secrets()
+#         update_file(["- secretv4"], "scheduler_secrets.yaml")
+#         update_file(
+#             [f"{trap_external_ip},,3,snmp-poller,secretv4,,600,,,"], "inventory.yaml"
+#         )
+#         upgrade_helm(["inventory.yaml", "scheduler_secrets.yaml"])
+#         time.sleep(40)
+#         search_string = """| mpreview index=netmetrics earliest=-20s"""
+#         result_count, metric_count = run_retried_single_search(
+#             setup_splunk, search_string, 2
+#         )
+#         assert result_count == 0
+#         assert metric_count == 0
 
 
 def run_retried_single_search(setup_splunk, search_string, retries):
