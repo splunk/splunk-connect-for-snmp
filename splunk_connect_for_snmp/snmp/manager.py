@@ -276,7 +276,6 @@ class Poller(Task):
         ir: InventoryRecord,
         walk: bool = False,
         profiles: List[str] = None,
-        walked_first_time=True,
     ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
@@ -287,7 +286,7 @@ class Poller(Task):
             logger.debug("Profiles reloaded")
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
-            address, walk=walk, profiles=profiles, walked_first_time=walked_first_time
+            address, walk=walk, profiles=profiles
         )
 
         authData = GetAuth(logger, ir, self.snmpEngine)
@@ -377,16 +376,20 @@ class Poller(Task):
         logger.warning(f"no mib found {id} based on {oid} from {target}")
         return False, ""
 
-    def get_var_binds(self, address, walk=False, profiles=[], walked_first_time=True):
+    def get_var_binds(self, address, walk=False, profiles=[]):
         varbinds_bulk = set()
         varbinds_get = set()
         get_mapping = {}
         bulk_mapping = {}
-        if walk and (not walked_first_time or not profiles):
+        if walk and not profiles:
             varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
         else:
             needed_mibs = []
-            required_bulk = {}
+            if walk and profiles:
+                # as we have base profile configured, we need to make sure that those two MIB families are walked
+                required_bulk = {"IF-MIB": None, "SNMPv2-MIB": None}
+            else:
+                required_bulk = {}
 
             # First pass we only look at profiles for a full mib walk
             for profile in profiles:

@@ -30,8 +30,8 @@ All of the components have the `resources` field for adjusting memory resources:
 More information about the concept of `resources` can be found in the [kuberentes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
 
 ### Update Inventory and Profile
-Inventory and profiles in `values.yaml` is quite expensive from Splunk Connect for SNMP perspective. 
-It required several checks before applying changes. SC4SNMP was designed to prevent changes in inventory and profiles 
+Inventory and profiles in `values.yaml` is quite expensive from the Splunk Connect for SNMP perspective. 
+It requires several checks before applying changes. SC4SNMP was designed to prevent changes in inventory and profiles 
 task more often than every 5 min. 
  
 When changing inventory or profile need to be applied in `values.yaml` following steps need to be done:
@@ -45,4 +45,8 @@ When changing inventory or profile need to be applied in `values.yaml` following
    
    If the command does not return any pods, follow the next step. In another case, wait and execute the command again until the moment 
    when inventory job finishes. 
-3. Run upgrade command describe in [Installation Guide](../gettingstarted/sc4snmp-installation/#install-sc4snmp) 
+   
+3. Run upgrade command describe in [Installation Guide](../../gettingstarted/sc4snmp-installation#install-sc4snmp) 
+
+NOTE: If you decide to change existing profile scope without changing inventory data, the change will be reflected after 
+next walk process for the host. Walk happens every `walk_interval` or on any change in inventory.

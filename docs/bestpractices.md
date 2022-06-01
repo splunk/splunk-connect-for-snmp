@@ -3,7 +3,7 @@
 ## Pieces of Advice
 
 ### Check when SNMP WALK was executed last time for device
-1. [Configure SCK](gettingstarted/sck-installation.md)
+1. [Configure Splunk OpenTelemetry Collector for Kubernetes](gettingstarted/sck-installation.md)
 2. Go to your Splunk and execute search: `index="em_logs"   "Sending due task" "sc4snmp;<IP_ADDRESS>;walk"` 
 and replace <IP_ADDRESS> by IP Address which you are interested. 
 
@@ -76,3 +76,7 @@ poller:
     address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
     10.202.4.202,,2c,public,,,2000,small_walk,,
 ```
+
+NOTE: When small walk is configured, you can set up polling only of OIDs belonging to walk profile varBinds. 
+Additionally, there are two MIB families that are enabled by default (we need them to create state of the device in the database and poll base profiles): `IF-MIB` and `SNMPv2-MIB`.
+For example, if you've decided to use `small_walk` from the example above, you'll be able to poll only `UDP-MIB`, `IF-MIB` and `SNMPv2-MIB` OIDs.
