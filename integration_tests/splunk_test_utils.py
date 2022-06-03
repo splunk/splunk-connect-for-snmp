@@ -139,7 +139,7 @@ def create_v3_secrets():
 
 def wait_for_pod_initialization():
     script_body = f""" 
-    while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep traps | grep Running | wc -l)" != "1" ] ; do
+    while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep "worker-trap" | grep Running | wc -l)" != "1" ] ; do
         echo "Waiting for POD initialization..."
         sleep 1
     done """

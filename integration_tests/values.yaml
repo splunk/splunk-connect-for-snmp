@@ -27,6 +27,8 @@ worker:
     concurrency: 4
     prefetch: 1
   trap:
+    autoscaling:
+      enabled: false
     replicaCount: 1
     concurrency: 8
     prefetch: 60
