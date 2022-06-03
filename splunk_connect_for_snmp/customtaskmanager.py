@@ -59,6 +59,14 @@ class CustomPeriodicTaskManager:
             periodic_document.delete()
 
     def manage_task(self, **task_data) -> None:
-        periodic_document = RedBeatSchedulerEntry(**task_data)
-        periodic_document.save()
-        periodic_document.reschedule()
+        task_name = task_data.get('name')
+        # When task is updated, we don't want to change existing schedules.
+        # If task interval is very long, running walk process in between would result in calculating
+        # next execution again.
+        try:
+            periodic_document = RedBeatSchedulerEntry.from_key(f"redbeat:{task_name}", app=app)
+            periodic_document.save()
+        except KeyError:
+            logger.info(f"Setting up a new task: {task_name}")
+            periodic_document = RedBeatSchedulerEntry(**task_data)
+            periodic_document.save()
