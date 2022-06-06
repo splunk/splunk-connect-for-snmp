@@ -378,3 +378,7 @@ mongodb:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9216"
+redis:
+  architecture: standalone
+  auth:
+    enabled: false
