@@ -17,11 +17,15 @@ import logging
 import os
 import sys
 
+from celery import chain, group, signature
+from celery.schedules import schedule
 from pymongo import ASCENDING
 
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
+
+from ..poller import app
 
 formatter = CustomisedJSONFormatter()
 
@@ -35,7 +39,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-CURRENT_SCHEMA_VERSION = 3
+CURRENT_SCHEMA_VERSION = 4
 MONGO_URI = os.getenv("MONGO_URI")
 
 
@@ -94,3 +98,51 @@ def migrate_to_version_3(mongo_client, task_manager):
     attributes_collection.create_index(
         [("address", ASCENDING), ("group_key_hash", ASCENDING)]
     )
+
+
+def migrate_to_version_4(mongo_client, task_manager):
+    logger.info("Migrating database schema to version 4")
+    schedules_collection = mongo_client.sc4snmp.schedules
+    transform_mongodb_periodic_to_redbeat(schedules_collection, task_manager)
+    schedules_collection.drop()
+
+
+def transform_mongodb_periodic_to_redbeat(schedule_collection, task_manager):
+    schedules = schedule_collection.find(
+        {"task": "splunk_connect_for_snmp.snmp.tasks.walk"}
+    )
+    for schedule_obj in schedules:
+        walk_interval = schedule_obj.get("interval").get("every")
+        schedule_obj["schedule"] = schedule(walk_interval)
+        schedule_obj["options"] = {
+            "link": chain(
+                signature("splunk_connect_for_snmp.enrich.tasks.enrich")
+                .set(queue="poll")
+                .set(priority=4),
+                group(
+                    signature(
+                        "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller"
+                    )
+                    .set(queue="poll")
+                    .set(priority=3),
+                    chain(
+                        signature("splunk_connect_for_snmp.splunk.tasks.prepare")
+                        .set(queue="send")
+                        .set(priority=1),
+                        signature("splunk_connect_for_snmp.splunk.tasks.send")
+                        .set(queue="send")
+                        .set(priority=0),
+                    ),
+                ),
+            ),
+        }
+        schedule_obj["app"] = app
+        schedule_obj["run_immediately"] = True
+        del schedule_obj["_id"]
+        del schedule_obj["_cls"]
+        del schedule_obj["max_run_count"]
+        del schedule_obj["date_changed"]
+        del schedule_obj["date_creation"]
+        del schedule_obj["total_run_count"]
+        del schedule_obj["interval"]
+        task_manager.manage_task(**schedule_obj)

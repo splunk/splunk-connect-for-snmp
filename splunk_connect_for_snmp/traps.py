@@ -35,10 +35,12 @@ import os
 import yaml
 from celery import Celery, chain, signals
 from opentelemetry import trace
+
 # from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
+
 # from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from pysnmp.carrier.asyncio.dgram import udp
 from pysnmp.entity import config, engine
@@ -112,7 +114,9 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
 
     work = {"data": data, "host": device_ip}
     my_chain = chain(
-        trap_task_signature(work).set(queue='traps').set(priority=5), prepare_task_signature().set(queue='send').set(priority=9), send_task_signature().set(queue='send').set(priority=10)
+        trap_task_signature(work).set(queue="traps").set(priority=5),
+        prepare_task_signature().set(queue="send").set(priority=9),
+        send_task_signature().set(queue="send").set(priority=10),
     )
     _ = my_chain.apply_async()
 

@@ -31,10 +31,12 @@ import os
 from celery import Celery, signals
 from celery.utils.log import get_task_logger
 from opentelemetry import trace
+
 # from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
+
 # from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 provider = TracerProvider()

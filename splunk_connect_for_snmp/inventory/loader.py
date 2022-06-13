@@ -19,11 +19,7 @@ import os
 import sys
 from csv import DictReader
 
-from celery.schedules import schedule
-
-from ..poller import app
 import pymongo
-from celery.canvas import chain, group, signature
 
 from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.customised_json_formatter import (
@@ -32,6 +28,9 @@ from splunk_connect_for_snmp.common.customised_json_formatter import (
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
+from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
+
+from ..poller import app
 
 try:
     from dotenv import load_dotenv
@@ -67,34 +66,11 @@ def transform_address_to_key(address, port):
 
 def gen_walk_task(ir: InventoryRecord, profile=None):
     target = transform_address_to_key(ir.address, ir.port)
-    return {
-        "name": f"sc4snmp;{target};walk",
-        "task": "splunk_connect_for_snmp.snmp.tasks.walk",
-        "target": target,
-        "args": [],
-        "kwargs": {
-            "address": target,
-            "profile": profile,
-        },
-        "options": {
-            "link": chain(
-                signature("splunk_connect_for_snmp.enrich.tasks.enrich").set(queue='poll').set(priority=4),
-                group(
-                    signature(
-                        "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller"
-                    ).set(queue='poll').set(priority=3),
-                    chain(
-                        signature("splunk_connect_for_snmp.splunk.tasks.prepare").set(queue='send').set(priority=1),
-                        signature("splunk_connect_for_snmp.splunk.tasks.send").set(queue='send').set(priority=0),
-                    ),
-                ),
-            ),
-        },
-        "schedule": schedule(ir.walk_interval),
-        "enabled": True,
-        "run_immediately": True,
-        "app": app,
-    }
+    walk_definition = WalkTaskGenerator(
+        target=target, schedule_period=ir.walk_interval, app=app, profile=profile
+    )
+    task_config = walk_definition.generate_task_definition()
+    return task_config
 
 
 def load():

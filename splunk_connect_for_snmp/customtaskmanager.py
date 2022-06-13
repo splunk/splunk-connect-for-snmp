@@ -17,13 +17,13 @@ import logging
 from typing import List
 
 from redbeat.schedulers import RedBeatSchedulerEntry
+
 from .poller import app
 
 logger = logging.getLogger(__name__)
 
 
 class CustomPeriodicTaskManager:
-
     def delete_unused_poll_tasks(self, target: str, activeschedules: List[str]):
         periodic_tasks = RedBeatSchedulerEntry.get_schedules_by_target(target, app=app)
         for periodic_document in periodic_tasks:
@@ -32,7 +32,9 @@ class CustomPeriodicTaskManager:
             logger.debug(f"Got Schedule: {periodic_document.name}")
             if periodic_document.name not in activeschedules:
                 periodic_document.delete()
-                logger.debug(f"Deleting Schedule: {periodic_document.name} delete_unused_poll_tasks")
+                logger.debug(
+                    f"Deleting Schedule: {periodic_document.name} delete_unused_poll_tasks"
+                )
 
     def delete_all_poll_tasks(self):
         periodic_tasks = RedBeatSchedulerEntry.get_schedules()
@@ -41,7 +43,9 @@ class CustomPeriodicTaskManager:
                 continue
             logger.debug(f"Got Schedule: {periodic_document.name}")
             periodic_document.delete()
-            logger.debug(f"Deleting Schedule {periodic_document.name} delete_all_poll_tasks")
+            logger.debug(
+                f"Deleting Schedule {periodic_document.name} delete_all_poll_tasks"
+            )
 
     def rerun_all_walks(self):
         periodic_tasks = RedBeatSchedulerEntry.get_schedules()
@@ -59,14 +63,21 @@ class CustomPeriodicTaskManager:
             periodic_document.delete()
 
     def manage_task(self, **task_data) -> None:
-        task_name = task_data.get('name')
+        task_name = task_data.get("name")
         # When task is updated, we don't want to change existing schedules.
         # If task interval is very long, running walk process in between would result in calculating
         # next execution again.
         try:
-            periodic_document = RedBeatSchedulerEntry.from_key(f"redbeat:{task_name}", app=app)
-            periodic_document.save()
+            periodic_document = RedBeatSchedulerEntry.from_key(
+                f"redbeat:{task_name}", app=app
+            )
+            periodic_document.target = task_data["target"]
+            periodic_document.args = task_data["args"]
+            periodic_document.kwargs = task_data["kwargs"]
+            periodic_document.run_immediately = task_data["run_immediately"]
+            periodic_document.schedule = task_data["schedule"]
+            periodic_document.enabled = task_data["enabled"]
         except KeyError:
             logger.info(f"Setting up a new task: {task_name}")
             periodic_document = RedBeatSchedulerEntry(**task_data)
-            periodic_document.save()
+        periodic_document.save()

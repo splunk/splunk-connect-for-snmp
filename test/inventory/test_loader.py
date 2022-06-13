@@ -1,9 +1,9 @@
 from unittest import TestCase, mock
 from unittest.mock import Mock, mock_open, patch
 
+from celery.schedules import schedule
 from pymongo.results import UpdateResult
 
-from celery.schedules import schedule
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.inventory.loader import (
     gen_walk_task,

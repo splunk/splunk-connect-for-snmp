@@ -2,6 +2,7 @@ from unittest import TestCase, mock
 from unittest.mock import Mock, patch
 
 from celery.schedules import schedule
+
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.inventory.tasks import (
     generate_poll_task_definition,
@@ -68,20 +69,30 @@ class TestInventorySetupPoller(TestCase):
         calls[1][1]["kwargs"]["profiles"] = set(calls[1][1]["kwargs"]["profiles"])
         calls[2][1]["kwargs"]["profiles"] = set(calls[2][1]["kwargs"]["profiles"])
         self.assertEqual(
-            {"address": "192.168.0.1", "profiles": {"BaseUpTime"}, 'priority': 2, "frequency": 60},
+            {
+                "address": "192.168.0.1",
+                "profiles": {"BaseUpTime"},
+                "priority": 2,
+                "frequency": 60,
+            },
             calls[0][1]["kwargs"],
         )
         self.assertEqual(
             {
                 "address": "192.168.0.1",
-                'priority': 2,
+                "priority": 2,
                 "profiles": {"profile2", "profile5"},
                 "frequency": 30,
             },
             calls[1][1]["kwargs"],
         )
         self.assertEqual(
-            {"address": "192.168.0.1", "profiles": {"profile1"}, 'priority': 2, "frequency": 20},
+            {
+                "address": "192.168.0.1",
+                "profiles": {"profile1"},
+                "priority": 2,
+                "frequency": 20,
+            },
             calls[2][1]["kwargs"],
         )
 
@@ -107,7 +118,7 @@ class TestInventorySetupPoller(TestCase):
         result = generate_poll_task_definition(
             active_schedules, address, assigned_profiles, period
         )
-
+        result["kwargs"]["profiles"] = set(result["kwargs"]["profiles"])
         self.assertEqual("sc4snmp;192.168.0.1;30;poll", result["name"])
         self.assertEqual("splunk_connect_for_snmp.snmp.tasks.poll", result["task"])
         self.assertEqual("192.168.0.1", result["target"])
@@ -115,8 +126,8 @@ class TestInventorySetupPoller(TestCase):
         self.assertEqual(
             {
                 "address": "192.168.0.1",
-                'priority': 2,
-                "profiles": ["profile2", "profile5"],
+                "priority": 2,
+                "profiles": {"profile2", "profile5"},
                 "frequency": 30,
             },
             result["kwargs"],
