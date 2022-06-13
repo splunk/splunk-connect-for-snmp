@@ -34,6 +34,7 @@ class TestSchemaMigration(TestCase):
     @patch("splunk_connect_for_snmp.common.schema_migration.save_schema_version")
     @patch("splunk_connect_for_snmp.common.schema_migration.migrate_to_version_2")
     @patch("splunk_connect_for_snmp.common.schema_migration.migrate_to_version_1")
+    @patch("splunk_connect_for_snmp.common.schema_migration.CURRENT_SCHEMA_VERSION", 3)
     def test_migrate_database(self, m_version_1, m_version_2, m_save, m_fetch):
         mc = MagicMock()
         m_fetch.return_value = 0

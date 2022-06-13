@@ -71,12 +71,10 @@ class CustomPeriodicTaskManager:
             periodic_document = RedBeatSchedulerEntry.from_key(
                 f"redbeat:{task_name}", app=app
             )
-            periodic_document.target = task_data["target"]
-            periodic_document.args = task_data["args"]
-            periodic_document.kwargs = task_data["kwargs"]
-            periodic_document.run_immediately = task_data["run_immediately"]
-            periodic_document.schedule = task_data["schedule"]
-            periodic_document.enabled = task_data["enabled"]
+            args_list = ["target", "args", "kwargs", "run_immediately", "schedule", "enabled"]
+            for arg in args_list:
+                if arg in task_data:
+                    setattr(periodic_document, arg, task_data.get(arg))
         except KeyError:
             logger.info(f"Setting up a new task: {task_name}")
             periodic_document = RedBeatSchedulerEntry(**task_data)

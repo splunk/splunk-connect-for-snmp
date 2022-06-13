@@ -94,7 +94,7 @@ def inventory_setup_poller(self, work):
 def generate_poll_task_definition(active_schedules, address, assigned_profiles, period):
     period_profiles = set(assigned_profiles[period])
     poll_definition = PollTaskGenerator(
-        target=address, schedule_period=period, app=app, profiles=period_profiles
+        target=address, schedule_period=period, app=app, profiles=list(period_profiles)
     )
     task_config = poll_definition.generate_task_definition()
     active_schedules.append(task_config.get("name"))

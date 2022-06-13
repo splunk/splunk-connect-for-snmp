@@ -17,13 +17,12 @@ import logging
 import os
 import sys
 
-from celery import chain, group, signature
-from celery.schedules import schedule
 from pymongo import ASCENDING
 
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
+from .task_generator import WalkTaskGenerator
 
 from ..poller import app
 
@@ -113,36 +112,7 @@ def transform_mongodb_periodic_to_redbeat(schedule_collection, task_manager):
     )
     for schedule_obj in schedules:
         walk_interval = schedule_obj.get("interval").get("every")
-        schedule_obj["schedule"] = schedule(walk_interval)
-        schedule_obj["options"] = {
-            "link": chain(
-                signature("splunk_connect_for_snmp.enrich.tasks.enrich")
-                .set(queue="poll")
-                .set(priority=4),
-                group(
-                    signature(
-                        "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller"
-                    )
-                    .set(queue="poll")
-                    .set(priority=3),
-                    chain(
-                        signature("splunk_connect_for_snmp.splunk.tasks.prepare")
-                        .set(queue="send")
-                        .set(priority=1),
-                        signature("splunk_connect_for_snmp.splunk.tasks.send")
-                        .set(queue="send")
-                        .set(priority=0),
-                    ),
-                ),
-            ),
-        }
-        schedule_obj["app"] = app
-        schedule_obj["run_immediately"] = True
-        del schedule_obj["_id"]
-        del schedule_obj["_cls"]
-        del schedule_obj["max_run_count"]
-        del schedule_obj["date_changed"]
-        del schedule_obj["date_creation"]
-        del schedule_obj["total_run_count"]
-        del schedule_obj["interval"]
-        task_manager.manage_task(**schedule_obj)
+        task_generator = WalkTaskGenerator(target=schedule_obj.get("target"), schedule_period=walk_interval, app=app,
+                                           profile=schedule_obj.get("kwargs").get("profile"))
+        walk_data = task_generator.generate_task_definition()
+        task_manager.manage_task(**walk_data)
