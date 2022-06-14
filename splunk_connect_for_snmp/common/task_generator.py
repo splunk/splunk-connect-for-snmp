@@ -1,43 +1,6 @@
 from celery import Celery, chain, group, signature
 from celery.schedules import schedule
 
-WALK_CHAIN_OF_TASKS = {
-    "link": chain(
-        signature("splunk_connect_for_snmp.enrich.tasks.enrich")
-        .set(queue="poll")
-        .set(priority=4),
-        group(
-            signature("splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller")
-            .set(queue="poll")
-            .set(priority=3),
-            chain(
-                signature("splunk_connect_for_snmp.splunk.tasks.prepare")
-                .set(queue="send")
-                .set(priority=1),
-                signature("splunk_connect_for_snmp.splunk.tasks.send")
-                .set(queue="send")
-                .set(priority=0),
-            ),
-        ),
-    ),
-}
-
-POLL_CHAIN_OF_TASKS = {
-    "link": chain(
-        signature("splunk_connect_for_snmp.enrich.tasks.enrich")
-        .set(queue="poll")
-        .set(priority=4),
-        chain(
-            signature("splunk_connect_for_snmp.splunk.tasks.prepare")
-            .set(queue="send")
-            .set(priority=1),
-            signature("splunk_connect_for_snmp.splunk.tasks.send")
-            .set(queue="send")
-            .set(priority=0),
-        ),
-    ),
-}
-
 
 class TaskGenerator:
     def __init__(self, target: str, schedule_period: int, app: Celery):
@@ -57,6 +20,30 @@ class TaskGenerator:
 
 
 class WalkTaskGenerator(TaskGenerator):
+
+    WALK_CHAIN_OF_TASKS = {
+        "link": chain(
+            signature("splunk_connect_for_snmp.enrich.tasks.enrich")
+            .set(queue="poll")
+            .set(priority=4),
+            group(
+                signature(
+                    "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller"
+                )
+                .set(queue="poll")
+                .set(priority=3),
+                chain(
+                    signature("splunk_connect_for_snmp.splunk.tasks.prepare")
+                    .set(queue="send")
+                    .set(priority=1),
+                    signature("splunk_connect_for_snmp.splunk.tasks.send")
+                    .set(queue="send")
+                    .set(priority=0),
+                ),
+            ),
+        ),
+    }
+
     def __init__(self, target, schedule_period, app, profile):
         super().__init__(target, schedule_period, app)
         self.profile = profile
@@ -66,7 +53,7 @@ class WalkTaskGenerator(TaskGenerator):
         name = f"sc4snmp;{self.target};walk"
         task_data["name"] = name
         task_data["task"] = "splunk_connect_for_snmp.snmp.tasks.walk"
-        task_data["options"] = WALK_CHAIN_OF_TASKS
+        task_data["options"] = self.WALK_CHAIN_OF_TASKS
         task_data["run_immediately"] = True
         walk_kwargs = {"profile": self.profile}
         task_data["kwargs"].update(walk_kwargs)
@@ -74,6 +61,23 @@ class WalkTaskGenerator(TaskGenerator):
 
 
 class PollTaskGenerator(TaskGenerator):
+
+    POLL_CHAIN_OF_TASKS = {
+        "link": chain(
+            signature("splunk_connect_for_snmp.enrich.tasks.enrich")
+            .set(queue="poll")
+            .set(priority=4),
+            chain(
+                signature("splunk_connect_for_snmp.splunk.tasks.prepare")
+                .set(queue="send")
+                .set(priority=1),
+                signature("splunk_connect_for_snmp.splunk.tasks.send")
+                .set(queue="send")
+                .set(priority=0),
+            ),
+        ),
+    }
+
     def __init__(self, target, schedule_period, app, profiles):
         super().__init__(target, schedule_period, app)
         self.profiles = profiles
@@ -82,7 +86,7 @@ class PollTaskGenerator(TaskGenerator):
         task_data = super().generate_task_definition()
         task_data["name"] = f"sc4snmp;{self.target};{self.schedule_period};poll"
         task_data["task"] = "splunk_connect_for_snmp.snmp.tasks.poll"
-        task_data["options"] = POLL_CHAIN_OF_TASKS
+        task_data["options"] = self.POLL_CHAIN_OF_TASKS
         task_data["run_immediately"] = self.run_immediately
         poll_kwargs = {
             "profiles": list(self.profiles),

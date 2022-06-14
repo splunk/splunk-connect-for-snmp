@@ -22,9 +22,9 @@ from pymongo import ASCENDING
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
-from .task_generator import WalkTaskGenerator
 
 from ..poller import app
+from .task_generator import WalkTaskGenerator
 
 formatter = CustomisedJSONFormatter()
 
@@ -112,7 +112,11 @@ def transform_mongodb_periodic_to_redbeat(schedule_collection, task_manager):
     )
     for schedule_obj in schedules:
         walk_interval = schedule_obj.get("interval").get("every")
-        task_generator = WalkTaskGenerator(target=schedule_obj.get("target"), schedule_period=walk_interval, app=app,
-                                           profile=schedule_obj.get("kwargs").get("profile"))
+        task_generator = WalkTaskGenerator(
+            target=schedule_obj.get("target"),
+            schedule_period=walk_interval,
+            app=app,
+            profile=schedule_obj.get("kwargs").get("profile"),
+        )
         walk_data = task_generator.generate_task_definition()
         task_manager.manage_task(**walk_data)
