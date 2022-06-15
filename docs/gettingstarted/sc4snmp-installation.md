@@ -43,8 +43,34 @@ traps:
   #loadBalancerIP: The IP address in the metallb pool
   loadBalancerIP: ###X.X.X.X###
 worker:
-  # replicas: Number of replicas for worker container should two or more
-  #replicaCount: 2
+  # There are 3 types of workers 
+  trap:
+    # replicaCount: number of trap-worker pods which consumes trap tasks
+    replicaCount: 2
+    # autoscaling: use it instead of replicaCount in order to make pods scalable by itself
+#    autoscaling:
+#      enabled: true
+#      minReplicas: 2
+#      maxReplicas: 40
+#      targetCPUUtilizationPercentage: 80
+  poller:
+    # replicaCount: number of poller-worker pods which consumes polling tasks
+    replicaCount: 2
+    # autoscaling: use it instead of replicaCount in order to make pods scalable by itself
+#    autoscaling:
+#      enabled: true
+#      minReplicas: 2
+#      maxReplicas: 40
+#      targetCPUUtilizationPercentage: 80
+  sender:
+    # replicaCount: number of sender-worker pods which consumes sending tasks
+    replicaCount: 1
+    # autoscaling: use it instead of replicaCount in order to make pods scalable by itself
+#    autoscaling:
+#      enabled: true
+#      minReplicas: 2
+#      maxReplicas: 40
+#      targetCPUUtilizationPercentage: 80
   # udpConnectionTimeout: timeout in seconds for SNMP operations
   #udpConnectionTimeout: 5
   logLevel: "INFO"
@@ -208,7 +234,7 @@ poller:
     10.0.101.22,public,60,,,
 ```
 
-- Load `value.yaml` file in SC4SNMP
+- Load `values.yaml` file in SC4SNMP
 
 ``` bash
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace

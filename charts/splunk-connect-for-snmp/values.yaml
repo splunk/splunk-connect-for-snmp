@@ -101,15 +101,14 @@ worker:
     concurrency: 4
     prefetch: 1
     autoscaling:
-      enabled: true
+      enabled: false
       minReplicas: 2
       maxReplicas: 40
       targetCPUUtilizationPercentage: 80
-      targetMemoryUtilizationPercentage: 80
     resources:
       limits:
         cpu: 500m
-        memory: 5128Mi
+        memory: 512Mi
       requests:
         cpu: 300m
         memory: 256Mi
@@ -118,15 +117,14 @@ worker:
     concurrency: 4
     prefetch: 30
     autoscaling:
-      enabled: true
+      enabled: false
       minReplicas: 2
       maxReplicas: 40
       targetCPUUtilizationPercentage: 80
-      targetMemoryUtilizationPercentage: 80
     resources:
       limits:
         cpu: 500m
-        memory: 5128Mi
+        memory: 512Mi
       requests:
         cpu: 300m
         memory: 256Mi
@@ -135,15 +133,14 @@ worker:
     concurrency: 4
     prefetch: 30
     autoscaling:
-      enabled: true
+      enabled: false
       minReplicas: 2
       maxReplicas: 40
       targetCPUUtilizationPercentage: 80
-      targetMemoryUtilizationPercentage: 80
     resources:
       limits:
         cpu: 500m
-        memory: 5128Mi
+        memory: 512Mi
       requests:
         cpu: 300m
         memory: 256Mi

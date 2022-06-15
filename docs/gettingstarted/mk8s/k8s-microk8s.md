@@ -57,6 +57,7 @@ microk8s enable storage
 microk8s enable rbac
 microk8s enable community
 microk8s enable openebs
+microk8s enable metrics-server
 microk8s status --wait-ready
 ```
 
