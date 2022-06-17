@@ -24,7 +24,7 @@ python_files = ["test_*.py"]
 python = "^3.8"
 pymongo = {extras = ["srv"], version = "^3.12.1"}
 requests = {extras = ["crypto"], version = "^2.26.0"}
-celery = {extras = ["tblib"], version = "^5.2.0"}
+celery = {extras = ["tblib"], version = "^5.2.7"}
 pydantic = "^1.9.0"
 opentelemetry-api = "^1.6.2"
 opentelemetry-sdk = "^1.6.2"
