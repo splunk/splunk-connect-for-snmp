@@ -51,8 +51,6 @@ from splunk_connect_for_snmp.snmp.tasks import trap
 from splunk_connect_for_snmp.splunk.tasks import prepare, send
 
 provider = TracerProvider()
-# processor = BatchSpanProcessor(JaegerExporter())
-# provider.add_span_processor(processor)
 trace.set_tracer_provider(provider)
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
