@@ -400,7 +400,7 @@ class TestSmallWalk:
             """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
         )
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
+            setup_splunk, search_string, 1
         )
         assert result_count == 0
         assert metric_count == 0
