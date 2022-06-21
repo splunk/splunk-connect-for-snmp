@@ -503,7 +503,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../rabbitmq-configuration/" class="md-nav__link">
+      <a href="../redis-configuration/" class="md-nav__link">
         RabbitMQ
       </a>
     </li>
@@ -709,9 +709,9 @@
 
 
 <h1 id="worker-configuration">Worker Configuration<a class="headerlink" href="#worker-configuration" title="Permanent link">&para;</a></h1>
-<p>The worker is a service with is responsible for tasks execution like SNMP Walk, GET, or processing trap messages.  </p>
+<p>The worker is a service witch is responsible for tasks execution like SNMP Walk, GET, or processing trap messages.  </p>
 <h3 id="worker-configuration-file">Worker configuration file<a class="headerlink" href="#worker-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Worker configuration is kept in <code>values.yaml</code> file in section <code>worker</code>.
+<p>Worker configuration is kept in <code>values.yaml</code> file in the section <code>worker</code>. <code>worker</code> is divided on 3 types of workers: <code>poller</code>, <code>sender</code> and <code>trap</code>.
 <code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
 <h3 id="worker-types">Worker types<a class="headerlink" href="#worker-types" title="Permanent link">&para;</a></h3>
 <p>SC4SNMP has two base functionalities: monitoring traps and polling. There are 3 types of workers, every type is
