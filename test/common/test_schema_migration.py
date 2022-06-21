@@ -90,13 +90,11 @@ class TestSchemaMigration(TestCase):
             [("address", ASCENDING), ("group_key_hash", ASCENDING)]
         )
 
-    def test_migrate_to_version_4(self):
+    @patch("splunk_connect_for_snmp.common.schema_migration.transform_mongodb_periodic_to_redbeat")
+    def test_migrate_to_version_4(self, transform_mongodb_periodic_to_redbeat):
         periodic_obj_mock = Mock()
         mc = MagicMock()
         migrate_to_version_4(mc, periodic_obj_mock)
-
-        periodic_obj_mock.delete_all_poll_tasks.assert_called()
-        periodic_obj_mock.rerun_all_walks.assert_called()
         mc.sc4snmp.schedules.drop.assert_called()
 
     def test_transform_mongodb_periodic_to_redbeat(self):
