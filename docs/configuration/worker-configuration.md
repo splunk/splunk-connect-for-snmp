@@ -1,9 +1,9 @@
 # Worker Configuration
-The worker is a service with is responsible for tasks execution like SNMP Walk, GET, or processing trap messages.  
+The worker is a service witch is responsible for tasks execution like SNMP Walk, GET, or processing trap messages.  
 
 ### Worker configuration file
 
-Worker configuration is kept in `values.yaml` file in section `worker`.
+Worker configuration is kept in `values.yaml` file in the section `worker`. `worker` is divided on 3 types of workers: `poller`, `sender` and `trap`.
 `values.yaml` is being used during the installation process for configuring Kubernetes values.
 
 ### Worker types

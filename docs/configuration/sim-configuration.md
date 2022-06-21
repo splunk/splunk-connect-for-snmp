@@ -24,14 +24,13 @@ After executing `microk8s helm3 upgrade --install snmp -f values.yaml splunk-con
 ```yaml
 splunker@ip-10-202-13-233:~$ microk8s kubectl get pods -n sc4snmp
 NAME                                                      READY   STATUS    RESTARTS   AGE
-snmp-splunk-connect-for-snmp-worker-7496b66947-6hjhl      1/1     Running   0          32s
-snmp-splunk-connect-for-snmp-worker-7496b66947-flcg7      1/1     Running   0          32s
-snmp-splunk-connect-for-snmp-scheduler-846f9b4f69-4rxd8   1/1     Running   0          32s
-snmp-mibserver-cdfccf586-cwz7h                            1/1     Running   0          32s
-snmp-splunk-connect-for-snmp-inventory--1-dxz5d           1/1     Running   0          32s
-snmp-splunk-connect-for-snmp-trap-6bbf57497b-v8d7l       1/1     Running   0          32s
-snmp-splunk-connect-for-snmp-trap-6bbf57497b-nvxrz       1/1     Running   0          31s
-snmp-splunk-connect-for-snmp-sim-59b89747f-kn6tf          1/1     Running   0          32s
-snmp-rabbitmq-0                                           0/1     Running   0          31s
-snmp-mongodb-9957b9f4d-f94hv                              2/2     Running   0          32s
+snmp-splunk-connect-for-snmp-scheduler-7ddbc8d75-bljsj        1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-poller-57cd8f4665-9z9vx   1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-sender-5c44cbb9c5-ppmb5   1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-trap-549766d4-28qzh       1/1     Running   0          133m
+snmp-mibserver-7f879c5b7c-hz9tz                               1/1     Running   0          133m
+snmp-mongodb-869cc8586f-vvr9f                                 2/2     Running   0          133m
+snmp-redis-master-0                                           1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-trap-78759bfc8b-79m6d            1/1     Running   0          99m
+snmp-splunk-connect-for-snmp-sim-59b89747f-kn6tf              1/1     Running   0          32s
 ```
