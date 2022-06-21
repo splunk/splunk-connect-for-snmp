@@ -1,12 +1,21 @@
 from unittest import TestCase
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import ANY, MagicMock, Mock, patch
+
+from celery import chain, group, signature
+from celery.schedules import schedule
+from pymongo import ASCENDING
 
 from splunk_connect_for_snmp.common.schema_migration import (
     fetch_schema_version,
     migrate_database,
     migrate_to_version_1,
+    migrate_to_version_2,
+    migrate_to_version_3,
+    migrate_to_version_4,
     save_schema_version,
+    transform_mongodb_periodic_to_redbeat,
 )
+from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
 
 
 class TestSchemaMigration(TestCase):
@@ -62,3 +71,188 @@ class TestSchemaMigration(TestCase):
 
         periodic_obj_mock.delete_all_poll_tasks.assert_called()
         periodic_obj_mock.rerun_all_walks.assert_called()
+
+    def test_migrate_to_version_2(self):
+        periodic_obj_mock = Mock()
+        mc = MagicMock()
+        migrate_to_version_2(mc, periodic_obj_mock)
+
+        periodic_obj_mock.delete_all_poll_tasks.assert_called()
+        periodic_obj_mock.rerun_all_walks.assert_called()
+        mc.sc4snmp.attributes.drop.assert_called()
+
+    def test_migrate_to_version_3(self):
+        periodic_obj_mock = Mock()
+        mc = MagicMock()
+        migrate_to_version_3(mc, periodic_obj_mock)
+
+        mc.sc4snmp.attributes.create_index.assert_called_with(
+            [("address", ASCENDING), ("group_key_hash", ASCENDING)]
+        )
+
+    def test_migrate_to_version_4(self):
+        periodic_obj_mock = Mock()
+        mc = MagicMock()
+        migrate_to_version_4(mc, periodic_obj_mock)
+
+        periodic_obj_mock.delete_all_poll_tasks.assert_called()
+        periodic_obj_mock.rerun_all_walks.assert_called()
+        mc.sc4snmp.schedules.drop.assert_called()
+
+    def test_transform_mongodb_periodic_to_redbeat(self):
+        old_schedules = [
+            {
+                "name": f"sc4snmp;127.0.0.1;walk",
+                "task": "splunk_connect_for_snmp.snmp.tasks.walk",
+                "target": "127.0.0.1",
+                "args": [],
+                "kwargs": {
+                    "address": "127.0.0.1",
+                    "profile": "walk1",
+                },
+                "options": {
+                    "link": chain(
+                        signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
+                        group(
+                            signature(
+                                "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller"
+                            ),
+                            chain(
+                                signature(
+                                    "splunk_connect_for_snmp.splunk.tasks.prepare"
+                                ),
+                                signature("splunk_connect_for_snmp.splunk.tasks.send"),
+                            ),
+                        ),
+                    ),
+                },
+                "interval": {"every": 30, "period": "seconds"},
+                "enabled": True,
+                "total_run_count": 0,
+                "run_immediately": True,
+            }
+        ]
+        new_schedule = {
+            "name": f"sc4snmp;127.0.0.1;walk",
+            "task": "splunk_connect_for_snmp.snmp.tasks.walk",
+            "target": "127.0.0.1",
+            "args": [],
+            "kwargs": {
+                "address": "127.0.0.1",
+                "profile": "walk1",
+            },
+            "options": WalkTaskGenerator.WALK_CHAIN_OF_TASKS,
+            "schedule": schedule(30),
+            "enabled": True,
+            "run_immediately": True,
+            "app": ANY,
+        }
+        mc = MagicMock()
+        mc.find.return_value = old_schedules
+        periodic_obj_mock = Mock()
+        transform_mongodb_periodic_to_redbeat(mc, periodic_obj_mock)
+        periodic_obj_mock.manage_task.assert_called_with(**new_schedule)
+
+    def test_transform_mongodb_periodic_to_redbeat_more_than_one_walk(self):
+        old_schedules = [
+            {
+                "name": f"sc4snmp;127.0.0.1;walk",
+                "task": "splunk_connect_for_snmp.snmp.tasks.walk",
+                "target": "127.0.0.1",
+                "args": [],
+                "kwargs": {
+                    "address": "127.0.0.1",
+                    "profile": "walk1",
+                },
+                "options": {
+                    "link": chain(
+                        signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
+                        group(
+                            signature(
+                                "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller"
+                            ),
+                            chain(
+                                signature(
+                                    "splunk_connect_for_snmp.splunk.tasks.prepare"
+                                ),
+                                signature("splunk_connect_for_snmp.splunk.tasks.send"),
+                            ),
+                        ),
+                    ),
+                },
+                "interval": {"every": 30, "period": "seconds"},
+                "enabled": True,
+                "total_run_count": 0,
+                "run_immediately": True,
+            },
+            {
+                "name": f"sc4snmp;127.0.0.2;walk",
+                "task": "splunk_connect_for_snmp.snmp.tasks.walk",
+                "target": "127.0.0.2",
+                "args": [],
+                "kwargs": {
+                    "address": "127.0.0.2",
+                    "profile": None,
+                },
+                "options": {
+                    "link": chain(
+                        signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
+                        group(
+                            signature(
+                                "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller"
+                            ),
+                            chain(
+                                signature(
+                                    "splunk_connect_for_snmp.splunk.tasks.prepare"
+                                ),
+                                signature("splunk_connect_for_snmp.splunk.tasks.send"),
+                            ),
+                        ),
+                    ),
+                },
+                "interval": {"every": 400, "period": "seconds"},
+                "enabled": True,
+                "total_run_count": 0,
+                "run_immediately": True,
+            },
+        ]
+        new_schedule = [
+            {
+                "name": f"sc4snmp;127.0.0.1;walk",
+                "task": "splunk_connect_for_snmp.snmp.tasks.walk",
+                "target": "127.0.0.1",
+                "args": [],
+                "kwargs": {
+                    "address": "127.0.0.1",
+                    "profile": "walk1",
+                },
+                "options": WalkTaskGenerator.WALK_CHAIN_OF_TASKS,
+                "schedule": schedule(30),
+                "enabled": True,
+                "run_immediately": True,
+                "app": ANY,
+            },
+            {
+                "name": f"sc4snmp;127.0.0.2;walk",
+                "task": "splunk_connect_for_snmp.snmp.tasks.walk",
+                "target": "127.0.0.2",
+                "args": [],
+                "kwargs": {
+                    "address": "127.0.0.2",
+                    "profile": None,
+                },
+                "options": WalkTaskGenerator.WALK_CHAIN_OF_TASKS,
+                "schedule": schedule(400),
+                "enabled": True,
+                "run_immediately": True,
+                "app": ANY,
+            },
+        ]
+        mc = MagicMock()
+        mc.find.return_value = old_schedules
+        periodic_obj_mock = Mock()
+        transform_mongodb_periodic_to_redbeat(mc, periodic_obj_mock)
+        calls = periodic_obj_mock.manage_task.call_args_list
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[0].kwargs, new_schedule[0])
+        self.assertEqual(calls[1].kwargs, new_schedule[1])
