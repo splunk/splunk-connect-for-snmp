@@ -104,7 +104,7 @@ horizontalpodautoscaler.autoscaling/snmp-splunk-connect-for-snmp-worker-sender  
 horizontalpodautoscaler.autoscaling/snmp-splunk-connect-for-snmp-worker-trap     Deployment/snmp-splunk-connect-for-snmp-worker-trap     1%/80%    4         10        4          28m
 ```
 
-If you see `??/80%` in `TARGETS` section instead of the CPU percentage, you probably don't have `metrics-server` addon enabled.
+If you see `<unknown>/80%` in `TARGETS` section instead of the CPU percentage, you probably don't have `metrics-server` addon enabled.
 Enable it using: `microk8s enable metrics-server`.
 
 
