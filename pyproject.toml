@@ -35,9 +35,7 @@ pyrate-limiter = "^2.8.1"
 requests-cache = "^0.9.3"
 requests-ratelimiter = "^0.2.1"
 mongoengine = "^0.24.1"
-#celerybeat-mongo = "^0.2.0"
-#celerybeat-mongo = {git="https://github.com/splunk/celerybeat-mongo", branch="main"}
-celery-redbeat = {git = "https://github.com/splunk/redbeat", rev = "feat/add-features-from-celerybeatmongo"}
+celery-redbeat = {git = "https://github.com/splunk/redbeat", rev = "main"}
 pysnmplib = "^5.0.5"
 PyYAML = "^6.0"
 #Note this is temporary PR to upstream project is issued
