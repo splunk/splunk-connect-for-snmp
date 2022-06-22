@@ -890,7 +890,7 @@ resources usage adjusted to what you actually need. </p>
 <span class="l l-Scalar l-Scalar-Plain">horizontalpodautoscaler.autoscaling/snmp-splunk-connect-for-snmp-worker-trap     Deployment/snmp-splunk-connect-for-snmp-worker-trap     1%/80%    4         10        4          28m</span><span class="w"></span>
 </code></pre></div>
 
-<p>If you see <code>??/80%</code> in <code>TARGETS</code> section instead of the CPU percentage, you probably don&rsquo;t have <code>metrics-server</code> addon enabled.
+<p>If you see <code>&lt;unknown&gt;/80%</code> in <code>TARGETS</code> section instead of the CPU percentage, you probably don&rsquo;t have <code>metrics-server</code> addon enabled.
 Enable it using: <code>microk8s enable metrics-server</code>.</p>
 <h4 id="reallife-scenario-i-have-a-significant-delay-in-polling">Reallife scenario: I have a significant delay in polling<a class="headerlink" href="#reallife-scenario-i-have-a-significant-delay-in-polling" title="Permanent link">&para;</a></h4>
 <p>Sometimes when polling is configured to be run frequently and on many devices, workers get overloaded 
