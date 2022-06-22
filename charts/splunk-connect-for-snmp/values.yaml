@@ -107,8 +107,8 @@ worker:
       targetCPUUtilizationPercentage: 80
     resources:
       limits:
-        cpu: 500m
-        memory: 512Mi
+        cpu: 700m
+        memory: 1024Mi
       requests:
         cpu: 300m
         memory: 256Mi
