@@ -35,11 +35,13 @@ import os
 import yaml
 from celery import Celery, chain, signals
 from opentelemetry import trace
-from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+
+# from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+# from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from pysnmp.carrier.asyncio.dgram import udp
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
@@ -49,8 +51,6 @@ from splunk_connect_for_snmp.snmp.tasks import trap
 from splunk_connect_for_snmp.splunk.tasks import prepare, send
 
 provider = TracerProvider()
-processor = BatchSpanProcessor(JaegerExporter())
-provider.add_span_processor(processor)
 trace.set_tracer_provider(provider)
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
@@ -112,7 +112,9 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
 
     work = {"data": data, "host": device_ip}
     my_chain = chain(
-        trap_task_signature(work), prepare_task_signature(), send_task_signature()
+        trap_task_signature(work).set(queue="traps").set(priority=5),
+        prepare_task_signature().set(queue="send").set(priority=9),
+        send_task_signature().set(queue="send").set(priority=10),
     )
     _ = my_chain.apply_async()
 

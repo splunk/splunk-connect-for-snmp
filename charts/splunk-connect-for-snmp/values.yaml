@@ -73,12 +73,12 @@ scheduler:
     runAsGroup: 10001
 
   resources: {}
-    # limits:
-    #   cpu: 1
-    #   memory: 1Gi
-    # requests:
-    #   cpu: 100m
-    #   memory: 256Mi
+#     limits:
+#       cpu: 800m
+#       memory: 512Mi
+#     requests:
+#       cpu: 500m
+#       memory: 256Mi
 
   autoscaling:
     enabled: false
@@ -94,10 +94,56 @@ scheduler:
   podAntiAffinity: soft
 
 worker:
-  ignoreNotIncreasingOid: []
-  replicaCount: 2
-  concurrency: 4
   taskTimeout: 2400
+  ignoreNotIncreasingOid: []
+  poller:
+    replicaCount: 2
+    concurrency: 4
+    prefetch: 1
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 40
+      targetCPUUtilizationPercentage: 80
+    resources:
+      limits:
+        cpu: 700m
+        memory: 1024Mi
+      requests:
+        cpu: 300m
+        memory: 256Mi
+  trap:
+    replicaCount: 2
+    concurrency: 4
+    prefetch: 30
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 40
+      targetCPUUtilizationPercentage: 80
+    resources:
+      limits:
+        cpu: 600m
+        memory: 1024Mi
+      requests:
+        cpu: 300m
+        memory: 256Mi
+  sender:
+    replicaCount: 2
+    concurrency: 4
+    prefetch: 30
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 40
+      targetCPUUtilizationPercentage: 80
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 300m
+        memory: 256Mi
   nameOverride: ""
   fullnameOverride: ""
 
@@ -124,13 +170,13 @@ worker:
     runAsUser: 10001
     runAsGroup: 10001
 
-  resources: {}
-    # limits:
-    #   cpu: 2
-    #   memory: 512Mi
-    # requests:
-    #   cpu: 200m
-    #   memory: 256Mi
+  resources:
+     limits:
+       cpu: 500m
+       memory: 5128Mi
+     requests:
+       cpu: 300m
+       memory: 256Mi
 
   autoscaling:
     enabled: false
@@ -329,78 +375,7 @@ mongodb:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9216"
-rabbitmq:
-  extraConfiguration: |
-    consumer_timeout =  7200000
-  replicaCount: 1
-  pdb:
-    create: true
-
-  podManagementPolicy: Parallel
-  ## @section Common parameters
-
-  rbac:
-    create: true
+redis:
+  architecture: standalone
   auth:
-    username: sc4snmp
-    password: password
-    erlangCookie: cookie
-
-  # ## RabbitMQ containers' resource requests and limits
-  # ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  # ## We usually recommend not to specify default resources and to leave this as a conscious
-  # ## choice for the user. This also increases chances charts run on environments with little
-  # ## resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # ## @param resources.limits The resources limits for RabbitMQ containers
-  # ## @param resources.requests The requested resources for RabbitMQ containers
-  # ##
-  resources: {}
-    # limits:
-    #   cpu: 1000m
-    #   memory: 2Gi
-    # requests:
-    #   cpu: 250m
-    #   memory: 1Gi
-
-  ## @section Persistence parameters
-
-  persistence:
-    ## @param persistence.enabled Enable RabbitMQ data persistence using PVC
-    ##
-    enabled: true
-
-    # ## @param persistence.storageClass PVC Storage Class for RabbitMQ data volume
-    # ## If defined, storageClassName: <storageClass>
-    # ## If set to "-", storageClassName: "", which disables dynamic provisioning
-    # ## If undefined (the default) or set to null, no storageClassName spec is
-    # ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
-    # ##   GKE, AWS & OpenStack)
-    # ##
-    # storageClass: ""
-    # ## @param persistence.selector Selector to match an existing Persistent Volume
-    # ## selector:
-    # ##   matchLabels:
-    # ##     app: my-app
-    # ##
-    # selector: {}
-    # ## @param persistence.accessMode PVC Access Mode for RabbitMQ data volume
-    # ##
-    # accessMode: ReadWriteOnce
-
-    # ## @param persistence.existingClaim Provide an existing PersistentVolumeClaims
-    # ## The value is evaluated as a template
-    # ## So, for example, the name can depend on .Release or .Chart
-    # ##
-    # existingClaim: ""
-
-    ## @param persistence.size PVC Storage Request for RabbitMQ data volume
-    ## If you change this value, you might have to adjust `rabbitmq.diskFreeLimit` as well
-    ##
-    size: 4Gi
-
-    # ## @param persistence.volumes Additional volumes without creating PVC
-    # ##  - name: volume_name
-    # ##    emptyDir: {}
-    # ##
-    # volumes: []
+    enabled: false

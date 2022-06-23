@@ -90,6 +90,7 @@ sudo microk8s enable dns
 sudo microk8s enable rbac
 sudo microk8s enable community
 sudo microk8s enable openebs
+sudo microk8s enable metrics-server
 sudo systemctl enable iscsid
 yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
 

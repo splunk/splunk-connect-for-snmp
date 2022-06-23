@@ -19,6 +19,8 @@ import typing
 from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.snmp.manager import get_inventory
 
+from ..common.task_generator import PollTaskGenerator
+
 try:
     from dotenv import load_dotenv
 
@@ -31,11 +33,12 @@ import re
 import pymongo
 import urllib3
 from celery import Task, shared_task
-from celery.canvas import chain, signature
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.hummanbool import human_bool
+
+from ..poller import app
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # nosemgrep
 
@@ -85,39 +88,16 @@ def inventory_setup_poller(self, work):
         periodic_obj.manage_task(**task_config)
 
     periodic_obj.delete_unused_poll_tasks(f"{address}", active_schedules)
-    periodic_obj.delete_disabled_poll_tasks()
+    # periodic_obj.delete_disabled_poll_tasks()
 
 
 def generate_poll_task_definition(active_schedules, address, assigned_profiles, period):
-    run_immediately: bool = False
-    if period > 300:
-        run_immediately = True
-    name = f"sc4snmp;{address};{period};poll"
     period_profiles = set(assigned_profiles[period])
-    active_schedules.append(name)
-    task_config = {
-        "name": name,
-        "task": "splunk_connect_for_snmp.snmp.tasks.poll",
-        "target": f"{address}",
-        "args": [],
-        "kwargs": {
-            "address": address,
-            "profiles": period_profiles,
-            "frequency": period,
-        },
-        "options": {
-            "link": chain(
-                signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
-                chain(
-                    signature("splunk_connect_for_snmp.splunk.tasks.prepare"),
-                    signature("splunk_connect_for_snmp.splunk.tasks.send"),
-                ),
-            ),
-        },
-        "interval": {"every": period, "period": "seconds"},
-        "enabled": True,
-        "run_immediately": run_immediately,
-    }
+    poll_definition = PollTaskGenerator(
+        target=address, schedule_period=period, app=app, profiles=list(period_profiles)
+    )
+    task_config = poll_definition.generate_task_definition()
+    active_schedules.append(task_config.get("name"))
     return task_config
 
 

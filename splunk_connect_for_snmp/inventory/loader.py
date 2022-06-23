@@ -20,7 +20,6 @@ import sys
 from csv import DictReader
 
 import pymongo
-from celery.canvas import chain, group, signature
 
 from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.customised_json_formatter import (
@@ -29,6 +28,9 @@ from splunk_connect_for_snmp.common.customised_json_formatter import (
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
+from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
+
+from ..poller import app
 
 try:
     from dotenv import load_dotenv
@@ -64,34 +66,11 @@ def transform_address_to_key(address, port):
 
 def gen_walk_task(ir: InventoryRecord, profile=None):
     target = transform_address_to_key(ir.address, ir.port)
-    return {
-        "name": f"sc4snmp;{target};walk",
-        "task": "splunk_connect_for_snmp.snmp.tasks.walk",
-        "target": target,
-        "args": [],
-        "kwargs": {
-            "address": target,
-            "profile": profile,
-        },
-        "options": {
-            "link": chain(
-                signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
-                group(
-                    signature(
-                        "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller"
-                    ),
-                    chain(
-                        signature("splunk_connect_for_snmp.splunk.tasks.prepare"),
-                        signature("splunk_connect_for_snmp.splunk.tasks.send"),
-                    ),
-                ),
-            ),
-        },
-        "interval": {"every": ir.walk_interval, "period": "seconds"},
-        "enabled": True,
-        "total_run_count": 0,
-        "run_immediately": True,
-    }
+    walk_definition = WalkTaskGenerator(
+        target=target, schedule_period=ir.walk_interval, app=app, profile=profile
+    )
+    task_config = walk_definition.generate_task_definition()
+    return task_config
 
 
 def load():
@@ -121,7 +100,7 @@ def load():
                 ir = InventoryRecord(**source_record)
                 target = transform_address_to_key(ir.address, ir.port)
                 if ir.delete:
-                    periodic_obj.disable_tasks(target)
+                    periodic_obj.delete_all_tasks_of_host(target)
                     inventory_records.delete_one(
                         {"address": ir.address, "port": ir.port}
                     )
@@ -147,7 +126,7 @@ def load():
                         ]
                         if profiles:
                             profile = profiles[-1]
-                            ir.walk_interval = source_record["walk_interval"]
+                            ir.walk_interval = int(source_record["walk_interval"])
                     if status.matched_count == 0:
                         logger.info(f"New Record {ir} {status.upserted_id}")
                     elif status.modified_count == 1 and status.upserted_id is None:

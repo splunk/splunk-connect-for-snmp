@@ -14,7 +14,7 @@ The whole file is divided into the following components:
 3. sim - more detail [sim configuration](sim-configuration.md)
 4. traps - more detail [trap configuration](trap-configuration.md)
 5. mongodb - more detail [mongo configuration](mongo-configuration.md)
-6. rabbitmq - more detail [rabbitmq configuration](rabbitmq-configuration.md)
+6. redis - more detail [redis configuration](redis-configuration.md)
 
 ### Shared values
 All of the components have the `resources` field for adjusting memory resources:

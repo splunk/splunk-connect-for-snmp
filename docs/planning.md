@@ -45,7 +45,7 @@ existing firewall.
 ## Planning Infrastructure
 
 A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
-16 Core/32 threads x64 and 12 GB ram will be able to handle up to 1300
+16 Core/32 threads x64 and 64 GB ram will be able to handle up to 1500
 SNMP TRAPs per sec.
 
 A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with

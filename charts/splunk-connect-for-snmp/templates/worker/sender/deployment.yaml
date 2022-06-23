@@ -1,91 +1,73 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "splunk-connect-for-snmp.scheduler.fullname" . }}
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-sender
   labels:
-    {{- include "splunk-connect-for-snmp.scheduler.labels" . | nindent 4 }}
+    {{- include "splunk-connect-for-snmp.worker.sender.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.scheduler.autoscaling.enabled }}
-  replicas: {{ .Values.scheduler.replicaCount }}
+  {{- if not .Values.worker.sender.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "splunk-connect-for-snmp.scheduler.selectorLabels" . | nindent 6 }}
+      {{- include "splunk-connect-for-snmp.worker.sender.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.scheduler.podAnnotations }}
+      {{- with .Values.worker.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "splunk-connect-for-snmp.scheduler.selectorLabels" . | nindent 8 }}
+        {{- include "splunk-connect-for-snmp.worker.sender.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "splunk-connect-for-snmp.scheduler.serviceAccountName" . }}
+      serviceAccountName: {{ include "splunk-connect-for-snmp.worker.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.scheduler.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.worker.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}-scheduler
+        - name: {{ .Chart.Name }}-worker-sender
           securityContext:
-            {{- toYaml .Values.scheduler.securityContext | nindent 12 }}
+            {{- toYaml .Values.worker.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             [
-              "celery", "beat",
-            ]          
-          env:
-            - name: CONFIG_PATH
-              value: /app/config/config.yaml
-            - name: REDIS_URL
-              value: {{ include "splunk-connect-for-snmp.redis_url" . }}
-            - name: CELERY_BROKER_URL
-              value: {{ include "splunk-connect-for-snmp.celery_url" . }}
-            - name: MONGO_URI
-              value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
-            - name: MIB_SOURCES
-              value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/asn1/@mib@"
-            - name: MIB_INDEX
-              value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/index.csv"
-            - name: MIB_STANDARD
-              value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/standard.txt"
-            - name: LOG_LEVEL
-              value: {{ .Values.scheduler.logLevel | default "INFO" }}
-            - name: INVENTORY_REFRESH_RATE
-              value: {{ .Values.scheduler.inventory_refresh_rate | default "600" | quote }}
+              "celery", "worker-sender",
+            ]
+          {{- include "environmental-variables" . | nindent 10 }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"
               readOnly: true
             - name: pysnmp-cache-volume
               mountPath: "/.pysnmp/"
-              readOnly: false            
+              readOnly: false
             - name: tmp
               mountPath: "/tmp/"
-              readOnly: false   
+              readOnly: false
             {{- if (.Values.poller).usernameSecrets }}
             - name: snmpv3-secrets
               mountPath: "/app/secrets/snmpv3"
               readOnly: true
             {{- end }}
           resources:
-            {{- toYaml .Values.scheduler.resources | nindent 12 }}
-      {{- with .Values.scheduler.nodeSelector }}
+            {{- toYaml .Values.worker.sender.resources | nindent 12 }}
+      {{- with .Values.worker.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if eq .Values.scheduler.podAntiAffinity "hard" }}
+      {{- if eq .Values.worker.podAntiAffinity "hard" }}
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - topologyKey: "kubernetes.io/hostname"
               labelSelector:
                 matchLabels:
-                    {{- include "splunk-connect-for-snmp.scheduler.selectorLabels" . | nindent 22 }}
-      {{- else if eq .Values.scheduler.podAntiAffinity "soft" }}
+                    {{- include "splunk-connect-for-snmp.worker.sender.selectorLabels" . | nindent 22 }}
+      {{- else if eq .Values.worker.podAntiAffinity "soft" }}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -94,9 +76,9 @@ spec:
                 topologyKey: kubernetes.io/hostname
                 labelSelector:
                   matchLabels:
-                    {{- include "splunk-connect-for-snmp.scheduler.selectorLabels" . | nindent 22 }}
+                    {{- include "splunk-connect-for-snmp.worker.sender.selectorLabels" . | nindent 22 }}
       {{- end }}
-      {{- with .Values.scheduler.tolerations }}
+      {{- with .Values.worker.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -115,43 +97,44 @@ spec:
           projected:
             sources:
             {{- range .Values.poller.usernameSecrets }}
-            {{- $secret := (lookup "v1" "Secret" $.Release.Namespace . ) -}}            
+            {{- $secret := (lookup "v1" "Secret" $.Release.Namespace . ) -}}
             {{- if $secret }}
             - secret:
                 name: {{ . }}
                 items:
                   {{ if $secret.data.userName -}}
                   - key: userName
-                    path: {{ . }}/userName                
-                  {{- end }} 
+                    path: {{ . }}/userName
+                  {{- end }}
                   {{ if $secret.data.authKey -}}
                   - key: authKey
                     path: {{ . }}/authKey
-                  {{- end }} 
+                  {{- end }}
                   {{ if $secret.data.privKey -}}
                   - key: privKey
                     path: {{ . }}/privKey
-                  {{- end }} 
+                  {{- end }}
                   {{ if $secret.data.authProtocol -}}
                   - key: authProtocol
                     path: {{ . }}/authProtocol
-                  {{- end }} 
+                  {{- end }}
                   {{ if $secret.data.privProtocol -}}
                   - key: privProtocol
                     path: {{ . }}/privProtocol
-                  {{- end }} 
+                  {{- end }}
                   {{ if $secret.data.contextEngineId -}}
                   - key: contextEngineId
                     path: {{ . }}/contextEngineId
-                  {{- end }} 
+                  {{- end }}
                   {{ if $secret.data.contextName -}}
                   - key: contextName
                     path: {{ . }}/contextName
-                  {{- end }} 
-            {{- end }}                    
+                  {{- end }}
             {{- end }}
-        {{- end }}     
+            {{- end }}
+        {{- end }}
         - name: pysnmp-cache-volume
-          emptyDir: {}    
+          emptyDir: {}
         - name: tmp
-          emptyDir: {}                        
+          emptyDir: {}
+

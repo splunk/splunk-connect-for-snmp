@@ -22,9 +22,22 @@ traps:
   #loadBalancerIP: The IP address in the metallb pool
   loadBalancerIP: ###LOAD_BALANCER_ID###
 worker:
+  poller:
+    replicaCount: 4
+    concurrency: 4
+    prefetch: 1
+  trap:
+    autoscaling:
+      enabled: false
+    replicaCount: 1
+    concurrency: 8
+    prefetch: 60
+  sender:
+    replicaCount: 1
+    concurrency: 4
+    prefetch: 60
   profilesReloadDelay: 1
   # replicas: Number of replicas for worker container should two or more
-  replicaCount: 1
   # udpConnectionTimeout: timeout in seconds for SNMP operations
   #udpConnectionTimeout: 5
   logLevel: "DEBUG"
@@ -60,12 +73,7 @@ mongodb:
     storageClass: "microk8s-hostpath"
   volumePermissions:
     enabled: true
-rabbitmq:
-  pdb:
-    create: true
-  replicaCount: 1
-  persistence:
-    enabled: true
-    storageClass: "microk8s-hostpath"
-  volumePermissions:
-    enabled: true
+redis:
+  architecture: standalone
+  auth:
+    enabled: false

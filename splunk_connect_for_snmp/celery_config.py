@@ -16,6 +16,8 @@
 # Support use of .env file for developers
 from contextlib import suppress
 
+from kombu import Queue
+
 with suppress(ImportError):
     from dotenv import load_dotenv
 
@@ -24,29 +26,35 @@ with suppress(ImportError):
 
 import os
 
-MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
-MONGO_DB_SCHEDULES = os.getenv("MONGO_DB_SCHEDULES", "schedules")
 CELERY_TASK_TIMEOUT = int(os.getenv("CELERY_TASK_TIMEOUT", "2400"))
-MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB_CELERY_DATABASE = os.getenv("MONGO_DB_CELERY_DATABASE", MONGO_DB)
-
+PREFETCH_COUNT = int(os.getenv("PREFETCH_COUNT", 1))
+redbeat_redis_url = os.getenv("REDIS_URL")
 # broker
-broker_url = os.getenv("CELERY_BROKER_URL")
-# results config
-result_backend = MONGO_URI
+broker_url = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672//")
 result_extended = True
-mongodb_backend_settings = {"database": MONGO_DB_CELERY_DATABASE}
-
-beat_scheduler = "celerybeatmongo.schedulers.MongoScheduler"
-mongodb_scheduler_url = MONGO_URI
-mongodb_scheduler_db = MONGO_DB_CELERY_DATABASE
+beat_scheduler = "redbeat.RedBeatScheduler"
+redbeat_lock_key = None
 
 # Optimization for long running tasks
 # https://docs.celeryproject.org/en/stable/userguide/optimizing.html#reserve-one-task-at-a-time
 task_acks_late = True
-worker_prefetch_multiplier = 1
+worker_prefetch_multiplier = PREFETCH_COUNT
 task_acks_on_failure_or_timeout = True
 task_reject_on_worker_lost = True
-task_track_started = True
 task_time_limit = CELERY_TASK_TIMEOUT
+task_create_missing_queues = False
 task_ignore_result = True
+result_persistent = False
+result_expires = 60
+task_default_priority = 5
+task_default_queue = "poll"
+broker_transport_options = {
+    "priority_steps": list(range(10)),
+    "sep": ":",
+    "queue_order_strategy": "priority",
+}
+task_queues = (
+    Queue("traps", exchange="traps"),
+    Queue("poll", exchange="poll"),
+    Queue("send", exchange="send"),
+)
