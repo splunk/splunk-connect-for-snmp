@@ -47,30 +47,30 @@ worker:
   trap:
     # replicaCount: number of trap-worker pods which consumes trap tasks
     replicaCount: 2
-    # autoscaling: use it instead of replicaCount in order to make pods scalable by itself
-#    autoscaling:
-#      enabled: true
-#      minReplicas: 2
-#      maxReplicas: 40
-#      targetCPUUtilizationPercentage: 80
+    #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
+    #autoscaling:
+    #  enabled: true
+    #  minReplicas: 2
+    #  maxReplicas: 40
+    #  targetCPUUtilizationPercentage: 80
   poller:
     # replicaCount: number of poller-worker pods which consumes polling tasks
     replicaCount: 2
-    # autoscaling: use it instead of replicaCount in order to make pods scalable by itself
-#    autoscaling:
-#      enabled: true
-#      minReplicas: 2
-#      maxReplicas: 40
-#      targetCPUUtilizationPercentage: 80
+    #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
+    #autoscaling:
+    #  enabled: true
+    #  minReplicas: 2
+    #  maxReplicas: 40
+    #  targetCPUUtilizationPercentage: 80
   sender:
     # replicaCount: number of sender-worker pods which consumes sending tasks
     replicaCount: 1
     # autoscaling: use it instead of replicaCount in order to make pods scalable by itself
-#    autoscaling:
-#      enabled: true
-#      minReplicas: 2
-#      maxReplicas: 40
-#      targetCPUUtilizationPercentage: 80
+    #autoscaling:
+    #  enabled: true
+    #  minReplicas: 2
+    #  maxReplicas: 40
+    #  targetCPUUtilizationPercentage: 80
   # udpConnectionTimeout: timeout in seconds for SNMP operations
   #udpConnectionTimeout: 5
   logLevel: "INFO"
@@ -213,7 +213,7 @@ service snmpd stop
 service snmpd start
 ```
 
-- Configure SC4SNMP Poller to test add IP address which need to be poll. Add configuration entry in `value.yaml` file by 
+- Configure SC4SNMP Poller to test add IP address which needs to be polled. Add configuration entry in `values.yaml` file by 
 replace the IP address `10.0.101.22` with the server IP address where snmpd were configured.
 ``` bash
 poller:
@@ -222,7 +222,7 @@ poller:
     - sc4snmp-homesecure-sha-des
   inventory: |
     address,version,community,walk_interval,profiles,SmartProfiles,delete
-    10.0.101.22,public,60,,,
+    10.0.101.22,public,42000,,,
 ```
 
 - Load `values.yaml` file in SC4SNMP
@@ -233,12 +233,15 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 
 -   Check-in Splunk
  
- Up to 1 min events appear in Splunk:
+Before polling starts, SC4SNMP must perform Walk process on the device. It is run after configuring new device and every `walk_interval`. 
+Its purpose is to gather all the data and provide meaningful context for the polling records. May be, that your device is so big that walk takes too long and scope of walking must be limited.
+In such cases, enable the small walk using the instruction: [walk takes too much time](/bestpractices/#walking-a-device-takes-too-much-time).
+When walk finishes, events appear in Splunk, check it with those queries:
 
 ``` bash
 index="netops" sourcetype="sc4snmp:event"
 ```
- Up to 1 min events appear in Splunk:
+
 ``` bash
 | mpreview index="netmetrics" | search sourcetype="sc4snmp:metric"
 ```

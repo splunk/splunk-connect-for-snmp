@@ -274,7 +274,7 @@ tornado = ">=5.0.0,<7.0.0"
 name = "ghp-import"
 version = "2.1.0"
 description = "Copy your docs directly to the gh-pages branch."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -307,7 +307,7 @@ python-versions = ">=3.5"
 name = "importlib-metadata"
 version = "4.11.4"
 description = "Read metadata from Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -331,7 +331,7 @@ python-versions = "*"
 name = "jinja2"
 version = "3.1.2"
 description = "A very fast and expressive template engine."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -381,7 +381,7 @@ zookeeper = ["kazoo (>=1.3.1)"]
 name = "markdown"
 version = "3.3.7"
 description = "Python implementation of Markdown."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -395,7 +395,7 @@ testing = ["coverage", "pyyaml"]
 name = "markupsafe"
 version = "2.1.1"
 description = "Safely add untrusted strings to HTML/XML markup."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -403,7 +403,7 @@ python-versions = ">=3.7"
 name = "mergedeep"
 version = "1.3.4"
 description = "A deep merge function for 🐍."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -429,7 +429,7 @@ test = ["coverage", "flake8 (>=3.0)", "shtab"]
 name = "mkdocs"
 version = "1.3.0"
 description = "Project documentation with Markdown."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -471,6 +471,17 @@ description = "Extension pack for Python Markdown."
 category = "dev"
 optional = false
 python-versions = ">=3.6"
+
+[[package]]
+name = "mkdocs-video"
+version = "1.3.0"
+description = ""
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+mkdocs = ">=1.1.0,<2"
 
 [[package]]
 name = "mongoengine"
@@ -853,7 +864,7 @@ python-versions = ">=3.6"
 name = "pyyaml-env-tag"
 version = "0.1"
 description = "A custom YAML tag for referencing environment variables in YAML files. "
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -1103,7 +1114,7 @@ resolved_reference = "b880ba68ba0da8ee5671b48dd58788002209946b"
 name = "watchdog"
 version = "2.1.9"
 description = "Filesystem events monitoring"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -1130,7 +1141,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 name = "zipp"
 version = "3.8.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -1141,7 +1152,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "32b5b46d1bd6f53309a28119eb0519a0494c4436623a7506a543995f496d804e"
+content-hash = "5f13597fec7fc7966ec9ded4edb547c2a1f41e31a212d2ce55a949a65621e963"
 
 [metadata.files]
 amqp = [
@@ -1356,6 +1367,10 @@ mkdocs-material = [
 mkdocs-material-extensions = [
     {file = "mkdocs-material-extensions-1.0.3.tar.gz", hash = "sha256:bfd24dfdef7b41c312ede42648f9eb83476ea168ec163b613f9abd12bbfddba2"},
     {file = "mkdocs_material_extensions-1.0.3-py3-none-any.whl", hash = "sha256:a82b70e533ce060b2a5d9eb2bc2e1be201cf61f901f93704b4acf6e3d5983a44"},
+]
+mkdocs-video = [
+    {file = "mkdocs-video-1.3.0.tar.gz", hash = "sha256:900a7da60aff6d313d3aec47348bb7c87ec2ad39bad27a1146fa153fafd61e44"},
+    {file = "mkdocs_video-1.3.0-py3-none-any.whl", hash = "sha256:6512887d65e65f4fb643b64e3f4cc7e365ce27d0ff4c4b48de8d91b04ea89731"},
 ]
 mongoengine = [
     {file = "mongoengine-0.24.1-py3-none-any.whl", hash = "sha256:68878b65bcb3751debcba4342180a180161cdb5f46525027e622ad081dd44fac"},

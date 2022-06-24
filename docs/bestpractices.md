@@ -56,7 +56,7 @@ worker:
 If you put only IP address (ex. `127.0.0.1`), then errors will be ignored for all of its devices (like `127.0.0.1:161`, 
 `127.0.0.1:163`...). If you put IP address and host structured as `{host}:{port}` that means the error will be ignored only for this device.
 
-### Walking a device takes much time
+### Walking a device takes too much time
 If you would like to limit the scope of the walk, you should set one of the profiles in the inventory to point to the profile definition of type `walk`
 ```yaml
 scheduler:
