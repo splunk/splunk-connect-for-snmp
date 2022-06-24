@@ -12,6 +12,10 @@ markdown_extensions:
   - sane_lists
   - codehilite
 
+plugins:
+    - mkdocs-video:
+        is_video: True
+
 theme:
   name: "material"
   palette:
