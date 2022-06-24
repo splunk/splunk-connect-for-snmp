@@ -20,3 +20,7 @@ What makes it easy to visualize the data in Analytics of Splunk:
 Here is a short presentation of how to browse SNMP data in Splunk:
 
 ![type:video](videos/setting_analytics.mov)
+
+Traps you can easily monitor in `netops` index, they are JSON formatted:
+
+![Trap example](images/trap.png)
