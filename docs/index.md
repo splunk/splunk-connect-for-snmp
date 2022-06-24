@@ -11,11 +11,11 @@ SC4SNMP provides context-full information - not only forwards SNMP data to Splun
 all of pieces into the meaningful objects. For example, you don't need to write queries in order to gather the information about
 interfaces of the device, because SC4SNMP does that automatically:
 
-![Interface metrics](images/interface_metrics.png)
+[![Interface metrics](images/interface_metrics.png)](images/interface_metrics.png)
 
 What makes it easy to visualize the data in Analytics of Splunk:
 
-![Interface analytics](images/interface_analytics.png)
+[![Interface analytics](images/interface_analytics.png)](images/interface_analytics.png)
 
 Here is a short presentation of how to browse SNMP data in Splunk:
 
@@ -23,4 +23,4 @@ Here is a short presentation of how to browse SNMP data in Splunk:
 
 Traps you can easily monitor in `netops` index, they are JSON formatted:
 
-![Trap example](images/trap.png)
+[![Trap example](images/trap.png)](images/trap.png)
