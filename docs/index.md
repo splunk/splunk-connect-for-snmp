@@ -21,6 +21,6 @@ Here is a short presentation of how to browse SNMP data in Splunk:
 
 ![type:video](videos/setting_analytics.mov)
 
-Traps you can easily monitor in `netops` index, they are JSON formatted:
+SC4SNMP can also easily monitor trap events sent by different SNMP devices. Trap events are JSON formatted, and are being stored under `netops` index.
 
 [![Trap example](images/trap.png)](images/trap.png)
