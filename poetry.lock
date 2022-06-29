@@ -898,18 +898,18 @@ docs = ["furo (>=2021.9.8)", "linkify-it-py (>=1.0.1,<2.0.0)", "myst-parser (>=0
 
 [[package]]
 name = "requests-ratelimiter"
-version = "0.2.1"
+version = "0.3.2"
 description = "Rate-limiting for the requests library"
 category = "main"
 optional = false
 python-versions = ">=3.6.2,<4.0.0"
 
 [package.dependencies]
-pyrate-limiter = ">=2.3,<3.0"
+pyrate-limiter = ">=2.6.3"
 requests = ">=2.20,<3.0"
 
 [package.extras]
-docs = ["furo (==2021.8.17b43)", "myst-parser (>=0.15.1,<0.16.0)", "sphinx (>=4.0.2,<5.0.0)", "sphinx-autodoc-typehints (>=1.11,<2.0)", "sphinx-copybutton (>=0.3,<0.5)"]
+docs = ["furo (==2022.3.4)", "myst-parser (>=0.17)", "sphinx (>=4.3.0,<5.0.0)", "sphinx-autodoc-typehints (>=1.17,<2.0)", "sphinx-copybutton (>=0.5)"]
 
 [[package]]
 name = "ruamel.yaml"
@@ -1046,7 +1046,6 @@ python-versions = ">=3.6"
 develop = false
 
 [package.dependencies]
-redis = {version = "*", optional = true, markers = "extra == \"redis\""}
 requests = ">=2.21.0"
 
 [package.extras]
@@ -1107,7 +1106,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "1e0066fdc696c5f6341165a37225d6525a9ce91320fd492aabc140dd9c996180"
+content-hash = "19dc70bcaabc61eace199b22018070b070821cf6ca8690b53419a4f7a3b0935b"
 
 [metadata.files]
 amqp = [
@@ -1652,8 +1651,8 @@ requests-cache = [
     {file = "requests_cache-0.9.4-py3-none-any.whl", hash = "sha256:edc51d4ba3f1bcacf100aa6097d0c4ae4c787fe13dcc4b2d3a6ce3064482b072"},
 ]
 requests-ratelimiter = [
-    {file = "requests-ratelimiter-0.2.1.tar.gz", hash = "sha256:9c9271c9435eea9e50b87837c32c23dd6f421c8303cbf615e0b52ee5e640015a"},
-    {file = "requests_ratelimiter-0.2.1-py3-none-any.whl", hash = "sha256:67ddb03c86c12fd41c3c8c204ccaf72553459ba37ab73a2b99312447fcd1e34a"},
+    {file = "requests-ratelimiter-0.3.2.tar.gz", hash = "sha256:5bec149645b549135dadb701f8e0a97ecc3dcd40fa6504d55a68cc99e62a89af"},
+    {file = "requests_ratelimiter-0.3.2-py3-none-any.whl", hash = "sha256:8028309cba50480f91d04a78178f1a49ff22573632af2b79be91d73092994332"},
 ]
 "ruamel.yaml" = [
     {file = "ruamel.yaml-0.17.21-py3-none-any.whl", hash = "sha256:742b35d3d665023981bd6d16b3d24248ce5df75fdb4e2924e93a05c1f8b61ca7"},
