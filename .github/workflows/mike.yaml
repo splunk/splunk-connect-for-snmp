@@ -14,27 +14,31 @@
 #    limitations under the License.
 #   ########################################################################
 
-name: cd-docs-pdf
+name: mike
 on:
   push:
-    branches-ignore:
-    - "**"  
-    tags:
+    branches:
+      - "main"
+      - "develop"
+      - "next"
+    tags-ignore:
       - "v*"
 jobs:
-  release:
-    name: Release
+  mike:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
-          submodules: false
-      - id: doc-files
-        name: Produce PDF from docs
+          fetch-depth: 0
+      - uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        with:
+          token: "${{ secrets.PAT_CLATOOL }}"
+
+      - name: Upload Docs
         run: |
-          sudo apt-get install -y pandoc texlive librsvg2-bin texlive-latex-extra
-          pandoc -s --pdf-engine=pdflatex -o /tmp/SC4S4SNMP_docs.pdf $(find . -type f -name "*.md") -H deeplists.tex
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: /tmp/SC4S_docs.pdf
+          BRANCH=$(echo $GITHUB_REF | cut -d / -f 3)
+          echo $BRANCH
+          pip3 install poetry
+          poetry install
+          poetry run mike deploy -p $BRANCH
