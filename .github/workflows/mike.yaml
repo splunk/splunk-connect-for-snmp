@@ -42,3 +42,4 @@ jobs:
           pip3 install poetry
           poetry install
           poetry run mike deploy -p $BRANCH
+          poetry run mike list | grep -w "\d*" | xargs -I % sh -c 'poetry run mike delete %'
