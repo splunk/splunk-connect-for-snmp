@@ -14,17 +14,13 @@
 #    limitations under the License.
 #   ########################################################################
 
-name: mike-cleanup
+name: mike
 on:
-  push:
+  pull_request:
     branches:
-      - "main"
       - "develop"
-      - "next"
-    tags-ignore:
-      - "v*"
 jobs:
-  mike-cleanup:
+  mike:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,10 +31,9 @@ jobs:
         with:
           token: "${{ secrets.PAT_CLATOOL }}"
 
-      - name: Upload Docs
+      - name: Delete unnecessary versions
         run: |
-          BRANCH=$(echo $GITHUB_REF | cut -d / -f 3)
-          echo $BRANCH
           pip3 install poetry
           poetry install
-          poetry run mike deploy -p $BRANCH
+          poetry run mike list | grep -w "\d*" | xargs -I % sh -c 'version to delete: %'
+          poetry run mike list | grep -w "\d*" | xargs -I % sh -c 'poetry run mike delete %'
