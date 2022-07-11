@@ -35,5 +35,4 @@ jobs:
         run: |
           pip3 install poetry
           poetry install
-          poetry run mike list | grep -w "\d*" | xargs -I % sh -c 'version to delete: %'
-          poetry run mike list | grep -w "\d*" | xargs -I % sh -c 'poetry run mike delete %'
+          poetry run mike list | grep -w "\d*" | xargs -I % sh -c 'echo version to delete: %'
