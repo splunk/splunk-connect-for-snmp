@@ -37,6 +37,6 @@ jobs:
           poetry install
           poetry run mike list
           echo "Run grep"
-          poetry run mike list | sed 's/[[:space:]]//g' | grep -w "^\d*$" || true
-          poetry run mike list | sed 's/[[:space:]]//g' | grep -w "^\d*$" |  xargs -I % sh -c 'echo version to delete: %'
+          poetry run mike list | grep -w "^\d* *$" || true
+          poetry run mike list | grep -w "^\d* *$" |  xargs -I % sh -c 'echo version to delete: %'
           poetry run mike list | grep -w "^\d*$" | xargs -I % sh -c 'poetry run mike delete %'
