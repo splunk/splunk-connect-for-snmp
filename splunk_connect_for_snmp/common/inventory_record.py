@@ -26,8 +26,10 @@ InventoryStr = Union[None, str]
 InventoryInt = Union[None, int]
 InventoryBool = Union[None, bool]
 
-ALTERNATIVE_FIELDS = {"securityEngine": "security_engine",
-                      "SmartProfiles": "smart_profiles"}
+ALTERNATIVE_FIELDS = {
+    "securityEngine": "security_engine",
+    "SmartProfiles": "smart_profiles",
+}
 
 
 class InventoryRecord(BaseModel):

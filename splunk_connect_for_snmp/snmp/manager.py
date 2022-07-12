@@ -31,7 +31,7 @@ import csv
 import os
 import time
 from io import StringIO
-from typing import Any, Dict, List, Union, Tuple
+from typing import Any, Dict, List, Tuple, Union
 
 import pymongo
 from celery import Task
