@@ -14,27 +14,38 @@
 #    limitations under the License.
 #   ########################################################################
 
-name: cd-docs-pdf
+name: mike-cleanup
 on:
+  pull_request:
+    branches:
+      - "develop"
   push:
-    branches-ignore:
-    - "**"  
-    tags:
+    branches:
+      - "main"
+      - "develop"
+      - "next"
+    tags-ignore:
       - "v*"
 jobs:
-  release:
-    name: Release
+  mike-cleanup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
-          submodules: false
-      - id: doc-files
-        name: Produce PDF from docs
+          fetch-depth: 0
+      - uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        with:
+          token: "${{ secrets.PAT_CLATOOL }}"
+
+      - name: Delete unnecessary versions
         run: |
-          sudo apt-get install -y pandoc texlive librsvg2-bin texlive-latex-extra
-          pandoc -s --pdf-engine=pdflatex -o /tmp/SC4S4SNMP_docs.pdf $(find . -type f -name "*.md") -H deeplists.tex
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: /tmp/SC4S_docs.pdf
+          pip3 install poetry
+          poetry install
+          poetry run mike list
+          echo "Run grep"
+          poetry run mike list | grep "^[0-9].*[0-9]$" |  xargs -I % sh -c 'echo version to delete: %'
+          poetry run mike delete 0.11.0-next.47
+          poetry run mike list | grep "^[0-9].*[0-9]$" | xargs -I % sh -c 'poetry run mike delete %'
+          echo "Versions after deletion"
+          poetry run mike list
