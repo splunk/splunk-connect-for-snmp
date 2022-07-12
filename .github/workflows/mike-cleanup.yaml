@@ -40,3 +40,5 @@ jobs:
           poetry run mike delete 480
           poetry run mike list | grep "^[0-9].*[0-9]$" |  xargs -I % sh -c 'echo version to delete: %'
           poetry run mike list | grep "^[0-9].*[0-9]$" | xargs -I % sh -c 'poetry run mike delete %'
+          echo "Versions after deletion"
+          poetry run mike list
