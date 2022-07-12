@@ -14,13 +14,20 @@
 #    limitations under the License.
 #   ########################################################################
 
-name: mike
+name: mike-cleanup
 on:
   pull_request:
     branches:
       - "develop"
+  push:
+    branches:
+      - "main"
+      - "develop"
+      - "next"
+    tags-ignore:
+      - "v*"
 jobs:
-  mike:
+  mike-cleanup:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
