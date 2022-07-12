@@ -34,6 +34,6 @@ jobs:
       - name: Delete unnecessary versions
         run: |
           echo "Run grep"
-          cd tmp
+          cd /tmp
           ls -la
 
