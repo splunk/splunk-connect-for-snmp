@@ -59,7 +59,7 @@ poller:
  #   - sc4snmp-hlab-sha-aes
  #   - sc4snmp-hlab-sha-des
   inventory: |
-    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
     ###LOAD_BALANCER_ID###,,2c,public,,,600,,,
 sim:
   # sim must be enabled if you want to use signalFx

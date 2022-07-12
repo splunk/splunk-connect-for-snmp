@@ -31,7 +31,7 @@ import csv
 import os
 import time
 from io import StringIO
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union, Tuple
 
 import pymongo
 from celery import Task
@@ -362,7 +362,7 @@ class Poller(Task):
                 except error.MibLoadError as e:
                     logger.exception(f"Error loading mib for {mib}, {e}")
 
-    def is_mib_known(self, id: str, oid: str, target: str) -> tuple[bool, str]:
+    def is_mib_known(self, id: str, oid: str, target: str) -> Tuple[bool, str]:
 
         oid_list = tuple(oid.split("."))
 

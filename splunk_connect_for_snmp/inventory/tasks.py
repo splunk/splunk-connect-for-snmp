@@ -103,7 +103,7 @@ def generate_poll_task_definition(active_schedules, address, assigned_profiles, 
 
 def assign_profiles(ir, profiles, target):
     assigned_profiles: dict[int, list[str]] = {}
-    if ir.SmartProfiles:
+    if ir.smart_profiles:
         for profile_name, profile in profiles.items():
 
             if not is_smart_profile_valid(profile_name, profile):

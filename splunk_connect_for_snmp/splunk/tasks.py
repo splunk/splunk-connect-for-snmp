@@ -123,6 +123,7 @@ def do_send(data, destination_url, self):
     # If a device is very large a walk may produce more than 1MB of data.
     # 50 items is a reasonable guess to keep the post under the http post size limit
     # and be reasonable efficient
+    logger.warning(f"token: {SPLUNK_HEC_TOKEN}")
     for i in range(0, len(data), SPLUNK_HEC_CHUNK_SIZE):
         # using sessions is important this avoid expensive setup time
         try:
