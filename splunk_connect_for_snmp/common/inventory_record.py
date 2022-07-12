@@ -149,16 +149,6 @@ class InventoryRecord(BaseModel):
         else:
             return human_bool(value)
 
-    @classmethod
-    def from_dict(cls, env):
-        for old, current in ALTERNATIVE_FIELDS.items():
-            if old in env.keys():
-                env[current] = env.get(old)
-                env.pop(old, None)
-        return cls(
-            **{k: v for k, v in env.items() if k in inspect.signature(cls).parameters}
-        )
-
     def asdict(self) -> dict:
         return self.dict()
 
