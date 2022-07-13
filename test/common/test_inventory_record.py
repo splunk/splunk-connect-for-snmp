@@ -481,9 +481,9 @@ class TestInventoryRecord(TestCase):
             "secret": "secret",
             "security_engine": "ENGINE",
             "walk_interval": 1850,
-            "profiles": ["generic_switch","new_profiles"],
+            "profiles": ["generic_switch", "new_profiles"],
             "smart_profiles": True,
-            "delete": False
+            "delete": False,
         }
 
         ir = InventoryRecord(**ir_dict)
