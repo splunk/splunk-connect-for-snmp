@@ -46,6 +46,22 @@ class TestInventoryRecord(TestCase):
             InventoryRecord(**ir_dict)
         self.assertEqual("Port out of range 65537", e.exception.args[0][0].exc.args[0])
 
+    def test_port_not_specified(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "",
+            "version": None,
+            "community": "public",
+            "secret": "secret",
+            "security_engine": "ENGINE",
+            "walk_interval": 1850,
+            "profiles": "",
+            "smart_profiles": True,
+            "delete": False,
+        }
+        ir = InventoryRecord(**ir_dict)
+        self.assertEqual(161, ir.port)
+
     def test_version_none(self):
         ir_dict = {
             "address": "192.168.0.1",
@@ -375,3 +391,100 @@ class TestInventoryRecord(TestCase):
 
         ir = InventoryRecord(**ir_dict)
         self.assertFalse(ir.delete)
+
+    def test_secret_not_specified(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "3",
+            "community": "public",
+            "secret": "",
+            "securityEngine": "ENGINE",
+            "walk_interval": 1850,
+            "profiles": "",
+            "SmartProfiles": True,
+            "delete": "",
+        }
+
+        ir = InventoryRecord(**ir_dict)
+        self.assertIsNone(ir.secret)
+
+    def test_security_engine_not_specified(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "3",
+            "community": "public",
+            "secret": "",
+            "securityEngine": "",
+            "walk_interval": 1850,
+            "profiles": "",
+            "SmartProfiles": True,
+            "delete": "",
+        }
+
+        ir = InventoryRecord(**ir_dict)
+        self.assertIsNone(ir.security_engine)
+
+    def test_profiles(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "3",
+            "community": "public",
+            "secret": "secret",
+            "securityEngine": "ENGINE",
+            "walk_interval": 1850,
+            "profiles": "generic_switch;new_profiles",
+            "SmartProfiles": True,
+            "delete": "",
+        }
+
+        ir = InventoryRecord(**ir_dict)
+        self.assertEqual(["generic_switch", "new_profiles"], ir.profiles)
+
+    def test_smart_profiles_not_specified(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "3",
+            "community": "public",
+            "secret": "secret",
+            "securityEngine": "ENGINE",
+            "walk_interval": 1850,
+            "profiles": "generic_switch;new_profiles",
+            "SmartProfiles": "",
+            "delete": "",
+        }
+
+        ir = InventoryRecord(**ir_dict)
+        self.assertTrue(ir.smart_profiles)
+
+    def test_asdict_method(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "3",
+            "community": "public",
+            "secret": "secret",
+            "securityEngine": "ENGINE",
+            "walk_interval": 1850,
+            "profiles": "generic_switch;new_profiles",
+            "SmartProfiles": "",
+            "delete": "",
+        }
+        expeced_dict = {
+            "address": "192.168.0.1",
+            "port": 34,
+            "version": "3",
+            "community": "public",
+            "secret": "secret",
+            "security_engine": "ENGINE",
+            "walk_interval": 1850,
+            "profiles": ["generic_switch","new_profiles"],
+            "smart_profiles": True,
+            "delete": False
+        }
+
+        ir = InventoryRecord(**ir_dict)
+        self.assertEqual(expeced_dict, ir.asdict())
