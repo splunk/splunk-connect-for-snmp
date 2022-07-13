@@ -635,7 +635,7 @@ which may overload the SNMP device when executing too often. It is used by SC4SN
 <div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;WARN&quot;</span><span class="w"></span>
 <span class="w">  </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">    </span><span class="no">address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete</span><span class="w"></span>
+<span class="w">    </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span><span class="w"></span>
 <span class="w">    </span><span class="no">10.202.4.202,,2c,public,,,2000,,,</span><span class="w"></span>
 </code></pre></div>
 
@@ -654,18 +654,18 @@ The default value is <code>WARNING</code></p>
 <li><code>secret</code> [OPTIONAL] - usernameSecrets define which secrets in &ldquo;Secret&rdquo; objects in k8s should be use, as a value it need to put 
  name of &ldquo;Secret&rdquo; objects. Field is required when <code>version</code> is <code>3</code>. More information how to define &ldquo;Secrets&rdquo; object for SNMPv3 can be found 
  in <a href="../snmpv3-configuration/">SNMPv3 Configuration</a></li>
-<li><code>securityEngine</code> [OPTIONAL] - Security engine required by SNMPv3. Field is required when <code>version</code> is <code>3</code>. </li>
+<li><code>security_engine</code> [OPTIONAL] - Security engine required by SNMPv3. Field is required when <code>version</code> is <code>3</code>. </li>
 <li><code>walk_interval</code> [OPTIONAL] - Define interval in second for SNMP walk, default value <code>42000</code></li>
 <li><code>profiles</code> [OPTIONAL] - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
 separation eg. <code>profiale1;profile2</code>. More about profile in <a href="../scheduler-configuration/#configure-profile">Profile Configuration</a></li>
-<li><code>SmartProfiles</code> [OPTIONAL] - enabled SmartProfile, default value true. Allowed value: <code>true</code>, <code>false</code>. Default value is <code>true</code> </li>
+<li><code>smart_profiles</code> [OPTIONAL] - enabled SmartProfile, default value true. Allowed value: <code>true</code>, <code>false</code>. Default value is <code>true</code> </li>
 <li><code>delete</code> [OPTIONAL] - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
 Allowed value: <code>true</code>, <code>false</code>. Default value is <code>false</code>.</li>
 </ul>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">      </span><span class="no">address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete</span><span class="w"></span>
+<span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span><span class="w"></span>
 <span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,,,</span><span class="w"></span>
 </code></pre></div>
 
