@@ -5,8 +5,8 @@ from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 from splunk_connect_for_snmp.snmp.manager import Poller
 
-inventory_record = InventoryRecord.from_dict(
-    {
+inventory_record = InventoryRecord(
+    **{
         "address": "192.168.0.1",
         "port": "34",
         "version": "2c",

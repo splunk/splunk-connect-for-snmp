@@ -73,7 +73,7 @@ In case of multiple profiles of type `walk` will be placed in profiles, the last
 ```yaml
 poller:
   inventory: |
-    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
     10.202.4.202,,2c,public,,,2000,small_walk,,
 ```
 

@@ -55,7 +55,7 @@ class TestLoader(TestCase):
             "delete": False,
         }
 
-        inventory_record = InventoryRecord.from_dict(inventory_record_json)
+        inventory_record = InventoryRecord(**inventory_record_json)
         result = gen_walk_task(inventory_record)
 
         self.assertEqual("sc4snmp;192.68.0.1:456;walk", result["name"])
@@ -100,7 +100,7 @@ class TestLoader(TestCase):
             "delete": False,
         }
 
-        inventory_record = InventoryRecord.from_dict(inventory_record_json)
+        inventory_record = InventoryRecord(**inventory_record_json)
         result = gen_walk_task(inventory_record)
 
         self.assertEqual("sc4snmp;192.68.0.1;walk", result["name"])

@@ -117,12 +117,12 @@ def getAuthV3(logger, ir: InventoryRecord, snmpEngine: SnmpEngine) -> UsmUserDat
             get_secret_value(location, "privKeyType", required=False, default="0")
         )
         if (
-            isinstance(ir.securityEngine, str)
-            and ir.securityEngine != ""
-            and not ir.securityEngine.isdigit()
+            isinstance(ir.security_engine, str)
+            and ir.security_engine != ""
+            and not ir.security_engine.isdigit()
         ):
-            securityEngineId = ir.securityEngine
-            logger.debug(f"Security eng from profile {ir.securityEngine}")
+            securityEngineId = ir.security_engine
+            logger.debug(f"Security eng from profile {ir.security_engine}")
         else:
             securityEngineId = get_security_engine_id(logger, ir, snmpEngine)
             logger.debug(f"Security eng dynamic {securityEngineId}")

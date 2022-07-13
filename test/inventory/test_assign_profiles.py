@@ -3,8 +3,8 @@ from unittest import TestCase
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.inventory.tasks import assign_profiles
 
-ir_smart = InventoryRecord.from_dict(
-    {
+ir_smart = InventoryRecord(
+    **{
         "address": "192.168.0.1",
         "port": "34",
         "version": "2c",
@@ -38,8 +38,8 @@ class TestProfilesAssignment(TestCase):
             "profile3": {},
         }
 
-        ir = InventoryRecord.from_dict(
-            {
+        ir = InventoryRecord(
+            **{
                 "address": "192.168.0.1",
                 "port": "34",
                 "version": "2c",
@@ -128,8 +128,8 @@ class TestProfilesAssignment(TestCase):
             "profile5": {"frequency": 30, "condition": {"type": "base"}},
         }
 
-        ir = InventoryRecord.from_dict(
-            {
+        ir = InventoryRecord(
+            **{
                 "address": "192.168.0.1",
                 "port": "34",
                 "version": "2c",

@@ -52,7 +52,7 @@ def splunk_single_search(service, search):
 
 inventory_template = """poller:
   inventory: |
-    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
 """
 
 profiles_template = """scheduler:

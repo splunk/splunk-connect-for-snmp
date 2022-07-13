@@ -26,6 +26,11 @@ InventoryStr = Union[None, str]
 InventoryInt = Union[None, int]
 InventoryBool = Union[None, bool]
 
+ALTERNATIVE_FIELDS = {
+    "securityEngine": "security_engine",
+    "SmartProfiles": "smart_profiles",
+}
+
 
 class InventoryRecord(BaseModel):
     address: InventoryStr
@@ -33,11 +38,18 @@ class InventoryRecord(BaseModel):
     version: InventoryStr
     community: InventoryStr
     secret: InventoryStr
-    securityEngine: InventoryStr = ""
+    security_engine: InventoryStr = ""
     walk_interval: InventoryInt = 42000
     profiles: List
-    SmartProfiles: InventoryBool
+    smart_profiles: InventoryBool
     delete: InventoryBool
+
+    def __init__(self, *args, **kwargs):
+        for old, current in ALTERNATIVE_FIELDS.items():
+            if old in kwargs.keys():
+                kwargs[current] = kwargs.get(old)
+                kwargs.pop(old, None)
+        super().__init__(*args, **kwargs)
 
     @validator("address", pre=True)
     def address_validator(cls, value):
@@ -95,8 +107,8 @@ class InventoryRecord(BaseModel):
         else:
             return value
 
-    @validator("securityEngine", pre=True)
-    def securityEngine_validator(cls, value):
+    @validator("security_engine", pre=True)
+    def security_engine_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
             return None
         else:
@@ -123,8 +135,8 @@ class InventoryRecord(BaseModel):
         else:
             return value
 
-    @validator("SmartProfiles", pre=True)
-    def SmartProfiles_validator(cls, value):
+    @validator("smart_profiles", pre=True)
+    def smart_profiles_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
             return True
         else:
@@ -137,39 +149,5 @@ class InventoryRecord(BaseModel):
         else:
             return human_bool(value)
 
-    @staticmethod
-    def from_json(ir_json: str):
-        ir_dict = json.loads(ir_json)
-        return InventoryRecord(**ir_dict)
-
-    def to_json(self):
-        return json.dumps(
-            {
-                "address": self.address,
-                "port": self.port,
-                "version": self.version,
-                "community": self.community,
-                "secret": self.secret,
-                "securityEngine": self.securityEngine,
-                "walk_interval": self.walk_interval,
-                "profiles": self.profiles,
-                "SmartProfiles": self.SmartProfiles,
-                "delete": self.delete,
-            }
-        )
-
-    @classmethod
-    def from_dict(cls, env):
-        return cls(
-            **{k: v for k, v in env.items() if k in inspect.signature(cls).parameters}
-        )
-
     def asdict(self) -> dict:
         return self.dict()
-
-
-class InventoryRecordEncoder(json.JSONEncoder):
-    def default(self, o):
-        if "tojson" in dir(o):
-            return o.tojson()
-        return json.JSONEncoder.default(self, o)

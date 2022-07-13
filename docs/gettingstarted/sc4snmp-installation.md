@@ -90,7 +90,7 @@ poller:
  #   - sc4snmp-hlab-sha-aes
  #   - sc4snmp-hlab-sha-des
  # inventory: |
- #   address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+ #   address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
  #   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,600,,,
  #   10.0.0.199,,2c,public,,,600,,,True
  #   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,600,,,
@@ -221,7 +221,7 @@ poller:
     - sc4snmp-homesecure-sha-aes
     - sc4snmp-homesecure-sha-des
   inventory: |
-    address,version,community,walk_interval,profiles,SmartProfiles,delete
+    address,version,community,walk_interval,profiles,smart_profiles,delete
     10.0.101.22,public,42000,,,
 ```
 
