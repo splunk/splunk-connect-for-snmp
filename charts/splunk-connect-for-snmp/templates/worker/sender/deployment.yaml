@@ -37,7 +37,9 @@ spec:
             [
               "celery", "worker-sender",
             ]
-          {{- include "environmental-variables" . | nindent 10 }}
+          env:
+            {{- include "environmental-variables" . | nindent 12 }}
+            {{- include "environmental-variables-sender" . | nindent 12 }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"
