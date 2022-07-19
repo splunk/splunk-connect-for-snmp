@@ -95,6 +95,7 @@ scheduler:
 
 worker:
   taskTimeout: 2400
+  walkRetryMaxInterval: 600
   ignoreNotIncreasingOid: []
   poller:
     replicaCount: 2

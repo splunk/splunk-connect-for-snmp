@@ -43,6 +43,7 @@ logger = get_task_logger(__name__)
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
+WALK_RETRY_MAX_INTERVAL = int(os.getenv("WALK_RETRY_MAX_INTERVAL", "600"))
 OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
 
 
@@ -50,8 +51,7 @@ OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
     bind=True,
     base=Poller,
     retry_backoff=30,
-    retry_jitter=True,
-    retry_backoff_max=3600,
+    retry_backoff_max=WALK_RETRY_MAX_INTERVAL,
     max_retries=50,
     autoretry_for=(
         MongoLockLocked,
