@@ -1,4 +1,7 @@
 #Redis configuration
+
+Recently, RabbitMQ was replaced with Redis as a queue service and periodic task database. The reason for that were performance bottlenecks.
+
 Redis is a service with is used for both managing periodic tasks and as a queue service for SC4SNMP. It is queuing tasks like SNMP Walk and Poll.  
 
 ### Redis configuration file

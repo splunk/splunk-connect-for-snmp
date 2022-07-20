@@ -33,13 +33,14 @@ nav:
       - Install SC4SNMP: "gettingstarted/sc4snmp-installation.md"
   - High Availability: ha.md  
   - Configuration:
+      - Configuring Profiles: "configuration/configuring-profiles.md"
       - Deployment: "configuration/deployment-configuration.md"
       - Poller: "configuration/poller-configuration.md"
       - Trap: "configuration/trap-configuration.md"
       - Scheduler: "configuration/scheduler-configuration.md"
       - Worker: "configuration/worker-configuration.md"
       - Mongo DB: "configuration/mongo-configuration.md"
-      - RabbitMQ: "configuration/redis-configuration.md"
+      - Redis: "configuration/redis-configuration.md"
       - SNMPv3 configuration: "configuration/snmpv3-configuration.md"
       - Splunk Infrastructure Monitoring: "configuration/sim-configuration.md"
   - Planning: "planning.md"

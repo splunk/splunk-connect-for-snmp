@@ -91,9 +91,9 @@ poller:
  #   - sc4snmp-hlab-sha-des
  # inventory: |
  #   address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
- #   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,600,,,
- #   10.0.0.199,,2c,public,,,600,,,True
- #   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,600,,,
+ #   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,1800,,,
+ #   10.0.0.199,,2c,public,,,3000,,,True
+ #   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,1800,,,
 sim:
   # sim must be enabled if you want to use signalFx
   enabled: false

@@ -108,7 +108,7 @@ If you see `<unknown>/80%` in `TARGETS` section instead of the CPU percentage, y
 Enable it using: `microk8s enable metrics-server`.
 
 
-#### Reallife scenario: I have a significant delay in polling
+#### Real life scenario: I have a significant delay in polling
 
 Sometimes when polling is configured to be run frequently and on many devices, workers get overloaded 
 and there is a delay in delivering data to splunk. To avoid such situations we can scale poller and sender pods.
