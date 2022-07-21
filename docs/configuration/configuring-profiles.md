@@ -170,7 +170,6 @@ To configure Smart Profile following value need to be set in `profiles` section:
     - `condition` - section define conditions to much profile
         - `type` - key of `condition` section which defines type of condition. Allowed value `base` and `field`. 
             - `base` type of condition will be executed when `SmartProfile` in inventory is set to true.
-            - `walk` such profile will be executed instead of full walk
             - `field` type of condition will be executed if match `pattern` for defined `field`. Supported fields:
                 -  "SNMPv2-MIB.sysDescr"
                 -  "SNMPv2-MIB.sysObjectID"
