@@ -13,7 +13,7 @@
     
     
       
-        <title>RabbitMQ - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Redis - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -103,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              RabbitMQ
+              Redis
             
           </span>
         </div>
@@ -304,6 +304,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../configuring-profiles/" class="md-nav__link">
+        Configuring Profiles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../deployment-configuration/" class="md-nav__link">
         Deployment
       </a>
@@ -398,12 +412,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          RabbitMQ
+          Redis
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        RabbitMQ
+        Redis
       </a>
       
         
@@ -594,6 +608,7 @@
 
 
 <h1 id="redis-configuration">Redis configuration<a class="headerlink" href="#redis-configuration" title="Permanent link">&para;</a></h1>
+<p>Recently, RabbitMQ was replaced with Redis as a queue service and periodic task database. The reason for that was to increase SC4SNMP performance and protect against bottlenecks.</p>
 <p>Redis is a service with is used for both managing periodic tasks and as a queue service for SC4SNMP. It is queuing tasks like SNMP Walk and Poll.  </p>
 <h3 id="redis-configuration-file">Redis configuration file<a class="headerlink" href="#redis-configuration-file" title="Permanent link">&para;</a></h3>
 <p>Redis configuration is kept in <code>values.yaml</code> file in section <code>redis</code>.

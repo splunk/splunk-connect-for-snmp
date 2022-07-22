@@ -304,6 +304,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../configuring-profiles/" class="md-nav__link">
+        Configuring Profiles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../deployment-configuration/" class="md-nav__link">
         Deployment
       </a>
@@ -430,8 +444,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#reallife-scenario-i-have-a-significant-delay-in-polling" class="md-nav__link">
-    Reallife scenario: I have a significant delay in polling
+  <a href="#real-life-scenario-i-have-a-significant-delay-in-polling" class="md-nav__link">
+    Real life scenario: I have a significant delay in polling
   </a>
   
 </li>
@@ -471,7 +485,7 @@
   
     <li class="md-nav__item">
       <a href="../redis-configuration/" class="md-nav__link">
-        RabbitMQ
+        Redis
       </a>
     </li>
   
@@ -650,8 +664,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#reallife-scenario-i-have-a-significant-delay-in-polling" class="md-nav__link">
-    Reallife scenario: I have a significant delay in polling
+  <a href="#real-life-scenario-i-have-a-significant-delay-in-polling" class="md-nav__link">
+    Real life scenario: I have a significant delay in polling
   </a>
   
 </li>
@@ -859,7 +873,7 @@ resources usage adjusted to what you actually need. </p>
 
 <p>If you see <code>&lt;unknown&gt;/80%</code> in <code>TARGETS</code> section instead of the CPU percentage, you probably don&rsquo;t have <code>metrics-server</code> addon enabled.
 Enable it using: <code>microk8s enable metrics-server</code>.</p>
-<h4 id="reallife-scenario-i-have-a-significant-delay-in-polling">Reallife scenario: I have a significant delay in polling<a class="headerlink" href="#reallife-scenario-i-have-a-significant-delay-in-polling" title="Permanent link">&para;</a></h4>
+<h4 id="real-life-scenario-i-have-a-significant-delay-in-polling">Real life scenario: I have a significant delay in polling<a class="headerlink" href="#real-life-scenario-i-have-a-significant-delay-in-polling" title="Permanent link">&para;</a></h4>
 <p>Sometimes when polling is configured to be run frequently and on many devices, workers get overloaded 
 and there is a delay in delivering data to splunk. To avoid such situations we can scale poller and sender pods.
 Because of the walk cycles (walk is a costly operation ran once for a while), poller workers require more resources 
