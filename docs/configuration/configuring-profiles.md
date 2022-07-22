@@ -1,6 +1,6 @@
 # Configuring profiles
 
-Profiles are the units, where you can configure what you want to poll and then assign them to the device. The definition of profile lays in `values.yaml` file
+Profiles are the units, where you can configure what you want to poll and then assign them to the device. The definition of profile can be found in `values.yaml` file
 under the `scheduler` section.
 
 Here is the instruction of how to use profiles: [Update Inventory and Profile](../deployment-configuration/#update-inventory-and-profile). 
@@ -10,7 +10,12 @@ There are two types of profiles in general:
 1. Static profile - polling starts when profile is added to `profiles` field in `inventory` of the device
 2. Smart profile - polling starts when configured conditions are fulfilled, and the device to poll from has `smart_profiles` enabled in inventory.
 Smart profiles are useful when we have many devices of certain kind, and we don't want to configure all of them "one by one" with static profiles.
-   In order to do so, we elect one of the fields (most commonly `sysDescr`), set the filter to match all the devices of this kind and setup polling of the profile.
+   
+    In order to configure smart profile do the following:
+   
+    1. Choose one of the fields polled from device, most commonly sysDescr is being used
+    2. Set the filter to match all the devices of this kind
+    3. Setup polling of the profile by enabling smart profiles for devices you want this profile to be polled
 
 The template of the profile looks like following:
 
@@ -23,7 +28,7 @@ scheduler:
         frequency: 10
         #Define condition
         condition:
-          # Define type of condition. Allowed value field and base 
+          # Define type of condition. Allowed value field, base and walk
           type: field
           field: "SNMPv2-MIB.sysDescr"
           # Define paterns
@@ -77,19 +82,19 @@ poller:
       10.202.4.202,,2c,public,,,2000,,t,
 ```
 
-Then if the device `sysDescr` match `'.*linux.*'` filter, `smart_profile` profile is enabled.
+Then if the device `sysDescr` match `'.*linux.*'` filter, `smart_profile` profile will be polled.
 
 
 ## varBinds configuration
 `varBinds` short for "variable binding" in SNMP. The combination of an Object Identifier (OID) and a value. 
-`varBinds` are used for defining in profiles what OIDs should be getting from SNMP Agents. `varBinds` is a required 
+`varBinds` are used for defining what OIDs should be requested from SNMP Agents. `varBinds` is a required 
 subsection of each profile. Syntax configuration of `varBinds` looks following:
 
  [ "MIB-Component", "MIB object"[Optional], "MIB index number"[Optional]]
  
  - `MIB-Component` - The SNMP MIB, itself, consists of distinct component MIBs, each of which refers to a specific 
  defined collection of management information that is part of the overall SNMP MIB eg. `SNMPv2-MIB`. 
- If only `MIB-Component` is set then all whole subtree is getting.
+ If only `MIB-Component` is set then SC4SNMP will get whole subtree.
  - `MIB object` -  The SNMP MIB stores only simple data types: scalars and two-dimensional arrays of scalars, 
  called tables. Keywords SYNTAX, ACCESS, and DESCRIPTION as well as other keywords such as STATUS and 
  INDEX is used to define the SNMP MIB managed objects. 
@@ -166,19 +171,19 @@ More information about configuring inventory can be found in [Inventory configur
 To configure Smart Profile following value need to be set in `profiles` section:
 
  - `ProfileName` - define as subsection key in `profiles`. 
-    - `frequency` - define an interval between executing SNMP gets in second.
-    - `condition` - section define conditions to much profile
-        - `type` - key of `condition` section which defines type of condition. Allowed value `base` and `field`. 
+    - `frequency` - define an interval between executing SNMP's gets in second.
+    - `condition` - section define conditions to match profile
+        - `type` - key of `condition` section which defines type of condition. Allowed value `base` and `field` (`walk` type is also allowed here, but it's not part of smart profiles)
             - `base` type of condition will be executed when `SmartProfile` in inventory is set to true.
             - `field` type of condition will be executed if match `pattern` for defined `field`. Supported fields:
                 -  "SNMPv2-MIB.sysDescr"
                 -  "SNMPv2-MIB.sysObjectID"
         - `field` Define field name for condition type field. 
-        - `pattern` Define list of regular expression pattern for MIB object field defined in `field` section. For example:
+        - `pattern` Define list of regular expression patterns for MIB object field defined in `field` section. For example:
                 - ".*linux.*"
     - `varBinds` - define var binds to query. 
 
-Example of `base` type of condition
+Example of `base` type profile
 ```yaml
 scheduler:
     profiles: |
@@ -191,7 +196,7 @@ scheduler:
           - ['SNMPv2-MIB', 'sysName']
 ``` 
 
-Example of `field` type of condition
+Example of `field`  type profile, also called an automatic profile
 ```yaml
 scheduler:
     profiles: |
