@@ -13,7 +13,7 @@ by third-party password managers then consumed without storing sensitive data in
 # <authProtocol>=One of SHA (SHA1) or MD5 
 # <privProtocol>=One of AES or DES 
 # Note MD5 and DES are considered insecure but must be supported for standards compliance
-kubectl create -n <namespace> secret generic <secretname> \
+microk8s kubectl create -n <namespace> secret generic <secretname> \
   --from-literal=userName=<username> \
   --from-literal=authKey=<key> \
   --from-literal=privKey=<key> \
@@ -22,4 +22,4 @@ kubectl create -n <namespace> secret generic <secretname> \
 ```
 
 Configured credential can be use in [poller](poller-configuration.md) and [trap](trap-configuration.md) services. 
-In services configuration, `secretname` need to be provided. 
+In services configuration, `secretname` needs to be provided. 
