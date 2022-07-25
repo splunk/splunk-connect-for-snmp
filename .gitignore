@@ -152,5 +152,4 @@ integration_tests/scripts/inventory.yaml
 integration_tests/scripts/main.tf
 integration_tests/scripts/.terraform
 .DS_Store
-
-
+snmp-ssh-key.pem
