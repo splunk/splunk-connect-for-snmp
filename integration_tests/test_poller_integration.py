@@ -414,6 +414,35 @@ class TestSmallWalk:
         assert metric_count > 0
 
 
+@pytest.fixture()
+def setup_v3_connection(request):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    time.sleep(60)
+    update_file(
+        [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,"], "inventory.yaml"
+    )
+    upgrade_helm(["inventory.yaml"])
+    time.sleep(30)
+    yield
+    update_file(
+        [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,t"], "inventory.yaml"
+    )
+    upgrade_helm(["inventory.yaml"])
+    time.sleep(20)
+
+
+@pytest.mark.usefixtures("setup_v3_connection")
+class TestSNMPv3Connection:
+    def test_snmpv3_walk(self, setup_splunk):
+        time.sleep(100)
+        search_string = """| mpreview index=netmetrics | search profiles=v3profile"""
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+
 def run_retried_single_search(setup_splunk, search_string, retries):
     for i in range(retries):
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)

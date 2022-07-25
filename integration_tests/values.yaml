@@ -23,7 +23,8 @@ traps:
   loadBalancerIP: ###LOAD_BALANCER_ID###
 worker:
   poller:
-    replicaCount: 4
+    replicaCount: 1
+    #changed replicaCount from 4 to 1
     concurrency: 4
     prefetch: 1
   trap:
@@ -46,6 +47,13 @@ scheduler:
   customTranslations:
     IP-MIB:
       icmpOutEchoReps: myCustomName1
+  profiles: |
+    v3profile:
+      frequency: 5
+      varBinds:
+        - ['IF-MIB']
+        - ['TCP-MIB']
+        - ['UDP-MIB']
 #  profiles: |
 #    generic_switch:
 #      frequency: 60
@@ -55,7 +63,8 @@ scheduler:
 #        - ['IF-MIB']
 #        - ['TCP-MIB']
 poller:
- # usernameSecrets:
+  usernameSecrets:
+    - sv3poller
  #   - sc4snmp-hlab-sha-aes
  #   - sc4snmp-hlab-sha-des
   inventory: |
