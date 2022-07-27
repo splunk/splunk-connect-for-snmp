@@ -18,9 +18,9 @@ import typing
 
 from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.snmp.manager import get_inventory
-from .loader import transform_address_to_key
 
 from ..common.task_generator import PollTaskGenerator
+from .loader import transform_address_to_key
 
 try:
     from dotenv import load_dotenv
@@ -155,9 +155,7 @@ def assign_profiles(ir, profiles, target):
             logger.warning(
                 f"profile {profile_name} was assigned for the host: {address}, no such profile in the config"
             )
-    logger.debug(
-        f"Profiles Assigned for host {address}: {assigned_profiles}"
-    )
+    logger.debug(f"Profiles Assigned for host {address}: {assigned_profiles}")
     return assigned_profiles
 
 
