@@ -1,9 +1,9 @@
-Version 1.6.3 of SC4SNMP enhances scalability of worker pods. If you upgraded from previous version and want to use horizontal pod autoscaling, turn on metrics-server addon of microk8s:
+Version 1.6.3 of SC4SNMP add new feature which enables horizontal worker pods autoscaling, in order to use it you will need to turn on microk8s metrics-server addon:
 
 microk8s enable metrics-server
 
-Make sure to update worker part in values.yaml according to the documentation:
+and you should also update worker configuration in values.yaml file according to the documentation:
 https://splunk.github.io/splunk-connect-for-snmp/develop/configuration/worker-configuration
 
-Values.yaml template is available here:
+values.yaml template is available here:
 https://splunk.github.io/splunk-connect-for-snmp/develop/gettingstarted/sc4snmp-installation
