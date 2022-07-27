@@ -1,22 +1,9 @@
-1. Get the application URL by running these commands:
-{{- if .Values.traps.ingress.enabled }}
-{{- range $host := .Values.traps.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.traps.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
-  {{- end }}
-{{- end }}
-{{- else if contains "NodePort" .Values.traps.service.type }}
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "splunk-connect-for-snmp.traps.fullname" . }})
-  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
-  echo http://$NODE_IP:$NODE_PORT
-{{- else if contains "LoadBalancer" .Values.traps.service.type }}
-     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "splunk-connect-for-snmp.traps.fullname" . }}'
-  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "splunk-connect-for-snmp.traps.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
-  echo http://$SERVICE_IP:{{ .Values.traps.service.port }}
-{{- else if contains "ClusterIP" .Values.traps.service.type }}
-  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "splunk-connect-for-snmp.traps.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-  echo "Visit http://127.0.0.1:8080 to use your application"
-  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
-{{- end }}
+Version 1.6.3 of SC4SNMP add new feature which enables horizontal worker pods autoscaling, in order to use it you will need to turn on microk8s metrics-server addon:
+
+microk8s enable metrics-server
+
+and you should also update worker configuration in values.yaml file according to the documentation:
+https://splunk.github.io/splunk-connect-for-snmp/develop/configuration/worker-configuration
+
+values.yaml template is available here:
+https://splunk.github.io/splunk-connect-for-snmp/develop/gettingstarted/sc4snmp-installation

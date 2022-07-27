@@ -20,6 +20,7 @@ from splunk_connect_for_snmp.common.profiles import load_profiles
 from splunk_connect_for_snmp.snmp.manager import get_inventory
 
 from ..common.task_generator import PollTaskGenerator
+from .loader import transform_address_to_key
 
 try:
     from dotenv import load_dotenv
@@ -103,6 +104,7 @@ def generate_poll_task_definition(active_schedules, address, assigned_profiles, 
 
 def assign_profiles(ir, profiles, target):
     assigned_profiles: dict[int, list[str]] = {}
+    address = transform_address_to_key(ir.address, ir.port)
     if ir.smart_profiles:
         for profile_name, profile in profiles.items():
 
@@ -149,7 +151,11 @@ def assign_profiles(ir, profiles, target):
             if profile["frequency"] not in assigned_profiles:
                 assigned_profiles[profile["frequency"]] = []
             assigned_profiles[profile["frequency"]].append(profile_name)
-    logger.debug(f"Profiles Assigned {assigned_profiles}")
+        else:
+            logger.warning(
+                f"profile {profile_name} was assigned for the host: {address}, no such profile in the config"
+            )
+    logger.debug(f"Profiles Assigned for host {address}: {assigned_profiles}")
     return assigned_profiles
 
 
