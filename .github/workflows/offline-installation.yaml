@@ -1,0 +1,21 @@
+name: offline-installation
+on: pull_request
+env:
+  SCRIPT_NAME: create_packages.sh
+  ARTIFACT_NAME: offline-installation-packages
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+
+      - name: Download images
+        run: ./${{ env.SCRIPT_NAME }}
+
+      - name: Create artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: /tmp/package/packages
