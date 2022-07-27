@@ -2,6 +2,9 @@
 
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 combine_image_name(){
+  #Function to combine registry, repository and tag
+  # into one image, so that it can be pulled by docker
+
   image_registry=$1
   image_repository=$2
   image_tag=$3
@@ -30,6 +33,8 @@ combine_image_name(){
 
 images_to_pack=""
 pull_image(){
+  #Function to pull image required for specified chart
+
   chart_dir="$1"
   if [ -d "$chart_dir" ] && { [ -a "$chart_dir/Chart.yaml" ] || [ -a "$chart_dir/Chart.yml" ]; } && { [ -a "$chart_dir/values.yaml" ] || [ -a "$chart_dir/values.yml" ]; }
   then
@@ -68,9 +73,6 @@ pull_image(){
 
     echo "Pulling: $docker_pull_image"
     docker pull "$docker_pull_image"
-
-    #docker save $docker_pull_image > "/tmp/package/$chart_dir.tar"
-
     images_to_pack="$images_to_pack""$docker_pull_image "
 
     #For mongodb we need one more image from values.yaml
@@ -94,9 +96,6 @@ pull_image(){
       fi
       echo "Pulling: ""$docker_pull_image"
       docker pull "$docker_pull_image"
-
-      #docker save $docker_pull_image > "/tmp/package/mongodb2.tar"
-
       images_to_pack="$images_to_pack""$docker_pull_image "
     fi
     printf "\n\n"
@@ -112,8 +111,24 @@ helm repo add pysnmp-mibs https://pysnmp.github.io/mibs/charts
 helm dependency build charts/splunk-connect-for-snmp
 helm package charts/splunk-connect-for-snmp -d /tmp/package
 cd /tmp/package || exit
-tar -xvf splunk-connect-for-snmp-1.6.3-beta.5.tgz
-cd splunk-connect-for-snmp || exit
+SPLUNK_FILE=$(ls)
+tar -xvf "$SPLUNK_FILE"
+
+DIRS=$(ls)
+SPLUNK_DIR=""
+for d in $DIRS
+do
+  #Find a directory name to the unpacked splunk chart
+  if [[ "$d" =~ splunk.* ]] && [[ ! "$d" =~ .+\.tgz$ ]] && [[ ! "$d" =~ .+\.tar$ ]]
+  then
+    SPLUNK_DIR="$d"
+  fi
+done
+if [ -z "$SPLUNK_DIR" ]
+then
+  exit
+fi
+cd "$SPLUNK_DIR" || exit
 
 rm -rf charts
 mkdir charts
