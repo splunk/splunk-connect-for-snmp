@@ -1,5 +1,8 @@
 name: offline-installation
-on: pull_request
+on:
+  push:
+    tags:
+      - "v*"
 env:
   SCRIPT_NAME: create_packages.sh
   ARTIFACT_NAME: offline-installation-packages
@@ -11,8 +14,11 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v1
 
-      - name: Download images
-        run: ./${{ env.SCRIPT_NAME }}
+      - name: Download images and upload them
+        run: |
+          ./${{ env.SCRIPT_NAME }}
+          VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
+          gh release upload $VERSION /tmp/package/packages/*
 
       - name: Create artifact
         uses: actions/upload-artifact@v2
