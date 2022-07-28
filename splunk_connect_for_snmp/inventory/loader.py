@@ -108,11 +108,6 @@ def load():
                     attributes_collection.remove({"address": target})
                     logger.info(f"Deleting record: {target}")
                 else:
-                    status = inventory_records.update_one(
-                        {"address": ir.address, "port": ir.port},
-                        {"$set": ir.asdict()},
-                        upsert=True,
-                    )
                     profiles = source_record["profiles"].split(";")
                     profile = None
                     if profiles:
@@ -127,6 +122,11 @@ def load():
                         if profiles:
                             profile = profiles[-1]
                             ir.walk_interval = int(source_record["walk_interval"])
+                    status = inventory_records.update_one(
+                        {"address": ir.address, "port": ir.port},
+                        {"$set": ir.asdict()},
+                        upsert=True,
+                    )
                     if status.matched_count == 0:
                         logger.info(f"New Record {ir} {status.upserted_id}")
                     elif status.modified_count == 1 and status.upserted_id is None:

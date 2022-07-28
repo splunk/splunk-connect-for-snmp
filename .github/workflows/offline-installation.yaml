@@ -3,9 +3,7 @@ on:
   push:
     tags:
       - "v*"
-env:
-  SCRIPT_NAME: create_packages.sh
-  ARTIFACT_NAME: offline-installation-packages
+
 jobs:
   build:
     name: Build
@@ -19,9 +17,13 @@ jobs:
           ./${{ env.SCRIPT_NAME }}
           VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
           gh release upload $VERSION /tmp/package/packages/*
-
+        env:
+          SCRIPT_NAME: create_packages.sh
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: /tmp/package/packages
+        env:
+          ARTIFACT_NAME: offline-installation-packages

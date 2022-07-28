@@ -145,6 +145,10 @@ def assign_profiles(ir, profiles, target):
     for profile_name in ir.profiles:
         if profile_name in profiles:
             profile = profiles[profile_name]
+            if "condition" in profile:
+                logger.warning(
+                    f"profile {profile_name} is a smart profile, it does not need to be configured as a static one"
+                )
             if "frequency" not in profile:
                 logger.warning(f"profile {profile_name} does not have frequency")
                 continue
