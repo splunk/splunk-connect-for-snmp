@@ -3,9 +3,6 @@ on:
   push:
     tags:
       - "v*"
-  pull_request:
-    branches:
-      - "develop"
 
 jobs:
   build:
@@ -19,7 +16,7 @@ jobs:
         run: |
           ./${{ env.SCRIPT_NAME }}
           VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
-#          gh release upload $VERSION /tmp/package/packages/*
+          gh release upload $VERSION /tmp/package/packages/*
         env:
           SCRIPT_NAME: create_packages.sh
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
