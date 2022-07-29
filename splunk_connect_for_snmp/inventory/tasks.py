@@ -146,6 +146,11 @@ def assign_profiles(ir, profiles, target):
         if profile_name in profiles:
             profile = profiles[profile_name]
             if "condition" in profile:
+                if profile["condition"].get("type") == "walk":
+                    logger.warning(
+                        f"profile {profile_name} is a walk profile, it cannot be used as a static profile"
+                    )
+                    continue
                 logger.warning(
                     f"profile {profile_name} is a smart profile, it does not need to be configured as a static one"
                 )

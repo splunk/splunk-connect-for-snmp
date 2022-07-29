@@ -147,3 +147,85 @@ class TestProfilesAssignment(TestCase):
         self.assertEqual(
             {60: ["BaseUpTime"], 30: ["profile5", "profile2"], 20: ["profile1"]}, result
         )
+
+    def test_assignment_of_walk_profile_as_a_static_profile(self):
+        profiles = {
+            "profile1": {"frequency": 20},
+            "profile2": {"frequency": 30},
+            "walk": {"frequency": 60, "condition": {"type": "walk"}},
+            "profile5": {"frequency": 30, "condition": {"type": "base"}},
+        }
+
+        ir = InventoryRecord(
+            **{
+                "address": "192.168.0.1",
+                "port": "34",
+                "version": "2c",
+                "community": "public",
+                "secret": "secret",
+                "securityEngine": "ENGINE",
+                "walk_interval": 1850,
+                "profiles": "profile1;profile2;walk",
+                "SmartProfiles": True,
+                "delete": False,
+            }
+        )
+
+        result = assign_profiles(ir, profiles, {})
+        self.assertEqual(
+            {30: ["profile5", "profile2"], 20: ["profile1"]}, result
+        )
+
+    def test_assignment_of_walk_profile_as_a_static_profile_without_frequency(self):
+        profiles = {
+            "profile1": {"frequency": 20},
+            "profile2": {"frequency": 30},
+            "walk": {"condition": {"type": "walk"}},
+            "profile5": {"frequency": 30, "condition": {"type": "base"}},
+        }
+
+        ir = InventoryRecord(
+            **{
+                "address": "192.168.0.1",
+                "port": "34",
+                "version": "2c",
+                "community": "public",
+                "secret": "secret",
+                "securityEngine": "ENGINE",
+                "walk_interval": 1850,
+                "profiles": "profile1;profile2;walk",
+                "SmartProfiles": True,
+                "delete": False,
+            }
+        )
+
+        result = assign_profiles(ir, profiles, {})
+        self.assertEqual(
+            {30: ["profile5", "profile2"], 20: ["profile1"]}, result
+        )
+
+    def test_smart_profiles_as_static_ones(self):
+        profiles = {
+            "profile1": {"frequency": 20},
+            "profile5": {"frequency": 30, "condition": {"type": "base"}},
+        }
+
+        ir = InventoryRecord(
+            **{
+                "address": "192.168.0.1",
+                "port": "34",
+                "version": "2c",
+                "community": "public",
+                "secret": "secret",
+                "securityEngine": "ENGINE",
+                "walk_interval": 1850,
+                "profiles": "profile1;profile5",
+                "SmartProfiles": False,
+                "delete": False,
+            }
+        )
+
+        result = assign_profiles(ir, profiles, {})
+        self.assertEqual(
+            {30: ["profile5"], 20: ["profile1"]}, result
+        )
