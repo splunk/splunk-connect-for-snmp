@@ -48,4 +48,5 @@ nav:
   - Request MIB: "mib-request.md"
   - Troubleshooting : "bestpractices.md"
   - Releases: "releases.md"
+  - Offline Installation: "offline-installation.md"
 
