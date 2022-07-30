@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import time
 import typing
 
-from splunk_connect_for_snmp.common.profiles import load_profiles
+from splunk_connect_for_snmp.common.profiles import ProfilesManager
 from splunk_connect_for_snmp.snmp.manager import get_inventory
 
 from ..common.task_generator import PollTaskGenerator
@@ -53,22 +52,20 @@ PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
 
 class InventoryTask(Task):
     def __init__(self):
-        self.profiles = load_profiles()
-        self.last_modified = time.time()
+        self.mongo_client = pymongo.MongoClient(MONGO_URI)
+        self.profiles_manager = ProfilesManager(self.mongo_client)
+        self.profiles = self.profiles_manager.return_all_profiles()
 
 
 @shared_task(bind=True, base=InventoryTask)
 def inventory_setup_poller(self, work):
     address = work["address"]
-    if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
-        self.profiles = load_profiles()
-        self.last_modified = time.time()
-        logger.debug("Profiles reloaded")
+    self.profiles = self.profiles_manager.return_all_profiles()
+    logger.debug("Profiles reloaded")
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
-    mongo_client = pymongo.MongoClient(MONGO_URI)
-    mongo_db = mongo_client[MONGO_DB]
+    mongo_db = self.mongo_client[MONGO_DB]
 
     mongo_inventory = mongo_db.inventory
     targets_collection = mongo_db.targets

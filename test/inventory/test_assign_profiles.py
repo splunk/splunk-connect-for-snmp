@@ -172,9 +172,7 @@ class TestProfilesAssignment(TestCase):
         )
 
         result = assign_profiles(ir, profiles, {})
-        self.assertEqual(
-            {30: ["profile5", "profile2"], 20: ["profile1"]}, result
-        )
+        self.assertEqual({30: ["profile5", "profile2"], 20: ["profile1"]}, result)
 
     def test_assignment_of_walk_profile_as_a_static_profile_without_frequency(self):
         profiles = {
@@ -200,9 +198,7 @@ class TestProfilesAssignment(TestCase):
         )
 
         result = assign_profiles(ir, profiles, {})
-        self.assertEqual(
-            {30: ["profile5", "profile2"], 20: ["profile1"]}, result
-        )
+        self.assertEqual({30: ["profile5", "profile2"], 20: ["profile1"]}, result)
 
     def test_smart_profiles_as_static_ones(self):
         profiles = {
@@ -226,6 +222,4 @@ class TestProfilesAssignment(TestCase):
         )
 
         result = assign_profiles(ir, profiles, {})
-        self.assertEqual(
-            {30: ["profile5"], 20: ["profile1"]}, result
-        )
+        self.assertEqual({30: ["profile5"], 20: ["profile1"]}, result)

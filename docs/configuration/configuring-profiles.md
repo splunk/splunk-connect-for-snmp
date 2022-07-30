@@ -212,7 +212,7 @@ scheduler:
           - ['SNMPv2-MIB', 'sysName']
 ``` 
 
-NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 5 minutes for changes to propagate. 
+NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 1 minute for changes to propagate. In case you changed frequency, or a profile type, the change will be reflected only after the next walk.
 There is also 5 minute TTL for an inventory pod. Basically, SC4SNMP allows one inventory upgrade and then block updates for the next 5 minutes
 
 ## Custom translations

@@ -129,7 +129,7 @@ Create the name of the service account to use
 - name: UDP_CONNECTION_TIMEOUT
   value: {{ .Values.worker.udpConnectionTimeout | default "3" | quote }}
 - name: PROFILES_RELOAD_DELAY
-  value: {{ .Values.worker.profilesReloadDelay | default "300" | quote }}
+  value: {{ .Values.worker.profilesReloadDelay | default "60" | quote }}
 - name: MIB_SOURCES
   value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/asn1/@mib@"
 - name: MIB_INDEX

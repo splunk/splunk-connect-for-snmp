@@ -43,7 +43,7 @@ from requests_cache import MongoCache
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-from splunk_connect_for_snmp.common.profiles import load_profiles
+from splunk_connect_for_snmp.common.profiles import ProfilesManager
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import GetAuth
 from splunk_connect_for_snmp.snmp.context import get_context_data
@@ -59,7 +59,7 @@ MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 IGNORE_EMPTY_VARBINDS = human_bool(os.getenv("IGNORE_EMPTY_VARBINDS", False))
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
-PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
+PROFILES_RELOAD_DELAY = 60
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 3))
 
 DEFAULT_STANDARD_MIBS = [
@@ -234,7 +234,8 @@ class Poller(Task):
                 allowable_codes=[200],
             )
 
-        self.profiles = load_profiles()
+        self.profiles_manager = ProfilesManager(self.mongo_client)
+        self.profiles = self.profiles_manager.return_all_profiles()
         self.last_modified = time.time()
         self.snmpEngine = SnmpEngine()
         self.builder = self.snmpEngine.getMibBuilder()
@@ -280,8 +281,8 @@ class Poller(Task):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
 
-        if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
-            self.profiles = load_profiles()
+        if time.time() - self.last_modified > PROFILES_RELOAD_DELAY or walk:
+            self.profiles = self.profiles_manager.return_all_profiles()
             self.last_modified = time.time()
             logger.debug("Profiles reloaded")
 
@@ -393,6 +394,10 @@ class Poller(Task):
 
             # First pass we only look at profiles for a full mib walk
             for profile in profiles:
+                # In case scheduler processes doesn't yet updated profiles information
+                if profile not in self.profiles:
+                    self.profiles = self.profiles_manager.return_all_profiles()
+                    self.last_modified = time.time()
                 # Its possible a profile is removed on upgrade but schedule doesn't yet know
                 if profile in self.profiles and "varBinds" in self.profiles[profile]:
                     profile_spec = self.profiles[profile]
@@ -405,6 +410,11 @@ class Poller(Task):
                                     bulk_mapping[f"{vb[0]}"] = profile
                         if vb[0] not in needed_mibs:
                             needed_mibs.append(vb[0])
+                else:
+                    logger.warning(
+                        f"There is either profile: {profile} missing from the configuration, or varBinds section not"
+                        f"present inside the profile"
+                    )
 
             for profile in profiles:
                 # Its possible a profile is removed on upgrade but schedule doesn't yet know
