@@ -11,7 +11,7 @@ from splunk_connect_for_snmp.inventory.tasks import (
 
 
 class TestInventorySetupPoller(TestCase):
-    @mock.patch("splunk_connect_for_snmp.common.profiles.load_profiles")
+    @mock.patch("splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles")
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.find_one")
     @mock.patch("splunk_connect_for_snmp.inventory.tasks.assign_profiles")
@@ -61,7 +61,7 @@ class TestInventorySetupPoller(TestCase):
         # when
         inventory_setup_poller(work)
 
-        m_load_profiles.assert_not_called()
+        m_load_profiles.assert_called()
 
         calls = periodic_obj_mock.manage_task.call_args_list
 
