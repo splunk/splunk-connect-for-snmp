@@ -7,7 +7,9 @@ from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 
 
 class TestInventorySetupPoller(TestCase):
-    @patch("splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles")
+    @patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.find_one")
     @mock.patch("splunk_connect_for_snmp.inventory.tasks.assign_profiles")

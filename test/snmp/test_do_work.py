@@ -90,7 +90,9 @@ class TestDoWork(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
     @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
-    @patch("splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles")
+    @patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     def test_do_work_get(self, load_profiles, getCmd, bulkCmd):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
@@ -128,7 +130,9 @@ class TestDoWork(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
     @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
-    @patch("splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles")
+    @patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     def test_do_work_errors(self, load_profiles, getCmd, bulkCmd):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634

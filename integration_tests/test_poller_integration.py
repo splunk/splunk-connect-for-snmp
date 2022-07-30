@@ -78,8 +78,6 @@ def setup_profile(request):
         }
     }
     update_profiles(profile)
-    # upgrade_helm(["profiles.yaml"])
-    # time.sleep(60)
     update_file(
         [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"], "inventory.yaml"
     )
@@ -266,8 +264,6 @@ def setup_modify_profile(request):
         },
     }
     update_profiles(profile)
-    # upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    # time.sleep(60)
     update_file(
         [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
     )
@@ -303,8 +299,8 @@ class TestModifyProfilesFrequency:
         update_file(
             [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"], "inventory.yaml"
         )
-        # upgrade_helm(["inventory.yaml", "profiles.yaml"])
-        # time.sleep(60)
+        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+        time.sleep(60)
         update_file(
             [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
         )
@@ -381,8 +377,6 @@ def setup_small_walk(request):
         },
     }
     update_profiles(profile)
-    # upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    # time.sleep(60)
     update_file([f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml")
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(30)

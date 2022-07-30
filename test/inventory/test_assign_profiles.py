@@ -33,9 +33,9 @@ simple_profiles = {
     "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
 )
 class TestProfilesAssignment(TestCase):
-
     def test_assignment_of_static_profiles(self, return_all_profiles):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
         profiles = {
             "profile1": {"frequency": 20},
             "profile2": {"frequency": 30},
@@ -62,6 +62,7 @@ class TestProfilesAssignment(TestCase):
 
     def test_assignment_of_base_profiles(self, return_all_profiles):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
         profiles = {
             "BaseUpTime": {"frequency": 60, "condition": {"type": "base"}},
             "profile2": {"frequency": 30, "condition": {"type": "base"}},
@@ -72,6 +73,7 @@ class TestProfilesAssignment(TestCase):
 
     def test_assignment_of_field_profiles(self, return_all_profiles):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
         profiles = {
             "BaseUpTime": {
                 "frequency": 60,
@@ -112,6 +114,7 @@ class TestProfilesAssignment(TestCase):
 
     def test_assignment_of_field_profiles_missing_state(self, return_all_profiles):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
         result = assign_profiles(ir_smart, simple_profiles, {})
         self.assertEqual({}, result)
 
@@ -119,6 +122,7 @@ class TestProfilesAssignment(TestCase):
         self, return_all_profiles
     ):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
         target = {"state": {"SNMPv2-MIB|sysDescr": {}}}
 
         result = assign_profiles(ir_smart, simple_profiles, target)
@@ -126,6 +130,7 @@ class TestProfilesAssignment(TestCase):
 
     def test_assignment_of_field_not_matching_regex(self, return_all_profiles):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
         target = {"state": {"SNMPv2-MIB|sysDescr": {"value": "WRONG"}}}
 
         result = assign_profiles(ir_smart, simple_profiles, target)
@@ -133,6 +138,7 @@ class TestProfilesAssignment(TestCase):
 
     def test_assignment_of_static_and_smart_profiles(self, return_all_profiles):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
         profiles = {
             "profile1": {"frequency": 20},
             "profile2": {"frequency": 30},
@@ -162,6 +168,7 @@ class TestProfilesAssignment(TestCase):
 
     def test_assignment_of_walk_profile_as_a_static_profile(self, return_all_profiles):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
         profiles = {
             "profile1": {"frequency": 20},
             "profile2": {"frequency": 30},
@@ -191,6 +198,7 @@ class TestProfilesAssignment(TestCase):
         self, return_all_profiles
     ):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
         profiles = {
             "profile1": {"frequency": 20},
             "profile2": {"frequency": 30},
@@ -218,6 +226,7 @@ class TestProfilesAssignment(TestCase):
 
     def test_smart_profiles_as_static_ones(self, return_all_profiles):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
         profiles = {
             "profile1": {"frequency": 20},
             "profile5": {"frequency": 30, "condition": {"type": "base"}},
