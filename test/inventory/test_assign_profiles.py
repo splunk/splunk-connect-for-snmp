@@ -1,7 +1,6 @@
 from unittest import TestCase, mock
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-from splunk_connect_for_snmp.inventory.tasks import assign_profiles
 
 ir_smart = InventoryRecord(
     **{
@@ -31,11 +30,12 @@ simple_profiles = {
 
 
 @mock.patch(
-    "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles",
-    return_value=[],
+    "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
 )
 class TestProfilesAssignment(TestCase):
+
     def test_assignment_of_static_profiles(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
         profiles = {
             "profile1": {"frequency": 20},
             "profile2": {"frequency": 30},
@@ -61,6 +61,7 @@ class TestProfilesAssignment(TestCase):
         self.assertEqual({20: ["profile1"], 30: ["profile2"]}, result)
 
     def test_assignment_of_base_profiles(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
         profiles = {
             "BaseUpTime": {"frequency": 60, "condition": {"type": "base"}},
             "profile2": {"frequency": 30, "condition": {"type": "base"}},
@@ -70,6 +71,7 @@ class TestProfilesAssignment(TestCase):
         self.assertEqual({60: ["BaseUpTime"], 30: ["profile2"]}, result)
 
     def test_assignment_of_field_profiles(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
         profiles = {
             "BaseUpTime": {
                 "frequency": 60,
@@ -109,24 +111,28 @@ class TestProfilesAssignment(TestCase):
         self.assertEqual({60: ["BaseUpTime", "MyProfile", "OtherProfile"]}, result)
 
     def test_assignment_of_field_profiles_missing_state(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
         result = assign_profiles(ir_smart, simple_profiles, {})
         self.assertEqual({}, result)
 
     def test_assignment_of_field_profiles_db_missing_field_value(
         self, return_all_profiles
     ):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
         target = {"state": {"SNMPv2-MIB|sysDescr": {}}}
 
         result = assign_profiles(ir_smart, simple_profiles, target)
         self.assertEqual({}, result)
 
     def test_assignment_of_field_not_matching_regex(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
         target = {"state": {"SNMPv2-MIB|sysDescr": {"value": "WRONG"}}}
 
         result = assign_profiles(ir_smart, simple_profiles, target)
         self.assertEqual({}, result)
 
     def test_assignment_of_static_and_smart_profiles(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
         profiles = {
             "profile1": {"frequency": 20},
             "profile2": {"frequency": 30},
@@ -155,6 +161,7 @@ class TestProfilesAssignment(TestCase):
         )
 
     def test_assignment_of_walk_profile_as_a_static_profile(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
         profiles = {
             "profile1": {"frequency": 20},
             "profile2": {"frequency": 30},
@@ -183,6 +190,7 @@ class TestProfilesAssignment(TestCase):
     def test_assignment_of_walk_profile_as_a_static_profile_without_frequency(
         self, return_all_profiles
     ):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
         profiles = {
             "profile1": {"frequency": 20},
             "profile2": {"frequency": 30},
@@ -209,6 +217,7 @@ class TestProfilesAssignment(TestCase):
         self.assertEqual({30: ["profile5", "profile2"], 20: ["profile1"]}, result)
 
     def test_smart_profiles_as_static_ones(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
         profiles = {
             "profile1": {"frequency": 20},
             "profile5": {"frequency": 30, "condition": {"type": "base"}},
