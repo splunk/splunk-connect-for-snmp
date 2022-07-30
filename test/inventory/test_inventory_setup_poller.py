@@ -24,7 +24,6 @@ class TestInventorySetupPoller(TestCase):
 
         periodic_obj_mock = Mock()
         m_task_manager.return_value = periodic_obj_mock
-        m_load_profiles.return_value = None
         m_get_inventory.return_value = InventoryRecord(
             **{
                 "address": "192.168.0.1",
