@@ -20,13 +20,14 @@ import sys
 from csv import DictReader
 
 import pymongo
+import yaml
 
 from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-from splunk_connect_for_snmp.common.profiles import load_profiles
+from splunk_connect_for_snmp.common.profiles import ProfilesManager
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
 from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
 
@@ -79,13 +80,15 @@ def load():
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4snmp.targets
     attributes_collection = mongo_client.sc4snmp.attributes
+    profiles_manager = ProfilesManager(mongo_client)
     mongo_db = mongo_client[MONGO_DB]
     inventory_records = mongo_db.inventory
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
     migrate_database(mongo_client, periodic_obj)
-    config_profiles = load_profiles()
+    profiles_manager.update_all_profiles()
+    config_profiles = profiles_manager.return_all_profiles()
 
     logger.info(f"Loading inventory from {path}")
     with open(path, encoding="utf-8") as csv_file:
