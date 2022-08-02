@@ -154,3 +154,48 @@ mkdir /tmp/package/packages
 docker save $images_to_pack > /tmp/package/packages/dependencies-images.tar
 cd ../..
 tar -czvf packages/splunk-connect-for-snmp-chart.tar splunk-connect-for-snmp
+
+# Download and pack image for sim
+cd "$SPLUNK_DIR" || exit
+
+# Check if there is a value for sim docker image in values.yaml
+# If not, get default image from templates/sim/deployment.yaml
+sim_info=$(sed -nE '/^sim:/,/^[a-zA-Z#]/p' "values.yaml")
+docker_link=$(grep -oE 'image:.+' <<< "$sim_info" | cut -d : -f2 | xargs)
+docker_tag=$(grep -oE 'tag:.+' <<< "$sim_info" | cut -d : -f2 | xargs)
+
+
+if [ -z "$docker_link" ]
+then
+  cd templates/sim || exit
+  docker_info=$(grep image: "deployment.yaml")
+
+  docker_link=$(cut -d : -f2 <<< "$docker_info" | grep -oE '".+"')
+  docker_link="${docker_link#?}"
+  docker_link="${docker_link%?}"
+
+  docker_tag=$(cut -d : -f3 <<< "$docker_info" | grep -oE '".+"')
+  docker_tag="${docker_tag#?}"
+  docker_tag="${docker_tag%?}"
+fi
+
+if [ -z "$docker_tag" ]
+then
+  docker_image_pull="$docker_link"
+else
+  docker_image_pull="$docker_link:$docker_tag"
+fi
+
+docker pull "$docker_image_pull"
+docker save $docker_image_pull > /tmp/package/packages/sim_image.tar
+
+# Download and package otel charts
+cd /tmp/package/packages/ || exit
+LOCATION=$(curl -s https://api.github.com/repos/signalfx/splunk-otel-collector-chart/releases/latest | grep "zipball_url" | awk '{ print $2 }' | sed 's/,$//' | sed 's/"//g' )
+curl -L -o otel-repo.tar $LOCATION
+tar -xvf otel-repo.tar
+rm otel-repo.tar
+OTEL_DIR=$(ls | grep -E "signalfx-splunk.+")
+CHART_DIT="$OTEL_DIR/helm-charts/splunk-otel-collector"
+helm package $CHART_DIT -d /tmp/package/packages/
+rm -rf $OTEL_DIR
