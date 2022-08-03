@@ -1,4 +1,4 @@
-# Offline installation
+# Offline SC4SNMP installation
 
 ## Local machine with internet access
 To install SC4SNMP offline first some packages must be downloaded from github release and then moved

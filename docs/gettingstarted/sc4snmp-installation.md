@@ -7,7 +7,7 @@ on production configuration.
 
 ### Offline installation
 
-For offline installation instructions see [this page](../offline-installation.md).
+For offline installation instructions see [this page](../offlineinstallation/offline-sc4snmp.md).
 
 ### Add SC4SNMP repository
 ```

@@ -48,5 +48,7 @@ nav:
   - Request MIB: "mib-request.md"
   - Troubleshooting : "bestpractices.md"
   - Releases: "releases.md"
-  - Offline Installation: "offline-installation.md"
+  - Offline Installation:
+      - Install Splunk OpenTelemetry Collector for Kubernetes: "offlineinstallation/offline-sck.md"
+      - Install SC4SNMP: "offlineinstallation/offline-sc4snmp.md"
 
