@@ -97,6 +97,26 @@ pull_image(){
       echo "Pulling: ""$docker_pull_image"
       docker pull "$docker_pull_image"
       images_to_pack="$images_to_pack""$docker_pull_image "
+
+      docker_pull_image=""
+      volumePermissions_info=$(sed -nE '/^volumePermissions:/,/^[a-zA-Z#]/p' "$values_file")
+      docker_info=$(sed -nE '/image:/,/[#]/p' <<< "$volumePermissions_info")
+
+      image_registry=$(grep -Eo 'registry:\s\S+$' <<< "$docker_info" | cut -d : -f2 | xargs)
+      image_repository=$(grep -Eo 'repository:\s\S+$' <<< "$docker_info" | cut -d : -f2 | xargs)
+      image_tag=$(grep -Eo 'tag:\s\S+$' <<< "$docker_info" | cut -d : -f2 | xargs)
+
+      docker_pull_image=$(combine_image_name "$image_registry" "$image_repository" "$image_tag" "$app_version")
+
+      printf "\n"
+      if [ -z "$docker_pull_image" ]
+      then
+        echo "No image to pull"
+        exit 0
+      fi
+      echo "Pulling: ""$docker_pull_image"
+      docker pull "$docker_pull_image"
+      images_to_pack="$images_to_pack""$docker_pull_image "
     fi
     printf "\n\n"
   else
@@ -160,7 +180,15 @@ cd "$SPLUNK_DIR" || exit
 
 # Check if there is a value for sim docker image in values.yaml
 # If not, get default image from templates/sim/deployment.yaml
-sim_info=$(sed -nE '/^sim:/,/^[a-zA-Z#]/p' "values.yaml")
+
+if [ -f "values.yaml" ]
+then
+  values_file="values.yaml"
+else
+  values_file="values.yml"
+fi
+
+sim_info=$(sed -nE '/^sim:/,/^[a-zA-Z#]/p' "$values_file")
 docker_link=$(grep -oE 'image:.+' <<< "$sim_info" | cut -d : -f2 | xargs)
 docker_tag=$(grep -oE 'tag:.+' <<< "$sim_info" | cut -d : -f2 | xargs)
 
@@ -168,7 +196,13 @@ docker_tag=$(grep -oE 'tag:.+' <<< "$sim_info" | cut -d : -f2 | xargs)
 if [ -z "$docker_link" ]
 then
   cd templates/sim || exit
-  docker_info=$(grep image: "deployment.yaml")
+  if [ -f "deployment.yaml" ]
+  then
+    depl_file="deployment.yaml"
+  else
+    depl_file="deployment.yml"
+  fi
+  docker_info=$(grep image: "$depl_file")
 
   docker_link=$(cut -d : -f2 <<< "$docker_info" | grep -oE '".+"')
   docker_link="${docker_link#?}"
