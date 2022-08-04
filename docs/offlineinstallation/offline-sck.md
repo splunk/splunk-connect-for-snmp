@@ -1,23 +1,21 @@
-# Splunk OpenTelemetry Collector for Kubernetes installation
+# Splunk OpenTelemetry Collector for Kubernetes offline installation
 
-The below steps are sufficient for a Splunk OpenTelemetry Collector installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud.
-In order to learn more about Splunk OpenTelemetry Collector visit [Splunk OpenTelemetry Collector](https://github.com/signalfx/splunk-otel-collector-chart).
+## Local machine with internet access
 
-### Offline installation
+To install Splunk OpenTelemetry Collector offline first one must download packed chart `splunk-otel-collector-<tag>.tgz` 
+from github release where `<tag>` is the current OpenTelemetry release tag. This package must be later moved to the installation server.
 
-For offline installation instructions see [this page](../offlineinstallation/offline-sck.md).
-
-### Add Splunk OpenTelemetry Collector repository to HELM
+## Installation on the server
+ 
+Imported package must be unpacked with the following command :
 
 ```bash
-microk8s helm3 repo add splunk-otel-collector-chart https://signalfx.github.io/splunk-otel-collector-chart
+tar -xvf splunk-otel-collector-<tag>.tgz --exclude='._*'
 ```
-
-## Install Splunk OpenTelemetry Collector with HELM for a Splunk Platform
 
 In order to run Splunk OpenTelemetry Collector on your environment, replace `<>` variables according to the description presented below
 ```bash
-microk8s helm3 upgrade --install sck \
+microk8s helm3 install sck \
   --set="clusterName=<cluster_name>" \
   --set="splunkPlatform.endpoint=<splunk_endpoint>" \
   --set="splunkPlatform.insecureSkipVerify=<insecure_skip_verify>" \
@@ -26,7 +24,7 @@ microk8s helm3 upgrade --install sck \
   --set="splunkPlatform.metricsEnabled=true" \
   --set="splunkPlatform.metricsIndex=em_metrics" \
   --set="splunkPlatform.index=em_logs" \
-  splunk-otel-collector-chart/splunk-otel-collector
+  splunk-otel-collector
 ```
 
 ### Variables description
@@ -41,7 +39,7 @@ microk8s helm3 upgrade --install sck \
 
 An example of filled up command is:
 ```bash
-microk8s helm3 upgrade --install sck \
+microk8s helm3 install sck \
   --set="clusterName=my-cluster" \
   --set="splunkPlatform.endpoint=https://endpoint.example.com/services/collector" \
   --set="splunkPlatform.insecureSkipVerify=false" \
@@ -49,7 +47,7 @@ microk8s helm3 upgrade --install sck \
   --set="splunkPlatform.metricsEnabled=true" \
   --set="splunkPlatform.metricsIndex=em_metrics" \
   --set="splunkPlatform.index=em_logs" \
-  splunk-otel-collector-chart/splunk-otel-collector
+  splunk-otel-collector
 ```
 
 ## Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes
@@ -57,7 +55,7 @@ microk8s helm3 upgrade --install sck \
 To run Splunk OpenTelemetry Collector on your environment, replace `<>` variables according to the description presented below
 
 ```bash
-microk8s helm3 upgrade --install sck
+microk8s helm3 install sck
 --set="clusterName=<cluster_name>"
 --set="splunkObservability.realm=<realm>"
 --set="splunkObservability.accessToken=<token>"
@@ -66,7 +64,7 @@ microk8s helm3 upgrade --install sck
 --set="splunkObservability.metricsEnabled=true"
 --set="splunkObservability.tracesEnabled=false"
 --set="splunkObservability.logsEnabled=false"
-splunk-otel-collector-chart/splunk-otel-collector
+splunk-otel-collector
 ```
 
 ### Variables description
@@ -82,7 +80,7 @@ splunk-otel-collector-chart/splunk-otel-collector
 
 An example of filled up command is:
 ```bash
-microk8s helm3 upgrade --install sck
+microk8s helm3 install sck 
 --set="clusterName=my_cluster"
 --set="splunkObservability.realm=us0"
 --set="splunkObservability.accessToken=BCwaJ_Ands4Xh7Nrg"
@@ -91,5 +89,5 @@ microk8s helm3 upgrade --install sck
 --set="splunkObservability.metricsEnabled=true"
 --set="splunkObservability.tracesEnabled=false"
 --set="splunkObservability.logsEnabled=false"
-splunk-otel-collector-chart/splunk-otel-collector
+splunk-otel-collector
 ```
