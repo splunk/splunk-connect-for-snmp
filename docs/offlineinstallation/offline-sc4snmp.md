@@ -10,18 +10,20 @@ to the sc4snmp installation server. Those packages are:
 Moreover, SC4SNMP Docker image must be pulled, saved as `.tar` package and then moved to the server as well. 
 This process requires Docker installed locally.
 
-Image can be pulled from the following repository: `ghcr.io/splunk/splunk-connect-for-snmp/container:<tag>`.
+Image can be pulled from the following repository: `ghcr.io/splunk/splunk-connect-for-snmp/container:<tag>`. 
+The latest tag can be found [here](https://github.com/splunk/splunk-connect-for-snmp) under Releases section with label `latest`.
+
 
 Example of docker pull command:
 
 ```bash
-docker pull ghcr.io/splunk/splunk-connect-for-snmp/container:1.6.2
+docker pull ghcr.io/splunk/splunk-connect-for-snmp/container:<tag>
 ```
 
 Then save the image. Directory where this image will be saved can be specified after `>` sign:
 
 ```bash
-docker save ghcr.io/splunk/splunk-connect-for-snmp/container:1.6.2 > snmp_image.tar
+docker save ghcr.io/splunk/splunk-connect-for-snmp/container:<tag> > snmp_image.tar
 ```
 All three packages `snmp_image.tar`, `dependencies-images.tar` and `splunk-connect-for-snmp-chart.tar` must be moved to the sc4snmp installation server.
 
