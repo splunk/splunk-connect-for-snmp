@@ -13,7 +13,7 @@
     
     
       
-        <title>Poller - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Install Splunk OpenTelemetry Collector for Kubernetes - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#poller-configuration" class="md-skip">
+        <a href="#splunk-opentelemetry-collector-for-kubernetes-offline-installation" class="md-skip">
           Skip to content
         </a>
       
@@ -103,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Poller
+              Install Splunk OpenTelemetry Collector for Kubernetes
             
           </span>
         </div>
@@ -274,14 +274,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
       
       
       
@@ -304,7 +302,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../configuring-profiles/" class="md-nav__link">
+      <a href="../../configuration/configuring-profiles/" class="md-nav__link">
         Configuring Profiles
       </a>
     </li>
@@ -318,7 +316,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../deployment-configuration/" class="md-nav__link">
+      <a href="../../configuration/deployment-configuration/" class="md-nav__link">
         Deployment
       </a>
     </li>
@@ -330,66 +328,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Poller
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../configuration/poller-configuration/" class="md-nav__link">
         Poller
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#poller-configuration-file" class="md-nav__link">
-    Poller configuration file
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#define-log-level" class="md-nav__link">
-    Define log level
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#configure-inventory" class="md-nav__link">
-    Configure inventory
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -401,7 +344,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../trap-configuration/" class="md-nav__link">
+      <a href="../../configuration/trap-configuration/" class="md-nav__link">
         Trap
       </a>
     </li>
@@ -415,7 +358,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../scheduler-configuration/" class="md-nav__link">
+      <a href="../../configuration/scheduler-configuration/" class="md-nav__link">
         Scheduler
       </a>
     </li>
@@ -429,7 +372,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../worker-configuration/" class="md-nav__link">
+      <a href="../../configuration/worker-configuration/" class="md-nav__link">
         Worker
       </a>
     </li>
@@ -443,7 +386,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mongo-configuration/" class="md-nav__link">
+      <a href="../../configuration/mongo-configuration/" class="md-nav__link">
         Mongo DB
       </a>
     </li>
@@ -457,7 +400,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../redis-configuration/" class="md-nav__link">
+      <a href="../../configuration/redis-configuration/" class="md-nav__link">
         Redis
       </a>
     </li>
@@ -471,7 +414,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../snmpv3-configuration/" class="md-nav__link">
+      <a href="../../configuration/snmpv3-configuration/" class="md-nav__link">
         SNMPv3 configuration
       </a>
     </li>
@@ -485,7 +428,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sim-configuration/" class="md-nav__link">
+      <a href="../../configuration/sim-configuration/" class="md-nav__link">
         Splunk Infrastructure Monitoring
       </a>
     </li>
@@ -580,12 +523,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" checked>
       
       
       
@@ -606,11 +551,92 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../offlineinstallation/offline-sck/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Install Splunk OpenTelemetry Collector for Kubernetes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Install Splunk OpenTelemetry Collector for Kubernetes
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#local-machine-with-internet-access" class="md-nav__link">
+    Local machine with internet access
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation-on-the-server" class="md-nav__link">
+    Installation on the server
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation on the server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variables-description" class="md-nav__link">
+    Variables description
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" class="md-nav__link">
+    Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes
+  </a>
+  
+    <nav class="md-nav" aria-label="Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variables-description_1" class="md-nav__link">
+    Variables description
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -622,7 +648,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../offlineinstallation/offline-sc4snmp/" class="md-nav__link">
+      <a href="../offline-sc4snmp/" class="md-nav__link">
         Install SC4SNMP
       </a>
     </li>
@@ -663,23 +689,49 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#poller-configuration-file" class="md-nav__link">
-    Poller configuration file
+  <a href="#local-machine-with-internet-access" class="md-nav__link">
+    Local machine with internet access
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#define-log-level" class="md-nav__link">
-    Define log level
+  <a href="#installation-on-the-server" class="md-nav__link">
+    Installation on the server
   </a>
+  
+    <nav class="md-nav" aria-label="Installation on the server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variables-description" class="md-nav__link">
+    Variables description
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-inventory" class="md-nav__link">
-    Configure inventory
+  <a href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" class="md-nav__link">
+    Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes
   </a>
+  
+    <nav class="md-nav" aria-label="Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variables-description_1" class="md-nav__link">
+    Variables description
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -697,52 +749,134 @@
                 
 
 
-<h1 id="poller-configuration">Poller Configuration<a class="headerlink" href="#poller-configuration" title="Permanent link">&para;</a></h1>
-<p>The instruction contains configuration documentation for Poller. Poller is a service which is responsible for querying 
-SNMP devices using SNMP GET, SNMP WALK functionality. Poller executes two main types of tasks:
-- Walk task execute SNMP walk. SNMP walk is an SNMP application that uses SNMP GETNEXT requests to 
-collect SNMP data from network and infrastructure SNMP-enabled devices, such as switches and routers. It is a time-consuming task,
-which may overload the SNMP device when executing too often. It is used by SC4SNMP to collect and push all OIDs values which provided ACL has access to. 
-- Get task - It is a lightweight task whose goal is to query a subset of OIDs defined by the customer. The task is dedicated to enabling monitoring of the most important OIDs with high frequency like memory or CPU utilization.  </p>
-<h3 id="poller-configuration-file">Poller configuration file<a class="headerlink" href="#poller-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Poller configuration is kept in <code>values.yaml</code> file in section poller.
-<code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
-<p>Poller example configuration:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;WARN&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">    </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span><span class="w"></span>
-<span class="w">    </span><span class="no">10.202.4.202,,2c,public,,,2000,,,</span><span class="w"></span>
+<h1 id="splunk-opentelemetry-collector-for-kubernetes-offline-installation">Splunk OpenTelemetry Collector for Kubernetes offline installation<a class="headerlink" href="#splunk-opentelemetry-collector-for-kubernetes-offline-installation" title="Permanent link">&para;</a></h1>
+<h2 id="local-machine-with-internet-access">Local machine with internet access<a class="headerlink" href="#local-machine-with-internet-access" title="Permanent link">&para;</a></h2>
+<p>To install Splunk OpenTelemetry Collector offline first one must download packed chart <code>splunk-otel-collector-&lt;tag&gt;.tgz</code> 
+from github release where <code>&lt;tag&gt;</code> is the current OpenTelemetry release tag. This package must be later moved to the installation server.</p>
+<h2 id="installation-on-the-server">Installation on the server<a class="headerlink" href="#installation-on-the-server" title="Permanent link">&para;</a></h2>
+<p>Imported package must be unpacked with the following command :</p>
+<div class="codehilite"><pre><span></span><code>tar -xvf splunk-otel-collector-&lt;tag&gt;.tgz --exclude<span class="o">=</span><span class="s1">&#39;._*&#39;</span>
 </code></pre></div>
 
-<p>NOTE: header&rsquo;s line (<code>address,port,version,community</code>) is necessary for the correct execution of SC4SNMP. Do not remove it.</p>
-<h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
-<p>Log level for trap can be set by changing the value for key <code>logLevel</code>. Allowed values are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
-The default value is <code>WARNING</code></p>
-<h3 id="configure-inventory">Configure inventory<a class="headerlink" href="#configure-inventory" title="Permanent link">&para;</a></h3>
-<p>To update inventory follow instruction: <a href="../deployment-configuration/#update-inventory-and-profile">Update Inventory and Profile</a> 
-<code>inventory</code> section in <code>poller</code> enable to configure inventory for polling data:</p>
-<ul>
-<li><code>address</code> [REQUIRED] - IP address which SC4SNMP should connect to collect data from.</li>
-<li><code>port</code> [OPTIONAL] - SNMP listening port. Default value <code>161</code>.</li>
-<li><code>version</code> [REQUIRED] - SNMP version, allowed values: <code>1</code>, <code>2c</code> or <code>3</code></li>
-<li><code>community</code> [OPTIONAL] - SNMP community string, filed is required when <code>version</code> is <code>1</code> or <code>2c</code></li>
-<li><code>secret</code> [OPTIONAL] - usernameSecrets define which secrets in &ldquo;Secret&rdquo; objects in k8s should be use, as a value it need to put 
- name of &ldquo;Secret&rdquo; objects. Field is required when <code>version</code> is <code>3</code>. More information how to define &ldquo;Secrets&rdquo; object for SNMPv3 can be found 
- in <a href="../snmpv3-configuration/">SNMPv3 Configuration</a></li>
-<li><code>security_engine</code> [OPTIONAL] - Security engine required by SNMPv3. Field is required when <code>version</code> is <code>3</code>. </li>
-<li><code>walk_interval</code> [OPTIONAL] - Define interval in seconds for SNMP walk, default value <code>42000</code>. This value needs to be between <code>1800</code> and <code>42000</code></li>
-<li><code>profiles</code> [OPTIONAL] - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
-separation eg. <code>profile1;profile2</code>. More about profiles in <a href="../scheduler-configuration/#configure-profile">Profile Configuration</a></li>
-<li><code>smart_profiles</code> [OPTIONAL] - enabled smart profiles, by default it&rsquo;s true. Allowed value: <code>true</code>, <code>false</code>. Default value is <code>true</code> </li>
-<li><code>delete</code> [OPTIONAL] - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
-Allowed value: <code>true</code>, <code>false</code>. Default value is <code>false</code>.</li>
-</ul>
-<p>Example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span><span class="w"></span>
-<span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,,,</span><span class="w"></span>
+<p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the description presented below</p>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 install sck <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;clusterName=&lt;cluster_name&gt;&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.endpoint=&lt;splunk_endpoint&gt;&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.insecureSkipVerify=&lt;insecure_skip_verify&gt;&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.token=&lt;splunk_token&gt;&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;logsEngine=otel&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsEnabled=true&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsIndex=em_metrics&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.index=em_logs&quot;</span> <span class="se">\</span>
+  splunk-otel-collector
+</code></pre></div>
+
+<h3 id="variables-description">Variables description<a class="headerlink" href="#variables-description" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Placeholder</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>splunk_endpoint</td>
+<td>host address of splunk instance</td>
+<td>https://endpoint.example.com:8088/services/collector</td>
+</tr>
+<tr>
+<td>insecure_skip_verify</td>
+<td>is insecure ssl allowed</td>
+<td>false</td>
+</tr>
+<tr>
+<td>splunk_token</td>
+<td>Splunk HTTP Event Collector token</td>
+<td>450a69af-16a9-4f87-9628-c26f04ad3785</td>
+</tr>
+<tr>
+<td>cluster_name</td>
+<td>name of the cluster</td>
+<td>my-cluster</td>
+</tr>
+</tbody>
+</table>
+<p>An example of filled up command is:</p>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 install sck <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;clusterName=my-cluster&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.endpoint=https://endpoint.example.com/services/collector&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.insecureSkipVerify=false&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.token=4d22911c-18d9-4706-ae7b-dd1b976ca6f7&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsEnabled=true&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsIndex=em_metrics&quot;</span> <span class="se">\</span>
+  --set<span class="o">=</span><span class="s2">&quot;splunkPlatform.index=em_logs&quot;</span> <span class="se">\</span>
+  splunk-otel-collector
+</code></pre></div>
+
+<h2 id="install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes">Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" title="Permanent link">&para;</a></h2>
+<p>To run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the description presented below</p>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 install sck
+--set<span class="o">=</span><span class="s2">&quot;clusterName=&lt;cluster_name&gt;&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.realm=&lt;realm&gt;&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.accessToken=&lt;token&gt;&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.ingestUrl=&lt;ingest_url&gt;&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.apiUrl=&lt;api_url&gt;&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.metricsEnabled=true&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.tracesEnabled=false&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.logsEnabled=false&quot;</span>
+splunk-otel-collector
+</code></pre></div>
+
+<h3 id="variables-description_1">Variables description<a class="headerlink" href="#variables-description_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Placeholder</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cluster_name</td>
+<td>name of the cluster</td>
+<td>my_cluster</td>
+</tr>
+<tr>
+<td>realm</td>
+<td>Realm obtained from the Splunk Observability Cloud environment</td>
+<td>us0</td>
+</tr>
+<tr>
+<td>token</td>
+<td>Token obtained from the Splunk Observability Cloud environment</td>
+<td>BCwaJ_Ands4Xh7Nrg</td>
+</tr>
+<tr>
+<td>ingest_url</td>
+<td>Ingest URL from the Splunk Observability Cloud environment</td>
+<td>https://ingest..signalfx.com</td>
+</tr>
+<tr>
+<td>api_url</td>
+<td>API URL from the Splunk Observability Cloud environment</td>
+<td>https://api..signalfx.com</td>
+</tr>
+</tbody>
+</table>
+<p>An example of filled up command is:</p>
+<div class="codehilite"><pre><span></span><code>microk8s helm3 install sck 
+--set<span class="o">=</span><span class="s2">&quot;clusterName=my_cluster&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.realm=us0&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.accessToken=BCwaJ_Ands4Xh7Nrg&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.ingestUrl=https://ingest..signalfx.com&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.apiUrl=https://api..signalfx.com&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.metricsEnabled=true&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.tracesEnabled=false&quot;</span>
+--set<span class="o">=</span><span class="s2">&quot;splunkObservability.logsEnabled=false&quot;</span>
+splunk-otel-collector
 </code></pre></div>
 
               
@@ -759,7 +893,7 @@ Allowed value: <code>true</code>, <code>false</code>. Default value is <code>fal
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../deployment-configuration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Deployment" rel="prev">
+        <a href="../../releases/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Releases" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -768,20 +902,20 @@ Allowed value: <code>true</code>, <code>false</code>. Default value is <code>fal
               <span class="md-footer__direction">
                 Previous
               </span>
-              Deployment
+              Releases
             </div>
           </div>
         </a>
       
       
         
-        <a href="../trap-configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Trap" rel="next">
+        <a href="../offline-sc4snmp/" class="md-footer__link md-footer__link--next" aria-label="Next: Install SC4SNMP" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Trap
+              Install SC4SNMP
             </div>
           </div>
           <div class="md-footer__button md-icon">
