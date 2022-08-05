@@ -359,8 +359,8 @@ class Poller(Task):
             if mib:
                 try:
                     self.builder.loadModules(mib)
-                except error.MibLoadError as e:
-                    logger.exception(f"Error loading mib for {mib}, {e}")
+                except Exception as e:
+                    logger.warning(f"Error loading mib for {mib}, {e}")
 
     def is_mib_known(self, id: str, oid: str, target: str) -> Tuple[bool, str]:
 
