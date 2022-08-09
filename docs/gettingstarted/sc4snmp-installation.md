@@ -5,6 +5,10 @@ for single node non HA deployments and do not have resource requests and limits.
 See the configuration sections for mongo, redis, scheduler, worker, and traps for guidance
 on production configuration.
 
+### Offline installation
+
+For offline installation instructions see [this page](../offlineinstallation/offline-sc4snmp.md).
+
 ### Add SC4SNMP repository
 ```
 microk8s helm3 repo add splunk-connect-for-snmp https://splunk.github.io/splunk-connect-for-snmp

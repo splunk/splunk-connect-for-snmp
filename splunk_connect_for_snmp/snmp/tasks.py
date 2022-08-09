@@ -63,7 +63,6 @@ OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
     ),
 )
 def walk(self, **kwargs):
-
     address = kwargs["address"]
     profile = kwargs.get("profile", [])
     if profile:

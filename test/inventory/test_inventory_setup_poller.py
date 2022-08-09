@@ -4,14 +4,12 @@ from unittest.mock import Mock, patch
 from celery.schedules import schedule
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-from splunk_connect_for_snmp.inventory.tasks import (
-    generate_poll_task_definition,
-    inventory_setup_poller,
-)
 
 
 class TestInventorySetupPoller(TestCase):
-    @mock.patch("splunk_connect_for_snmp.common.profiles.load_profiles")
+    @patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.find_one")
     @mock.patch("splunk_connect_for_snmp.inventory.tasks.assign_profiles")
@@ -24,9 +22,11 @@ class TestInventorySetupPoller(TestCase):
         m_task_manager,
         m_load_profiles,
     ):
-        periodic_obj_mock = Mock()
-        m_task_manager.return_value = periodic_obj_mock
+        from splunk_connect_for_snmp.inventory.tasks import inventory_setup_poller
 
+        periodic_obj_mock = Mock()
+        m_load_profiles.return_value = []
+        m_task_manager.return_value = periodic_obj_mock
         m_get_inventory.return_value = InventoryRecord(
             **{
                 "address": "192.168.0.1",
@@ -60,8 +60,6 @@ class TestInventorySetupPoller(TestCase):
 
         # when
         inventory_setup_poller(work)
-
-        m_load_profiles.assert_not_called()
 
         calls = periodic_obj_mock.manage_task.call_args_list
 
@@ -105,7 +103,12 @@ class TestInventorySetupPoller(TestCase):
             ],
         )
 
-    def test_generate_poll_task_definition(self):
+    @patch("splunk_connect_for_snmp.common.profiles.ProfilesManager")
+    def test_generate_poll_task_definition(self, rp):
+        from splunk_connect_for_snmp.inventory.tasks import (
+            generate_poll_task_definition,
+        )
+
         active_schedules = []
         address = "192.168.0.1"
         assigned_profiles = {
@@ -114,7 +117,6 @@ class TestInventorySetupPoller(TestCase):
             20: ["profile1"],
         }
         period = 30
-
         result = generate_poll_task_definition(
             active_schedules, address, assigned_profiles, period
         )
