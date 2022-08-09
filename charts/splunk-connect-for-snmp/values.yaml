@@ -108,13 +108,13 @@ worker:
       targetCPUUtilizationPercentage: 80
     resources:
       limits:
-        cpu: 700m
-        memory: 1024Mi
-      requests:
         cpu: 300m
+        memory: 800Mi
+      requests:
+        cpu: 250m
         memory: 256Mi
   trap:
-    replicaCount: 2
+    replicaCount: 1
     concurrency: 4
     prefetch: 30
     autoscaling:
@@ -124,13 +124,13 @@ worker:
       targetCPUUtilizationPercentage: 80
     resources:
       limits:
-        cpu: 600m
+        cpu: 400m
         memory: 1024Mi
       requests:
-        cpu: 300m
+        cpu: 350m
         memory: 256Mi
   sender:
-    replicaCount: 2
+    replicaCount: 1
     concurrency: 4
     prefetch: 30
     autoscaling:
@@ -141,10 +141,10 @@ worker:
     resources:
       limits:
         cpu: 500m
-        memory: 512Mi
+        memory: 612Mi
       requests:
-        cpu: 300m
-        memory: 256Mi
+        cpu: 450m
+        memory: 456Mi
   nameOverride: ""
   fullnameOverride: ""
 
