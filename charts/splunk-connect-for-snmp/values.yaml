@@ -106,6 +106,7 @@ worker:
       minReplicas: 2
       maxReplicas: 40
       targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
     resources:
       limits:
         cpu: 300m
@@ -122,6 +123,7 @@ worker:
       minReplicas: 2
       maxReplicas: 40
       targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
     resources:
       limits:
         cpu: 400m
@@ -138,6 +140,7 @@ worker:
       minReplicas: 2
       maxReplicas: 40
       targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
     resources:
       limits:
         cpu: 500m
