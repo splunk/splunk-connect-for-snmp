@@ -25,6 +25,8 @@ spec:
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.worker.poller.autoscaling.targetMemoryUtilizationPercentage | default 80 }}
+        target:
+          type: Utilization
+          targetAverageUtilization: {{ .Values.worker.poller.autoscaling.targetMemoryUtilizationPercentage | default 80 }}
     {{- end }}
 {{- end }}
