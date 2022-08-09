@@ -122,9 +122,9 @@ worker:
       targetCPUUtilizationPercentage: 80
     resources:
       limits:
-        cpu: 400m
+        cpu: 300m
       requests:
-        cpu: 350m
+        cpu: 250m
   sender:
     replicaCount: 1
     concurrency: 4
