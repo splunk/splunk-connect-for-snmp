@@ -106,14 +106,11 @@ worker:
       minReplicas: 2
       maxReplicas: 40
       targetCPUUtilizationPercentage: 80
-      targetMemoryUtilizationPercentage: 80
     resources:
       limits:
         cpu: 300m
-        memory: 800Mi
       requests:
         cpu: 250m
-        memory: 256Mi
   trap:
     replicaCount: 1
     concurrency: 4
@@ -123,14 +120,11 @@ worker:
       minReplicas: 2
       maxReplicas: 40
       targetCPUUtilizationPercentage: 80
-      targetMemoryUtilizationPercentage: 80
     resources:
       limits:
         cpu: 400m
-        memory: 1024Mi
       requests:
         cpu: 350m
-        memory: 256Mi
   sender:
     replicaCount: 1
     concurrency: 4
@@ -140,14 +134,11 @@ worker:
       minReplicas: 2
       maxReplicas: 40
       targetCPUUtilizationPercentage: 80
-      targetMemoryUtilizationPercentage: 80
     resources:
       limits:
         cpu: 500m
-        memory: 612Mi
       requests:
         cpu: 450m
-        memory: 456Mi
   nameOverride: ""
   fullnameOverride: ""
 
