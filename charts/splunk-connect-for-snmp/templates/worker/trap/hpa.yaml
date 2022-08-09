@@ -27,6 +27,6 @@ spec:
         name: memory
         target:
           type: Utilization
-          targetAverageUtilization: {{ .Values.worker.trap.autoscaling.targetMemoryUtilizationPercentage | default 80 }}
+          averageUtilization: {{ .Values.worker.trap.autoscaling.targetMemoryUtilizationPercentage | default 80 }}
     {{- end }}
 {{- end }}
