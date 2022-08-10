@@ -633,7 +633,7 @@ by third-party password managers then consumed without storing sensitive data in
 <span class="c1"># &lt;authProtocol&gt;=One of SHA (SHA1) or MD5 </span>
 <span class="c1"># &lt;privProtocol&gt;=One of AES or DES </span>
 <span class="c1"># Note MD5 and DES are considered insecure but must be supported for standards compliance</span>
-kubectl create -n &lt;namespace&gt; secret generic &lt;secretname&gt; <span class="se">\</span>
+microk8s kubectl create -n &lt;namespace&gt; secret generic &lt;secretname&gt; <span class="se">\</span>
   --from-literal<span class="o">=</span><span class="nv">userName</span><span class="o">=</span>&lt;username&gt; <span class="se">\</span>
   --from-literal<span class="o">=</span><span class="nv">authKey</span><span class="o">=</span>&lt;key&gt; <span class="se">\</span>
   --from-literal<span class="o">=</span><span class="nv">privKey</span><span class="o">=</span>&lt;key&gt; <span class="se">\</span>

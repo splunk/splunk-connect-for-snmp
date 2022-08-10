@@ -767,14 +767,14 @@ More information on how to define the &ldquo;Secret&rdquo; object for SNMPv3 can
 
 <h3 id="define-security-engine-id-for-snmpv3">Define security engine ID for SNMPv3<a class="headerlink" href="#define-security-engine-id-for-snmpv3" title="Permanent link">&para;</a></h3>
 <p>Security engine ID variable is necessary when sending SNMPv3 traps. By default, it is set to 
-<code>8000000903000A397056B8AC</code>. It has to match the <code>-e</code> string in snmptrap.</p>
+<code>80003a8c04</code>. It has to match the <code>-e</code> string in snmptrap.</p>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">securityEngineId</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;8000000903000A397056B8AC&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">securityEngineId</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;80003a8c04&quot;</span><span class="w"></span>
 </code></pre></div>
 
 <p>An example of SNMPv3 trap is:</p>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">snmptrap -v3  -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 &#39;&#39; 1.3.6.1.2.1.2.2.1.1.1</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 &#39;&#39; 1.3.6.1.2.1.2.2.1.1.1</span><span class="w"></span>
 </code></pre></div>
 
 <h3 id="define-load-balancer-ip">Define load balancer IP<a class="headerlink" href="#define-load-balancer-ip" title="Permanent link">&para;</a></h3>
