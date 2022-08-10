@@ -137,7 +137,7 @@ def trap(self, work):
                 found, mib = self.is_mib_known(w[1], w[1], work["host"])
                 if found and mib not in self.oid_values:
                     self.load_mibs([mib])
-                    oid_values.add(mib)
+                    self.oid_values.add(mib)
 
         try:
             var_bind_table.append(
