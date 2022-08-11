@@ -147,11 +147,42 @@ By default, every worker has configured following resources:
     resources:
       limits:
         cpu: 500m
-        memory: 512Mi
       requests:
-        cpu: 300m
-        memory: 256Mi
+        cpu: 250m
 ```
 
-You can read about Horizontal Autoscaling and how to adjust maximum replica value to the resources you have
-here: [Horizontal Autoscaling.](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
+
+#### I have autoscaling enabled and experience problems with Mongo and Redis pod
+
+If MongoDB and Redis pods are crushing, and some of the pods are in infinite `Pending` state, that means 
+you're over your resources and SC4SNMP cannot scale more. You should decrease number of `maxReplicas` in 
+workers, so that it's not going beyond available CPU.
+
+#### I don't know how to set autoscaling parameters and how many replicas I need
+
+The best way to see if pods are overloaded is to run command:
+
+```yaml
+microk8s kubectl top pods -n sc4snmp
+```
+
+```yaml
+NAME                                                          CPU(cores)   MEMORY(bytes)   
+snmp-mibserver-7f879c5b7c-nnlfj                               1m           3Mi             
+snmp-mongodb-869cc8586f-q8lkm                                 18m          225Mi           
+snmp-redis-master-0                                           10m          2Mi             
+snmp-splunk-connect-for-snmp-scheduler-558dccfb54-nb97j       2m           136Mi           
+snmp-splunk-connect-for-snmp-trap-5878f89bbf-24wrz            2m           129Mi           
+snmp-splunk-connect-for-snmp-trap-5878f89bbf-z9gd5            2m           129Mi           
+snmp-splunk-connect-for-snmp-worker-poller-599c7fdbfb-cfqjm   260m         354Mi           
+snmp-splunk-connect-for-snmp-worker-poller-599c7fdbfb-ztf7l   312m         553Mi           
+snmp-splunk-connect-for-snmp-worker-sender-579f796bbd-vmw88   14m           257Mi           
+snmp-splunk-connect-for-snmp-worker-trap-5474db6fc6-46zhf     3m           259Mi           
+snmp-splunk-connect-for-snmp-worker-trap-5474db6fc6-mjtpv     4m           259Mi   
+```
+
+Here you can see how much CPU and Memory is being used by the pods. If the CPU is close to 500m (which is the limit for one pod by default),
+you should enable autoscaling/increase maxReplicas or increase replicaCount with autoscaling off.
+
+
+Here you can read about Horizontal Autoscaling and how to adjust maximum replica value to the resources you have: [Horizontal Autoscaling.](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)

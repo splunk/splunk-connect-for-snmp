@@ -238,6 +238,7 @@ class Poller(Task):
         self.profiles = self.profiles_manager.return_all_profiles()
         self.last_modified = time.time()
         self.snmpEngine = SnmpEngine()
+        self.already_loaded_mibs = set()
         self.builder = self.snmpEngine.getMibBuilder()
         self.mib_view_controller = view.MibViewController(self.builder)
         compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])

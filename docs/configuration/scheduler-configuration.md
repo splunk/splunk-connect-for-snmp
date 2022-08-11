@@ -25,7 +25,7 @@ scheduler:
 ```
 
 ### Define log level
-Log level for trap can be set by changing the value for key `logLevel`. Allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
+Log level for scheduler can be set by changing the value for key `logLevel`. Allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
 The default value is `WARNING`
 
 ### Define resource requests and limits

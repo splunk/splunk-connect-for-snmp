@@ -24,23 +24,14 @@ existing firewall.
 -   HA Requires 3 or more instances (odd numbers) 8 core/16 thread 16 GB
     ram
 
--   100 GB root mount
+-   50 GB root mount
 
 -   HTTP access (non-proxy) allowed for the HTTP(s) connection from
     SC4SNMP to the Splunk destination.
 
--   Splunk Enterprise/Cloud 8.x and or Splunk Infrastructure Monitoring
+-   Splunk Enterprise/Cloud 8.x or newer and/or Splunk Infrastructure Monitoring
     (SignalFx)
-
-- Splunk Enterprise/Cloud specific Requirements:
-
-    *  Splunk ITSI or Splunk IT Work
-    *  Ability to create a HEC token
-    *  Ability to create event and metrics indexes (or use
-            existing)
-
-- Splunk Infrastructure Monitoring specific requirements:   
-    * Ability to create or obtain real and token
+    
 
 ## Planning Infrastructure
 
