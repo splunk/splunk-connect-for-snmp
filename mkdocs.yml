@@ -46,6 +46,7 @@ nav:
   - Planning: "planning.md"
   - Security: "security.md"
   - Request MIB: "mib-request.md"
+  - Upgrade SC4SNMP: "upgrade.md"
   - Troubleshooting : "bestpractices.md"
   - Releases: "releases.md"
   - Offline Installation:
