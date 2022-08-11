@@ -112,7 +112,7 @@ worker:
       requests:
         cpu: 250m
   trap:
-    replicaCount: 1
+    replicaCount: 2
     concurrency: 4
     prefetch: 30
     autoscaling:
@@ -136,9 +136,9 @@ worker:
       targetCPUUtilizationPercentage: 80
     resources:
       limits:
-        cpu: 500m
+        cpu: 300m
       requests:
-        cpu: 450m
+        cpu: 250m
   nameOverride: ""
   fullnameOverride: ""
 
@@ -236,7 +236,8 @@ sim:
 traps:
   replicaCount: 2
   usernameSecrets: []
-  securityEngineId: "80003a8c04"
+  securityEngineId:
+    - "80003a8c04"
 
   communities: {}
   nameOverride: ""

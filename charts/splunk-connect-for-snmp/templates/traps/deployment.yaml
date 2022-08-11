@@ -69,7 +69,7 @@ spec:
             - name: SPLUNK_HEC_INSECURESSL
               value: {{ .Values.splunk.insecureSSL | default "false" | quote }}
             - name: SNMP_V3_SECURITY_ENGINE_ID
-              value: {{ .Values.traps.securityEngineId | default "8000000903000A397056B8AC" }}
+              value: {{ join "," .Values.traps.securityEngineId }}
             - name: SPLUNK_HEC_TOKEN
               valueFrom:
                   secretKeyRef:
@@ -89,9 +89,10 @@ spec:
             - name: tmp
               mountPath: "/tmp/"
               readOnly: false                    
-            {{- if .Values.traps.usernameSecrets }}                 
-            - name: snmpv3-secrets
-              mountPath: "/app/secrets/snmpv3"
+            {{- range .Values.traps.usernameSecrets }}
+            - name: {{ . }}
+              mountPath: "/app/secrets/snmpv3/{{ . }}"
+              subPath: {{ . }}
               readOnly: true
             {{- end }}                    
 
@@ -134,9 +135,8 @@ spec:
             items:
               - key: "config.yaml"
                 path: "config.yaml"
-        {{- if .Values.traps.usernameSecrets }}
-        - name: snmpv3-secrets
         {{- range .Values.traps.usernameSecrets }}
+        - name: {{ . }}
         {{- $secret := (lookup "v1" "Secret" $.Release.Namespace . ) -}}
         {{- if $secret }}
           secret:
@@ -170,7 +170,6 @@ spec:
               - key: contextName
                 path: {{ . }}/contextName
               {{- end }}
-        {{- end }}
         {{- end }}
       {{- end }}
         - name: pysnmp-cache-volume
