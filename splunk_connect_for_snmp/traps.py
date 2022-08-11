@@ -54,7 +54,9 @@ provider = TracerProvider()
 trace.set_tracer_provider(provider)
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
-SECURITY_ENGINE_ID = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "8000000903000A397056B8AC")
+SECURITY_ENGINE_ID_LIST = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "80003a8c04").split(
+    ","
+)
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
 logging.basicConfig(
@@ -172,19 +174,20 @@ def main():
             logging.debug(f"privProtocol: {privProtocol}")
             privProtocol = PrivProtocolMap.get(privProtocol.upper(), "NONE")
 
-            config.addV3User(
-                snmpEngine,
-                userName=userName,
-                authProtocol=authProtocol,
-                authKey=authKey,
-                privProtocol=privProtocol,
-                privKey=privKey,
-                securityEngineId=v2c.OctetString(hexValue=SECURITY_ENGINE_ID),
-            )
-            logging.debug(
-                f"V3 users: {userName} auth {authProtocol} authkey {authKey} privprotocol {privProtocol} "
-                f"privkey {privKey} securityEngineId {SECURITY_ENGINE_ID}"
-            )
+            for security_engine_id in SECURITY_ENGINE_ID_LIST:
+                config.addV3User(
+                    snmpEngine,
+                    userName=userName,
+                    authProtocol=authProtocol,
+                    authKey=authKey,
+                    privProtocol=privProtocol,
+                    privKey=privKey,
+                    securityEngineId=v2c.OctetString(hexValue=security_engine_id),
+                )
+                logging.debug(
+                    f"V3 users: {userName} auth {authProtocol} authkey {authKey} privprotocol {privProtocol} "
+                    f"privkey {privKey} securityEngineId {security_engine_id}"
+                )
 
     # Register SNMP Application at the SNMP engine
     ntfrcv.NotificationReceiver(snmpEngine, cbFun)
