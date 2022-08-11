@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "splunk-connect-for-snmp"
-version = "1.6.3-beta.12"
+version = "1.6.3-beta.13"
 description = ""
 authors = ["omrozowicz-splunk <omrozowicz@splunk.com>"]
 license = "Apache-2.0"
