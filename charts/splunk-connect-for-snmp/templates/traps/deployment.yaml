@@ -89,7 +89,7 @@ spec:
             - name: tmp
               mountPath: "/tmp/"
               readOnly: false                    
-            {{- with .Values.traps.usernameSecrets }}
+            {{- range .Values.traps.usernameSecrets }}
             - name: {{ . }}
               mountPath: "/app/secrets/snmpv3/{{ . }}"
               subPath: {{ . }}
@@ -135,7 +135,7 @@ spec:
             items:
               - key: "config.yaml"
                 path: "config.yaml"
-        {{- with .Values.traps.usernameSecrets }}
+        {{- range .Values.traps.usernameSecrets }}
         - name: {{ . }}
         {{- $secret := (lookup "v1" "Secret" $.Release.Namespace . ) -}}
         {{- if $secret }}
