@@ -108,7 +108,7 @@ worker:
       targetCPUUtilizationPercentage: 80
     resources:
       limits:
-        cpu: 300m
+        cpu: 450m
       requests:
         cpu: 250m
   trap:
@@ -122,7 +122,7 @@ worker:
       targetCPUUtilizationPercentage: 80
     resources:
       limits:
-        cpu: 300m
+        cpu: 450m
       requests:
         cpu: 250m
   sender:
@@ -136,7 +136,7 @@ worker:
       targetCPUUtilizationPercentage: 80
     resources:
       limits:
-        cpu: 300m
+        cpu: 450m
       requests:
         cpu: 250m
   nameOverride: ""
