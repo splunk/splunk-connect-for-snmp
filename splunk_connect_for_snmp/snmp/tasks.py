@@ -135,9 +135,9 @@ def trap(self, work):
         if OID_VALIDATOR.match(w[1]):
             with suppress(Exception):
                 found, mib = self.is_mib_known(w[1], w[1], work["host"])
-                if found and mib not in self.oid_values:
+                if found and mib not in self.already_loaded_mibs:
                     self.load_mibs([mib])
-                    self.oid_values.add(mib)
+                    self.already_loaded_mibs.add(mib)
 
         try:
             var_bind_table.append(
@@ -150,13 +150,13 @@ def trap(self, work):
 
     for oid in not_translated_oids:
         found, mib = self.is_mib_known(oid[0], oid[0], work["host"])
-        if found and mib not in self.oid_values:
+        if found and mib not in self.already_loaded_mibs:
             remotemibs.add(mib)
             remaining_oids.append((oid[0], oid[1]))
 
     if remotemibs:
         self.load_mibs(remotemibs)
-        self.oid_values.update(remotemibs)
+        self.already_loaded_mibs.update(remotemibs)
         for w in remaining_oids:
             try:
                 var_bind_table.append(
