@@ -69,7 +69,7 @@ spec:
             - name: SPLUNK_HEC_INSECURESSL
               value: {{ .Values.splunk.insecureSSL | default "false" | quote }}
             - name: SNMP_V3_SECURITY_ENGINE_ID
-              value: {{ .Values.traps.securityEngineId | default "8000000903000A397056B8AC" }}
+              value: {{ .Values.traps.securityEngineId }}
             - name: SPLUNK_HEC_TOKEN
               valueFrom:
                   secretKeyRef:
