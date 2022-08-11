@@ -104,11 +104,11 @@ worker:
     autoscaling:
       enabled: false
       minReplicas: 2
-      maxReplicas: 40
+      maxReplicas: 10
       targetCPUUtilizationPercentage: 80
     resources:
       limits:
-        cpu: 450m
+        cpu: 500m
       requests:
         cpu: 250m
   trap:
@@ -118,11 +118,11 @@ worker:
     autoscaling:
       enabled: false
       minReplicas: 2
-      maxReplicas: 40
+      maxReplicas: 10
       targetCPUUtilizationPercentage: 80
     resources:
       limits:
-        cpu: 450m
+        cpu: 500m
       requests:
         cpu: 250m
   sender:
@@ -132,11 +132,11 @@ worker:
     autoscaling:
       enabled: false
       minReplicas: 2
-      maxReplicas: 40
+      maxReplicas: 10
       targetCPUUtilizationPercentage: 80
     resources:
       limits:
-        cpu: 450m
+        cpu: 500m
       requests:
         cpu: 250m
   nameOverride: ""

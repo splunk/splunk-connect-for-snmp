@@ -147,10 +147,8 @@ By default, every worker has configured following resources:
     resources:
       limits:
         cpu: 500m
-        memory: 512Mi
       requests:
-        cpu: 300m
-        memory: 256Mi
+        cpu: 250m
 ```
 
 You can read about Horizontal Autoscaling and how to adjust maximum replica value to the resources you have
