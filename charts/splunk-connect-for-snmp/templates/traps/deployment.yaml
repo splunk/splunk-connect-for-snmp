@@ -89,7 +89,7 @@ spec:
             - name: tmp
               mountPath: "/tmp/"
               readOnly: false                    
-            {{- if .Values.traps.usernameSecrets }}                 
+            {{- range .Values.traps.usernameSecrets }}
             - name: {{ . }}
               mountPath: "/app/secrets/snmpv3/{{ . }}"
               subPath: {{ . }}
