@@ -135,9 +135,8 @@ spec:
             items:
               - key: "config.yaml"
                 path: "config.yaml"
-        {{- if .Values.traps.usernameSecrets }}
-        - name: {{ . }}
         {{- range .Values.traps.usernameSecrets }}
+        - name: {{ . }}
         {{- $secret := (lookup "v1" "Secret" $.Release.Namespace . ) -}}
         {{- if $secret }}
           secret:
@@ -171,7 +170,6 @@ spec:
               - key: contextName
                 path: {{ . }}/contextName
               {{- end }}
-        {{- end }}
         {{- end }}
       {{- end }}
         - name: pysnmp-cache-volume
