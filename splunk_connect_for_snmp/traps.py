@@ -185,8 +185,8 @@ def main():
                     securityEngineId=v2c.OctetString(hexValue=security_engine_id),
                 )
                 logging.debug(
-                    f"V3 users: {userName} auth {authProtocol} authkey {authKey} privprotocol {privProtocol} "
-                    f"privkey {privKey} securityEngineId {security_engine_id}"
+                    f"V3 users: {userName} auth {authProtocol} authkey {len(authKey)*'*'} privprotocol {privProtocol} "
+                    f"privkey {len(privKey)*'*'} securityEngineId {len(security_engine_id)*'*'}"
                 )
 
     # Register SNMP Application at the SNMP engine
