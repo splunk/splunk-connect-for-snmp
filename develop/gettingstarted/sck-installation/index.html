@@ -585,6 +585,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../../upgrade/" class="md-nav__link">
+        Upgrade SC4SNMP
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../bestpractices/" class="md-nav__link">
         Troubleshooting
       </a>
@@ -618,18 +633,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" type="checkbox" id="__nav_11" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_10">
+        <label class="md-nav__link" for="__nav_11">
           Offline Installation
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Offline Installation" data-md-level="1">
-        <label class="md-nav__title" for="__nav_10">
+        <label class="md-nav__title" for="__nav_11">
           <span class="md-nav__icon md-icon"></span>
           Offline Installation
         </label>
@@ -764,6 +779,10 @@
 
 
 <h1 id="splunk-opentelemetry-collector-for-kubernetes-installation">Splunk OpenTelemetry Collector for Kubernetes installation<a class="headerlink" href="#splunk-opentelemetry-collector-for-kubernetes-installation" title="Permanent link">&para;</a></h1>
+<p>Splunk OpenTelemetry Collector for Kubernetes is not required for SC4SNMP installation. This is the tool that sends logs
+and metrics from k8s cluster to Splunk instance, what makes SC4SNMP easier to debug. 
+You can do the same using <code>microk8s kubectl logs</code> command on instances you&rsquo;re interested in, but if you&rsquo;re not proficient in Kubernetes,
+Splunk OpenTelemetry Collector for Kubernetes is strongly advised.</p>
 <p>The below steps are sufficient for a Splunk OpenTelemetry Collector installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud.
 In order to learn more about Splunk OpenTelemetry Collector visit <a href="https://github.com/signalfx/splunk-otel-collector-chart">Splunk OpenTelemetry Collector</a>.</p>
 <h3 id="offline-installation">Offline installation<a class="headerlink" href="#offline-installation" title="Permanent link">&para;</a></h3>

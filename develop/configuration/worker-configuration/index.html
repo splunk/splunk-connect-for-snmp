@@ -450,6 +450,20 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#i-have-autoscaling-enabled-and-experience-problems-with-mongo-and-redis-pod" class="md-nav__link">
+    I have autoscaling enabled and experience problems with Mongo and Redis pod
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#i-dont-know-how-to-set-autoscaling-parameters-and-how-many-replicas-i-need" class="md-nav__link">
+    I don't know how to set autoscaling parameters and how many replicas I need
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -579,6 +593,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../../upgrade/" class="md-nav__link">
+        Upgrade SC4SNMP
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../bestpractices/" class="md-nav__link">
         Troubleshooting
       </a>
@@ -612,18 +641,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" type="checkbox" id="__nav_11" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_10">
+        <label class="md-nav__link" for="__nav_11">
           Offline Installation
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Offline Installation" data-md-level="1">
-        <label class="md-nav__title" for="__nav_10">
+        <label class="md-nav__title" for="__nav_11">
           <span class="md-nav__icon md-icon"></span>
           Offline Installation
         </label>
@@ -728,6 +757,20 @@
           <li class="md-nav__item">
   <a href="#real-life-scenario-i-have-a-significant-delay-in-polling" class="md-nav__link">
     Real life scenario: I have a significant delay in polling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#i-have-autoscaling-enabled-and-experience-problems-with-mongo-and-redis-pod" class="md-nav__link">
+    I have autoscaling enabled and experience problems with Mongo and Redis pod
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#i-dont-know-how-to-set-autoscaling-parameters-and-how-many-replicas-i-need" class="md-nav__link">
+    I don't know how to set autoscaling parameters and how many replicas I need
   </a>
   
 </li>
@@ -968,14 +1011,36 @@ By default, every worker has configured following resources:</p>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
 <span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500m</span><span class="w"></span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512Mi</span><span class="w"></span>
 <span class="w">      </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300m</span><span class="w"></span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">256Mi</span><span class="w"></span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250m</span><span class="w"></span>
 </code></pre></div>
 
-<p>You can read about Horizontal Autoscaling and how to adjust maximum replica value to the resources you have
-here: <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/">Horizontal Autoscaling.</a></p>
+<h4 id="i-have-autoscaling-enabled-and-experience-problems-with-mongo-and-redis-pod">I have autoscaling enabled and experience problems with Mongo and Redis pod<a class="headerlink" href="#i-have-autoscaling-enabled-and-experience-problems-with-mongo-and-redis-pod" title="Permanent link">&para;</a></h4>
+<p>If MongoDB and Redis pods are crushing, and some of the pods are in infinite <code>Pending</code> state, that means 
+you&rsquo;re over your resources and SC4SNMP cannot scale more. You should decrease number of <code>maxReplicas</code> in 
+workers, so that it&rsquo;s not going beyond available CPU.</p>
+<h4 id="i-dont-know-how-to-set-autoscaling-parameters-and-how-many-replicas-i-need">I don&rsquo;t know how to set autoscaling parameters and how many replicas I need<a class="headerlink" href="#i-dont-know-how-to-set-autoscaling-parameters-and-how-many-replicas-i-need" title="Permanent link">&para;</a></h4>
+<p>The best way to see if pods are overloaded is to run command:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s kubectl top pods -n sc4snmp</span><span class="w"></span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">NAME                                                          CPU(cores)   MEMORY(bytes)</span><span class="w">   </span>
+<span class="l l-Scalar l-Scalar-Plain">snmp-mibserver-7f879c5b7c-nnlfj                               1m           3Mi</span><span class="w">             </span>
+<span class="l l-Scalar l-Scalar-Plain">snmp-mongodb-869cc8586f-q8lkm                                 18m          225Mi</span><span class="w">           </span>
+<span class="l l-Scalar l-Scalar-Plain">snmp-redis-master-0                                           10m          2Mi</span><span class="w">             </span>
+<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-scheduler-558dccfb54-nb97j       2m           136Mi</span><span class="w">           </span>
+<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-trap-5878f89bbf-24wrz            2m           129Mi</span><span class="w">           </span>
+<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-trap-5878f89bbf-z9gd5            2m           129Mi</span><span class="w">           </span>
+<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-poller-599c7fdbfb-cfqjm   260m         354Mi</span><span class="w">           </span>
+<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-poller-599c7fdbfb-ztf7l   312m         553Mi</span><span class="w">           </span>
+<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-sender-579f796bbd-vmw88   14m           257Mi</span><span class="w">           </span>
+<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-trap-5474db6fc6-46zhf     3m           259Mi</span><span class="w">           </span>
+<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-trap-5474db6fc6-mjtpv     4m           259Mi</span><span class="w">   </span>
+</code></pre></div>
+
+<p>Here you can see how much CPU and Memory is being used by the pods. If the CPU is close to 500m (which is the limit for one pod by default),
+you should enable autoscaling/increase maxReplicas or increase replicaCount with autoscaling off.</p>
+<p>Here you can read about Horizontal Autoscaling and how to adjust maximum replica value to the resources you have: <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/">Horizontal Autoscaling.</a></p>
 
               
             </article>

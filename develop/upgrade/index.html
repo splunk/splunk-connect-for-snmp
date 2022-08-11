@@ -8,19 +8,19 @@
       
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.7">
     
     
       
-        <title>Platform Microk8s - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Upgrade SC4SNMP - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.4a0965b7.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.4a0965b7.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.cbb835fc.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
         
           
           
@@ -40,7 +40,7 @@
       
     
     
-    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#splunk-connect-for-snmp-using-microk8s" class="md-skip">
+        <a href="#upgrading-sc4snmp" class="md-skip">
           Skip to content
         </a>
       
@@ -84,7 +84,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+    <a href=".." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -103,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Platform Microk8s
+              Upgrade SC4SNMP
             
           </span>
         </div>
@@ -137,7 +137,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+    <a href=".." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -156,7 +156,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         Home
       </a>
     </li>
@@ -169,14 +169,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
       
       
       
@@ -199,7 +197,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../splunk-requirements/" class="md-nav__link">
+      <a href="../gettingstarted/splunk-requirements/" class="md-nav__link">
         Splunk Requirements
       </a>
     </li>
@@ -211,21 +209,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../gettingstarted/mk8s/k8s-microk8s/" class="md-nav__link">
         Platform Microk8s
       </a>
-      
     </li>
   
 
@@ -237,7 +225,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../sck-installation/" class="md-nav__link">
+      <a href="../gettingstarted/sck-installation/" class="md-nav__link">
         Install Splunk OpenTelemetry Collector for Kubernetes
       </a>
     </li>
@@ -251,7 +239,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../sc4snmp-installation/" class="md-nav__link">
+      <a href="../gettingstarted/sc4snmp-installation/" class="md-nav__link">
         Install SC4SNMP
       </a>
     </li>
@@ -273,7 +261,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../ha/" class="md-nav__link">
+      <a href="../ha/" class="md-nav__link">
         High Availability
       </a>
     </li>
@@ -314,7 +302,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/configuring-profiles/" class="md-nav__link">
+      <a href="../configuration/configuring-profiles/" class="md-nav__link">
         Configuring Profiles
       </a>
     </li>
@@ -328,7 +316,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/deployment-configuration/" class="md-nav__link">
+      <a href="../configuration/deployment-configuration/" class="md-nav__link">
         Deployment
       </a>
     </li>
@@ -342,7 +330,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/poller-configuration/" class="md-nav__link">
+      <a href="../configuration/poller-configuration/" class="md-nav__link">
         Poller
       </a>
     </li>
@@ -356,7 +344,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/trap-configuration/" class="md-nav__link">
+      <a href="../configuration/trap-configuration/" class="md-nav__link">
         Trap
       </a>
     </li>
@@ -370,7 +358,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/scheduler-configuration/" class="md-nav__link">
+      <a href="../configuration/scheduler-configuration/" class="md-nav__link">
         Scheduler
       </a>
     </li>
@@ -384,7 +372,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/worker-configuration/" class="md-nav__link">
+      <a href="../configuration/worker-configuration/" class="md-nav__link">
         Worker
       </a>
     </li>
@@ -398,7 +386,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/mongo-configuration/" class="md-nav__link">
+      <a href="../configuration/mongo-configuration/" class="md-nav__link">
         Mongo DB
       </a>
     </li>
@@ -412,7 +400,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/redis-configuration/" class="md-nav__link">
+      <a href="../configuration/redis-configuration/" class="md-nav__link">
         Redis
       </a>
     </li>
@@ -426,7 +414,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/snmpv3-configuration/" class="md-nav__link">
+      <a href="../configuration/snmpv3-configuration/" class="md-nav__link">
         SNMPv3 configuration
       </a>
     </li>
@@ -440,7 +428,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/sim-configuration/" class="md-nav__link">
+      <a href="../configuration/sim-configuration/" class="md-nav__link">
         Splunk Infrastructure Monitoring
       </a>
     </li>
@@ -462,7 +450,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../planning/" class="md-nav__link">
+      <a href="../planning/" class="md-nav__link">
         Planning
       </a>
     </li>
@@ -477,7 +465,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/" class="md-nav__link">
+      <a href="../security/" class="md-nav__link">
         Security
       </a>
     </li>
@@ -492,7 +480,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../mib-request/" class="md-nav__link">
+      <a href="../mib-request/" class="md-nav__link">
         Request MIB
       </a>
     </li>
@@ -505,11 +493,59 @@
 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../../upgrade/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Upgrade SC4SNMP
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Upgrade SC4SNMP
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#upgrade-to-the-latest-version" class="md-nav__link">
+    Upgrade to the latest version
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrade-to-a-specific-version" class="md-nav__link">
+    Upgrade to a specific version
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -522,7 +558,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../bestpractices/" class="md-nav__link">
+      <a href="../bestpractices/" class="md-nav__link">
         Troubleshooting
       </a>
     </li>
@@ -537,7 +573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/" class="md-nav__link">
+      <a href="../releases/" class="md-nav__link">
         Releases
       </a>
     </li>
@@ -578,7 +614,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../offlineinstallation/offline-sck/" class="md-nav__link">
+      <a href="../offlineinstallation/offline-sck/" class="md-nav__link">
         Install Splunk OpenTelemetry Collector for Kubernetes
       </a>
     </li>
@@ -592,7 +628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../offlineinstallation/offline-sc4snmp/" class="md-nav__link">
+      <a href="../offlineinstallation/offline-sc4snmp/" class="md-nav__link">
         Install SC4SNMP
       </a>
     </li>
@@ -626,6 +662,28 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#upgrade-to-the-latest-version" class="md-nav__link">
+    Upgrade to the latest version
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrade-to-a-specific-version" class="md-nav__link">
+    Upgrade to a specific version
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -638,70 +696,41 @@
                 
 
 
-<h1 id="splunk-connect-for-snmp-using-microk8s">Splunk Connect for SNMP using MicroK8s<a class="headerlink" href="#splunk-connect-for-snmp-using-microk8s" title="Permanent link">&para;</a></h1>
-<p>Using this deployment option any Linux deployment of Microk8s can be used to support SC4SNMP given the following requirements are met. The minimum requirements below are suitable for proof of value and small installations, actual requirements will differ.</p>
-<p>Single node minimum
-* 4 cores
-* 8 GB of memory per node
-* 50 GB mounted as /</p>
-<p>Three node minimum per node
-* 4 cores
-* 8 GB of memory per node
-* 50 GB mounted /</p>
-<h1 id="microk8s-installation-on-ubuntu">MicroK8s installation on Ubuntu<a class="headerlink" href="#microk8s-installation-on-ubuntu" title="Permanent link">&para;</a></h1>
-<p>The following quick start guidance is based on Ubuntu 20.04LTS with MicroK8s with internet access. Other deployment options
-may be found in the MicroK8s <a href="https://microk8s.io/docs">documentation</a> including offline and with proxy. </p>
-<h2 id="install-microk8s-using-snap">Install MicroK8s using Snap<a class="headerlink" href="#install-microk8s-using-snap" title="Permanent link">&para;</a></h2>
-<div class="codehilite"><pre><span></span><code>sudo snap install microk8s --classic
+<h1 id="upgrading-sc4snmp">Upgrading SC4SNMP<a class="headerlink" href="#upgrading-sc4snmp" title="Permanent link">&para;</a></h1>
+<h2 id="upgrade-to-the-latest-version">Upgrade to the latest version<a class="headerlink" href="#upgrade-to-the-latest-version" title="Permanent link">&para;</a></h2>
+<p>To upgrade SC4SNMP to the latest version, simply run the following command:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 repo update</span><span class="w"></span>
 </code></pre></div>
 
-<p>Add user to the microk8s group to no longer have to use the <code>sudo</code> command</p>
-<div class="codehilite"><pre><span></span><code>sudo usermod -a -G microk8s <span class="nv">$USER</span>
-sudo chown -f -R <span class="nv">$USER</span> ~/.kube
-su - <span class="nv">$USER</span>
+<p>After that, next time you run:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</span><span class="w"></span>
 </code></pre></div>
 
-<p>Wait for Installation of Mk8S to complete</p>
-<div class="codehilite"><pre><span></span><code>microk8s status --wait-ready
+<p>SC4SNMP will be upgraded to the newest version. You can see the latest version after hitting the command:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 search repo snmp</span><span class="w"></span>
 </code></pre></div>
 
-<h2 id="add-additional-nodes-optional">Add additional nodes (optional)<a class="headerlink" href="#add-additional-nodes-optional" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Repeat the steps above for each additional node (minimum total 3)</li>
-<li>On the first node issue the following, this will return joining instructions</li>
-</ul>
-<div class="codehilite"><pre><span></span><code>microk8s add-node
+<p>The output looks like that:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span>                                            <span class="nv">CHART</span> <span class="nv">VERSION</span>   <span class="nv">APP</span> <span class="nv">VERSION</span> <span class="nv">DESCRIPTION</span>                           
+<span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span> <span class="mi">1</span>.<span class="mi">6</span>.<span class="mi">2</span>           <span class="mi">1</span>.<span class="mi">6</span>.<span class="mi">2</span>       <span class="nv">A</span> <span class="nv">Helm</span> <span class="nv">chart</span> <span class="k">for</span> <span class="nv">SNMP</span> <span class="k">Connect</span> <span class="k">for</span> <span class="nv">SNMP</span>
 </code></pre></div>
 
-<ul>
-<li>On each additional node use the output from the command above</li>
-</ul>
-<h2 id="install-basic-services-required-for-sc4snmp">Install basic services required for sc4snmp<a class="headerlink" href="#install-basic-services-required-for-sc4snmp" title="Permanent link">&para;</a></h2>
-<p>The following commands can be issued from any one node in a cluster</p>
-<div class="codehilite"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> iscsid
-microk8s <span class="nb">enable</span> helm3
-microk8s <span class="nb">enable</span> storage
-microk8s <span class="nb">enable</span> rbac
-microk8s <span class="nb">enable</span> community
-microk8s <span class="nb">enable</span> openebs
-microk8s <span class="nb">enable</span> metrics-server
-microk8s status --wait-ready
+<p>So in this case, the latest version is <code>1.6.2</code> and it will be installed after <code>helm3 upgrade</code> command.</p>
+<h2 id="upgrade-to-a-specific-version">Upgrade to a specific version<a class="headerlink" href="#upgrade-to-a-specific-version" title="Permanent link">&para;</a></h2>
+<p>Alternatively, you can install one of the previous versions, or a development one. You can list all the previous versions with:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 search repo snmp --versions</span><span class="w"></span>
 </code></pre></div>
 
-<p>Install the DNS server for mk8s and configure the forwarding DNS servers replace the IP addressed below (opendns) from
-allowed values for your network</p>
-<div class="codehilite"><pre><span></span><code>microk8s <span class="nb">enable</span> dns:208.67.222.222,208.67.220.220
-microk8s status --wait-ready
+<p>And all the development versions:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 search repo snmp --devel</span><span class="w"></span>
 </code></pre></div>
 
-<h2 id="install-metallb">Install Metallb<a class="headerlink" href="#install-metallb" title="Permanent link">&para;</a></h2>
-<p>Note: when installing metallb you will be prompted for one or more IPs to use as entry points
-Into the cluster. If your plan to enable clustering, this IP should not be assigned to the host (floats)
-If you do not plan to cluster, then this IP may be the same IP as the host</p>
-<p>Note2: a single IP in cidr format is x.x.x.x/32 use CIDR or range syntax for single server installations this can be
-the same as the primary ip.</p>
-<div class="codehilite"><pre><span></span><code>microk8s <span class="nb">enable</span> metallb
-microk8s status --wait-ready
+<p>To upgrade your SC4SNMP instance to any of the listed versions, run <code>helm3 upgrade</code> with the <code>--version</code> flag:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version &lt;VERSION&gt;</span><span class="w"></span>
+</code></pre></div>
+
+<p>For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version 1.6.3-beta.13</span><span class="w"></span>
 </code></pre></div>
 
               
@@ -718,7 +747,7 @@ microk8s status --wait-ready
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../../splunk-requirements/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Splunk Requirements" rel="prev">
+        <a href="../mib-request/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Request MIB" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -727,20 +756,20 @@ microk8s status --wait-ready
               <span class="md-footer__direction">
                 Previous
               </span>
-              Splunk Requirements
+              Request MIB
             </div>
           </div>
         </a>
       
       
         
-        <a href="../../sck-installation/" class="md-footer__link md-footer__link--next" aria-label="Next: Install Splunk OpenTelemetry Collector for Kubernetes" rel="next">
+        <a href="../bestpractices/" class="md-footer__link md-footer__link--next" aria-label="Next: Troubleshooting" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Install Splunk OpenTelemetry Collector for Kubernetes
+              Troubleshooting
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -770,10 +799,10 @@ microk8s status --wait-ready
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.0238f547.min.js"></script>
+      <script src="../assets/javascripts/bundle.0238f547.min.js"></script>
       
     
   </body>
