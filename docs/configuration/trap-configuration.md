@@ -62,18 +62,24 @@ traps:
       - sc4snmp-homesecure-sha-des
 ```   
 
-### Define security engine ID for SNMPv3
+### Define security engines ID for SNMPv3
 
-Security engine ID variable is necessary when sending SNMPv3 traps. By default, it is set to 
-`80003a8c04`. It has to match the `-e` string in snmptrap.
+SNMPv3 TRAPs mandate you configuring SNMP Engine ID of the TRAP sending application to USM users table of TRAP receiving 
+application for each USM user. It is usually unique per the device, and SC4SNMP as a trap receiver has to be aware of 
+which security engine ids to accept. Define all of them under `traps.securityEngineId` in `values.yaml`.
+
+By default, it is set to one-element list: `[80003a8c04]`. 
 
 Example:
 ```yaml
 traps:
-    securityEngineId: "80003a8c04"
+    securityEngineId: 
+      - "80003a8c04"
 ```
 
+Security engine id is a substitute of `-e` variable in `snmptrap`.
 An example of SNMPv3 trap is:
+
 ```yaml
 snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 '' 1.3.6.1.2.1.2.2.1.1.1
 ```

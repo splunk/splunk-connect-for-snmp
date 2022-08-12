@@ -195,7 +195,8 @@ sim:
 traps:
   replicaCount: 2
   usernameSecrets: []
-  securityEngineId: "80003a8c04"
+  securityEngineId:
+    - "80003a8c04"
 
   communities: {}
   nameOverride: ""
