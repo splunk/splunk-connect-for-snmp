@@ -1,4 +1,4 @@
-# Installation of SC4SNMP on small environment
+# Installation of SC4SNMP on a small environment
 
 SC4SNMP can be successfully installed on small environments with 2 CPUs and 4 Gb of memory.
 One important thing to remember is that Splunk OpenTelemetry Collector for Kubernetes cannot be installed on such a small
@@ -19,11 +19,11 @@ traps:
   replicaCount: 1
   resources:
      limits:
-       cpu: 300m
+       cpu: 100m
        memory: 300Mi
      requests:
-       cpu: 60m
-       memory: 256Mi
+       cpu: 40m
+       memory: 256Mi 
   communities:
     2c:
       - public
@@ -41,11 +41,11 @@ worker:
     replicaCount: 1
     resources:
       limits:
-        cpu: 200m
-        memory: 400Mi
+        cpu: 100m
+        memory: 300Mi
       requests:
         cpu: 40m
-        memory: 260Mi
+        memory: 150Mi
     #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
     #autoscaling:
     #  enabled: true
@@ -54,13 +54,13 @@ worker:
     #  targetCPUUtilizationPercentage: 80
   poller:
     # replicaCount: number of poller-worker pods which consumes polling tasks
-    replicaCount: 1
+    replicaCount: 2
     resources:
       limits:
-        cpu: 400m
-        memory: 400Mi
+        cpu: 200m
+        memory: 600Mi
       requests:
-        cpu: 100m
+        cpu: 60m
         memory: 260Mi
     #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
     #autoscaling:
@@ -73,11 +73,11 @@ worker:
     replicaCount: 1
     resources:
       limits:
-        cpu: 200m
-        memory: 500Mi
+        cpu: 100m
+        memory: 350Mi
       requests:
-        cpu: 20m
-        memory: 260Mi
+        cpu: 30m
+        memory: 250Mi
     # autoscaling: use it instead of replicaCount in order to make pods scalable by itself
     #autoscaling:
     #  enabled: true
@@ -92,7 +92,7 @@ scheduler:
   resources:
      limits:
        cpu: 40m
-       memory: 300Mi
+       memory: 260Mi
      requests:
        cpu: 20m
        memory: 180Mi
@@ -130,7 +130,7 @@ inventory:
   resources:
      limits:
        cpu: 60m
-       memory: 312Mi
+       memory: 300Mi
      requests:
        cpu: 20m
 ```
