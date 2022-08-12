@@ -419,8 +419,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#define-security-engine-id-for-snmpv3" class="md-nav__link">
-    Define security engine ID for SNMPv3
+  <a href="#define-security-engines-id-for-snmpv3" class="md-nav__link">
+    Define security engines ID for SNMPv3
   </a>
   
 </li>
@@ -598,6 +598,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../../upgrade/" class="md-nav__link">
+        Upgrade SC4SNMP
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../bestpractices/" class="md-nav__link">
         Troubleshooting
       </a>
@@ -668,8 +683,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#define-security-engine-id-for-snmpv3" class="md-nav__link">
-    Define security engine ID for SNMPv3
+  <a href="#define-security-engines-id-for-snmpv3" class="md-nav__link">
+    Define security engines ID for SNMPv3
   </a>
   
 </li>
@@ -765,15 +780,19 @@ More information on how to define the &ldquo;Secret&rdquo; object for SNMPv3 can
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-des</span><span class="w"></span>
 </code></pre></div>
 
-<h3 id="define-security-engine-id-for-snmpv3">Define security engine ID for SNMPv3<a class="headerlink" href="#define-security-engine-id-for-snmpv3" title="Permanent link">&para;</a></h3>
-<p>Security engine ID variable is necessary when sending SNMPv3 traps. By default, it is set to 
-<code>80003a8c04</code>. It has to match the <code>-e</code> string in snmptrap.</p>
+<h3 id="define-security-engines-id-for-snmpv3">Define security engines ID for SNMPv3<a class="headerlink" href="#define-security-engines-id-for-snmpv3" title="Permanent link">&para;</a></h3>
+<p>SNMPv3 TRAPs mandate you configuring SNMP Engine ID of the TRAP sending application to USM users table of TRAP receiving 
+application for each USM user. It is usually unique per the device, and SC4SNMP as a trap receiver has to be aware of 
+which security engine ids to accept. Define all of them under <code>traps.securityEngineId</code> in <code>values.yaml</code>.</p>
+<p>By default, it is set to one-element list: <code>[80003a8c04]</code>. </p>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">securityEngineId</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;80003a8c04&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">securityEngineId</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;80003a8c04&quot;</span><span class="w"></span>
 </code></pre></div>
 
-<p>An example of SNMPv3 trap is:</p>
+<p>Security engine id is a substitute of <code>-e</code> variable in <code>snmptrap</code>.
+An example of SNMPv3 trap is:</p>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 &#39;&#39; 1.3.6.1.2.1.2.2.1.1.1</span><span class="w"></span>
 </code></pre></div>
 
