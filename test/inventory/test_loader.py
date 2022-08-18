@@ -1,6 +1,6 @@
+import os
 from unittest import TestCase, mock
 from unittest.mock import Mock, mock_open, patch
-import os
 
 from celery.schedules import schedule
 from pymongo.results import UpdateResult
@@ -440,7 +440,10 @@ class TestLoader(TestCase):
         m_open,
         walk_task,
     ):
-        mock_files = [mock_open(read_data=content).return_value for content in [mock_inventory_group, testing_group]]
+        mock_files = [
+            mock_open(read_data=content).return_value
+            for content in [mock_inventory_group, testing_group]
+        ]
         m_open.side_effect = mock_files
         walk_task.return_value = expected_managed_task
         m_mongo_collection.return_value = UpdateResult(
@@ -452,7 +455,6 @@ class TestLoader(TestCase):
         self.assertEqual(False, load())
 
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
-
 
     @patch("builtins.open", new_callable=mock_open)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
@@ -475,7 +477,10 @@ class TestLoader(TestCase):
         m_taskManager,
         m_open,
     ):
-        mock_files = [mock_open(read_data=content).return_value for content in [mock_inventory_group_delete, testing_group]]
+        mock_files = [
+            mock_open(read_data=content).return_value
+            for content in [mock_inventory_group_delete, testing_group]
+        ]
         m_open.side_effect = mock_files
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
