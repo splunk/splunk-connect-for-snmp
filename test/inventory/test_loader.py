@@ -28,13 +28,16 @@ mock_inventory_small_walk = """address,port,version,community,secret,securityEng
 192.168.0.1,,2c,public,,,1805,test_1;walk1;walk2,False,False"""
 
 mock_inventory_group = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
-testing,,2c,public,,,1805,test_1,False,False"""
+testing_existing,,2c,public,,,1805,test_1,False,False"""
+
+mock_inventory_none_existing_group = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+testing_non_existing,,2c,public,,,1805,test_1,False,False"""
 
 mock_inventory_group_delete = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
-testing,,2c,public,,,1805,test_1,False,True"""
+testing_existing,,2c,public,,,1805,test_1,False,True"""
 
 testing_group = """groups:
-    testing:
+    testing_existing:
       - 127.0.0.1
       - 192.168.0.1:1161"""
 
@@ -455,6 +458,41 @@ class TestLoader(TestCase):
         self.assertEqual(False, load())
 
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
+
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
+    @patch("builtins.open", new_callable=mock_open)
+    @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
+    @mock.patch("pymongo.collection.Collection.update_one")
+    @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
+    def test_load_new_records_with_none_existing_group(
+        self,
+        m_load_profiles,
+        m_update_profiles,
+        m_migrate,
+        m_mongo_collection,
+        m_taskManager,
+        m_open,
+        walk_task,
+    ):
+        mock_files = [
+            mock_open(read_data=content).return_value
+            for content in [mock_inventory_none_existing_group, testing_group]
+        ]
+        m_open.side_effect = mock_files
+        walk_task.return_value = expected_managed_task
+        periodic_obj_mock = Mock()
+        m_taskManager.return_value = periodic_obj_mock
+        m_load_profiles.return_value = default_profiles
+        self.assertEqual(False, load())
+
+        m_mongo_collection.assert_not_called()
+        periodic_obj_mock.manage_task.assert_not_called()
 
     @patch("builtins.open", new_callable=mock_open)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")

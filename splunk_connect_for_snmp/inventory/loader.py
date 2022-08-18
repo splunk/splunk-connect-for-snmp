@@ -111,6 +111,8 @@ def load():
                     new_record["address"] = gr_addr["ip"]
                     new_record["port"] = gr_addr["port"]
                     records_converted.append(new_record)
+            if len(records_converted) == 0:
+                continue
             for new_source_record in records_converted:
                 try:
                     ir = InventoryRecord(**new_source_record)
