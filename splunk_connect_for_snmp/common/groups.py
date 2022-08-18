@@ -1,6 +1,7 @@
-import yaml
 import os
+import yaml
 from celery.utils.log import get_task_logger
+
 try:
     from dotenv import load_dotenv
 

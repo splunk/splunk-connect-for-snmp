@@ -17,8 +17,8 @@
 import logging
 import os
 import sys
-from csv import DictReader
 from copy import copy
+from csv import DictReader
 
 import pymongo
 import yaml
@@ -27,11 +27,11 @@ from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
+from splunk_connect_for_snmp.common.groups import get_group
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.profiles import ProfilesManager
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
 from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
-from splunk_connect_for_snmp.common.groups import get_group
 
 from ..poller import app
 
@@ -102,7 +102,7 @@ def load():
             if address.startswith("#"):
                 logger.warning(f"Record: {address} is commented out. Skipping...")
                 continue
-            elif address.startswith(('1','2','3','4','5','6','7','8','9','0')):
+            elif address.startswith(("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")):
                 records_converted.append(source_record)
             else:
                 group_addresses = get_group(address)
@@ -137,7 +137,9 @@ def load():
                             ]
                             if profiles:
                                 profile = profiles[-1]
-                                ir.walk_interval = int(new_source_record["walk_interval"])
+                                ir.walk_interval = int(
+                                    new_source_record["walk_interval"]
+                                )
                         status = inventory_records.update_one(
                             {"address": ir.address, "port": ir.port},
                             {"$set": ir.asdict()},

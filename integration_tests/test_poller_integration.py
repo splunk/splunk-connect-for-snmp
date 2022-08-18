@@ -22,6 +22,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 from integration_tests.splunk_test_utils import (
     splunk_single_search,
     update_file,
+    update_groups,
     update_profiles,
     upgrade_helm,
     yaml_escape_list,
@@ -430,6 +431,88 @@ class TestSNMPv3Connection:
     def test_snmpv3_walk(self, setup_splunk):
         time.sleep(100)
         search_string = """| mpreview index=netmetrics | search profiles=v3profile"""
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+
+@pytest.fixture(scope="class")
+def setup_groups(request):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    profiles = {
+        "single_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IP-MIB"))],
+        },
+        "routers_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IP-MIB"))],
+        },
+        "switches_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IP-MIB"))],
+        },
+    }
+    groups = {
+        "routers": [f"{trap_external_ip}:1163", f"{trap_external_ip}:1164"],
+        "switches": [f"{trap_external_ip}", f"{trap_external_ip}:1162"],
+    }
+    update_profiles(profiles)
+    update_groups(groups)
+    update_file(
+        [
+            f"{trap_external_ip},1165,2c,public,,,600,single_profile,,",
+            f"routers,,2c,public,,,600,routers_profile,,",
+            f"switches,,2c,public,,,600,switches_profile,,",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+    time.sleep(190)
+    yield
+    update_file(
+        [
+            f"{trap_external_ip},1165,2c,public,,,600,single_profile,,t",
+            f"routers,,2c,public,,,600,routers_profile,,t",
+            f"switches,,2c,public,,,600,switches_profile,,t",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml"])
+    time.sleep(100)
+
+
+@pytest.mark.usefixtures("setup_groups")
+class TestGroupsInventory:
+    def test_ip_address_inventory(self, setup_splunk):
+        time.sleep(20)
+        search_string = (
+            """| mpreview index=netmetrics | search profiles=single_profile"""
+        )
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+    def test_switches_group(self, setup_splunk):
+        time.sleep(20)
+        search_string = (
+            """| mpreview index=netmetrics | search profiles=switches_profile"""
+        )
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+    def test_routers_group(self, setup_splunk):
+        time.sleep(20)
+        search_string = (
+            """| mpreview index=netmetrics | search profiles=routers_profile"""
+        )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
