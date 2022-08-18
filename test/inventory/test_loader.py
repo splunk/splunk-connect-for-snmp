@@ -1,5 +1,6 @@
 from unittest import TestCase, mock
 from unittest.mock import Mock, mock_open, patch
+import os
 
 from celery.schedules import schedule
 from pymongo.results import UpdateResult
@@ -25,6 +26,17 @@ mock_inventory_delete_non_default = """address,port,version,community,secret,sec
 
 mock_inventory_small_walk = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
 192.168.0.1,,2c,public,,,1805,test_1;walk1;walk2,False,False"""
+
+mock_inventory_group = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+testing,,2c,public,,,1805,test_1,False,False"""
+
+mock_inventory_group_delete = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+testing,,2c,public,,,1805,test_1,False,True"""
+
+testing_group = """groups:
+    testing:
+      - 127.0.0.1
+      - 192.168.0.1:1161"""
 
 expected_managed_task = {"some": 1, "test": 2, "data": 3}
 
@@ -406,6 +418,82 @@ class TestLoader(TestCase):
         m_load_profiles.return_value = default_profiles
 
         self.assertEqual(True, load())
+
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
+    @patch("builtins.open", new_callable=mock_open)
+    @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
+    @mock.patch("pymongo.collection.Collection.update_one")
+    @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
+    def test_load_new_records_from_group(
+        self,
+        m_load_profiles,
+        m_update_profiles,
+        m_migrate,
+        m_mongo_collection,
+        m_taskManager,
+        m_open,
+        walk_task,
+    ):
+        mock_files = [mock_open(read_data=content).return_value for content in [mock_inventory_group, testing_group]]
+        m_open.side_effect = mock_files
+        walk_task.return_value = expected_managed_task
+        m_mongo_collection.return_value = UpdateResult(
+            {"n": 0, "nModified": 2, "upserted": 2}, True
+        )
+        periodic_obj_mock = Mock()
+        m_taskManager.return_value = periodic_obj_mock
+        m_load_profiles.return_value = default_profiles
+        self.assertEqual(False, load())
+
+        periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
+
+
+    @patch("builtins.open", new_callable=mock_open)
+    @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
+    @mock.patch("pymongo.collection.Collection.delete_one")
+    @mock.patch("pymongo.collection.Collection.remove")
+    @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
+    def test_deleting_records_from_group(
+        self,
+        m_load_profiles,
+        m_update_profiles,
+        m_migrate,
+        m_remove,
+        m_delete,
+        m_taskManager,
+        m_open,
+    ):
+        mock_files = [mock_open(read_data=content).return_value for content in [mock_inventory_group_delete, testing_group]]
+        m_open.side_effect = mock_files
+        periodic_obj_mock = Mock()
+        m_taskManager.return_value = periodic_obj_mock
+        m_load_profiles.return_value = default_profiles
+        self.assertEqual(False, load())
+
+        periodic_obj_mock.delete_all_tasks_of_host.assert_any_call("127.0.0.1")
+        m_delete.assert_any_call({"address": "127.0.0.1", "port": 161})
+        periodic_obj_mock.delete_all_tasks_of_host.assert_any_call("192.168.0.1:1161")
+        m_delete.assert_any_call({"address": "192.168.0.1", "port": 1161})
+
+        calls = m_remove.call_args_list
+
+        self.assertEqual(4, len(calls))
+        self.assertEqual(({"address": "127.0.0.1"},), calls[0].args)
+        self.assertEqual(({"address": "127.0.0.1"},), calls[1].args)
+        self.assertEqual(({"address": "192.168.0.1:1161"},), calls[2].args)
+        self.assertEqual(({"address": "192.168.0.1:1161"},), calls[3].args)
 
     def test_transform_address_to_key_161(self):
         self.assertEqual(transform_address_to_key("127.0.0.1", 161), "127.0.0.1")
