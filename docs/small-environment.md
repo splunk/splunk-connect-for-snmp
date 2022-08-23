@@ -1,9 +1,9 @@
-# Installation of SC4SNMP on a small environment
+# Lightweight SC4SNMP installation
 
-SC4SNMP can be successfully installed on small environments with 2 CPUs and 4 Gb of memory.
-One important thing to remember is that Splunk OpenTelemetry Collector for Kubernetes cannot be installed on such a small
-environment along with SC4SNMP. The other difference from normal installation is that resources limits must be set for Kubernetes
-pods. Example `values.yaml` with the appropriate resources can be seen bellow:
+SC4SNMP can be successfully installed in small environments with 2 CPUs and 4 Gb of memory.
+One important thing to remember is that Splunk OpenTelemetry Collector for Kubernetes cannot be installed in such a small
+environment along with SC4SNMP. The other difference from normal installation is that `resources` limits must be set for Kubernetes
+pods. Example `values.yaml` with the appropriate resources below:
 
 ```yaml
 splunk:
@@ -137,3 +137,6 @@ inventory:
 
 The rest of the installation is the same as in [online](gettingstarted/sc4snmp-installation.md) or 
 [offline](offlineinstallation/offline-sc4snmp.md) installation.
+
+Keep in mind, that lightweight instance of SC4SNMP won't be able to poll from many devices and may experience delays 
+in case of frequent polling.
