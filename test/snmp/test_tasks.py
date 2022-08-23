@@ -163,7 +163,10 @@ class TestTasks(TestCase):
         m_is_mib_known,
         m_process_data,
         m_resolved,
-        *mongo_args
+        m_release,
+        m_lock,
+        m_mongo_lock,
+        m_mongo_client,
     ):
         from splunk_connect_for_snmp.snmp.tasks import trap
 
@@ -177,6 +180,7 @@ class TestTasks(TestCase):
         self_obj = MagicMock()
         self_obj.trap = trap
         self_obj.mib_view_controller = MagicMock()
+        self_obj.trap.already_loaded_mibs = set()
         result = self_obj.trap(work)
 
         calls = m_load_mib.call_args_list

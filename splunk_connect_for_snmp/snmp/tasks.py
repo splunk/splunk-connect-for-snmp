@@ -43,6 +43,7 @@ logger = get_task_logger(__name__)
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
+WALK_RETRY_MAX_INTERVAL = int(os.getenv("WALK_RETRY_MAX_INTERVAL", "600"))
 OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
 
 
@@ -50,8 +51,7 @@ OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
     bind=True,
     base=Poller,
     retry_backoff=30,
-    retry_jitter=True,
-    retry_backoff_max=3600,
+    retry_backoff_max=WALK_RETRY_MAX_INTERVAL,
     max_retries=50,
     autoretry_for=(
         MongoLockLocked,
@@ -63,7 +63,6 @@ OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
     ),
 )
 def walk(self, **kwargs):
-
     address = kwargs["address"]
     profile = kwargs.get("profile", [])
     if profile:
@@ -129,7 +128,6 @@ def trap(self, work):
     var_bind_table = []
     not_translated_oids = []
     remaining_oids = []
-    oid_values = set()
     remotemibs = set()
     metrics = {}
     for w in work["data"]:
@@ -137,9 +135,9 @@ def trap(self, work):
         if OID_VALIDATOR.match(w[1]):
             with suppress(Exception):
                 found, mib = self.is_mib_known(w[1], w[1], work["host"])
-                if found and mib not in oid_values:
+                if found and mib not in self.already_loaded_mibs:
                     self.load_mibs([mib])
-                    oid_values.add(mib)
+                    self.already_loaded_mibs.add(mib)
 
         try:
             var_bind_table.append(
@@ -152,12 +150,13 @@ def trap(self, work):
 
     for oid in not_translated_oids:
         found, mib = self.is_mib_known(oid[0], oid[0], work["host"])
-        if found:
+        if found and mib not in self.already_loaded_mibs:
             remotemibs.add(mib)
             remaining_oids.append((oid[0], oid[1]))
 
     if remotemibs:
         self.load_mibs(remotemibs)
+        self.already_loaded_mibs.update(remotemibs)
         for w in remaining_oids:
             try:
                 var_bind_table.append(

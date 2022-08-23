@@ -1,6 +1,7 @@
 from unittest import TestCase, mock
 from unittest.mock import Mock, mock_open, patch
 
+from celery.schedules import schedule
 from pymongo.results import UpdateResult
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
@@ -54,7 +55,7 @@ class TestLoader(TestCase):
             "delete": False,
         }
 
-        inventory_record = InventoryRecord.from_dict(inventory_record_json)
+        inventory_record = InventoryRecord(**inventory_record_json)
         result = gen_walk_task(inventory_record)
 
         self.assertEqual("sc4snmp;192.68.0.1:456;walk", result["name"])
@@ -81,7 +82,7 @@ class TestLoader(TestCase):
             "splunk_connect_for_snmp.splunk.tasks.send",
             result["options"]["link"].tasks[1].tasks[1].tasks[1].name,
         )
-        self.assertEqual({"every": 3456, "period": "seconds"}, result["interval"])
+        self.assertEqual(schedule(3456), result["schedule"])
         self.assertTrue(result["enabled"])
         self.assertTrue(result["run_immediately"])
 
@@ -99,7 +100,7 @@ class TestLoader(TestCase):
             "delete": False,
         }
 
-        inventory_record = InventoryRecord.from_dict(inventory_record_json)
+        inventory_record = InventoryRecord(**inventory_record_json)
         result = gen_walk_task(inventory_record)
 
         self.assertEqual("sc4snmp;192.68.0.1;walk", result["name"])
@@ -124,7 +125,7 @@ class TestLoader(TestCase):
             "splunk_connect_for_snmp.splunk.tasks.send",
             result["options"]["link"].tasks[1].tasks[1].tasks[1].name,
         )
-        self.assertEqual({"every": 3456, "period": "seconds"}, result["interval"])
+        self.assertEqual(schedule(3456), result["schedule"])
         self.assertTrue(result["enabled"])
         self.assertTrue(result["run_immediately"])
 
@@ -132,10 +133,16 @@ class TestLoader(TestCase):
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     def test_load_new_record_small_walk(
         self,
         m_load_profiles,
+        m_gather_profiles,
         m_migrate,
         m_mongo_collection,
         m_taskManager,
@@ -177,10 +184,16 @@ class TestLoader(TestCase):
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     def test_load_new_record(
         self,
         m_load_profiles,
+        m_update_profiles,
         m_migrate,
         m_mongo_collection,
         m_taskManager,
@@ -203,10 +216,16 @@ class TestLoader(TestCase):
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     def test_load_modified_record(
         self,
         m_load_profiles,
+        m_update_profiles,
         m_migrate,
         m_mongo_collection,
         m_taskManager,
@@ -228,9 +247,20 @@ class TestLoader(TestCase):
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     def test_load_unchanged_record(
-        self, m_load_profiles, m_migrate, m_mongo_collection, m_taskManager, m_open
+        self,
+        m_load_profiles,
+        m_update_profiles,
+        m_migrate,
+        m_mongo_collection,
+        m_taskManager,
+        m_open,
     ):
         m_mongo_collection.return_value = UpdateResult(
             {"n": 1, "nModified": 0, "upserted": None}, True
@@ -248,9 +278,20 @@ class TestLoader(TestCase):
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     def test_ignoring_comment(
-        self, m_load_profiles, m_migrate, m_mongo_collection, m_taskManager, m_open
+        self,
+        m_load_profiles,
+        m_update_profiles,
+        m_migrate,
+        m_mongo_collection,
+        m_taskManager,
+        m_open,
     ):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
@@ -265,16 +306,28 @@ class TestLoader(TestCase):
     @mock.patch("pymongo.collection.Collection.delete_one")
     @mock.patch("pymongo.collection.Collection.remove")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     def test_deleting_record(
-        self, m_load_profiles, m_migrate, m_remove, m_delete, m_taskManager, m_open
+        self,
+        m_load_profiles,
+        m_update_profiles,
+        m_migrate,
+        m_remove,
+        m_delete,
+        m_taskManager,
+        m_open,
     ):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         m_load_profiles.return_value = default_profiles
         self.assertEqual(False, load())
 
-        periodic_obj_mock.disable_tasks.assert_called_with("192.168.0.1")
+        periodic_obj_mock.delete_all_tasks_of_host.assert_called_with("192.168.0.1")
         m_delete.assert_called_with({"address": "192.168.0.1", "port": 161})
 
         calls = m_remove.call_args_list
@@ -292,16 +345,28 @@ class TestLoader(TestCase):
     @mock.patch("pymongo.collection.Collection.delete_one")
     @mock.patch("pymongo.collection.Collection.remove")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     def test_deleting_record_non_default_port(
-        self, m_load_profiles, m_migrate, m_remove, m_delete, m_taskManager, m_open
+        self,
+        m_load_profiles,
+        m_update_profiles,
+        m_migrate,
+        m_remove,
+        m_delete,
+        m_taskManager,
+        m_open,
     ):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         m_load_profiles.return_value = default_profiles
         self.assertEqual(False, load())
 
-        periodic_obj_mock.disable_tasks.assert_called_with("192.168.0.1:345")
+        periodic_obj_mock.delete_all_tasks_of_host.assert_called_with("192.168.0.1:345")
         m_delete.assert_called_with({"address": "192.168.0.1", "port": 345})
 
         calls = m_remove.call_args_list
@@ -317,10 +382,16 @@ class TestLoader(TestCase):
         "splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager.manage_task"
     )
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
-    @mock.patch("splunk_connect_for_snmp.inventory.loader.load_profiles")
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     def test_inventory_errors(
         self,
         m_load_profiles,
+        m_update_profiles,
         m_migrate,
         m_manage_task,
         m_mongo_collection,

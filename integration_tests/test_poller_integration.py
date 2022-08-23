@@ -20,7 +20,6 @@ import pytest
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
 from integration_tests.splunk_test_utils import (
-    create_v3_secrets,
     splunk_single_search,
     update_file,
     update_profiles,
@@ -79,8 +78,6 @@ def setup_profile(request):
         }
     }
     update_profiles(profile)
-    upgrade_helm(["profiles.yaml"])
-    time.sleep(60)
     update_file(
         [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"], "inventory.yaml"
     )
@@ -123,8 +120,8 @@ def setup_profiles(request):
         },
     }
     update_profiles(profile)
-    upgrade_helm(["profiles.yaml"])
-    time.sleep(60)
+    # upgrade_helm(["profiles.yaml"])
+    # time.sleep(60)
     update_file(
         [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"],
         "inventory.yaml",
@@ -207,8 +204,8 @@ def setup_smart_profiles(request):
         }
     }
     update_profiles(profile)
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(60)
+    # upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    # time.sleep(60)
     update_file([f"{trap_external_ip},,2c,public,,,600,,t,"], "inventory.yaml")
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(30)
@@ -267,8 +264,6 @@ def setup_modify_profile(request):
         },
     }
     update_profiles(profile)
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(60)
     update_file(
         [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
     )
@@ -382,8 +377,6 @@ def setup_small_walk(request):
         },
     }
     update_profiles(profile)
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(60)
     update_file([f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml")
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
     time.sleep(30)
@@ -401,7 +394,7 @@ class TestSmallWalk:
             """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
         )
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
+            setup_splunk, search_string, 1
         )
         assert result_count == 0
         assert metric_count == 0
@@ -415,23 +408,33 @@ class TestSmallWalk:
         assert metric_count > 0
 
 
-class TestPoolingV3:
-    def test_pooling_v3(self, request, setup_splunk):
-        trap_external_ip = request.config.getoption("trap_external_ip")
-        logger.info("Integration test for v3 version of SNMP")
-        create_v3_secrets()
-        update_file(["- secretv4"], "scheduler_secrets.yaml")
-        update_file(
-            [f"{trap_external_ip},,3,snmp-poller,secretv4,,600,,,"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "scheduler_secrets.yaml"])
-        time.sleep(40)
-        search_string = """| mpreview index=netmetrics earliest=-20s"""
+@pytest.fixture()
+def setup_v3_connection(request):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    time.sleep(60)
+    update_file(
+        [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,"], "inventory.yaml"
+    )
+    upgrade_helm(["inventory.yaml"])
+    time.sleep(30)
+    yield
+    update_file(
+        [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,t"], "inventory.yaml"
+    )
+    upgrade_helm(["inventory.yaml"])
+    time.sleep(20)
+
+
+@pytest.mark.usefixtures("setup_v3_connection")
+class TestSNMPv3Connection:
+    def test_snmpv3_walk(self, setup_splunk):
+        time.sleep(100)
+        search_string = """| mpreview index=netmetrics | search profiles=v3profile"""
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
-        assert result_count == 0
-        assert metric_count == 0
+        assert result_count > 0
+        assert metric_count > 0
 
 
 def run_retried_single_search(setup_splunk, search_string, retries):

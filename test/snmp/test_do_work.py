@@ -5,8 +5,8 @@ from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 from splunk_connect_for_snmp.snmp.manager import Poller
 
-inventory_record = InventoryRecord.from_dict(
-    {
+inventory_record = InventoryRecord(
+    **{
         "address": "192.168.0.1",
         "port": "34",
         "version": "2c",
@@ -33,6 +33,7 @@ class TestDoWork(TestCase):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
+        poller.profiles_manager = MagicMock()
 
         varbinds_bulk, varbinds_get = set(), set()
         get_mapping, bulk_mapping = {}, {}
@@ -56,17 +57,18 @@ class TestDoWork(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
     @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
-    @patch("splunk_connect_for_snmp.snmp.manager.load_profiles")
+    @patch("splunk_connect_for_snmp.common.profiles.ProfilesManager")
     def test_do_work_bulk(self, load_profiles, getCmd, bulkCmd):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
         poller.builder = MagicMock()
+        poller.profiles_manager = MagicMock()
         m_process_data = MagicMock()
         m_process_data.return_value = (False, [], {})
         poller.process_snmp_data = m_process_data
         requested_profiles = ["profile1", "profile2"]
-        load_profiles.return_value = {
+        poller.profiles_manager.return_all_profiles.return_value = {
             "profile1": {
                 "frequency": 20,
                 "varBinds": [["IF-MIB", "ifDescr"], ["IF-MIB", "ifSpeed"]],
@@ -88,15 +90,18 @@ class TestDoWork(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
     @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
-    @patch("splunk_connect_for_snmp.snmp.manager.load_profiles")
+    @patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     def test_do_work_get(self, load_profiles, getCmd, bulkCmd):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
         poller.builder = MagicMock()
         poller.process_snmp_data = MagicMock()
+        poller.profiles_manager = MagicMock()
         requested_profiles = ["profile1", "profile2"]
-        load_profiles.return_value = {
+        poller.profiles_manager.return_all_profiles.return_value = {
             "profile1": {
                 "frequency": 20,
                 "varBinds": [["IF-MIB", "ifDescr", 1], ["IF-MIB", "ifSpeed", 2]],
@@ -125,15 +130,18 @@ class TestDoWork(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
     @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
-    @patch("splunk_connect_for_snmp.snmp.manager.load_profiles")
+    @patch(
+        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    )
     def test_do_work_errors(self, load_profiles, getCmd, bulkCmd):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
         poller.builder = MagicMock()
         poller.process_snmp_data = MagicMock()
+        poller.profiles_manager = MagicMock()
         requested_profiles = ["profile1"]
-        load_profiles.return_value = {
+        poller.profiles_manager.return_all_profiles.return_value = {
             "profile1": {"frequency": 20, "varBinds": [["IF-MIB", "ifDescr", 1]]}
         }
         getCmd.return_value = [(True, True, 2, [])]

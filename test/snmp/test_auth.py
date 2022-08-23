@@ -21,8 +21,8 @@ from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 mock_value = """some
 value"""
 
-ir = InventoryRecord.from_dict(
-    {
+ir = InventoryRecord(
+    **{
         "address": "192.168.0.1",
         "port": "34",
         "version": "2c",
@@ -65,8 +65,8 @@ class TestAuth(TestCase):
     @patch("splunk_connect_for_snmp.snmp.auth.getCmd")
     @patch("splunk_connect_for_snmp.snmp.auth.fetch_security_engine_id")
     def test_get_security_engine_id_not_present(self, m_fetch, m_get_cmd):
-        ir2 = InventoryRecord.from_dict(
-            {
+        ir2 = InventoryRecord(
+            **{
                 "address": "192.168.0.1",
                 "port": "34",
                 "version": "2c",
@@ -101,8 +101,8 @@ class TestAuth(TestCase):
     @patch("splunk_connect_for_snmp.snmp.auth.getCmd")
     @patch("splunk_connect_for_snmp.snmp.auth.fetch_security_engine_id")
     def test_get_security_engine_id(self, m_fetch, m_get_cmd):
-        ir2 = InventoryRecord.from_dict(
-            {
+        ir2 = InventoryRecord(
+            **{
                 "address": "192.168.0.1",
                 "port": "34",
                 "version": "2c",
@@ -193,8 +193,8 @@ class TestAuth(TestCase):
         logger = Mock()
         snmpEngine = Mock()
 
-        ir2 = InventoryRecord.from_dict(
-            {
+        ir2 = InventoryRecord(
+            **{
                 "address": "192.168.0.1",
                 "port": "34",
                 "version": "2c",

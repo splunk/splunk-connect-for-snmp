@@ -13,11 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import time
 import typing
 
-from splunk_connect_for_snmp.common.profiles import load_profiles
+from splunk_connect_for_snmp.common.profiles import ProfilesManager
 from splunk_connect_for_snmp.snmp.manager import get_inventory
+
+from ..common.task_generator import PollTaskGenerator
+from .loader import transform_address_to_key
 
 try:
     from dotenv import load_dotenv
@@ -31,11 +33,12 @@ import re
 import pymongo
 import urllib3
 from celery import Task, shared_task
-from celery.canvas import chain, signature
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.hummanbool import human_bool
+
+from ..poller import app
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # nosemgrep
 
@@ -49,22 +52,20 @@ PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
 
 class InventoryTask(Task):
     def __init__(self):
-        self.profiles = load_profiles()
-        self.last_modified = time.time()
+        self.mongo_client = pymongo.MongoClient(MONGO_URI)
+        self.profiles_manager = ProfilesManager(self.mongo_client)
+        self.profiles = self.profiles_manager.return_all_profiles()
 
 
 @shared_task(bind=True, base=InventoryTask)
 def inventory_setup_poller(self, work):
     address = work["address"]
-    if time.time() - self.last_modified > PROFILES_RELOAD_DELAY:
-        self.profiles = load_profiles()
-        self.last_modified = time.time()
-        logger.debug("Profiles reloaded")
+    self.profiles = self.profiles_manager.return_all_profiles()
+    logger.debug("Profiles reloaded")
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
-    mongo_client = pymongo.MongoClient(MONGO_URI)
-    mongo_db = mongo_client[MONGO_DB]
+    mongo_db = self.mongo_client[MONGO_DB]
 
     mongo_inventory = mongo_db.inventory
     targets_collection = mongo_db.targets
@@ -85,45 +86,23 @@ def inventory_setup_poller(self, work):
         periodic_obj.manage_task(**task_config)
 
     periodic_obj.delete_unused_poll_tasks(f"{address}", active_schedules)
-    periodic_obj.delete_disabled_poll_tasks()
+    # periodic_obj.delete_disabled_poll_tasks()
 
 
 def generate_poll_task_definition(active_schedules, address, assigned_profiles, period):
-    run_immediately: bool = False
-    if period > 300:
-        run_immediately = True
-    name = f"sc4snmp;{address};{period};poll"
     period_profiles = set(assigned_profiles[period])
-    active_schedules.append(name)
-    task_config = {
-        "name": name,
-        "task": "splunk_connect_for_snmp.snmp.tasks.poll",
-        "target": f"{address}",
-        "args": [],
-        "kwargs": {
-            "address": address,
-            "profiles": period_profiles,
-            "frequency": period,
-        },
-        "options": {
-            "link": chain(
-                signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
-                chain(
-                    signature("splunk_connect_for_snmp.splunk.tasks.prepare"),
-                    signature("splunk_connect_for_snmp.splunk.tasks.send"),
-                ),
-            ),
-        },
-        "interval": {"every": period, "period": "seconds"},
-        "enabled": True,
-        "run_immediately": run_immediately,
-    }
+    poll_definition = PollTaskGenerator(
+        target=address, schedule_period=period, app=app, profiles=list(period_profiles)
+    )
+    task_config = poll_definition.generate_task_definition()
+    active_schedules.append(task_config.get("name"))
     return task_config
 
 
 def assign_profiles(ir, profiles, target):
     assigned_profiles: dict[int, list[str]] = {}
-    if ir.SmartProfiles:
+    address = transform_address_to_key(ir.address, ir.port)
+    if ir.smart_profiles:
         for profile_name, profile in profiles.items():
 
             if not is_smart_profile_valid(profile_name, profile):
@@ -163,13 +142,26 @@ def assign_profiles(ir, profiles, target):
     for profile_name in ir.profiles:
         if profile_name in profiles:
             profile = profiles[profile_name]
+            if "condition" in profile:
+                if profile["condition"].get("type") == "walk":
+                    logger.warning(
+                        f"profile {profile_name} is a walk profile, it cannot be used as a static profile"
+                    )
+                    continue
+                logger.warning(
+                    f"profile {profile_name} is a smart profile, it does not need to be configured as a static one"
+                )
             if "frequency" not in profile:
                 logger.warning(f"profile {profile_name} does not have frequency")
                 continue
             if profile["frequency"] not in assigned_profiles:
                 assigned_profiles[profile["frequency"]] = []
             assigned_profiles[profile["frequency"]].append(profile_name)
-    logger.debug(f"Profiles Assigned {assigned_profiles}")
+        else:
+            logger.warning(
+                f"profile {profile_name} was assigned for the host: {address}, no such profile in the config"
+            )
+    logger.debug(f"Profiles Assigned for host {address}: {assigned_profiles}")
     return assigned_profiles
 
 

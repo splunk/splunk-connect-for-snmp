@@ -1,7 +1,5 @@
 # splunk-connect-for-snmp
 Splunk Connect for SNMP Gets SNMP data in to Splunk Enterprise and Splunk Cloud Platform.
-This project repo is primarily the documentation and publishing repo for the integrated set 
-of components.
 
 # Badges
 
@@ -11,5 +9,7 @@ of components.
 
 For deployment and user documentation [see](https://splunk.github.io/splunk-connect-for-snmp/)
 
-#
+# Contact
+Feel free to contact us via [#splunk-connect-for-snmp](https://splunk-usergroups.slack.com/archives/C01K4V86WV7) slack channel.
+
 #

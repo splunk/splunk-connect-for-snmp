@@ -24,32 +24,24 @@ existing firewall.
 -   HA Requires 3 or more instances (odd numbers) 8 core/16 thread 16 GB
     ram
 
--   100 GB root mount
+-   50 GB root mount
 
 -   HTTP access (non-proxy) allowed for the HTTP(s) connection from
     SC4SNMP to the Splunk destination.
 
--   Splunk Enterprise/Cloud 8.x and or Splunk Infrastructure Monitoring
+-   Splunk Enterprise/Cloud 8.x or newer and/or Splunk Infrastructure Monitoring
     (SignalFx)
-
-- Splunk Enterprise/Cloud specific Requirements:
-
-    *  Splunk ITSI or Splunk IT Work
-    *  Ability to create a HEC token
-    *  Ability to create event and metrics indexes (or use
-            existing)
-
-- Splunk Infrastructure Monitoring specific requirements:   
-    * Ability to create or obtain real and token
+    
 
 ## Planning Infrastructure
 
 A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
-16 Core/32 threads x64 and 12 GB ram will be able to handle up to 1300
+16 Core/32 threads x64 and 64 GB ram will be able to handle up to 1500
 SNMP TRAPs per sec.
 
 A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
-16 Core/32 threads x64 and 64 GB ram will be able to handle up to 1300
-SNMP GETs per sec.
+16 Core/32 threads x64 and 64 GB ram is able to handle up to 2750 SNMP varbinds per sec. 
+As for events per second visible in Splunk, please remember that single SC4SNMP event can contain more than one varbind inside - auto aggregation/grouping feature (varbinds which are describing same thing ie. network interface will be grouped in one event). 
+That is why, depending on configuration the number of events per second may vary. 
 
 When planning infrastructure for Splunk Connect for SNMP, (SC4SNMP) note the limitations highlighted above.

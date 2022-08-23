@@ -29,6 +29,8 @@ spec:
           env:
           - name: CONFIG_PATH
             value: /app/config/config.yaml
+          - name: REDIS_URL
+            value: {{ include "splunk-connect-for-snmp.redis_url" . }}
           - name: INVENTORY_PATH
             value: /app/inventory/inventory.csv
           - name: CELERY_BROKER_URL

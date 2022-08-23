@@ -56,27 +56,7 @@ worker:
 If you put only IP address (ex. `127.0.0.1`), then errors will be ignored for all of its devices (like `127.0.0.1:161`, 
 `127.0.0.1:163`...). If you put IP address and host structured as `{host}:{port}` that means the error will be ignored only for this device.
 
-### Walking a device takes much time
-If you would like to limit the scope of the walk, you should set one of the profiles in the inventory to point to the profile definition of type `walk`
-```yaml
-scheduler:
-    profiles: |
-      small_walk:
-        condition: 
-          type: "walk"
-        varBinds:
-          - ['UDP-MIB']
-``` 
-Such profile should be placed in the profiles section of inventory definition. It will be executed with the frequency defined in walk_interval.
-In case of multiple profiles of type `walk` will be placed in profiles, the last one will be used.
+### Walking a device takes too much time
 
-```yaml
-poller:
-  inventory: |
-    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
-    10.202.4.202,,2c,public,,,2000,small_walk,,
-```
+Enable small walk functionality with the following instruction: [Configure small walk profile](../configuration/configuring-profiles/#walk-profile). 
 
-NOTE: When small walk is configured, you can set up polling only of OIDs belonging to walk profile varBinds. 
-Additionally, there are two MIB families that are enabled by default (we need them to create state of the device in the database and poll base profiles): `IF-MIB` and `SNMPv2-MIB`.
-For example, if you've decided to use `small_walk` from the example above, you'll be able to poll only `UDP-MIB`, `IF-MIB` and `SNMPv2-MIB` OIDs.

@@ -20,15 +20,18 @@ import sys
 from csv import DictReader
 
 import pymongo
-from celery.canvas import chain, group, signature
+import yaml
 
 from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-from splunk_connect_for_snmp.common.profiles import load_profiles
+from splunk_connect_for_snmp.common.profiles import ProfilesManager
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
+from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
+
+from ..poller import app
 
 try:
     from dotenv import load_dotenv
@@ -64,34 +67,11 @@ def transform_address_to_key(address, port):
 
 def gen_walk_task(ir: InventoryRecord, profile=None):
     target = transform_address_to_key(ir.address, ir.port)
-    return {
-        "name": f"sc4snmp;{target};walk",
-        "task": "splunk_connect_for_snmp.snmp.tasks.walk",
-        "target": target,
-        "args": [],
-        "kwargs": {
-            "address": target,
-            "profile": profile,
-        },
-        "options": {
-            "link": chain(
-                signature("splunk_connect_for_snmp.enrich.tasks.enrich"),
-                group(
-                    signature(
-                        "splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller"
-                    ),
-                    chain(
-                        signature("splunk_connect_for_snmp.splunk.tasks.prepare"),
-                        signature("splunk_connect_for_snmp.splunk.tasks.send"),
-                    ),
-                ),
-            ),
-        },
-        "interval": {"every": ir.walk_interval, "period": "seconds"},
-        "enabled": True,
-        "total_run_count": 0,
-        "run_immediately": True,
-    }
+    walk_definition = WalkTaskGenerator(
+        target=target, schedule_period=ir.walk_interval, app=app, profile=profile
+    )
+    task_config = walk_definition.generate_task_definition()
+    return task_config
 
 
 def load():
@@ -100,13 +80,15 @@ def load():
     mongo_client = pymongo.MongoClient(MONGO_URI)
     targets_collection = mongo_client.sc4snmp.targets
     attributes_collection = mongo_client.sc4snmp.attributes
+    profiles_manager = ProfilesManager(mongo_client)
     mongo_db = mongo_client[MONGO_DB]
     inventory_records = mongo_db.inventory
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
     migrate_database(mongo_client, periodic_obj)
-    config_profiles = load_profiles()
+    profiles_manager.update_all_profiles()
+    config_profiles = profiles_manager.return_all_profiles()
 
     logger.info(f"Loading inventory from {path}")
     with open(path, encoding="utf-8") as csv_file:
@@ -121,7 +103,7 @@ def load():
                 ir = InventoryRecord(**source_record)
                 target = transform_address_to_key(ir.address, ir.port)
                 if ir.delete:
-                    periodic_obj.disable_tasks(target)
+                    periodic_obj.delete_all_tasks_of_host(target)
                     inventory_records.delete_one(
                         {"address": ir.address, "port": ir.port}
                     )
@@ -129,11 +111,6 @@ def load():
                     attributes_collection.remove({"address": target})
                     logger.info(f"Deleting record: {target}")
                 else:
-                    status = inventory_records.update_one(
-                        {"address": ir.address, "port": ir.port},
-                        {"$set": ir.asdict()},
-                        upsert=True,
-                    )
                     profiles = source_record["profiles"].split(";")
                     profile = None
                     if profiles:
@@ -147,7 +124,12 @@ def load():
                         ]
                         if profiles:
                             profile = profiles[-1]
-                            ir.walk_interval = source_record["walk_interval"]
+                            ir.walk_interval = int(source_record["walk_interval"])
+                    status = inventory_records.update_one(
+                        {"address": ir.address, "port": ir.port},
+                        {"$set": ir.asdict()},
+                        upsert=True,
+                    )
                     if status.matched_count == 0:
                         logger.info(f"New Record {ir} {status.upserted_id}")
                     elif status.modified_count == 1 and status.upserted_id is None:

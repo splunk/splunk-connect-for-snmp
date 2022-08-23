@@ -23,6 +23,9 @@ from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
 
+from ..poller import app
+from .task_generator import WalkTaskGenerator
+
 formatter = CustomisedJSONFormatter()
 
 logger = logging.getLogger(__name__)
@@ -35,7 +38,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-CURRENT_SCHEMA_VERSION = 3
+CURRENT_SCHEMA_VERSION = 4
 MONGO_URI = os.getenv("MONGO_URI")
 
 
@@ -94,3 +97,26 @@ def migrate_to_version_3(mongo_client, task_manager):
     attributes_collection.create_index(
         [("address", ASCENDING), ("group_key_hash", ASCENDING)]
     )
+
+
+def migrate_to_version_4(mongo_client, task_manager):
+    logger.info("Migrating database schema to version 4")
+    schedules_collection = mongo_client.sc4snmp.schedules
+    transform_mongodb_periodic_to_redbeat(schedules_collection, task_manager)
+    schedules_collection.drop()
+
+
+def transform_mongodb_periodic_to_redbeat(schedule_collection, task_manager):
+    schedules = schedule_collection.find(
+        {"task": "splunk_connect_for_snmp.snmp.tasks.walk"}
+    )
+    for schedule_obj in schedules:
+        walk_interval = schedule_obj.get("interval").get("every")
+        task_generator = WalkTaskGenerator(
+            target=schedule_obj.get("target"),
+            schedule_period=walk_interval,
+            app=app,
+            profile=schedule_obj.get("kwargs").get("profile"),
+        )
+        walk_data = task_generator.generate_task_definition()
+        task_manager.manage_task(**walk_data)

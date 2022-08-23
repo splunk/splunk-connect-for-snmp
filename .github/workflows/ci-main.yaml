@@ -28,9 +28,37 @@ on:
       - "main"
       - "develop"
       - "next"
+  workflow_call:
+    secrets:
+      FOSSA_API_KEY:
+        description: API token for FOSSA app
+        required: true
 jobs:
-  semgrep:
-    name: Scan
+  fossa-scan:
+    name: fossa
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: run fossa anlyze and create report
+        run: |
+          curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install-latest.sh | bash
+          fossa analyze --debug
+          fossa report attribution --format text > /tmp/THIRDPARTY
+        env:
+          FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
+      - name: upload THIRDPARTY file
+        uses: actions/upload-artifact@v2
+        with:
+          name: THIRDPARTY
+          path: /tmp/THIRDPARTY
+      - name: run fossa test
+        run: |
+          fossa test --debug
+        env:
+          FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
+  semgrep-scan:
+    name: semgrep
     runs-on: ubuntu-latest
     if: (github.actor != 'dependabot[bot]')
     steps:
@@ -210,21 +238,4 @@ jobs:
             @google/semantic-release-replace-plugin
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN_ADMIN }}
-  mike:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: oleksiyrudenko/gha-git-credentials@v2-latest
-        with:
-          token: "${{ secrets.PAT_CLATOOL }}"
 
-      - name: Upload Docs
-        run: |
-          BRANCH=$(echo $GITHUB_REF | cut -d / -f 3)
-          echo $BRANCH
-          pip3 install poetry
-          poetry install
-          poetry run mike deploy -p $BRANCH

@@ -2,8 +2,12 @@
 
 The basic installation process and configuration used in this section are typical 
 for single node non HA deployments and do not have resource requests and limits.
-See the configuration sections for mongo, Rabbitmq, scheduler, worker, and traps for guidance
+See the configuration sections for mongo, redis, scheduler, worker, and traps for guidance
 on production configuration.
+
+### Offline installation
+
+For offline installation instructions see [this page](../offlineinstallation/offline-sc4snmp.md).
 
 ### Add SC4SNMP repository
 ```
@@ -43,8 +47,34 @@ traps:
   #loadBalancerIP: The IP address in the metallb pool
   loadBalancerIP: ###X.X.X.X###
 worker:
-  # replicas: Number of replicas for worker container should two or more
-  #replicaCount: 2
+  # There are 3 types of workers 
+  trap:
+    # replicaCount: number of trap-worker pods which consumes trap tasks
+    replicaCount: 2
+    #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
+    #autoscaling:
+    #  enabled: true
+    #  minReplicas: 2
+    #  maxReplicas: 40
+    #  targetCPUUtilizationPercentage: 80
+  poller:
+    # replicaCount: number of poller-worker pods which consumes polling tasks
+    replicaCount: 2
+    #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
+    #autoscaling:
+    #  enabled: true
+    #  minReplicas: 2
+    #  maxReplicas: 40
+    #  targetCPUUtilizationPercentage: 80
+  sender:
+    # replicaCount: number of sender-worker pods which consumes sending tasks
+    replicaCount: 1
+    # autoscaling: use it instead of replicaCount in order to make pods scalable by itself
+    #autoscaling:
+    #  enabled: true
+    #  minReplicas: 2
+    #  maxReplicas: 40
+    #  targetCPUUtilizationPercentage: 80
   # udpConnectionTimeout: timeout in seconds for SNMP operations
   #udpConnectionTimeout: 5
   logLevel: "INFO"
@@ -64,10 +94,10 @@ poller:
  #   - sc4snmp-hlab-sha-aes
  #   - sc4snmp-hlab-sha-des
  # inventory: |
- #   address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
- #   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,600,,,
- #   10.0.0.199,,2c,public,,,600,,,True
- #   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,600,,,
+ #   address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+ #   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,1800,,,
+ #   10.0.0.199,,2c,public,,,3000,,,True
+ #   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,1800,,,
 sim:
   # sim must be enabled if you want to use signalFx
   enabled: false
@@ -77,15 +107,6 @@ mongodb:
   pdb:
     create: true
   persistence:
-    storageClass: "microk8s-hostpath"
-  volumePermissions:
-    enabled: true
-rabbitmq:
-  pdb:
-    create: true
-  replicaCount: 1
-  persistence:
-    enabled: true
     storageClass: "microk8s-hostpath"
   volumePermissions:
     enabled: true
@@ -147,14 +168,14 @@ microk8s kubectl get pods -n sc4snmp
 Example output:
 ``` 
 NAME                                                      READY   STATUS             RESTARTS      AGE
-snmp-splunk-connect-for-snmp-worker-66685fcb6d-f6rxb      1/1     Running            0             6m4s
-snmp-splunk-connect-for-snmp-scheduler-6586488d85-t6j5d   1/1     Running            0             6m4s
-snmp-mongodb-arbiter-0                                    1/1     Running            0             6m4s
-snmp-mibserver-6f575ddb7d-mmkmn                           1/1     Running            0             6m4s
-snmp-mongodb-0                                            2/2     Running            0             6m4s
-snmp-mongodb-1                                            2/2     Running            0             4m58s
-snmp-rabbitmq-0                                           1/1     Running            0             6m4s
-snmp-splunk-connect-for-snmp-traps-54f79b945d-bmbg7       1/1     Running            0             6m4s
+snmp-splunk-connect-for-snmp-scheduler-7ddbc8d75-bljsj        1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-poller-57cd8f4665-9z9vx   1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-sender-5c44cbb9c5-ppmb5   1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-trap-549766d4-28qzh       1/1     Running   0          133m
+snmp-mibserver-7f879c5b7c-hz9tz                               1/1     Running   0          133m
+snmp-mongodb-869cc8586f-vvr9f                                 2/2     Running   0          133m
+snmp-redis-master-0                                           1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-trap-78759bfc8b-79m6d            1/1     Running   0          99m
 ```
 
 ### Test SNMP Traps
@@ -196,7 +217,7 @@ service snmpd stop
 service snmpd start
 ```
 
-- Configure SC4SNMP Poller to test add IP address which need to be poll. Add configuration entry in `value.yaml` file by 
+- Configure SC4SNMP Poller to test add IP address which needs to be polled. Add configuration entry in `values.yaml` file by 
 replace the IP address `10.0.101.22` with the server IP address where snmpd were configured.
 ``` bash
 poller:
@@ -204,11 +225,11 @@ poller:
     - sc4snmp-homesecure-sha-aes
     - sc4snmp-homesecure-sha-des
   inventory: |
-    address,version,community,walk_interval,profiles,SmartProfiles,delete
-    10.0.101.22,public,60,,,
+    address,version,community,walk_interval,profiles,smart_profiles,delete
+    10.0.101.22,public,42000,,,
 ```
 
-- Load `value.yaml` file in SC4SNMP
+- Load `values.yaml` file in SC4SNMP
 
 ``` bash
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
@@ -216,12 +237,15 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 
 -   Check-in Splunk
  
- Up to 1 min events appear in Splunk:
+Before polling starts, SC4SNMP must perform Walk process on the device. It is run after configuring new device and every `walk_interval`. 
+Its purpose is to gather all the data and provide meaningful context for the polling records. May be, that your device is so big that walk takes too long and scope of walking must be limited.
+In such cases, enable the small walk using the instruction: [walk takes too much time](/bestpractices/#walking-a-device-takes-too-much-time).
+When walk finishes, events appear in Splunk, check it with those queries:
 
 ``` bash
 index="netops" sourcetype="sc4snmp:event"
 ```
- Up to 1 min events appear in Splunk:
+
 ``` bash
 | mpreview index="netmetrics" | search sourcetype="sc4snmp:metric"
 ```
