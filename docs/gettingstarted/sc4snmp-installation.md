@@ -55,7 +55,7 @@ worker:
     #autoscaling:
     #  enabled: true
     #  minReplicas: 2
-    #  maxReplicas: 40
+    #  maxReplicas: 10
     #  targetCPUUtilizationPercentage: 80
   poller:
     # replicaCount: number of poller-worker pods which consumes polling tasks
@@ -64,7 +64,7 @@ worker:
     #autoscaling:
     #  enabled: true
     #  minReplicas: 2
-    #  maxReplicas: 40
+    #  maxReplicas: 10
     #  targetCPUUtilizationPercentage: 80
   sender:
     # replicaCount: number of sender-worker pods which consumes sending tasks
@@ -73,7 +73,7 @@ worker:
     #autoscaling:
     #  enabled: true
     #  minReplicas: 2
-    #  maxReplicas: 40
+    #  maxReplicas: 10
     #  targetCPUUtilizationPercentage: 80
   # udpConnectionTimeout: timeout in seconds for SNMP operations
   #udpConnectionTimeout: 5

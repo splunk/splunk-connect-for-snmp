@@ -1,55 +1,67 @@
 # Worker Configuration
-The worker is a service witch is responsible for tasks execution like SNMP Walk, GET, or processing trap messages.  
-
-### Worker configuration file
-
-Worker configuration is kept in `values.yaml` file in the section `worker`. `worker` is divided on 3 types of workers: `poller`, `sender` and `trap`.
-`values.yaml` is being used during the installation process for configuring Kubernetes values.
+The `worker` is a kubernetes pod which is responsible for the actual execution of polling, processing trap messages and sending 
+data to Splunk.
 
 ### Worker types
 
-SC4SNMP has two base functionalities: monitoring traps and polling. There are 3 types of workers, every type is
-responsible for something else.
+SC4SNMP has two base functionalities: monitoring traps and polling. These operations are handled by 3 types of workers:
 
-Trap workers consumes all the trap related tasks produced by the trap pod. 
+1. `trap` worker consumes all the trap related tasks produced by the trap pod. 
 
-Poller workers consumes all the tasks related to polling.
+2. `poller` worker consumes all the tasks related to polling.
 
-Sender workers handle sending data to splunk. You need to always have at least one sender pod running.
+3. `sender` worker handles sending data to splunk. You need to always have at least one sender pod running.
 
-### Worker parameters
+### Worker configuration file
 
-| variable | description | default |
-| --- | --- | --- |
-| work.taskTimeout | task timeout in seconds (usually necessary when walk process takes a long time) | 2400 |
-| work.poller.replicaCount | number of poller worker replicas | 2 |
-| work.poller.autoscaling.enabled | enabling autoscaling for poller worker pods | false |
-| work.poller.autoscaling.minReplicas | minimum number of running poller worker pods when autoscaling is enabled | 2 |
-| work.poller.autoscaling.maxReplicas | maximum number of running poller worker pods when autoscaling is enabled | 40 |
-| work.poller.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on poller worker pods to spawn another replica  | 80 |
-| work.poller.resources.limits | the resources limits for poller worker container | {} |
-| work.poller.resources.requests | the requested resources for poller worker container | {} |
-| work.trap.replicaCount | number of trap worker replicas | 2 |
-| work.trap.autoscaling.enabled | enabling autoscaling for trap worker pods | false |
-| work.trap.autoscaling.minReplicas | minimum number of running trap worker pods when autoscaling is enabled | 2 |
-| work.trap.autoscaling.maxReplicas | maximum number of running trap worker pods when autoscaling is enabled | 40 |
-| work.trap.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on trap worker pods to spawn another replica  | 80 |
-| work.trap.resources.limits | the resources limits for poller worker container | {} |
-| work.trap.resources.requests | the requested resources for poller worker container | {} |
-| work.sender.replicaCount | number of sender worker replicas | 2 |
-| work.sender.autoscaling.enabled | enabling autoscaling for sender worker pods | false |
-| work.sender.autoscaling.minReplicas | minimum number of running sender worker pods when autoscaling is enabled | 2 |
-| work.sender.autoscaling.maxReplicas | maximum number of running sender worker pods when autoscaling is enabled | 40 |
-| work.sender.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on sender worker pods to spawn another replica  | 80 |
-| work.sender.resources.limits | the resources limits for poller worker container | {} |
-| work.sender.resources.requests | the requested resources for poller worker container | {} |
+Worker configuration is kept in `values.yaml` file in the `worker` section. `worker` has 3 subsections: `poller`, `sender` or `trap`, that refer to the workers' types.
+`values.yaml` is being used during the installation process for configuring Kubernetes values.
+The `worker` default configuration is:
+
+```yaml
+worker:
+  # There are 3 types of workers 
+  trap:
+    # replicaCount: number of trap-worker pods which consumes trap tasks
+    replicaCount: 2
+    #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
+    #autoscaling:
+    #  enabled: true
+    #  minReplicas: 2
+    #  maxReplicas: 10
+    #  targetCPUUtilizationPercentage: 80
+  poller:
+    # replicaCount: number of poller-worker pods which consumes polling tasks
+    replicaCount: 2
+    #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
+    #autoscaling:
+    #  enabled: true
+    #  minReplicas: 2
+    #  maxReplicas: 10
+    #  targetCPUUtilizationPercentage: 80
+  sender:
+    # replicaCount: number of sender-worker pods which consumes sending tasks
+    replicaCount: 1
+    # autoscaling: use it instead of replicaCount in order to make pods scalable by itself
+    #autoscaling:
+    #  enabled: true
+    #  minReplicas: 2
+    #  maxReplicas: 10
+    #  targetCPUUtilizationPercentage: 80
+  # udpConnectionTimeout: timeout in seconds for SNMP operations
+  #udpConnectionTimeout: 5
+  logLevel: "INFO"
+```
+
+All parameters are described in [Worker parameters](#worker-parameters) section.
+
 
 ### Worker scaling
 
 You can adjust number of worker pods to your needs in two ways: setting fixed value in `replicaCount`
 or enabling `autoscaling` which scales pods automatically. 
 
-#### Reallife scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively
+#### Real life scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively
 
 If you don't use polling at all, would be the best to set `worker.poller.replicaCount` to `0`.
 Remember, that if you'll want to use polling in the future you need to increase `replicaCount`,
@@ -186,3 +198,31 @@ you should enable autoscaling/increase maxReplicas or increase replicaCount with
 
 
 Here you can read about Horizontal Autoscaling and how to adjust maximum replica value to the resources you have: [Horizontal Autoscaling.](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
+
+
+### Worker parameters
+
+| variable | description | default |
+| --- | --- | --- |
+| worker.taskTimeout | task timeout in seconds (usually necessary when walk process takes a long time) | 2400 |
+| worker.poller.replicaCount | number of poller worker replicas | 2 |
+| worker.poller.autoscaling.enabled | enabling autoscaling for poller worker pods | false |
+| worker.poller.autoscaling.minReplicas | minimum number of running poller worker pods when autoscaling is enabled | 2 |
+| worker.poller.autoscaling.maxReplicas | maximum number of running poller worker pods when autoscaling is enabled | 40 |
+| worker.poller.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on poller worker pods to spawn another replica  | 80 |
+| worker.poller.resources.limits | the resources limits for poller worker container | {} |
+| worker.poller.resources.requests | the requested resources for poller worker container | {} |
+| worker.trap.replicaCount | number of trap worker replicas | 2 |
+| worker.trap.autoscaling.enabled | enabling autoscaling for trap worker pods | false |
+| worker.trap.autoscaling.minReplicas | minimum number of running trap worker pods when autoscaling is enabled | 2 |
+| worker.trap.autoscaling.maxReplicas | maximum number of running trap worker pods when autoscaling is enabled | 40 |
+| worker.trap.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on trap worker pods to spawn another replica  | 80 |
+| worker.trap.resources.limits | the resources limits for poller worker container | {} |
+| worker.trap.resources.requests | the requested resources for poller worker container | {} |
+| worker.sender.replicaCount | number of sender worker replicas | 2 |
+| worker.sender.autoscaling.enabled | enabling autoscaling for sender worker pods | false |
+| worker.sender.autoscaling.minReplicas | minimum number of running sender worker pods when autoscaling is enabled | 2 |
+| worker.sender.autoscaling.maxReplicas | maximum number of running sender worker pods when autoscaling is enabled | 40 |
+| worker.sender.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on sender worker pods to spawn another replica  | 80 |
+| worker.sender.resources.limits | the resources limits for poller worker container | {} |
+| worker.sender.resources.requests | the requested resources for poller worker container | {} |
