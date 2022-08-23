@@ -40,6 +40,8 @@ spec:
           env:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
+            - name: REDIS_URL
+              value: {{ include "splunk-connect-for-snmp.redis_url" . }}
             - name: CELERY_BROKER_URL
               value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI

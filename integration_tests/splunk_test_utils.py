@@ -52,7 +52,7 @@ def splunk_single_search(service, search):
 
 inventory_template = """poller:
   inventory: |
-    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
 """
 
 profiles_template = """scheduler:
@@ -67,11 +67,16 @@ traps_secrets_template = """traps:
   usernameSecrets:
 """
 
+polling_secrets_template = """poller:
+  usernameSecrets:
+"""
+
 TEMPLATE_MAPPING = {
     "inventory.yaml": inventory_template,
     "profiles.yaml": profiles_template,
     "scheduler_secrets.yaml": poller_secrets_template,
     "traps_secrets.yaml": traps_secrets_template,
+    "polling_secrets.yaml": polling_secrets_template,
 }
 
 
@@ -125,21 +130,28 @@ def upgrade_helm(yaml_files):
     )
 
 
-def create_v3_secrets():
+def create_v3_secrets(
+    secret_name="secretv4",
+    user_name="snmp-poller",
+    auth_key="PASSWORD1",
+    priv_key="PASSWORD1",
+    auth_protocol="SHA",
+    priv_protocol="AES",
+):
     os.system(
-        "sudo microk8s kubectl create -n sc4snmp secret generic secretv4 \
-      --from-literal=userName=snmp-poller \
-      --from-literal=authKey=PASSWORD1 \
-      --from-literal=privKey=PASSWORD1 \
-      --from-literal=authProtocol=SHA \
-      --from-literal=privProtocol=AES \
+        f"sudo microk8s kubectl create -n sc4snmp secret generic {secret_name} \
+      --from-literal=userName={user_name} \
+      --from-literal=authKey={auth_key} \
+      --from-literal=privKey={priv_key} \
+      --from-literal=authProtocol={auth_protocol} \
+      --from-literal=privProtocol={priv_protocol} \
       --from-literal=securityEngineId=8000000903000A397056B8AC"
     )
 
 
 def wait_for_pod_initialization():
     script_body = f""" 
-    while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep traps | grep Running | wc -l)" != "1" ] ; do
+    while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep "worker-trap" | grep Running | wc -l)" != "1" ] ; do
         echo "Waiting for POD initialization..."
         sleep 1
     done """

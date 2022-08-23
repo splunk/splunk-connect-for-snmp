@@ -21,5 +21,5 @@ microk8s kubectl create -n <namespace> secret generic <secretname> \
   --from-literal=privProtocol=<privProtocol> 
 ```
 
-Configured credential can be use in [poller](poller-configuration.md) and [trap](trap-configuration.md) services. 
-In services configuration, `secretname` need to be provided. 
+Configured credentials can be use in [poller](poller-configuration.md) and [trap](trap-configuration.md) services. 
+In services configuration, `secretname` needs to be provided. 

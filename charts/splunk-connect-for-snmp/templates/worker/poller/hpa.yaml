@@ -1,0 +1,24 @@
+{{- if .Values.worker.poller.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-poller
+  labels:
+    {{- include "splunk-connect-for-snmp.worker.poller.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-poller
+  minReplicas: {{ .Values.worker.poller.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.worker.poller.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.worker.poller.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.worker.poller.autoscaling.targetCPUUtilizationPercentage | default 80 }}
+    {{- end }}
+{{- end }}

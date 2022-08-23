@@ -42,10 +42,10 @@ class TestUtils(TestCase):
         self.assertEqual("2c", ir.version)
         self.assertEqual("public", ir.community)
         self.assertEqual("some_secret", ir.secret)
-        self.assertEqual("some_engine", ir.securityEngine)
+        self.assertEqual("some_engine", ir.security_engine)
         self.assertEqual(1820, ir.walk_interval)
         self.assertEqual(["profile1", "profile2"], ir.profiles)
-        self.assertEqual(True, ir.SmartProfiles)
+        self.assertEqual(True, ir.smart_profiles)
         self.assertEqual(False, ir.delete)
 
     def test_any_failure_happened_error_indication(self):

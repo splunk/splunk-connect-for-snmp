@@ -33,8 +33,8 @@ jobs:
         name: Produce PDF from docs
         run: |
           sudo apt-get install -y pandoc texlive librsvg2-bin texlive-latex-extra
-          pandoc -s --pdf-engine=pdflatex -o /tmp/SC4S_docs.pdf $(find . -type f -name "*.md") -H deeplists.tex
+          pandoc -s --pdf-engine=pdflatex -o /tmp/SC4S4SNMP_docs.pdf $(find . -type f -name "*.md") -H deeplists.tex
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: /tmp/SC4S_docs.pdf
+          files: /tmp/SC4SNMP_docs.pdf

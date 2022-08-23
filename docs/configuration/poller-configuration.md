@@ -16,7 +16,7 @@ Poller example configuration:
 poller:
   logLevel: "WARN"
   inventory: |
-    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
     10.202.4.202,,2c,public,,,2000,,,
 ```
 
@@ -37,11 +37,11 @@ To update inventory follow instruction: [Update Inventory and Profile](../deploy
  - `secret` [OPTIONAL] - usernameSecrets define which secrets in "Secret" objects in k8s should be use, as a value it need to put 
  name of "Secret" objects. Field is required when `version` is `3`. More information how to define "Secrets" object for SNMPv3 can be found 
  in [SNMPv3 Configuration](snmpv3-configuration.md)
- - `securityEngine` [OPTIONAL] - Security engine required by SNMPv3. Field is required when `version` is `3`. 
- - `walk_interval` [OPTIONAL] - Define interval in second for SNMP walk, default value `42000`
+ - `security_engine` [OPTIONAL] - Security engine required by SNMPv3. Field is required when `version` is `3`. 
+ - `walk_interval` [OPTIONAL] - Define interval in seconds for SNMP walk, default value `42000`. This value needs to be between `1800` and `42000`
  - `profiles` [OPTIONAL] - list of SNMP profiles which need to be used for device. More than one profile can be added by semicolon 
-separation eg. `profiale1;profile2`. More about profile in [Profile Configuration](../scheduler-configuration/#configure-profile)
- - `SmartProfiles` [OPTIONAL] - enabled SmartProfile, default value true. Allowed value: `true`, `false`. Default value is `true` 
+separation eg. `profile1;profile2`. More about profiles in [Profile Configuration](../scheduler-configuration/#configure-profile)
+ - `smart_profiles` [OPTIONAL] - enabled smart profiles, by default it's true. Allowed value: `true`, `false`. Default value is `true` 
  - `delete` [OPTIONAL] - flags which define if inventory should be deleted from scheduled tasks for walk and gets. 
 Allowed value: `true`, `false`. Default value is `false`.
 
@@ -49,7 +49,7 @@ Example:
 ```yaml
 poller:
     inventory: |
-      address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
       10.202.4.202,,2c,public,,,2000,,,
 ```
 

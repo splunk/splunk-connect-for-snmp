@@ -22,9 +22,23 @@ traps:
   #loadBalancerIP: The IP address in the metallb pool
   loadBalancerIP: ###LOAD_BALANCER_ID###
 worker:
+  poller:
+    replicaCount: 1
+    #changed replicaCount from 4 to 1
+    concurrency: 4
+    prefetch: 1
+  trap:
+    autoscaling:
+      enabled: false
+    replicaCount: 1
+    concurrency: 8
+    prefetch: 60
+  sender:
+    replicaCount: 1
+    concurrency: 4
+    prefetch: 60
   profilesReloadDelay: 1
   # replicas: Number of replicas for worker container should two or more
-  replicaCount: 1
   # udpConnectionTimeout: timeout in seconds for SNMP operations
   #udpConnectionTimeout: 5
   logLevel: "DEBUG"
@@ -33,6 +47,13 @@ scheduler:
   customTranslations:
     IP-MIB:
       icmpOutEchoReps: myCustomName1
+  profiles: |
+    v3profile:
+      frequency: 5
+      varBinds:
+        - ['IF-MIB']
+        - ['TCP-MIB']
+        - ['UDP-MIB']
 #  profiles: |
 #    generic_switch:
 #      frequency: 60
@@ -42,11 +63,12 @@ scheduler:
 #        - ['IF-MIB']
 #        - ['TCP-MIB']
 poller:
- # usernameSecrets:
+  usernameSecrets:
+    - sv3poller
  #   - sc4snmp-hlab-sha-aes
  #   - sc4snmp-hlab-sha-des
   inventory: |
-    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
     ###LOAD_BALANCER_ID###,,2c,public,,,600,,,
 sim:
   # sim must be enabled if you want to use signalFx
@@ -60,12 +82,7 @@ mongodb:
     storageClass: "microk8s-hostpath"
   volumePermissions:
     enabled: true
-rabbitmq:
-  pdb:
-    create: true
-  replicaCount: 1
-  persistence:
-    enabled: true
-    storageClass: "microk8s-hostpath"
-  volumePermissions:
-    enabled: true
+redis:
+  architecture: standalone
+  auth:
+    enabled: false

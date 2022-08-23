@@ -51,7 +51,7 @@ docker0_ip() {
 }
 
 wait_for_load_balancer_external_ip() {
-  while [ "$(microk8s.kubectl get service/sc4-snmp-traps -n sc4snmp | grep pending)" != "" ] ; do
+  while [ "$(microk8s.kubectl get service/sc4-snmp-trap -n sc4snmp | grep pending)" != "" ] ; do
     echo "Waiting for service/sc4-snmp-traps to have a proper external IP..."
     sleep 1
   done
@@ -98,7 +98,7 @@ run_integration_tests() {
   splunk_ip=$1
   splunk_password=$2
 
-  trap_external_ip=$(microk8s.kubectl -n sc4snmp get service/sc4-snmp-traps | \
+  trap_external_ip=$(microk8s.kubectl -n sc4snmp get service/sc4-snmp-trap | \
     tail -1 | sed -e 's/[[:space:]]\+/\t/g' | cut -f4)
 
   deploy_poetry

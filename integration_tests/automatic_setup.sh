@@ -60,6 +60,14 @@ wait_for_rabbitmq_to_be_up() {
   done
 }
 
+sudo apt update -y
+sudo apt install snmpd -y
+sudo sed -i -E 's/agentaddress[[:space:]]+127.0.0.1,\[::1\]/#agentaddress  127.0.0.1,\[::1\]\nagentaddress udp:1161,udp6:[::1]:1161/g' /etc/snmp/snmpd.conf
+echo "" | sudo tee -a /etc/snmp/snmpd.conf
+echo "createUser r-wuser SHA admin1234 AES admin1234" | sudo tee -a /etc/snmp/snmpd.conf
+echo "rwuser r-wuser priv" | sudo tee -a /etc/snmp/snmpd.conf
+sudo systemctl restart snmpd
+
 sudo apt -y install docker.io
 cd ~/splunk-connect-for-snmp
 
@@ -90,6 +98,7 @@ sudo microk8s enable dns
 sudo microk8s enable rbac
 sudo microk8s enable community
 sudo microk8s enable openebs
+sudo microk8s enable metrics-server
 sudo systemctl enable iscsid
 yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
 
@@ -99,6 +108,7 @@ cd ~/splunk-connect-for-snmp/integration_tests
 
 echo $(green "Installing SC4SNMP on Kubernetes")
 sudo microk8s helm3 install snmp -f values.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
+sudo microk8s kubectl create -n sc4snmp secret generic sv3poller --from-literal=userName=r-wuser --from-literal=authKey=admin1234 --from-literal=privKey=admin1234 --from-literal=authProtocol=SHA --from-literal=privProtocol=AES --from-literal=securityEngineId=8000000903000A397056B8AC
 
 wait_for_pod_initialization
 wait_for_rabbitmq_to_be_up

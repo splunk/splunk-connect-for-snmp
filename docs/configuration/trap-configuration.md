@@ -95,7 +95,7 @@ traps:
 ```
 
 ### Define number of traps server replica
-`replicas` Defines the number of replicas for trap container should be 2x number of nodes. The default value is `2`. 
+`replicaCount` Defines the number of replicas for trap container should be 2x number of nodes. The default value is `2`. 
 Example:
 ```yaml
 traps:

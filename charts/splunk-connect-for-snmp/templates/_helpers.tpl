@@ -7,9 +7,12 @@
 {{- end }}  
 
 {{- define "splunk-connect-for-snmp.celery_url" -}}
-{{- printf "amqp://%s:%s@%s-rabbitmq:5672/" .Values.rabbitmq.auth.username .Values.rabbitmq.auth.password .Release.Name }}
-{{- end }}  
+{{- printf "redis://%s-redis-headless:6379/0" .Release.Name }}
+{{- end }}
 
+{{- define "splunk-connect-for-snmp.redis_url" -}}
+{{- printf "redis://%s-redis-headless:6379/1" .Release.Name }}
+{{- end }}
 
 {{- define "splunk-connect-for-snmp.name" -}}
 {{- default (printf "%s" .Chart.Name ) .Values.nameOverride | trunc 63 | trimSuffix "-" }}
