@@ -231,7 +231,6 @@ jobs:
         id: version
         uses: cycjimmy/semantic-release-action@v2.6.0
         with:
-          dry_run: true
           semantic_version: 17
           extra_plugins: |
             @semantic-release/exec
