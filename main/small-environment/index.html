@@ -13,7 +13,7 @@
     
     
       
-        <title>SC4SNMP lightweight installation - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Lightweight installation - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#installation-of-sc4snmp-on-a-small-environment" class="md-skip">
+        <a href="#lightweight-sc4snmp-installation" class="md-skip">
           Skip to content
         </a>
       
@@ -103,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SC4SNMP lightweight installation
+              Lightweight installation
             
           </span>
         </div>
@@ -612,7 +612,7 @@
       
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        SC4SNMP lightweight installation
+        Lightweight installation
       </a>
       
     </li>
@@ -651,11 +651,11 @@
                 
 
 
-<h1 id="installation-of-sc4snmp-on-a-small-environment">Installation of SC4SNMP on a small environment<a class="headerlink" href="#installation-of-sc4snmp-on-a-small-environment" title="Permanent link">&para;</a></h1>
-<p>SC4SNMP can be successfully installed on small environments with 2 CPUs and 4 Gb of memory.
-One important thing to remember is that Splunk OpenTelemetry Collector for Kubernetes cannot be installed on such a small
-environment along with SC4SNMP. The other difference from normal installation is that resources limits must be set for Kubernetes
-pods. Example <code>values.yaml</code> with the appropriate resources can be seen bellow:</p>
+<h1 id="lightweight-sc4snmp-installation">Lightweight SC4SNMP installation<a class="headerlink" href="#lightweight-sc4snmp-installation" title="Permanent link">&para;</a></h1>
+<p>SC4SNMP can be successfully installed in small environments with 2 CPUs and 4 Gb of memory.
+One important thing to remember is that Splunk OpenTelemetry Collector for Kubernetes cannot be installed in such a small
+environment along with SC4SNMP. The other difference from normal installation is that <code>resources</code> limits must be set for Kubernetes
+pods. Example <code>values.yaml</code> with the appropriate resources below:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">splunk</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 <span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https</span><span class="w"></span>
@@ -787,6 +787,8 @@ pods. Example <code>values.yaml</code> with the appropriate resources can be see
 
 <p>The rest of the installation is the same as in <a href="../gettingstarted/sc4snmp-installation/">online</a> or 
 <a href="../offlineinstallation/offline-sc4snmp/">offline</a> installation.</p>
+<p>Keep in mind, that lightweight instance of SC4SNMP won&rsquo;t be able to poll from many devices and may experience delays 
+in case of frequent polling.</p>
 
               
             </article>
