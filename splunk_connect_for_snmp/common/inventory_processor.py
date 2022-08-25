@@ -22,7 +22,6 @@ INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
 
 
 def transform_key_to_address(target):
-    print(target)
     if ":" in target:
         address, port = target.split(":")
     else:
@@ -52,7 +51,9 @@ def return_hosts_from_deleted_groups(previous_groups, new_groups):
         if group_name not in new_groups:
             inventory_lines_to_delete += previous_groups[group_name]
         else:
-            deleted_hosts = set(previous_groups.get(group_name)) - set(new_groups.get(group_name))
+            deleted_hosts = set(previous_groups.get(group_name)) - set(
+                new_groups.get(group_name)
+            )
             inventory_lines_to_delete += deleted_hosts
     return inventory_lines_to_delete
 
@@ -78,7 +79,7 @@ class InventoryProcessor:
             self.logger.warning(f"Record: {address} is commented out. Skipping...")
         # Address is an IP address
         elif address[0].isdigit():
-            self.inventory_records.append(source_record)
+            self.inventory_records.append(address)
         # Address is a group
         else:
             self.get_group_hosts(source_record, address)
@@ -86,6 +87,7 @@ class InventoryProcessor:
     def get_group_hosts(self, group_object, group_name):
         groups = self.group_manager.return_element(group_name, {"$exists": 1})
         if groups:
+            print(group_object)
             addresses = list(groups[0].values())
             for host_address in addresses[0]:
                 address, port = transform_key_to_address(host_address)
@@ -110,9 +112,7 @@ class InventoryRecordManager:
     def delete(self, target):
         address, port = transform_key_to_address(target)
         self.periodic_object_collection.delete_all_tasks_of_host(target)
-        self.inventory_collection.delete_one(
-            {"address": address, "port": port}
-        )
+        self.inventory_collection.delete_one({"address": address, "port": port})
         self.targets_collection.remove({"address": target})
         self.attributes_collection.remove({"address": target})
         self.logger.info(f"Deleting record: {target}")
@@ -138,6 +138,7 @@ class InventoryRecordManager:
         self.periodic_object_collection.manage_task(**task_config)
 
     def return_walk_profile(self, runtime_profiles, inventory_profiles):
+        print(runtime_profiles)
         walk_profile = None
         if inventory_profiles:
             walk_profiles = [

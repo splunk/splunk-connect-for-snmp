@@ -31,7 +31,8 @@ from splunk_connect_for_snmp.common.customised_json_formatter import (
 from splunk_connect_for_snmp.common.inventory_processor import (
     InventoryProcessor,
     InventoryRecordManager,
-    transform_address_to_key, return_hosts_from_deleted_groups,
+    return_hosts_from_deleted_groups,
+    transform_address_to_key,
 )
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
@@ -97,12 +98,16 @@ def load():
     new_groups = groups_manager.return_collection()
 
     inventory_processor = InventoryProcessor(groups_manager, logger)
-    inventory_record_manager = InventoryRecordManager(mongo_client, periodic_obj, logger)
+    inventory_record_manager = InventoryRecordManager(
+        mongo_client, periodic_obj, logger
+    )
     logger.info(f"Loading inventory from {INVENTORY_PATH}")
     inventory_lines = inventory_processor.get_all_hosts()
 
     # Function to delete inventory records that are
-    hosts_from_groups_to_delete = return_hosts_from_deleted_groups(previous_groups, new_groups)
+    hosts_from_groups_to_delete = return_hosts_from_deleted_groups(
+        previous_groups, new_groups
+    )
     for host in hosts_from_groups_to_delete:
         inventory_record_manager.delete(host)
 

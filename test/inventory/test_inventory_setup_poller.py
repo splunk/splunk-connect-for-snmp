@@ -103,7 +103,9 @@ class TestInventorySetupPoller(TestCase):
             ],
         )
 
-    @patch("splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection")
+    @patch(
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
+    )
     def test_generate_poll_task_definition(self, rp):
         from splunk_connect_for_snmp.inventory.tasks import (
             generate_poll_task_definition,

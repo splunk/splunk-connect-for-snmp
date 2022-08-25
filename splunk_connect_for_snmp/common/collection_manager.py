@@ -47,10 +47,11 @@ class CollectionManager:
         elements_to_insert = []
         for key, value in elements.items():
             elements_to_insert.append({key: value})
-        with self.mongo.start_session() as session:
-            with session.start_transaction():
-                self.collection.delete_many({})
-                self.collection.insert_many(elements_to_insert)
+        if elements_to_insert:
+            with self.mongo.start_session() as session:
+                with session.start_transaction():
+                    self.collection.delete_many({})
+                    self.collection.insert_many(elements_to_insert)
 
     def update_all(self):
         all_elements = self.gather_elements()
@@ -115,4 +116,3 @@ class ProfilesManager(CollectionManager):
         except FileNotFoundError:
             logger.info(f"File: {CONFIG_PATH} not found")
         return active_profiles
-
