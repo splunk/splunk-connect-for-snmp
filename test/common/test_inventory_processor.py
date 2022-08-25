@@ -4,9 +4,10 @@ from unittest.mock import Mock
 
 from splunk_connect_for_snmp.common.inventory_processor import (
     InventoryProcessor,
+    InventoryRecordManager,
     return_hosts_from_deleted_groups,
     transform_address_to_key,
-    transform_key_to_address, InventoryRecordManager,
+    transform_key_to_address,
 )
 
 
@@ -14,7 +15,11 @@ class TestInventoryProcessor(TestCase):
 
     profiles = {
         "test5": {"frequency": 6, "varBinds": [["IP-MIB"]]},
-        "test_33": {"condition": {"type": "walk"}, "frequency": 77, "varBinds": [["UDP-MIB"]]},
+        "test_33": {
+            "condition": {"type": "walk"},
+            "frequency": 77,
+            "varBinds": [["UDP-MIB"]],
+        },
         "generic_switch": {"frequency": 5, "varBinds": [["TCP-MIB"]]},
         "walk1": {
             "condition": {"type": "walk"},
@@ -187,35 +192,61 @@ class TestInventoryProcessor(TestCase):
         inventory_processor.get_group_hosts.assert_called_with(source_record, "group1")
 
     def test_return_walk_profile(self):
-        inventory_profiles = ['walk1', 'generic_switch']
+        inventory_profiles = ["walk1", "generic_switch"]
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(inventory_record_manager.return_walk_profile(self.profiles, inventory_profiles), "walk1")
+        self.assertEqual(
+            inventory_record_manager.return_walk_profile(
+                self.profiles, inventory_profiles
+            ),
+            "walk1",
+        )
 
     def test_return_walk_profile_more_than_one(self):
-        inventory_profiles = ['walk1', 'test_33', 'generic_switch']
+        inventory_profiles = ["walk1", "test_33", "generic_switch"]
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(inventory_record_manager.return_walk_profile(self.profiles, inventory_profiles), "test_33")
+        self.assertEqual(
+            inventory_record_manager.return_walk_profile(
+                self.profiles, inventory_profiles
+            ),
+            "test_33",
+        )
 
     def test_return_walk_profile_no_walk_in_inventory(self):
-        inventory_profiles = ['generic_switch']
+        inventory_profiles = ["generic_switch"]
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(inventory_record_manager.return_walk_profile(self.profiles, inventory_profiles), None)
+        self.assertEqual(
+            inventory_record_manager.return_walk_profile(
+                self.profiles, inventory_profiles
+            ),
+            None,
+        )
 
     def test_return_walk_profile_no_walk_in_config(self):
-        inventory_profiles = ['generic_switch', 'walk2']
+        inventory_profiles = ["generic_switch", "walk2"]
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(inventory_record_manager.return_walk_profile(self.profiles, inventory_profiles), None)
+        self.assertEqual(
+            inventory_record_manager.return_walk_profile(
+                self.profiles, inventory_profiles
+            ),
+            None,
+        )
 
     def test_return_walk_profile_no_config(self):
-        inventory_profiles = ['generic_switch', 'walk2']
+        inventory_profiles = ["generic_switch", "walk2"]
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(inventory_record_manager.return_walk_profile({}, inventory_profiles), None)
+        self.assertEqual(
+            inventory_record_manager.return_walk_profile({}, inventory_profiles), None
+        )
 
     def test_return_walk_profile_no_config_no_inventory(self):
         inventory_profiles = []
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(inventory_record_manager.return_walk_profile({}, inventory_profiles), None)
+        self.assertEqual(
+            inventory_record_manager.return_walk_profile({}, inventory_profiles), None
+        )
 
     def test_return_walk_profile_no_inventory(self):
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(inventory_record_manager.return_walk_profile(self.profiles, []), None)
+        self.assertEqual(
+            inventory_record_manager.return_walk_profile(self.profiles, []), None
+        )
