@@ -8,7 +8,7 @@ from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 
 class TestInventorySetupPoller(TestCase):
     @patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
     )
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.find_one")
@@ -103,7 +103,7 @@ class TestInventorySetupPoller(TestCase):
             ],
         )
 
-    @patch("splunk_connect_for_snmp.common.profiles.ProfilesManager")
+    @patch("splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection")
     def test_generate_poll_task_definition(self, rp):
         from splunk_connect_for_snmp.inventory.tasks import (
             generate_poll_task_definition,

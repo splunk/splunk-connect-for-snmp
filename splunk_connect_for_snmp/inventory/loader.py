@@ -17,17 +17,23 @@
 import logging
 import os
 import sys
-from csv import DictReader
 
 import pymongo
-import yaml
 
 from splunk_connect_for_snmp import customtaskmanager
+from splunk_connect_for_snmp.common.collection_manager import (
+    GroupsManager,
+    ProfilesManager,
+)
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
+from splunk_connect_for_snmp.common.inventory_processor import (
+    InventoryProcessor,
+    InventoryRecordManager,
+    transform_address_to_key, return_hosts_from_deleted_groups,
+)
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-from splunk_connect_for_snmp.common.profiles import ProfilesManager
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
 from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
 
@@ -58,13 +64,6 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
 
 
-def transform_address_to_key(address, port):
-    if int(port) == 161:
-        return address
-    else:
-        return f"{address}:{port}"
-
-
 def gen_walk_task(ir: InventoryRecord, profile=None):
     target = transform_address_to_key(ir.address, ir.port)
     walk_definition = WalkTaskGenerator(
@@ -75,75 +74,50 @@ def gen_walk_task(ir: InventoryRecord, profile=None):
 
 
 def load():
-    path = INVENTORY_PATH
     inventory_errors = False
+    target = None
+    # DB managers initialization
     mongo_client = pymongo.MongoClient(MONGO_URI)
-    targets_collection = mongo_client.sc4snmp.targets
-    attributes_collection = mongo_client.sc4snmp.attributes
     profiles_manager = ProfilesManager(mongo_client)
-    mongo_db = mongo_client[MONGO_DB]
-    inventory_records = mongo_db.inventory
-
+    groups_manager = GroupsManager(mongo_client)
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
+    # DB migration in case of update of SC4SNMP
     migrate_database(mongo_client, periodic_obj)
-    profiles_manager.update_all_profiles()
-    config_profiles = profiles_manager.return_all_profiles()
 
-    logger.info(f"Loading inventory from {path}")
-    with open(path, encoding="utf-8") as csv_file:
-        # Dict reader will trust the header of the csv
-        ir_reader = DictReader(csv_file)
-        for source_record in ir_reader:
-            address = source_record["address"]
-            if address.startswith("#"):
-                logger.warning(f"Record: {address} is commented out. Skipping...")
-                continue
-            try:
-                ir = InventoryRecord(**source_record)
-                target = transform_address_to_key(ir.address, ir.port)
-                if ir.delete:
-                    periodic_obj.delete_all_tasks_of_host(target)
-                    inventory_records.delete_one(
-                        {"address": ir.address, "port": ir.port}
-                    )
-                    targets_collection.remove({"address": target})
-                    attributes_collection.remove({"address": target})
-                    logger.info(f"Deleting record: {target}")
-                else:
-                    profiles = source_record["profiles"].split(";")
-                    profile = None
-                    if profiles:
-                        profiles = [
-                            p
-                            for p in profiles
-                            if config_profiles.get(p, {})
-                            .get("condition", {})
-                            .get("type")
-                            == "walk"
-                        ]
-                        if profiles:
-                            profile = profiles[-1]
-                            ir.walk_interval = int(source_record["walk_interval"])
-                    status = inventory_records.update_one(
-                        {"address": ir.address, "port": ir.port},
-                        {"$set": ir.asdict()},
-                        upsert=True,
-                    )
-                    if status.matched_count == 0:
-                        logger.info(f"New Record {ir} {status.upserted_id}")
-                    elif status.modified_count == 1 and status.upserted_id is None:
-                        logger.info(f"Modified Record {ir}")
-                    else:
-                        logger.debug(f"Unchanged Record {ir}")
-                        continue
+    previous_groups = groups_manager.return_collection()
+    logger.info(f"Previous groups: {previous_groups}")
 
-                    task_config = gen_walk_task(ir, profile)
-                    periodic_obj.manage_task(**task_config)
+    # Read the config file and update MongoDB collections
+    profiles_manager.update_all()
+    groups_manager.update_all()
 
-            except Exception as e:
-                inventory_errors = True
-                logger.exception(f"Exception raised for {target}: {e}")
+    # Read objects necessary for inventory processing
+    config_profiles = profiles_manager.return_collection()
+    new_groups = groups_manager.return_collection()
+
+    inventory_processor = InventoryProcessor(groups_manager, logger)
+    inventory_record_manager = InventoryRecordManager(mongo_client, periodic_obj, logger)
+    logger.info(f"Loading inventory from {INVENTORY_PATH}")
+    inventory_lines = inventory_processor.get_all_hosts()
+
+    # Function to delete inventory records that are
+    hosts_from_groups_to_delete = return_hosts_from_deleted_groups(previous_groups, new_groups)
+    for host in hosts_from_groups_to_delete:
+        inventory_record_manager.delete(host)
+
+    for new_source_record in inventory_lines:
+        try:
+            ir = InventoryRecord(**new_source_record)
+            target = transform_address_to_key(ir.address, ir.port)
+            if ir.delete:
+                inventory_record_manager.delete(target)
+            else:
+                inventory_record_manager.update(ir, new_source_record, config_profiles)
+
+        except Exception as e:
+            inventory_errors = True
+            logger.exception(f"Exception raised for {target}: {e}")
 
     return inventory_errors
 
