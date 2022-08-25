@@ -19,6 +19,7 @@ from pysnmp.proto.errind import EmptyResponse
 from pysnmp.smi import error
 from requests import Session
 
+from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
 from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
 
 try:
@@ -43,7 +44,6 @@ from requests_cache import MongoCache
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-from splunk_connect_for_snmp.common.profiles import ProfilesManager
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import GetAuth
 from splunk_connect_for_snmp.snmp.context import get_context_data
@@ -235,7 +235,7 @@ class Poller(Task):
             )
 
         self.profiles_manager = ProfilesManager(self.mongo_client)
-        self.profiles = self.profiles_manager.return_all_profiles()
+        self.profiles = self.profiles_manager.return_collection()
         self.last_modified = time.time()
         self.snmpEngine = SnmpEngine()
         self.already_loaded_mibs = set()
@@ -243,18 +243,6 @@ class Poller(Task):
         self.mib_view_controller = view.MibViewController(self.builder)
         compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
 
-        # mib_standard_response = self.session.get(f"{MIB_STANDARD}", stream=True)
-        # if mib_standard_response.status_code == 200:
-        #     for line in mib_standard_response.iter_lines():
-        #         if line:
-        #             mib = line.decode("utf-8")
-        #             logger.info(f"MIB: {mib}")
-        #             try:
-        #                 self.builder.loadModules(mib)
-        #                 self.standard_mibs.append(mib)
-        #             except Exception as e:
-        #                 logger.warning(f"An error occurred during loading MIB module: {mib}: {e}")
-        # else:
         for mib in DEFAULT_STANDARD_MIBS:
             self.standard_mibs.append(mib)
             self.builder.loadModules(mib)
@@ -283,7 +271,7 @@ class Poller(Task):
         address = transform_address_to_key(ir.address, ir.port)
 
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY or walk:
-            self.profiles = self.profiles_manager.return_all_profiles()
+            self.profiles = self.profiles_manager.return_collection()
             self.last_modified = time.time()
             logger.debug("Profiles reloaded")
 
@@ -397,7 +385,7 @@ class Poller(Task):
             for profile in profiles:
                 # In case scheduler processes doesn't yet updated profiles information
                 if profile not in self.profiles:
-                    self.profiles = self.profiles_manager.return_all_profiles()
+                    self.profiles = self.profiles_manager.return_collection()
                     self.last_modified = time.time()
                 # Its possible a profile is removed on upgrade but schedule doesn't yet know
                 if profile in self.profiles and "varBinds" in self.profiles[profile]:

@@ -188,6 +188,8 @@ worker:
 
 poller:
   usernameSecrets: []
+  inventory: |
+    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
 
 sim:
   enabled: false

@@ -15,9 +15,9 @@
 #
 import typing
 
-from splunk_connect_for_snmp.common.profiles import ProfilesManager
 from splunk_connect_for_snmp.snmp.manager import get_inventory
 
+from ..common.collection_manager import ProfilesManager
 from ..common.task_generator import PollTaskGenerator
 from .loader import transform_address_to_key
 
@@ -54,13 +54,13 @@ class InventoryTask(Task):
     def __init__(self):
         self.mongo_client = pymongo.MongoClient(MONGO_URI)
         self.profiles_manager = ProfilesManager(self.mongo_client)
-        self.profiles = self.profiles_manager.return_all_profiles()
+        self.profiles = self.profiles_manager.return_collection()
 
 
 @shared_task(bind=True, base=InventoryTask)
 def inventory_setup_poller(self, work):
     address = work["address"]
-    self.profiles = self.profiles_manager.return_all_profiles()
+    self.profiles = self.profiles_manager.return_collection()
     logger.debug("Profiles reloaded")
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
