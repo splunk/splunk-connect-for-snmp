@@ -14,6 +14,10 @@ data:
       profiles:
 {{ .Values.scheduler.profiles | indent 8 -}}
 {{ end }}
+{{- if (.Values.scheduler).groups }}
+      groups:
+{{ toYaml .Values.scheduler.groups | indent 8 -}}
+{{ end }}
 {{- if (.Values.scheduler).communities }}
       communities:
 {{ .Values.scheduler.communities | indent 8 }}
