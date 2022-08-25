@@ -6,11 +6,31 @@ from splunk_connect_for_snmp.common.inventory_processor import (
     InventoryProcessor,
     return_hosts_from_deleted_groups,
     transform_address_to_key,
-    transform_key_to_address,
+    transform_key_to_address, InventoryRecordManager,
 )
 
 
 class TestInventoryProcessor(TestCase):
+
+    profiles = {
+        "test5": {"frequency": 6, "varBinds": [["IP-MIB"]]},
+        "test_33": {"condition": {"type": "walk"}, "frequency": 77, "varBinds": [["UDP-MIB"]]},
+        "generic_switch": {"frequency": 5, "varBinds": [["TCP-MIB"]]},
+        "walk1": {
+            "condition": {"type": "walk"},
+            "varBinds": [["IP-MIB"], ["SNMPv2-MIB"], ["TCP-MIB"]],
+        },
+        "test_auto": {
+            "frequency": 30,
+            "condition": {
+                "type": "field",
+                "field": "SNMPv2-MIB.sysDescr",
+                "patterns": ["1234"],
+            },
+            "varBinds": [["SNMPv2-MIB", "sysContact"]],
+        },
+    }
+
     def test_transform_key_to_address(self):
         self.assertEqual(("123.0.0.1", 777), transform_key_to_address("123.0.0.1:777"))
         self.assertEqual(("123.0.0.1", 161), transform_key_to_address("123.0.0.1:161"))
@@ -118,7 +138,9 @@ class TestInventoryProcessor(TestCase):
             {"group1": ["123.0.0.1:161", "178.8.8.1:999"]}
         ]
         inventory_processor.get_group_hosts(group_object, "group1")
-        self.assertListEqual(inventory_processor.inventory_records, group_object_returned)
+        self.assertListEqual(
+            inventory_processor.inventory_records, group_object_returned
+        )
 
     def test_get_group_hosts_no_group_found(self):
         group_manager = Mock()
@@ -138,20 +160,24 @@ class TestInventoryProcessor(TestCase):
         inventory_processor = InventoryProcessor(group_manager, logger)
         group_manager.return_element.return_value = []
         inventory_processor.get_group_hosts(group_object, "group1")
-        logger.warning.assert_called_with("Group group1 doesn't exist in the configuration. Skipping...")
+        logger.warning.assert_called_with(
+            "Group group1 doesn't exist in the configuration. Skipping..."
+        )
 
     def test_process_line_comment(self):
         logger = Mock()
         source_record = {"address": "#54.234.85.76"}
         inventory_processor = InventoryProcessor(Mock(), logger)
         inventory_processor.process_line(source_record)
-        logger.warning.assert_called_with("Record: #54.234.85.76 is commented out. Skipping...")
+        logger.warning.assert_called_with(
+            "Record: #54.234.85.76 is commented out. Skipping..."
+        )
 
     def test_process_line_host(self):
         source_record = {"address": "54.234.85.76"}
         inventory_processor = InventoryProcessor(Mock(), Mock())
         inventory_processor.process_line(source_record)
-        self.assertEqual(inventory_processor.inventory_records, ["54.234.85.76"])
+        self.assertEqual(inventory_processor.inventory_records, [source_record])
 
     def test_process_line_group(self):
         source_record = {"address": "group1"}
@@ -161,3 +187,35 @@ class TestInventoryProcessor(TestCase):
         inventory_processor.get_group_hosts.assert_called_with(source_record, "group1")
 
     def test_return_walk_profile(self):
+        inventory_profiles = ['walk1', 'generic_switch']
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        self.assertEqual(inventory_record_manager.return_walk_profile(self.profiles, inventory_profiles), "walk1")
+
+    def test_return_walk_profile_more_than_one(self):
+        inventory_profiles = ['walk1', 'test_33', 'generic_switch']
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        self.assertEqual(inventory_record_manager.return_walk_profile(self.profiles, inventory_profiles), "test_33")
+
+    def test_return_walk_profile_no_walk_in_inventory(self):
+        inventory_profiles = ['generic_switch']
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        self.assertEqual(inventory_record_manager.return_walk_profile(self.profiles, inventory_profiles), None)
+
+    def test_return_walk_profile_no_walk_in_config(self):
+        inventory_profiles = ['generic_switch', 'walk2']
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        self.assertEqual(inventory_record_manager.return_walk_profile(self.profiles, inventory_profiles), None)
+
+    def test_return_walk_profile_no_config(self):
+        inventory_profiles = ['generic_switch', 'walk2']
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        self.assertEqual(inventory_record_manager.return_walk_profile({}, inventory_profiles), None)
+
+    def test_return_walk_profile_no_config_no_inventory(self):
+        inventory_profiles = []
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        self.assertEqual(inventory_record_manager.return_walk_profile({}, inventory_profiles), None)
+
+    def test_return_walk_profile_no_inventory(self):
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        self.assertEqual(inventory_record_manager.return_walk_profile(self.profiles, []), None)

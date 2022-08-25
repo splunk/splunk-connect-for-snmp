@@ -79,7 +79,7 @@ class InventoryProcessor:
             self.logger.warning(f"Record: {address} is commented out. Skipping...")
         # Address is an IP address
         elif address[0].isdigit():
-            self.inventory_records.append(address)
+            self.inventory_records.append(source_record)
         # Address is a group
         else:
             self.get_group_hosts(source_record, address)
@@ -87,7 +87,6 @@ class InventoryProcessor:
     def get_group_hosts(self, group_object, group_name):
         groups = self.group_manager.return_element(group_name, {"$exists": 1})
         if groups:
-            print(group_object)
             addresses = list(groups[0].values())
             for host_address in addresses[0]:
                 address, port = transform_key_to_address(host_address)
@@ -138,7 +137,7 @@ class InventoryRecordManager:
         self.periodic_object_collection.manage_task(**task_config)
 
     def return_walk_profile(self, runtime_profiles, inventory_profiles):
-        print(runtime_profiles)
+        print(inventory_profiles)
         walk_profile = None
         if inventory_profiles:
             walk_profiles = [

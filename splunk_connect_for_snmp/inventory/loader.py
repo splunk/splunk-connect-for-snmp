@@ -113,6 +113,7 @@ def load():
 
     for new_source_record in inventory_lines:
         try:
+            print(new_source_record)
             ir = InventoryRecord(**new_source_record)
             target = transform_address_to_key(ir.address, ir.port)
             if ir.delete:
