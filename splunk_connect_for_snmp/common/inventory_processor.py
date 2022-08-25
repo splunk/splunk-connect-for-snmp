@@ -137,7 +137,6 @@ class InventoryRecordManager:
         self.periodic_object_collection.manage_task(**task_config)
 
     def return_walk_profile(self, runtime_profiles, inventory_profiles):
-        print(inventory_profiles)
         walk_profile = None
         if inventory_profiles:
             walk_profiles = [
