@@ -9,5 +9,5 @@ data:
 {{- if (.Values.poller).inventory }}
 {{ .Values.poller.inventory | indent 4 }}
 {{ else }}
-    address,version,community,walk_interval,profiles,SmartProfiles,delete
+    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
 {{- end }}
