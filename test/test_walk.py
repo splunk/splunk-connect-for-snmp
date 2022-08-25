@@ -14,7 +14,7 @@ class TestWalk(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
     )
     def test_run_walk(self, m_load_profiles, m_do_work, m_init, m_open):
         m_init.return_value = None
@@ -36,7 +36,7 @@ class TestWalk(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
     )
     def test_run_walk_exception(self, m_load_profiles, m_do_work, m_init, m_open):
         m_init.return_value = None
