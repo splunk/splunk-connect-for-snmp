@@ -19,6 +19,7 @@ except:
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
+ALLOWED_KEYS_VALUES = ["address", "port", "community", "secret", "version", "security_engine", "securityEngine"]
 
 
 def transform_key_to_address(target):
@@ -48,14 +49,20 @@ def gen_walk_task(ir: InventoryRecord, profile=None):
 def return_hosts_from_deleted_groups(previous_groups, new_groups):
     inventory_lines_to_delete = []
     for group_name in previous_groups.keys():
+        previous_groups_keys = get_groups_keys(previous_groups[group_name])
         if group_name not in new_groups:
-            inventory_lines_to_delete += previous_groups[group_name]
+            inventory_lines_to_delete += previous_groups_keys
         else:
-            deleted_hosts = set(previous_groups.get(group_name)) - set(
-                new_groups.get(group_name)
-            )
+            new_groups_keys = get_groups_keys(new_groups[group_name])
+            deleted_hosts = set(previous_groups_keys) - set(new_groups_keys)
             inventory_lines_to_delete += deleted_hosts
     return inventory_lines_to_delete
+
+
+def get_groups_keys(list_of_groups):
+    groups_keys = [f"{transform_address_to_key(element.get('address'), element.get('port', 161))}" for element in
+                   list_of_groups]
+    return groups_keys
 
 
 class InventoryProcessor:
@@ -84,15 +91,18 @@ class InventoryProcessor:
         else:
             self.get_group_hosts(source_record, address)
 
-    def get_group_hosts(self, group_object, group_name):
+    def get_group_hosts(self, source_object, group_name):
         groups = self.group_manager.return_element(group_name, {"$exists": 1})
-        if groups:
-            addresses = list(groups[0].values())
-            for host_address in addresses[0]:
-                address, port = transform_key_to_address(host_address)
-                host_group_object = copy.copy(group_object)
-                host_group_object["address"] = address
-                host_group_object["port"] = port
+        group_list = list(groups)
+        if group_list:
+            groups_object_list = list(group_list[0].values())
+            for group_object in groups_object_list[0]:
+                host_group_object = copy.copy(source_object)
+                for key in group_object.keys():
+                    if key in ALLOWED_KEYS_VALUES:
+                        host_group_object[key] = group_object[key]
+                    else:
+                        self.logger.warning(f"Key {key} is not allowed to be changed from the group level")
                 self.inventory_records.append(host_group_object)
         else:
             self.logger.warning(

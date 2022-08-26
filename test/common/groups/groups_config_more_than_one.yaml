@@ -1,7 +1,11 @@
 groups:
   group1:
-    - 123.0.0.1:161
-    - 178.8.8.1:999
+    - address: 123.0.0.1
+      port: 161
+    - address: 178.8.8.1
+      port: 999
   switches:
-    - 12.22.23.33
-    - 1.1.1.1:162
+    - address: 12.22.23
+      port: 33
+    - address: 1.1.1.1
+      port: 162
