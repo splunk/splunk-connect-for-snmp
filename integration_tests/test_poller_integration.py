@@ -456,9 +456,10 @@ def setup_groups(request):
         },
     }
     groups = {
-        "routers": [f"{trap_external_ip}:1163", f"{trap_external_ip}:1164"],
-        "switches": [f"{trap_external_ip}", f"{trap_external_ip}:1162"],
+        "routers": [{'address': trap_external_ip, 'port': 1163}, {'address': trap_external_ip, 'port': 1164}],
+        "switches": [{'address': trap_external_ip}, {'address': 'trap_external_ip', 'port': 1162}],
     }
+
     update_profiles(profiles)
     update_groups(groups)
     update_file(

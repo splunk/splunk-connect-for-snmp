@@ -16,7 +16,7 @@ data:
 {{ end }}
 {{- if (.Values.scheduler).groups }}
       groups:
-{{ toYaml .Values.scheduler.groups | indent 8 -}}
+{{ .Values.scheduler.groups | indent 8 -}}
 {{ end }}
 {{- if (.Values.scheduler).communities }}
       communities:

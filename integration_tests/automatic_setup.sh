@@ -91,6 +91,10 @@ echo $(green "Preparing Splunk instance")
 sed -i "s/###SPLUNK_TOKEN###/$(cat hec_token)/" values.yaml
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" values.yaml
 sudo docker run -d -p 161:161/udp tandrup/snmpsim
+sudo docker run -d -p 1162:161/udp tandrup/snmpsim
+sudo docker run -d -p 1163:161/udp tandrup/snmpsim
+sudo docker run -d -p 1164:161/udp tandrup/snmpsim
+sudo docker run -d -p 1165:161/udp tandrup/snmpsim
 
 sudo microk8s enable helm3
 sudo microk8s enable storage
