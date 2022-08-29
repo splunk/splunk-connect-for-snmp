@@ -471,7 +471,7 @@ def setup_groups(request):
         "inventory.yaml",
     )
     upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
-    time.sleep(190)
+    time.sleep(120)
     yield
     update_file(
         [
