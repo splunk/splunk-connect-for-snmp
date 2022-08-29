@@ -30,7 +30,8 @@ The default value is `WARNING`
 To update inventory follow instruction: [Update Inventory and Profile](../deployment-configuration/#update-inventory-and-profile) 
 `inventory` section in `poller` enable to configure inventory for polling data:
 
- - `address` [REQUIRED] - IP address which SC4SNMP should connect to collect data from.
+ - `address` [REQUIRED] - IP address which SC4SNMP should connect to collect data from or name of the group of hosts. General
+information about groups can be found on [Configuring Groups](configuring-groups.md) page.
  - `port` [OPTIONAL] - SNMP listening port. Default value `161`.
  - `version` [REQUIRED] - SNMP version, allowed values: `1`, `2c` or `3`
  - `community` [OPTIONAL] - SNMP community string, filed is required when `version` is `1` or `2c`
@@ -50,7 +51,9 @@ Example:
 poller:
     inventory: |
       address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-      10.202.4.202,,2c,public,,,2000,,,
+      10.202.4.202,,2c,public,,,2000,my_profile1,,
+      example_group_1,,2c,public,,,2000,my_profile2,,
+      example_group_2,,2c,public,,,2000,my_profile3,,
 ```
 
 
