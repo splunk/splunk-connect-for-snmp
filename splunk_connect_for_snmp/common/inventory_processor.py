@@ -1,5 +1,4 @@
 import copy
-import logging
 import os
 from csv import DictReader
 from typing import List
@@ -19,7 +18,15 @@ except:
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
-ALLOWED_KEYS_VALUES = ["address", "port", "community", "secret", "version", "security_engine", "securityEngine"]
+ALLOWED_KEYS_VALUES = [
+    "address",
+    "port",
+    "community",
+    "secret",
+    "version",
+    "security_engine",
+    "securityEngine",
+]
 
 
 def transform_key_to_address(target):
@@ -37,10 +44,14 @@ def transform_address_to_key(address, port):
         return f"{address}:{port}"
 
 
-def gen_walk_task(ir: InventoryRecord, profile=None):
+def gen_walk_task(ir: InventoryRecord, profile=None, group=None):
     target = transform_address_to_key(ir.address, ir.port)
     walk_definition = WalkTaskGenerator(
-        target=target, schedule_period=ir.walk_interval, app=app, profile=profile
+        target=target,
+        schedule_period=ir.walk_interval,
+        app=app,
+        host_group=group,
+        profile=profile,
     )
     task_config = walk_definition.generate_task_definition()
     return task_config
@@ -60,8 +71,10 @@ def return_hosts_from_deleted_groups(previous_groups, new_groups):
 
 
 def get_groups_keys(list_of_groups):
-    groups_keys = [f"{transform_address_to_key(element.get('address'), element.get('port', 161))}" for element in
-                   list_of_groups]
+    groups_keys = [
+        f"{transform_address_to_key(element.get('address'), element.get('port', 161))}"
+        for element in list_of_groups
+    ]
     return groups_keys
 
 
@@ -102,7 +115,9 @@ class InventoryProcessor:
                     if key in ALLOWED_KEYS_VALUES:
                         host_group_object[key] = group_object[key]
                     else:
-                        self.logger.warning(f"Key {key} is not allowed to be changed from the group level")
+                        self.logger.warning(
+                            f"Key {key} is not allowed to be changed from the group level"
+                        )
                 self.inventory_records.append(host_group_object)
         else:
             self.logger.warning(
@@ -126,7 +141,7 @@ class InventoryRecordManager:
         self.attributes_collection.remove({"address": target})
         self.logger.info(f"Deleting record: {target}")
 
-    def update(self, inventory_record, new_source_record, runtime_profiles):
+    def update(self, inventory_record, new_source_record, runtime_profiles, groups):
         profiles = new_source_record["profiles"].split(";")
         walk_profile = self.return_walk_profile(runtime_profiles, profiles)
         if walk_profile:
@@ -136,6 +151,9 @@ class InventoryRecordManager:
             {"$set": inventory_record.asdict()},
             upsert=True,
         )
+        group = self.return_group(
+            inventory_record.address, inventory_record.port, groups
+        )
         if status.matched_count == 0:
             self.logger.info(f"New Record {inventory_record} {status.upserted_id}")
         elif status.modified_count == 1 and status.upserted_id is None:
@@ -143,7 +161,7 @@ class InventoryRecordManager:
         else:
             self.logger.info(f"Unchanged Record {inventory_record}")
             return
-        task_config = gen_walk_task(inventory_record, walk_profile)
+        task_config = gen_walk_task(inventory_record, walk_profile, group)
         self.periodic_object_collection.manage_task(**task_config)
 
     def return_walk_profile(self, runtime_profiles, inventory_profiles):
@@ -159,3 +177,14 @@ class InventoryRecordManager:
                 # if there's more than one walk profile, we're choosing the last one on the list
                 walk_profile = walk_profiles[-1]
         return walk_profile
+
+    def return_group(self, address, port, groups):
+        for group_name in groups:
+            host_list = groups[group_name]
+            for host_obj in host_list:
+                if (
+                    host_obj["address"] == address
+                    and int(host_obj.get("port", 161)) == port
+                ):
+                    return group_name
+        return None

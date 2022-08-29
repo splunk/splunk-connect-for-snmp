@@ -47,12 +47,21 @@ class TestInventoryProcessor(TestCase):
 
     def test_return_hosts_from_deleted_groups_one_host(self):
         previous_groups = {
-            'group1': [{'address': '123.0.0.1', 'port': 161}, {'address': '178.8.8.1', 'port': 999}],
-            'switches': [{'address': '12.22.23.33', 'port': 161}, {'address': '1.1.1.1', 'port': 162}],
+            "group1": [
+                {"address": "123.0.0.1", "port": 161},
+                {"address": "178.8.8.1", "port": 999},
+            ],
+            "switches": [
+                {"address": "12.22.23.33", "port": 161},
+                {"address": "1.1.1.1", "port": 162},
+            ],
         }
         new_groups = {
-            'group1': [{'address': '123.0.0.1', 'port': 161}, {'address': '178.8.8.1', 'port': 999}],
-            'switches': [{'address': '12.22.23.33', 'port': 161}],
+            "group1": [
+                {"address": "123.0.0.1", "port": 161},
+                {"address": "178.8.8.1", "port": 999},
+            ],
+            "switches": [{"address": "12.22.23.33", "port": 161}],
         }
 
         self.assertEqual(
@@ -62,11 +71,20 @@ class TestInventoryProcessor(TestCase):
 
     def test_return_hosts_from_deleted_groups_whole_group(self):
         previous_groups = {
-            'group1': [{'address': '123.0.0.1', 'port': 161}, {'address': '178.8.8.1', 'port': 999}],
-            'switches': [{'address': '12.22.23.33', 'port': 161}, {'address': '1.1.1.1', 'port': 162}],
+            "group1": [
+                {"address": "123.0.0.1", "port": 161},
+                {"address": "178.8.8.1", "port": 999},
+            ],
+            "switches": [
+                {"address": "12.22.23.33", "port": 161},
+                {"address": "1.1.1.1", "port": 162},
+            ],
         }
         new_groups = {
-            'group1': [{'address': '123.0.0.1', 'port': 161}, {'address': '178.8.8.1', 'port': 999}],
+            "group1": [
+                {"address": "123.0.0.1", "port": 161},
+                {"address": "178.8.8.1", "port": 999},
+            ],
         }
 
         self.assertEqual(
@@ -76,11 +94,17 @@ class TestInventoryProcessor(TestCase):
 
     def test_return_hosts_from_deleted_groups_one_host_and_group(self):
         previous_groups = {
-            'group1': [{'address': '123.0.0.1', 'port': 161}, {'address': '178.8.8.1', 'port': 999}],
-            'switches': [{'address': '12.22.23.33', 'port': 161}, {'address': '1.1.1.1', 'port': 162}],
+            "group1": [
+                {"address": "123.0.0.1", "port": 161},
+                {"address": "178.8.8.1", "port": 999},
+            ],
+            "switches": [
+                {"address": "12.22.23.33", "port": 161},
+                {"address": "1.1.1.1", "port": 162},
+            ],
         }
         new_groups = {
-            'switches': [{'address': '12.22.23.33'}],
+            "switches": [{"address": "12.22.23.33"}],
         }
 
         self.assertEqual(
@@ -97,7 +121,7 @@ class TestInventoryProcessor(TestCase):
 
     def test_return_hosts_new_ones(self):
         previous_groups = {}
-        new_groups = {"switches": [{'address': '12.22.23.33', 'port': 161}]}
+        new_groups = {"switches": [{"address": "12.22.23.33", "port": 161}]}
         self.assertEqual(
             return_hosts_from_deleted_groups(previous_groups, new_groups), []
         )
@@ -144,7 +168,12 @@ class TestInventoryProcessor(TestCase):
         ]
         inventory_processor = InventoryProcessor(group_manager, Mock())
         group_manager.return_element.return_value = [
-            {"group1": [{'address': '123.0.0.1', 'port': 161}, {'address': '178.8.8.1', 'port': 999}]}
+            {
+                "group1": [
+                    {"address": "123.0.0.1", "port": 161},
+                    {"address": "178.8.8.1", "port": 999},
+                ]
+            }
         ]
         inventory_processor.get_group_hosts(group_object, "group1")
         self.assertListEqual(

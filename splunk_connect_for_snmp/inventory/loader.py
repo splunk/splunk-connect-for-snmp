@@ -36,9 +36,6 @@ from splunk_connect_for_snmp.common.inventory_processor import (
 )
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
-from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
-
-from ..poller import app
 
 try:
     from dotenv import load_dotenv
@@ -63,15 +60,6 @@ MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
-
-
-def gen_walk_task(ir: InventoryRecord, profile=None):
-    target = transform_address_to_key(ir.address, ir.port)
-    walk_definition = WalkTaskGenerator(
-        target=target, schedule_period=ir.walk_interval, app=app, profile=profile
-    )
-    task_config = walk_definition.generate_task_definition()
-    return task_config
 
 
 def load():
@@ -103,6 +91,7 @@ def load():
     )
     logger.info(f"Loading inventory from {INVENTORY_PATH}")
     inventory_lines = inventory_processor.get_all_hosts()
+    print(inventory_lines)
 
     # Function to delete inventory records that are
     hosts_from_groups_to_delete = return_hosts_from_deleted_groups(
@@ -113,13 +102,14 @@ def load():
 
     for new_source_record in inventory_lines:
         try:
-            print(new_source_record)
             ir = InventoryRecord(**new_source_record)
             target = transform_address_to_key(ir.address, ir.port)
             if ir.delete:
                 inventory_record_manager.delete(target)
             else:
-                inventory_record_manager.update(ir, new_source_record, config_profiles)
+                inventory_record_manager.update(
+                    ir, new_source_record, config_profiles, new_groups
+                )
 
         except Exception as e:
             inventory_errors = True

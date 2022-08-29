@@ -456,8 +456,14 @@ def setup_groups(request):
         },
     }
     groups = {
-        "routers": [{'address': trap_external_ip, 'port': 1163}, {'address': trap_external_ip, 'port': 1164}],
-        "switches": [{'address': trap_external_ip}, {'address': trap_external_ip, 'port': 1162}],
+        "routers": [
+            {"address": trap_external_ip, "port": 1163},
+            {"address": trap_external_ip, "port": 1164},
+        ],
+        "switches": [
+            {"address": trap_external_ip},
+            {"address": trap_external_ip, "port": 1162},
+        ],
     }
 
     update_profiles(profiles)
@@ -511,26 +517,23 @@ class TestGroupsInventory:
 
     def test_routers_group(self, setup_splunk):
         time.sleep(20)
-        search_string = (
-            """| mpreview index=netmetrics | search profiles=routers_profile | stats dc(event) by host"""
-        )
-        result_count, _ = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
+        search_string = """| mpreview index=netmetrics | search profiles=routers_profile | stats dc(event) by host"""
+        result_count, _ = run_retried_single_search(setup_splunk, search_string, 2)
         assert result_count == 2
 
     def test_edit_routers_group(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
         new_groups = {
-            "routers": [{'address': trap_external_ip, 'port': 1164}],
-            "switches": [{'address': trap_external_ip}, {'address': trap_external_ip, 'port': 1162}],
+            "routers": [{"address": trap_external_ip, "port": 1164}],
+            "switches": [
+                {"address": trap_external_ip},
+                {"address": trap_external_ip, "port": 1162},
+            ],
         }
         update_groups(new_groups)
         upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
         time.sleep(30)
-        search_string = (
-            f"""| mpreview index=netmetrics earliest=-20s | search profiles=routers_profile host="{trap_external_ip}:1163" """
-        )
+        search_string = f"""| mpreview index=netmetrics earliest=-20s | search profiles=routers_profile host="{trap_external_ip}:1163" """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 1
         )

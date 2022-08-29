@@ -60,6 +60,7 @@ class InventoryTask(Task):
 @shared_task(bind=True, base=InventoryTask)
 def inventory_setup_poller(self, work):
     address = work["address"]
+    group = work.get("group")
     self.profiles = self.profiles_manager.return_collection()
     logger.debug("Profiles reloaded")
 
@@ -81,7 +82,7 @@ def inventory_setup_poller(self, work):
     active_schedules: list[str] = []
     for period in assigned_profiles:
         task_config = generate_poll_task_definition(
-            active_schedules, address, assigned_profiles, period
+            active_schedules, address, assigned_profiles, period, group
         )
         periodic_obj.manage_task(**task_config)
 
@@ -89,10 +90,16 @@ def inventory_setup_poller(self, work):
     # periodic_obj.delete_disabled_poll_tasks()
 
 
-def generate_poll_task_definition(active_schedules, address, assigned_profiles, period):
+def generate_poll_task_definition(
+    active_schedules, address, assigned_profiles, period, group=None
+):
     period_profiles = set(assigned_profiles[period])
     poll_definition = PollTaskGenerator(
-        target=address, schedule_period=period, app=app, profiles=list(period_profiles)
+        target=address,
+        schedule_period=period,
+        app=app,
+        host_group=group,
+        profiles=list(period_profiles),
     )
     task_config = poll_definition.generate_task_definition()
     active_schedules.append(task_config.get("name"))

@@ -27,7 +27,12 @@ class TestGroups(TestCase):
         return_yaml_groups(),
     )
     def test_read_one_group(self):
-        active_groups = {'group1': [{'address': '123.0.0.1', 'port': 161}, {'address': '178.8.8.1', 'port': 999}]}
+        active_groups = {
+            "group1": [
+                {"address": "123.0.0.1", "port": 161},
+                {"address": "178.8.8.1", "port": 999},
+            ]
+        }
         groups_manager = GroupsManager(Mock())
         groups = groups_manager.gather_elements()
         self.assertEqual(groups, active_groups)
@@ -38,8 +43,18 @@ class TestGroups(TestCase):
     )
     def return_yaml_groups_more_than_one(self):
         active_groups = {
-            "group1": {'group1': [{'address': '123.0.0.1', 'port': 161}, {'address': '178.8.8.1', 'port': 999}]},
-            "switches": {'group1': [{'address': '12.22.23.33', 'port': 161}, {'address': '1.1.1.1', 'port': 162}]},
+            "group1": {
+                "group1": [
+                    {"address": "123.0.0.1", "port": 161},
+                    {"address": "178.8.8.1", "port": 999},
+                ]
+            },
+            "switches": {
+                "group1": [
+                    {"address": "12.22.23.33", "port": 161},
+                    {"address": "1.1.1.1", "port": 162},
+                ]
+            },
         }
         groups_manager = GroupsManager(Mock())
         groups = groups_manager.gather_elements()
