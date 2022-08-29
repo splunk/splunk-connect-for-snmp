@@ -34,6 +34,7 @@ nav:
   - High Availability: ha.md  
   - Configuration:
       - Configuring Profiles: "configuration/configuring-profiles.md"
+      - Configuring Groups: "configuration/configuring-groups.md"
       - Deployment: "configuration/deployment-configuration.md"
       - Poller: "configuration/poller-configuration.md"
       - Trap: "configuration/trap-configuration.md"
