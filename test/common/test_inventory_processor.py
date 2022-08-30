@@ -283,3 +283,17 @@ class TestInventoryProcessor(TestCase):
         self.assertEqual(
             inventory_record_manager.return_walk_profile(self.profiles, []), None
         )
+
+    def test_return_group(self):
+        groups = {"group1": [{"address": "123.0.0.1", "port": 163}, {"address": "124.0.0.1", "port": 164}]}
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        self.assertEqual(
+            inventory_record_manager.return_group("123.0.0.1", 163, groups), "group1"
+        )
+
+    def test_return_group_none(self):
+        groups = {"group1": [{"address": "123.0.0.1", "port": 163}, {"address": "124.0.0.1", "port": 164}]}
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        self.assertEqual(
+            inventory_record_manager.return_group("126.0.0.1", 166, groups), None
+        )
