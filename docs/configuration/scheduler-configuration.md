@@ -48,7 +48,7 @@ To get the general idea when groups are useful see [Configuring Groups](configur
 Example group configuration:
 ```yaml
 scheduler:
-  groups:
+  groups: |
     example_group_1:
       - address: 123.0.0.1
         port: 161
