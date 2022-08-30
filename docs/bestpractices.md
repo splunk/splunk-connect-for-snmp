@@ -60,3 +60,15 @@ If you put only IP address (ex. `127.0.0.1`), then errors will be ignored for al
 
 Enable small walk functionality with the following instruction: [Configure small walk profile](../configuration/configuring-profiles/#walk-profile). 
 
+### An error of SNMP isWalk=True blocks traffic on SC4SNMP instance
+
+If you see many `An error of SNMP isWalk=True` errors in logs, that means that there is a connection problem with the hosts you're polling from.
+Walk will try to retry multiple times, what will eventually cause a worker to be blocked for the retries time. In this case, you might want to limit
+the maximum retries time. You can do it by setting the variable `worker.walkRetryMaxInterval`, like:
+
+```yaml
+worker:
+  walkRetryMaxInterval: 60
+```
+
+With the configuration from the above, walk will retry exponentially until it reaches 60 seconds.
