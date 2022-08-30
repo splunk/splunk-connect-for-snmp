@@ -205,6 +205,7 @@ Here you can read about Horizontal Autoscaling and how to adjust maximum replica
 | variable | description | default |
 | --- | --- | --- |
 | worker.taskTimeout | task timeout in seconds (usually necessary when walk process takes a long time) | 2400 |
+| worker.walkRetryMaxInterval | maximum time interval between walk attempts | 600 |
 | worker.poller.replicaCount | number of poller worker replicas | 2 |
 | worker.poller.autoscaling.enabled | enabling autoscaling for poller worker pods | false |
 | worker.poller.autoscaling.minReplicas | minimum number of running poller worker pods when autoscaling is enabled | 2 |
