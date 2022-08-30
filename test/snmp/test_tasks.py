@@ -9,14 +9,14 @@ from pysnmp.smi.error import SmiError
 @patch("mongolock.MongoLock.lock")
 @patch("mongolock.MongoLock.release")
 class TestTasks(TestCase):
-    @patch("splunk_connect_for_snmp.snmp.tasks.get_inventory")
-    @patch("splunk_connect_for_snmp.snmp.tasks.Poller.__init__")
+    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch("time.time")
     def test_walk(
         self,
         m_time,
-        m_do_work,
+        m_poller_do_work,
         m_poller,
         m_get_inventory,
         m_release,
@@ -32,7 +32,7 @@ class TestTasks(TestCase):
         m_time.return_value = 1640692955.365186
 
         kwargs = {"address": "192.168.0.1"}
-        m_do_work.return_value = (False, {"test": "value1"})
+        m_poller_do_work.return_value = (False, {"test": "value1"})
 
         result = walk(**kwargs)
 
@@ -48,8 +48,8 @@ class TestTasks(TestCase):
             result,
         )
 
-    @patch("splunk_connect_for_snmp.snmp.tasks.get_inventory")
-    @patch("splunk_connect_for_snmp.snmp.tasks.Poller.__init__")
+    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch("time.time")
     def test_poll(
@@ -63,13 +63,12 @@ class TestTasks(TestCase):
         m_mongo_lock,
         m_mongo_client,
     ):
+        m_poller.return_value = None
         from splunk_connect_for_snmp.snmp.tasks import poll
 
         m_mongo_client.return_value = MagicMock()
         m_mongo_lock.return_value = None
         m_time.return_value = 1640692955.365186
-
-        m_poller.return_value = None
 
         kwargs = {"address": "192.168.0.1", "profiles": ["profile1"], "frequency": 70}
         m_do_work.return_value = (False, {"test": "value1"})
@@ -90,8 +89,8 @@ class TestTasks(TestCase):
             result,
         )
 
-    @patch("splunk_connect_for_snmp.snmp.tasks.get_inventory")
-    @patch("splunk_connect_for_snmp.snmp.tasks.Poller.__init__")
+    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch("time.time")
     def test_poll_with_group(
@@ -105,13 +104,12 @@ class TestTasks(TestCase):
         m_mongo_lock,
         m_mongo_client,
     ):
+        m_poller.return_value = None
         from splunk_connect_for_snmp.snmp.tasks import poll
 
         m_mongo_client.return_value = MagicMock()
         m_mongo_lock.return_value = None
         m_time.return_value = 1640692955.365186
-
-        m_poller.return_value = None
 
         kwargs = {
             "address": "192.168.0.1",
@@ -138,8 +136,8 @@ class TestTasks(TestCase):
             result,
         )
 
-    @patch("splunk_connect_for_snmp.snmp.tasks.get_inventory")
-    @patch("splunk_connect_for_snmp.snmp.tasks.Poller.__init__")
+    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch("time.time")
     def test_walk_with_group(
@@ -153,13 +151,12 @@ class TestTasks(TestCase):
         m_mongo_lock,
         m_mongo_client,
     ):
+        m_poller.return_value = None
         from splunk_connect_for_snmp.snmp.tasks import walk
 
         m_mongo_client.return_value = MagicMock()
         m_mongo_lock.return_value = None
         m_time.return_value = 1640692955.365186
-
-        m_poller.return_value = None
 
         kwargs = {"address": "192.168.0.1", "group": "group1"}
         m_do_work.return_value = (False, {"test": "value1"})
@@ -181,7 +178,7 @@ class TestTasks(TestCase):
 
     @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
-    @patch("splunk_connect_for_snmp.snmp.tasks.Poller.__init__")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("time.time")
     def test_trap(
         self,
@@ -194,6 +191,7 @@ class TestTasks(TestCase):
         m_mongo_lock,
         m_mongo_client,
     ):
+        m_poller.return_value = None
         from splunk_connect_for_snmp.snmp.tasks import trap
 
         m_time.return_value = 1640692955.365186
@@ -203,7 +201,6 @@ class TestTasks(TestCase):
         work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
         m_process_data.return_value = (False, [], {"test": "value1"})
         m_poller.builder = MagicMock()
-        m_poller.return_value = None
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
         result = trap(work)
@@ -223,7 +220,7 @@ class TestTasks(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
-    @patch("splunk_connect_for_snmp.snmp.tasks.Poller.__init__")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("time.time")
     def test_trap_retry_translation(
         self,
@@ -235,13 +232,13 @@ class TestTasks(TestCase):
         m_resolved,
         *mongo_args
     ):
+        m_poller.return_value = None
         from splunk_connect_for_snmp.snmp.tasks import trap
 
         m_time.return_value = 1640692955.365186
 
         m_resolved.side_effect = [SmiError, "TEST1"]
         m_is_mib_known.return_value = (True, "SOME-MIB")
-        m_poller.return_value = None
         work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
         m_process_data.return_value = (False, [], {"test": "value1"})
         m_poller.trap = trap
@@ -270,7 +267,7 @@ class TestTasks(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
-    @patch("splunk_connect_for_snmp.snmp.tasks.Poller.__init__")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("time.time")
     def test_trap_retry_translation_failed(
         self,
@@ -285,6 +282,7 @@ class TestTasks(TestCase):
         m_mongo_lock,
         m_mongo_client,
     ):
+        m_poller.return_value = None
         from splunk_connect_for_snmp.snmp.tasks import trap
 
         m_time.return_value = 1640692955.365186
@@ -294,7 +292,6 @@ class TestTasks(TestCase):
 
         work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
         m_process_data.return_value = (False, [], {"test": "value1"})
-        m_poller.return_value = None
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
         m_poller.trap.already_loaded_mibs = set()
