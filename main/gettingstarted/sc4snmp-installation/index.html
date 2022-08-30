@@ -1043,7 +1043,7 @@ inserted in the corresponding section of <code>values.yaml</code>. For more deta
 <ul>
 <li>
 <p>Test the Trap by logging into Splunk and confirming the presence of events
-    in snmp <code>netops</code> and metrics in <code>netmetrics</code> index</p>
+    in snmp <code>netops</code> index.</p>
 </li>
 <li>
 <p>Test the trap from a Linux system with SNMP installed. Replace the IP address 
@@ -1077,7 +1077,7 @@ apt-get install snmpd
 </code></pre></div>
 
 <ul>
-<li>To test SNMP poller, snmpd needs to be configured to listen on external IP. To enabled listening snmpd to external IP, 
+<li>To test SNMP poller, snmpd needs to be configured to listen on the external IP. To enabled listening snmpd to external IP, 
 in configuration file: <code>/etc/snmp/snmpd.conf</code> replace the IP address  <code>10.0.101.22</code> with the server IP address where snmpd is configured
 <code>agentaddress  10.0.101.22,127.0.0.1,[::1]</code>. Restart snmpd by execute command:</li>
 </ul>
@@ -1086,20 +1086,17 @@ service snmpd start
 </code></pre></div>
 
 <ul>
-<li>Configure SC4SNMP Poller to test add IP address which needs to be polled. Add configuration entry in <code>values.yaml</code> file by 
-replace the IP address <code>10.0.101.22</code> with the server IP address where snmpd were configured.</li>
+<li>Configure SC4SNMP Poller to test add IP address which you want to poll. Add configuration entry in <code>values.yaml</code> file by 
+replacing the IP address <code>10.0.101.22</code> with the server IP address where snmpd was configured.</li>
 </ul>
 <div class="codehilite"><pre><span></span><code>poller:
-  usernameSecrets:
-    - sc4snmp-homesecure-sha-aes
-    - sc4snmp-homesecure-sha-des
   inventory: <span class="p">|</span>
-    address,version,community,walk_interval,profiles,smart_profiles,delete
-    <span class="m">10</span>.0.101.22,public,42000,,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+    <span class="m">10</span>.0.101.22,,2c,public,,,42000,,,
 </code></pre></div>
 
 <ul>
-<li>Load <code>values.yaml</code> file in SC4SNMP</li>
+<li>Load <code>values.yaml</code> file into SC4SNMP</li>
 </ul>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
@@ -1107,9 +1104,9 @@ replace the IP address <code>10.0.101.22</code> with the server IP address where
 <ul>
 <li>Check-in Splunk</li>
 </ul>
-<p>Before polling starts, SC4SNMP must perform Walk process on the device. It is run after configuring new device and every <code>walk_interval</code>. 
+<p>Before polling starts, SC4SNMP must perform SNMP WALK process on the device. It is run first time after configuring the new device and  then in every <code>walk_interval</code>. 
 Its purpose is to gather all the data and provide meaningful context for the polling records. May be, that your device is so big that walk takes too long and scope of walking must be limited.
-In such cases, enable the small walk using the instruction: <a href="/bestpractices/#walking-a-device-takes-too-much-time">walk takes too much time</a>.
+In such cases, enable the small walk using the instruction: <a href="../../bestpractices/#walking-a-device-takes-too-much-time">walk takes too much time</a>.
 When walk finishes, events appear in Splunk, check it with those queries:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">&quot;netops&quot;</span> <span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:event&quot;</span>
 </code></pre></div>

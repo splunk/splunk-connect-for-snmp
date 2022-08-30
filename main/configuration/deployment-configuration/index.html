@@ -714,7 +714,7 @@
 
 
 <h1 id="deployment-configuration">Deployment Configuration<a class="headerlink" href="#deployment-configuration" title="Permanent link">&para;</a></h1>
-<p><code>values.yaml</code> are the main point of SC4SNMP management. The most important variables are already there from the very beginning 
+<p><code>values.yaml</code> is the main point of SC4SNMP management. The most important variables are already there from the very beginning 
 after executing:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">inspect</span> <span class="nv">values</span> <span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span> <span class="o">&gt;</span> <span class="nv">values</span>.<span class="nv">yaml</span>
 </code></pre></div>
@@ -745,19 +745,25 @@ after executing:</p>
 <p>Inventory and profiles in <code>values.yaml</code> is quite expensive from the Splunk Connect for SNMP perspective. 
 It requires several checks before applying changes. SC4SNMP was designed to prevent changes in inventory and profiles 
 task more often than every 5 min. </p>
-<p>When changing inventory or profile need to be applied in <code>values.yaml</code> following steps need to be done:</p>
+<p>When changing inventory or profile needs to be applied in <code>values.yaml</code> following steps need to be done:</p>
 <ol>
-<li>Apply changes in <code>values.yaml</code> </li>
+<li>Edit <code>values.yaml</code> </li>
 <li>Check is inventory pod is still running by an execute command</li>
 </ol>
-<p><code>shell
-   microk8s kubectl -n sc4snmp get pods | grep inventory</code></p>
+<div class="codehilite"><pre><span></span><code>microk8s kubectl -n sc4snmp get pods <span class="p">|</span> grep inventory
+</code></pre></div>
+
 <p>If the command does not return any pods, follow the next step. In another case, wait and execute the command again until the moment 
-   when inventory job finishes. </p>
+when inventory job finishes. </p>
+<p>If you really need to apply changes immediately, you can get around the limitation by deleting inventory job, with:</p>
+<div class="codehilite"><pre><span></span><code>microk8s kubectl delete job/snmp-splunk-connect-for-snmp-inventory -n sc4snmp
+</code></pre></div>
+
+<p>After running this command, you can proceed with upgrading without a need to wait.</p>
 <ol start="3">
-<li>Run upgrade command describe in <a href="../../gettingstarted/sc4snmp-installation#install-sc4snmp">Installation Guide</a> </li>
+<li>Run upgrade command described in <a href="../../gettingstarted/sc4snmp-installation#install-sc4snmp">Installation Guide</a> </li>
 </ol>
-<p>NOTE: If you decide to change existing profile scope without changing inventory data, the change will be reflected after 
+<p>NOTE: If you decide to change frequency of the profile without changing inventory data, the change will be reflected after 
 next walk process for the host. Walk happens every <code>walk_interval</code> or on any change in inventory.</p>
 
               
