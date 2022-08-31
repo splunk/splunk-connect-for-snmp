@@ -58,14 +58,12 @@ class CustomPeriodicTaskManager:
             periodic_document.reschedule()
 
     def delete_all_tasks_of_host(self, target):
-        periodic_tasks = RedBeatSchedulerEntry.get_schedules_by_target(target, app=app)
-        for periodic_document in periodic_tasks:
-            periodic_document.delete()
+        RedBeatSchedulerEntry.delete_schedules_by_target(target, app=app)
 
     def manage_task(self, **task_data) -> None:
         task_name = task_data.get("name")
         # When task is updated, we don't want to change existing schedules.
-        # If task interval is very long, running walk process in between would result in calculating
+        # If task interval is very long, running walk process in between would result in ca`lculating
         # next execution again.
         try:
             periodic_document = RedBeatSchedulerEntry.from_key(
