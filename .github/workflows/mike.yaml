@@ -39,6 +39,6 @@ jobs:
         run: |
           BRANCH=$(echo $GITHUB_REF | cut -d / -f 3)
           echo $BRANCH
-          pip3 install poetry
+          pip3 install poetry=="1.1.15"
           poetry install
           poetry run mike deploy -p $BRANCH
