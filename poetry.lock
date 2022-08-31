@@ -217,7 +217,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "coverage"
-version = "6.4.1"
+version = "6.4.4"
 description = "Code coverage measurement for Python"
 category = "dev"
 optional = false
@@ -481,7 +481,7 @@ pymongo = ">=2.6.0"
 
 [[package]]
 name = "opentelemetry-api"
-version = "1.6.2"
+version = "1.12.0"
 description = "OpenTelemetry Python API"
 category = "main"
 optional = false
@@ -505,7 +505,7 @@ thrift = ">=0.10.0"
 
 [[package]]
 name = "opentelemetry-instrumentation"
-version = "0.25b2"
+version = "0.33b0"
 description = "Instrumentation Tools & Auto Instrumentation for OpenTelemetry Python"
 category = "main"
 optional = false
@@ -517,51 +517,52 @@ wrapt = ">=1.0.0,<2.0.0"
 
 [[package]]
 name = "opentelemetry-instrumentation-celery"
-version = "0.25b2"
+version = "0.33b0"
 description = "OpenTelemetry Celery Instrumentation"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-opentelemetry-api = ">=1.3,<2.0"
-opentelemetry-instrumentation = "0.25b2"
-opentelemetry-semantic-conventions = "0.25b2"
+opentelemetry-api = ">=1.12,<2.0"
+opentelemetry-instrumentation = "0.33b0"
+opentelemetry-semantic-conventions = "0.33b0"
 
 [package.extras]
 instruments = ["celery (>=4.0,<6.0)"]
-test = ["pytest", "opentelemetry-test (==0.25b2)", "celery (>=4.0,<6.0)"]
+test = ["pytest", "opentelemetry-test-utils (==0.33b0)", "celery (>=4.0,<6.0)"]
 
 [[package]]
 name = "opentelemetry-instrumentation-logging"
-version = "0.25b2"
+version = "0.33b0"
 description = "OpenTelemetry Logging instrumentation"
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-opentelemetry-api = ">=1.3,<2.0"
-opentelemetry-instrumentation = "0.25b2"
+opentelemetry-api = ">=1.12,<2.0"
+opentelemetry-instrumentation = "0.33b0"
 
 [package.extras]
-test = ["opentelemetry-test (==0.25b2)"]
+test = ["opentelemetry-test-utils (==0.33b0)"]
 
 [[package]]
 name = "opentelemetry-sdk"
-version = "1.6.2"
+version = "1.12.0"
 description = "OpenTelemetry Python SDK"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-opentelemetry-api = "1.6.2"
-opentelemetry-semantic-conventions = "0.25b2"
+opentelemetry-api = "1.12.0"
+opentelemetry-semantic-conventions = "0.33b0"
+typing-extensions = ">=3.7.4"
 
 [[package]]
 name = "opentelemetry-semantic-conventions"
-version = "0.25b2"
+version = "0.33b0"
 description = "OpenTelemetry Semantic Conventions"
 category = "main"
 optional = false
@@ -1107,7 +1108,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "1e0066fdc696c5f6341165a37225d6525a9ce91320fd492aabc140dd9c996180"
+content-hash = "cc3dcb63c4c1c47e5a8fc1b956f37a9cc828aea637d62f48ae59956925fc82d9"
 
 [metadata.files]
 amqp = [
@@ -1171,49 +1172,7 @@ colorama = [
     {file = "colorama-0.4.5-py2.py3-none-any.whl", hash = "sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da"},
     {file = "colorama-0.4.5.tar.gz", hash = "sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4"},
 ]
-coverage = [
-    {file = "coverage-6.4.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:f1d5aa2703e1dab4ae6cf416eb0095304f49d004c39e9db1d86f57924f43006b"},
-    {file = "coverage-6.4.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:4ce1b258493cbf8aec43e9b50d89982346b98e9ffdfaae8ae5793bc112fb0068"},
-    {file = "coverage-6.4.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:83c4e737f60c6936460c5be330d296dd5b48b3963f48634c53b3f7deb0f34ec4"},
-    {file = "coverage-6.4.1-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:84e65ef149028516c6d64461b95a8dbcfce95cfd5b9eb634320596173332ea84"},
-    {file = "coverage-6.4.1-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f69718750eaae75efe506406c490d6fc5a6161d047206cc63ce25527e8a3adad"},
-    {file = "coverage-6.4.1-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:e57816f8ffe46b1df8f12e1b348f06d164fd5219beba7d9433ba79608ef011cc"},
-    {file = "coverage-6.4.1-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:01c5615d13f3dd3aa8543afc069e5319cfa0c7d712f6e04b920431e5c564a749"},
-    {file = "coverage-6.4.1-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:75ab269400706fab15981fd4bd5080c56bd5cc07c3bccb86aab5e1d5a88dc8f4"},
-    {file = "coverage-6.4.1-cp310-cp310-win32.whl", hash = "sha256:a7f3049243783df2e6cc6deafc49ea123522b59f464831476d3d1448e30d72df"},
-    {file = "coverage-6.4.1-cp310-cp310-win_amd64.whl", hash = "sha256:ee2ddcac99b2d2aec413e36d7a429ae9ebcadf912946b13ffa88e7d4c9b712d6"},
-    {file = "coverage-6.4.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:fb73e0011b8793c053bfa85e53129ba5f0250fdc0392c1591fd35d915ec75c46"},
-    {file = "coverage-6.4.1-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:106c16dfe494de3193ec55cac9640dd039b66e196e4641fa8ac396181578b982"},
-    {file = "coverage-6.4.1-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:87f4f3df85aa39da00fd3ec4b5abeb7407e82b68c7c5ad181308b0e2526da5d4"},
-    {file = "coverage-6.4.1-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:961e2fb0680b4f5ad63234e0bf55dfb90d302740ae9c7ed0120677a94a1590cb"},
-    {file = "coverage-6.4.1-cp37-cp37m-musllinux_1_1_aarch64.whl", hash = "sha256:cec3a0f75c8f1031825e19cd86ee787e87cf03e4fd2865c79c057092e69e3a3b"},
-    {file = "coverage-6.4.1-cp37-cp37m-musllinux_1_1_i686.whl", hash = "sha256:129cd05ba6f0d08a766d942a9ed4b29283aff7b2cccf5b7ce279d50796860bb3"},
-    {file = "coverage-6.4.1-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:bf5601c33213d3cb19d17a796f8a14a9eaa5e87629a53979a5981e3e3ae166f6"},
-    {file = "coverage-6.4.1-cp37-cp37m-win32.whl", hash = "sha256:269eaa2c20a13a5bf17558d4dc91a8d078c4fa1872f25303dddcbba3a813085e"},
-    {file = "coverage-6.4.1-cp37-cp37m-win_amd64.whl", hash = "sha256:f02cbbf8119db68455b9d763f2f8737bb7db7e43720afa07d8eb1604e5c5ae28"},
-    {file = "coverage-6.4.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:ffa9297c3a453fba4717d06df579af42ab9a28022444cae7fa605af4df612d54"},
-    {file = "coverage-6.4.1-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:145f296d00441ca703a659e8f3eb48ae39fb083baba2d7ce4482fb2723e050d9"},
-    {file = "coverage-6.4.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d67d44996140af8b84284e5e7d398e589574b376fb4de8ccd28d82ad8e3bea13"},
-    {file = "coverage-6.4.1-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2bd9a6fc18aab8d2e18f89b7ff91c0f34ff4d5e0ba0b33e989b3cd4194c81fd9"},
-    {file = "coverage-6.4.1-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3384f2a3652cef289e38100f2d037956194a837221edd520a7ee5b42d00cc605"},
-    {file = "coverage-6.4.1-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:9b3e07152b4563722be523e8cd0b209e0d1a373022cfbde395ebb6575bf6790d"},
-    {file = "coverage-6.4.1-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:1480ff858b4113db2718848d7b2d1b75bc79895a9c22e76a221b9d8d62496428"},
-    {file = "coverage-6.4.1-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:865d69ae811a392f4d06bde506d531f6a28a00af36f5c8649684a9e5e4a85c83"},
-    {file = "coverage-6.4.1-cp38-cp38-win32.whl", hash = "sha256:664a47ce62fe4bef9e2d2c430306e1428ecea207ffd68649e3b942fa8ea83b0b"},
-    {file = "coverage-6.4.1-cp38-cp38-win_amd64.whl", hash = "sha256:26dff09fb0d82693ba9e6231248641d60ba606150d02ed45110f9ec26404ed1c"},
-    {file = "coverage-6.4.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:d9c80df769f5ec05ad21ea34be7458d1dc51ff1fb4b2219e77fe24edf462d6df"},
-    {file = "coverage-6.4.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:39ee53946bf009788108b4dd2894bf1349b4e0ca18c2016ffa7d26ce46b8f10d"},
-    {file = "coverage-6.4.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f5b66caa62922531059bc5ac04f836860412f7f88d38a476eda0a6f11d4724f4"},
-    {file = "coverage-6.4.1-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:fd180ed867e289964404051a958f7cccabdeed423f91a899829264bb7974d3d3"},
-    {file = "coverage-6.4.1-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:84631e81dd053e8a0d4967cedab6db94345f1c36107c71698f746cb2636c63e3"},
-    {file = "coverage-6.4.1-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:8c08da0bd238f2970230c2a0d28ff0e99961598cb2e810245d7fc5afcf1254e8"},
-    {file = "coverage-6.4.1-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:d42c549a8f41dc103a8004b9f0c433e2086add8a719da00e246e17cbe4056f72"},
-    {file = "coverage-6.4.1-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:309ce4a522ed5fca432af4ebe0f32b21d6d7ccbb0f5fcc99290e71feba67c264"},
-    {file = "coverage-6.4.1-cp39-cp39-win32.whl", hash = "sha256:fdb6f7bd51c2d1714cea40718f6149ad9be6a2ee7d93b19e9f00934c0f2a74d9"},
-    {file = "coverage-6.4.1-cp39-cp39-win_amd64.whl", hash = "sha256:342d4aefd1c3e7f620a13f4fe563154d808b69cccef415415aece4c786665397"},
-    {file = "coverage-6.4.1-pp36.pp37.pp38-none-any.whl", hash = "sha256:4803e7ccf93230accb928f3a68f00ffa80a88213af98ed338a57ad021ef06815"},
-    {file = "coverage-6.4.1.tar.gz", hash = "sha256:4321f075095a096e70aff1d002030ee612b65a205a0a0f5b815280d5dc58100c"},
-]
+coverage = []
 deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
@@ -1326,34 +1285,16 @@ mongoengine = [
 mongolock = [
     {file = "mongolock-1.3.4.tar.gz", hash = "sha256:f261dc41ee6acd80e79ae75acc9fdd8c4f018b363041e1d33ec145d2250c26bd"},
 ]
-opentelemetry-api = [
-    {file = "opentelemetry-api-1.6.2.tar.gz", hash = "sha256:d28513e948014a61b66472a9a5c51b6cc5f9f9f7f2785ad2c3d0006e9b0b9103"},
-    {file = "opentelemetry_api-1.6.2-py3-none-any.whl", hash = "sha256:223ba94033cc03cf3dc9be20304e90300402a8e9b60979ae7f4b76c4b1f76b0a"},
-]
+opentelemetry-api = []
 opentelemetry-exporter-jaeger-thrift = [
     {file = "opentelemetry-exporter-jaeger-thrift-1.11.0.tar.gz", hash = "sha256:66924fda1f3b38144b6b87f2c008d8ee064964e45ba76bc4b80adc1b2a115191"},
     {file = "opentelemetry_exporter_jaeger_thrift-1.11.0-py3-none-any.whl", hash = "sha256:5774c31fddf73dd2c0858e3dfd6e9b6245d8975c525267043c717022bf4eb140"},
 ]
-opentelemetry-instrumentation = [
-    {file = "opentelemetry-instrumentation-0.25b2.tar.gz", hash = "sha256:473426972781b544047acf0ffee757cdbe2254842e6dc44a8d56c027a0e5aaa1"},
-    {file = "opentelemetry_instrumentation-0.25b2-py3-none-any.whl", hash = "sha256:e81256d91e2917fe5cbda0c2286e5f1383e8a2d78defe212612dcfb6a07c2b83"},
-]
-opentelemetry-instrumentation-celery = [
-    {file = "opentelemetry-instrumentation-celery-0.25b2.tar.gz", hash = "sha256:498ff0742df88ceb2ed1e5714668fbe01988a8ab229fb26f1ceb4a675d7a63dd"},
-    {file = "opentelemetry_instrumentation_celery-0.25b2-py3-none-any.whl", hash = "sha256:fcbeadf545776c458e7ed5288a9182a572d0e83c0301f2d7cdb0c9007e101cce"},
-]
-opentelemetry-instrumentation-logging = [
-    {file = "opentelemetry-instrumentation-logging-0.25b2.tar.gz", hash = "sha256:afcf6a67e28de7c0d9a7e9ce9d520b62b0f6ed3ac602fe0436ff8e84e88e036e"},
-    {file = "opentelemetry_instrumentation_logging-0.25b2-py3-none-any.whl", hash = "sha256:0b6e039e0c061efbc6dd34601869848728965b6c1357f7d0f5338116c1be675b"},
-]
-opentelemetry-sdk = [
-    {file = "opentelemetry-sdk-1.6.2.tar.gz", hash = "sha256:223a73aff23a07655378d74b9ec8aa2fb412a36be538b1c7179619194cc02b6e"},
-    {file = "opentelemetry_sdk-1.6.2-py3-none-any.whl", hash = "sha256:68d29873212184b975dcd280737b451355bd249af0ee27977faf85a0d5cf615e"},
-]
-opentelemetry-semantic-conventions = [
-    {file = "opentelemetry-semantic-conventions-0.25b2.tar.gz", hash = "sha256:f59a06acc3258b29b9048c4c83ea72032bf7c3c9607a7dfa6bf40593f8fbdd91"},
-    {file = "opentelemetry_semantic_conventions-0.25b2-py3-none-any.whl", hash = "sha256:c428c7c8df4dd0959966f53df755a760cc63a4b3c3bc4174e648b031e32c48b5"},
-]
+opentelemetry-instrumentation = []
+opentelemetry-instrumentation-celery = []
+opentelemetry-instrumentation-logging = []
+opentelemetry-sdk = []
+opentelemetry-semantic-conventions = []
 packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
     {file = "packaging-21.3.tar.gz", hash = "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb"},
