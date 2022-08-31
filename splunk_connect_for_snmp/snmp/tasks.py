@@ -71,13 +71,10 @@ def walk(self, **kwargs):
     mongo_db = mongo_client[MONGO_DB]
     mongo_inventory = mongo_db.inventory
 
-    lock = MongoLock(client=mongo_client, db="sc4snmp")
-
-    with lock(address, self.request.id, expire=300, timeout=300):
-        ir = get_inventory(mongo_inventory, address)
-        retry = True
-        while retry:
-            retry, result = self.do_work(ir, walk=True, profiles=profile)
+    ir = get_inventory(mongo_inventory, address)
+    retry = True
+    while retry:
+        retry, result = self.do_work(ir, walk=True, profiles=profile)
 
     # After a Walk tell schedule to recalc
     work = {}
@@ -105,11 +102,9 @@ def poll(self, **kwargs):
     mongo_client = pymongo.MongoClient(MONGO_URI)
     mongo_db = mongo_client[MONGO_DB]
     mongo_inventory = mongo_db.inventory
-    lock = MongoLock(client=mongo_client, db="sc4snmp")
 
-    with lock(kwargs["address"], self.request.id, expire=90, timeout=20):
-        ir = get_inventory(mongo_inventory, address)
-        _, result = self.do_work(ir, profiles=profiles)
+    ir = get_inventory(mongo_inventory, address)
+    _, result = self.do_work(ir, profiles=profiles)
 
     # After a Walk tell schedule to recalc
     work = {}
