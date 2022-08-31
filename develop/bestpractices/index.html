@@ -606,6 +606,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-sc4snmp-instance" class="md-nav__link">
+    An error of SNMP isWalk=True blocks traffic on SC4SNMP instance
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -800,6 +807,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-sc4snmp-instance" class="md-nav__link">
+    An error of SNMP isWalk=True blocks traffic on SC4SNMP instance
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -865,6 +879,15 @@ required checking if the firewall is not blocking any of <a href="https://microk
 <code>127.0.0.1:163</code>&hellip;). If you put IP address and host structured as <code>{host}:{port}</code> that means the error will be ignored only for this device.</p>
 <h3 id="walking-a-device-takes-too-much-time">Walking a device takes too much time<a class="headerlink" href="#walking-a-device-takes-too-much-time" title="Permanent link">&para;</a></h3>
 <p>Enable small walk functionality with the following instruction: <a href="../configuration/configuring-profiles/#walk-profile">Configure small walk profile</a>. </p>
+<h3 id="an-error-of-snmp-iswalktrue-blocks-traffic-on-sc4snmp-instance">An error of SNMP isWalk=True blocks traffic on SC4SNMP instance<a class="headerlink" href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-sc4snmp-instance" title="Permanent link">&para;</a></h3>
+<p>If you see many <code>An error of SNMP isWalk=True</code> errors in logs, that means that there is a connection problem with the hosts you&rsquo;re polling from.
+Walk will try to retry multiple times, what will eventually cause a worker to be blocked for the retries time. In this case, you might want to limit
+the maximum retries time. You can do it by setting the variable <code>worker.walkRetryMaxInterval</code>, like:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">walkRetryMaxInterval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span><span class="w"></span>
+</code></pre></div>
+
+<p>With the configuration from the above, walk will retry exponentially until it reaches 60 seconds.</p>
 
               
             </article>
