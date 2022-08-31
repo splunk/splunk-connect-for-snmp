@@ -493,7 +493,7 @@ pymongo = ">=2.6.0"
 
 [[package]]
 name = "opentelemetry-api"
-version = "1.6.2"
+version = "1.12.0"
 description = "OpenTelemetry Python API"
 category = "main"
 optional = false
@@ -504,7 +504,7 @@ Deprecated = ">=1.2.6"
 
 [[package]]
 name = "opentelemetry-exporter-jaeger-thrift"
-version = "1.11.0"
+version = "1.12.0"
 description = "Jaeger Thrift Exporter for OpenTelemetry"
 category = "main"
 optional = false
@@ -512,12 +512,12 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 opentelemetry-api = ">=1.3,<2.0"
-opentelemetry-sdk = ">=1.3,<2.0"
+opentelemetry-sdk = ">=1.11,<2.0"
 thrift = ">=0.10.0"
 
 [[package]]
 name = "opentelemetry-instrumentation"
-version = "0.25b2"
+version = "0.33b0"
 description = "Instrumentation Tools & Auto Instrumentation for OpenTelemetry Python"
 category = "main"
 optional = false
@@ -529,51 +529,52 @@ wrapt = ">=1.0.0,<2.0.0"
 
 [[package]]
 name = "opentelemetry-instrumentation-celery"
-version = "0.25b2"
+version = "0.33b0"
 description = "OpenTelemetry Celery Instrumentation"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-opentelemetry-api = ">=1.3,<2.0"
-opentelemetry-instrumentation = "0.25b2"
-opentelemetry-semantic-conventions = "0.25b2"
+opentelemetry-api = ">=1.12,<2.0"
+opentelemetry-instrumentation = "0.33b0"
+opentelemetry-semantic-conventions = "0.33b0"
 
 [package.extras]
 instruments = ["celery (>=4.0,<6.0)"]
-test = ["pytest", "opentelemetry-test (==0.25b2)", "celery (>=4.0,<6.0)"]
+test = ["pytest", "opentelemetry-test-utils (==0.33b0)", "celery (>=4.0,<6.0)"]
 
 [[package]]
 name = "opentelemetry-instrumentation-logging"
-version = "0.25b2"
+version = "0.33b0"
 description = "OpenTelemetry Logging instrumentation"
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-opentelemetry-api = ">=1.3,<2.0"
-opentelemetry-instrumentation = "0.25b2"
+opentelemetry-api = ">=1.12,<2.0"
+opentelemetry-instrumentation = "0.33b0"
 
 [package.extras]
-test = ["opentelemetry-test (==0.25b2)"]
+test = ["opentelemetry-test-utils (==0.33b0)"]
 
 [[package]]
 name = "opentelemetry-sdk"
-version = "1.6.2"
+version = "1.12.0"
 description = "OpenTelemetry Python SDK"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-opentelemetry-api = "1.6.2"
-opentelemetry-semantic-conventions = "0.25b2"
+opentelemetry-api = "1.12.0"
+opentelemetry-semantic-conventions = "0.33b0"
+typing-extensions = ">=3.7.4"
 
 [[package]]
 name = "opentelemetry-semantic-conventions"
-version = "0.25b2"
+version = "0.33b0"
 description = "OpenTelemetry Semantic Conventions"
 category = "main"
 optional = false
@@ -1122,7 +1123,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "1e0066fdc696c5f6341165a37225d6525a9ce91320fd492aabc140dd9c996180"
+content-hash = "cc3dcb63c4c1c47e5a8fc1b956f37a9cc828aea637d62f48ae59956925fc82d9"
 
 [metadata.files]
 amqp = [
@@ -1276,34 +1277,13 @@ mongoengine = []
 mongolock = [
     {file = "mongolock-1.3.4.tar.gz", hash = "sha256:f261dc41ee6acd80e79ae75acc9fdd8c4f018b363041e1d33ec145d2250c26bd"},
 ]
-opentelemetry-api = [
-    {file = "opentelemetry-api-1.6.2.tar.gz", hash = "sha256:d28513e948014a61b66472a9a5c51b6cc5f9f9f7f2785ad2c3d0006e9b0b9103"},
-    {file = "opentelemetry_api-1.6.2-py3-none-any.whl", hash = "sha256:223ba94033cc03cf3dc9be20304e90300402a8e9b60979ae7f4b76c4b1f76b0a"},
-]
-opentelemetry-exporter-jaeger-thrift = [
-    {file = "opentelemetry-exporter-jaeger-thrift-1.11.0.tar.gz", hash = "sha256:66924fda1f3b38144b6b87f2c008d8ee064964e45ba76bc4b80adc1b2a115191"},
-    {file = "opentelemetry_exporter_jaeger_thrift-1.11.0-py3-none-any.whl", hash = "sha256:5774c31fddf73dd2c0858e3dfd6e9b6245d8975c525267043c717022bf4eb140"},
-]
-opentelemetry-instrumentation = [
-    {file = "opentelemetry-instrumentation-0.25b2.tar.gz", hash = "sha256:473426972781b544047acf0ffee757cdbe2254842e6dc44a8d56c027a0e5aaa1"},
-    {file = "opentelemetry_instrumentation-0.25b2-py3-none-any.whl", hash = "sha256:e81256d91e2917fe5cbda0c2286e5f1383e8a2d78defe212612dcfb6a07c2b83"},
-]
-opentelemetry-instrumentation-celery = [
-    {file = "opentelemetry-instrumentation-celery-0.25b2.tar.gz", hash = "sha256:498ff0742df88ceb2ed1e5714668fbe01988a8ab229fb26f1ceb4a675d7a63dd"},
-    {file = "opentelemetry_instrumentation_celery-0.25b2-py3-none-any.whl", hash = "sha256:fcbeadf545776c458e7ed5288a9182a572d0e83c0301f2d7cdb0c9007e101cce"},
-]
-opentelemetry-instrumentation-logging = [
-    {file = "opentelemetry-instrumentation-logging-0.25b2.tar.gz", hash = "sha256:afcf6a67e28de7c0d9a7e9ce9d520b62b0f6ed3ac602fe0436ff8e84e88e036e"},
-    {file = "opentelemetry_instrumentation_logging-0.25b2-py3-none-any.whl", hash = "sha256:0b6e039e0c061efbc6dd34601869848728965b6c1357f7d0f5338116c1be675b"},
-]
-opentelemetry-sdk = [
-    {file = "opentelemetry-sdk-1.6.2.tar.gz", hash = "sha256:223a73aff23a07655378d74b9ec8aa2fb412a36be538b1c7179619194cc02b6e"},
-    {file = "opentelemetry_sdk-1.6.2-py3-none-any.whl", hash = "sha256:68d29873212184b975dcd280737b451355bd249af0ee27977faf85a0d5cf615e"},
-]
-opentelemetry-semantic-conventions = [
-    {file = "opentelemetry-semantic-conventions-0.25b2.tar.gz", hash = "sha256:f59a06acc3258b29b9048c4c83ea72032bf7c3c9607a7dfa6bf40593f8fbdd91"},
-    {file = "opentelemetry_semantic_conventions-0.25b2-py3-none-any.whl", hash = "sha256:c428c7c8df4dd0959966f53df755a760cc63a4b3c3bc4174e648b031e32c48b5"},
-]
+opentelemetry-api = []
+opentelemetry-exporter-jaeger-thrift = []
+opentelemetry-instrumentation = []
+opentelemetry-instrumentation-celery = []
+opentelemetry-instrumentation-logging = []
+opentelemetry-sdk = []
+opentelemetry-semantic-conventions = []
 packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
     {file = "packaging-21.3.tar.gz", hash = "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb"},
