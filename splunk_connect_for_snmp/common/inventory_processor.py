@@ -88,23 +88,32 @@ class InventoryProcessor:
         self.logger.info(f"Loading inventory from {INVENTORY_PATH}")
         with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
             ir_reader = DictReader(csv_file)
+            hosts_from_groups = {}
             for inventory_line in ir_reader:
-                self.process_line(inventory_line)
+                self.process_line(inventory_line, hosts_from_groups)
         return self.inventory_records
 
-    def process_line(self, source_record):
+    def process_line(self, source_record, hosts_from_groups):
         address = source_record["address"]
+        port = source_record["port"] if len(str(source_record["port"])) > 0 else "161"
+        host = f"{address}:{port}"
         # Inventory record is commented out
         if address.startswith("#"):
             self.logger.warning(f"Record: {address} is commented out. Skipping...")
         # Address is an IP address
         elif address[0].isdigit():
-            self.inventory_records.append(source_record)
+            was_present = hosts_from_groups.get(host, None)
+            if was_present is None:
+                self.inventory_records.append(source_record)
+            else:
+                self.logger.warning(
+                    f"Record: {host} has been already configured in group. Skipping..."
+                )
         # Address is a group
         else:
-            self.get_group_hosts(source_record, address)
+            self.get_group_hosts(source_record, address, hosts_from_groups)
 
-    def get_group_hosts(self, source_object, group_name):
+    def get_group_hosts(self, source_object, group_name, hosts_from_groups):
         groups = self.group_manager.return_element(group_name, {"$exists": 1})
         group_list = list(groups)
         if group_list:
@@ -118,6 +127,11 @@ class InventoryProcessor:
                         self.logger.warning(
                             f"Key {key} is not allowed to be changed from the group level"
                         )
+                address = str(group_object["address"])
+                port = str(group_object.get("port", "161"))
+                port = port if len(port) > 0 else "161"
+                host = f"{address}:{port}"
+                hosts_from_groups[host] = True
                 self.inventory_records.append(host_group_object)
         else:
             self.logger.warning(
