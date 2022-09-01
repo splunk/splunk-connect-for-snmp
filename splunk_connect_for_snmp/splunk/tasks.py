@@ -224,7 +224,7 @@ def prepare_trap_data(work):
                 processed[k]["value"] = valueAsBest(v["value"])
         event = {
             "time": work["time"],
-            "event": json.dumps(data["fields"] | processed),
+            "event": json.dumps({**data["fields"], **processed}),
             "source": "sc4snmp",
             "sourcetype": "sc4snmp:traps",
             "host": work["address"],
