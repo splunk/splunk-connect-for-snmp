@@ -56,14 +56,16 @@ scheduler:
         port: 999
       - address: 12.22.23
         port: 161
-        community: private
+        community: 'private'
     example_group_2:
       - address: 103.0.0.1
         port: 1161
-        walk_interval: 2500
+        version: '3'
+        secret: 'my_secret'
       - address: 178.80.8.1
         port: 999
 ```
 
-Two obligatory fields for the host configuration are `address` and `port`. Rest of the
-fields which are not specified in the host configuration will be derived from the inventory record regarding specific group.
+Two obligatory fields for the host configuration are `address` and `port`. Other fields that can be modified here are: 
+`community`, `secret`, `version`, `security_engine`. However, if they remain unspecified in the host configuration, they
+will be derived from the inventory record regarding specific group.
