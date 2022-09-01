@@ -222,7 +222,9 @@ class TestInventoryProcessor(TestCase):
         inventory_processor = InventoryProcessor(Mock(), Mock())
         inventory_processor.get_group_hosts = Mock()
         inventory_processor.process_line(source_record)
-        inventory_processor.get_group_hosts.assert_called_with(source_record, "group1", {})
+        inventory_processor.get_group_hosts.assert_called_with(
+            source_record, "group1", {}
+        )
 
     def test_return_walk_profile(self):
         inventory_profiles = ["walk1", "generic_switch"]
