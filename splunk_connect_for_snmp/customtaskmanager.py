@@ -63,7 +63,7 @@ class CustomPeriodicTaskManager:
     def manage_task(self, **task_data) -> None:
         task_name = task_data.get("name")
         # When task is updated, we don't want to change existing schedules.
-        # If task interval is very long, running walk process in between would result in ca`lculating
+        # If task interval is very long, running walk process in between would result in calculating
         # next execution again.
         try:
             periodic_document = RedBeatSchedulerEntry.from_key(
