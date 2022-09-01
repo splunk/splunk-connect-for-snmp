@@ -1,6 +1,6 @@
 import os
 from unittest import TestCase, mock
-from unittest.mock import Mock
+from unittest.mock import Mock, mock_open, patch
 
 from splunk_connect_for_snmp.common.inventory_processor import (
     InventoryProcessor,
@@ -9,6 +9,9 @@ from splunk_connect_for_snmp.common.inventory_processor import (
     transform_address_to_key,
     transform_key_to_address,
 )
+
+mock_inventory = """address
+54.234.85.76"""
 
 
 class TestInventoryProcessor(TestCase):
@@ -211,10 +214,11 @@ class TestInventoryProcessor(TestCase):
             "Record: #54.234.85.76 is commented out. Skipping..."
         )
 
-    def test_process_line_host(self):
+    @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
+    def test_process_line_host(self, m_inventory):
         source_record = {"address": "54.234.85.76"}
         inventory_processor = InventoryProcessor(Mock(), Mock())
-        inventory_processor.process_line(source_record)
+        inventory_processor.get_all_hosts()
         self.assertEqual(inventory_processor.inventory_records, [source_record])
 
     def test_process_line_group(self):
@@ -222,9 +226,7 @@ class TestInventoryProcessor(TestCase):
         inventory_processor = InventoryProcessor(Mock(), Mock())
         inventory_processor.get_group_hosts = Mock()
         inventory_processor.process_line(source_record)
-        inventory_processor.get_group_hosts.assert_called_with(
-            source_record, "group1", {}
-        )
+        inventory_processor.get_group_hosts.assert_called_with(source_record, "group1")
 
     def test_return_walk_profile(self):
         inventory_profiles = ["walk1", "generic_switch"]

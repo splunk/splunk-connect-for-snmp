@@ -38,7 +38,7 @@ def transform_key_to_address(target):
 
 
 def transform_address_to_key(address, port):
-    if int(port) == 161:
+    if not port or int(port) == 161:
         return address
     else:
         return f"{address}:{port}"
@@ -83,42 +83,44 @@ class InventoryProcessor:
         self.inventory_records: List[dict] = []
         self.group_manager = group_manager
         self.logger = logger
+        self.hosts_from_groups: dict = {}
+        self.single_hosts: List[dict] = []
 
     def get_all_hosts(self):
         self.logger.info(f"Loading inventory from {INVENTORY_PATH}")
         with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
             ir_reader = DictReader(csv_file)
-            hosts_from_groups = {}
             for inventory_line in ir_reader:
-                self.process_line(inventory_line, hosts_from_groups)
+                self.process_line(inventory_line)
+            print(self.single_hosts)
+            for source_record in self.single_hosts:
+                address = source_record["address"]
+                port = source_record.get("port")
+                host = transform_address_to_key(address, port)
+                was_present = self.hosts_from_groups.get(host, None)
+                if was_present is None:
+                    self.inventory_records.append(source_record)
+                else:
+                    self.logger.warning(
+                        f"Record: {host} has been already configured in group. Skipping..."
+                    )
         return self.inventory_records
 
-    def process_line(self, source_record, hosts_from_groups=None):
-        if hosts_from_groups is None:
-            hosts_from_groups = {}
+    def process_line(self, source_record):
         address = source_record["address"]
-        port = str(source_record.get("port", "161"))
-        port = port if len(port) > 0 else "161"
-        host = f"{address}:{port}"
         # Inventory record is commented out
         if address.startswith("#"):
             self.logger.warning(f"Record: {address} is commented out. Skipping...")
         # Address is an IP address
         elif address[0].isdigit():
-            was_present = hosts_from_groups.get(host, None)
-            if was_present is None:
-                self.inventory_records.append(source_record)
-            else:
-                self.logger.warning(
-                    f"Record: {host} has been already configured in group. Skipping..."
-                )
+            print(f"doloczam: {source_record}")
+            self.single_hosts.append(source_record)
+            print(self.single_hosts)
         # Address is a group
         else:
-            self.get_group_hosts(source_record, address, hosts_from_groups)
+            self.get_group_hosts(source_record, address)
 
-    def get_group_hosts(self, source_object, group_name, hosts_from_groups=None):
-        if hosts_from_groups is None:
-            hosts_from_groups = {}
+    def get_group_hosts(self, source_object, group_name):
         groups = self.group_manager.return_element(group_name, {"$exists": 1})
         group_list = list(groups)
         if group_list:
@@ -133,10 +135,9 @@ class InventoryProcessor:
                             f"Key {key} is not allowed to be changed from the group level"
                         )
                 address = str(group_object["address"])
-                port = str(group_object.get("port", "161"))
-                port = port if len(port) > 0 else "161"
-                host = f"{address}:{port}"
-                hosts_from_groups[host] = True
+                port = group_object.get("port")
+                host = transform_address_to_key(address, port)
+                self.hosts_from_groups[host] = True
                 self.inventory_records.append(host_group_object)
         else:
             self.logger.warning(
