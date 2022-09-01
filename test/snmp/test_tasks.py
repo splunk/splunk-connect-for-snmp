@@ -13,37 +13,6 @@ class TestTasks(TestCase):
     def test_walk(
         self,
         m_time,
-        m_poller_do_work,
-        m_poller,
-        m_get_inventory,
-        m_mongo_client,
-    ):
-        m_poller.return_value = None
-        from splunk_connect_for_snmp.snmp.tasks import walk
-
-        m_time.return_value = 1640692955.365186
-
-        kwargs = {"address": "192.168.0.1"}
-        m_poller_do_work.return_value = (False, {"test": "value1"})
-
-        result = walk(**kwargs)
-
-        self.assertEqual(
-            {
-                "time": 1640692955.365186,
-                "address": "192.168.0.1",
-                "result": {"test": "value1"},
-            },
-            result,
-        )
-
-    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
-    @patch("time.time")
-    def test_poll(
-        self,
-        m_time,
         m_do_work,
         m_poller,
         m_get_inventory,
@@ -86,7 +55,6 @@ class TestTasks(TestCase):
         m_poller.return_value = None
         from splunk_connect_for_snmp.snmp.tasks import poll
 
-        m_mongo_client.return_value = MagicMock()
         m_time.return_value = 1640692955.365186
 
         kwargs = {

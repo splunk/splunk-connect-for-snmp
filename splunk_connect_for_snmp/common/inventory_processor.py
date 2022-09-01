@@ -93,9 +93,12 @@ class InventoryProcessor:
                 self.process_line(inventory_line, hosts_from_groups)
         return self.inventory_records
 
-    def process_line(self, source_record, hosts_from_groups):
+    def process_line(self, source_record, hosts_from_groups=None):
+        if hosts_from_groups is None:
+            hosts_from_groups = {}
         address = source_record["address"]
-        port = source_record["port"] if len(str(source_record["port"])) > 0 else "161"
+        port = str(source_record.get("port", "161"))
+        port = port if len(port) > 0 else "161"
         host = f"{address}:{port}"
         # Inventory record is commented out
         if address.startswith("#"):
@@ -113,7 +116,9 @@ class InventoryProcessor:
         else:
             self.get_group_hosts(source_record, address, hosts_from_groups)
 
-    def get_group_hosts(self, source_object, group_name, hosts_from_groups):
+    def get_group_hosts(self, source_object, group_name, hosts_from_groups=None):
+        if hosts_from_groups is None:
+            hosts_from_groups = {}
         groups = self.group_manager.return_element(group_name, {"$exists": 1})
         group_list = list(groups)
         if group_list:
