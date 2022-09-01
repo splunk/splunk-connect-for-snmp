@@ -58,9 +58,7 @@ class CustomPeriodicTaskManager:
             periodic_document.reschedule()
 
     def delete_all_tasks_of_host(self, target):
-        periodic_tasks = RedBeatSchedulerEntry.get_schedules_by_target(target, app=app)
-        for periodic_document in periodic_tasks:
-            periodic_document.delete()
+        RedBeatSchedulerEntry.delete_schedules_by_target(target, app=app)
 
     def manage_task(self, **task_data) -> None:
         task_name = task_data.get("name")
