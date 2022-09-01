@@ -68,4 +68,4 @@ scheduler:
 
 Two obligatory fields for the host configuration are `address` and `port`. Other fields that can be modified here are: 
 `community`, `secret`, `version`, `security_engine`. However, if they remain unspecified in the host configuration, they
-will be derived from the inventory record regarding specific group.
+will be derived from the inventory record regarding this specific group.
