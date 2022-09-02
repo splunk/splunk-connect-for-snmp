@@ -541,6 +541,87 @@ class TestGroupsInventory:
         assert metric_count == 0
 
 
+@pytest.fixture(scope="class")
+def setup_single_ang_group(request):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    profiles = {
+        "single_profile_1": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IP-MIB"))],
+        },
+        "single_profile_2": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IP-MIB"))],
+        },
+        "switches_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IP-MIB"))],
+        },
+    }
+    groups = {
+        "switches": [
+            {"address": trap_external_ip, "port": 1162},
+        ],
+    }
+
+    update_profiles(profiles)
+    update_groups(groups)
+    update_file(
+        [
+            f"{trap_external_ip},1165,2c,public,,,600,single_profile_1,,",
+            f"{trap_external_ip},1162,2c,public,,,600,single_profile_2,,",
+            f"switches,,2c,public,,,600,switches_profile,,",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+    time.sleep(120)
+    yield
+    update_file(
+        [
+            f"{trap_external_ip},1165,2c,public,,,600,single_profile_1,,t",
+            f"{trap_external_ip},1162,2c,public,,,600,single_profile_2,,t",
+            f"switches,,2c,public,,,600,switches_profile,,t",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml"])
+    time.sleep(100)
+
+
+@pytest.mark.usefixtures("setup_single_ang_group")
+class TestIgnoreSingleIfInGroup:
+    def test_host_from_group(self, request, setup_splunk):
+        trap_external_ip = request.config.getoption("trap_external_ip")
+        time.sleep(20)
+        search_string = f"""| mpreview index=netmetrics | search profiles=switches_profile AND host="{trap_external_ip}:1162" """
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+    def test_inline_host_not_present_in_group(self, request, setup_splunk):
+        trap_external_ip = request.config.getoption("trap_external_ip")
+        time.sleep(20)
+        search_string = f"""| mpreview index=netmetrics | search profiles=single_profile_1 AND host="{trap_external_ip}:1165" """
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+    def test_inline_host_present_in_group(self, request, setup_splunk):
+        trap_external_ip = request.config.getoption("trap_external_ip")
+        time.sleep(20)
+        search_string = f"""| mpreview index=netmetrics | search profiles=single_profile_2 AND host="{trap_external_ip}:1162" """
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 1
+        )
+        assert result_count == 0
+        assert metric_count == 0
+
+
 def run_retried_single_search(setup_splunk, search_string, retries):
     for i in range(retries):
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)

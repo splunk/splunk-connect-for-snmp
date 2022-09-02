@@ -92,7 +92,6 @@ class InventoryProcessor:
             ir_reader = DictReader(csv_file)
             for inventory_line in ir_reader:
                 self.process_line(inventory_line)
-            print(self.single_hosts)
             for source_record in self.single_hosts:
                 address = source_record["address"]
                 port = source_record.get("port")

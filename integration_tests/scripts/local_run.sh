@@ -51,4 +51,4 @@ destroy_environment() {
 source ./set_env.sh
 check_prerequisites
 setup_environment_and_run_tests
-destroy_environment
+#destroy_environment
