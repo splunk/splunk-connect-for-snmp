@@ -92,6 +92,9 @@ jobs:
           wget https://splunk.github.io/splunk-connect-for-snmp/index.yaml -P /tmp/origin || true
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo add pysnmp-mibs https://pysnmp.github.io/mibs/charts
+          echo "$(helm repo search pysnmp-mibs)"
+          helm repo update
+          echo "$(helm repo search pysnmp-mibs)"
           helm dependency build charts/splunk-connect-for-snmp
           helm package charts/splunk-connect-for-snmp -d /tmp/package
           gh release upload $VERSION /tmp/package/*
