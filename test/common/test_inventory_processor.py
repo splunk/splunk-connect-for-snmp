@@ -10,12 +10,16 @@ from splunk_connect_for_snmp.common.inventory_processor import (
     transform_key_to_address,
 )
 
-mock_inventory = """address
+mock_inventory_only_address = """address
 54.234.85.76"""
+
+mock_inventory_host_same_as_in_group = """address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+group1,,2c,public,,,1805,group_profile,False,False
+0.0.0.0,,2c,public,,,1805,solo_profile1,False,False
+0.0.0.0,1161,2c,public,,,1805,solo_profile2,False,False"""
 
 
 class TestInventoryProcessor(TestCase):
-
     profiles = {
         "test5": {"frequency": 6, "varBinds": [["IP-MIB"]]},
         "test_33": {
@@ -214,7 +218,9 @@ class TestInventoryProcessor(TestCase):
             "Record: #54.234.85.76 is commented out. Skipping..."
         )
 
-    @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
+    @patch(
+        "builtins.open", new_callable=mock_open, read_data=mock_inventory_only_address
+    )
     def test_process_line_host(self, m_inventory):
         source_record = {"address": "54.234.85.76"}
         inventory_processor = InventoryProcessor(Mock(), Mock())
@@ -227,6 +233,64 @@ class TestInventoryProcessor(TestCase):
         inventory_processor.get_group_hosts = Mock()
         inventory_processor.process_line(source_record)
         inventory_processor.get_group_hosts.assert_called_with(source_record, "group1")
+
+    @patch(
+        "builtins.open",
+        new_callable=mock_open,
+        read_data=mock_inventory_host_same_as_in_group,
+    )
+    def test_ignore_line_host_configured_in_group(self, m_load_element):
+        returned_group = [
+            {
+                "group1": [
+                    {"address": "0.0.0.0", "port": "161"},
+                    {"address": "127.0.0.1", "port": "161"},
+                ]
+            }
+        ]
+        group_manager = Mock()
+        group_manager.return_element.return_value = returned_group
+        inventory_processor = InventoryProcessor(group_manager, Mock())
+        expected = [
+            {
+                "address": "0.0.0.0",
+                "port": "161",
+                "version": "2c",
+                "community": "public",
+                "secret": "",
+                "security_engine": "",
+                "walk_interval": "1805",
+                "profiles": "group_profile",
+                "smart_profiles": "False",
+                "delete": "False",
+            },
+            {
+                "address": "127.0.0.1",
+                "port": "161",
+                "version": "2c",
+                "community": "public",
+                "secret": "",
+                "security_engine": "",
+                "walk_interval": "1805",
+                "profiles": "group_profile",
+                "smart_profiles": "False",
+                "delete": "False",
+            },
+            {
+                "address": "0.0.0.0",
+                "port": "1161",
+                "version": "2c",
+                "community": "public",
+                "secret": "",
+                "security_engine": "",
+                "walk_interval": "1805",
+                "profiles": "solo_profile2",
+                "smart_profiles": "False",
+                "delete": "False",
+            },
+        ]
+        inventory_processor.get_all_hosts()
+        self.assertEqual(expected, inventory_processor.inventory_records)
 
     def test_return_walk_profile(self):
         inventory_profiles = ["walk1", "generic_switch"]
