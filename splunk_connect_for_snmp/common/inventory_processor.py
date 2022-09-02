@@ -113,9 +113,7 @@ class InventoryProcessor:
             self.logger.warning(f"Record: {address} is commented out. Skipping...")
         # Address is an IP address
         elif address[0].isdigit():
-            print(f"doloczam: {source_record}")
             self.single_hosts.append(source_record)
-            print(self.single_hosts)
         # Address is a group
         else:
             self.get_group_hosts(source_record, address)
