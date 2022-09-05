@@ -4,12 +4,9 @@ from unittest.mock import Mock, mock_open, patch
 from celery.schedules import schedule
 from pymongo.results import UpdateResult
 
+from splunk_connect_for_snmp.common.inventory_processor import gen_walk_task
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-from splunk_connect_for_snmp.inventory.loader import (
-    gen_walk_task,
-    load,
-    transform_address_to_key,
-)
+from splunk_connect_for_snmp.inventory.loader import load, transform_address_to_key
 
 mock_inventory = """address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
 192.168.0.1,,2c,public,,,1805,test_1,False,False"""
@@ -134,15 +131,23 @@ class TestLoader(TestCase):
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.update_all"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.update_all"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_collection"
     )
     def test_load_new_record_small_walk(
         self,
+        m_load_groups,
+        m_update_groups,
         m_load_profiles,
-        m_gather_profiles,
+        m_gather_elements,
         m_migrate,
         m_mongo_collection,
         m_taskManager,
@@ -179,19 +184,27 @@ class TestLoader(TestCase):
             periodic_obj_mock.manage_task.call_args.kwargs["kwargs"],
         )
 
-    @mock.patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
+    @patch("splunk_connect_for_snmp.common.inventory_processor.gen_walk_task")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.update_all"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.update_all"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_collection"
     )
     def test_load_new_record(
         self,
+        m_load_groups,
+        m_update_groups,
         m_load_profiles,
         m_update_profiles,
         m_migrate,
@@ -211,19 +224,27 @@ class TestLoader(TestCase):
 
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
-    @mock.patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
+    @patch("splunk_connect_for_snmp.common.inventory_processor.gen_walk_task")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.update_all"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.update_all"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_collection"
     )
     def test_load_modified_record(
         self,
+        m_load_groups,
+        m_update_groups,
         m_load_profiles,
         m_update_profiles,
         m_migrate,
@@ -234,7 +255,7 @@ class TestLoader(TestCase):
     ):
         walk_task.return_value = expected_managed_task
         m_mongo_collection.return_value = UpdateResult(
-            {"n": 1, "nModified": 1, "upserted": None}, True
+            {"n": 0, "nModified": 1, "upserted": 1}, True
         )
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
@@ -248,13 +269,21 @@ class TestLoader(TestCase):
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.update_all"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.update_all"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_collection"
     )
     def test_load_unchanged_record(
         self,
+        m_load_groups,
+        m_update_groups,
         m_load_profiles,
         m_update_profiles,
         m_migrate,
@@ -279,13 +308,21 @@ class TestLoader(TestCase):
     @mock.patch("pymongo.collection.Collection.update_one")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.update_all"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.update_all"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_collection"
     )
     def test_ignoring_comment(
         self,
+        m_load_groups,
+        m_update_groups,
         m_load_profiles,
         m_update_profiles,
         m_migrate,
@@ -307,13 +344,21 @@ class TestLoader(TestCase):
     @mock.patch("pymongo.collection.Collection.remove")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.update_all"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.update_all"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_collection"
     )
     def test_deleting_record(
         self,
+        m_load_groups,
+        m_update_groups,
         m_load_profiles,
         m_update_profiles,
         m_migrate,
@@ -346,13 +391,21 @@ class TestLoader(TestCase):
     @mock.patch("pymongo.collection.Collection.remove")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.update_all"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.update_all"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_collection"
     )
     def test_deleting_record_non_default_port(
         self,
+        m_load_groups,
+        m_update_groups,
         m_load_profiles,
         m_update_profiles,
         m_migrate,
@@ -375,7 +428,7 @@ class TestLoader(TestCase):
         self.assertEqual(({"address": "192.168.0.1:345"},), calls[0].args)
         self.assertEqual(({"address": "192.168.0.1:345"},), calls[1].args)
 
-    @patch("splunk_connect_for_snmp.inventory.loader.gen_walk_task")
+    @patch("splunk_connect_for_snmp.common.inventory_processor.gen_walk_task")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("pymongo.collection.Collection.update_one")
     @patch(
@@ -383,13 +436,21 @@ class TestLoader(TestCase):
     )
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.update_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.update_all"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.update_all"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_collection"
     )
     def test_inventory_errors(
         self,
+        m_load_groups,
+        m_update_groups,
         m_load_profiles,
         m_update_profiles,
         m_migrate,

@@ -3,13 +3,14 @@ from celery.schedules import schedule
 
 
 class TaskGenerator:
-    def __init__(self, target: str, schedule_period: int, app: Celery):
+    def __init__(self, target: str, schedule_period: int, app: Celery, host_group=None):
         self.target = target
         self.schedule_period = schedule_period
         self.app = app
+        self.group = host_group
 
     def generate_task_definition(self):
-        return {
+        task_definition = {
             "target": self.target,
             "args": [],
             "kwargs": {"address": self.target},
@@ -17,6 +18,9 @@ class TaskGenerator:
             "enabled": True,
             "app": self.app,
         }
+        if self.group:
+            task_definition["kwargs"]["group"] = self.group
+        return task_definition
 
 
 class WalkTaskGenerator(TaskGenerator):
@@ -44,8 +48,8 @@ class WalkTaskGenerator(TaskGenerator):
         ),
     }
 
-    def __init__(self, target, schedule_period, app, profile):
-        super().__init__(target, schedule_period, app)
+    def __init__(self, target, schedule_period, app, host_group, profile):
+        super().__init__(target, schedule_period, app, host_group)
         self.profile = profile
 
     def generate_task_definition(self):
@@ -78,8 +82,8 @@ class PollTaskGenerator(TaskGenerator):
         ),
     }
 
-    def __init__(self, target, schedule_period, app, profiles):
-        super().__init__(target, schedule_period, app)
+    def __init__(self, target, schedule_period, app, host_group, profiles):
+        super().__init__(target, schedule_period, app, host_group)
         self.profiles = profiles
 
     def generate_task_definition(self):

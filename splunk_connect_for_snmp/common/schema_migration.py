@@ -117,6 +117,7 @@ def transform_mongodb_periodic_to_redbeat(schedule_collection, task_manager):
             schedule_period=walk_interval,
             app=app,
             profile=schedule_obj.get("kwargs").get("profile"),
+            host_group=None,
         )
         walk_data = task_generator.generate_task_definition()
         task_manager.manage_task(**walk_data)
