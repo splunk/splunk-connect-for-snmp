@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.7">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.2">
     
     
       
@@ -17,7 +17,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.4a0965b7.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.69437709.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
@@ -40,7 +40,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,9 +74,7 @@
     </div>
     
       <div data-md-component="outdated" hidden>
-        <aside class="md-banner md-banner--warning">
-          
-        </aside>
+        
       </div>
     
     
@@ -819,8 +817,8 @@ on production configuration.</p>
 <h3 id="offline-installation">Offline installation<a class="headerlink" href="#offline-installation" title="Permanent link">&para;</a></h3>
 <p>For offline installation instructions see <a href="../../offlineinstallation/offline-sc4snmp/">this page</a>.</p>
 <h3 id="add-sc4snmp-repository">Add SC4SNMP repository<a class="headerlink" href="#add-sc4snmp-repository" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">repo</span> <span class="nv">add</span> <span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">splunk</span>.<span class="nv">github</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span>
-<span class="nv">microk8s</span> <span class="nv">helm3</span> <span class="nv">repo</span> <span class="nv">update</span>
+<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">helm3</span><span class="w"> </span><span class="nv">repo</span><span class="w"> </span><span class="nv">add</span><span class="w"> </span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="w"> </span><span class="nv">https</span>:<span class="o">//</span><span class="nv">splunk</span>.<span class="nv">github</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="w"></span>
+<span class="nv">microk8s</span><span class="w"> </span><span class="nv">helm3</span><span class="w"> </span><span class="nv">repo</span><span class="w"> </span><span class="nv">update</span><span class="w"></span>
 </code></pre></div>
 
 <p>Now the package should be visible in <code>helm3</code> search command result:</p>
@@ -828,8 +826,8 @@ on production configuration.</p>
 </code></pre></div>
 
 <p>Example output:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span>                                               <span class="nv">CHART</span> <span class="nv">VERSION</span>  <span class="nv">APP</span> <span class="nv">VERSION</span>    <span class="nv">DESCRIPTION</span>                           
-<span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span>        <span class="mi">1</span>.<span class="mi">0</span>.<span class="mi">0</span>        <span class="mi">1</span>.<span class="mi">0</span>.<span class="mi">0</span>       <span class="nv">A</span> <span class="nv">Helm</span> <span class="nv">chart</span> <span class="k">for</span> <span class="nv">SNMP</span> <span class="k">Connect</span> <span class="k">for</span> <span class="nv">SNMP</span>
+<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span><span class="w">                                               </span><span class="nv">CHART</span><span class="w"> </span><span class="nv">VERSION</span><span class="w">  </span><span class="nv">APP</span><span class="w"> </span><span class="nv">VERSION</span><span class="w">    </span><span class="nv">DESCRIPTION</span><span class="w">                           </span>
+<span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="w">        </span><span class="mi">1</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="w">        </span><span class="mi">1</span>.<span class="mi">0</span>.<span class="mi">0</span><span class="w">       </span><span class="nv">A</span><span class="w"> </span><span class="nv">Helm</span><span class="w"> </span><span class="nv">chart</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">SNMP</span><span class="w"> </span><span class="k">Connect</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">SNMP</span><span class="w"></span>
 </code></pre></div>
 
 <h3 id="download-and-modify-valuesyaml">Download and modify values.yaml<a class="headerlink" href="#download-and-modify-valuesyaml" title="Permanent link">&para;</a></h3>
@@ -1028,15 +1026,15 @@ inserted in the corresponding section of <code>values.yaml</code>. For more deta
 </code></pre></div>
 
 <p>Example output:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span>                                                      <span class="nv">READY</span>   <span class="nv">STATUS</span>             <span class="nv">RESTARTS</span>      <span class="nv">AGE</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">scheduler</span><span class="o">-</span><span class="mi">7</span><span class="nv">ddbc8d75</span><span class="o">-</span><span class="nv">bljsj</span>        <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>   <span class="mi">0</span>          <span class="mi">133</span><span class="nv">m</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">poller</span><span class="o">-</span><span class="mi">57</span><span class="nv">cd8f4665</span><span class="o">-</span><span class="mi">9</span><span class="nv">z9vx</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>   <span class="mi">0</span>          <span class="mi">133</span><span class="nv">m</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">sender</span><span class="o">-</span><span class="mi">5</span><span class="nv">c44cbb9c5</span><span class="o">-</span><span class="nv">ppmb5</span>   <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>   <span class="mi">0</span>          <span class="mi">133</span><span class="nv">m</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="mi">549766</span><span class="nv">d4</span><span class="o">-</span><span class="mi">28</span><span class="nv">qzh</span>       <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>   <span class="mi">0</span>          <span class="mi">133</span><span class="nv">m</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">mibserver</span><span class="o">-</span><span class="mi">7</span><span class="nv">f879c5b7c</span><span class="o">-</span><span class="nv">hz9tz</span>                               <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>   <span class="mi">0</span>          <span class="mi">133</span><span class="nv">m</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">mongodb</span><span class="o">-</span><span class="mi">869</span><span class="nv">cc8586f</span><span class="o">-</span><span class="nv">vvr9f</span>                                 <span class="mi">2</span><span class="o">/</span><span class="mi">2</span>     <span class="nv">Running</span>   <span class="mi">0</span>          <span class="mi">133</span><span class="nv">m</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">redis</span><span class="o">-</span><span class="nv">master</span><span class="o">-</span><span class="mi">0</span>                                           <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>   <span class="mi">0</span>          <span class="mi">133</span><span class="nv">m</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="mi">78759</span><span class="nv">bfc8b</span><span class="o">-</span><span class="mi">79</span><span class="nv">m6d</span>            <span class="mi">1</span><span class="o">/</span><span class="mi">1</span>     <span class="nv">Running</span>   <span class="mi">0</span>          <span class="mi">99</span><span class="nv">m</span>
+<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span><span class="w">                                                      </span><span class="nv">READY</span><span class="w">   </span><span class="nv">STATUS</span><span class="w">             </span><span class="nv">RESTARTS</span><span class="w">      </span><span class="nv">AGE</span><span class="w"></span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">scheduler</span><span class="o">-</span><span class="mi">7</span><span class="nv">ddbc8d75</span><span class="o">-</span><span class="nv">bljsj</span><span class="w">        </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">133</span><span class="nv">m</span><span class="w"></span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">poller</span><span class="o">-</span><span class="mi">57</span><span class="nv">cd8f4665</span><span class="o">-</span><span class="mi">9</span><span class="nv">z9vx</span><span class="w">   </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">133</span><span class="nv">m</span><span class="w"></span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">sender</span><span class="o">-</span><span class="mi">5</span><span class="nv">c44cbb9c5</span><span class="o">-</span><span class="nv">ppmb5</span><span class="w">   </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">133</span><span class="nv">m</span><span class="w"></span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="mi">549766</span><span class="nv">d4</span><span class="o">-</span><span class="mi">28</span><span class="nv">qzh</span><span class="w">       </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">133</span><span class="nv">m</span><span class="w"></span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">mibserver</span><span class="o">-</span><span class="mi">7</span><span class="nv">f879c5b7c</span><span class="o">-</span><span class="nv">hz9tz</span><span class="w">                               </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">133</span><span class="nv">m</span><span class="w"></span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">mongodb</span><span class="o">-</span><span class="mi">869</span><span class="nv">cc8586f</span><span class="o">-</span><span class="nv">vvr9f</span><span class="w">                                 </span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">133</span><span class="nv">m</span><span class="w"></span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">redis</span><span class="o">-</span><span class="nv">master</span><span class="o">-</span><span class="mi">0</span><span class="w">                                           </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">133</span><span class="nv">m</span><span class="w"></span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="mi">78759</span><span class="nv">bfc8b</span><span class="o">-</span><span class="mi">79</span><span class="nv">m6d</span><span class="w">            </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">99</span><span class="nv">m</span><span class="w"></span>
 </code></pre></div>
 
 <h3 id="test-snmp-traps">Test SNMP Traps<a class="headerlink" href="#test-snmp-traps" title="Permanent link">&para;</a></h3>
@@ -1114,6 +1112,9 @@ When walk finishes, events appear in Splunk, check it with those queries:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">|</span> mpreview <span class="nv">index</span><span class="o">=</span><span class="s2">&quot;netmetrics&quot;</span> <span class="p">|</span> search <span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:metric&quot;</span>
 </code></pre></div>
 
+
+
+
               
             </article>
             
@@ -1180,10 +1181,11 @@ When walk finishes, events appear in Splunk, check it with those queries:</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.0238f547.min.js"></script>
+      <script src="../../assets/javascripts/bundle.9c69f0bc.min.js"></script>
       
     
   </body>
