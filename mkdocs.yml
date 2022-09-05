@@ -33,12 +33,14 @@ nav:
       - Install SC4SNMP: "gettingstarted/sc4snmp-installation.md"
   - High Availability: ha.md  
   - Configuration:
-      - Configuring Profiles: "configuration/configuring-profiles.md"
-      - Configuring Groups: "configuration/configuring-groups.md"
       - Deployment: "configuration/deployment-configuration.md"
-      - Poller: "configuration/poller-configuration.md"
-      - Trap: "configuration/trap-configuration.md"
-      - Scheduler: "configuration/scheduler-configuration.md"
+      - Polling:
+        - Poller: "configuration/poller-configuration.md"
+        - Scheduler: "configuration/scheduler-configuration.md"
+        - Configuring Profiles: "configuration/configuring-profiles.md"
+        - Configuring Groups: "configuration/configuring-groups.md"
+        - Step by Step polling example: "configuration/step-by-step-poll.md"
+      - Traps: "configuration/trap-configuration.md"
       - Worker: "configuration/worker-configuration.md"
       - Mongo DB: "configuration/mongo-configuration.md"
       - Redis: "configuration/redis-configuration.md"
