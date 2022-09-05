@@ -106,3 +106,48 @@ query in Splunk. When groups are used, we can also use querying by the group nam
 
 Keep in mind, that querying by profiles/group in Splunk is only possible in metrics index. Every piece of data being sent
 by SC4SNMP is formed based on MIB file's definition of the SNMP object's index. The object is forwarded to an event index only if it doesn't have any metric value inside.
+
+The `raw` metrics in Splunk example is:
+
+```json
+{
+   "frequency":"60",
+   "group":"switch_group",
+   "ifAdminStatus":"up",
+   "ifAlias":"1",
+   "ifDescr":"lo",
+   "ifIndex":"1",
+   "ifName":"lo",
+   "ifOperStatus":"up",
+   "ifPhysAddress":"1",
+   "ifType":"softwareLoopback",
+   "profiles":"switch_profile",
+   "metric_name:sc4snmp.IF-MIB.ifInDiscards":21877,
+   "metric_name:sc4snmp.IF-MIB.ifInErrors":21840,
+   "metric_name:sc4snmp.IF-MIB.ifInNUcastPkts":14152789,
+   "metric_name:sc4snmp.IF-MIB.ifInOctets":1977814270,
+   "metric_name:sc4snmp.IF-MIB.ifInUcastPkts":220098191,
+   "metric_name:sc4snmp.IF-MIB.ifInUnknownProtos":1488029,
+   "metric_name:sc4snmp.IF-MIB.ifLastChange":124000001,
+   "metric_name:sc4snmp.IF-MIB.ifMtu":16436,
+   "metric_name:sc4snmp.IF-MIB.ifOutDiscards":21862,
+   "metric_name:sc4snmp.IF-MIB.ifOutErrors":21836,
+   "metric_name:sc4snmp.IF-MIB.ifOutNUcastPkts":14774727,
+   "metric_name:sc4snmp.IF-MIB.ifOutOctets":1346799625,
+   "metric_name:sc4snmp.IF-MIB.ifOutQLen":4294967295,
+   "metric_name:sc4snmp.IF-MIB.ifOutUcastPkts":74003841,
+   "metric_name:sc4snmp.IF-MIB.ifSpeed":10000000
+}
+```
+
+or
+
+```json
+{
+   "frequency":"60",
+   "group":"switch_group",
+   "laNames":"Load-1",
+   "profiles":"switch_profile",
+   "metric_name:sc4snmp.UCD-SNMP-MIB.laIndex":1
+}
+```
