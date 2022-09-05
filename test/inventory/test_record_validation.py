@@ -2,7 +2,7 @@ from unittest import TestCase, mock
 
 
 @mock.patch(
-    "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
 )
 class TestRecordValidation(TestCase):
     def test_disabled_profile(self, return_all_profiles):

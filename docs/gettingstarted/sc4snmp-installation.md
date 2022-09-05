@@ -180,7 +180,7 @@ snmp-splunk-connect-for-snmp-trap-78759bfc8b-79m6d            1/1     Running   
 
 ### Test SNMP Traps
 - Test the Trap by logging into Splunk and confirming the presence of events
-    in snmp `netops` and metrics in `netmetrics` index
+    in snmp `netops` index.
 
 -   Test the trap from a Linux system with SNMP installed. Replace the IP address 
     `10.0.101.22` with the shared IP address above
@@ -209,7 +209,7 @@ apt update
 apt-get install snmpd
 ```
 
-- To test SNMP poller, snmpd needs to be configured to listen on external IP. To enabled listening snmpd to external IP, 
+- To test SNMP poller, snmpd needs to be configured to listen on the external IP. To enabled listening snmpd to external IP, 
 in configuration file: `/etc/snmp/snmpd.conf` replace the IP address  `10.0.101.22` with the server IP address where snmpd is configured
 `agentaddress  10.0.101.22,127.0.0.1,[::1]`. Restart snmpd by execute command:
 ``` bash
@@ -217,19 +217,16 @@ service snmpd stop
 service snmpd start
 ```
 
-- Configure SC4SNMP Poller to test add IP address which needs to be polled. Add configuration entry in `values.yaml` file by 
-replace the IP address `10.0.101.22` with the server IP address where snmpd were configured.
+- Configure SC4SNMP Poller to test add IP address which you want to poll. Add configuration entry in `values.yaml` file by 
+replacing the IP address `10.0.101.22` with the server IP address where snmpd was configured.
 ``` bash
 poller:
-  usernameSecrets:
-    - sc4snmp-homesecure-sha-aes
-    - sc4snmp-homesecure-sha-des
   inventory: |
-    address,version,community,walk_interval,profiles,smart_profiles,delete
-    10.0.101.22,public,42000,,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+    10.0.101.22,,2c,public,,,42000,,,
 ```
 
-- Load `values.yaml` file in SC4SNMP
+- Load `values.yaml` file into SC4SNMP
 
 ``` bash
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
@@ -237,9 +234,9 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 
 -   Check-in Splunk
  
-Before polling starts, SC4SNMP must perform Walk process on the device. It is run after configuring new device and every `walk_interval`. 
+Before polling starts, SC4SNMP must perform SNMP WALK process on the device. It is run first time after configuring the new device and  then in every `walk_interval`. 
 Its purpose is to gather all the data and provide meaningful context for the polling records. May be, that your device is so big that walk takes too long and scope of walking must be limited.
-In such cases, enable the small walk using the instruction: [walk takes too much time](/bestpractices/#walking-a-device-takes-too-much-time).
+In such cases, enable the small walk using the instruction: [walk takes too much time](../../bestpractices/#walking-a-device-takes-too-much-time).
 When walk finishes, events appear in Splunk, check it with those queries:
 
 ``` bash

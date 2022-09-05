@@ -59,6 +59,10 @@ profiles_template = """scheduler:
   profiles: |
 """
 
+groups_template = """scheduler:
+  groups: |
+"""
+
 poller_secrets_template = """scheduler:
   usernameSecrets:
 """
@@ -77,6 +81,7 @@ TEMPLATE_MAPPING = {
     "scheduler_secrets.yaml": poller_secrets_template,
     "traps_secrets.yaml": traps_secrets_template,
     "polling_secrets.yaml": polling_secrets_template,
+    "groups.yaml": groups_template,
 }
 
 
@@ -111,6 +116,21 @@ def update_profiles(profiles):
     with open("profiles.yaml", "w") as fp:
         fp.write(profiles_template)
         with open("profiles_tmp.yaml") as fp2:
+            line = fp2.readline()
+            while line != "":
+                new_line = str.rjust(" ", 4) + line
+                fp.write(new_line)
+                line = fp2.readline()
+
+
+def update_groups(groups):
+    yaml = ruamel.yaml.YAML()
+    with open("groups_tmp.yaml", "w") as fp:
+        yaml.dump(groups, fp)
+
+    with open("groups.yaml", "w") as fp:
+        fp.write(groups_template)
+        with open("groups_tmp.yaml") as fp2:
             line = fp2.readline()
             while line != "":
                 new_line = str.rjust(" ", 4) + line

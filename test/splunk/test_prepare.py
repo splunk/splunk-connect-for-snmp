@@ -144,6 +144,78 @@ class TestPrepare(TestCase):
         self.assertEqual("profile1,profile2", fields2["profiles"])
 
     @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
+    def test_prepare_metrics_group(self, m_custom):
+        task_input = {
+            "time": 1234567,
+            "address": "192.168.0.1",
+            "frequency": 15,
+            "group": "group1",
+            "result": {
+                "SOME_GROUP_KEY1": {
+                    "metrics": {
+                        "metric_one": {"value": 23},
+                        "metric_two": {"value": 26},
+                    },
+                    "fields": {
+                        "field_one": {"value": "on"},
+                        "field_two": {"value": "listening"},
+                    },
+                    "profiles": "profile1,profile2",
+                },
+                "SOME_GROUP_KEY2": {
+                    "metrics": {
+                        "metric_three": {"value": 67},
+                        "metric_four": {"value": 90},
+                    },
+                    "fields": {
+                        "field_three": {"value": "OFF"},
+                        "field_four": {"value": "stopping"},
+                    },
+                    "profiles": "profile1,profile2",
+                },
+            },
+        }
+
+        m_custom.return_value = task_input
+        result = prepare(task_input)
+
+        self.assertEqual("list", type(result["metrics"]).__name__)
+        self.assertEqual(2, len(result))
+        self.assertEqual(0, len(result["events"]))
+        self.assertEqual(2, len(result["metrics"]))
+
+        item1 = json.loads(result["metrics"][0])
+        fields1 = item1["fields"]
+        self.assertEqual(1234567, item1["time"])
+        self.assertEqual("192.168.0.1", item1["host"])
+        self.assertEqual("test_index_2", item1["index"])
+        self.assertEqual("sc4snmp", item1["source"])
+        self.assertEqual("sc4snmp:metric", item1["sourcetype"])
+        self.assertEqual("192.168.0.1", item1["host"])
+        self.assertEqual("on", fields1["field_one"])
+        self.assertEqual("group1", fields1["group"])
+        self.assertEqual("listening", fields1["field_two"])
+        self.assertEqual(23.0, fields1["metric_name:sc4snmp.metric_one"])
+        self.assertEqual(26.0, fields1["metric_name:sc4snmp.metric_two"])
+        self.assertEqual(15, fields1["frequency"])
+        self.assertEqual("profile1,profile2", fields1["profiles"])
+
+        item2 = json.loads(result["metrics"][1])
+        fields2 = item2["fields"]
+        self.assertEqual(1234567, item2["time"])
+        self.assertEqual("192.168.0.1", item2["host"])
+        self.assertEqual("test_index_2", item2["index"])
+        self.assertEqual("sc4snmp", item2["source"])
+        self.assertEqual("sc4snmp:metric", item2["sourcetype"])
+        self.assertEqual("192.168.0.1", item2["host"])
+        self.assertEqual("OFF", fields2["field_three"])
+        self.assertEqual("stopping", fields2["field_four"])
+        self.assertEqual(67, fields2["metric_name:sc4snmp.metric_three"])
+        self.assertEqual(90, fields2["metric_name:sc4snmp.metric_four"])
+        self.assertEqual(15, fields2["frequency"])
+        self.assertEqual("profile1,profile2", fields2["profiles"])
+
+    @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_only_events(self, m_custom):
         task_input = {
             "time": 1234567,

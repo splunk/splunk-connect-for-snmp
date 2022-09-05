@@ -30,7 +30,7 @@ simple_profiles = {
 
 
 @mock.patch(
-    "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
 )
 class TestProfilesAssignment(TestCase):
     def test_assignment_of_static_profiles(self, return_all_profiles):

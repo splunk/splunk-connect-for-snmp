@@ -2,7 +2,7 @@ import os
 from unittest import TestCase, mock
 from unittest.mock import Mock
 
-from splunk_connect_for_snmp.common.profiles import ProfilesManager
+from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
 
 
 def return_mocked_path(file_name):
@@ -41,30 +41,32 @@ def return_not_existing_file(*args):
 
 class TestProfiles(TestCase):
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.os.listdir", return_not_existing_file
+        "splunk_connect_for_snmp.common.collection_manager.os.listdir",
+        return_not_existing_file,
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.CONFIG_PATH",
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH",
         return_config_without_profiles(),
     )
     def test_base_files_not_found(self):
         profiles_manager = ProfilesManager(Mock())
         with self.assertRaises(FileNotFoundError):
-            profiles_manager.gather_profiles()
+            profiles_manager.gather_elements()
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.os.listdir", return_yaml_profiles
+        "splunk_connect_for_snmp.common.collection_manager.os.listdir",
+        return_yaml_profiles,
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.CONFIG_PATH",
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH",
         return_not_existing_config(),
     )
     def test_config_file_not_found(self):
         with self.assertLogs(
-            "splunk_connect_for_snmp.common.profiles", level="INFO"
+            "splunk_connect_for_snmp.common.collection_manager", level="INFO"
         ) as cm:
             profiles_manager = ProfilesManager(Mock())
-            profiles_manager.gather_profiles()
+            profiles_manager.gather_elements()
             self.assertTrue(
                 any(
                     [
@@ -76,10 +78,11 @@ class TestProfiles(TestCase):
             )
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.os.listdir", return_yaml_profiles
+        "splunk_connect_for_snmp.common.collection_manager.os.listdir",
+        return_yaml_profiles,
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.CONFIG_PATH",
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH",
         return_config_without_profiles(),
     )
     def test_read_base_profiles(self):
@@ -105,13 +108,16 @@ class TestProfiles(TestCase):
             },
         }
         profiles_manager = ProfilesManager(Mock())
-        profiles = profiles_manager.gather_profiles()
+        profiles = profiles_manager.gather_elements()
         self.assertEqual(profiles, active_profiles)
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.os.listdir", return_yaml_empty_profiles
+        "splunk_connect_for_snmp.common.collection_manager.os.listdir",
+        return_yaml_empty_profiles,
     )
-    @mock.patch("splunk_connect_for_snmp.common.profiles.CONFIG_PATH", return_config())
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH", return_config()
+    )
     def test_runtime_profiles(self):
         active_profiles = {
             "test_2": {
@@ -135,13 +141,16 @@ class TestProfiles(TestCase):
             },
         }
         profiles_manager = ProfilesManager(Mock())
-        profiles = profiles_manager.gather_profiles()
+        profiles = profiles_manager.gather_elements()
         self.assertEqual(profiles, active_profiles)
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.os.listdir", return_yaml_profiles
+        "splunk_connect_for_snmp.common.collection_manager.os.listdir",
+        return_yaml_profiles,
     )
-    @mock.patch("splunk_connect_for_snmp.common.profiles.CONFIG_PATH", return_config())
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH", return_config()
+    )
     def test_all_profiles(self):
         active_profiles = {
             "BaseUpTime": {
@@ -184,14 +193,16 @@ class TestProfiles(TestCase):
             },
         }
         profiles_manager = ProfilesManager(Mock())
-        profiles = profiles_manager.gather_profiles()
+        profiles = profiles_manager.gather_elements()
         self.assertEqual(profiles, active_profiles)
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.os.listdir", return_yaml_profiles
+        "splunk_connect_for_snmp.common.collection_manager.os.listdir",
+        return_yaml_profiles,
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.profiles.CONFIG_PATH", return_disabled_config()
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH",
+        return_disabled_config(),
     )
     def test_disabled_profiles(self):
         active_profiles = {
@@ -206,5 +217,5 @@ class TestProfiles(TestCase):
             }
         }
         profiles_manager = ProfilesManager(Mock())
-        profiles = profiles_manager.gather_profiles()
+        profiles = profiles_manager.gather_elements()
         self.assertEqual(profiles, active_profiles)
