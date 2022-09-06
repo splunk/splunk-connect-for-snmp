@@ -57,11 +57,11 @@ poller:
     inventory: |
       address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
       10.202.4.202,,2c,public,,,2000,my_profile1,,
-      example_group_1,,2c,public,,,2000,my_profile2,,
+      example_group_1,,2c,public,,,2000,my_profile2;my_profile3,,
 ```
 
 
-### Update Inventory and Profile
+### Update Inventory
 Adding new devices for `values.yaml` is quite expensive from the Splunk Connect for SNMP perspective. 
 As it interacts with real, networking devices, it requires several checks before applying changes. SC4SNMP was designed to prevent changes in inventory
 task more often than every 5 min. 
@@ -86,7 +86,11 @@ microk8s kubectl delete job/snmp-splunk-connect-for-snmp-inventory -n sc4snmp
 
 After running this command, you can proceed with upgrading without a need to wait.
    
-3. Run upgrade command described in [Installation Guide](../../gettingstarted/sc4snmp-installation#install-sc4snmp) 
+3. Run upgrade command :
+
+```shell
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
+```
 
 NOTE: If you decide to change frequency of the profile without changing inventory data, the change will be reflected after 
 next walk process for the host. Walk happens every `walk_interval` or on any change in inventory.
