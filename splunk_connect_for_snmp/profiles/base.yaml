@@ -1,7 +1,7 @@
 BaseUpTime:
-  frequency: 300
+  frequency: 20
   condition:
-    type: "base"
+    type: "mandatory"
     # field: "SNMPv2-MIB.sysDescr"
     # patterns:
     #   - "^.*"
@@ -9,9 +9,9 @@ BaseUpTime:
   varBinds:
     - ["SNMPv2-MIB", "sysUpTime",0]
 BaseDeviceData:
-  frequency: 1200
+  frequency: 20
   condition:
-    type: "base"
+    type: "mandatory"
   varBinds:
     # Syntax: [ "MIB-Files", "MIB ocelery[tblib]bject name" "MIB index number"]
     - ["SNMPv2-MIB", "sysDescr",0]

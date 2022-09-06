@@ -168,6 +168,17 @@ def assign_profiles(ir, profiles, target):
             logger.warning(
                 f"profile {profile_name} was assigned for the host: {address}, no such profile in the config"
             )
+
+    mandatory_profiles = [
+        (profile_name, profile.get("frequency"))
+        for profile_name, profile in profiles.items()
+        if profile.get("condition", {}).get("type") == "mandatory"
+    ]
+    for m_profile_name, m_profile_frequency in mandatory_profiles:
+        if m_profile_frequency not in assigned_profiles:
+            assigned_profiles[m_profile_frequency] = []
+        assigned_profiles[m_profile_frequency].append(m_profile_name)
+
     logger.debug(f"Profiles Assigned for host {address}: {assigned_profiles}")
     return assigned_profiles
 
