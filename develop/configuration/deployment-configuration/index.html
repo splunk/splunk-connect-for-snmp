@@ -300,20 +300,6 @@
               
   
   
-  
-    <li class="md-nav__item">
-      <a href="../configuring-profiles/" class="md-nav__link">
-        Configuring Profiles
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
     
   
   
@@ -356,13 +342,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#update-inventory-and-profile" class="md-nav__link">
-    Update Inventory and Profile
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -371,6 +350,32 @@
   
 
             
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2">
+          Polling
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Polling" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          Polling
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
           
             
               
@@ -392,8 +397,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../trap-configuration/" class="md-nav__link">
-        Trap
+      <a href="../scheduler-configuration/" class="md-nav__link">
+        Scheduler
       </a>
     </li>
   
@@ -406,8 +411,57 @@
   
   
     <li class="md-nav__item">
-      <a href="../scheduler-configuration/" class="md-nav__link">
-        Scheduler
+      <a href="../configuring-profiles/" class="md-nav__link">
+        Configuring Profiles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuring-groups/" class="md-nav__link">
+        Configuring Groups
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-by-step-poll/" class="md-nav__link">
+        Step by Step polling example
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trap-configuration/" class="md-nav__link">
+        Traps
       </a>
     </li>
   
@@ -690,13 +744,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#update-inventory-and-profile" class="md-nav__link">
-    Update Inventory and Profile
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -712,23 +759,33 @@
 
 
 <h1 id="deployment-configuration">Deployment Configuration<a class="headerlink" href="#deployment-configuration" title="Permanent link">&para;</a></h1>
-<p><code>values.yaml</code> is the main point of SC4SNMP management. The most important variables are already there from the very beginning 
-after executing:</p>
+<p><code>values.yaml</code> is the main point of SC4SNMP management. You can check all the default values of Helm dependencies using:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">helm3</span><span class="w"> </span><span class="nv">inspect</span><span class="w"> </span><span class="nv">values</span><span class="w"> </span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">values</span>.<span class="nv">yaml</span><span class="w"></span>
 </code></pre></div>
 
-<p>The whole file is divided into the following components:</p>
-<ol>
-<li>scheduler - more detail <a href="../scheduler-configuration/">scheduler configuration</a></li>
-<li>worker - more detail <a href="../worker-configuration/">worker configuration</a></li>
-<li>poller - more detail <a href="../poller-configuration/">poller configuration</a></li>
-<li>sim - more detail <a href="../sim-configuration/">sim configuration</a></li>
-<li>traps - more detail <a href="../trap-configuration/">trap configuration</a></li>
-<li>mongodb - more detail <a href="../mongo-configuration/">mongo configuration</a></li>
-<li>redis - more detail <a href="../redis-configuration/">redis configuration</a></li>
-</ol>
+<p>The whole file is divided into the following parts:</p>
+<p>For configuring endpoint for sending SNMP data:</p>
+<ul>
+<li><code>splunk</code> - in case you use Splunk Enterprise/Cloud</li>
+<li><code>sim</code> - in case you use Splunk Observability Cloud. More details: <a href="../sim-configuration/">sim configuration</a></li>
+</ul>
+<p>For polling purposes:</p>
+<ul>
+<li><code>scheduler</code> - more details: <a href="../scheduler-configuration/">scheduler configuration</a></li>
+<li><code>poller</code> - more details: <a href="../poller-configuration/">poller configuration</a></li>
+</ul>
+<p>For traps receiving purposes:</p>
+<ul>
+<li><code>traps</code> - more details: <a href="../trap-configuration/">trap configuration</a></li>
+</ul>
+<p>Shared components:</p>
+<ul>
+<li><code>worker</code> - more details: <a href="../worker-configuration/">worker configuration</a></li>
+<li><code>mongodb</code> - more details: <a href="../mongo-configuration/">mongo configuration</a></li>
+<li><code>redis</code> - more details: <a href="../redis-configuration/">redis configuration</a></li>
+</ul>
 <h3 id="shared-values">Shared values<a class="headerlink" href="#shared-values" title="Permanent link">&para;</a></h3>
-<p>All of the components have the <code>resources</code> field for adjusting memory resources:</p>
+<p>All the components have the <code>resources</code> field for adjusting memory resources:</p>
 <div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000m</span><span class="w"></span>
@@ -739,30 +796,6 @@ after executing:</p>
 </code></pre></div>
 
 <p>More information about the concept of <code>resources</code> can be found in the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">kuberentes documentation</a>.</p>
-<h3 id="update-inventory-and-profile">Update Inventory and Profile<a class="headerlink" href="#update-inventory-and-profile" title="Permanent link">&para;</a></h3>
-<p>Inventory and profiles in <code>values.yaml</code> is quite expensive from the Splunk Connect for SNMP perspective. 
-It requires several checks before applying changes. SC4SNMP was designed to prevent changes in inventory and profiles 
-task more often than every 5 min. </p>
-<p>When changing inventory or profile needs to be applied in <code>values.yaml</code> following steps need to be done:</p>
-<ol>
-<li>Edit <code>values.yaml</code> </li>
-<li>Check is inventory pod is still running by an execute command</li>
-</ol>
-<div class="codehilite"><pre><span></span><code>microk8s kubectl -n sc4snmp get pods <span class="p">|</span> grep inventory
-</code></pre></div>
-
-<p>If the command does not return any pods, follow the next step. In another case, wait and execute the command again until the moment 
-when inventory job finishes. </p>
-<p>If you really need to apply changes immediately, you can get around the limitation by deleting inventory job, with:</p>
-<div class="codehilite"><pre><span></span><code>microk8s kubectl delete job/snmp-splunk-connect-for-snmp-inventory -n sc4snmp
-</code></pre></div>
-
-<p>After running this command, you can proceed with upgrading without a need to wait.</p>
-<ol start="3">
-<li>Run upgrade command described in <a href="../../gettingstarted/sc4snmp-installation#install-sc4snmp">Installation Guide</a> </li>
-</ol>
-<p>NOTE: If you decide to change frequency of the profile without changing inventory data, the change will be reflected after 
-next walk process for the host. Walk happens every <code>walk_interval</code> or on any change in inventory.</p>
 
 
 
@@ -781,7 +814,7 @@ next walk process for the host. Walk happens every <code>walk_interval</code> or
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../configuring-profiles/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Configuring Profiles" rel="prev">
+        <a href="../../ha/" class="md-footer__link md-footer__link--prev" aria-label="Previous: High Availability" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -790,7 +823,7 @@ next walk process for the host. Walk happens every <code>walk_interval</code> or
               <span class="md-footer__direction">
                 Previous
               </span>
-              Configuring Profiles
+              High Availability
             </div>
           </div>
         </a>
