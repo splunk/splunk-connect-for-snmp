@@ -41,3 +41,31 @@ scheduler:
       cpu: 200m
       memory: 128Mi
 ```
+
+### Define groups of hosts
+To get the general idea when groups are useful see [Configuring Groups](configuring-groups.md).
+
+Example group configuration:
+```yaml
+scheduler:
+  groups: |
+    example_group_1:
+      - address: 123.0.0.1
+        port: 161
+      - address: 178.8.8.1
+        port: 999
+      - address: 12.22.23
+        port: 161
+        community: 'private'
+    example_group_2:
+      - address: 103.0.0.1
+        port: 1161
+        version: '3'
+        secret: 'my_secret'
+      - address: 178.80.8.1
+        port: 999
+```
+
+The one obligatory field for the host configuration is `address`. If `port` isn't configured its default value is `161`. 
+Other fields that can be modified here are: `community`, `secret`, `version`, `security_engine`.
+However, if they remain unspecified in the host configuration, they will be derived from the inventory record regarding this specific group.
