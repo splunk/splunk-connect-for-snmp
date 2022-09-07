@@ -64,8 +64,7 @@ def check_restart(current_target, result, targets_collection, address):
                 if int(new_value) < int(old_value):
                     task_config = {
                         "name": f"sc4snmp;{address};walk",
-                        "run_immediately": True,
-                        "kwargs": {"address": address, "profile": None},
+                        "run_immediately": True
                     }
                     logger.info(f"Detected restart of {address}, triggering walk")
                     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
