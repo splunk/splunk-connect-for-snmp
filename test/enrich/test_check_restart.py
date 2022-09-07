@@ -26,8 +26,7 @@ class TestEnrich(TestCase):
         check_restart(current_target, result, targets_collection, "192.168.0.1")
         expected_args = {
             "name": "sc4snmp;192.168.0.1;walk",
-            "run_immediately": True,
-            "kwargs": {"address": "192.168.0.1", "profile": None},
+            "run_immediately": True
         }
         periodic_obj_mock.manage_task.assert_called_with(**expected_args)
         calls = targets_collection.update_one.call_args_list
