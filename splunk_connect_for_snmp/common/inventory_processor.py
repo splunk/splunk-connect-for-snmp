@@ -163,13 +163,15 @@ class InventoryRecordManager:
         walk_profile = self.return_walk_profile(runtime_profiles, profiles)
         if walk_profile:
             inventory_record.walk_interval = int(new_source_record["walk_interval"])
+        group = self.return_group(
+            inventory_record.address, inventory_record.port, groups
+        )
+        if group:
+            inventory_record.group = group
         status = self.inventory_collection.update_one(
             {"address": inventory_record.address, "port": inventory_record.port},
             {"$set": inventory_record.asdict()},
             upsert=True,
-        )
-        group = self.return_group(
-            inventory_record.address, inventory_record.port, groups
         )
         if status.matched_count == 0:
             self.logger.info(f"New Record {inventory_record} {status.upserted_id}")
