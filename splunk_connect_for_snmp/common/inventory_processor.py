@@ -135,6 +135,7 @@ class InventoryProcessor:
                 port = group_object.get("port")
                 host = transform_address_to_key(address, port)
                 self.hosts_from_groups[host] = True
+                host_group_object["group"] = group_name
                 self.inventory_records.append(host_group_object)
         else:
             self.logger.warning(
@@ -158,16 +159,11 @@ class InventoryRecordManager:
         self.attributes_collection.remove({"address": target})
         self.logger.info(f"Deleting record: {target}")
 
-    def update(self, inventory_record, new_source_record, runtime_profiles, groups):
+    def update(self, inventory_record, new_source_record, runtime_profiles):
         profiles = new_source_record["profiles"].split(";")
         walk_profile = self.return_walk_profile(runtime_profiles, profiles)
         if walk_profile:
             inventory_record.walk_interval = int(new_source_record["walk_interval"])
-        group = self.return_group(
-            inventory_record.address, inventory_record.port, groups
-        )
-        if group:
-            inventory_record.group = group
         status = self.inventory_collection.update_one(
             {"address": inventory_record.address, "port": inventory_record.port},
             {"$set": inventory_record.asdict()},
@@ -180,7 +176,7 @@ class InventoryRecordManager:
         else:
             self.logger.info(f"Unchanged Record {inventory_record}")
             return
-        task_config = gen_walk_task(inventory_record, walk_profile, group)
+        task_config = gen_walk_task(inventory_record, walk_profile, new_source_record.get("group"))
         self.periodic_object_collection.manage_task(**task_config)
 
     def return_walk_profile(self, runtime_profiles, inventory_profiles):
@@ -196,14 +192,3 @@ class InventoryRecordManager:
                 # if there's more than one walk profile, we're choosing the last one on the list
                 walk_profile = walk_profiles[-1]
         return walk_profile
-
-    def return_group(self, address, port, groups):
-        for group_name in groups:
-            host_list = groups[group_name]
-            for host_obj in host_list:
-                if (
-                    host_obj["address"] == address
-                    and int(host_obj.get("port", 161)) == port
-                ):
-                    return group_name
-        return None

@@ -158,6 +158,7 @@ class TestInventoryProcessor(TestCase):
                 "walk_interval": "788",
                 "profiles": "walk1;generic_switch",
                 "SmartProfiles": "f",
+                "group": "group1",
                 "delete": "",
             },
             {
@@ -170,6 +171,7 @@ class TestInventoryProcessor(TestCase):
                 "walk_interval": "788",
                 "profiles": "walk1;generic_switch",
                 "SmartProfiles": "f",
+                "group": "group1",
                 "delete": "",
             },
         ]
@@ -263,6 +265,7 @@ class TestInventoryProcessor(TestCase):
                 "profiles": "group_profile",
                 "smart_profiles": "False",
                 "delete": "False",
+                "group": "group1"
             },
             {
                 "address": "127.0.0.1",
@@ -275,6 +278,7 @@ class TestInventoryProcessor(TestCase):
                 "profiles": "group_profile",
                 "smart_profiles": "False",
                 "delete": "False",
+                "group": "group1"
             },
             {
                 "address": "0.0.0.0",
@@ -350,28 +354,4 @@ class TestInventoryProcessor(TestCase):
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
         self.assertEqual(
             inventory_record_manager.return_walk_profile(self.profiles, []), None
-        )
-
-    def test_return_group(self):
-        groups = {
-            "group1": [
-                {"address": "123.0.0.1", "port": 163},
-                {"address": "124.0.0.1", "port": 164},
-            ]
-        }
-        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(
-            inventory_record_manager.return_group("123.0.0.1", 163, groups), "group1"
-        )
-
-    def test_return_group_none(self):
-        groups = {
-            "group1": [
-                {"address": "123.0.0.1", "port": 163},
-                {"address": "124.0.0.1", "port": 164},
-            ]
-        }
-        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(
-            inventory_record_manager.return_group("126.0.0.1", 166, groups), None
         )
