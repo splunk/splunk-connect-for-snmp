@@ -460,7 +460,7 @@ class TestInventoryRecord(TestCase):
         ir = InventoryRecord(**ir_dict)
         self.assertTrue(ir.smart_profiles)
 
-    def test_asdict_method(self):
+    def test_asdict_method_without_group(self):
         ir_dict = {
             "address": "192.168.0.1",
             "port": "34",
@@ -473,7 +473,7 @@ class TestInventoryRecord(TestCase):
             "SmartProfiles": "",
             "delete": "",
         }
-        expeced_dict = {
+        expected_dict = {
             "address": "192.168.0.1",
             "port": 34,
             "version": "3",
@@ -484,7 +484,39 @@ class TestInventoryRecord(TestCase):
             "profiles": ["generic_switch", "new_profiles"],
             "smart_profiles": True,
             "delete": False,
+            "group": None
         }
 
         ir = InventoryRecord(**ir_dict)
-        self.assertEqual(expeced_dict, ir.asdict())
+        self.assertEqual(expected_dict, ir.asdict())
+
+    def test_asdict_method(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "3",
+            "community": "public",
+            "secret": "secret",
+            "securityEngine": "ENGINE",
+            "walk_interval": 1850,
+            "profiles": "generic_switch;new_profiles",
+            "SmartProfiles": "",
+            "delete": "",
+            "group": "group1"
+        }
+        expected_dict = {
+            "address": "192.168.0.1",
+            "port": 34,
+            "version": "3",
+            "community": "public",
+            "secret": "secret",
+            "security_engine": "ENGINE",
+            "walk_interval": 1850,
+            "profiles": ["generic_switch", "new_profiles"],
+            "smart_profiles": True,
+            "delete": False,
+            "group": "group1"
+        }
+
+        ir = InventoryRecord(**ir_dict)
+        self.assertEqual(expected_dict, ir.asdict())
