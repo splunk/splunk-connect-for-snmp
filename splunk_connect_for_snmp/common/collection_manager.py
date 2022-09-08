@@ -45,7 +45,6 @@ class CollectionManager:
 
     def update_collection(self, elements):
         elements_to_insert = []
-        print(f"elements: {elements}")
         for key, value in elements.items():
             elements_to_insert.append({key: value})
         if elements_to_insert:
