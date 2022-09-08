@@ -52,6 +52,8 @@ class CollectionManager:
                 with session.start_transaction():
                     self.collection.delete_many({})
                     self.collection.insert_many(elements_to_insert)
+        else:
+            self.collection.delete_many({})
 
     def update_all(self):
         all_elements = self.gather_elements()
