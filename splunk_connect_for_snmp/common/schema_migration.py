@@ -109,7 +109,7 @@ def migrate_to_version_4(mongo_client, task_manager):
 def migrate_to_version_5(mongo_client, task_manager):
     logger.info("Migrating database schema to version 5")
     inventory_collection = mongo_client.sc4snmp.inventory
-    inventory_collection.update({}, {"$set": {"group": None}})
+    inventory_collection.update_many({}, {"$set": {"group": null}})
 
 
 def transform_mongodb_periodic_to_redbeat(schedule_collection, task_manager):
