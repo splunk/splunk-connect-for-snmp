@@ -45,6 +45,7 @@ class CollectionManager:
 
     def update_collection(self, elements):
         elements_to_insert = []
+        print(f"elements: {elements}")
         for key, value in elements.items():
             elements_to_insert.append({key: value})
         if elements_to_insert:
@@ -57,6 +58,9 @@ class CollectionManager:
 
     def update_all(self):
         all_elements = self.gather_elements()
+        # check in case only header is present
+        if all_elements is None:
+            all_elements = {}
         self.update_collection(all_elements)
 
 
