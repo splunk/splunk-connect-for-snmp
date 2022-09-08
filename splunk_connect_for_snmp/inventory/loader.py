@@ -105,8 +105,7 @@ def load():
             if ir.delete:
                 inventory_record_manager.delete(target)
             else:
-                inventory_record_manager.update(
-                    ir, new_source_record, config_profiles)
+                inventory_record_manager.update(ir, new_source_record, config_profiles)
 
         except Exception as e:
             inventory_errors = True

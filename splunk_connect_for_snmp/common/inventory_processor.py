@@ -176,7 +176,9 @@ class InventoryRecordManager:
         else:
             self.logger.info(f"Unchanged Record {inventory_record}")
             return
-        task_config = gen_walk_task(inventory_record, walk_profile, new_source_record.get("group"))
+        task_config = gen_walk_task(
+            inventory_record, walk_profile, new_source_record.get("group")
+        )
         self.periodic_object_collection.manage_task(**task_config)
 
     def return_walk_profile(self, runtime_profiles, inventory_profiles):

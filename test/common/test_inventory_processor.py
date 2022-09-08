@@ -265,7 +265,7 @@ class TestInventoryProcessor(TestCase):
                 "profiles": "group_profile",
                 "smart_profiles": "False",
                 "delete": "False",
-                "group": "group1"
+                "group": "group1",
             },
             {
                 "address": "127.0.0.1",
@@ -278,7 +278,7 @@ class TestInventoryProcessor(TestCase):
                 "profiles": "group_profile",
                 "smart_profiles": "False",
                 "delete": "False",
-                "group": "group1"
+                "group": "group1",
             },
             {
                 "address": "0.0.0.0",
