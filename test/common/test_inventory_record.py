@@ -484,7 +484,7 @@ class TestInventoryRecord(TestCase):
             "profiles": ["generic_switch", "new_profiles"],
             "smart_profiles": True,
             "delete": False,
-            "group": None
+            "group": None,
         }
 
         ir = InventoryRecord(**ir_dict)
@@ -502,7 +502,7 @@ class TestInventoryRecord(TestCase):
             "profiles": "generic_switch;new_profiles",
             "SmartProfiles": "",
             "delete": "",
-            "group": "group1"
+            "group": "group1",
         }
         expected_dict = {
             "address": "192.168.0.1",
@@ -515,7 +515,7 @@ class TestInventoryRecord(TestCase):
             "profiles": ["generic_switch", "new_profiles"],
             "smart_profiles": True,
             "delete": False,
-            "group": "group1"
+            "group": "group1",
         }
 
         ir = InventoryRecord(**ir_dict)
