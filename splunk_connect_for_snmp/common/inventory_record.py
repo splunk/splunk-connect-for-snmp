@@ -43,6 +43,7 @@ class InventoryRecord(BaseModel):
     profiles: List
     smart_profiles: InventoryBool
     delete: InventoryBool
+    group: InventoryStr
 
     def __init__(self, *args, **kwargs):
         for old, current in ALTERNATIVE_FIELDS.items():
@@ -148,6 +149,13 @@ class InventoryRecord(BaseModel):
             return False
         else:
             return human_bool(value)
+
+    @validator("group", pre=True)
+    def group_validator(cls, value):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
+            return False
+        else:
+            return value
 
     def asdict(self) -> dict:
         return self.dict()

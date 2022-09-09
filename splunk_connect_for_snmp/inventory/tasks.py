@@ -15,9 +15,9 @@
 #
 import typing
 
-from splunk_connect_for_snmp.common.profiles import ProfilesManager
 from splunk_connect_for_snmp.snmp.manager import get_inventory
 
+from ..common.collection_manager import ProfilesManager
 from ..common.task_generator import PollTaskGenerator
 from .loader import transform_address_to_key
 
@@ -54,13 +54,14 @@ class InventoryTask(Task):
     def __init__(self):
         self.mongo_client = pymongo.MongoClient(MONGO_URI)
         self.profiles_manager = ProfilesManager(self.mongo_client)
-        self.profiles = self.profiles_manager.return_all_profiles()
+        self.profiles = self.profiles_manager.return_collection()
 
 
 @shared_task(bind=True, base=InventoryTask)
 def inventory_setup_poller(self, work):
     address = work["address"]
-    self.profiles = self.profiles_manager.return_all_profiles()
+    group = work.get("group")
+    self.profiles = self.profiles_manager.return_collection()
     logger.debug("Profiles reloaded")
 
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
@@ -81,7 +82,7 @@ def inventory_setup_poller(self, work):
     active_schedules: list[str] = []
     for period in assigned_profiles:
         task_config = generate_poll_task_definition(
-            active_schedules, address, assigned_profiles, period
+            active_schedules, address, assigned_profiles, period, group
         )
         periodic_obj.manage_task(**task_config)
 
@@ -89,10 +90,16 @@ def inventory_setup_poller(self, work):
     # periodic_obj.delete_disabled_poll_tasks()
 
 
-def generate_poll_task_definition(active_schedules, address, assigned_profiles, period):
+def generate_poll_task_definition(
+    active_schedules, address, assigned_profiles, period, group=None
+):
     period_profiles = set(assigned_profiles[period])
     poll_definition = PollTaskGenerator(
-        target=address, schedule_period=period, app=app, profiles=list(period_profiles)
+        target=address,
+        schedule_period=period,
+        app=app,
+        host_group=group,
+        profiles=list(period_profiles),
     )
     task_config = poll_definition.generate_task_definition()
     active_schedules.append(task_config.get("name"))
@@ -161,6 +168,17 @@ def assign_profiles(ir, profiles, target):
             logger.warning(
                 f"profile {profile_name} was assigned for the host: {address}, no such profile in the config"
             )
+
+    mandatory_profiles = [
+        (profile_name, profile.get("frequency"))
+        for profile_name, profile in profiles.items()
+        if profile.get("condition", {}).get("type") == "mandatory"
+    ]
+    for m_profile_name, m_profile_frequency in mandatory_profiles:
+        if m_profile_frequency not in assigned_profiles:
+            assigned_profiles[m_profile_frequency] = []
+        assigned_profiles[m_profile_frequency].append(m_profile_name)
+
     logger.debug(f"Profiles Assigned for host {address}: {assigned_profiles}")
     return assigned_profiles
 

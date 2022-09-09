@@ -38,7 +38,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-CURRENT_SCHEMA_VERSION = 4
+CURRENT_SCHEMA_VERSION = 5
 MONGO_URI = os.getenv("MONGO_URI")
 
 
@@ -106,6 +106,12 @@ def migrate_to_version_4(mongo_client, task_manager):
     schedules_collection.drop()
 
 
+def migrate_to_version_5(mongo_client, task_manager):
+    logger.info("Migrating database schema to version 5")
+    inventory_collection = mongo_client.sc4snmp.inventory
+    inventory_collection.update_many({}, {"$set": {"group": None}})
+
+
 def transform_mongodb_periodic_to_redbeat(schedule_collection, task_manager):
     schedules = schedule_collection.find(
         {"task": "splunk_connect_for_snmp.snmp.tasks.walk"}
@@ -117,6 +123,7 @@ def transform_mongodb_periodic_to_redbeat(schedule_collection, task_manager):
             schedule_period=walk_interval,
             app=app,
             profile=schedule_obj.get("kwargs").get("profile"),
+            host_group=None,
         )
         walk_data = task_generator.generate_task_definition()
         task_manager.manage_task(**walk_data)

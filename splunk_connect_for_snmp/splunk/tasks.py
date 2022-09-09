@@ -164,7 +164,7 @@ def valueAsBest(value) -> Union[str, float]:
 def prepare(self, work):
     events = []
     metrics = []
-
+    print(f"work: {work}")
     if work.get("sourcetype") == "sc4snmp:traps":
         return {
             "events": prepare_trap_data(
@@ -190,6 +190,8 @@ def prepare(self, work):
                 metric["fields"]["frequency"] = work["frequency"]
             if "profiles" in data:
                 metric["fields"]["profiles"] = data["profiles"]
+            if work.get("group"):
+                metric["fields"]["group"] = work.get("group")
             for field, values in data["fields"].items():
                 short_field = field.split(".")[-1]
                 metric["fields"][short_field] = valueAsBest(values["value"])
@@ -222,7 +224,7 @@ def prepare_trap_data(work):
                 processed[k]["value"] = valueAsBest(v["value"])
         event = {
             "time": work["time"],
-            "event": json.dumps(data["fields"] | processed),
+            "event": json.dumps({**data["fields"], **processed}),
             "source": "sc4snmp",
             "sourcetype": "sc4snmp:traps",
             "host": work["address"],

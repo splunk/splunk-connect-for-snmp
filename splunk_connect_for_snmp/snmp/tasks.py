@@ -65,6 +65,7 @@ OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
 def walk(self, **kwargs):
     address = kwargs["address"]
     profile = kwargs.get("profile", [])
+    group = kwargs.get("group")
     if profile:
         profile = [profile]
     mongo_client = pymongo.MongoClient(MONGO_URI)
@@ -77,10 +78,9 @@ def walk(self, **kwargs):
         retry, result = self.do_work(ir, walk=True, profiles=profile)
 
     # After a Walk tell schedule to recalc
-    work = {}
-    work["time"] = time.time()
-    work["address"] = address
-    work["result"] = result
+    work = {"time": time.time(), "address": address, "result": result}
+    if group:
+        work["group"] = group
 
     return work
 
@@ -99,6 +99,7 @@ def poll(self, **kwargs):
 
     address = kwargs["address"]
     profiles = kwargs["profiles"]
+    group = kwargs.get("group")
     mongo_client = pymongo.MongoClient(MONGO_URI)
     mongo_db = mongo_client[MONGO_DB]
     mongo_inventory = mongo_db.inventory
@@ -107,12 +108,15 @@ def poll(self, **kwargs):
     _, result = self.do_work(ir, profiles=profiles)
 
     # After a Walk tell schedule to recalc
-    work = {}
-    work["time"] = time.time()
-    work["address"] = address
-    work["result"] = result
-    work["detectchange"] = False
-    work["frequency"] = kwargs["frequency"]
+    work = {
+        "time": time.time(),
+        "address": address,
+        "result": result,
+        "detectchange": False,
+        "frequency": kwargs["frequency"],
+    }
+    if group:
+        work["group"] = group
 
     return work
 

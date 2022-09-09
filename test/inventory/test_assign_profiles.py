@@ -30,7 +30,7 @@ simple_profiles = {
 
 
 @mock.patch(
-    "splunk_connect_for_snmp.common.profiles.ProfilesManager.return_all_profiles"
+    "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
 )
 class TestProfilesAssignment(TestCase):
     def test_assignment_of_static_profiles(self, return_all_profiles):
@@ -249,3 +249,84 @@ class TestProfilesAssignment(TestCase):
 
         result = assign_profiles(ir, profiles, {})
         self.assertEqual({30: ["profile5"], 20: ["profile1"]}, result)
+
+    def test_smart_profiles_disabled_mandatory_profile(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
+        profiles = {
+            "profile1": {"frequency": 20},
+            "profile5": {"frequency": 30, "condition": {"type": "base"}},
+            "profile_mandatory": {"frequency": 30, "condition": {"type": "mandatory"}},
+        }
+
+        ir = InventoryRecord(
+            **{
+                "address": "192.168.0.1",
+                "port": "34",
+                "version": "2c",
+                "community": "public",
+                "secret": "secret",
+                "securityEngine": "ENGINE",
+                "walk_interval": 1850,
+                "profiles": "profile1;profile5",
+                "SmartProfiles": False,
+                "delete": False,
+            }
+        )
+
+        result = assign_profiles(ir, profiles, {})
+        self.assertEqual(
+            {30: ["profile5", "profile_mandatory"], 20: ["profile1"]}, result
+        )
+
+    def test_smart_profiles_disabled_mandatory_profile_without_static_base_profile(
+        self, return_all_profiles
+    ):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
+        profiles = {
+            "profile1": {"frequency": 20},
+            "profile5": {"frequency": 30, "condition": {"type": "base"}},
+            "profile_mandatory": {"frequency": 30, "condition": {"type": "mandatory"}},
+        }
+
+        ir = InventoryRecord(
+            **{
+                "address": "192.168.0.1",
+                "port": "34",
+                "version": "2c",
+                "community": "public",
+                "secret": "secret",
+                "securityEngine": "ENGINE",
+                "walk_interval": 1850,
+                "profiles": "profile1",
+                "SmartProfiles": False,
+                "delete": False,
+            }
+        )
+
+        result = assign_profiles(ir, profiles, {})
+        self.assertEqual({30: ["profile_mandatory"], 20: ["profile1"]}, result)
+
+    def test_assign_profiles_no_profiles(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
+        profiles = {}
+
+        ir = InventoryRecord(
+            **{
+                "address": "192.168.0.1",
+                "port": "34",
+                "version": "2c",
+                "community": "public",
+                "secret": "secret",
+                "securityEngine": "ENGINE",
+                "walk_interval": 1850,
+                "profiles": "profile1",
+                "SmartProfiles": False,
+                "delete": False,
+            }
+        )
+
+        result = assign_profiles(ir, profiles, {})
+        self.assertEqual({}, result)
