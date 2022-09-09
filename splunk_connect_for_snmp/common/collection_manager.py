@@ -52,9 +52,14 @@ class CollectionManager:
                 with session.start_transaction():
                     self.collection.delete_many({})
                     self.collection.insert_many(elements_to_insert)
+        else:
+            self.collection.delete_many({})
 
     def update_all(self):
         all_elements = self.gather_elements()
+        # check in case only header is present
+        if all_elements is None:
+            all_elements = {}
         self.update_collection(all_elements)
 
 
