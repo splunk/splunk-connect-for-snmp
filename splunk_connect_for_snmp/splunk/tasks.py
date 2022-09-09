@@ -192,6 +192,8 @@ def prepare(self, work):
                 metric["fields"]["profiles"] = data["profiles"]
             if work.get("group"):
                 metric["fields"]["group"] = work.get("group")
+            if work.get("sysUpTimeRollover"):
+                metric["fields"]["sysUpTimeRollover"] = work.get("sysUpTimeRollover")
             for field, values in data["fields"].items():
                 short_field = field.split(".")[-1]
                 metric["fields"][short_field] = valueAsBest(values["value"])
