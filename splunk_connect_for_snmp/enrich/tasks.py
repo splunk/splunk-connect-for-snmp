@@ -53,7 +53,7 @@ MAX_VAL_SYSUPTIME = 4294967295
 
 
 # check if sysUpTime decreased, if so trigger new walk
-def check_restart_and_rollover(current_target, result, targets_collection, address):
+def check_restart(current_target, result, targets_collection, address):
     for group_key, group_dict in result.items():
         if "metrics" in group_dict and SYS_UP_TIME in group_dict["metrics"]:
             sysuptime = group_dict["metrics"][SYS_UP_TIME]
@@ -123,11 +123,11 @@ def enrich(self, result):
         logger.info(f"Not first time for {address}")
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
-    check_restart_and_rollover(
+    check_restart(
         current_target, result["result"], targets_collection, address
     )
-    rollovers = targets_collection.find_one({"address": address}, {"rollover": True})
-    result["sysUpTime_rollover"] = f'{rollovers["rollover"]}'
+    rollovers = targets_collection.find_one({"address": address}, {"sysUpTimeRollover": True})
+    result["sysUpTimeRollover"] = f'{rollovers["sysUpTimeRollover"]}'
     logger.info(f"After check_restart_and_rollover for {address}")
     # First write back to DB new/changed data
 
