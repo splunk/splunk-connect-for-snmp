@@ -58,13 +58,12 @@ def check_restart(current_target, result, targets_collection, address):
         if "metrics" in group_dict and SYS_UP_TIME in group_dict["metrics"]:
             sysuptime = group_dict["metrics"][SYS_UP_TIME]
             new_value = sysuptime["value"]
-            sysuptime_rollover_counter = 0
+            sysuptime_rollover_counter = current_target.get("sysUpTimeRollover", 0)
 
             logger.debug(f"current target = {current_target}")
             if "sysUpTime" in current_target:
                 old_value = current_target["sysUpTime"]["value"]
                 logger.debug(f"new_value = {new_value}  old_value = {old_value}")
-                sysuptime_rollover_counter = current_target["sysUpTimeRollover"]
                 poll_frequency = result["frequency"]
                 if (
                     int(new_value) < int(old_value)
