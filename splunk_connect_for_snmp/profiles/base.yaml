@@ -1,5 +1,5 @@
 BaseUpTime:
-  frequency: 300
+  frequency: 20
   condition:
     type: "mandatory"
     # field: "SNMPv2-MIB.sysDescr"
