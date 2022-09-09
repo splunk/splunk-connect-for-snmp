@@ -9,7 +9,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.7">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.2">
     
     
       
@@ -17,7 +17,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.4a0965b7.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.69437709.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
@@ -40,7 +40,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,9 +74,7 @@
     </div>
     
       <div data-md-component="outdated" hidden>
-        <aside class="md-banner md-banner--warning">
-          
-        </aside>
+        
       </div>
     
     
@@ -304,20 +302,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../configuring-profiles/" class="md-nav__link">
-        Configuring Profiles
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../deployment-configuration/" class="md-nav__link">
         Deployment
       </a>
@@ -330,15 +314,29 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../poller-configuration/" class="md-nav__link">
-        Poller
-      </a>
-    </li>
   
-
-            
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2">
+          Polling
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Polling" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          Polling
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
           
             
               
@@ -346,8 +344,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../trap-configuration/" class="md-nav__link">
-        Trap
+      <a href="../poller-configuration/" class="md-nav__link">
+        Poller
       </a>
     </li>
   
@@ -414,10 +412,80 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#define-groups-of-hosts" class="md-nav__link">
+    Define groups of hosts
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuring-profiles/" class="md-nav__link">
+        Configuring Profiles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuring-groups/" class="md-nav__link">
+        Configuring Groups
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-by-step-poll/" class="md-nav__link">
+        Step by Step polling example
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trap-configuration/" class="md-nav__link">
+        Traps
+      </a>
     </li>
   
 
@@ -713,6 +781,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#define-groups-of-hosts" class="md-nav__link">
+    Define groups of hosts
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -765,6 +840,35 @@ The default value is <code>WARNING</code></p>
 <span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">128Mi</span><span class="w"></span>
 </code></pre></div>
 
+<h3 id="define-groups-of-hosts">Define groups of hosts<a class="headerlink" href="#define-groups-of-hosts" title="Permanent link">&para;</a></h3>
+<p>To get the general idea when groups are useful see <a href="../configuring-groups/">Configuring Groups</a>.</p>
+<p>Example group configuration:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">groups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">    </span><span class="no">example_group_1:</span><span class="w"></span>
+<span class="w">      </span><span class="no">- address: 123.0.0.1</span><span class="w"></span>
+<span class="w">        </span><span class="no">port: 161</span><span class="w"></span>
+<span class="w">      </span><span class="no">- address: 178.8.8.1</span><span class="w"></span>
+<span class="w">        </span><span class="no">port: 999</span><span class="w"></span>
+<span class="w">      </span><span class="no">- address: 12.22.23</span><span class="w"></span>
+<span class="w">        </span><span class="no">port: 161</span><span class="w"></span>
+<span class="w">        </span><span class="no">community: &#39;private&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="no">example_group_2:</span><span class="w"></span>
+<span class="w">      </span><span class="no">- address: 103.0.0.1</span><span class="w"></span>
+<span class="w">        </span><span class="no">port: 1161</span><span class="w"></span>
+<span class="w">        </span><span class="no">version: &#39;3&#39;</span><span class="w"></span>
+<span class="w">        </span><span class="no">secret: &#39;my_secret&#39;</span><span class="w"></span>
+<span class="w">      </span><span class="no">- address: 178.80.8.1</span><span class="w"></span>
+<span class="w">        </span><span class="no">port: 999</span><span class="w"></span>
+</code></pre></div>
+
+<p>The one obligatory field for the host configuration is <code>address</code>. If <code>port</code> isn&rsquo;t configured its default value is <code>161</code>. 
+Other fields that can be modified here are: <code>community</code>, <code>secret</code>, <code>version</code>, <code>security_engine</code>.
+However, if they remain unspecified in the host configuration, they will be derived from the inventory record regarding this specific group.</p>
+
+
+
+
               
             </article>
             
@@ -779,7 +883,7 @@ The default value is <code>WARNING</code></p>
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../trap-configuration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Trap" rel="prev">
+        <a href="../poller-configuration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Poller" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -788,20 +892,20 @@ The default value is <code>WARNING</code></p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              Trap
+              Poller
             </div>
           </div>
         </a>
       
       
         
-        <a href="../worker-configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Worker" rel="next">
+        <a href="../configuring-profiles/" class="md-footer__link md-footer__link--next" aria-label="Next: Configuring Profiles" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Worker
+              Configuring Profiles
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -831,10 +935,11 @@ The default value is <code>WARNING</code></p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.0238f547.min.js"></script>
+      <script src="../../assets/javascripts/bundle.9c69f0bc.min.js"></script>
       
     
   </body>
