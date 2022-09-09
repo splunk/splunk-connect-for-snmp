@@ -123,10 +123,10 @@ def enrich(self, result):
         logger.info(f"Not first time for {address}")
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
-    check_restart(
-        current_target, result["result"], targets_collection, address
+    check_restart(current_target, result["result"], targets_collection, address)
+    rollovers = targets_collection.find_one(
+        {"address": address}, {"sysUpTimeRollover": True}
     )
-    rollovers = targets_collection.find_one({"address": address}, {"sysUpTimeRollover": True})
     result["sysUpTimeRollover"] = f'{rollovers["sysUpTimeRollover"]}'
     logger.info(f"After check_restart_and_rollover for {address}")
     # First write back to DB new/changed data

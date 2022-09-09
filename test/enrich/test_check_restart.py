@@ -23,9 +23,7 @@ class TestEnrich(TestCase):
         }
         targets_collection = Mock()
 
-        check_restart(
-            current_target, result, targets_collection, "192.168.0.1"
-        )
+        check_restart(current_target, result, targets_collection, "192.168.0.1")
         expected_args = {"name": "sc4snmp;192.168.0.1;walk", "run_immediately": True}
         periodic_obj_mock.manage_task.assert_called_with(**expected_args)
         calls = targets_collection.update_one.call_args_list
@@ -54,9 +52,7 @@ class TestEnrich(TestCase):
         }
         targets_collection = Mock()
 
-        check_restart(
-            current_target, result, targets_collection, "192.168.0.1"
-        )
+        check_restart(current_target, result, targets_collection, "192.168.0.1")
         periodic_obj_mock.manage_task.assert_not_called()
 
         calls = targets_collection.update_one.call_args_list
