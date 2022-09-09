@@ -66,7 +66,10 @@ def check_restart_and_rollover(current_target, result, targets_collection, addre
                 logger.debug(f"new_value = {new_value}  old_value = {old_value}")
                 sysuptime_rollover_counter = current_target["sysUpTimeRollover"]
                 poll_frequency = result["frequency"]
-                if int(new_value) < int(old_value) and (MAX_VAL_SYSUPTIME - old_value) < 2 * 100 * poll_frequency:
+                if (
+                    int(new_value) < int(old_value)
+                    and (MAX_VAL_SYSUPTIME - old_value) < 2 * 100 * poll_frequency
+                ):
                     sysuptime_rollover_counter += 1
                 elif int(new_value) < int(old_value):
                     task_config = {
@@ -84,7 +87,14 @@ def check_restart_and_rollover(current_target, result, targets_collection, addre
             }
 
             targets_collection.update_one(
-                {"address": address}, {"$set": {"sysUpTime": state, "sysUpTimeRollover": sysuptime_rollover_counter}}, upsert=True
+                {"address": address},
+                {
+                    "$set": {
+                        "sysUpTime": state,
+                        "sysUpTimeRollover": sysuptime_rollover_counter,
+                    }
+                },
+                upsert=True,
             )
 
 
@@ -113,10 +123,10 @@ def enrich(self, result):
         logger.info(f"Not first time for {address}")
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
-    check_restart_and_rollover(current_target, result["result"], targets_collection, address)
-    rollovers = targets_collection.find_one(
-        {"address": address}, {"rollover": True}
+    check_restart_and_rollover(
+        current_target, result["result"], targets_collection, address
     )
+    rollovers = targets_collection.find_one({"address": address}, {"rollover": True})
     result["sysUpTime_rollover"] = f'{rollovers["rollover"]}'
     logger.info(f"After check_restart_and_rollover for {address}")
     # First write back to DB new/changed data
