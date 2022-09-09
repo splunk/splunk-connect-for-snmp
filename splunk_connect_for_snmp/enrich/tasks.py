@@ -64,7 +64,7 @@ def check_restart(current_target, result, targets_collection, address):
             if "sysUpTime" in current_target:
                 old_value = current_target["sysUpTime"]["value"]
                 logger.debug(f"new_value = {new_value}  old_value = {old_value}")
-                poll_frequency = result["frequency"]
+                poll_frequency = result.get("frequency", 300)
                 if (
                     int(new_value) < int(old_value)
                     and (MAX_VAL_SYSUPTIME - old_value) < 2 * 100 * poll_frequency
