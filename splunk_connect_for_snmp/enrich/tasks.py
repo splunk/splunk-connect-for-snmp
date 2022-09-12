@@ -108,14 +108,14 @@ def check_restart_or_rollover(
             if old_enginetime_value:
                 if (
                     MAX_VAL_SYSUPTIME - old_sysuptime_value
-                ) < 3 * 100 * poll_frequency and int(old_enginetime_value) < int(
+                ) < 4 * 100 * poll_frequency and int(old_enginetime_value) < int(
                     new_enginetime_value
                 ):
                     sysuptime_rollover_counter += 1
                 else:
                     start_walk = True
             else:
-                if (MAX_VAL_SYSUPTIME - old_sysuptime_value) < 3 * 100 * poll_frequency:
+                if (MAX_VAL_SYSUPTIME - old_sysuptime_value) < 4 * 100 * poll_frequency:
                     sysuptime_rollover_counter += 1
                 else:
                     start_walk = True
