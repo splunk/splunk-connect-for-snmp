@@ -1,5 +1,5 @@
 BaseUpTime:
-  frequency: 20
+  frequency: 300
   condition:
     type: "mandatory"
     # field: "SNMPv2-MIB.sysDescr"
@@ -9,7 +9,7 @@ BaseUpTime:
   varBinds:
     - ["SNMPv2-MIB", "sysUpTime", 0]
 BaseSNMPEngineTime:
-  frequency: 20
+  frequency: 300
   condition:
     type: "mandatory"
     # field: "SNMPv2-MIB.sysDescr"
