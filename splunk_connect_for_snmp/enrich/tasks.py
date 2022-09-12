@@ -65,6 +65,7 @@ def check_restart(current_target, result, targets_collection, address):
                 old_value = current_target["sysUpTime"]["value"]
                 logger.debug(f"new_value = {new_value}  old_value = {old_value}")
                 poll_frequency = result.get("frequency", 300)
+                logger.debug(f"Rollover checks:\npoll_frequency = {poll_frequency}\nold_value = {old_value}\nnew_value = {new_value}")
                 if (
                     int(new_value) < int(old_value)
                     and (MAX_VAL_SYSUPTIME - old_value) < 2 * 100 * poll_frequency
