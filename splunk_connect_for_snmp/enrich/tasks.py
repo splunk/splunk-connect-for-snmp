@@ -53,55 +53,7 @@ MONGO_UPDATE_BATCH_THRESHOLD = 20
 MAX_VAL_SYSUPTIME = 4294967295  # 2^32-1
 
 
-# check if sysUpTime decreased, if so trigger new walk
-def check_restart(current_target, result, targets_collection, address, poll_frequency):
-    logger.debug(f"result in check: {result}")
-    for group_key, group_dict in result.items():
-        if "metrics" in group_dict and SYS_UP_TIME in group_dict["metrics"]:
-            sysuptime = group_dict["metrics"][SYS_UP_TIME]
-            new_value = sysuptime["value"]
-            sysuptime_rollover_counter = current_target.get("sysUpTimeRollover", 0)
-
-            logger.debug(f"current target = {current_target}")
-            if "sysUpTime" in current_target:
-                old_value = current_target["sysUpTime"]["value"]
-                logger.debug(f"new_value = {new_value}  old_value = {old_value}")
-                logger.debug(
-                    f"Rollover checks: poll_frequency = {poll_frequency}, old_value = {old_value}, "
-                    f"new_value = {new_value}, difference = {MAX_VAL_SYSUPTIME - old_value}"
-                )
-                if (
-                    int(new_value) < int(old_value)
-                    and (MAX_VAL_SYSUPTIME - old_value) < 3 * 100 * poll_frequency
-                ):
-                    sysuptime_rollover_counter += 1
-                elif int(new_value) < int(old_value):
-                    task_config = {
-                        "name": f"sc4snmp;{address};walk",
-                        "run_immediately": True,
-                    }
-                    logger.info(f"Detected restart of {address}, triggering walk")
-                    periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
-                    periodic_obj.manage_task(**task_config)
-
-            state = {
-                "value": sysuptime["value"],
-                "type": sysuptime["type"],
-                "oid": sysuptime["oid"],
-            }
-
-            targets_collection.update_one(
-                {"address": address},
-                {
-                    "$set": {
-                        "sysUpTime": state,
-                        "sysUpTimeRollover": sysuptime_rollover_counter,
-                    }
-                },
-                upsert=True,
-            )
-
-
+# check if device restarted or sysUpTime rollover occurred
 def check_restart_or_rollover(
     current_target, result, targets_collection, address, poll_frequency
 ):
@@ -151,24 +103,22 @@ def check_restart_or_rollover(
 
     # Check if device was restarted or sysUpTime rollover occurred
     start_walk = False
-    if old_sysuptime_value and old_enginetime_value:
-        if (
-            int(new_sysuptime_value) < int(old_sysuptime_value)
-            and (MAX_VAL_SYSUPTIME - old_sysuptime_value) < 3 * 100 * poll_frequency
-        ):
-            if int(old_enginetime_value) < int(new_enginetime_value):
-                sysuptime_rollover_counter += 1
+    if old_sysuptime_value:
+        if int(new_sysuptime_value) < int(old_sysuptime_value):
+            if old_enginetime_value:
+                if (
+                    MAX_VAL_SYSUPTIME - old_sysuptime_value
+                ) < 3 * 100 * poll_frequency and int(old_enginetime_value) < int(
+                    new_enginetime_value
+                ):
+                    sysuptime_rollover_counter += 1
+                else:
+                    start_walk = True
             else:
-                start_walk = True
-
-    elif old_sysuptime_value:
-        if (
-            int(new_sysuptime_value) < int(old_sysuptime_value)
-            and (MAX_VAL_SYSUPTIME - old_sysuptime_value) < 3 * 100 * poll_frequency
-        ):
-            sysuptime_rollover_counter += 1
-        else:
-            start_walk = True
+                if (MAX_VAL_SYSUPTIME - old_sysuptime_value) < 3 * 100 * poll_frequency:
+                    sysuptime_rollover_counter += 1
+                else:
+                    start_walk = True
 
     if start_walk:
         task_config = {

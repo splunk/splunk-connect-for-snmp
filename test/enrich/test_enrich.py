@@ -77,10 +77,20 @@ class TestEnrich(TestCase):
     @patch("pymongo.collection.Collection.find_one")
     @patch("pymongo.collection.Collection.update_one")
     @patch("pymongo.collection.Collection.bulk_write")
-    @patch("splunk_connect_for_snmp.enrich.tasks.check_restart")
-    def test_enrich(self, m_check_restart, bulk_write, m_update_one, m_find_one):
+    @patch("splunk_connect_for_snmp.enrich.tasks.check_restart_or_rollover")
+    def test_enrich(
+        self, m_check_restart_or_rollover, bulk_write, m_update_one, m_find_one
+    ):
         current_target = {"address": "192.168.0.1"}
-        m_find_one.side_effect = [current_target, True, attributes, attributes2, {}]
+        returned_rollover = {"sysUpTimeRollover": 0}
+        m_find_one.side_effect = [
+            current_target,
+            returned_rollover,
+            True,
+            attributes,
+            attributes2,
+            {},
+        ]
 
         result = enrich(input_dict)
 
@@ -119,7 +129,7 @@ class TestEnrich(TestCase):
 
         self.assertEqual("192.168.0.1", result["address"])
 
-        m_check_restart.assert_called()
+        m_check_restart_or_rollover.assert_called()
         bulk_write.assert_called()
 
         calls = m_update_one.call_args_list
@@ -129,11 +139,12 @@ class TestEnrich(TestCase):
     @patch("pymongo.collection.Collection.find_one")
     @patch("pymongo.collection.Collection.update_one")
     @patch("pymongo.collection.Collection.bulk_write")
-    @patch("splunk_connect_for_snmp.enrich.tasks.check_restart")
+    @patch("splunk_connect_for_snmp.enrich.tasks.check_restart_or_rollover")
     def test_enrich_no_target(
-        self, m_check_restart, bulk_write, m_update_one, m_find_one
+        self, m_check_restart_or_rollover, bulk_write, m_update_one, m_find_one
     ):
-        m_find_one.side_effect = [None, False]
+        returned_rollover = {"sysUpTimeRollover": 0}
+        m_find_one.side_effect = [None, returned_rollover, False]
         result = enrich(input_dict)
 
         self.assertEqual(
