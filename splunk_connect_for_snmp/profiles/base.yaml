@@ -7,7 +7,17 @@ BaseUpTime:
     #   - "^.*"
     #"SNMPv2-MIB.sysObjectID"
   varBinds:
-    - ["SNMPv2-MIB", "sysUpTime",0]
+    - ["SNMPv2-MIB", "sysUpTime", 0]
+BaseSNMPEngineTime:
+  frequency: 20
+  condition:
+    type: "mandatory"
+    # field: "SNMPv2-MIB.sysDescr"
+    # patterns:
+    #   - "^.*"
+    #"SNMPv2-MIB.sysObjectID"
+  varBinds:
+    - ["SNMP-FRAMEWORK-MIB", "snmpEngineTime", 0]
 BaseDeviceData:
   frequency: 1200
   condition:

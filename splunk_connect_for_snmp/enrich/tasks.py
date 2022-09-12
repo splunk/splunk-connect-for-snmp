@@ -46,14 +46,16 @@ TRACKED_F = [
 ]
 
 SYS_UP_TIME = "SNMPv2-MIB.sysUpTime"
+SNMP_ENGINE_TIME = "SNMP-FRAMEWORK-MIB.snmpEngineTime"
 
 MONGO_UPDATE_BATCH_THRESHOLD = 20
 
-MAX_VAL_SYSUPTIME = 4294967295
+MAX_VAL_SYSUPTIME = 4294967295  # 2^32-1
 
 
 # check if sysUpTime decreased, if so trigger new walk
 def check_restart(current_target, result, targets_collection, address, poll_frequency):
+    logger.debug(f"result in check: {result}")
     for group_key, group_dict in result.items():
         if "metrics" in group_dict and SYS_UP_TIME in group_dict["metrics"]:
             sysuptime = group_dict["metrics"][SYS_UP_TIME]
@@ -66,7 +68,7 @@ def check_restart(current_target, result, targets_collection, address, poll_freq
                 logger.debug(f"new_value = {new_value}  old_value = {old_value}")
                 logger.debug(
                     f"Rollover checks: poll_frequency = {poll_frequency}, old_value = {old_value}, "
-                    f"new_value = {new_value}, difference = {MAX_VAL_SYSUPTIME-old_value}"
+                    f"new_value = {new_value}, difference = {MAX_VAL_SYSUPTIME - old_value}"
                 )
                 if (
                     int(new_value) < int(old_value)
@@ -100,6 +102,109 @@ def check_restart(current_target, result, targets_collection, address, poll_freq
             )
 
 
+def check_restart_or_rollover(
+    current_target, result, targets_collection, address, poll_frequency
+):
+    logger.debug(f"current_target in check restart: {current_target}")
+
+    new_sysuptime_value = None
+    old_sysuptime_value = None
+    new_enginetime_value = None
+    old_enginetime_value = None
+    state_enginetime = None
+    state_sysuptime = None
+    sysuptime_rollover_counter = current_target.get("sysUpTimeRollover", 0)
+
+    # Find new and old sysUpTime and snmpEngineTime
+    for group_key, group_dict in result.items():
+        if "metrics" in group_dict and SYS_UP_TIME in group_dict["metrics"]:
+            sysuptime = group_dict["metrics"][SYS_UP_TIME]
+            new_sysuptime_value = sysuptime["value"]
+            state_sysuptime = {
+                "value": sysuptime["value"],
+                "type": sysuptime["type"],
+                "oid": sysuptime["oid"],
+            }
+
+            logger.debug(f"current target = {current_target}")
+            if "sysUpTime" in current_target:
+                old_sysuptime_value = current_target["sysUpTime"]["value"]
+                logger.debug(
+                    f"new_sysuptime_value = {new_sysuptime_value}  old_sysuptime_value = {old_sysuptime_value}"
+                )
+
+        if "fields" in group_dict and SNMP_ENGINE_TIME in group_dict["fields"]:
+            enginetime = group_dict["fields"][SNMP_ENGINE_TIME]
+            new_enginetime_value = enginetime["value"]
+            state_enginetime = {
+                "value": enginetime["value"],
+                "type": enginetime["type"],
+                "oid": enginetime["oid"],
+            }
+
+            logger.debug(f"current target = {current_target}")
+            if "snmpEngineTime" in current_target:
+                old_enginetime_value = current_target["snmpEngineTime"]["value"]
+                logger.debug(
+                    f"new_enginetime_value = {new_enginetime_value}  old_enginetime_value = {old_enginetime_value}"
+                )
+
+    # Check if device was restarted or sysUpTime rollover occurred
+    start_walk = False
+    if old_sysuptime_value and old_enginetime_value:
+        if (
+            int(new_sysuptime_value) < int(old_sysuptime_value)
+            and (MAX_VAL_SYSUPTIME - old_sysuptime_value) < 3 * 100 * poll_frequency
+        ):
+            if int(old_enginetime_value) < int(new_enginetime_value):
+                sysuptime_rollover_counter += 1
+            else:
+                start_walk = True
+
+    elif old_sysuptime_value:
+        if (
+            int(new_sysuptime_value) < int(old_sysuptime_value)
+            and (MAX_VAL_SYSUPTIME - old_sysuptime_value) < 3 * 100 * poll_frequency
+        ):
+            sysuptime_rollover_counter += 1
+        else:
+            start_walk = True
+
+    if start_walk:
+        task_config = {
+            "name": f"sc4snmp;{address};walk",
+            "run_immediately": True,
+        }
+        logger.info(f"Detected restart of {address}, triggering walk")
+        periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
+        periodic_obj.manage_task(**task_config)
+
+    # Update targets_collection
+    if state_sysuptime and state_enginetime:
+        targets_collection.update_one(
+            {"address": address},
+            {
+                "$set": {
+                    "sysUpTime": state_sysuptime,
+                    "snmpEngineTime": state_enginetime,
+                    "sysUpTimeRollover": sysuptime_rollover_counter,
+                }
+            },
+            upsert=True,
+        )
+    elif state_sysuptime:
+        targets_collection.update_one(
+            {"address": address},
+            {
+                "$set": {
+                    "sysUpTime": state_sysuptime,
+                    "sysUpTimeRollover": sysuptime_rollover_counter,
+                }
+            },
+            upsert=True,
+        )
+
+
 class EnrichTask(Task):
     def __init__(self):
         pass
@@ -116,7 +221,13 @@ def enrich(self, result):
     attribute_updates = []
 
     current_target = targets_collection.find_one(
-        {"address": address}, {"target": True, "sysUpTime": True}
+        {"address": address},
+        {
+            "target": True,
+            "sysUpTime": True,
+            "snmpEngineTime": True,
+            "sysUpTimeRollover": True,
+        },
     )
     if not current_target:
         logger.info(f"First time for {address}")
@@ -125,7 +236,7 @@ def enrich(self, result):
         logger.info(f"Not first time for {address}")
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
-    check_restart(
+    check_restart_or_rollover(
         current_target,
         result["result"],
         targets_collection,
