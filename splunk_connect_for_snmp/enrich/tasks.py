@@ -53,7 +53,7 @@ MAX_VAL_SYSUPTIME = 4294967295
 
 
 # check if sysUpTime decreased, if so trigger new walk
-def check_restart(current_target, result, targets_collection, address):
+def check_restart(current_target, result, targets_collection, address, poll_frequency):
     for group_key, group_dict in result.items():
         if "metrics" in group_dict and SYS_UP_TIME in group_dict["metrics"]:
             sysuptime = group_dict["metrics"][SYS_UP_TIME]
@@ -64,11 +64,13 @@ def check_restart(current_target, result, targets_collection, address):
             if "sysUpTime" in current_target:
                 old_value = current_target["sysUpTime"]["value"]
                 logger.debug(f"new_value = {new_value}  old_value = {old_value}")
-                poll_frequency = result.get("frequency", 300)
-                logger.debug(f"Rollover checks:\npoll_frequency = {poll_frequency}\nold_value = {old_value}\nnew_value = {new_value}")
+                logger.debug(
+                    f"Rollover checks: poll_frequency = {poll_frequency}, old_value = {old_value}, "
+                    f"new_value = {new_value}, difference = {MAX_VAL_SYSUPTIME-old_value}"
+                )
                 if (
                     int(new_value) < int(old_value)
-                    and (MAX_VAL_SYSUPTIME - old_value) < 2 * 100 * poll_frequency
+                    and (MAX_VAL_SYSUPTIME - old_value) < 3 * 100 * poll_frequency
                 ):
                     sysuptime_rollover_counter += 1
                 elif int(new_value) < int(old_value):
@@ -123,7 +125,13 @@ def enrich(self, result):
         logger.info(f"Not first time for {address}")
 
     # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
-    check_restart(current_target, result["result"], targets_collection, address)
+    check_restart(
+        current_target,
+        result["result"],
+        targets_collection,
+        address,
+        result.get("frequency", 300),
+    )
     rollovers = targets_collection.find_one(
         {"address": address}, {"sysUpTimeRollover": True}
     )
