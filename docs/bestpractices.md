@@ -72,3 +72,10 @@ worker:
 ```
 
 With the configuration from the above, walk will retry exponentially until it reaches 60 seconds.
+
+### SNMP Rollover
+The Rollover problem is that the integer value that they store (especially when they are 32-bit) is finite, 
+and when it’s reaching the maximum, it gets rolled down to 0 again which causes a strange drop in Analytics data.
+The most common case of this issue is interface speed on a high speed ports. As a solution to this problem, SNMPv2 SMI defined a new object type, counter64, for 64-bit counters ([read more about it](https://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/26007-faq-snmpcounter.html)).
+Not all the devices support it, but if they are - remember to always poll counter64 type OID instead of counter32 one. 
+For example, use `ifHCInOctets` instead of `ifInOctets`.
