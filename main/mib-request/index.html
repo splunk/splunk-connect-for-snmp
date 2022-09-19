@@ -579,6 +579,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#update-your-instance-of-sc4snmp-with-the-newest-mib-server" class="md-nav__link">
+    Update your instance of SC4SNMP with the newest MIB server
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -756,6 +763,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#update-your-instance-of-sc4snmp-with-the-newest-mib-server" class="md-nav__link">
+    Update your instance of SC4SNMP with the newest MIB server
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -798,6 +812,29 @@ there is no directory of vendors you need, create it by yourself)</p>
 <p>An alternative way of adding MIBs to the MIB server is to create an issue on 
 <a href="https://github.com/pysnmp/mibs">https://github.com/pysnmp/mibs</a> repository, attaching the files and information about 
 the vendor.</p>
+<h2 id="update-your-instance-of-sc4snmp-with-the-newest-mib-server">Update your instance of SC4SNMP with the newest MIB server<a class="headerlink" href="#update-your-instance-of-sc4snmp-with-the-newest-mib-server" title="Permanent link">&para;</a></h2>
+<p>Usually SC4SNMP is released with the newest version of MIB server every time the new MIB files were added.
+But, if you want to use the newest MIB server right after its released, you can do it manually via the <code>values.yaml</code> file.</p>
+<ol>
+<li>Append <code>mibserver</code> config to the values.yaml, with the <code>mibserver.image.tag</code> of a value of the newest <code>mibserver</code>, for ex.:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code><span class="n">mibserver</span><span class="o">:</span><span class="w"></span>
+<span class="w">  </span><span class="n">image</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">tag</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;1.14.5&quot;</span><span class="w"></span>
+</code></pre></div>
+
+<p>Check all of the MIB server releases <a href="https://github.com/pysnmp/mibs/releases">here</a>.</p>
+<ol start="2">
+<li>
+<p>Run <code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</code></p>
+</li>
+<li>
+<p>Restart worker-trap and worker-poller deployments:</p>
+</li>
+</ol>
+<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">rollout</span><span class="w"> </span><span class="nv">restart</span><span class="w"> </span><span class="nv">deployment</span><span class="w"> </span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">trap</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span><span class="w"></span>
+<span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">rollout</span><span class="w"> </span><span class="nv">restart</span><span class="w"> </span><span class="nv">deployment</span><span class="w"> </span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">poller</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span><span class="w"></span>
+</code></pre></div>
 
 
 
