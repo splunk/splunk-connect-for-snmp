@@ -176,6 +176,7 @@ snmp-mibserver-7f879c5b7c-hz9tz                               1/1     Running   
 snmp-mongodb-869cc8586f-vvr9f                                 2/2     Running   0          133m
 snmp-redis-master-0                                           1/1     Running   0          133m
 snmp-splunk-connect-for-snmp-trap-78759bfc8b-79m6d            1/1     Running   0          99m
+snmp-splunk-connect-for-snmp-inventory-mjccw                  0/1     Completed 0          6s
 ```
 
 ### Test SNMP Traps
