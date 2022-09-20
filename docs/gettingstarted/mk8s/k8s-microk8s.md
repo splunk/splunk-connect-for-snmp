@@ -53,7 +53,7 @@ The following commands can be issued from any one node in a cluster
 ```bash
 sudo systemctl enable iscsid
 microk8s enable helm3
-microk8s enable storage
+microk8s enable hostpath-storage
 microk8s enable rbac
 microk8s enable metrics-server
 microk8s status --wait-ready
