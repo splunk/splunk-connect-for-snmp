@@ -53,7 +53,7 @@ The following commands can be issued from any one node in a cluster
 ```bash
 sudo systemctl enable iscsid
 microk8s enable helm3
-microk8s enable storage
+microk8s enable hostpath-storage
 microk8s enable rbac
 microk8s enable metrics-server
 microk8s status --wait-ready
@@ -69,9 +69,9 @@ microk8s status --wait-ready
 
 ## Install Metallb
 
-Note: when installing metallb you will be prompted for one or more IPs to use as entry points
-Into the cluster. If your plan to enable clustering, this IP should not be assigned to the host (floats)
-If you do not plan to cluster, then this IP may be the same IP as the host
+Note: when installing Metallb you will be prompted for one or more IPs to use as entry points
+into the cluster. If your plan to enable clustering, this IP should not be assigned to the host (floats).
+If you do not plan to cluster, then this IP should be the IP of your host.
 
 Note2: a single IP in cidr format is x.x.x.x/32 use CIDR or range syntax for single server installations this can be
 the same as the primary ip.

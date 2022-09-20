@@ -27,3 +27,25 @@ there is no directory of vendors you need, create it by yourself)
 An alternative way of adding MIBs to the MIB server is to create an issue on 
 [https://github.com/pysnmp/mibs](https://github.com/pysnmp/mibs) repository, attaching the files and information about 
 the vendor.
+
+## Update your instance of SC4SNMP with the newest MIB server
+
+Usually SC4SNMP is released with the newest version of MIB server every time the new MIB files were added.
+But, if you want to use the newest MIB server right after its released, you can do it manually via the `values.yaml` file.
+
+1. Append `mibserver` config to the values.yaml, with the `mibserver.image.tag` of a value of the newest `mibserver`, for ex.:
+```
+mibserver:
+  image:
+    tag: "1.14.5"
+```
+Check all of the MIB server releases [here](https://github.com/pysnmp/mibs/releases).
+
+2. Run `microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace`
+
+3. Restart worker-trap and worker-poller deployments:
+
+```
+microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-trap -n sc4snmp
+microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-poller -n sc4snmp
+```
