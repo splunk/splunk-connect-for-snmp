@@ -72,3 +72,23 @@ worker:
 ```
 
 With the configuration from the above, walk will retry exponentially until it reaches 60 seconds.
+
+### SNMP Rollover
+The Rollover problem is that the integer value that they store (especially when they are 32-bit) is finite, 
+and when it’s reaching the maximum, it gets rolled down to 0 again which causes a strange drop in Analytics data.
+The most common case of this issue is interface speed on a high speed ports. As a solution to this problem, SNMPv2 SMI defined a new object type, counter64, for 64-bit counters ([read more about it](https://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/26007-faq-snmpcounter.html)).
+Not all the devices support it, but if they are - remember to always poll counter64 type OID instead of counter32 one. 
+For example, use `ifHCInOctets` instead of `ifInOctets`.
+
+If 64-bit counter are not supported on your device, you can write own splunk queries that calculate the shift based on
+maximum integer value + current state. The same works for values big enough that they're not fitting 64-bit value.
+An example for a SPLUNK query like that (inteface counter), would be:
+
+```
+| streamstats current=f last(ifInOctets) as p_ifInOctets last(ifOutOctets) as p_ifOutOctets by ifAlias             
+| eval in_delta=(ifInOctets - p_ifInOctets)
+| eval out_delta=(ifOutOctets - p_ifOutOctets)
+| eval max=pow(2,64)
+| eval out = if(out_delta<0,((max+out_delta)*8/(5*60*1000*1000*1000)),(out_delta)*8/(5*60*1000*1000*1000))
+| timechart span=5m avg(in) AS in, avg(out) AS out by ifAlias
+```
