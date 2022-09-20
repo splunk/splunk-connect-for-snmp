@@ -265,6 +265,7 @@ traps:
     runAsGroup: 10001
 
   service:
+    annotations: {}
     usemetallb: true
     metallbsharingkey: "splunk-connect"
     type: LoadBalancer
