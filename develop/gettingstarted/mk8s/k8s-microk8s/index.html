@@ -637,6 +637,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../offlineinstallation/offline-microk8s/" class="md-nav__link">
+        Install Microk8s
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../offlineinstallation/offline-sck/" class="md-nav__link">
         Install Splunk OpenTelemetry Collector for Kubernetes
       </a>
@@ -754,7 +768,7 @@ su - <span class="nv">$USER</span>
 <p>The following commands can be issued from any one node in a cluster</p>
 <div class="codehilite"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> iscsid
 microk8s <span class="nb">enable</span> helm3
-microk8s <span class="nb">enable</span> storage
+microk8s <span class="nb">enable</span> hostpath-storage
 microk8s <span class="nb">enable</span> rbac
 microk8s <span class="nb">enable</span> metrics-server
 microk8s status --wait-ready
@@ -767,9 +781,9 @@ microk8s status --wait-ready
 </code></pre></div>
 
 <h2 id="install-metallb">Install Metallb<a class="headerlink" href="#install-metallb" title="Permanent link">&para;</a></h2>
-<p>Note: when installing metallb you will be prompted for one or more IPs to use as entry points
-Into the cluster. If your plan to enable clustering, this IP should not be assigned to the host (floats)
-If you do not plan to cluster, then this IP may be the same IP as the host</p>
+<p>Note: when installing Metallb you will be prompted for one or more IPs to use as entry points
+into the cluster. If your plan to enable clustering, this IP should not be assigned to the host (floats).
+If you do not plan to cluster, then this IP should be the IP of your host.</p>
 <p>Note2: a single IP in cidr format is x.x.x.x/32 use CIDR or range syntax for single server installations this can be
 the same as the primary ip.</p>
 <div class="codehilite"><pre><span></span><code>microk8s <span class="nb">enable</span> metallb
