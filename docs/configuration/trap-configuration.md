@@ -110,7 +110,7 @@ Log level for trap can be set by changing the value for key `logLevel`. Allowed 
 The default value is `WARNING`
 
 ### Define annotations
-In case you need to append some annotations to trap service, you can do it by setting `traps.service.annotations`, for ex.:
+In case you need to append some annotations to the `trap` service, you can do it by setting `traps.service.annotations`, for ex.:
 
 ```yaml
 traps:
