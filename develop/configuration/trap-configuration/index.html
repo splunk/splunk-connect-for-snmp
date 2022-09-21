@@ -501,6 +501,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#define-annotations" class="md-nav__link">
+    Define annotations
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -842,6 +849,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#define-annotations" class="md-nav__link">
+    Define annotations
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -939,7 +953,7 @@ Example:</p>
 <p><code>replicaCount</code> Defines the number of replicas for trap container should be 2x number of nodes. The default value is <code>2</code>. 
 Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="c1">#For production deployments the value should be 2x the number of nodes</span><span class="w"></span>
+<span class="w">  </span><span class="c1">#For production deployments the value should be at least 2x the number of nodes</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Minimum 2 for a single node</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Minimum 6 for multi-node HA</span><span class="w"></span>
 <span class="w">  </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
@@ -948,6 +962,13 @@ Example:</p>
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
 <p>Log level for trap can be set by changing the value for key <code>logLevel</code>. Allowed values are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
 The default value is <code>WARNING</code></p>
+<h3 id="define-annotations">Define annotations<a class="headerlink" href="#define-annotations" title="Permanent link">&para;</a></h3>
+<p>In case you need to append some annotations to the <code>trap</code> service, you can do it by setting <code>traps.service.annotations</code>, for ex.:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">annotation_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">annotation_value</span><span class="w"></span>
+</code></pre></div>
 
 
 

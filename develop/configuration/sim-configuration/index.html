@@ -498,9 +498,40 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Splunk Infrastructure Monitoring
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Splunk Infrastructure Monitoring
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#define-annotations" class="md-nav__link">
+    Define annotations
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -714,6 +745,21 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#define-annotations" class="md-nav__link">
+    Define annotations
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -753,6 +799,14 @@ In order to use it, you must set <code>enabled</code> flag in <code>values.yaml<
 <span class="l l-Scalar l-Scalar-Plain">snmp-redis-master-0                                           1/1     Running   0          133m</span><span class="w"></span>
 <span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-trap-78759bfc8b-79m6d            1/1     Running   0          99m</span><span class="w"></span>
 <span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-sim-59b89747f-kn6tf              1/1     Running   0          32s</span><span class="w"></span>
+</code></pre></div>
+
+<h3 id="define-annotations">Define annotations<a class="headerlink" href="#define-annotations" title="Permanent link">&para;</a></h3>
+<p>In case you need to append some annotations to the <code>sim</code> service, you can do it by setting <code>sim.service.annotations</code>, for ex.:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">annotation_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">annotation_value</span><span class="w"></span>
 </code></pre></div>
 
 
