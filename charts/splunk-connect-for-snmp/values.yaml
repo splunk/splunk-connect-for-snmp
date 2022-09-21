@@ -200,11 +200,11 @@ sim:
     enabled: false
 
   podSecurityContext:
-    allowPrivilegeEscalation: false
     fsGroup: 10001
   ingress:
     enabled: false
   securityContext:
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - ALL
