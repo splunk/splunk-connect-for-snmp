@@ -10,6 +10,9 @@ metadata:
     {{- if .Values.sim.service.annotations }}
 {{ toYaml .Values.sim.service.annotations | indent 4 }}
     {{- end }}
+  {{- if .Values.commonAnnotations }}
+{{ toYaml .Values.commonAnnotations| indent 4 }}
+  {{- end }}
 spec:
   type: ClusterIP
   ports:
