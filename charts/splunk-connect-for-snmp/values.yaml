@@ -200,6 +200,7 @@ sim:
     enabled: false
 
   podSecurityContext:
+    allowPrivilegeEscalation: false
     fsGroup: 10001
   ingress:
     enabled: false
@@ -231,6 +232,9 @@ sim:
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
     name: ""
+
+  service:
+    annotations: {}
 traps:
   replicaCount: 2
   usernameSecrets: []

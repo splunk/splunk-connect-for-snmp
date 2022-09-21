@@ -7,6 +7,9 @@ metadata:
     {{- include "splunk-connect-for-snmp.sim.labels" . | nindent 4 }}
   annotations:
     metallb.universe.tf/allow-shared-ip: "true"
+    {{- if .Values.sim.service.annotations }}
+{{ toYaml .Values.sim.service.annotations | indent 4 }}
+    {{- end }}
 spec:
   type: ClusterIP
   ports:
