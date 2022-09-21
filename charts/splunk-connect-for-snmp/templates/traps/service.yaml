@@ -9,7 +9,7 @@ metadata:
     metallb.universe.tf/allow-shared-ip: {{ .Values.traps.service.metallbsharingkey | default "splunk-connect" | quote }}
   {{- end }}
   {{- if .Values.traps.service.annotations }}
-    {{ .Values.traps.service.annotations | toYaml }}}
+    {{ .Values.traps.service.annotations }}}
   {{- end }}
     
 spec:
