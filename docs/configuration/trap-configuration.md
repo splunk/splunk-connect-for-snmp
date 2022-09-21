@@ -99,7 +99,7 @@ traps:
 Example:
 ```yaml
 traps:
-  #For production deployments the value should be 2x the number of nodes
+  #For production deployments the value should be at least 2x the number of nodes
   # Minimum 2 for a single node
   # Minimum 6 for multi-node HA
   replicaCount: 2
@@ -108,3 +108,13 @@ traps:
 ### Define log level
 Log level for trap can be set by changing the value for key `logLevel`. Allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
 The default value is `WARNING`
+
+### Define annotations
+In case you need to append some annotations to trap service, you can do it by setting `traps.service.annotations`, for ex.:
+
+```yaml
+traps:
+  service:
+    annotations:
+      annotation_key: annotation_value
+```
