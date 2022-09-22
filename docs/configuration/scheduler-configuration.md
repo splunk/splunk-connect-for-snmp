@@ -1,11 +1,11 @@
 # Scheduler configuration
-The scheduler is a service with is responsible for managing schedules for SNMP walks and GETs. Schedules definition 
+The scheduler service is responsible for managing schedules for SNMP walks and GETs. Schedule definitions
 are stored in Mongo DB. 
  
 ### Scheduler configuration file
 
-Scheduler configuration is kept in `values.yaml` file in section `scheduler`.
-`values.yaml` is being used during the installation process for configuring Kubernetes values.
+The scheduler configuration is kept in the `values.yaml` file in the 'scheduler' section.
+`values.yaml` is used during the installation process for configuring Kubernetes values.
 
 Example:
 ```yaml
@@ -25,14 +25,14 @@ scheduler:
 ```
 
 ### Define log level
-Log level for scheduler can be set by changing the value for key `logLevel`. Allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
-The default value is `WARNING`
+The log level for the scheduler can be set by changing the value OF the `logLevel` key. The allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
+The default value is `WARNING`.
 
 ### Define resource requests and limits
 ```yaml
 scheduler:
-  #The following resource specification is appropriate for most deployments to scale the
-  #Larger inventories may require more memory but should not require additional cpu
+  #The following resource specification is appropriate for most deployments to scale. 
+  #Larger inventories may require more memory, but should not require additional CPU
   resources:
     limits:
         cpu: 1
@@ -43,7 +43,7 @@ scheduler:
 ```
 
 ### Define groups of hosts
-To get the general idea when groups are useful see [Configuring Groups](configuring-groups.md).
+For more details on when to use groups, see: [Configuring Groups](configuring-groups.md).
 
 Example group configuration:
 ```yaml
@@ -66,6 +66,6 @@ scheduler:
         port: 999
 ```
 
-The one obligatory field for the host configuration is `address`. If `port` isn't configured its default value is `161`. 
-Other fields that can be modified here are: `community`, `secret`, `version`, `security_engine`.
-However, if they remain unspecified in the host configuration, they will be derived from the inventory record regarding this specific group.
+The one obligatory field for the host configuration is `address`. If `port` isn't configured, its default value is `161`. 
+Other fields that can be modified here are: `community`, `secret`, `version`, and `security_engine`.
+However, if they remain unspecified in the host configuration, they will be derived from the inventory record for this specific group.
