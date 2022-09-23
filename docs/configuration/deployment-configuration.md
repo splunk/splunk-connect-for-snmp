@@ -40,3 +40,10 @@ All the components have the `resources` field for adjusting memory resources:
       memory: 2Gi
 ```
 More information about the concept of `resources` can be found in the [kuberentes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+
+There is an option to create common annotations across all the services. It can be set by:
+
+```yaml
+commonAnnotations:
+  annotation_key: annotation_value
+```

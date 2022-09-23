@@ -34,3 +34,13 @@ snmp-redis-master-0                                           1/1     Running   
 snmp-splunk-connect-for-snmp-trap-78759bfc8b-79m6d            1/1     Running   0          99m
 snmp-splunk-connect-for-snmp-sim-59b89747f-kn6tf              1/1     Running   0          32s
 ```
+
+### Define annotations
+In case you need to append some annotations to the `sim` service, you can do it by setting `sim.service.annotations`, for ex.:
+
+```yaml
+sim:
+  service:
+    annotations:
+      annotation_key: annotation_value
+```

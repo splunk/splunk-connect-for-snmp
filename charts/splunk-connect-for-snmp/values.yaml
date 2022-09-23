@@ -204,6 +204,7 @@ sim:
   ingress:
     enabled: false
   securityContext:
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - ALL
@@ -231,6 +232,9 @@ sim:
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
     name: ""
+
+  service:
+    annotations: {}
 traps:
   replicaCount: 2
   usernameSecrets: []
@@ -265,6 +269,7 @@ traps:
     runAsGroup: 10001
 
   service:
+    annotations: {}
     usemetallb: true
     metallbsharingkey: "splunk-connect"
     type: LoadBalancer
@@ -373,3 +378,4 @@ redis:
   architecture: standalone
   auth:
     enabled: false
+commonAnnotations: {}
