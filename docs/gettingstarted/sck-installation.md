@@ -6,7 +6,7 @@ You can do the same using the `microk8s kubectl logs` command on instances you'r
 Splunk OpenTelemetry Collector for Kubernetes is strongly advised.
 
 The below steps are sufficient for a Splunk OpenTelemetry Collector installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud.
-In order to learn more about Splunk OpenTelemetry Collector visit [Splunk OpenTelemetry Collector](https://github.com/signalfx/splunk-otel-collector-chart).
+In order to learn more about Splunk OpenTelemetry Collector, visit [Splunk OpenTelemetry Collector](https://github.com/signalfx/splunk-otel-collector-chart).
 
 ### Offline installation
 
@@ -60,6 +60,7 @@ microk8s helm3 upgrade --install sck \
 ## Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes
 
 To run Splunk OpenTelemetry Collector on your environment, replace the `<>` variables according to the description presented below:
+
 
 ```bash
 microk8s helm3 upgrade --install sck

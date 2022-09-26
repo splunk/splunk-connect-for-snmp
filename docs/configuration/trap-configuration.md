@@ -3,8 +3,8 @@ A trap service is a simple server that can handle SNMP traps sent by SNMP device
 
 ### Trap configuration file
 
-Trap configuration is kept in `values.yaml` file in section traps.
-`values.yaml` is being used during the installation process for configuring Kubernetes values.
+The trap configuration is kept in the `values.yaml` file in section traps.
+`values.yaml` is used during the installation process for configuring Kubernetes values.
 
 Trap example configuration:
 ```yaml
@@ -35,8 +35,8 @@ traps:
 ```
 
 ### Define communities 
-`communities` define a version of SNMP protocol and SNMP community string which should be used. 
-`communities` key is split by protocol version, supported values are `1` and `2c`. Under `version` section, SNMP community string can be defined. 
+`communities` define a version of SNMP protocol and SNMP community string, which should be used. 
+`communities` key is split by protocol version, supported values are `1` and `2c`. Under the `version` section, SNMP community string can be defined. 
 
 Example: 
 ```yaml
@@ -50,9 +50,9 @@ traps:
 ```
 
 ### Configure user secrets for SNMPv3 
-`usernameSecrets` key in the `traps` section define SNMPv3 secrets for trap messages sent by SNMP device. `usernameSecrets` define which secrets 
-in "Secret" objects in k8s should be used, as a value it needs to put the name of "Secret" objects. 
-More information on how to define the "Secret" object for SNMPv3 can be found in [SNMPv3 Configuration](snmpv3-configuration.md)
+The `usernameSecrets` key in the `traps` section define SNMPv3 secrets for trap messages sent by SNMP device. `usernameSecrets` define which secrets 
+in "Secret" objects in k8s should be used, as a value it needs the name of "Secret" objects. 
+More information on how to define the "Secret" object for SNMPv3 can be found in [SNMPv3 Configuration](snmpv3-configuration.md).
 
 Example:
 ```yaml
@@ -64,9 +64,9 @@ traps:
 
 ### Define security engines ID for SNMPv3
 
-SNMPv3 TRAPs mandate you configuring SNMP Engine ID of the TRAP sending application to USM users table of TRAP receiving 
-application for each USM user. It is usually unique per the device, and SC4SNMP as a trap receiver has to be aware of 
-which security engine ids to accept. Define all of them under `traps.securityEngineId` in `values.yaml`.
+SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table of the TRAP receiving 
+application for each USM user. The SNMP Engine ID is usually unique for the device, and the SC4SNMP as a trap receiver has to be aware of 
+which security engine IDs to accept. Define all of them under `traps.securityEngineId` in `values.yaml`.
 
 By default, it is set to one-element list: `[80003a8c04]`. 
 
@@ -77,7 +77,7 @@ traps:
       - "80003a8c04"
 ```
 
-Security engine id is a substitute of `-e` variable in `snmptrap`.
+Security engine ID is a substitute of the `-e` variable in `snmptrap`.
 An example of SNMPv3 trap is:
 
 ```yaml
@@ -95,7 +95,7 @@ traps:
 ```
 
 ### Define number of traps server replica
-`replicaCount` Defines the number of replicas for trap container should be 2x number of nodes. The default value is `2`. 
+`replicaCount` defines that the number of replicas for trap container should be 2x number of nodes. The default value is `2`. 
 Example:
 ```yaml
 traps:
@@ -106,11 +106,11 @@ traps:
 ```
 
 ### Define log level
-Log level for trap can be set by changing the value for key `logLevel`. Allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
-The default value is `WARNING`
+The log level for trap can be set by changing the value for the `logLevel` key. The allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
+The default value is `WARNING`.
 
 ### Define annotations
-In case you need to append some annotations to the `trap` service, you can do it by setting `traps.service.annotations`, for ex.:
+In case you need to append some annotations to the `trap` service, you can do so by setting `traps.service.annotations`, for ex.:
 
 ```yaml
 traps:

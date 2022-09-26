@@ -1,7 +1,7 @@
 # Offline Microk8s installation issues
 
 Offline installation of Microk8s is described [here](https://microk8s.io/docs/install-alternatives#heading--offline), but
-there are steps that you need to execute additionally in order to successfully install microk8s offline. 
+there are additional steps to install microk8s offline. 
 
 ## Importing images
 
@@ -18,19 +18,19 @@ You should check if the microk8s instance is healthy. Do it with:
 microk8s kubectl get pods -A
 ```
 
-The output most probably will look like:
+The output will probably look like:
 ```
 NAMESPACE      NAME                                       READY   STATUS     RESTARTS   AGE
 kube-system    calico-kube-controllers-7c9c8dd885-fg8f2   0/1     Pending    0          14m
 kube-system    calico-node-zg4c4                          0/1     Init:0/3   0          23s
 ```
 
-The pods are in `Pending`/`Init` state because they're trying to download images, what is impossible to do offline.
-In order to make them work you need to download all the images on a different server with an internet connection, pack it up and
-import to microk8s image registry on your offline server.
+The pods are in the `Pending`/`Init` state because they're trying to download images, which is impossible to do offline.
+In order to make them work you need to download all the images on a different server with an internet connection, pack it up, and
+import it to a microk8s image registry on your offline server.
 
-Also, the addons we enable through `microk8s enable {addon}` needs some images to work.
-For example, `microk8s` version `3597` requires this images to work correctly:
+Also, the add-ons we enable through `microk8s enable {addon}` need some images to work.
+For example, `microk8s` version `3597` requires these images to work correctly:
 
 ```commandline
 docker pull docker.io/calico/kube-controllers:v3.21.4 
@@ -65,7 +65,7 @@ microk8s ctr image import pause.tar
 microk8s ctr image import metrics.tar
 ```
 
-NOTE: for other versions of `microk8s`, tags of images may differ. You need to monitor 
+NOTE: for other versions of `microk8s`, tags of images may differ. You need to monitor
 
 ```commandline
 microk8s kubectl get events -A
@@ -78,7 +78,7 @@ kube-system    0s          Warning   Failed              pod/calico-node-sc784  
 kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Error: ErrImagePull
 ```
 
-This shows you that you lack `docker.io/calico/cni:v3.21.4` image, and need to import it in order to fix the issue.
+This shows you that you lack a `docker.io/calico/cni:v3.21.4` image, and need to import it in order to fix the issue.
 
 
 The healthy instance of microk8s, after running:
@@ -101,9 +101,9 @@ kube-system    metrics-server-5f8f64cb86-x7k29            1/1     Running       
 
 ## Installing helm3
 
-The additional problem is the installation of `helm3` addon. You need to do a few things to make it work.
+The additional problem is the installation of `helm3` add-on. You need to do a few things to make it work.
 
-1. Check what is your server's platform with:
+1. Check your server's platform with:
 
 ```commandline
 dpkg --print-architecture
@@ -112,7 +112,7 @@ dpkg --print-architecture
 The output would be for ex.: `amd64`.
 You need the platform to download the correct version of helm.
 
-2. Download the helm package from `https://get.helm.sh/helm-v3.8.0-linux-{{arch}}.tar.gz` where `{{arch}}` should be 
+2. Download the helm package from `https://get.helm.sh/helm-v3.8.0-linux-{{arch}}.tar.gz`, where `{{arch}}` should be 
 replaced with the result from the previous command. Example: `https://get.helm.sh/helm-v3.8.0-linux-amd64.tar.gz`
 
 3. Rename package to `helm.tar.gz` and send it to an offline lab.
@@ -139,7 +139,7 @@ Save file.
 
 6. Run `microk8s enable helm3`
 
-7. Check if `helm3` was successfully installed with command: `microk8s status --wait-ready`. An example of
+7. Check if `helm3` was successfully installed with the command: `microk8s status --wait-ready`. An example of
 a correct output is:
 
 ```commandline

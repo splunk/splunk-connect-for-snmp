@@ -7,10 +7,10 @@ We have 4 hosts we want to poll from:
 3. `10.202.4.203:161`
 4. `10.202.4.204:163`
    
-Let's say, that we're interested mostly in information about interfaces and some CPU related data. For this purposes,
-we need to configure `IF-MIB` family for interfaces, and `UCD-SNMP-MIB` for the CPU.
+Let's say that we're interested mostly in information about interfaces and some CPU related data. For this purposes,
+we need to configure the `IF-MIB` family for interfaces, and `UCD-SNMP-MIB` for the CPU.
 
-We'll do two things under `scheduler` section: define the group from which we want to poll, and the profile of what exactly will be polled:
+We'll do two things under the `scheduler` section: define the group from which we want to poll, and the profile of what exactly will be polled:
 
 ```yaml
 scheduler:
@@ -92,7 +92,7 @@ Successfully connected to http://snmp-mibserver/index.csv
 {"message": "New Record address='10.202.4.204' port=163 version='2c' community='public' secret=None security_engine=None walk_interval=2000 profiles=['switch_profile'] smart_profiles=True delete=False", "time": "2022-09-05T14:30:30.607641", "level": "INFO"}
 ```
 
-In some time (depending of how long does the walk takes), we'll see events under:
+In some time (depending of how long the walk takes), we'll see events under:
 
 ```yaml
 | mpreview index=netmetrics | search profiles=switch_profile
@@ -104,8 +104,8 @@ query in Splunk. When groups are used, we can also use querying by the group nam
 | mpreview index=netmetrics | search group=switch_group
 ```
 
-Keep in mind, that querying by profiles/group in Splunk is only possible in metrics index. Every piece of data being sent
-by SC4SNMP is formed based on MIB file's definition of the SNMP object's index. The object is forwarded to an event index only if it doesn't have any metric value inside.
+Keep in mind, that querying by profiles/group in Splunk is only possible in the metrics index. Every piece of data being sent
+by SC4SNMP is formed based on the MIB file's definition of the SNMP object's index. The object is forwarded to an event index only if it doesn't have any metric value inside.
 
 The `raw` metrics in Splunk example is:
 
