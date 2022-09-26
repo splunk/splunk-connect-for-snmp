@@ -3,8 +3,8 @@ Mongo DB is used as the database for keeping schedules.
 
 ### Mongo DB configuration file
 
-Mongo DB configuration is kept in `values.yaml` file in section `mongodb`.
-`values.yaml` is being used during the installation process for configuring kubernetes values.
+Mongo DB configuration is kept in the `values.yaml` file in the `mongodb` section.
+`values.yaml` is used during the installation process for configuring kubernetes values.
 
 Example:
 ```yaml
@@ -30,4 +30,4 @@ mongodb:
     enabled: true
 ```
 
-The recommendation is to do not change this setting. In case of need to change it please follow documentation: [MongoDB on Kubernetes](https://github.com/bitnami/charts/tree/master/bitnami/mongodb/)  
+It is recommended not to change this setting. If it is necessary to change it, see: [MongoDB on Kubernetes](https://github.com/bitnami/charts/tree/master/bitnami/mongodb/)  
