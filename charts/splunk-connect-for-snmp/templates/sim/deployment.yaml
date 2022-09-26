@@ -17,7 +17,7 @@ spec:
       {{- with .Values.sim.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
-        checksum/config: {{ include (print $.Chart.Name "../common/" "sim-secret.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/common/sim-secret.yaml") . | sha256sum }}
       {{- end }}
       labels:
         {{- include "splunk-connect-for-snmp.sim.selectorLabels" . | nindent 8 }}
