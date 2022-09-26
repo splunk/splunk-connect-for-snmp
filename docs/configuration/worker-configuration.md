@@ -1,21 +1,21 @@
 # Worker Configuration
-The `worker` is a kubernetes pod which is responsible for the actual execution of polling, processing trap messages and sending 
+The `worker` is a kubernetes pod which is responsible for the actual execution of polling, processing trap messages, and sending 
 data to Splunk.
 
 ### Worker types
 
 SC4SNMP has two base functionalities: monitoring traps and polling. These operations are handled by 3 types of workers:
 
-1. `trap` worker consumes all the trap related tasks produced by the trap pod. 
+1. The `trap` worker consumes all the trap related tasks produced by the trap pod. 
 
-2. `poller` worker consumes all the tasks related to polling.
+2. The `poller` worker consumes all the tasks related to polling.
 
-3. `sender` worker handles sending data to splunk. You need to always have at least one sender pod running.
+3. The `sender` worker handles sending data to Splunk. You need to always have at least one sender pod running.
 
 ### Worker configuration file
 
-Worker configuration is kept in `values.yaml` file in the `worker` section. `worker` has 3 subsections: `poller`, `sender` or `trap`, that refer to the workers' types.
-`values.yaml` is being used during the installation process for configuring Kubernetes values.
+Worker configuration is kept in the `values.yaml` file in the `worker` section. `worker` has 3 subsections: `poller`, `sender`, or `trap`, that refer to the workers' types.
+`values.yaml` is used during the installation process for configuring Kubernetes values.
 The `worker` default configuration is:
 
 ```yaml
@@ -53,20 +53,18 @@ worker:
   logLevel: "INFO"
 ```
 
-All parameters are described in [Worker parameters](#worker-parameters) section.
+All parameters are described in the [Worker parameters](#worker-parameters) section.
 
 
 ### Worker scaling
 
-You can adjust number of worker pods to your needs in two ways: setting fixed value in `replicaCount`
-or enabling `autoscaling` which scales pods automatically. 
+You can adjust worker pods in two ways: set fixed value in `replicaCount`,
+or enable `autoscaling`, which scales pods automatically. 
 
-#### Real life scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively
+#### Real life scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively.
 
-If you don't use polling at all, would be the best to set `worker.poller.replicaCount` to `0`.
-Remember, that if you'll want to use polling in the future you need to increase `replicaCount`,
-otherwise it won't work. To monitor traps, adjust `worker.trap.replicaCount` depending on your needs
-and `worker.sender.replicaCount` to send traps to splunk. Usually you need much less sender pods than trap ones.
+If you don't use polling at all, set `worker.poller.replicaCount` to `0`.
+If you'll want to use polling in the future, you need to increase `replicaCount`. To monitor traps, adjust `worker.trap.replicaCount` depending on your needs and `worker.sender.replicaCount` to send traps to Splunk. Usually you need much less sender pods than trap ones.
 
 This is the example of `values.yaml` without using autoscaling:
 
@@ -102,9 +100,9 @@ worker:
   logLevel: "WARNING"
 ```
 
-In the example above both trap and sender pods are autoscaled. During an upgrade process
-`minReplicas` number of pods is created, and then new ones are created only if CPU threshold
-exceeds `targetCPUUtilizationPercentage` which by default is 80%. This solution helps you to keep 
+In the example above both trap and sender pods are autoscaled. During an upgrade process, the number of pods is created through
+`minReplicas`, and then new ones are created only if the CPU threshold
+exceeds the `targetCPUUtilizationPercentage`, which by default is 80%. This solution helps you to keep 
 resources usage adjusted to what you actually need. 
 
 After helm upgrade process, you will see `horizontalpodautoscaler` in `microk8s kubectl get all -n sc4snmp`:
@@ -116,15 +114,15 @@ horizontalpodautoscaler.autoscaling/snmp-splunk-connect-for-snmp-worker-sender  
 horizontalpodautoscaler.autoscaling/snmp-splunk-connect-for-snmp-worker-trap     Deployment/snmp-splunk-connect-for-snmp-worker-trap     1%/80%    4         10        4          28m
 ```
 
-If you see `<unknown>/80%` in `TARGETS` section instead of the CPU percentage, you probably don't have `metrics-server` addon enabled.
-Enable it using: `microk8s enable metrics-server`.
+If you see `<unknown>/80%` in `TARGETS` section instead of the CPU percentage, you probably don't have the `metrics-server` add-on enabled.
+Enable it using `microk8s enable metrics-server`.
 
 
 #### Real life scenario: I have a significant delay in polling
 
 Sometimes when polling is configured to be run frequently and on many devices, workers get overloaded 
-and there is a delay in delivering data to splunk. To avoid such situations we can scale poller and sender pods.
-Because of the walk cycles (walk is a costly operation ran once for a while), poller workers require more resources 
+and there is a delay in delivering data to Splunk. To avoid such situations, we can scale poller and sender pods.
+Because of the walk cycles (walk is a costly operation ran once in a while), poller workers require more resources 
 for a short time. For this reason, enabling autoscaling is recommended. 
 
 This is the example of `values.yaml` with autoscaling:
@@ -153,7 +151,7 @@ worker:
 ```
 
 Remember, that the system won't scale itself infinitely, there is a finite amount of resources that you can allocate.
-By default, every worker has configured following resources:
+By default, every worker has configured the following resources:
 
 ```yaml
     resources:
@@ -167,12 +165,12 @@ By default, every worker has configured following resources:
 #### I have autoscaling enabled and experience problems with Mongo and Redis pod
 
 If MongoDB and Redis pods are crushing, and some of the pods are in infinite `Pending` state, that means 
-you're over your resources and SC4SNMP cannot scale more. You should decrease number of `maxReplicas` in 
-workers, so that it's not going beyond available CPU.
+you're over your resources and SC4SNMP cannot scale more. You should decrease the number of `maxReplicas` in 
+workers, so that it's not going beyond the available CPU.
 
 #### I don't know how to set autoscaling parameters and how many replicas I need
 
-The best way to see if pods are overloaded is to run command:
+The best way to see if pods are overloaded is to run:
 
 ```yaml
 microk8s kubectl top pods -n sc4snmp
