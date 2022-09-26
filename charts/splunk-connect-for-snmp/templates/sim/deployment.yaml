@@ -14,11 +14,11 @@ spec:
       {{- include "splunk-connect-for-snmp.sim.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.sim.podAnnotations }}
       annotations:
+      {{- with .Values.sim.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-        checksum/config: {{ include (print $.Template.BasePath "/common/sim-secret.yaml") . | sha256sum }}
       {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/common/sim-secret.yaml") . | sha256sum }}
       labels:
         {{- include "splunk-connect-for-snmp.sim.selectorLabels" . | nindent 8 }}
     spec:
