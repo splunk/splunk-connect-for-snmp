@@ -13,7 +13,7 @@ sim:
 
 You need to specify Splunk Observability Cloud token and realm. There are two ways of configuring them:
 
-1. Pass those in a plain text via `values.yaml` so at the end sim element in looks like this:
+1. Pass those in a plain text via `values.yaml` so at the end sim element looks like this:
 
 ```yaml
 sim:
@@ -40,6 +40,11 @@ sim:
     create: false
     name: signalfx
 ```
+
+Note: After the initial installation, if you change `sim.signalfxToken` and/or `sim.signalfxRealm` and no `sim.secret.name` is given, 
+the `sim` pod will sense the update by itself (after `helm3 upgrade` command) and trigger the recreation. But, when you edit secret created outside
+of `values.yaml` (given by `sim.secret.name`), you need to roll out the deployment by yourself or delete the pod to update the data.
+
 
 ### Define annotations
 In case you need to append some annotations to the `sim` service, you can do it by setting `sim.service.annotations`, for ex.:
