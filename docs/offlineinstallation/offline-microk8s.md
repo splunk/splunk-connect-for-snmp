@@ -8,8 +8,8 @@ there are steps that you need to execute additionally in order to successfully i
 After running:
 
 ```
-snap ack core_{microk8s_version}.assert
-snap install core_{microk8s_version}.snap
+snap ack microk8s_{microk8s_version}.assert
+snap install microk8s_{microk8s_version}.snap --classic
 ```
 
 You should check if the microk8s instance is healthy. Do it with:
@@ -139,7 +139,14 @@ Save file.
 
 6. Run `microk8s enable helm3`
 
-7. Check if `helm3` was successfully installed with command: `microk8s status --wait-ready`. An example of
+7. Enable `dns` and `metallb` (more on `metallb` [here](../gettingstarted/mk8s/k8s-microk8s.md#install-metallb)):
+
+```yaml
+microk8s enable dns
+microk8s enable metallb
+```
+
+8. Check if `helm3` was successfully installed with command: `microk8s status --wait-ready`. An example of
 a correct output is:
 
 ```commandline
@@ -149,22 +156,22 @@ high-availability: no
   datastore standby nodes: none
 addons:
   enabled:
+    dns                  # (core) CoreDNS
     ha-cluster           # (core) Configure high availability on the current node
     helm3                # (core) Helm 3 - Kubernetes package manager
     hostpath-storage     # (core) Storage class; allocates storage from host directory
+    metallb              # (core) Loadbalancer for your Kubernetes cluster
     metrics-server       # (core) K8s Metrics Server for API access to service metrics
     rbac                 # (core) Role-Based Access Control for authorisation
     storage              # (core) Alias to hostpath-storage add-on, deprecated
   disabled:
     community            # (core) The community addons repository
     dashboard            # (core) The Kubernetes dashboard
-    dns                  # (core) CoreDNS
     gpu                  # (core) Automatic enablement of Nvidia CUDA
     helm                 # (core) Helm 2 - the package manager for Kubernetes
     host-access          # (core) Allow Pods connecting to Host services smoothly
     ingress              # (core) Ingress controller for external access
     mayastor             # (core) OpenEBS MayaStor
-    metallb              # (core) Loadbalancer for your Kubernetes cluster
     prometheus           # (core) Prometheus operator for monitoring and logging
     registry             # (core) Private image registry exposed on localhost:32000
 ```
