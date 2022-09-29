@@ -849,7 +849,7 @@ then save it to <code>tar</code> packages:</p>
 
 <p>This shows you that you lack <code>docker.io/calico/cni:v3.21.4</code> image, and need to import it in order to fix the issue.</p>
 <p>The healthy instance of microk8s, after running:</p>
-<div class="codehilite"><pre><span></span><code>microk8s enable storage
+<div class="codehilite"><pre><span></span><code>microk8s enable hostpath-storage
 microk8s enable rbac
 microk8s enable metrics-server
 </code></pre></div>
