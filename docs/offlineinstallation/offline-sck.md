@@ -2,11 +2,17 @@
 
 ## Local machine with internet access
 
-To install Splunk OpenTelemetry Collector offline first one must download packed chart `splunk-otel-collector-<tag>.tgz` 
-from github release where `<tag>` is the current OpenTelemetry release tag. This package must be later moved to the installation server.
+To install Splunk OpenTelemetry Collector offline first one must download packed chart `splunk-otel-collector-<tag>.tgz` and the otel image `otel_image.tar`
+from github release where `<tag>` is the current OpenTelemetry release tag. Both packages must be later moved to the installation server.
 
 ## Installation on the server
  
+Otel image has to be imported to the `microk8s` registry with:
+
+```bash
+microk8s ctr image import otel_image.tar 
+```
+
 Imported package must be unpacked with the following command :
 
 ```bash
