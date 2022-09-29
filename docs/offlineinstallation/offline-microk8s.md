@@ -84,7 +84,7 @@ This shows you that you lack `docker.io/calico/cni:v3.21.4` image, and need to i
 The healthy instance of microk8s, after running:
 
 ```commandline
-microk8s enable storage
+microk8s enable hostpath-storage
 microk8s enable rbac
 microk8s enable metrics-server
 ```
