@@ -854,9 +854,13 @@
 
 <h1 id="splunk-opentelemetry-collector-for-kubernetes-offline-installation">Splunk OpenTelemetry Collector for Kubernetes offline installation<a class="headerlink" href="#splunk-opentelemetry-collector-for-kubernetes-offline-installation" title="Permanent link">&para;</a></h1>
 <h2 id="local-machine-with-internet-access">Local machine with internet access<a class="headerlink" href="#local-machine-with-internet-access" title="Permanent link">&para;</a></h2>
-<p>To install Splunk OpenTelemetry Collector offline first one must download packed chart <code>splunk-otel-collector-&lt;tag&gt;.tgz</code> 
-from github release where <code>&lt;tag&gt;</code> is the current OpenTelemetry release tag. This package must be later moved to the installation server.</p>
+<p>To install Splunk OpenTelemetry Collector offline first one must download packed chart <code>splunk-otel-collector-&lt;tag&gt;.tgz</code> and the otel image <code>otel_image.tar</code>
+from github release where <code>&lt;tag&gt;</code> is the current OpenTelemetry release tag. Both packages must be later moved to the installation server.</p>
 <h2 id="installation-on-the-server">Installation on the server<a class="headerlink" href="#installation-on-the-server" title="Permanent link">&para;</a></h2>
+<p>Otel image has to be imported to the <code>microk8s</code> registry with:</p>
+<div class="codehilite"><pre><span></span><code>microk8s ctr image import otel_image.tar 
+</code></pre></div>
+
 <p>Imported package must be unpacked with the following command :</p>
 <div class="codehilite"><pre><span></span><code>tar -xvf splunk-otel-collector-&lt;tag&gt;.tgz --exclude<span class="o">=</span><span class="s1">&#39;._*&#39;</span>
 </code></pre></div>
