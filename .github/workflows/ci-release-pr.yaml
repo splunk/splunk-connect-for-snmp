@@ -14,7 +14,7 @@
 #    limitations under the License.
 #   ########################################################################
 
-name: ci-main
+name: ci-release-pr
 on:
   pull_request:
     branches:
@@ -57,9 +57,6 @@ jobs:
             type=semver,pattern={{major}}
             type=semver,pattern={{version}}
             type=ref,event=branch
-            type=ref,event=pr
-            type=sha
-            type=sha,format=long
       - name: Build and push action
         id: docker_action_build
         uses: docker/build-push-action@v2

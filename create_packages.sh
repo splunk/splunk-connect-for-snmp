@@ -226,7 +226,7 @@ docker save $docker_image_pull > /tmp/package/packages/sim_image.tar
 # Download and package otel charts
 cd /tmp/package/packages/ || exit
 LOCATION=$(curl -s https://api.github.com/repos/signalfx/splunk-otel-collector-chart/releases/latest | grep "zipball_url" | awk '{ print $2 }' | sed 's/,$//' | sed 's/"//g' )
-otel_image=splunk-otel-collector/$(echo $LOCATION | sed 's/.*zipball\/splunk-otel-collector-//g')
+otel_image=splunk-otel-collector:$(echo $LOCATION | sed 's/.*zipball\/splunk-otel-collector-//g')
 docker pull "$otel_image"
 docker save $otel_image > /tmp/package/packages/otel_image.tar
 curl -L -o otel-repo.zip $LOCATION
