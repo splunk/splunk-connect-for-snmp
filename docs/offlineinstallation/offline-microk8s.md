@@ -27,9 +27,40 @@ kube-system    calico-node-zg4c4                          0/1     Init:0/3   0  
 
 The pods are in the `Pending`/`Init` state because they're trying to download images, which is impossible to do offline.
 In order to make them work you need to download all the images on a different server with an internet connection, pack it up, and
-import it to a microk8s image registry on your offline server.
+import it to a microk8s image registry on your offline server. 
 
-Also, the add-ons we enable through `microk8s enable {addon}` need some images to work.
+### Packing up images for offline environment
+
+You need to monitor
+
+```commandline
+microk8s kubectl get events -A
+```
+
+to see if `microk8s` fails to pull images, and then import anything it needs. An example of such information is:
+
+```commandline
+kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Failed to pull image "docker.io/calico/cni:v3.21.4": rpc error: code = Unknown desc = failed to pull and unpack image "docker.io/calico/cni:v3.21.4": failed to resolve reference "docker.io/calico/cni:v3.21.4": failed to do request: Head "https://registry-1.docker.io/v2/calico/cni/manifests/v3.21.4": dial tcp 54.83.42.45:443: i/o timeout
+kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Error: ErrImagePull
+```
+
+This shows you that you lack a `docker.io/calico/cni:v3.21.4` image, and need to import it in order to fix the issue.
+
+The process of such action is always:
+
+```commandline
+docker pull <needed_image>
+docker save <needed_image> > image.tar
+```
+Transfer package to the offline lab and execute:
+
+```
+microk8s ctr image import image.tar
+```
+
+
+### Example of the offline installation
+
 For example, `microk8s` version `3597` requires these images to work correctly:
 
 ```commandline
@@ -65,32 +96,7 @@ microk8s ctr image import pause.tar
 microk8s ctr image import metrics.tar
 ```
 
-NOTE: for other versions of `microk8s`, tags of images may differ. You need to monitor
-
-```commandline
-microk8s kubectl get events -A
-```
-
-to see if `microk8s` fails to pull images, and then import anything it needs. An example of such information is:
-
-```commandline
-kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Failed to pull image "docker.io/calico/cni:v3.21.4": rpc error: code = Unknown desc = failed to pull and unpack image "docker.io/calico/cni:v3.21.4": failed to resolve reference "docker.io/calico/cni:v3.21.4": failed to do request: Head "https://registry-1.docker.io/v2/calico/cni/manifests/v3.21.4": dial tcp 54.83.42.45:443: i/o timeout
-kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Error: ErrImagePull
-```
-
-This shows you that you lack a `docker.io/calico/cni:v3.21.4` image, and need to import it in order to fix the issue.
-
-The process of such action is always:
-
-```commandline
-docker pull <needed_image>
-docker save <needed_image> > image.tar
-```
-Transfer package to the offline lab and execute:
-
-```
-microk8s ctr image import image.tar
-```
+NOTE: for other versions of `microk8s`, tags of images may differ. 
 
 The healthy instance of microk8s, after running:
 
@@ -110,12 +116,16 @@ kube-system    hostpath-provisioner-f57964d5f-zs4sj       1/1     Running       
 kube-system    metrics-server-5f8f64cb86-x7k29            1/1     Running                 0          2m15s
 ```
 
-Then, ennable `dns` and `metallb` (more on `metallb` [here](../gettingstarted/mk8s/k8s-microk8s.md#install-metallb)):
+## Enabling DNS and Metallb
+
+The `dns` and `metallb` don't require importing any images, so you can enable them simply by:
 
 ```yaml
 microk8s enable dns
 microk8s enable metallb
 ```
+
+More on `metallb` [here](../gettingstarted/mk8s/k8s-microk8s.md#install-metallb).
 
 ## Installing helm3
 
@@ -157,7 +167,9 @@ Save file.
 
 6. Run `microk8s enable helm3`
 
-7. Check if `helm3` was successfully installed with command: `microk8s status --wait-ready`. An example of
+## Verify your instance
+
+Check if all the add-ons were installed successfully with command: `microk8s status --wait-ready`. An example of
 a correct output is:
 
 ```commandline
