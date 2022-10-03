@@ -60,6 +60,7 @@ splunk:
   insecureSSL: "false"
   port: "###SPLUNK_PORT###"
 image:
+  tag: ###TAG###
   pullPolicy: "Never"
 traps:
   communities:
@@ -144,6 +145,10 @@ redis:
   image:
     pullPolicy: "Never"
 ```
+
+Fill `###` variables according to the description from [online installation](../gettingstarted/sc4snmp-installation.md#configure-splunk-enterprise-or-splunk-cloud-connection).
+
+Additionally, fill `###TAG###` with the same tag you used before to `docker pull` an SC4SNMP image.
 
 The next step is to unpack the chart package `splunk-connect-for-snmp-chart.tar`. It will result in creating the `splunk-connect-for-snmp` directory:
 

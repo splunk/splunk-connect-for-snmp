@@ -60,3 +60,15 @@ Create the name of the service account to use
 {{- default "default" .Values.sim.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Define name for the Splunk Secret
+*/}}
+{{- define "splunk-connect-for-snmp.sim.secret" -}}
+{{- if .Values.sim.secret.name -}}
+{{- printf "%s" .Values.sim.secret.name -}}
+{{- else -}}
+{{ include "splunk-connect-for-snmp.name" . }}-sim
+{{- end -}}
+{{- end -}}
+

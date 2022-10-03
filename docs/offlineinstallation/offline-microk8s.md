@@ -8,8 +8,8 @@ there are additional steps to install microk8s offline.
 After running:
 
 ```
-snap ack core_{microk8s_version}.assert
-snap install core_{microk8s_version}.snap
+snap ack microk8s_{microk8s_version}.assert
+snap install microk8s_{microk8s_version}.snap --classic
 ```
 
 You should check if the microk8s instance is healthy. Do it with:
@@ -80,11 +80,22 @@ kube-system    0s          Warning   Failed              pod/calico-node-sc784  
 
 This shows you that you lack a `docker.io/calico/cni:v3.21.4` image, and need to import it in order to fix the issue.
 
+The process of such action is always:
+
+```commandline
+docker pull <needed_image>
+docker save <needed_image> > image.tar
+```
+Transfer package to the offline lab and execute:
+
+```
+microk8s ctr image import image.tar
+```
 
 The healthy instance of microk8s, after running:
 
 ```commandline
-microk8s enable storage
+microk8s enable hostpath-storage
 microk8s enable rbac
 microk8s enable metrics-server
 ```
@@ -97,6 +108,13 @@ kube-system    calico-kube-controllers-7c9c8dd885-wxms9   1/1     Running       
 kube-system    calico-node-8cxsq                          1/1     Running                 0          3h21m
 kube-system    hostpath-provisioner-f57964d5f-zs4sj       1/1     Running                 0          5m41s
 kube-system    metrics-server-5f8f64cb86-x7k29            1/1     Running                 0          2m15s
+```
+
+Then, ennable `dns` and `metallb` (more on `metallb` [here](../gettingstarted/mk8s/k8s-microk8s.md#install-metallb)):
+
+```yaml
+microk8s enable dns
+microk8s enable metallb
 ```
 
 ## Installing helm3
@@ -139,7 +157,7 @@ Save file.
 
 6. Run `microk8s enable helm3`
 
-7. Check if `helm3` was successfully installed with the command: `microk8s status --wait-ready`. An example of
+7. Check if `helm3` was successfully installed with command: `microk8s status --wait-ready`. An example of
 a correct output is:
 
 ```commandline
@@ -149,22 +167,22 @@ high-availability: no
   datastore standby nodes: none
 addons:
   enabled:
+    dns                  # (core) CoreDNS
     ha-cluster           # (core) Configure high availability on the current node
     helm3                # (core) Helm 3 - Kubernetes package manager
     hostpath-storage     # (core) Storage class; allocates storage from host directory
+    metallb              # (core) Loadbalancer for your Kubernetes cluster
     metrics-server       # (core) K8s Metrics Server for API access to service metrics
     rbac                 # (core) Role-Based Access Control for authorisation
     storage              # (core) Alias to hostpath-storage add-on, deprecated
   disabled:
     community            # (core) The community addons repository
     dashboard            # (core) The Kubernetes dashboard
-    dns                  # (core) CoreDNS
     gpu                  # (core) Automatic enablement of Nvidia CUDA
     helm                 # (core) Helm 2 - the package manager for Kubernetes
     host-access          # (core) Allow Pods connecting to Host services smoothly
     ingress              # (core) Ingress controller for external access
     mayastor             # (core) OpenEBS MayaStor
-    metallb              # (core) Loadbalancer for your Kubernetes cluster
     prometheus           # (core) Prometheus operator for monitoring and logging
     registry             # (core) Private image registry exposed on localhost:32000
 ```
