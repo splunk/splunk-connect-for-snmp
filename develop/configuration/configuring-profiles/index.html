@@ -869,24 +869,24 @@
 
 
 <h1 id="configuring-profiles">Configuring profiles<a class="headerlink" href="#configuring-profiles" title="Permanent link">&para;</a></h1>
-<p>Profiles are the units, where you can configure what you want to poll and then assign them to the device. The definition of profile can be found in <code>values.yaml</code> file
+<p>Profiles are the units where you can configure what you want to poll, and then assign them to the device. The definition of profile can be found in the <code>values.yaml</code> file
 under the <code>scheduler</code> section.</p>
-<p>Here is the instruction of how to use profiles: <a href="../deployment-configuration/#update-inventory-and-profile">Update Inventory and Profile</a>. </p>
+<p>Here are the instructions on how to use profiles: <a href="../deployment-configuration/#update-inventory-and-profile">Update Inventory and Profile</a>. </p>
 <p>There are two types of profiles in general:</p>
 <ol>
-<li>Static profile - polling starts when profile is added to <code>profiles</code> field in <code>inventory</code> of the device</li>
+<li>Static profile - polling starts when the profile is added to the <code>profiles</code> field in the <code>inventory</code> of the device.</li>
 <li>
 <p>Smart profile - polling starts when configured conditions are fulfilled, and the device to poll from has <code>smart_profiles</code> enabled in inventory.
-Smart profiles are useful when we have many devices of certain kind, and we don&rsquo;t want to configure all of them &ldquo;one by one&rdquo; with static profiles.</p>
-<p>In order to configure smart profile do the following:</p>
+Smart profiles are useful when we have many devices of a certain kind, and we don&rsquo;t want to configure each of them individually with static profiles.</p>
+<p>In order to configure smart profile, do the following:</p>
 <ol>
-<li>Choose one of the fields polled from device, most commonly sysDescr is being used</li>
-<li>Set the filter to match all the devices of this kind</li>
-<li>Setup polling of the profile by enabling smart profiles for devices you want this profile to be polled</li>
+<li>Choose one of the fields polled from the device, most commonly sysDescr. </li>
+<li>Set the filter to match all the devices of this kind.</li>
+<li>Setup polling of the profile by enabling smart profiles for devices you want to be polled.</li>
 </ol>
 </li>
 </ol>
-<p>The template of the profile looks like following:</p>
+<p>The template of the profile looks like the following:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">      </span><span class="no">#Name of profile</span><span class="w"></span>
@@ -909,7 +909,7 @@ Smart profiles are useful when we have many devices of certain kind, and we don&
 <span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysUpTime&#39;,0]</span><span class="w"></span>
 </code></pre></div>
 
-<p>For example, we have configured two profiles. One is smart, the other one is static:</p>
+<p>For example, we have configured two profiles. One is smart, and the other one is static:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">      </span><span class="no">smart_profile:</span><span class="w"></span>
@@ -929,33 +929,33 @@ Smart profiles are useful when we have many devices of certain kind, and we don&
 <span class="w">          </span><span class="no">- [&#39;IP-MIB&#39;]</span><span class="w"></span>
 </code></pre></div>
 
-<p>If we want to enable only <code>static_profile</code> polling for host <code>10.202.4.202</code>, we will configure inventory like that:</p>
+<p>If we want to enable only <code>static_profile</code> polling for the host <code>10.202.4.202</code>, we will configure similar inventory:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span><span class="w"></span>
 <span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,static_profile,f,</span><span class="w"></span>
 </code></pre></div>
 
-<p>If we want to enable checking <code>10.202.4.202</code> device against smart profiles, we need to set <code>smart_profiles</code> to <code>t</code>:</p>
+<p>If we want to enable checking the <code>10.202.4.202</code> device against smart profiles, we need to set <code>smart_profiles</code> to <code>t</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span><span class="w"></span>
 <span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,,t,</span><span class="w"></span>
 </code></pre></div>
 
-<p>Then if the device <code>sysDescr</code> match <code>'.*linux.*'</code> filter, <code>smart_profile</code> profile will be polled.</p>
+<p>Then, if the device <code>sysDescr</code> matches the <code>'.*linux.*'</code> filter, the <code>smart_profile</code> profile will be polled.</p>
 <h2 id="varbinds-configuration">varBinds configuration<a class="headerlink" href="#varbinds-configuration" title="Permanent link">&para;</a></h2>
-<p><code>varBinds</code> short for &ldquo;variable binding&rdquo; in SNMP. The combination of an Object Identifier (OID) and a value. 
+<p><code>varBinds</code> is short for &ldquo;variable binding&rdquo; in the SNMP. It is the combination of an Object Identifier (OID) and a value. 
 <code>varBinds</code> are used for defining what OIDs should be requested from SNMP Agents. <code>varBinds</code> is a required 
-subsection of each profile. Syntax configuration of <code>varBinds</code> looks following:</p>
+subsection of each profile. The syntax configuration of <code>varBinds</code> looks like the following:</p>
 <p>[ &ldquo;MIB-Component&rdquo;, &ldquo;MIB object&rdquo;[Optional], &ldquo;MIB index number&rdquo;[Optional]]</p>
 <ul>
-<li><code>MIB-Component</code> - The SNMP MIB, itself, consists of distinct component MIBs, each of which refers to a specific 
- defined collection of management information that is part of the overall SNMP MIB eg. <code>SNMPv2-MIB</code>. 
- If only <code>MIB-Component</code> is set then SC4SNMP will get whole subtree.</li>
+<li><code>MIB-Component</code> - The SNMP MIB itself consists of distinct component MIBs, each of which refers to a specific 
+ defined collection of management information that is part of the overall SNMP MIB, eg., <code>SNMPv2-MIB</code>. 
+ If only the <code>MIB-Component</code> is set, then the SC4SNMP will get the whole subtree.</li>
 <li><code>MIB object</code> -  The SNMP MIB stores only simple data types: scalars and two-dimensional arrays of scalars, 
- called tables. Keywords SYNTAX, ACCESS, and DESCRIPTION as well as other keywords such as STATUS and 
- INDEX is used to define the SNMP MIB managed objects. </li>
+ called tables. The keywords SYNTAX, ACCESS, and DESCRIPTION as well as other keywords such as STATUS and 
+ INDEX are used to define the SNMP MIB managed objects. </li>
 <li><code>MIB index number</code> - Define index number for given MIB Object eg. <code>0</code>.</li>
 </ul>
 <p>Example:</p>
@@ -967,10 +967,10 @@ subsection of each profile. Syntax configuration of <code>varBinds</code> looks 
 </code></pre></div>
 
 <h2 id="static-profile-configuration">Static Profile configuration<a class="headerlink" href="#static-profile-configuration" title="Permanent link">&para;</a></h2>
-<p>Static Profile are used when they are defined on a list of profiles in inventory configuration in <code>poller</code> 
+<p>Static Profile is used when they are defined on a list of profiles in the inventory configuration in the <code>poller</code> 
 service <a href="../poller-configuration/#configure-inventory">Inventory configuration</a>. Static Profiles are executed 
 even if the SmartProfile flag in inventory is set to false. 
-To configure Static Profile following value needs to be set in <code>profiles</code> section:</p>
+To configure Static Profile value needs to be set in the <code>profiles</code> section:</p>
 <ul>
 <li><code>ProfileName</code> - define as subsection key in <code>profiles</code>. <ul>
 <li><code>frequency</code> - define interval between executing SNMP gets in second.  </li>
@@ -990,9 +990,9 @@ To configure Static Profile following value needs to be set in <code>profiles</c
 </code></pre></div>
 
 <h3 id="particular-kinds-of-static-profiles">Particular kinds of static profiles<a class="headerlink" href="#particular-kinds-of-static-profiles" title="Permanent link">&para;</a></h3>
-<p>Sometimes static profiles have additional functionalities, to be used in some special scenarios. </p>
+<p>Sometimes static profiles have additional functionalities to be used in specific scenarios. </p>
 <h4 id="walk-profile">WALK profile<a class="headerlink" href="#walk-profile" title="Permanent link">&para;</a></h4>
-<p>If you would like to limit the scope of the walk, you should set one of the profiles in the inventory to point to the profile definition of type <code>walk</code></p>
+<p>If you would like to limit the scope of the walk, you should set one of the profiles in the inventory to point to the profile definition of type <code>walk</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">      </span><span class="no">small_walk:</span><span class="w"></span>
@@ -1002,8 +1002,8 @@ To configure Static Profile following value needs to be set in <code>profiles</c
 <span class="w">          </span><span class="no">- [&#39;UDP-MIB&#39;]</span><span class="w"></span>
 </code></pre></div>
 
-<p>Such profile should be placed in the profiles section of inventory definition. It will be executed with the frequency defined in <code>walk_interval</code>.
-In case of multiple profiles of type <code>walk</code> will be placed in profiles, the last one will be used. </p>
+<p>This profile should be placed in the profiles section of the inventory definition. It will be executed with the frequency defined in <code>walk_interval</code>.
+If multiple profiles of type <code>walk</code> is placed in profiles, the last one will be used. </p>
 <p>This is how to use <code>walk</code> profiles:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
@@ -1011,20 +1011,20 @@ In case of multiple profiles of type <code>walk</code> will be placed in profile
 <span class="w">    </span><span class="no">10.202.4.202,,2c,public,,,2000,small_walk,,</span><span class="w"></span>
 </code></pre></div>
 
-<p>NOTE: When small walk is configured, you can set up polling only of OIDs belonging to walk profile varBinds. 
-Additionally, there are two MIB families that are enabled by default (we need them to create state of the device in the database and poll base profiles): <code>IF-MIB</code> and <code>SNMPv2-MIB</code>.
-For example, if you&rsquo;ve decided to use <code>small_walk</code> from the example above, you&rsquo;ll be able to poll only <code>UDP-MIB</code>, <code>IF-MIB</code> and <code>SNMPv2-MIB</code> OIDs.</p>
+<p>NOTE: When small walk is configured, you can set up polling only of OIDs belonging to the walk profile varBinds. 
+Additionally, there are two MIB families that are enabled by default (we need them to create the state of the device in the database and poll base profiles): <code>IF-MIB</code> and <code>SNMPv2-MIB</code>.
+For example, if you&rsquo;ve decided to use <code>small_walk</code> from the example above, you&rsquo;ll be able to poll only <code>UDP-MIB</code>, <code>IF-MIB</code>, and <code>SNMPv2-MIB</code> OIDs.</p>
 <h2 id="smartprofile-configuration">SmartProfile configuration<a class="headerlink" href="#smartprofile-configuration" title="Permanent link">&para;</a></h2>
 <p>SmartProfile is executed when the SmartProfile flag in inventory is set to true and the condition defined in profile match. 
-More information about configuring inventory can be found in <a href="../poller-configuration/#configure-inventory">Inventory configuration</a></p>
-<p>To configure Smart Profile following value need to be set in <code>profiles</code> section:</p>
+More information about configuring inventory can be found in <a href="../poller-configuration/#configure-inventory">Inventory configuration</a>.</p>
+<p>To configure Smart Profile, the following value needs to be set in the <code>profiles</code> section:</p>
 <ul>
 <li><code>ProfileName</code> - define as subsection key in <code>profiles</code>. <ul>
 <li><code>frequency</code> - define an interval between executing SNMP&rsquo;s gets in second.</li>
 <li><code>condition</code> - section define conditions to match profile<ul>
-<li><code>type</code> - key of <code>condition</code> section which defines type of condition. Allowed value <code>base</code> and <code>field</code> (<code>walk</code> type is also allowed here, but it&rsquo;s not part of smart profiles)<ul>
+<li><code>type</code> - key of <code>condition</code> section which defines type of condition. The allowed values are <code>base</code> and <code>field</code> (<code>walk</code> type is also allowed here, but it&rsquo;s not part of smart profiles).<ul>
 <li><code>base</code> type of condition will be executed when <code>SmartProfile</code> in inventory is set to true.</li>
-<li><code>field</code> type of condition will be executed if match <code>pattern</code> for defined <code>field</code>. Supported fields:<ul>
+<li><code>field</code> type of condition will be executed if it matches <code>pattern</code> for defined <code>field</code>. Supported fields are:<ul>
 <li>&ldquo;SNMPv2-MIB.sysDescr&rdquo;</li>
 <li>&ldquo;SNMPv2-MIB.sysObjectID&rdquo;</li>
 </ul>
@@ -1040,7 +1040,7 @@ More information about configuring inventory can be found in <a href="../poller-
 </ul>
 </li>
 </ul>
-<p>Example of <code>base</code> type profile</p>
+<p>Example of <code>base</code> type profile:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">      </span><span class="no">SmartProfile_base_example:</span><span class="w"></span>
@@ -1052,7 +1052,7 @@ More information about configuring inventory can be found in <a href="../poller-
 <span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span><span class="w"></span>
 </code></pre></div>
 
-<p>Example of <code>field</code>  type profile, also called an automatic profile</p>
+<p>Example of <code>field</code>  type profile, also called an automatic profile:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">      </span><span class="no">SmartProfile_field_example:</span><span class="w"></span>
@@ -1068,10 +1068,10 @@ More information about configuring inventory can be found in <a href="../poller-
 </code></pre></div>
 
 <p>NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 1 minute for changes to propagate. In case you changed frequency, or a profile type, the change will be reflected only after the next walk.
-There is also 5 minute TTL for an inventory pod. Basically, SC4SNMP allows one inventory upgrade and then block updates for the next 5 minutes</p>
+There is also 5 minute TTL for an inventory pod. Basically, SC4SNMP allows one inventory upgrade and then block updates for the next 5 minutes.</p>
 <h2 id="custom-translations">Custom translations<a class="headerlink" href="#custom-translations" title="Permanent link">&para;</a></h2>
-<p>If the user wants to use custom names/translations of MIB names, it can be configured under customTranslations section under scheduler config.
-Translations are grouped by MIB family. In the example below IF-MIB.ifInDiscards will be translated to IF-MIB.myCustomName1</p>
+<p>If the user wants to use custom names/translations of MIB names, it can be configured under the customTranslations section under scheduler config.
+Translations are grouped by MIB family. In the example below IF-MIB.ifInDiscards will be translated to IF-MIB.myCustomName1:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">customTranslations</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="nt">IF-MIB</span><span class="p">:</span><span class="w"></span>

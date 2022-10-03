@@ -490,7 +490,7 @@
         
           <li class="md-nav__item">
   <a href="#real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-i-want-to-use-my-resources-effectively" class="md-nav__link">
-    Real life scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively
+    Real life scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively.
   </a>
   
 </li>
@@ -830,7 +830,7 @@
         
           <li class="md-nav__item">
   <a href="#real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-i-want-to-use-my-resources-effectively" class="md-nav__link">
-    Real life scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively
+    Real life scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively.
   </a>
   
 </li>
@@ -883,24 +883,24 @@
 
 
 <h1 id="worker-configuration">Worker Configuration<a class="headerlink" href="#worker-configuration" title="Permanent link">&para;</a></h1>
-<p>The <code>worker</code> is a kubernetes pod which is responsible for the actual execution of polling, processing trap messages and sending 
+<p>The <code>worker</code> is a kubernetes pod which is responsible for the actual execution of polling, processing trap messages, and sending 
 data to Splunk.</p>
 <h3 id="worker-types">Worker types<a class="headerlink" href="#worker-types" title="Permanent link">&para;</a></h3>
 <p>SC4SNMP has two base functionalities: monitoring traps and polling. These operations are handled by 3 types of workers:</p>
 <ol>
 <li>
-<p><code>trap</code> worker consumes all the trap related tasks produced by the trap pod. </p>
+<p>The <code>trap</code> worker consumes all the trap related tasks produced by the trap pod. </p>
 </li>
 <li>
-<p><code>poller</code> worker consumes all the tasks related to polling.</p>
+<p>The <code>poller</code> worker consumes all the tasks related to polling.</p>
 </li>
 <li>
-<p><code>sender</code> worker handles sending data to splunk. You need to always have at least one sender pod running.</p>
+<p>The <code>sender</code> worker handles sending data to Splunk. You need to always have at least one sender pod running.</p>
 </li>
 </ol>
 <h3 id="worker-configuration-file">Worker configuration file<a class="headerlink" href="#worker-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Worker configuration is kept in <code>values.yaml</code> file in the <code>worker</code> section. <code>worker</code> has 3 subsections: <code>poller</code>, <code>sender</code> or <code>trap</code>, that refer to the workers&rsquo; types.
-<code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.
+<p>Worker configuration is kept in the <code>values.yaml</code> file in the <code>worker</code> section. <code>worker</code> has 3 subsections: <code>poller</code>, <code>sender</code>, or <code>trap</code>, that refer to the workers&rsquo; types.
+<code>values.yaml</code> is used during the installation process for configuring Kubernetes values.
 The <code>worker</code> default configuration is:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># There are 3 types of workers </span><span class="w"></span>
@@ -936,15 +936,13 @@ The <code>worker</code> default configuration is:</p>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INFO&quot;</span><span class="w"></span>
 </code></pre></div>
 
-<p>All parameters are described in <a href="#worker-parameters">Worker parameters</a> section.</p>
+<p>All parameters are described in the <a href="#worker-parameters">Worker parameters</a> section.</p>
 <h3 id="worker-scaling">Worker scaling<a class="headerlink" href="#worker-scaling" title="Permanent link">&para;</a></h3>
-<p>You can adjust number of worker pods to your needs in two ways: setting fixed value in <code>replicaCount</code>
-or enabling <code>autoscaling</code> which scales pods automatically. </p>
-<h4 id="real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-i-want-to-use-my-resources-effectively">Real life scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively<a class="headerlink" href="#real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-i-want-to-use-my-resources-effectively" title="Permanent link">&para;</a></h4>
-<p>If you don&rsquo;t use polling at all, would be the best to set <code>worker.poller.replicaCount</code> to <code>0</code>.
-Remember, that if you&rsquo;ll want to use polling in the future you need to increase <code>replicaCount</code>,
-otherwise it won&rsquo;t work. To monitor traps, adjust <code>worker.trap.replicaCount</code> depending on your needs
-and <code>worker.sender.replicaCount</code> to send traps to splunk. Usually you need much less sender pods than trap ones.</p>
+<p>You can adjust worker pods in two ways: set fixed value in <code>replicaCount</code>,
+or enable <code>autoscaling</code>, which scales pods automatically. </p>
+<h4 id="real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-i-want-to-use-my-resources-effectively">Real life scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively.<a class="headerlink" href="#real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-i-want-to-use-my-resources-effectively" title="Permanent link">&para;</a></h4>
+<p>If you don&rsquo;t use polling at all, set <code>worker.poller.replicaCount</code> to <code>0</code>.
+If you&rsquo;ll want to use polling in the future, you need to increase <code>replicaCount</code>. To monitor traps, adjust <code>worker.trap.replicaCount</code> depending on your needs and <code>worker.sender.replicaCount</code> to send traps to Splunk. Usually you need much less sender pods than trap ones.</p>
 <p>This is the example of <code>values.yaml</code> without using autoscaling:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">trap</span><span class="p">:</span><span class="w"></span>
@@ -975,9 +973,9 @@ and <code>worker.sender.replicaCount</code> to send traps to splunk. Usually you
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;WARNING&quot;</span><span class="w"></span>
 </code></pre></div>
 
-<p>In the example above both trap and sender pods are autoscaled. During an upgrade process
-<code>minReplicas</code> number of pods is created, and then new ones are created only if CPU threshold
-exceeds <code>targetCPUUtilizationPercentage</code> which by default is 80%. This solution helps you to keep 
+<p>In the example above both trap and sender pods are autoscaled. During an upgrade process, the number of pods is created through
+<code>minReplicas</code>, and then new ones are created only if the CPU threshold
+exceeds the <code>targetCPUUtilizationPercentage</code>, which by default is 80%. This solution helps you to keep 
 resources usage adjusted to what you actually need. </p>
 <p>After helm upgrade process, you will see <code>horizontalpodautoscaler</code> in <code>microk8s kubectl get all -n sc4snmp</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">NAME                                                                             REFERENCE                                               TARGETS   MINPODS   MAXPODS   REPLICAS   AGE</span><span class="w"></span>
@@ -986,12 +984,12 @@ resources usage adjusted to what you actually need. </p>
 <span class="l l-Scalar l-Scalar-Plain">horizontalpodautoscaler.autoscaling/snmp-splunk-connect-for-snmp-worker-trap     Deployment/snmp-splunk-connect-for-snmp-worker-trap     1%/80%    4         10        4          28m</span><span class="w"></span>
 </code></pre></div>
 
-<p>If you see <code>&lt;unknown&gt;/80%</code> in <code>TARGETS</code> section instead of the CPU percentage, you probably don&rsquo;t have <code>metrics-server</code> addon enabled.
-Enable it using: <code>microk8s enable metrics-server</code>.</p>
+<p>If you see <code>&lt;unknown&gt;/80%</code> in <code>TARGETS</code> section instead of the CPU percentage, you probably don&rsquo;t have the <code>metrics-server</code> add-on enabled.
+Enable it using <code>microk8s enable metrics-server</code>.</p>
 <h4 id="real-life-scenario-i-have-a-significant-delay-in-polling">Real life scenario: I have a significant delay in polling<a class="headerlink" href="#real-life-scenario-i-have-a-significant-delay-in-polling" title="Permanent link">&para;</a></h4>
 <p>Sometimes when polling is configured to be run frequently and on many devices, workers get overloaded 
-and there is a delay in delivering data to splunk. To avoid such situations we can scale poller and sender pods.
-Because of the walk cycles (walk is a costly operation ran once for a while), poller workers require more resources 
+and there is a delay in delivering data to Splunk. To avoid such situations, we can scale poller and sender pods.
+Because of the walk cycles (walk is a costly operation ran once in a while), poller workers require more resources 
 for a short time. For this reason, enabling autoscaling is recommended. </p>
 <p>This is the example of <code>values.yaml</code> with autoscaling:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
@@ -1017,7 +1015,7 @@ for a short time. For this reason, enabling autoscaling is recommended. </p>
 </code></pre></div>
 
 <p>Remember, that the system won&rsquo;t scale itself infinitely, there is a finite amount of resources that you can allocate.
-By default, every worker has configured following resources:</p>
+By default, every worker has configured the following resources:</p>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
 <span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500m</span><span class="w"></span>
@@ -1027,10 +1025,10 @@ By default, every worker has configured following resources:</p>
 
 <h4 id="i-have-autoscaling-enabled-and-experience-problems-with-mongo-and-redis-pod">I have autoscaling enabled and experience problems with Mongo and Redis pod<a class="headerlink" href="#i-have-autoscaling-enabled-and-experience-problems-with-mongo-and-redis-pod" title="Permanent link">&para;</a></h4>
 <p>If MongoDB and Redis pods are crushing, and some of the pods are in infinite <code>Pending</code> state, that means 
-you&rsquo;re over your resources and SC4SNMP cannot scale more. You should decrease number of <code>maxReplicas</code> in 
-workers, so that it&rsquo;s not going beyond available CPU.</p>
+you&rsquo;re over your resources and SC4SNMP cannot scale more. You should decrease the number of <code>maxReplicas</code> in 
+workers, so that it&rsquo;s not going beyond the available CPU.</p>
 <h4 id="i-dont-know-how-to-set-autoscaling-parameters-and-how-many-replicas-i-need">I don&rsquo;t know how to set autoscaling parameters and how many replicas I need<a class="headerlink" href="#i-dont-know-how-to-set-autoscaling-parameters-and-how-many-replicas-i-need" title="Permanent link">&para;</a></h4>
-<p>The best way to see if pods are overloaded is to run command:</p>
+<p>The best way to see if pods are overloaded is to run:</p>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s kubectl top pods -n sc4snmp</span><span class="w"></span>
 </code></pre></div>
 

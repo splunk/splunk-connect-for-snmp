@@ -767,15 +767,15 @@
   <h1>High Availability</h1>
 
 <h2 id="high-availability-considerations">High Availability Considerations<a class="headerlink" href="#high-availability-considerations" title="Permanent link">&para;</a></h2>
-<p>The SNMP protocol uses UDP as the transport protocol and is subject to network reliability, as
-a constraint. Network architecture should be considered when designing for high availability.</p>
+<p>The SNMP protocol uses UDP as the transport protocol. Network reliability is a constraint.
+Consider network architecture when designing for high availability:</p>
 <ul>
-<li>When using a single node collector ensure automatic recovery from virtual infrastructure i.e. VMware, Openstack, etc.</li>
-<li>When using a multi-node cluster ensure nodes are not located such that a simple majority of nodes can
-be lost for example consider row, rack, network, power, storage</li>
-<li>When determining the placement of clusters the closest location by the number of network hops should be utilized.</li>
-<li>For &ldquo;data center&rdquo; applications collection should be local to the data center.</li>
-<li>Consider IP Anycast</li>
+<li>When using a single node collector, ensure automatic recovery from virtual infrastructure (i.e. VMware, Openstack, etc).</li>
+<li>When using a multi-node cluster, ensure nodes are not located such that a simple majority of nodes can
+be lost. For example, consider row, rack, network, power, and storage.</li>
+<li>When determining the placement of clusters, the closest location by the number of network hops should be utilized.</li>
+<li>For &ldquo;data center&rdquo; applications, collection should be local to the data center.</li>
+<li>Consider IP Anycast.</li>
 </ul>
 
 

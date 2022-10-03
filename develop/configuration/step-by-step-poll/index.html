@@ -736,9 +736,9 @@
 <li><code>10.202.4.203:161</code></li>
 <li><code>10.202.4.204:163</code></li>
 </ol>
-<p>Let&rsquo;s say, that we&rsquo;re interested mostly in information about interfaces and some CPU related data. For this purposes,
-we need to configure <code>IF-MIB</code> family for interfaces, and <code>UCD-SNMP-MIB</code> for the CPU.</p>
-<p>We&rsquo;ll do two things under <code>scheduler</code> section: define the group from which we want to poll, and the profile of what exactly will be polled:</p>
+<p>Let&rsquo;s say that we&rsquo;re interested mostly in information about interfaces and some CPU related data. For this purposes,
+we need to configure the <code>IF-MIB</code> family for interfaces, and <code>UCD-SNMP-MIB</code> for the CPU.</p>
+<p>We&rsquo;ll do two things under the <code>scheduler</code> section: define the group from which we want to poll, and the profile of what exactly will be polled:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INFO&quot;</span><span class="w"></span>
 <span class="w">  </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
@@ -807,7 +807,7 @@ to <code>poller.inventory</code>:</p>
 <span class="p p-Indicator">{</span><span class="s">&quot;message&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;New</span><span class="nv"> </span><span class="s">Record</span><span class="nv"> </span><span class="s">address=&#39;10.202.4.204&#39;</span><span class="nv"> </span><span class="s">port=163</span><span class="nv"> </span><span class="s">version=&#39;2c&#39;</span><span class="nv"> </span><span class="s">community=&#39;public&#39;</span><span class="nv"> </span><span class="s">secret=None</span><span class="nv"> </span><span class="s">security_engine=None</span><span class="nv"> </span><span class="s">walk_interval=2000</span><span class="nv"> </span><span class="s">profiles=[&#39;switch_profile&#39;]</span><span class="nv"> </span><span class="s">smart_profiles=True</span><span class="nv"> </span><span class="s">delete=False&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;time&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;2022-09-05T14:30:30.607641&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;level&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;INFO&quot;</span><span class="p p-Indicator">}</span><span class="w"></span>
 </code></pre></div>
 
-<p>In some time (depending of how long does the walk takes), we&rsquo;ll see events under:</p>
+<p>In some time (depending of how long the walk takes), we&rsquo;ll see events under:</p>
 <div class="codehilite"><pre><span></span><code><span class="p p-Indicator">|</span><span class="err"> mpreview index=netmetrics | search profiles=switch_profile</span><span class="w"></span>
 </code></pre></div>
 
@@ -815,8 +815,8 @@ to <code>poller.inventory</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="p p-Indicator">|</span><span class="err"> mpreview index=netmetrics | search group=switch_group</span><span class="w"></span>
 </code></pre></div>
 
-<p>Keep in mind, that querying by profiles/group in Splunk is only possible in metrics index. Every piece of data being sent
-by SC4SNMP is formed based on MIB file&rsquo;s definition of the SNMP object&rsquo;s index. The object is forwarded to an event index only if it doesn&rsquo;t have any metric value inside.</p>
+<p>Keep in mind, that querying by profiles/group in Splunk is only possible in the metrics index. Every piece of data being sent
+by SC4SNMP is formed based on the MIB file&rsquo;s definition of the SNMP object&rsquo;s index. The object is forwarded to an event index only if it doesn&rsquo;t have any metric value inside.</p>
 <p>The <code>raw</code> metrics in Splunk example is:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;frequency&quot;</span><span class="p">:</span><span class="s2">&quot;60&quot;</span><span class="p">,</span><span class="w"></span>

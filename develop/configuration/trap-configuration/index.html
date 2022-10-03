@@ -873,8 +873,8 @@
 <h1 id="trap-configuration">Trap Configuration<a class="headerlink" href="#trap-configuration" title="Permanent link">&para;</a></h1>
 <p>A trap service is a simple server that can handle SNMP traps sent by SNMP devices like routers or switches.   </p>
 <h3 id="trap-configuration-file">Trap configuration file<a class="headerlink" href="#trap-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Trap configuration is kept in <code>values.yaml</code> file in section traps.
-<code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
+<p>The trap configuration is kept in the <code>values.yaml</code> file in section traps.
+<code>values.yaml</code> is used during the installation process for configuring Kubernetes values.</p>
 <p>Trap example configuration:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">communities</span><span class="p">:</span><span class="w"></span>
@@ -903,8 +903,8 @@
 </code></pre></div>
 
 <h3 id="define-communities">Define communities<a class="headerlink" href="#define-communities" title="Permanent link">&para;</a></h3>
-<p><code>communities</code> define a version of SNMP protocol and SNMP community string which should be used. 
-<code>communities</code> key is split by protocol version, supported values are <code>1</code> and <code>2c</code>. Under <code>version</code> section, SNMP community string can be defined. </p>
+<p><code>communities</code> define a version of SNMP protocol and SNMP community string, which should be used. 
+<code>communities</code> key is split by protocol version, supported values are <code>1</code> and <code>2c</code>. Under the <code>version</code> section, SNMP community string can be defined. </p>
 <p>Example: </p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">communities</span><span class="p">:</span><span class="w"></span>
@@ -916,9 +916,9 @@
 </code></pre></div>
 
 <h3 id="configure-user-secrets-for-snmpv3">Configure user secrets for SNMPv3<a class="headerlink" href="#configure-user-secrets-for-snmpv3" title="Permanent link">&para;</a></h3>
-<p><code>usernameSecrets</code> key in the <code>traps</code> section define SNMPv3 secrets for trap messages sent by SNMP device. <code>usernameSecrets</code> define which secrets 
-in &ldquo;Secret&rdquo; objects in k8s should be used, as a value it needs to put the name of &ldquo;Secret&rdquo; objects. 
-More information on how to define the &ldquo;Secret&rdquo; object for SNMPv3 can be found in <a href="../snmpv3-configuration/">SNMPv3 Configuration</a></p>
+<p>The <code>usernameSecrets</code> key in the <code>traps</code> section define SNMPv3 secrets for trap messages sent by SNMP device. <code>usernameSecrets</code> define which secrets 
+in &ldquo;Secret&rdquo; objects in k8s should be used, as a value it needs the name of &ldquo;Secret&rdquo; objects. 
+More information on how to define the &ldquo;Secret&rdquo; object for SNMPv3 can be found in <a href="../snmpv3-configuration/">SNMPv3 Configuration</a>.</p>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">usernameSecrets</span><span class="p">:</span><span class="w"></span>
@@ -927,9 +927,9 @@ More information on how to define the &ldquo;Secret&rdquo; object for SNMPv3 can
 </code></pre></div>
 
 <h3 id="define-security-engines-id-for-snmpv3">Define security engines ID for SNMPv3<a class="headerlink" href="#define-security-engines-id-for-snmpv3" title="Permanent link">&para;</a></h3>
-<p>SNMPv3 TRAPs mandate you configuring SNMP Engine ID of the TRAP sending application to USM users table of TRAP receiving 
-application for each USM user. It is usually unique per the device, and SC4SNMP as a trap receiver has to be aware of 
-which security engine ids to accept. Define all of them under <code>traps.securityEngineId</code> in <code>values.yaml</code>.</p>
+<p>SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table of the TRAP receiving 
+application for each USM user. The SNMP Engine ID is usually unique for the device, and the SC4SNMP as a trap receiver has to be aware of 
+which security engine IDs to accept. Define all of them under <code>traps.securityEngineId</code> in <code>values.yaml</code>.</p>
 <p>By default, it is set to one-element list: <code>[80003a8c04]</code>. </p>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
@@ -937,7 +937,7 @@ which security engine ids to accept. Define all of them under <code>traps.securi
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;80003a8c04&quot;</span><span class="w"></span>
 </code></pre></div>
 
-<p>Security engine id is a substitute of <code>-e</code> variable in <code>snmptrap</code>.
+<p>Security engine ID is a substitute of the <code>-e</code> variable in <code>snmptrap</code>.
 An example of SNMPv3 trap is:</p>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 &#39;&#39; 1.3.6.1.2.1.2.2.1.1.1</span><span class="w"></span>
 </code></pre></div>
@@ -950,7 +950,7 @@ Example:</p>
 </code></pre></div>
 
 <h3 id="define-number-of-traps-server-replica">Define number of traps server replica<a class="headerlink" href="#define-number-of-traps-server-replica" title="Permanent link">&para;</a></h3>
-<p><code>replicaCount</code> Defines the number of replicas for trap container should be 2x number of nodes. The default value is <code>2</code>. 
+<p><code>replicaCount</code> defines that the number of replicas for trap container should be 2x number of nodes. The default value is <code>2</code>. 
 Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1">#For production deployments the value should be at least 2x the number of nodes</span><span class="w"></span>
@@ -960,10 +960,10 @@ Example:</p>
 </code></pre></div>
 
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
-<p>Log level for trap can be set by changing the value for key <code>logLevel</code>. Allowed values are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
-The default value is <code>WARNING</code></p>
+<p>The log level for trap can be set by changing the value for the <code>logLevel</code> key. The allowed values are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
+The default value is <code>WARNING</code>.</p>
 <h3 id="define-annotations">Define annotations<a class="headerlink" href="#define-annotations" title="Permanent link">&para;</a></h3>
-<p>In case you need to append some annotations to the <code>trap</code> service, you can do it by setting <code>traps.service.annotations</code>, for ex.:</p>
+<p>In case you need to append some annotations to the <code>trap</code> service, you can do so by setting <code>traps.service.annotations</code>, for ex.:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">annotations</span><span class="p">:</span><span class="w"></span>

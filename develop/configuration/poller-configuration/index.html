@@ -832,21 +832,21 @@
 
 <h1 id="poller-configuration">Poller Configuration<a class="headerlink" href="#poller-configuration" title="Permanent link">&para;</a></h1>
 <p>Poller is a service which is responsible for querying 
-SNMP devices using SNMP GET, SNMP WALK functionality. Poller executes two main types of tasks:</p>
+SNMP devices using the SNMP GET, and the SNMP WALK functionality. Poller executes two main types of tasks:</p>
 <ul>
 <li>
 <p>Walk task - executes SNMP walk. SNMP walk is an SNMP application that uses SNMP GETNEXT requests to 
 collect SNMP data from the network and infrastructure SNMP-enabled devices, such as switches and routers. It is a time-consuming task,
-which may overload the SNMP device when executing too often. It is used by SC4SNMP to collect and push all OIDs values which provided ACL has access to. </p>
+which may overload the SNMP device when executed too often. It is used by the SC4SNMP to collect and push all OID values, which the provided ACL has access to. </p>
 </li>
 <li>
-<p>Get task - it is a lightweight task whose goal is to query a subset of OIDs defined by the customer. The task serves for a frequent monitoring OIDs like memory or CPU utilization.  </p>
+<p>Get task - it is a lightweight task whose goal is to query a subset of OIDs defined by the customer. The task serves frequent monitoring OIDs, like memory or CPU utilization.  </p>
 </li>
 </ul>
 <p>Poller has an <code>inventory</code>, which defines what and how often SC4SNMP has to poll.</p>
 <h3 id="poller-configuration-file">Poller configuration file<a class="headerlink" href="#poller-configuration-file" title="Permanent link">&para;</a></h3>
-<p>Poller configuration is kept in <code>values.yaml</code> file in a <code>poller</code> section.
-<code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
+<p>The poller configuration is kept in a <code>values.yaml</code> file in the <code>poller</code> section.
+<code>values.yaml</code> is used during the installation process for configuring Kubernetes values.</p>
 <p>Poller example configuration:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span><span class="w"></span>
@@ -860,14 +860,13 @@ which may overload the SNMP device when executing too often. It is used by SC4SN
 
 <p>NOTE: header&rsquo;s line (<code>address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</code>) is necessary for the correct execution of SC4SNMP. Do not remove it.</p>
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h3>
-<p>Log level for poller can be set by changing the value for key <code>logLevel</code>. Allowed values are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
-The default value is <code>WARNING</code></p>
+<p>The log level for poller can be set by changing the value for the key <code>logLevel</code>. The allowed values are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>. 
+The default value is <code>WARNING</code>.</p>
 <h3 id="define-usernamesecrets">Define usernameSecrets<a class="headerlink" href="#define-usernamesecrets" title="Permanent link">&para;</a></h3>
-<p>Secrets are required to run SNMPv3 polling. To add v3 authentication details, create the k8s Secret object following this
-instruction: <a href="../snmpv3-configuration/">SNMPv3 Configuration</a>, and put its name in <code>poller.usernameSecrets</code>.</p>
+<p>Secrets are required to run SNMPv3 polling. To add v3 authentication details, create the k8s Secret object: <a href="../snmpv3-configuration/">SNMPv3 Configuration</a>, and put its name in <code>poller.usernameSecrets</code>.</p>
 <h3 id="configure-inventory">Configure inventory<a class="headerlink" href="#configure-inventory" title="Permanent link">&para;</a></h3>
-<p>To update inventory, follow instruction: <a href="#update-inventory-and-profile">Update Inventory and Profile</a>.</p>
-<p><code>inventory</code> section in <code>poller</code> has following fields to configure:</p>
+<p>To update inventory, see: <a href="#update-inventory-and-profile">Update Inventory and Profile</a>.</p>
+<p><code>inventory</code> section in <code>poller</code> has the following fields to configure:</p>
 <ul>
 <li><code>address</code> [REQUIRED] - IP address which SC4SNMP should connect to collect data from or name of the group of hosts. General
 information about groups can be found on <a href="../configuring-groups/">Configuring Groups</a> page.</li>
@@ -895,17 +894,17 @@ Allowed value: <code>true</code>, <code>false</code>. Default value is <code>fal
 <p>Adding new devices for <code>values.yaml</code> is quite expensive from the Splunk Connect for SNMP perspective. 
 As it interacts with real, networking devices, it requires several checks before applying changes. SC4SNMP was designed to prevent changes in inventory
 task more often than every 5 min. </p>
-<p>To apply inventory changes in <code>values.yaml</code>, following steps need to be executed:</p>
+<p>To apply inventory changes in <code>values.yaml</code>, the following steps need to be executed:</p>
 <ol>
 <li>Edit <code>values.yaml</code> </li>
-<li>Check if inventory pod is still running by an execute command</li>
+<li>Check if inventory pod is still running by the execute command:</li>
 </ol>
 <div class="codehilite"><pre><span></span><code>microk8s kubectl -n sc4snmp get pods <span class="p">|</span> grep inventory
 </code></pre></div>
 
 <p>If the command does not return any pods, follow the next step. In another case, wait and execute the command again until the moment 
 when inventory job finishes. </p>
-<p>If you really need to apply changes immediately, you can get around the limitation by deleting inventory job, with:</p>
+<p>If you really need to apply changes immediately, you can get around the limitation by deleting the inventory job with:</p>
 <div class="codehilite"><pre><span></span><code>microk8s kubectl delete job/snmp-splunk-connect-for-snmp-inventory -n sc4snmp
 </code></pre></div>
 
@@ -916,8 +915,8 @@ when inventory job finishes. </p>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
 
-<p>NOTE: If you decide to change frequency of the profile without changing inventory data, the change will be reflected after 
-next walk process for the host. Walk happens every <code>walk_interval</code> or on any change in inventory.</p>
+<p>NOTE: If you decide to change the frequency of the profile without changing the inventory data, the change will be reflected after 
+next the walk process for the host. The walk happens every <code>walk_interval</code>, or on any change in inventory.</p>
 
 
 

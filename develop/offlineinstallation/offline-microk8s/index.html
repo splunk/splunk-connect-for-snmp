@@ -665,11 +665,45 @@
     Importing images
   </a>
   
+    <nav class="md-nav" aria-label="Importing images">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#packing-up-images-for-offline-environment" class="md-nav__link">
+    Packing up images for offline environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-of-the-offline-installation" class="md-nav__link">
+    Example of the offline installation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabling-dns-and-metallb" class="md-nav__link">
+    Enabling DNS and Metallb
+  </a>
+  
 </li>
       
         <li class="md-nav__item">
   <a href="#installing-helm3" class="md-nav__link">
     Installing helm3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verify-your-instance" class="md-nav__link">
+    Verify your instance
   </a>
   
 </li>
@@ -763,11 +797,45 @@
     Importing images
   </a>
   
+    <nav class="md-nav" aria-label="Importing images">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#packing-up-images-for-offline-environment" class="md-nav__link">
+    Packing up images for offline environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-of-the-offline-installation" class="md-nav__link">
+    Example of the offline installation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enabling-dns-and-metallb" class="md-nav__link">
+    Enabling DNS and Metallb
+  </a>
+  
 </li>
       
         <li class="md-nav__item">
   <a href="#installing-helm3" class="md-nav__link">
     Installing helm3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verify-your-instance" class="md-nav__link">
+    Verify your instance
   </a>
   
 </li>
@@ -788,7 +856,7 @@
 
 <h1 id="offline-microk8s-installation-issues">Offline Microk8s installation issues<a class="headerlink" href="#offline-microk8s-installation-issues" title="Permanent link">&para;</a></h1>
 <p>Offline installation of Microk8s is described <a href="https://microk8s.io/docs/install-alternatives#heading--offline">here</a>, but
-there are steps that you need to execute additionally in order to successfully install microk8s offline. </p>
+there are additional steps to install microk8s offline. </p>
 <h2 id="importing-images">Importing images<a class="headerlink" href="#importing-images" title="Permanent link">&para;</a></h2>
 <p>After running:</p>
 <div class="codehilite"><pre><span></span><code>snap ack microk8s_{microk8s_version}.assert
@@ -799,17 +867,37 @@ snap install microk8s_{microk8s_version}.snap --classic
 <div class="codehilite"><pre><span></span><code>microk8s kubectl get pods -A
 </code></pre></div>
 
-<p>The output most probably will look like:</p>
+<p>The output will probably look like:</p>
 <div class="codehilite"><pre><span></span><code>NAMESPACE      NAME                                       READY   STATUS     RESTARTS   AGE
 kube-system    calico-kube-controllers-7c9c8dd885-fg8f2   0/1     Pending    0          14m
 kube-system    calico-node-zg4c4                          0/1     Init:0/3   0          23s
 </code></pre></div>
 
-<p>The pods are in <code>Pending</code>/<code>Init</code> state because they&rsquo;re trying to download images, what is impossible to do offline.
-In order to make them work you need to download all the images on a different server with an internet connection, pack it up and
-import to microk8s image registry on your offline server.</p>
-<p>Also, the addons we enable through <code>microk8s enable {addon}</code> needs some images to work.
-For example, <code>microk8s</code> version <code>3597</code> requires this images to work correctly:</p>
+<p>The pods are in the <code>Pending</code>/<code>Init</code> state because they&rsquo;re trying to download images, which is impossible to do offline.
+In order to make them work you need to download all the images on a different server with an internet connection, pack it up, and
+import it to a microk8s image registry on your offline server. </p>
+<h3 id="packing-up-images-for-offline-environment">Packing up images for offline environment<a class="headerlink" href="#packing-up-images-for-offline-environment" title="Permanent link">&para;</a></h3>
+<p>You need to monitor</p>
+<div class="codehilite"><pre><span></span><code>microk8s kubectl get events -A
+</code></pre></div>
+
+<p>to see if <code>microk8s</code> fails to pull images, and then import anything it needs. An example of such information is:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="w">    </span><span class="mh">0</span><span class="n">s</span><span class="w">          </span><span class="n">Warning</span><span class="w">   </span><span class="n">Failed</span><span class="w">              </span><span class="n">pod</span><span class="o">/</span><span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="n">sc784</span><span class="w">                           </span><span class="n">Failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">pull</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="s">&quot;docker.io/calico/cni:v3.21.4&quot;</span><span class="o">:</span><span class="w"> </span><span class="n">rpc</span><span class="w"> </span><span class="nl">error:</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Unknown</span><span class="w"> </span><span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">pull</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">unpack</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="s">&quot;docker.io/calico/cni:v3.21.4&quot;</span><span class="o">:</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">resolve</span><span class="w"> </span><span class="n">reference</span><span class="w"> </span><span class="s">&quot;docker.io/calico/cni:v3.21.4&quot;</span><span class="o">:</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nl">request:</span><span class="w"> </span><span class="n">Head</span><span class="w"> </span><span class="s">&quot;https://registry-1.docker.io/v2/calico/cni/manifests/v3.21.4&quot;</span><span class="o">:</span><span class="w"> </span><span class="n">dial</span><span class="w"> </span><span class="n">tcp</span><span class="w"> </span><span class="mf">54.83.42.45</span><span class="o">:</span><span class="mh">443</span><span class="o">:</span><span class="w"> </span><span class="n">i</span><span class="o">/</span><span class="n">o</span><span class="w"> </span><span class="n">timeout</span><span class="w"></span>
+<span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="w">    </span><span class="mh">0</span><span class="n">s</span><span class="w">          </span><span class="n">Warning</span><span class="w">   </span><span class="n">Failed</span><span class="w">              </span><span class="n">pod</span><span class="o">/</span><span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="n">sc784</span><span class="w">                           </span><span class="nl">Error:</span><span class="w"> </span><span class="n">ErrImagePull</span><span class="w"></span>
+</code></pre></div>
+
+<p>This shows you that you lack a <code>docker.io/calico/cni:v3.21.4</code> image, and need to import it in order to fix the issue.</p>
+<p>The process of such action is always:</p>
+<div class="codehilite"><pre><span></span><code>docker pull &lt;needed_image&gt;
+docker save &lt;needed_image&gt; &gt; image.tar
+</code></pre></div>
+
+<p>Transfer package to the offline lab and execute:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">microk8s</span> <span class="n">ctr</span> <span class="n">image</span> <span class="kn">import</span> <span class="nn">image.tar</span>
+</code></pre></div>
+
+<h3 id="example-of-the-offline-installation">Example of the offline installation<a class="headerlink" href="#example-of-the-offline-installation" title="Permanent link">&para;</a></h3>
+<p>For example, <code>microk8s</code> version <code>3597</code> requires these images to work correctly:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">docker</span><span class="w"> </span><span class="nv">pull</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">kube</span><span class="o">-</span><span class="nv">controllers</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span><span class="w"> </span>
 <span class="nv">docker</span><span class="w"> </span><span class="nv">pull</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">node</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span><span class="w"></span>
 <span class="nv">docker</span><span class="w"> </span><span class="nv">pull</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">pod2daemon</span><span class="o">-</span><span class="nv">flexvol</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span><span class="w"></span>
@@ -838,25 +926,7 @@ then save it to <code>tar</code> packages:</p>
 <span class="n">microk8s</span> <span class="n">ctr</span> <span class="n">image</span> <span class="kn">import</span> <span class="nn">metrics.tar</span>
 </code></pre></div>
 
-<p>NOTE: for other versions of <code>microk8s</code>, tags of images may differ. You need to monitor </p>
-<div class="codehilite"><pre><span></span><code>microk8s kubectl get events -A
-</code></pre></div>
-
-<p>to see if <code>microk8s</code> fails to pull images, and then import anything it needs. An example of such information is:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="w">    </span><span class="mh">0</span><span class="n">s</span><span class="w">          </span><span class="n">Warning</span><span class="w">   </span><span class="n">Failed</span><span class="w">              </span><span class="n">pod</span><span class="o">/</span><span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="n">sc784</span><span class="w">                           </span><span class="n">Failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">pull</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="s">&quot;docker.io/calico/cni:v3.21.4&quot;</span><span class="o">:</span><span class="w"> </span><span class="n">rpc</span><span class="w"> </span><span class="nl">error:</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Unknown</span><span class="w"> </span><span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">pull</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">unpack</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="s">&quot;docker.io/calico/cni:v3.21.4&quot;</span><span class="o">:</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">resolve</span><span class="w"> </span><span class="n">reference</span><span class="w"> </span><span class="s">&quot;docker.io/calico/cni:v3.21.4&quot;</span><span class="o">:</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nl">request:</span><span class="w"> </span><span class="n">Head</span><span class="w"> </span><span class="s">&quot;https://registry-1.docker.io/v2/calico/cni/manifests/v3.21.4&quot;</span><span class="o">:</span><span class="w"> </span><span class="n">dial</span><span class="w"> </span><span class="n">tcp</span><span class="w"> </span><span class="mf">54.83.42.45</span><span class="o">:</span><span class="mh">443</span><span class="o">:</span><span class="w"> </span><span class="n">i</span><span class="o">/</span><span class="n">o</span><span class="w"> </span><span class="n">timeout</span><span class="w"></span>
-<span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="w">    </span><span class="mh">0</span><span class="n">s</span><span class="w">          </span><span class="n">Warning</span><span class="w">   </span><span class="n">Failed</span><span class="w">              </span><span class="n">pod</span><span class="o">/</span><span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="n">sc784</span><span class="w">                           </span><span class="nl">Error:</span><span class="w"> </span><span class="n">ErrImagePull</span><span class="w"></span>
-</code></pre></div>
-
-<p>This shows you that you lack <code>docker.io/calico/cni:v3.21.4</code> image, and need to import it in order to fix the issue.</p>
-<p>The process of such action is always:</p>
-<div class="codehilite"><pre><span></span><code>docker pull &lt;needed_image&gt;
-docker save &lt;needed_image&gt; &gt; image.tar
-</code></pre></div>
-
-<p>Transfer package to the offline lab and execute:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">microk8s</span> <span class="n">ctr</span> <span class="n">image</span> <span class="kn">import</span> <span class="nn">image.tar</span>
-</code></pre></div>
-
+<p>NOTE: for other versions of <code>microk8s</code>, tags of images may differ. </p>
 <p>The healthy instance of microk8s, after running:</p>
 <div class="codehilite"><pre><span></span><code>microk8s enable hostpath-storage
 microk8s enable rbac
@@ -871,10 +941,17 @@ kube-system    hostpath-provisioner-f57964d5f-zs4sj       1/1     Running       
 kube-system    metrics-server-5f8f64cb86-x7k29            1/1     Running                 0          2m15s
 </code></pre></div>
 
+<h2 id="enabling-dns-and-metallb">Enabling DNS and Metallb<a class="headerlink" href="#enabling-dns-and-metallb" title="Permanent link">&para;</a></h2>
+<p>The <code>dns</code> and <code>metallb</code> don&rsquo;t require importing any images, so you can enable them simply by:</p>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s enable dns</span><span class="w"></span>
+<span class="l l-Scalar l-Scalar-Plain">microk8s enable metallb</span><span class="w"></span>
+</code></pre></div>
+
+<p>More on <code>metallb</code> <a href="../../gettingstarted/mk8s/k8s-microk8s/#install-metallb">here</a>.</p>
 <h2 id="installing-helm3">Installing helm3<a class="headerlink" href="#installing-helm3" title="Permanent link">&para;</a></h2>
-<p>The additional problem is the installation of <code>helm3</code> addon. You need to do a few things to make it work.</p>
+<p>The additional problem is the installation of <code>helm3</code> add-on. You need to do a few things to make it work.</p>
 <ol>
-<li>Check what is your server&rsquo;s platform with:</li>
+<li>Check your server&rsquo;s platform with:</li>
 </ol>
 <div class="codehilite"><pre><span></span><code>dpkg --print-architecture
 </code></pre></div>
@@ -883,7 +960,7 @@ kube-system    metrics-server-5f8f64cb86-x7k29            1/1     Running       
 You need the platform to download the correct version of helm.</p>
 <ol start="2">
 <li>
-<p>Download the helm package from <code>https://get.helm.sh/helm-v3.8.0-linux-{{arch}}.tar.gz</code> where <code>{{arch}}</code> should be 
+<p>Download the helm package from <code>https://get.helm.sh/helm-v3.8.0-linux-{{arch}}.tar.gz</code>, where <code>{{arch}}</code> should be 
 replaced with the result from the previous command. Example: <code>https://get.helm.sh/helm-v3.8.0-linux-amd64.tar.gz</code></p>
 </li>
 <li>
@@ -907,21 +984,11 @@ replaced with the result from the previous command. Example: <code>https://get.h
 
 <p>Save file.</p>
 <ol start="6">
-<li>
-<p>Run <code>microk8s enable helm3</code></p>
-</li>
-<li>
-<p>Enable <code>dns</code> and <code>metallb</code> (more on <code>metallb</code> <a href="../../gettingstarted/mk8s/k8s-microk8s/#install-metallb">here</a>):</p>
-</li>
+<li>Run <code>microk8s enable helm3</code></li>
 </ol>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s enable dns</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">microk8s enable metallb</span><span class="w"></span>
-</code></pre></div>
-
-<ol start="8">
-<li>Check if <code>helm3</code> was successfully installed with command: <code>microk8s status --wait-ready</code>. An example of
-a correct output is:</li>
-</ol>
+<h2 id="verify-your-instance">Verify your instance<a class="headerlink" href="#verify-your-instance" title="Permanent link">&para;</a></h2>
+<p>Check if all the add-ons were installed successfully with command: <code>microk8s status --wait-ready</code>. An example of
+a correct output is:</p>
 <div class="codehilite"><pre><span></span><code><span class="n">microk8s</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">running</span><span class="w"></span>
 <span class="n">high</span><span class="o">-</span><span class="nl">availability:</span><span class="w"> </span><span class="n">no</span><span class="w"></span>
 <span class="w">  </span><span class="n">datastore</span><span class="w"> </span><span class="n">master</span><span class="w"> </span><span class="nl">nodes:</span><span class="w"> </span><span class="mf">127.0.0.1</span><span class="o">:</span><span class="mh">19001</span><span class="w"></span>

@@ -868,11 +868,11 @@
 
 <h1 id="splunk-opentelemetry-collector-for-kubernetes-installation">Splunk OpenTelemetry Collector for Kubernetes installation<a class="headerlink" href="#splunk-opentelemetry-collector-for-kubernetes-installation" title="Permanent link">&para;</a></h1>
 <p>Splunk OpenTelemetry Collector for Kubernetes is not required for SC4SNMP installation. This is the tool that sends logs
-and metrics from k8s cluster to Splunk instance, what makes SC4SNMP easier to debug. 
-You can do the same using <code>microk8s kubectl logs</code> command on instances you&rsquo;re interested in, but if you&rsquo;re not proficient in Kubernetes,
+and metrics from a k8s cluster to a Splunk instance, which makes SC4SNMP easier to debug. 
+You can do the same using the <code>microk8s kubectl logs</code> command on instances you&rsquo;re interested in, but if you&rsquo;re not proficient in Kubernetes,
 Splunk OpenTelemetry Collector for Kubernetes is strongly advised.</p>
 <p>The below steps are sufficient for a Splunk OpenTelemetry Collector installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud.
-In order to learn more about Splunk OpenTelemetry Collector visit <a href="https://github.com/signalfx/splunk-otel-collector-chart">Splunk OpenTelemetry Collector</a>.</p>
+In order to learn more about Splunk OpenTelemetry Collector, visit <a href="https://github.com/signalfx/splunk-otel-collector-chart">Splunk OpenTelemetry Collector</a>.</p>
 <h3 id="offline-installation">Offline installation<a class="headerlink" href="#offline-installation" title="Permanent link">&para;</a></h3>
 <p>For offline installation instructions see <a href="../../offlineinstallation/offline-sck/">this page</a>.</p>
 <h3 id="add-splunk-opentelemetry-collector-repository-to-helm">Add Splunk OpenTelemetry Collector repository to HELM<a class="headerlink" href="#add-splunk-opentelemetry-collector-repository-to-helm" title="Permanent link">&para;</a></h3>
@@ -938,7 +938,7 @@ In order to learn more about Splunk OpenTelemetry Collector visit <a href="https
 </code></pre></div>
 
 <h2 id="install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes">Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" title="Permanent link">&para;</a></h2>
-<p>To run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the description presented below</p>
+<p>To run Splunk OpenTelemetry Collector on your environment, replace the <code>&lt;&gt;</code> variables according to the description presented below:</p>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install sck
 --set<span class="o">=</span><span class="s2">&quot;clusterName=&lt;cluster_name&gt;&quot;</span>
 --set<span class="o">=</span><span class="s2">&quot;splunkObservability.realm=&lt;realm&gt;&quot;</span>
@@ -988,7 +988,7 @@ splunk-otel-collector-chart/splunk-otel-collector
 </tr>
 </tbody>
 </table>
-<p>An example of filled up command is:</p>
+<p>An example of a filled up command is:</p>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 upgrade --install sck
 --set<span class="o">=</span><span class="s2">&quot;clusterName=my_cluster&quot;</span>
 --set<span class="o">=</span><span class="s2">&quot;splunkObservability.realm=us0&quot;</span>

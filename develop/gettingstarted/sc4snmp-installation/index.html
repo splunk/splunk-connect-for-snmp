@@ -885,9 +885,9 @@
 
 
 <h1 id="sc4snmp-helm-installation">SC4SNMP Helm installation<a class="headerlink" href="#sc4snmp-helm-installation" title="Permanent link">&para;</a></h1>
-<p>The basic installation process and configuration used in this section are typical 
-for single node non HA deployments and do not have resource requests and limits.
-See the configuration sections for mongo, redis, scheduler, worker, and traps for guidance
+<p>The basic installation and configuration process discussed in this section is typical 
+for single node non-HA deployments. It does not have resource requests and limits.
+See the mongo, redis, scheduler, worker, and traps configuration sections for guidance
 on production configuration.</p>
 <h3 id="offline-installation">Offline installation<a class="headerlink" href="#offline-installation" title="Permanent link">&para;</a></h3>
 <p>For offline installation instructions see <a href="../../offlineinstallation/offline-sc4snmp/">this page</a>.</p>
@@ -992,10 +992,10 @@ on production configuration.</p>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </code></pre></div>
 
-<p><code>values.yaml</code> is being used during the installation process for configuring Kubernetes values.</p>
+<p><code>values.yaml</code> is used during the installation process for configuring Kubernetes values.</p>
 <h3 id="configure-splunk-enterprise-or-splunk-cloud-connection">Configure Splunk Enterprise or Splunk Cloud Connection<a class="headerlink" href="#configure-splunk-enterprise-or-splunk-cloud-connection" title="Permanent link">&para;</a></h3>
-<p>Splunk Enterprise or Splunk Cloud connection is enabled by default, to disable Splunk Enterprise or Splunk Cloud <code>splunk.enabled</code> property must be set to <code>false</code>.
-Additionally, connection parameters for Splunk Enterprise or Splunk Cloud needs to be set in <code>splunk</code> section: </p>
+<p>Splunk Enterprise or Splunk Cloud Connection is enabled by default. To disable Splunk Enterprise or Splunk Cloud <code>splunk.enabled</code> property, set it to <code>false</code>.
+Additionally, the connection parameters for Splunk Enterprise or Splunk Cloud need to be set in the <code>splunk</code> section: </p>
 <table>
 <thead>
 <tr>
@@ -1060,9 +1060,9 @@ Additionally, connection parameters for Splunk Enterprise or Splunk Cloud needs 
 </tbody>
 </table>
 <h3 id="configure-splunk-infrastructure-monitoring-connection">Configure Splunk Infrastructure Monitoring Connection<a class="headerlink" href="#configure-splunk-infrastructure-monitoring-connection" title="Permanent link">&para;</a></h3>
-<p>Splunk Infrastructure Monitoring is disabled by default, to enable Splunk Infrastructure Monitoring 
-<code>sim.enabled</code> property must be set to <code>true</code>.
-Additionally, connection parameters for Splunk Infrastructure Monitoring need to be set in <code>sim</code> section:</p>
+<p>Splunk Infrastructure Monitoring is disabled by default. To enable the Splunk Infrastructure Monitoring 
+<code>sim.enabled</code> property, set it to <code>true</code>.
+Additionally, connection parameters for Splunk Infrastructure Monitoring need to be set in the <code>sim</code> section:</p>
 <table>
 <thead>
 <tr>
@@ -1121,7 +1121,7 @@ inserted in the corresponding section of <code>values.yaml</code>. For more deta
 </li>
 <li>
 <p>Test the trap from a Linux system with SNMP installed. Replace the IP address 
-    <code>10.0.101.22</code> with the shared IP address above</p>
+    <code>10.0.101.22</code> with the shared IP address above.</p>
 </li>
 </ul>
 <div class="codehilite"><pre><span></span><code>apt update
@@ -1131,7 +1131,7 @@ snmptrap -v2c -c public <span class="m">10</span>.0.101.22 <span class="m">123</
 
 <ul>
 <li>Search Splunk: You should see one event per trap command with the host value of the
-    test machine IP address</li>
+    test machine IP address.</li>
 </ul>
 <div class="codehilite"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">&quot;netops&quot;</span> <span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:traps&quot;</span>
 </code></pre></div>
@@ -1140,7 +1140,7 @@ snmptrap -v2c -c public <span class="m">10</span>.0.101.22 <span class="m">123</
 <ul>
 <li>
 <p>Test the Poller by logging into Splunk and confirming the presence of events
-    in snmp <code>netops</code> and metrics in <code>netmetrics</code> index</p>
+    in snmp <code>netops</code> and metrics in <code>netmetrics</code> index.</p>
 </li>
 <li>
 <p>Test the trap from a Linux system install snmpd.</p>
@@ -1151,17 +1151,16 @@ apt-get install snmpd
 </code></pre></div>
 
 <ul>
-<li>To test SNMP poller, snmpd needs to be configured to listen on the external IP. To enabled listening snmpd to external IP, 
-in configuration file: <code>/etc/snmp/snmpd.conf</code> replace the IP address  <code>10.0.101.22</code> with the server IP address where snmpd is configured
-<code>agentaddress  10.0.101.22,127.0.0.1,[::1]</code>. Restart snmpd by execute command:</li>
+<li>To test SNMP poller, snmpd needs to be configured to listen on the external IP. To enable listening snmpd to external IP, go to the <code>/etc/snmp/snmpd.conf</code> configuration file, and replace the IP address <code>10.0.101.22</code> with the server IP address where snmpd is configured.
+<code>agentaddress  10.0.101.22,127.0.0.1,[::1]</code>. Restart snmpd through the execute command:</li>
 </ul>
 <div class="codehilite"><pre><span></span><code>service snmpd stop
 service snmpd start
 </code></pre></div>
 
 <ul>
-<li>Configure SC4SNMP Poller to test add IP address which you want to poll. Add configuration entry in <code>values.yaml</code> file by 
-replacing the IP address <code>10.0.101.22</code> with the server IP address where snmpd was configured.</li>
+<li>Configure SC4SNMP Poller to test and add the IP address which you want to poll. Add the configuration entry into the <code>values.yaml</code> file by 
+replacing the IP address <code>10.0.101.22</code> with the server IP address where the snmpd was configured.</li>
 </ul>
 <div class="codehilite"><pre><span></span><code>poller:
   inventory: <span class="p">|</span>
@@ -1178,10 +1177,10 @@ replacing the IP address <code>10.0.101.22</code> with the server IP address whe
 <ul>
 <li>Check-in Splunk</li>
 </ul>
-<p>Before polling starts, SC4SNMP must perform SNMP WALK process on the device. It is run first time after configuring the new device and  then in every <code>walk_interval</code>. 
-Its purpose is to gather all the data and provide meaningful context for the polling records. May be, that your device is so big that walk takes too long and scope of walking must be limited.
-In such cases, enable the small walk using the instruction: <a href="../../bestpractices/#walking-a-device-takes-too-much-time">walk takes too much time</a>.
-When walk finishes, events appear in Splunk, check it with those queries:</p>
+<p>Before polling starts, SC4SNMP must perform SNMP WALK process on the device. It is the run first time after configuring the new device, and then the run time in every <code>walk_interval</code>. 
+Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
+In such cases, enable the small walk. See: <a href="../../bestpractices/#walking-a-device-takes-too-much-time">walk takes too much time</a>.
+When the walk finishes, events appear in Splunk. Confirm the walk with the following queries:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">&quot;netops&quot;</span> <span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:event&quot;</span>
 </code></pre></div>
 

@@ -611,8 +611,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#check-when-snmp-walk-was-executed-last-time-for-device" class="md-nav__link">
-    Check when SNMP WALK was executed last time for device
+  <a href="#check-when-snmp-walk-was-executed-last-time-for-the-device" class="md-nav__link">
+    Check when SNMP WALK was executed last time for the device
   </a>
   
 </li>
@@ -833,8 +833,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#check-when-snmp-walk-was-executed-last-time-for-device" class="md-nav__link">
-    Check when SNMP WALK was executed last time for device
+  <a href="#check-when-snmp-walk-was-executed-last-time-for-the-device" class="md-nav__link">
+    Check when SNMP WALK was executed last time for the device
   </a>
   
 </li>
@@ -922,11 +922,11 @@
 
 <h1 id="debug-splunk-connect-for-snmp">Debug Splunk Connect for SNMP<a class="headerlink" href="#debug-splunk-connect-for-snmp" title="Permanent link">&para;</a></h1>
 <h2 id="pieces-of-advice">Pieces of Advice<a class="headerlink" href="#pieces-of-advice" title="Permanent link">&para;</a></h2>
-<h3 id="check-when-snmp-walk-was-executed-last-time-for-device">Check when SNMP WALK was executed last time for device<a class="headerlink" href="#check-when-snmp-walk-was-executed-last-time-for-device" title="Permanent link">&para;</a></h3>
+<h3 id="check-when-snmp-walk-was-executed-last-time-for-the-device">Check when SNMP WALK was executed last time for the device<a class="headerlink" href="#check-when-snmp-walk-was-executed-last-time-for-the-device" title="Permanent link">&para;</a></h3>
 <ol>
 <li><a href="../gettingstarted/sck-installation/">Configure Splunk OpenTelemetry Collector for Kubernetes</a></li>
 <li>Go to your Splunk and execute search: <code>index="em_logs"   "Sending due task" "sc4snmp;&lt;IP_ADDRESS&gt;;walk"</code> 
-and replace <IP_ADDRESS> by IP Address which you are interested. </li>
+and replace <IP_ADDRESS> with the pertinent IP Address. </li>
 </ol>
 <h3 id="uninstall-splunk-connect-for-snmp">Uninstall Splunk Connect for SNMP<a class="headerlink" href="#uninstall-splunk-connect-for-snmp" title="Permanent link">&para;</a></h3>
 <p>To uninstall SC4SNMP run the following commands:</p>
@@ -936,10 +936,10 @@ and replace <IP_ADDRESS> by IP Address which you are interested. </li>
 
 <h3 id="installing-splunk-connect-for-snmp-on-linux-redhat">Installing Splunk Connect for SNMP on Linux RedHat<a class="headerlink" href="#installing-splunk-connect-for-snmp-on-linux-redhat" title="Permanent link">&para;</a></h3>
 <p>Installation of RedHat may be blocking ports required by microk8s. Installing microk8s on RedHat 
-required checking if the firewall is not blocking any of <a href="https://microk8s.io/docs/ports">required microk8s ports</a>. </p>
+requires checking to see if the firewall is not blocking any of <a href="https://microk8s.io/docs/ports">required microk8s ports</a>. </p>
 <h2 id="issues">Issues<a class="headerlink" href="#issues" title="Permanent link">&para;</a></h2>
 <h3 id="empty-snmp-response-message-problem">&ldquo;Empty SNMP response message&rdquo; problem<a class="headerlink" href="#empty-snmp-response-message-problem" title="Permanent link">&para;</a></h3>
-<p>In case you see the following line in worker&rsquo;s logs:</p>
+<p>In case you see the following line in the worker&rsquo;s logs:</p>
 <div class="codehilite"><pre><span></span><code>[<span class="mi">2022</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span><span class="w"> </span><span class="mi">11</span>:<span class="mi">44</span>:<span class="mi">22</span>,<span class="mi">553</span>:<span class="w"> </span><span class="nv">INFO</span><span class="o">/</span><span class="nv">ForkPoolWorker</span><span class="o">-</span><span class="mi">1</span>]<span class="w"> </span><span class="nv">Task</span><span class="w"> </span><span class="nv">splunk_connect_for_snmp</span>.<span class="nv">snmp</span>.<span class="nv">tasks</span>.<span class="nv">walk</span>[<span class="mi">8</span><span class="nv">e62fc62</span><span class="o">-</span><span class="mi">569</span><span class="nv">c</span><span class="o">-</span><span class="mi">473</span><span class="nv">f</span><span class="o">-</span><span class="nv">a765</span><span class="o">-</span><span class="nv">ff92577774e5</span>]<span class="w"> </span><span class="nv">retry</span>:<span class="w"> </span><span class="nv">Retry</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="mi">3489</span><span class="nv">s</span>:<span class="w"> </span><span class="nv">SnmpActionError</span><span class="ss">(</span><span class="s1">&#39;An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message&#39;</span><span class="ss">)</span><span class="w"></span>
 </code></pre></div>
 
@@ -963,27 +963,27 @@ required checking if the firewall is not blocking any of <a href="https://microk
 </code></pre></div>
 
 <p>If you put only IP address (ex. <code>127.0.0.1</code>), then errors will be ignored for all of its devices (like <code>127.0.0.1:161</code>, 
-<code>127.0.0.1:163</code>&hellip;). If you put IP address and host structured as <code>{host}:{port}</code> that means the error will be ignored only for this device.</p>
+<code>127.0.0.1:163</code>&hellip;). If you put IP address and host structured as <code>{host}:{port}</code>, that means the error will be ignored only for this device.</p>
 <h3 id="walking-a-device-takes-too-much-time">Walking a device takes too much time<a class="headerlink" href="#walking-a-device-takes-too-much-time" title="Permanent link">&para;</a></h3>
 <p>Enable small walk functionality with the following instruction: <a href="../configuration/configuring-profiles/#walk-profile">Configure small walk profile</a>. </p>
 <h3 id="an-error-of-snmp-iswalktrue-blocks-traffic-on-sc4snmp-instance">An error of SNMP isWalk=True blocks traffic on SC4SNMP instance<a class="headerlink" href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-sc4snmp-instance" title="Permanent link">&para;</a></h3>
 <p>If you see many <code>An error of SNMP isWalk=True</code> errors in logs, that means that there is a connection problem with the hosts you&rsquo;re polling from.
-Walk will try to retry multiple times, what will eventually cause a worker to be blocked for the retries time. In this case, you might want to limit
-the maximum retries time. You can do it by setting the variable <code>worker.walkRetryMaxInterval</code>, like:</p>
+Walk will try to retry multiple times, which will eventually cause a worker to be blocked for the retries time. In this case, you might want to limit
+the maximum retries time. You can do this by setting the variable <code>worker.walkRetryMaxInterval</code>, for example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">walkRetryMaxInterval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span><span class="w"></span>
 </code></pre></div>
 
-<p>With the configuration from the above, walk will retry exponentially until it reaches 60 seconds.</p>
+<p>With the configuration from the above, &lsquo;walk&rsquo; will retry exponentially until it reaches 60 seconds.</p>
 <h3 id="snmp-rollover">SNMP Rollover<a class="headerlink" href="#snmp-rollover" title="Permanent link">&para;</a></h3>
-<p>The Rollover problem is that the integer value that they store (especially when they are 32-bit) is finite, 
-and when it’s reaching the maximum, it gets rolled down to 0 again which causes a strange drop in Analytics data.
-The most common case of this issue is interface speed on a high speed ports. As a solution to this problem, SNMPv2 SMI defined a new object type, counter64, for 64-bit counters (<a href="https://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/26007-faq-snmpcounter.html">read more about it</a>).
-Not all the devices support it, but if they are - remember to always poll counter64 type OID instead of counter32 one. 
+<p>The Rollover problem is due to the integer value stored (especially when the value is 32-bit) being finite. 
+When it reaches its maximum, it gets rolled down to 0 again. This causes a strange drop in Analytics data.
+The most common case of this issue is interface speed on high speed ports. As a solution to this problem, SNMPv2 SMI defined a new object type, counter64, for 64-bit counters (<a href="https://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/26007-faq-snmpcounter.html">read more about it</a>).
+Not all the devices support it, but if they do, poll the counter64 type OID instead of the counter32 one. 
 For example, use <code>ifHCInOctets</code> instead of <code>ifInOctets</code>.</p>
-<p>If 64-bit counter are not supported on your device, you can write own splunk queries that calculate the shift based on
-maximum integer value + current state. The same works for values big enough that they&rsquo;re not fitting 64-bit value.
-An example for a SPLUNK query like that (inteface counter), would be:</p>
+<p>If 64-bit counter are not supported on your device, you can write your own Splunk queries that calculate the shift based on
+maximum integer value + current state. The same works for values big enough that they&rsquo;re not fitting a 64-bit value.
+An example for a SPLUNK query like that (interface counter), would be:</p>
 <div class="codehilite"><pre><span></span><code><span class="o">|</span><span class="w"> </span><span class="nv">streamstats</span><span class="w"> </span><span class="nv">current</span><span class="o">=</span><span class="nv">f</span><span class="w"> </span><span class="nv">last</span><span class="ss">(</span><span class="nv">ifInOctets</span><span class="ss">)</span><span class="w"> </span><span class="nv">as</span><span class="w"> </span><span class="nv">p_ifInOctets</span><span class="w"> </span><span class="nv">last</span><span class="ss">(</span><span class="nv">ifOutOctets</span><span class="ss">)</span><span class="w"> </span><span class="nv">as</span><span class="w"> </span><span class="nv">p_ifOutOctets</span><span class="w"> </span><span class="nv">by</span><span class="w"> </span><span class="nv">ifAlias</span><span class="w">             </span>
 <span class="o">|</span><span class="w"> </span><span class="nv">eval</span><span class="w"> </span><span class="nv">in_delta</span><span class="o">=</span><span class="ss">(</span><span class="nv">ifInOctets</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">p_ifInOctets</span><span class="ss">)</span><span class="w"></span>
 <span class="o">|</span><span class="w"> </span><span class="nv">eval</span><span class="w"> </span><span class="nv">out_delta</span><span class="o">=</span><span class="ss">(</span><span class="nv">ifOutOctets</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">p_ifOutOctets</span><span class="ss">)</span><span class="w"></span>

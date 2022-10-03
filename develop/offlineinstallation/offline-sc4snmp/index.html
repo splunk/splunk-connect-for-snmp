@@ -788,27 +788,27 @@
 
 <h1 id="offline-sc4snmp-installation">Offline SC4SNMP installation<a class="headerlink" href="#offline-sc4snmp-installation" title="Permanent link">&para;</a></h1>
 <h2 id="local-machine-with-internet-access">Local machine with internet access<a class="headerlink" href="#local-machine-with-internet-access" title="Permanent link">&para;</a></h2>
-<p>To install SC4SNMP offline first some packages must be downloaded from github release and then moved
-to the sc4snmp installation server. Those packages are:</p>
+<p>To install the SC4SNMP offline, first, some packages must be downloaded from the Github release and then moved
+to the SC4sNMP installation server. Those packages are:</p>
 <ul>
 <li><code>dependencies-images.tar</code></li>
 <li><code>splunk-connect-for-snmp-chart.tar</code></li>
 </ul>
-<p>Moreover, SC4SNMP Docker image must be pulled, saved as <code>.tar</code> package and then moved to the server as well. 
-This process requires Docker installed locally.</p>
-<p>Image can be pulled from the following repository: <code>ghcr.io/splunk/splunk-connect-for-snmp/container:&lt;tag&gt;</code>. 
-The latest tag can be found <a href="https://github.com/splunk/splunk-connect-for-snmp">here</a> under Releases section with label <code>latest</code>.</p>
+<p>Moreover, SC4SNMP Docker image must be pulled, saved as a <code>.tar</code> package, and then moved to the server as well. 
+This process requires Docker to be installed locally.</p>
+<p>Images can be pulled from the following repository: <code>ghcr.io/splunk/splunk-connect-for-snmp/container:&lt;tag&gt;</code>. 
+The latest tag can be found <a href="https://github.com/splunk/splunk-connect-for-snmp">here</a> under the Releases section with the label <code>latest</code>.</p>
 <p>Example of docker pull command:</p>
 <div class="codehilite"><pre><span></span><code>docker pull ghcr.io/splunk/splunk-connect-for-snmp/container:&lt;tag&gt;
 </code></pre></div>
 
-<p>Then save the image. Directory where this image will be saved can be specified after <code>&gt;</code> sign:</p>
+<p>Then save the image. Directory where this image will be saved can be specified after the <code>&gt;</code> sign:</p>
 <div class="codehilite"><pre><span></span><code>docker save ghcr.io/splunk/splunk-connect-for-snmp/container:&lt;tag&gt; &gt; snmp_image.tar
 </code></pre></div>
 
-<p>All three packages <code>snmp_image.tar</code>, <code>dependencies-images.tar</code> and <code>splunk-connect-for-snmp-chart.tar</code> must be moved to the sc4snmp installation server.</p>
+<p>All three packages, <code>snmp_image.tar</code>, <code>dependencies-images.tar</code>, and <code>splunk-connect-for-snmp-chart.tar</code>, must be moved to the SC4SNMP installation server.</p>
 <h2 id="installation-on-the-server">Installation on the server<a class="headerlink" href="#installation-on-the-server" title="Permanent link">&para;</a></h2>
-<p>On the server all the images must be imported to the microk8s cluster. This can be done with the following command:</p>
+<p>On the server, all the images must be imported to the microk8s cluster. This can be done with the following command:</p>
 <div class="codehilite"><pre><span></span><code>microk8s ctr image import &lt;name_of_tar_image&gt;
 </code></pre></div>
 
@@ -818,7 +818,7 @@ microk8s ctr image import snmp_image.tar
 </code></pre></div>
 
 <p>Then create <code>values.yaml</code>. It&rsquo;s a little different from <code>values.yaml</code> used in an online installation. 
-The difference are following lines added to prevent automatic image pulling:</p>
+The difference between the two files is the following, which is used for automatic image pulling:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">image</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Never&quot;</span><span class="w"></span>
 </code></pre></div>
@@ -920,11 +920,11 @@ The difference are following lines added to prevent automatic image pulling:</p>
 
 <p>Fill <code>###</code> variables according to the description from <a href="../../gettingstarted/sc4snmp-installation/#configure-splunk-enterprise-or-splunk-cloud-connection">online installation</a>.</p>
 <p>Additionally, fill <code>###TAG###</code> with the same tag you used before to <code>docker pull</code> an SC4SNMP image.</p>
-<p>The next step is to unpack chart package <code>splunk-connect-for-snmp-chart.tar</code>. It will result in creating <code>splunk-connect-for-snmp</code> directory:</p>
+<p>The next step is to unpack the chart package <code>splunk-connect-for-snmp-chart.tar</code>. It will result in creating the <code>splunk-connect-for-snmp</code> directory:</p>
 <div class="codehilite"><pre><span></span><code>tar -xvf splunk-connect-for-snmp-chart.tar --exclude<span class="o">=</span><span class="s1">&#39;._*&#39;</span>
 </code></pre></div>
 
-<p>Finally, run helm install command in the directory where both <code>values.yaml</code> and <code>splunk-connect-for-snmp</code> directory are located:</p>
+<p>Finally, run the helm install command in the directory where both the <code>values.yaml</code> and <code>splunk-connect-for-snmp</code> directories are located:</p>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
 
