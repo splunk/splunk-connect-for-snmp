@@ -848,6 +848,15 @@ then save it to <code>tar</code> packages:</p>
 </code></pre></div>
 
 <p>This shows you that you lack <code>docker.io/calico/cni:v3.21.4</code> image, and need to import it in order to fix the issue.</p>
+<p>The process of such action is always:</p>
+<div class="codehilite"><pre><span></span><code>docker pull &lt;needed_image&gt;
+docker save &lt;needed_image&gt; &gt; image.tar
+</code></pre></div>
+
+<p>Transfer package to the offline lab and execute:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">microk8s</span> <span class="n">ctr</span> <span class="n">image</span> <span class="kn">import</span> <span class="nn">image.tar</span>
+</code></pre></div>
+
 <p>The healthy instance of microk8s, after running:</p>
 <div class="codehilite"><pre><span></span><code>microk8s enable hostpath-storage
 microk8s enable rbac

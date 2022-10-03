@@ -832,6 +832,7 @@ The difference are following lines added to prevent automatic image pulling:</p>
 <span class="w">  </span><span class="nt">insecureSSL</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;false&quot;</span><span class="w"></span>
 <span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;###SPLUNK_PORT###&quot;</span><span class="w"></span>
 <span class="nt">image</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="c1">###TAG###</span><span class="w"></span>
 <span class="w">  </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Never&quot;</span><span class="w"></span>
 <span class="nt">traps</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">communities</span><span class="p">:</span><span class="w"></span>
@@ -917,11 +918,13 @@ The difference are following lines added to prevent automatic image pulling:</p>
 <span class="w">    </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Never&quot;</span><span class="w"></span>
 </code></pre></div>
 
-<p>Next step is to unpack chart package <code>splunk-connect-for-snmp-chart.tar</code>. It will result in creating <code>splunk-connect-for-snmp</code> directory:</p>
+<p>Fill <code>###</code> variables according to the description from <a href="../../gettingstarted/sc4snmp-installation/#configure-splunk-enterprise-or-splunk-cloud-connection">online installation</a>.</p>
+<p>Additionally, fill <code>###TAG###</code> with the same tag you used before to <code>docker pull</code> an SC4SNMP image.</p>
+<p>The next step is to unpack chart package <code>splunk-connect-for-snmp-chart.tar</code>. It will result in creating <code>splunk-connect-for-snmp</code> directory:</p>
 <div class="codehilite"><pre><span></span><code>tar -xvf splunk-connect-for-snmp-chart.tar --exclude<span class="o">=</span><span class="s1">&#39;._*&#39;</span>
 </code></pre></div>
 
-<p>Finally run helm install command in the directory where both <code>values.yaml</code> and <code>splunk-connect-for-snmp</code> directory are located:</p>
+<p>Finally, run helm install command in the directory where both <code>values.yaml</code> and <code>splunk-connect-for-snmp</code> directory are located:</p>
 <div class="codehilite"><pre><span></span><code>microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp --namespace<span class="o">=</span>sc4snmp --create-namespace
 </code></pre></div>
 
