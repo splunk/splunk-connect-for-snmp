@@ -60,6 +60,7 @@ splunk:
   insecureSSL: "false"
   port: "###SPLUNK_PORT###"
 image:
+  tag: ###TAG###
   pullPolicy: "Never"
 traps:
   communities:
@@ -145,13 +146,17 @@ redis:
     pullPolicy: "Never"
 ```
 
-Next step is to unpack chart package `splunk-connect-for-snmp-chart.tar`. It will result in creating `splunk-connect-for-snmp` directory:
+Fill `###` variables according to the description from [online installation](../gettingstarted/sc4snmp-installation.md#configure-splunk-enterprise-or-splunk-cloud-connection).
+
+Additionally, fill `###TAG###` with the same tag you used before to `docker pull` an SC4SNMP image.
+
+The next step is to unpack chart package `splunk-connect-for-snmp-chart.tar`. It will result in creating `splunk-connect-for-snmp` directory:
 
 ```bash
 tar -xvf splunk-connect-for-snmp-chart.tar --exclude='._*'
 ```
 
-Finally run helm install command in the directory where both `values.yaml` and `splunk-connect-for-snmp` directory are located:
+Finally, run helm install command in the directory where both `values.yaml` and `splunk-connect-for-snmp` directory are located:
 
 ```bash
 microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
