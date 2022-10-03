@@ -80,6 +80,17 @@ kube-system    0s          Warning   Failed              pod/calico-node-sc784  
 
 This shows you that you lack `docker.io/calico/cni:v3.21.4` image, and need to import it in order to fix the issue.
 
+The process of such action is always:
+
+```commandline
+docker pull <needed_image>
+docker save <needed_image> > image.tar
+```
+Transfer package to the offline lab and execute:
+
+```
+microk8s ctr image import image.tar
+```
 
 The healthy instance of microk8s, after running:
 
