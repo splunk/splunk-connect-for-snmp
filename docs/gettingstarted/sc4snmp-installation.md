@@ -1,8 +1,8 @@
 # SC4SNMP Helm installation
 
-The basic installation process and configuration used in this section are typical 
-for single node non HA deployments and do not have resource requests and limits.
-See the configuration sections for mongo, redis, scheduler, worker, and traps for guidance
+The basic installation and configuration process discussed in this section is typical 
+for single node non-HA deployments. It does not have resource requests and limits.
+See the mongo, redis, scheduler, worker, and traps configuration sections for guidance
 on production configuration.
 
 ### Offline installation
@@ -112,11 +112,11 @@ mongodb:
     enabled: true
 ```
 
-`values.yaml` is being used during the installation process for configuring Kubernetes values.
+`values.yaml` is used during the installation process for configuring Kubernetes values.
 
 ### Configure Splunk Enterprise or Splunk Cloud Connection
-Splunk Enterprise or Splunk Cloud connection is enabled by default, to disable Splunk Enterprise or Splunk Cloud `splunk.enabled` property must be set to `false`.
-Additionally, connection parameters for Splunk Enterprise or Splunk Cloud needs to be set in `splunk` section: 
+Splunk Enterprise or Splunk Cloud Connection is enabled by default. To disable Splunk Enterprise or Splunk Cloud `splunk.enabled` property, set it to `false`.
+Additionally, the connection parameters for Splunk Enterprise or Splunk Cloud need to be set in the `splunk` section: 
 
 | Placeholder   | Description  | Example  | 
 |---|---|---|
@@ -136,9 +136,9 @@ Other optional variables can be configured:
 
 
 ### Configure Splunk Infrastructure Monitoring Connection
-Splunk Infrastructure Monitoring is disabled by default, to enable Splunk Infrastructure Monitoring 
-`sim.enabled` property must be set to `true`.
-Additionally, connection parameters for Splunk Infrastructure Monitoring need to be set in `sim` section:
+Splunk Infrastructure Monitoring is disabled by default. To enable the Splunk Infrastructure Monitoring 
+`sim.enabled` property, set it to `true`.
+Additionally, connection parameters for Splunk Infrastructure Monitoring need to be set in the `sim` section:
 
 | variable | description | default |
 | --- | --- | --- |
@@ -184,7 +184,7 @@ snmp-splunk-connect-for-snmp-inventory-mjccw                  0/1     Completed 
     in snmp `netops` index.
 
 -   Test the trap from a Linux system with SNMP installed. Replace the IP address 
-    `10.0.101.22` with the shared IP address above
+    `10.0.101.22` with the shared IP address above.
 
 ``` bash
 apt update
@@ -193,7 +193,7 @@ snmptrap -v2c -c public 10.0.101.22 123 1.3.6.1.2.1.1.4 1.3.6.1.2.1.1.4 s test
 ```
 
 -   Search Splunk: You should see one event per trap command with the host value of the
-    test machine IP address
+    test machine IP address.
 
 ``` bash
 index="netops" sourcetype="sc4snmp:traps"
@@ -201,7 +201,7 @@ index="netops" sourcetype="sc4snmp:traps"
 
 ### Test SNMP Poller
 - Test the Poller by logging into Splunk and confirming the presence of events
-    in snmp `netops` and metrics in `netmetrics` index
+    in snmp `netops` and metrics in `netmetrics` index.
 
 - Test the trap from a Linux system install snmpd.
     
@@ -210,16 +210,15 @@ apt update
 apt-get install snmpd
 ```
 
-- To test SNMP poller, snmpd needs to be configured to listen on the external IP. To enabled listening snmpd to external IP, 
-in configuration file: `/etc/snmp/snmpd.conf` replace the IP address  `10.0.101.22` with the server IP address where snmpd is configured
-`agentaddress  10.0.101.22,127.0.0.1,[::1]`. Restart snmpd by execute command:
+- To test SNMP poller, snmpd needs to be configured to listen on the external IP. To enable listening snmpd to external IP, go to the `/etc/snmp/snmpd.conf` configuration file, and replace the IP address `10.0.101.22` with the server IP address where snmpd is configured.
+`agentaddress  10.0.101.22,127.0.0.1,[::1]`. Restart snmpd through the execute command:
 ``` bash
 service snmpd stop
 service snmpd start
 ```
 
-- Configure SC4SNMP Poller to test add IP address which you want to poll. Add configuration entry in `values.yaml` file by 
-replacing the IP address `10.0.101.22` with the server IP address where snmpd was configured.
+- Configure SC4SNMP Poller to test and add the IP address which you want to poll. Add the configuration entry into the `values.yaml` file by 
+replacing the IP address `10.0.101.22` with the server IP address where the snmpd was configured.
 ``` bash
 poller:
   inventory: |
@@ -235,10 +234,10 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 
 -   Check-in Splunk
  
-Before polling starts, SC4SNMP must perform SNMP WALK process on the device. It is run first time after configuring the new device and  then in every `walk_interval`. 
-Its purpose is to gather all the data and provide meaningful context for the polling records. May be, that your device is so big that walk takes too long and scope of walking must be limited.
-In such cases, enable the small walk using the instruction: [walk takes too much time](../../bestpractices/#walking-a-device-takes-too-much-time).
-When walk finishes, events appear in Splunk, check it with those queries:
+Before polling starts, SC4SNMP must perform SNMP WALK process on the device. It is the run first time after configuring the new device, and then the run time in every `walk_interval`. 
+Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
+In such cases, enable the small walk. See: [walk takes too much time](../../bestpractices/#walking-a-device-takes-too-much-time).
+When the walk finishes, events appear in Splunk. Confirm the walk with the following queries:
 
 ``` bash
 index="netops" sourcetype="sc4snmp:event"

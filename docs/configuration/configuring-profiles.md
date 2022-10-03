@@ -1,23 +1,23 @@
 # Configuring profiles
 
-Profiles are the units, where you can configure what you want to poll and then assign them to the device. The definition of profile can be found in `values.yaml` file
+Profiles are the units where you can configure what you want to poll, and then assign them to the device. The definition of profile can be found in the `values.yaml` file
 under the `scheduler` section.
 
-Here is the instruction of how to use profiles: [Update Inventory and Profile](../deployment-configuration/#update-inventory-and-profile). 
+Here are the instructions on how to use profiles: [Update Inventory and Profile](../deployment-configuration/#update-inventory-and-profile). 
 
 There are two types of profiles in general:
 
-1. Static profile - polling starts when profile is added to `profiles` field in `inventory` of the device
+1. Static profile - polling starts when the profile is added to the `profiles` field in the `inventory` of the device.
 2. Smart profile - polling starts when configured conditions are fulfilled, and the device to poll from has `smart_profiles` enabled in inventory.
-Smart profiles are useful when we have many devices of certain kind, and we don't want to configure all of them "one by one" with static profiles.
+Smart profiles are useful when we have many devices of a certain kind, and we don't want to configure each of them individually with static profiles.
    
-    In order to configure smart profile do the following:
+    In order to configure smart profile, do the following:
    
-    1. Choose one of the fields polled from device, most commonly sysDescr is being used
-    2. Set the filter to match all the devices of this kind
-    3. Setup polling of the profile by enabling smart profiles for devices you want this profile to be polled
+    1. Choose one of the fields polled from the device, most commonly sysDescr. 
+    2. Set the filter to match all the devices of this kind.
+    3. Setup polling of the profile by enabling smart profiles for devices you want to be polled.
 
-The template of the profile looks like following:
+The template of the profile looks like the following:
 
 ```yaml
 scheduler:
@@ -42,7 +42,7 @@ scheduler:
           - ['SNMPv2-MIB', 'sysUpTime',0]
 ```
 
-For example, we have configured two profiles. One is smart, the other one is static:
+For example, we have configured two profiles. One is smart, and the other one is static:
 
 ```yaml
 scheduler:
@@ -64,7 +64,7 @@ scheduler:
           - ['IP-MIB']
 ```
 
-If we want to enable only `static_profile` polling for host `10.202.4.202`, we will configure inventory like that:
+If we want to enable only `static_profile` polling for the host `10.202.4.202`, we will configure similar inventory:
 
 ```yaml
 poller:
@@ -73,7 +73,7 @@ poller:
       10.202.4.202,,2c,public,,,2000,static_profile,f,
 ```
 
-If we want to enable checking `10.202.4.202` device against smart profiles, we need to set `smart_profiles` to `t`:
+If we want to enable checking the `10.202.4.202` device against smart profiles, we need to set `smart_profiles` to `t`:
 
 ```yaml
 poller:
@@ -82,22 +82,22 @@ poller:
       10.202.4.202,,2c,public,,,2000,,t,
 ```
 
-Then if the device `sysDescr` match `'.*linux.*'` filter, `smart_profile` profile will be polled.
+Then, if the device `sysDescr` matches the `'.*linux.*'` filter, the `smart_profile` profile will be polled.
 
 
 ## varBinds configuration
-`varBinds` short for "variable binding" in SNMP. The combination of an Object Identifier (OID) and a value. 
+`varBinds` is short for "variable binding" in the SNMP. It is the combination of an Object Identifier (OID) and a value. 
 `varBinds` are used for defining what OIDs should be requested from SNMP Agents. `varBinds` is a required 
-subsection of each profile. Syntax configuration of `varBinds` looks following:
+subsection of each profile. The syntax configuration of `varBinds` looks like the following:
 
  [ "MIB-Component", "MIB object"[Optional], "MIB index number"[Optional]]
  
- - `MIB-Component` - The SNMP MIB, itself, consists of distinct component MIBs, each of which refers to a specific 
- defined collection of management information that is part of the overall SNMP MIB eg. `SNMPv2-MIB`. 
- If only `MIB-Component` is set then SC4SNMP will get whole subtree.
+ - `MIB-Component` - The SNMP MIB itself consists of distinct component MIBs, each of which refers to a specific 
+ defined collection of management information that is part of the overall SNMP MIB, eg., `SNMPv2-MIB`. 
+ If only the `MIB-Component` is set, then the SC4SNMP will get the whole subtree.
  - `MIB object` -  The SNMP MIB stores only simple data types: scalars and two-dimensional arrays of scalars, 
- called tables. Keywords SYNTAX, ACCESS, and DESCRIPTION as well as other keywords such as STATUS and 
- INDEX is used to define the SNMP MIB managed objects. 
+ called tables. The keywords SYNTAX, ACCESS, and DESCRIPTION as well as other keywords such as STATUS and 
+ INDEX are used to define the SNMP MIB managed objects. 
  - `MIB index number` - Define index number for given MIB Object eg. `0`.
  
 Example:
@@ -110,10 +110,10 @@ Example:
 ```
 
 ## Static Profile configuration
-Static Profile are used when they are defined on a list of profiles in inventory configuration in `poller` 
+Static Profile is used when they are defined on a list of profiles in the inventory configuration in the `poller` 
 service [Inventory configuration](../poller-configuration/#configure-inventory). Static Profiles are executed 
 even if the SmartProfile flag in inventory is set to false. 
-To configure Static Profile following value needs to be set in `profiles` section:
+To configure Static Profile value needs to be set in the `profiles` section:
 
  - `ProfileName` - define as subsection key in `profiles`. 
     - `frequency` - define interval between executing SNMP gets in second.  
@@ -133,11 +133,11 @@ scheduler:
 
 ### Particular kinds of static profiles
 
-Sometimes static profiles have additional functionalities, to be used in some special scenarios. 
+Sometimes static profiles have additional functionalities to be used in specific scenarios. 
 
 #### WALK profile
 
-If you would like to limit the scope of the walk, you should set one of the profiles in the inventory to point to the profile definition of type `walk`
+If you would like to limit the scope of the walk, you should set one of the profiles in the inventory to point to the profile definition of type `walk`:
 ```yaml
 scheduler:
     profiles: |
@@ -147,8 +147,8 @@ scheduler:
         varBinds:
           - ['UDP-MIB']
 ``` 
-Such profile should be placed in the profiles section of inventory definition. It will be executed with the frequency defined in `walk_interval`.
-In case of multiple profiles of type `walk` will be placed in profiles, the last one will be used. 
+This profile should be placed in the profiles section of the inventory definition. It will be executed with the frequency defined in `walk_interval`.
+If multiple profiles of type `walk` is placed in profiles, the last one will be used. 
 
 This is how to use `walk` profiles:
 
@@ -159,23 +159,23 @@ poller:
     10.202.4.202,,2c,public,,,2000,small_walk,,
 ```
 
-NOTE: When small walk is configured, you can set up polling only of OIDs belonging to walk profile varBinds. 
-Additionally, there are two MIB families that are enabled by default (we need them to create state of the device in the database and poll base profiles): `IF-MIB` and `SNMPv2-MIB`.
-For example, if you've decided to use `small_walk` from the example above, you'll be able to poll only `UDP-MIB`, `IF-MIB` and `SNMPv2-MIB` OIDs.
+NOTE: When small walk is configured, you can set up polling only of OIDs belonging to the walk profile varBinds. 
+Additionally, there are two MIB families that are enabled by default (we need them to create the state of the device in the database and poll base profiles): `IF-MIB` and `SNMPv2-MIB`.
+For example, if you've decided to use `small_walk` from the example above, you'll be able to poll only `UDP-MIB`, `IF-MIB`, and `SNMPv2-MIB` OIDs.
 
 
 ## SmartProfile configuration
 SmartProfile is executed when the SmartProfile flag in inventory is set to true and the condition defined in profile match. 
-More information about configuring inventory can be found in [Inventory configuration](../poller-configuration/#configure-inventory)
+More information about configuring inventory can be found in [Inventory configuration](../poller-configuration/#configure-inventory).
 
-To configure Smart Profile following value need to be set in `profiles` section:
+To configure Smart Profile, the following value needs to be set in the `profiles` section:
 
  - `ProfileName` - define as subsection key in `profiles`. 
     - `frequency` - define an interval between executing SNMP's gets in second.
     - `condition` - section define conditions to match profile
-        - `type` - key of `condition` section which defines type of condition. Allowed value `base` and `field` (`walk` type is also allowed here, but it's not part of smart profiles)
+        - `type` - key of `condition` section which defines type of condition. The allowed values are `base` and `field` (`walk` type is also allowed here, but it's not part of smart profiles).
             - `base` type of condition will be executed when `SmartProfile` in inventory is set to true.
-            - `field` type of condition will be executed if match `pattern` for defined `field`. Supported fields:
+            - `field` type of condition will be executed if it matches `pattern` for defined `field`. Supported fields are:
                 -  "SNMPv2-MIB.sysDescr"
                 -  "SNMPv2-MIB.sysObjectID"
         - `field` Define field name for condition type field. 
@@ -183,7 +183,7 @@ To configure Smart Profile following value need to be set in `profiles` section:
                 - ".*linux.*"
     - `varBinds` - define var binds to query. 
 
-Example of `base` type profile
+Example of `base` type profile:
 ```yaml
 scheduler:
     profiles: |
@@ -196,7 +196,7 @@ scheduler:
           - ['SNMPv2-MIB', 'sysName']
 ``` 
 
-Example of `field`  type profile, also called an automatic profile
+Example of `field`  type profile, also called an automatic profile:
 ```yaml
 scheduler:
     profiles: |
@@ -213,11 +213,11 @@ scheduler:
 ``` 
 
 NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 1 minute for changes to propagate. In case you changed frequency, or a profile type, the change will be reflected only after the next walk.
-There is also 5 minute TTL for an inventory pod. Basically, SC4SNMP allows one inventory upgrade and then block updates for the next 5 minutes
+There is also 5 minute TTL for an inventory pod. Basically, SC4SNMP allows one inventory upgrade and then block updates for the next 5 minutes.
 
 ## Custom translations
-If the user wants to use custom names/translations of MIB names, it can be configured under customTranslations section under scheduler config.
-Translations are grouped by MIB family. In the example below IF-MIB.ifInDiscards will be translated to IF-MIB.myCustomName1
+If the user wants to use custom names/translations of MIB names, it can be configured under the customTranslations section under scheduler config.
+Translations are grouped by MIB family. In the example below IF-MIB.ifInDiscards will be translated to IF-MIB.myCustomName1:
 ```yaml
 scheduler:
     customTranslations:
