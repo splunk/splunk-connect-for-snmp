@@ -16,6 +16,11 @@ plugins:
     - mkdocs-video:
         is_video: True
 
+extra_javascript:
+   - javascripts/footer.js
+
+copyright: <p>Webpages built on GitHub Pages | <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">Github Terms</a> | <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement">GitHub Privacy</a></p>
+
 theme:
   name: "material"
   palette:

@@ -204,6 +204,7 @@ sim:
   ingress:
     enabled: false
   securityContext:
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - ALL
@@ -230,6 +231,17 @@ sim:
     annotations: { }
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  service:
+    annotations: {}
+
+  secret:
+    # Option for creating a new secret or using an existing one.
+    # When secret.create=true, a new kubernetes secret will be created by the helm chart that will contain the
+    # values from sim.signalfxToken and sim.signalfxRealm.
+    # When secret.create=false, the user must set secret.name to a name of a k8s secret the user created.
+    create: true
     name: ""
 traps:
   replicaCount: 2
@@ -265,6 +277,7 @@ traps:
     runAsGroup: 10001
 
   service:
+    annotations: {}
     usemetallb: true
     metallbsharingkey: "splunk-connect"
     type: LoadBalancer
@@ -373,3 +386,4 @@ redis:
   architecture: standalone
   auth:
     enabled: false
+commonAnnotations: {}

@@ -231,5 +231,9 @@ unzip otel-repo.zip
 rm otel-repo.zip
 OTEL_DIR=$(ls | grep -E "signalfx-splunk.+")
 CHART_DIT="$OTEL_DIR/helm-charts/splunk-otel-collector"
+OTEL_IMAGE_TAG=$(cat $CHART_DIT/Chart.yaml | grep appVersion | sed 's/.*: //g')
+otel_image=quay.io/signalfx/splunk-otel-collector:"$OTEL_IMAGE_TAG"
+docker pull "$otel_image"
+docker save $otel_image > /tmp/package/packages/otel_image.tar
 helm package $CHART_DIT -d /tmp/package/packages/
 rm -rf $OTEL_DIR

@@ -14,10 +14,11 @@ spec:
       {{- include "splunk-connect-for-snmp.sim.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.sim.podAnnotations }}
       annotations:
+      {{- with .Values.sim.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/common/sim-secret.yaml") . | sha256sum }}
       labels:
         {{- include "splunk-connect-for-snmp.sim.selectorLabels" . | nindent 8 }}
     spec:
@@ -35,18 +36,16 @@ spec:
           image: {{ .Values.sim.image | default "quay.io/signalfx/splunk-otel-collector" }}:{{ .Values.sim.tag | default "0.41.0" }}
           imagePullPolicy: {{ .Values.sim.pullPolicy | default "IfNotPresent" }}
           args: ["--config=/config/otel-collector-config.yaml"]
-          securityContext:
-            allowPrivilegeEscalation: false
           env:
             - name: signalfxToken
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "splunk-connect-for-snmp.name" . }}-sim
+                  name: {{ include "splunk-connect-for-snmp.sim.secret" . }}
                   key: signalfxToken
             - name: signalfxRealm
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "splunk-connect-for-snmp.name" . }}-sim
+                  name: {{ include "splunk-connect-for-snmp.sim.secret" . }}
                   key: signalfxRealm
           ports:
             - containerPort: 8882

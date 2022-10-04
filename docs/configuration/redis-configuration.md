@@ -1,12 +1,12 @@
 #Redis configuration
 
-Recently, RabbitMQ was replaced with Redis as a queue service and periodic task database. The reason for that was to increase SC4SNMP performance and protect against bottlenecks.
+Recently, RabbitMQ was replaced with Redis as a queue service and periodic task database. The reason for this is to increase SC4SNMP performance and protect against bottlenecks.
 
-Redis is a service with is used for both managing periodic tasks and as a queue service for SC4SNMP. It is queuing tasks like SNMP Walk and Poll.  
+Redis both manages periodic tasks and queues the SC4SNMP service. It queues tasks like SNMP Walk and Poll.  
 
 ### Redis configuration file
 
-Redis configuration is kept in `values.yaml` file in section `redis`.
+Redis configuration is kept in the `values.yaml` file in the `redis` section.
 `values.yaml` is being used during the installation process for configuring Kubernetes values.
 
-In case of need to change it please follow documentation: [Redis on Kubernetes](https://github.com/bitnami/charts/tree/master/bitnami/redis) 
+To edit the configuration, see: [Redis on Kubernetes](https://github.com/bitnami/charts/tree/master/bitnami/redis) 
