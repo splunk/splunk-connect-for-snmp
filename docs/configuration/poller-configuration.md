@@ -1,19 +1,19 @@
 #Poller Configuration
 Poller is a service which is responsible for querying 
-SNMP devices using SNMP GET, SNMP WALK functionality. Poller executes two main types of tasks:
+SNMP devices using the SNMP GET, and the SNMP WALK functionality. Poller executes two main types of tasks:
 
 - Walk task - executes SNMP walk. SNMP walk is an SNMP application that uses SNMP GETNEXT requests to 
 collect SNMP data from the network and infrastructure SNMP-enabled devices, such as switches and routers. It is a time-consuming task,
-which may overload the SNMP device when executing too often. It is used by SC4SNMP to collect and push all OIDs values which provided ACL has access to. 
+which may overload the SNMP device when executed too often. It is used by the SC4SNMP to collect and push all OID values, which the provided ACL has access to. 
   
-- Get task - it is a lightweight task whose goal is to query a subset of OIDs defined by the customer. The task serves for a frequent monitoring OIDs like memory or CPU utilization.  
+- Get task - it is a lightweight task whose goal is to query a subset of OIDs defined by the customer. The task serves frequent monitoring OIDs, like memory or CPU utilization.  
 
 Poller has an `inventory`, which defines what and how often SC4SNMP has to poll.
 
 ### Poller configuration file
 
-Poller configuration is kept in `values.yaml` file in a `poller` section.
-`values.yaml` is being used during the installation process for configuring Kubernetes values.
+The poller configuration is kept in a `values.yaml` file in the `poller` section.
+`values.yaml` is used during the installation process for configuring Kubernetes values.
 
 Poller example configuration:
 ```yaml
@@ -30,17 +30,16 @@ poller:
 NOTE: header's line (`address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete`) is necessary for the correct execution of SC4SNMP. Do not remove it.
 
 ### Define log level
-Log level for poller can be set by changing the value for key `logLevel`. Allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
-The default value is `WARNING`
+The log level for poller can be set by changing the value for the key `logLevel`. The allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
+The default value is `WARNING`.
 
 ### Define usernameSecrets
-Secrets are required to run SNMPv3 polling. To add v3 authentication details, create the k8s Secret object following this
-instruction: [SNMPv3 Configuration](snmpv3-configuration.md), and put its name in `poller.usernameSecrets`.
+Secrets are required to run SNMPv3 polling. To add v3 authentication details, create the k8s Secret object: [SNMPv3 Configuration](snmpv3-configuration.md), and put its name in `poller.usernameSecrets`.
 
 ### Configure inventory 
-To update inventory, follow instruction: [Update Inventory and Profile](#update-inventory-and-profile).
+To update inventory, see: [Update Inventory and Profile](#update-inventory-and-profile).
 
-`inventory` section in `poller` has following fields to configure:
+`inventory` section in `poller` has the following fields to configure:
 
  - `address` [REQUIRED] - IP address which SC4SNMP should connect to collect data from or name of the group of hosts. General
 information about groups can be found on [Configuring Groups](configuring-groups.md) page.
@@ -71,10 +70,10 @@ Adding new devices for `values.yaml` is quite expensive from the Splunk Connect 
 As it interacts with real, networking devices, it requires several checks before applying changes. SC4SNMP was designed to prevent changes in inventory
 task more often than every 5 min. 
  
-To apply inventory changes in `values.yaml`, following steps need to be executed:
+To apply inventory changes in `values.yaml`, the following steps need to be executed:
 
 1. Edit `values.yaml` 
-2. Check if inventory pod is still running by an execute command
+2. Check if inventory pod is still running by the execute command:
    
 ```shell
 microk8s kubectl -n sc4snmp get pods | grep inventory
@@ -83,7 +82,7 @@ microk8s kubectl -n sc4snmp get pods | grep inventory
 If the command does not return any pods, follow the next step. In another case, wait and execute the command again until the moment 
 when inventory job finishes. 
 
-If you really need to apply changes immediately, you can get around the limitation by deleting inventory job, with:
+If you really need to apply changes immediately, you can get around the limitation by deleting the inventory job with:
 
 ```shell
 microk8s kubectl delete job/snmp-splunk-connect-for-snmp-inventory -n sc4snmp
@@ -97,5 +96,5 @@ After running this command, you can proceed with upgrading without a need to wai
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
 
-NOTE: If you decide to change frequency of the profile without changing inventory data, the change will be reflected after 
-next walk process for the host. Walk happens every `walk_interval` or on any change in inventory.
+NOTE: If you decide to change the frequency of the profile without changing the inventory data, the change will be reflected after 
+next the walk process for the host. The walk happens every `walk_interval`, or on any change in inventory.

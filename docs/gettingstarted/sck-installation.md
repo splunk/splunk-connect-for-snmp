@@ -1,12 +1,12 @@
 # Splunk OpenTelemetry Collector for Kubernetes installation
 
 Splunk OpenTelemetry Collector for Kubernetes is not required for SC4SNMP installation. This is the tool that sends logs
-and metrics from k8s cluster to Splunk instance, what makes SC4SNMP easier to debug. 
-You can do the same using `microk8s kubectl logs` command on instances you're interested in, but if you're not proficient in Kubernetes,
+and metrics from a k8s cluster to a Splunk instance, which makes SC4SNMP easier to debug. 
+You can do the same using the `microk8s kubectl logs` command on instances you're interested in, but if you're not proficient in Kubernetes,
 Splunk OpenTelemetry Collector for Kubernetes is strongly advised.
 
 The below steps are sufficient for a Splunk OpenTelemetry Collector installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud.
-In order to learn more about Splunk OpenTelemetry Collector visit [Splunk OpenTelemetry Collector](https://github.com/signalfx/splunk-otel-collector-chart).
+In order to learn more about Splunk OpenTelemetry Collector, visit [Splunk OpenTelemetry Collector](https://github.com/signalfx/splunk-otel-collector-chart).
 
 ### Offline installation
 
@@ -59,7 +59,8 @@ microk8s helm3 upgrade --install sck \
 
 ## Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes
 
-To run Splunk OpenTelemetry Collector on your environment, replace `<>` variables according to the description presented below
+To run Splunk OpenTelemetry Collector on your environment, replace the `<>` variables according to the description presented below:
+
 
 ```bash
 microk8s helm3 upgrade --install sck
@@ -85,7 +86,7 @@ splunk-otel-collector-chart/splunk-otel-collector
 | ingest_url | Ingest URL from the Splunk Observability Cloud environment | https://ingest..signalfx.com |
 | api_url | API URL from the Splunk Observability Cloud environment  | https://api..signalfx.com |
 
-An example of filled up command is:
+An example of a filled up command is:
 ```bash
 microk8s helm3 upgrade --install sck
 --set="clusterName=my_cluster"

@@ -7,7 +7,7 @@ To upgrade SC4SNMP to the latest version, simply run the following command:
 microk8s helm3 repo update
 ```
 
-After that, next time you run:
+Afterwards, run:
 
 ```yaml
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
