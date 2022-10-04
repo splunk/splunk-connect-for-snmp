@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#otel-configuration" class="md-skip">
+        <a href="#otel-and-splunk-observability-cloud-configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -498,9 +498,60 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Splunk Infrastructure Monitoring
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Splunk Infrastructure Monitoring
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#token-and-realm" class="md-nav__link">
+    Token and realm
+  </a>
+  
+    <nav class="md-nav" aria-label="Token and realm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#define-annotations" class="md-nav__link">
+    Define annotations
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verify-the-deployment" class="md-nav__link">
+    Verify the deployment
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -714,6 +765,41 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#token-and-realm" class="md-nav__link">
+    Token and realm
+  </a>
+  
+    <nav class="md-nav" aria-label="Token and realm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#define-annotations" class="md-nav__link">
+    Define annotations
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verify-the-deployment" class="md-nav__link">
+    Verify the deployment
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -726,21 +812,54 @@
                 
 
 
-<h1 id="otel-configuration">Otel configuration<a class="headerlink" href="#otel-configuration" title="Permanent link">&para;</a></h1>
-<p>Splunk OpenTelemetry Collector is a component that provides an option to send metrics to SignalFx.
+<h1 id="otel-and-splunk-observability-cloud-configuration">OTEL and Splunk Observability Cloud configuration<a class="headerlink" href="#otel-and-splunk-observability-cloud-configuration" title="Permanent link">&para;</a></h1>
+<p>Splunk OpenTelemetry Collector is a component that provides an option to send metrics to Splunk Observability Cloud.
 In order to use it, you must set <code>enabled</code> flag in <code>values.yaml</code> to <code>true</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># sim must be enabled if you want to use SignalFx</span><span class="w"></span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </code></pre></div>
 
-<p>Also, you need to specify SignalFx token and realm, so at the end sim element in <code>values.yaml</code> looks like this:</p>
+<h2 id="token-and-realm">Token and realm<a class="headerlink" href="#token-and-realm" title="Permanent link">&para;</a></h2>
+<p>You need to specify Splunk Observability Cloud token and realm. There are two ways of configuring them:</p>
+<ol>
+<li>Pass those in a plain text via <code>values.yaml</code> so at the end sim element looks like this:</li>
+</ol>
 <div class="codehilite"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 <span class="w">  </span><span class="nt">signalfxToken</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BCwaJ_Ands4Xh7Nrg</span><span class="w"></span>
 <span class="w">  </span><span class="nt">signalfxRealm</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us0</span><span class="w"></span>
 </code></pre></div>
 
+<ol start="2">
+<li>Alternatively, create microk8s secret by yourself and pass its name in <code>values.yaml</code> file. Create secret:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code><span class="n">microk8s</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="n">create</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="n">namespace</span><span class="o">&gt;</span><span class="w"> </span><span class="n">secret</span><span class="w"> </span><span class="n">generic</span><span class="w"> </span><span class="o">&lt;</span><span class="n">secretname</span><span class="o">&gt;</span><span class="w"> </span>\<span class="w"></span>
+<span class="w">  </span><span class="o">--</span><span class="n">from</span><span class="o">-</span><span class="n">literal</span><span class="o">=</span><span class="n">signalfxToken</span><span class="o">=&lt;</span><span class="n">signalfxToken</span><span class="o">&gt;</span><span class="w"> </span>\<span class="w"></span>
+<span class="w">  </span><span class="o">--</span><span class="n">from</span><span class="o">-</span><span class="n">literal</span><span class="o">=</span><span class="n">signalfxRealm</span><span class="o">=&lt;</span><span class="n">signalfxRealm</span><span class="o">&gt;</span><span class="w"></span>
+</code></pre></div>
+
+<p>Modify <code>sim.secret</code> section of <code>values.yaml</code>. Disable creation of the secret with <code>sim.secret.create</code> and provide the
+<code>&lt;secretname&gt;</code> matching the one from the previous step. Pass it via <code>sim.secret.name</code>. For example, for <code>&lt;secretname&gt;</code>=<code>signalfx</code>
+the <code>sim</code> section would look like:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">secret</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">create</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">signalfx</span><span class="w"></span>
+</code></pre></div>
+
+<p>Note: After the initial installation, if you change <code>sim.signalfxToken</code> and/or <code>sim.signalfxRealm</code> and no <code>sim.secret.name</code> is given, 
+the <code>sim</code> pod will sense the update by itself (after <code>helm3 upgrade</code> command) and trigger the recreation. But, when you edit secret created outside
+of <code>values.yaml</code> (given by <code>sim.secret.name</code>), you need to roll out the deployment by yourself or delete the pod to update the data.</p>
+<h3 id="define-annotations">Define annotations<a class="headerlink" href="#define-annotations" title="Permanent link">&para;</a></h3>
+<p>In case you need to append some annotations to the <code>sim</code> service, you can do it by setting <code>sim.service.annotations</code>, for ex.:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">annotation_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">annotation_value</span><span class="w"></span>
+</code></pre></div>
+
+<h2 id="verify-the-deployment">Verify the deployment<a class="headerlink" href="#verify-the-deployment" title="Permanent link">&para;</a></h2>
 <p>After executing <code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</code>, the sim pod should be up and running:</p>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">splunker@ip-10-202-13-233:~$ microk8s kubectl get pods -n sc4snmp</span><span class="w"></span>
 <span class="l l-Scalar l-Scalar-Plain">NAME                                                      READY   STATUS    RESTARTS   AGE</span><span class="w"></span>
@@ -808,6 +927,10 @@ In order to use it, you must set <code>enabled</code> flag in <code>values.yaml<
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
   
+    <div class="md-copyright__highlight">
+      <p>Webpages built on GitHub Pages | <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">Github Terms</a> | <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement">GitHub Privacy</a></p>
+    </div>
+  
   
     Made with
     <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
@@ -829,6 +952,8 @@ In order to use it, you must set <code>enabled</code> flag in <code>values.yaml<
     
     
       <script src="../../assets/javascripts/bundle.9c69f0bc.min.js"></script>
+      
+        <script src="../../javascripts/footer.js"></script>
       
     
   </body>
