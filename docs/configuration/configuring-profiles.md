@@ -25,7 +25,7 @@ scheduler:
       #Name of profile
       basev1:
         # Define frequency for profile
-        frequency: 10
+        frequency: 100
         #Define condition
         condition:
           # Define type of condition. Allowed value field, base and walk
@@ -48,7 +48,7 @@ For example, we have configured two profiles. One is smart, and the other one is
 scheduler:
     profiles: |
       smart_profile:
-        frequency: 10
+        frequency: 100
         condition:
           type: field
           field: "SNMPv2-MIB.sysDescr"
@@ -188,7 +188,7 @@ Example of `base` type profile:
 scheduler:
     profiles: |
       SmartProfile_base_example:
-        frequency: 10
+        frequency: 100
         condition: 
           type: "base"
         varBinds:
@@ -201,7 +201,7 @@ Example of `field`  type profile, also called an automatic profile:
 scheduler:
     profiles: |
       SmartProfile_field_example:
-        frequency: 10
+        frequency: 100
         condition: 
           type: "field"
           field: "SNMPv2-MIB.sysDescr"
