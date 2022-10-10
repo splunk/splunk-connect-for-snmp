@@ -962,13 +962,13 @@ on production configuration.</p>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INFO&quot;</span><span class="w"></span>
 <span class="c1">#  profiles: |</span><span class="w"></span>
 <span class="c1">#    generic_switch:</span><span class="w"></span>
-<span class="c1">#      frequency: 60</span><span class="w"></span>
+<span class="c1">#      frequency: 300</span><span class="w"></span>
 <span class="c1">#      varBinds:</span><span class="w"></span>
 <span class="c1">#        - [&#39;SNMPv2-MIB&#39;, &#39;sysDescr&#39;]</span><span class="w"></span>
 <span class="c1">#        - [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;, 0]</span><span class="w"></span>
+<span class="c1">#        - [&#39;TCP-MIB&#39;, &#39;tcpActiveOpens&#39;]</span><span class="w"></span>
+<span class="c1">#        - [&#39;TCP-MIB&#39;, &#39;tcpAttemptFails&#39;]</span><span class="w"></span>
 <span class="c1">#        - [&#39;IF-MIB&#39;]</span><span class="w"></span>
-<span class="c1">#        - [&#39;TCP-MIB&#39;]</span><span class="w"></span>
-<span class="c1">#        - [&#39;UDP-MIB&#39;]</span><span class="w"></span>
 <span class="nt">poller</span><span class="p">:</span><span class="w"></span>
 <span class="w"> </span><span class="c1"># usernameSecrets:</span><span class="w"></span>
 <span class="w"> </span><span class="c1">#   - sc4snmp-hlab-sha-aes</span><span class="w"></span>

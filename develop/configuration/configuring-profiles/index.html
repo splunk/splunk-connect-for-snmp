@@ -892,7 +892,7 @@ Smart profiles are useful when we have many devices of a certain kind, and we do
 <span class="w">      </span><span class="no">#Name of profile</span><span class="w"></span>
 <span class="w">      </span><span class="no">basev1:</span><span class="w"></span>
 <span class="w">        </span><span class="no"># Define frequency for profile</span><span class="w"></span>
-<span class="w">        </span><span class="no">frequency: 10</span><span class="w"></span>
+<span class="w">        </span><span class="no">frequency: 100</span><span class="w"></span>
 <span class="w">        </span><span class="no">#Define condition</span><span class="w"></span>
 <span class="w">        </span><span class="no">condition:</span><span class="w"></span>
 <span class="w">          </span><span class="no"># Define type of condition. Allowed value field, base and walk</span><span class="w"></span>
@@ -913,7 +913,7 @@ Smart profiles are useful when we have many devices of a certain kind, and we do
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">      </span><span class="no">smart_profile:</span><span class="w"></span>
-<span class="w">        </span><span class="no">frequency: 10</span><span class="w"></span>
+<span class="w">        </span><span class="no">frequency: 100</span><span class="w"></span>
 <span class="w">        </span><span class="no">condition:</span><span class="w"></span>
 <span class="w">          </span><span class="no">type: field</span><span class="w"></span>
 <span class="w">          </span><span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span><span class="w"></span>
@@ -1044,7 +1044,7 @@ More information about configuring inventory can be found in <a href="../poller-
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">      </span><span class="no">SmartProfile_base_example:</span><span class="w"></span>
-<span class="w">        </span><span class="no">frequency: 10</span><span class="w"></span>
+<span class="w">        </span><span class="no">frequency: 100</span><span class="w"></span>
 <span class="w">        </span><span class="no">condition: </span><span class="w"></span>
 <span class="w">          </span><span class="no">type: &quot;base&quot;</span><span class="w"></span>
 <span class="w">        </span><span class="no">varBinds:</span><span class="w"></span>
@@ -1056,7 +1056,7 @@ More information about configuring inventory can be found in <a href="../poller-
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">      </span><span class="no">SmartProfile_field_example:</span><span class="w"></span>
-<span class="w">        </span><span class="no">frequency: 10</span><span class="w"></span>
+<span class="w">        </span><span class="no">frequency: 100</span><span class="w"></span>
 <span class="w">        </span><span class="no">condition: </span><span class="w"></span>
 <span class="w">          </span><span class="no">type: &quot;field&quot;</span><span class="w"></span>
 <span class="w">          </span><span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span><span class="w"></span>
