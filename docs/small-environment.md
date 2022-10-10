@@ -98,13 +98,13 @@ scheduler:
        memory: 180Mi
 #  profiles: |
 #    generic_switch:
-#      frequency: 60
+#      frequency: 300
 #      varBinds:
 #        - ['SNMPv2-MIB', 'sysDescr']
 #        - ['SNMPv2-MIB', 'sysName', 0]
+#        - ['TCP-MIB', 'tcpActiveOpens']
+#        - ['TCP-MIB', 'tcpAttemptFails']
 #        - ['IF-MIB']
-#        - ['TCP-MIB']
-#        - ['UDP-MIB']
 poller:
  # usernameSecrets:
  #   - sc4snmp-hlab-sha-aes
