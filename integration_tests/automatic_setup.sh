@@ -53,6 +53,15 @@ wait_for_pod_initialization() {
   done
 }
 
+check_metallb_status() {
+  while [ "$(sudo microk8s kubectl get svc -n sc4snmp | grep snmp-splunk-connect-for-snmp-trap | grep "pending" )" != "" ] ; do
+    echo "MetalLB was enabled unsuccessfully"
+    sudo microk8s disable metallb
+    yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
+    sleep 30
+  done
+}
+
 wait_for_rabbitmq_to_be_up() {
   while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep 0/1)" != "" ] ; do
     echo "Waiting for RabbitMQ POD initialization..."
@@ -116,6 +125,7 @@ sudo microk8s kubectl create -n sc4snmp secret generic sv3poller --from-literal=
 
 wait_for_pod_initialization
 wait_for_rabbitmq_to_be_up
+check_metallb_status
 
 define_python
 
