@@ -124,10 +124,6 @@ deploy_poetry
 poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" \
   --trap_external_ip="$(hostname -I | cut -d " " -f1)" --junitxml=result.xml > pytest.log
 
-tail pytest.log
-cat result.xml
-printenv
-
 if [ ! -z "${S3_PATH}" ]; then
   aws s3 cp /home/ubuntu/splunk-connect-for-snmp/integration_tests/result.xml s3://snmp-integration-tests/$S3_PATH/
   aws s3 cp /home/ubuntu/splunk-connect-for-snmp/integration_tests/pytest.log s3://snmp-integration-tests/$S3_PATH/
