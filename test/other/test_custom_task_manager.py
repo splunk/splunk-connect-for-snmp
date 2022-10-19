@@ -12,7 +12,8 @@ def raise_exception():
 
 class TestCustomTaskManager(TestCase):
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules_by_target")
-    def test_delete_unused_poll_tasks(self, m_objects):
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
+    def test_delete_unused_poll_tasks(self, m_from_key, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
         doc1 = Mock()
         doc1.enabled = True
@@ -45,6 +46,7 @@ class TestCustomTaskManager(TestCase):
         periodic_list.__iter__ = Mock(return_value=iter([task1, task2, task3, task4]))
 
         m_objects.return_value = periodic_list
+        m_from_key.side_effect = [task1, task2, task4]
 
         task_manager.delete_unused_poll_tasks("192.168.0.1", ["name1", "name2"])
         m_objects.assert_called_with("192.168.0.1", app=ANY)
@@ -178,7 +180,8 @@ class TestCustomTaskManager(TestCase):
         task1.save.assert_called()
 
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
-    def test_delete_all_poll_tasks(self, m_objects):
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
+    def test_delete_all_poll_tasks(self, m_from_key, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
         task1 = Mock()
         task1.task = "splunk_connect_for_snmp.snmp.tasks.poll"
@@ -195,15 +198,16 @@ class TestCustomTaskManager(TestCase):
         periodic_list = [task1, task2, task3]
 
         m_objects.return_value = periodic_list
-
+        task_from_key1, task_from_key2, task_from_key3 = Mock(), Mock(), Mock()
+        m_from_key.side_effect = [task_from_key1, task_from_key2, task_from_key3]
         task_manager.delete_all_poll_tasks()
-
-        task1.delete.assert_called()
-        task2.delete.assert_called()
-        task3.delete.assert_not_called()
+        self.assertTrue(task_from_key1.delete.called)
+        self.assertTrue(task_from_key2.delete.called)
+        self.assertFalse(task_from_key3.delete.called)
 
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
-    def test_rerun_all_walks(self, m_objects):
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
+    def test_rerun_all_walks(self, m_from_key, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 
         task1 = Mock()
@@ -211,9 +215,11 @@ class TestCustomTaskManager(TestCase):
         task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
         task1.name = "test1"
 
+        task_from_key1 = Mock()
         m_objects.return_value = [task1]
+        m_from_key.return_value = task_from_key1
 
         task_manager.rerun_all_walks()
 
-        task1.set_run_immediately.assert_called_with(True)
-        task1.save.assert_called()
+        task_from_key1.set_run_immediately.assert_called_with(True)
+        task_from_key1.save.assert_called()

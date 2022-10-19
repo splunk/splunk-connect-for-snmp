@@ -195,7 +195,7 @@ def enrich(self, result):
         # Now add back any fields we need
         if current_attributes:
             attribute_group_id = current_attributes["id"]
-            fields = current_attributes["fields"]
+            fields = current_attributes.get("fields", {})
             if attribute_group_id in result["result"]:
                 for persist_data in fields.values():
                     if (

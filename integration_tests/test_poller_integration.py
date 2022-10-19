@@ -532,7 +532,7 @@ class TestGroupsInventory:
         }
         update_groups(new_groups)
         upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
-        time.sleep(30)
+        time.sleep(60)
         search_string = f"""| mpreview index=netmetrics earliest=-20s | search profiles=routers_profile host="{trap_external_ip}:1163" """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 1
