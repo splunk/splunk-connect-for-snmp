@@ -19,7 +19,7 @@ except:
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
-INVENTORY_FROM_MONGO = os.getenv("INVENTORY_FROM_MONGO", False)
+INVENTORY_FROM_MONGO = os.getenv("INVENTORY_FROM_MONGO", "false")
 MONGO_URI = os.getenv("MONGO_URI")
 ALLOWED_KEYS_VALUES = [
     "address",

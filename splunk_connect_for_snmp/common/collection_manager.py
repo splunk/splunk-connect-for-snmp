@@ -12,7 +12,7 @@ except:
     pass
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
-INVENTORY_FROM_MONGO = os.getenv("INVENTORY_FROM_MONGO", False)
+INVENTORY_FROM_MONGO = os.getenv("INVENTORY_FROM_MONGO", "false")
 logger = get_task_logger(__name__)
 
 
