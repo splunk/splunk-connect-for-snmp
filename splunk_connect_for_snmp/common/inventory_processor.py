@@ -2,6 +2,7 @@ import copy
 import os
 from csv import DictReader
 from typing import List
+import pymongo
 
 from splunk_connect_for_snmp.common.collection_manager import GroupsManager
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
@@ -18,6 +19,8 @@ except:
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
+INVENTORY_FROM_MONGO = os.getenv("INVENTORY_FROM_MONGO", False)
+MONGO_URI = os.getenv("MONGO_URI")
 ALLOWED_KEYS_VALUES = [
     "address",
     "port",
@@ -87,9 +90,14 @@ class InventoryProcessor:
         self.single_hosts: List[dict] = []
 
     def get_all_hosts(self):
-        self.logger.info(f"Loading inventory from {INVENTORY_PATH}")
         with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
-            ir_reader = DictReader(csv_file)
+            if INVENTORY_FROM_MONGO.lower() in ["true", "1", "t"]:
+                self.logger.info(f"Loading inventory from inventory_ui collection")
+                mongo_client = pymongo.MongoClient(MONGO_URI)
+                ir_reader = list(mongo_client.sc4snmp.inventory_ui.find({}))
+            else:
+                self.logger.info(f"Loading inventory from {INVENTORY_PATH}")
+                ir_reader = DictReader(csv_file)
             for inventory_line in ir_reader:
                 self.process_line(inventory_line)
             for source_record in self.single_hosts:

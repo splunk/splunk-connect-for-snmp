@@ -88,7 +88,7 @@ def load():
     inventory_record_manager = InventoryRecordManager(
         mongo_client, periodic_obj, logger
     )
-    logger.info(f"Loading inventory from {INVENTORY_PATH}")
+    #logger.info(f"Loading inventory from {INVENTORY_PATH}")
     inventory_lines = inventory_processor.get_all_hosts()
 
     # Function to delete inventory records that are
@@ -104,6 +104,10 @@ def load():
             target = transform_address_to_key(ir.address, ir.port)
             if ir.delete:
                 inventory_record_manager.delete(target)
+                if ir.group is None:
+                    mongo_client.sc4snmp.inventory_ui.delete_one({"address": ir.address, "port": ir.port})
+                else:
+                    mongo_client.sc4snmp.inventory_ui.delete_one({"address": ir.group})
             else:
                 inventory_record_manager.update(ir, new_source_record, config_profiles)
 
