@@ -18,6 +18,8 @@ import os
 import sys
 
 from pymongo import ASCENDING
+from csv import DictReader
+import yaml
 
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
@@ -38,8 +40,16 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-CURRENT_SCHEMA_VERSION = 5
+CURRENT_SCHEMA_VERSION = 6
 MONGO_URI = os.getenv("MONGO_URI")
+CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
+INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
+
+INVENTORY_KEYS_TRANSFORM = {
+    "securityEngine": "security_engine",
+    "SmartProfiles": "smart_profiles"
+}
+BOOLEAN_INVENTORY_FIELDS = ["delete", "smart_profiles"]
 
 
 def fetch_schema_version(mongo_client):
@@ -110,6 +120,60 @@ def migrate_to_version_5(mongo_client, task_manager):
     logger.info("Migrating database schema to version 5")
     inventory_collection = mongo_client.sc4snmp.inventory
     inventory_collection.update_many({}, {"$set": {"group": None}})
+
+
+def migrate_to_version_6(mongo_client, task_manager):
+    inventory_collection = mongo_client.sc4snmp.inventory_ui
+    groups_collection = mongo_client.sc4snmp.groups_ui
+    profiles_collection = mongo_client.sc4snmp.profiles_ui
+
+    with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
+        ir_reader = DictReader(csv_file)
+        for inventory_line in ir_reader:
+            for key in INVENTORY_KEYS_TRANSFORM.keys():
+                if key in inventory_line:
+                    new_key = INVENTORY_KEYS_TRANSFORM[key]
+                    inventory_line[new_key] = inventory_line.pop(key)
+
+            for field in BOOLEAN_INVENTORY_FIELDS:
+                if inventory_line[field].lower() in ["", "f", "false", "0"]:
+                    inventory_line[field] = False
+                else:
+                    inventory_line[field] = True
+
+            port = int(inventory_line['port']) if len(inventory_line['port']) > 0 else 161
+            walk_interval = int(inventory_line["walk_interval"]) if int(inventory_line["walk_interval"]) >= 1800 else 1800
+            inventory_line['port'] = port
+            inventory_line['walk_interval'] = walk_interval
+            inventory_collection.insert(inventory_line)
+
+    groups = {}
+    try:
+        with open(CONFIG_PATH, encoding="utf-8") as file:
+            config_runtime = yaml.safe_load(file)
+            if "groups" in config_runtime:
+                groups = config_runtime.get("groups", {})
+    except FileNotFoundError:
+        logger.info(f"File: {CONFIG_PATH} not found")
+    groups_list = [{key: value} for key, value in groups.items()]
+    groups_collection.insert_many(groups_list)
+
+    all_profiles = {}
+    try:
+        with open(CONFIG_PATH, encoding="utf-8") as file:
+            config_runtime = yaml.safe_load(file)
+            if "profiles" in config_runtime:
+
+                profiles = config_runtime.get("profiles", {})
+                logger.info(
+                    f"loading {len(profiles.keys())} profiles from runtime profile group"
+                )
+                for key, profile in profiles.items():
+                    all_profiles[key] = profile
+    except FileNotFoundError:
+        logger.info(f"File: {CONFIG_PATH} not found")
+    profiles_list = [{key: value} for key, value in all_profiles.items()]
+    profiles_collection.insert_many(profiles_list)
 
 
 def transform_mongodb_periodic_to_redbeat(schedule_collection, task_manager):
