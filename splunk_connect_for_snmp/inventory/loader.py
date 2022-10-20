@@ -104,6 +104,8 @@ def load():
             target = transform_address_to_key(ir.address, ir.port)
             if ir.delete:
                 inventory_record_manager.delete(target)
+                # TODO: if record with group was deleted and the group itself, then this record won't be present
+                # TODO: in inventory_lines and so won't be deleted from inventory_ui collection
                 if ir.group is None:
                     mongo_client.sc4snmp.inventory_ui.delete_one({"address": ir.address, "port": ir.port})
                 else:
