@@ -30,6 +30,9 @@ class CustomPeriodicTaskManager:
             if not periodic_document.task == "splunk_connect_for_snmp.snmp.tasks.poll":
                 continue
             logger.debug(f"Got Schedule: {periodic_document.name}")
+            periodic_document = RedBeatSchedulerEntry.from_key(
+                f"redbeat:{periodic_document.name}", app=app
+            )
             if periodic_document.name not in activeschedules:
                 periodic_document.delete()
                 logger.debug(
@@ -42,6 +45,9 @@ class CustomPeriodicTaskManager:
             if not periodic_document.task == "splunk_connect_for_snmp.snmp.tasks.poll":
                 continue
             logger.debug(f"Got Schedule: {periodic_document.name}")
+            periodic_document = RedBeatSchedulerEntry.from_key(
+                f"redbeat:{periodic_document.name}", app=app
+            )
             periodic_document.delete()
             logger.debug(
                 f"Deleting Schedule {periodic_document.name} delete_all_poll_tasks"
@@ -52,6 +58,9 @@ class CustomPeriodicTaskManager:
         for periodic_document in periodic_tasks:
             if not periodic_document.task == "splunk_connect_for_snmp.snmp.tasks.walk":
                 continue
+            periodic_document = RedBeatSchedulerEntry.from_key(
+                f"redbeat:{periodic_document.name}", app=app
+            )
             periodic_document.set_run_immediately(True)
             logger.debug("Got Schedule")
             periodic_document.save()
