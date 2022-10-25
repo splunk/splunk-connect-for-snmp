@@ -146,6 +146,15 @@ class InventoryProcessor:
                 host_group_object["group"] = group_name
                 self.inventory_records.append(host_group_object)
         else:
+            # If record with group was deleted and the group itself also was deleted, then this record also should
+            # be added to self.inventory_records with any valid address, group set to group_name and delete set to True
+            # in order to delete this record from inventory_ui collection in the inventory loader.
+
+            host_group_object = copy.copy(source_object)
+            host_group_object["address"] = "0.0.0.0"
+            host_group_object["group"] = group_name
+            host_group_object["delete"] = True
+            self.inventory_records.append(host_group_object)
             self.logger.warning(
                 f"Group {group_name} doesn't exist in the configuration. Skipping..."
             )

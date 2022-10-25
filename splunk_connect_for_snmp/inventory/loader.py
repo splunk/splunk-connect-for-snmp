@@ -60,6 +60,7 @@ MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
+INVENTORY_FROM_MONGO = os.getenv("INVENTORY_FROM_MONGO", "false")
 
 
 def load():
@@ -104,12 +105,11 @@ def load():
             target = transform_address_to_key(ir.address, ir.port)
             if ir.delete:
                 inventory_record_manager.delete(target)
-                # TODO: if record with group was deleted and the group itself, then this record won't be present
-                # TODO: in inventory_lines and so won't be deleted from inventory_ui collection
-                if ir.group is None:
-                    mongo_client.sc4snmp.inventory_ui.delete_one({"address": ir.address, "port": ir.port})
-                else:
-                    mongo_client.sc4snmp.inventory_ui.delete_one({"address": ir.group})
+                if INVENTORY_FROM_MONGO.lower() in ["true", "1", "t"]:
+                    if ir.group is None:
+                        mongo_client.sc4snmp.inventory_ui.delete_one({"address": ir.address, "port": ir.port})
+                    else:
+                        mongo_client.sc4snmp.inventory_ui.delete_one({"address": ir.group})
             else:
                 inventory_record_manager.update(ir, new_source_record, config_profiles)
 
