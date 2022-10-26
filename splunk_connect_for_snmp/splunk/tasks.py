@@ -71,6 +71,7 @@ else:
     SPLUNK_HEC_TLSVERIFY = True
 
 OTEL_METRICS_URL = os.getenv("OTEL_METRICS_URL", None)
+OTEL_EVENTS_URL = os.getenv("OTEL_EVENTS_URL", None)
 
 logger = get_task_logger(__name__)
 
@@ -117,6 +118,7 @@ def send(self, data):
         do_send(data["metrics"], SPLUNK_HEC_URI, self)
     if OTEL_METRICS_URL:
         do_send(data["metrics"], OTEL_METRICS_URL, self)
+        do_send(data["o11y_events"], OTEL_EVENTS_URL, self)
 
 
 def do_send(data, destination_url, self):
@@ -166,12 +168,17 @@ def prepare(self, work):
     metrics = []
     print(f"work: {work}")
     if work.get("sourcetype") == "sc4snmp:traps":
-        return {
+        trap_object = {
             "events": prepare_trap_data(
                 apply_custom_translations(work, self.custom_translations)
             ),
             "metrics": metrics,
         }
+        if OTEL_METRICS_URL:
+            trap_object["o11y_events"] = prepare_o11y_trap_data(
+                apply_custom_translations(work, self.custom_translations)
+            )
+        return trap_object
 
     work = apply_custom_translations(work, self.custom_translations)
 
@@ -211,7 +218,7 @@ def prepare(self, work):
             }
             events.append(json.dumps(event, indent=None))
 
-    return {"metrics": metrics, "events": events}
+    return {"metrics": metrics, "events": events, "o11y_events": []}
 
 
 def prepare_trap_data(work):
@@ -231,6 +238,21 @@ def prepare_trap_data(work):
             "index": SPLUNK_HEC_INDEX_EVENTS,
         }
         events.append(json.dumps(event, indent=None))
+
+    return events
+def prepare_o11y_trap_data(work):
+    events = []
+    for key, data in work["result"].items():
+        processed = {}
+        if data["metrics"]:
+            for k, v in data["metrics"].items():
+                processed[k] = v
+                processed[k]["value"] = valueAsBest(v["value"])
+        event = {
+            "eventType": "sc4snmp_trap",
+            "dimensions": json.dumps({**data["fields"], **processed, "host": work["address"], "time": work["time"]}),
+        }
+        events.append([json.dumps(event, indent=None)])
 
     return events
 

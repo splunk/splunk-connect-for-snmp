@@ -40,6 +40,7 @@ from celery.utils.log import get_task_logger
 from pysnmp.hlapi import SnmpEngine, UdpTransportTarget, bulkCmd, getCmd
 from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
+from pythonping import ping
 from requests_cache import MongoCache
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
@@ -290,6 +291,10 @@ class Poller(Task):
         if not varbinds_get and not varbinds_bulk:
             logger.info(f"No work to do for {address}")
             return False, {}
+
+        if walk:
+            pinged = ping(ir.address)
+            logger.info(f"Latency of host {ir.address}: {pinged.rtt_avg_ms}")
 
         if varbinds_bulk:
 

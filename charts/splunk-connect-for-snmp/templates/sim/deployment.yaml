@@ -49,6 +49,7 @@ spec:
                   key: signalfxRealm
           ports:
             - containerPort: 8882
+            - containerPort: 8883
           volumeMounts:
             - name: config
               mountPath: "/config"
