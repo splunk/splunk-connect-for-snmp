@@ -17,8 +17,6 @@ data:
         realm: $signalfxRealm
     service:
       telemetry:
-      logs:
-        level: "debug"
       pipelines:
         metrics:
           receivers: [splunk_hec/metrics]
