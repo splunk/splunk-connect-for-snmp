@@ -19,7 +19,7 @@ spec:
     - port: 8882
       name: metrics
     - port: 8883
-      name: metrics
+      name: events
   selector:
     {{- include "splunk-connect-for-snmp.sim.selectorLabels" . | nindent 4 }}
 {{- end }}
