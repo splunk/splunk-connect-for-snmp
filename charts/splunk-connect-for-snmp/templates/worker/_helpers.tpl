@@ -124,7 +124,7 @@ Create the name of the service account to use
 - name: OTEL_METRICS_URL
   value: "http://{{ .Release.Name }}-{{ include "splunk-connect-for-snmp.name" . }}-sim:8882"
 - name: OTEL_EVENTS_URL
-  value: "http://{{ .Release.Name }}-{{ include "splunk-connect-for-snmp.name" . }}-sim:8883"
+  value: "http://{{ .Release.Name }}-{{ include "splunk-connect-for-snmp.name" . }}-sim:8883/v1/logs"
 {{- end}}
 - name: LOG_LEVEL
   value: {{ .Values.worker.logLevel | default "INFO" }}
