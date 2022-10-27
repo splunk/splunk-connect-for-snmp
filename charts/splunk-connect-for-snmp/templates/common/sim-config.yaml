@@ -17,10 +17,13 @@ data:
       signalfx:
         access_token: $signalfxToken
         realm: $signalfxRealm
-      signalfx/2:
-        ingest_url: $signalfxIngest
-        realm: $signalfxRealm
+      sapm:
+        # This expects SFX_TOKEN environment variable to contain the access token.
+        # Alternatively, specify the access token directly here.
         access_token: $signalfxToken
+        # This expects SFX_REALM environment variable to contain the realm (e.g. us0).
+        # Alternatively, specify the relm directly in the endpoint url here.
+        endpoint: "https://ingest.${signalfxRealm}.signalfx.com/v2/event"
     service:
       telemetry:
       pipelines:
@@ -29,5 +32,5 @@ data:
           exporters: [signalfx]
         logs:
           receivers: [otlp]
-          exporters: [signalfx/2]
+          exporters: [sapm]
 {{- end }}
