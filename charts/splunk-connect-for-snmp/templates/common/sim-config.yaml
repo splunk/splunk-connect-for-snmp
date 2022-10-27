@@ -19,6 +19,7 @@ data:
         realm: $signalfxRealm
       signalfx/2:
         ingest_url: $signalfxIngest
+        realm: $signalfxRealm
         access_token: $signalfxToken
     service:
       telemetry:
