@@ -17,6 +17,9 @@ data:
       signalfx:
         access_token: $signalfxToken
         realm: $signalfxRealm
+      signalfx/2:
+        ingest_url: "https://ingest.${signalfxRealm}.signalfx.com"
+        access_token: $signalfxToken
     service:
       telemetry:
       pipelines:
@@ -25,5 +28,5 @@ data:
           exporters: [signalfx]
         logs:
           receivers: [otlp]
-          exporters: [signalfx]
+          exporters: [signalfx/2]
 {{- end }}
