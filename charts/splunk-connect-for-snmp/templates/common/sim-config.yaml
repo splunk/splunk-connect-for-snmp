@@ -9,7 +9,7 @@ data:
     receivers:
       splunk_hec/metrics:
         endpoint: 0.0.0.0:8882
-      fluentforward:
+      splunk_hec/logs:
         endpoint: 0.0.0.0:8883
     exporters:
       signalfx:
@@ -26,6 +26,6 @@ data:
           receivers: [splunk_hec/metrics]
           exporters: [signalfx]
         logs:
-          receivers: [fluentforward]
+          receivers: [splunk_hec/logs]
           exporters: [signalfx/2]
 {{- end }}
