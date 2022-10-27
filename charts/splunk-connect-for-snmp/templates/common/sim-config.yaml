@@ -18,8 +18,8 @@ data:
         access_token: $signalfxToken
         realm: $signalfxRealm
       signalfx/2:
-        ingest_url: $signalfxIngest
-        realm: $signalfxRealm
+        ingest_url: "https://ingest.${signalfxRealm}.signalfx.com"
+        api_url: "https://ingest.${signalfxRealm}.signalfx.com"
         access_token: $signalfxToken
     service:
       telemetry:
