@@ -9,10 +9,8 @@ data:
     receivers:
       splunk_hec/metrics:
         endpoint: 0.0.0.0:8882
-      otlp:
-        protocols:
-          http:
-            endpoint: 0.0.0.0:8883
+      otlphttp:
+        endpoint: 0.0.0.0:8883/v2/event
     exporters:
       signalfx:
         access_token: $signalfxToken
@@ -24,6 +22,6 @@ data:
           receivers: [splunk_hec/metrics]
           exporters: [signalfx]
         logs:
-          receivers: [otlp]
+          receivers: [otlphttp]
           exporters: [signalfx]
 {{- end }}
