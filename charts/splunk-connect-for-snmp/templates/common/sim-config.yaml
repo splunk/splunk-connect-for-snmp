@@ -15,10 +15,6 @@ data:
       signalfx:
         access_token: $signalfxToken
         realm: $signalfxRealm
-      signalfx/2:
-        ingest_url: "https://ingest.${signalfxRealm}.signalfx.com"
-        api_url: "https://ingest.${signalfxRealm}.signalfx.com"
-        access_token: $signalfxToken
     service:
       telemetry:
       pipelines:
@@ -27,5 +23,5 @@ data:
           exporters: [signalfx]
         logs:
           receivers: [splunk_hec/logs]
-          exporters: [signalfx/2]
+          exporters: [signalfx]
 {{- end }}
