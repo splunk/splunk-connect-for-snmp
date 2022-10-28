@@ -197,11 +197,6 @@ sim:
           logs:
             # Enable debug logging from the collector.
             level: debug
-  # Optional for exporting logs.
-  logsCollection:
-    containers:
-      # Enable the logs from the collector/agent to be collected at the container level.
-      excludeAgentLogs: false
   enabled: false
   nameOverride: ""
   fullnameOverride: ""
