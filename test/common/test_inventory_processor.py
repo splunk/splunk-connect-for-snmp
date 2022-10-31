@@ -223,6 +223,10 @@ class TestInventoryProcessor(TestCase):
     @patch(
         "builtins.open", new_callable=mock_open, read_data=mock_inventory_only_address
     )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.INVENTORY_FROM_MONGO",
+        "false",
+    )
     def test_process_line_host(self, m_inventory):
         source_record = {"address": "54.234.85.76"}
         inventory_processor = InventoryProcessor(Mock(), Mock())
@@ -240,6 +244,10 @@ class TestInventoryProcessor(TestCase):
         "builtins.open",
         new_callable=mock_open,
         read_data=mock_inventory_host_same_as_in_group,
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.INVENTORY_FROM_MONGO",
+        "false",
     )
     def test_ignore_line_host_configured_in_group(self, m_load_element):
         returned_group = [

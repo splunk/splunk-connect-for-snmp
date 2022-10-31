@@ -126,6 +126,18 @@ class TestLoader(TestCase):
         self.assertTrue(result["enabled"])
         self.assertTrue(result["run_immediately"])
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.inventory.loader.INVENTORY_FROM_MONGO",
+        "false"
+    )
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory_small_walk)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
@@ -151,7 +163,7 @@ class TestLoader(TestCase):
         m_migrate,
         m_mongo_collection,
         m_taskManager,
-        m_open,
+        m_open
     ):
         profiles = {
             "walk1": {
@@ -184,6 +196,18 @@ class TestLoader(TestCase):
             periodic_obj_mock.manage_task.call_args.kwargs["kwargs"],
         )
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.inventory.loader.INVENTORY_FROM_MONGO",
+        "false"
+    )
     @patch("splunk_connect_for_snmp.common.inventory_processor.gen_walk_task")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
@@ -224,6 +248,18 @@ class TestLoader(TestCase):
 
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.inventory.loader.INVENTORY_FROM_MONGO",
+        "false"
+    )
     @patch("splunk_connect_for_snmp.common.inventory_processor.gen_walk_task")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
@@ -264,6 +300,18 @@ class TestLoader(TestCase):
 
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.inventory.loader.INVENTORY_FROM_MONGO",
+        "false"
+    )
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
@@ -301,6 +349,18 @@ class TestLoader(TestCase):
 
         periodic_obj_mock.manage_task.assert_not_called()
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.inventory.loader.INVENTORY_FROM_MONGO",
+        "false"
+    )
     @patch(
         "builtins.open", new_callable=mock_open, read_data=mock_inventory_with_comment
     )
@@ -338,6 +398,18 @@ class TestLoader(TestCase):
         m_mongo_collection.assert_not_called()
         periodic_obj_mock.manage_task.assert_not_called()
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.inventory.loader.INVENTORY_FROM_MONGO",
+        "false"
+    )
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory_delete)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.delete_one")
@@ -381,6 +453,18 @@ class TestLoader(TestCase):
         self.assertEqual(({"address": "192.168.0.1"},), calls[0].args)
         self.assertEqual(({"address": "192.168.0.1"},), calls[1].args)
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.inventory.loader.INVENTORY_FROM_MONGO",
+        "false"
+    )
     @patch(
         "builtins.open",
         new_callable=mock_open,
@@ -428,6 +512,18 @@ class TestLoader(TestCase):
         self.assertEqual(({"address": "192.168.0.1:345"},), calls[0].args)
         self.assertEqual(({"address": "192.168.0.1:345"},), calls[1].args)
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.INVENTORY_FROM_MONGO",
+        "false"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.inventory.loader.INVENTORY_FROM_MONGO",
+        "false"
+    )
     @patch("splunk_connect_for_snmp.common.inventory_processor.gen_walk_task")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("pymongo.collection.Collection.update_one")

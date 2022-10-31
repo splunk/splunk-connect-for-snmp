@@ -61,6 +61,10 @@ class TestProfiles(TestCase):
         "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH",
         return_not_existing_config(),
     )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false",
+    )
     def test_config_file_not_found(self):
         with self.assertLogs(
             "splunk_connect_for_snmp.common.collection_manager", level="INFO"
@@ -84,6 +88,10 @@ class TestProfiles(TestCase):
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH",
         return_config_without_profiles(),
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false",
     )
     def test_read_base_profiles(self):
         active_profiles = {
@@ -118,6 +126,10 @@ class TestProfiles(TestCase):
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH", return_config()
     )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false",
+    )
     def test_runtime_profiles(self):
         active_profiles = {
             "test_2": {
@@ -150,6 +162,10 @@ class TestProfiles(TestCase):
     )
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH", return_config()
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false",
     )
     def test_all_profiles(self):
         active_profiles = {
@@ -203,6 +219,10 @@ class TestProfiles(TestCase):
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH",
         return_disabled_config(),
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "false",
     )
     def test_disabled_profiles(self):
         active_profiles = {
