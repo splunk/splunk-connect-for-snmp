@@ -261,7 +261,8 @@ def prepare_o11y_trap_data(work):
                 **fields,
                 "com.splunk.signalfx.event_type": "sc4snmp_trap",
                 "com.splunk.signalfx.event_category": 2000000,
-            }
+            },
+            "var": "xmaple"
         }
         events.append(event)
 
