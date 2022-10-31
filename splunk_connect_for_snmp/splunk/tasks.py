@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import requests
+
 from splunk_connect_for_snmp.common.custom_translations import load_custom_translations
 
 try:
@@ -84,6 +86,7 @@ if SPLUNK_HEC_TOKEN:
     }
 else:
     SPLUNK_HEC_HEADERS = {}
+
 SPLUNK_HEC_CHUNK_SIZE = int(os.getenv("SPLUNK_HEC_CHUNK_SIZE", "50"))
 
 
@@ -118,10 +121,10 @@ def send(self, data):
         do_send(data["metrics"], SPLUNK_HEC_URI, self)
     if OTEL_METRICS_URL:
         do_send(data["metrics"], OTEL_METRICS_URL, self)
-        do_send(data["o11y_events"], OTEL_EVENTS_URL, self)
+        do_send(data["o11y_events"], OTEL_EVENTS_URL, self, True)
 
 
-def do_send(data, destination_url, self):
+def do_send(data, destination_url, self, events=False):
     # If a device is very large a walk may produce more than 1MB of data.
     # 50 items is a reasonable guess to keep the post under the http post size limit
     # and be reasonable efficient
@@ -130,8 +133,11 @@ def do_send(data, destination_url, self):
         try:
             response = self.session.post(
                 destination_url,
-                data="\n".join(data[i : i + SPLUNK_HEC_CHUNK_SIZE]),
+                data=data[i]
+                if events
+                else "\n".join(data[i : i + SPLUNK_HEC_CHUNK_SIZE]),
                 timeout=60,
+                headers=SPLUNK_HEC_HEADERS,
             )
         except ConnectionError:
             logger.warning(f"Unable to communicate with {destination_url} endpoint")
@@ -224,11 +230,7 @@ def prepare(self, work):
 def prepare_trap_data(work):
     events = []
     for key, data in work["result"].items():
-        processed = {}
-        if data["metrics"]:
-            for k, v in data["metrics"].items():
-                processed[k] = v
-                processed[k]["value"] = valueAsBest(v["value"])
+        processed = transform_fields_and_metrics(data)
         event = {
             "time": work["time"],
             "event": json.dumps({**data["fields"], **processed}),
@@ -240,21 +242,40 @@ def prepare_trap_data(work):
         events.append(json.dumps(event, indent=None))
 
     return events
+
+
 def prepare_o11y_trap_data(work):
     events = []
+    logger.info(f"Work for trap data: {work}")
     for key, data in work["result"].items():
-        processed = {}
-        if data["metrics"]:
-            for k, v in data["metrics"].items():
-                processed[k] = v
-                processed[k]["value"] = valueAsBest(v["value"])
+        processed = transform_fields_and_metrics(data)
+        fields = transform_to_o11y(**data["fields"], **processed)
         event = {
-            "eventType": "sc4snmp_trap",
-            "dimensions": json.dumps({**data["fields"], **processed, "host": work["address"], "time": work["time"]}),
+            "fields": {
+                **fields,
+                "com.splunk.signalfx.event_type": "sc4snmp_trap",
+            }
         }
-        events.append([json.dumps(event, indent=None)])
+        events.append(json.dumps(event, indent=None))
 
     return events
+
+
+def transform_fields_and_metrics(work_item):
+    processed = {}
+    if work_item["metrics"]:
+        for k, v in work_item["metrics"].items():
+            processed[k] = v
+            processed[k]["value"] = valueAsBest(v["value"])
+    return processed
+
+
+def transform_to_o11y(work_dict):
+    result = {}
+    for k, v in work_dict.items():
+        result[k] = v["value"]
+        result[f"{k}.time"] = v["time"]
+    return result
 
 
 def apply_custom_translations(work, custom_translations):
