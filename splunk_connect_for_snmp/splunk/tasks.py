@@ -249,7 +249,7 @@ def prepare_o11y_trap_data(work):
     logger.info(f"Work for trap data: {work}")
     for key, data in work["result"].items():
         processed = transform_fields_and_metrics(data)
-        fields = transform_to_o11y(**data["fields"], **processed)
+        fields = transform_to_o11y(dict(**data["fields"], **processed))
         event = {
             "fields": {
                 **fields,
