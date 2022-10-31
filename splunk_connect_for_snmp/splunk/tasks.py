@@ -254,6 +254,7 @@ def prepare_o11y_trap_data(work):
             "fields": {
                 **fields,
                 "com.splunk.signalfx.event_type": "sc4snmp_trap",
+                "com.splunk.signalfx.event_category": 2000000,
             }
         }
         events.append(json.dumps(event, indent=None))
