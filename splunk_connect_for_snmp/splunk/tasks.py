@@ -258,7 +258,7 @@ def prepare_o11y_trap_data(work):
                 "com.splunk.signalfx.event_category": 2000000,
             }
         }
-        events.append(json.dumps(event, indent=None))
+        events.append(event)
 
     return events
 
