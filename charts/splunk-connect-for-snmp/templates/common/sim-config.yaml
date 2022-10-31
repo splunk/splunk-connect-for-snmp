@@ -12,6 +12,8 @@ data:
       splunk_hec/logs:
         endpoint: 0.0.0.0:8883
     exporters:
+      logging:
+        level: DEBUG
       signalfx:
         access_token: $signalfxToken
         realm: $signalfxRealm
@@ -23,5 +25,5 @@ data:
           exporters: [signalfx]
         logs:
           receivers: [splunk_hec/logs]
-          exporters: [signalfx]
+          exporters: [signalfx, logging]
 {{- end }}
