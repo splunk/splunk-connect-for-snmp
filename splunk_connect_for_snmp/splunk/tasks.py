@@ -132,14 +132,19 @@ def do_send(data, destination_url, self, events=False):
         # using sessions is important this avoid expensive setup time
         logger.info(f"Body sent to: {destination_url}: {data[i]}")
         try:
-            response = self.session.post(
-                destination_url,
-                data=data[i]
-                if events
-                else "\n".join(data[i : i + SPLUNK_HEC_CHUNK_SIZE]),
-                timeout=60,
-                headers=SPLUNK_HEC_HEADERS,
-            )
+            if not events:
+                response = self.session.post(
+                    destination_url,
+                    data="\n".join(data[i : i + SPLUNK_HEC_CHUNK_SIZE]),
+                    timeout=60,
+                )
+            else:
+                response = self.session.post(
+                    destination_url,
+                    json=data[i],
+                    timeout=60,
+                )
+
         except ConnectionError:
             logger.warning(f"Unable to communicate with {destination_url} endpoint")
             self.retry(countdown=30)
