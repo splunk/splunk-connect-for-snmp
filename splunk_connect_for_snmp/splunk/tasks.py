@@ -130,6 +130,7 @@ def do_send(data, destination_url, self, events=False):
     # and be reasonable efficient
     for i in range(0, len(data), SPLUNK_HEC_CHUNK_SIZE):
         # using sessions is important this avoid expensive setup time
+        logger.info(f"Body sent to: {destination_url}: {data[i]}")
         try:
             response = self.session.post(
                 destination_url,
