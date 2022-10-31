@@ -273,8 +273,9 @@ def transform_fields_and_metrics(work_item):
 def transform_to_o11y(work_dict):
     result = {}
     for k, v in work_dict.items():
-        result[k] = v["value"]
-        result[f"{k}.time"] = v["time"]
+        key_transformed = k.replace(".", "_")
+        result[key_transformed] = str(v["value"])
+        result[f"{key_transformed}_time"] = str(v["time"])
     return result
 
 
