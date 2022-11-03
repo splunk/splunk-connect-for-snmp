@@ -148,22 +148,14 @@ def migrate_to_version_6(mongo_client, task_manager):
             inventory_collection.insert(inventory_line)
 
     groups = {}
+    all_profiles = {}
     try:
         with open(CONFIG_PATH, encoding="utf-8") as file:
             config_runtime = yaml.safe_load(file)
             if "groups" in config_runtime:
                 groups = config_runtime.get("groups", {})
-    except FileNotFoundError:
-        logger.info(f"File: {CONFIG_PATH} not found")
-    groups_list = [{key: value} for key, value in groups.items()]
-    groups_collection.insert_many(groups_list)
 
-    all_profiles = {}
-    try:
-        with open(CONFIG_PATH, encoding="utf-8") as file:
-            config_runtime = yaml.safe_load(file)
             if "profiles" in config_runtime:
-
                 profiles = config_runtime.get("profiles", {})
                 logger.info(
                     f"loading {len(profiles.keys())} profiles from runtime profile group"
@@ -172,6 +164,9 @@ def migrate_to_version_6(mongo_client, task_manager):
                     all_profiles[key] = profile
     except FileNotFoundError:
         logger.info(f"File: {CONFIG_PATH} not found")
+
+    groups_list = [{key: value} for key, value in groups.items()]
+    groups_collection.insert_many(groups_list)
     profiles_list = [{key: value} for key, value in all_profiles.items()]
     profiles_collection.insert_many(profiles_list)
 
