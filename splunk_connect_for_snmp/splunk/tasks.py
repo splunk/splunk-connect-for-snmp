@@ -164,7 +164,6 @@ def valueAsBest(value) -> Union[str, float]:
 def prepare(self, work):
     events = []
     metrics = []
-    print(f"work: {work}")
     if work.get("sourcetype") == "sc4snmp:traps":
         return {
             "events": prepare_trap_data(
