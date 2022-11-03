@@ -96,7 +96,7 @@ class InventoryProcessor:
         else:
             with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
                 self.logger.info(f"Loading inventory from {INVENTORY_PATH}")
-                ir_reader = copy.copy(DictReader(csv_file))
+                ir_reader = list(DictReader(csv_file))
         for inventory_line in ir_reader:
             self.process_line(inventory_line)
         for source_record in self.single_hosts:
