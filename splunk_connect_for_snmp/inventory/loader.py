@@ -60,7 +60,7 @@ MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
-INVENTORY_FROM_MONGO = os.getenv("INVENTORY_FROM_MONGO", "false")
+CONFIG_FROM_MONGO = os.getenv("CONFIG_FROM_MONGO", "false")
 
 
 def load():
@@ -85,11 +85,11 @@ def load():
     config_profiles = profiles_manager.return_collection()
     new_groups = groups_manager.return_collection()
 
-    inventory_processor = InventoryProcessor(groups_manager, logger)
+    inventory_ui_collection = mongo_client.sc4snmp.inventory_ui
+    inventory_processor = InventoryProcessor(groups_manager, logger, inventory_ui_collection)
     inventory_record_manager = InventoryRecordManager(
         mongo_client, periodic_obj, logger
     )
-    #logger.info(f"Loading inventory from {INVENTORY_PATH}")
     inventory_lines = inventory_processor.get_all_hosts()
 
     # Function to delete inventory records that are
@@ -105,7 +105,7 @@ def load():
             target = transform_address_to_key(ir.address, ir.port)
             if ir.delete:
                 inventory_record_manager.delete(target)
-                if INVENTORY_FROM_MONGO.lower() in ["true", "1", "t"]:
+                if CONFIG_FROM_MONGO.lower() in ["true", "1", "t"]:
                     if ir.group is None:
                         mongo_client.sc4snmp.inventory_ui.delete_one({"address": ir.address, "port": ir.port})
                     else:

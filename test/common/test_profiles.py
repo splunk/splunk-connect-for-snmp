@@ -62,7 +62,7 @@ class TestProfiles(TestCase):
         return_not_existing_config(),
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
         "false",
     )
     def test_config_file_not_found(self):
@@ -90,7 +90,7 @@ class TestProfiles(TestCase):
         return_config_without_profiles(),
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
         "false",
     )
     def test_read_base_profiles(self):
@@ -127,7 +127,7 @@ class TestProfiles(TestCase):
         "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH", return_config()
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
         "false",
     )
     def test_runtime_profiles(self):
@@ -164,7 +164,7 @@ class TestProfiles(TestCase):
         "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH", return_config()
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
         "false",
     )
     def test_all_profiles(self):
@@ -221,7 +221,7 @@ class TestProfiles(TestCase):
         return_disabled_config(),
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.INVENTORY_FROM_MONGO",
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
         "false",
     )
     def test_disabled_profiles(self):
@@ -237,5 +237,158 @@ class TestProfiles(TestCase):
             }
         }
         profiles_manager = ProfilesManager(Mock())
+        profiles = profiles_manager.gather_elements()
+        self.assertEqual(profiles, active_profiles)
+
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.os.listdir",
+        return_yaml_empty_profiles,
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH", return_disabled_config()
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
+        "true",
+    )
+    def test_runtime_profiles_from_mongo(self):
+        active_profiles = {
+            "test_2": {
+                "frequency": 120,
+                "varBinds": [
+                    ["IF-MIB", "ifInDiscards", 1],
+                    ["IF-MIB", "ifOutErrors"],
+                    ["SNMPv2-MIB", "sysDescr", 0],
+                ],
+            },
+            "new_profiles": {"frequency": 6, "varBinds": [["IP-MIB"]]},
+            "generic_switch": {
+                "frequency": 5,
+                "varBinds": [
+                    ["SNMPv2-MIB", "sysDescr"],
+                    ["SNMPv2-MIB", "sysName", 0],
+                    ["IF-MIB"],
+                    ["TCP-MIB"],
+                    ["UDP-MIB"],
+                ],
+            },
+        }
+
+        mongo_mock = Mock()
+        mongo_mock.sc4snmp.profiles_ui.find.return_value = [
+            {
+                "test_2": {
+                    "frequency": 120,
+                    "varBinds": [
+                        ["IF-MIB", "ifInDiscards", 1],
+                        ["IF-MIB", "ifOutErrors"],
+                        ["SNMPv2-MIB", "sysDescr", 0],
+                    ],
+                }
+            },
+            {
+                "new_profiles": {"frequency": 6, "varBinds": [["IP-MIB"]]}
+            },
+            {
+                "generic_switch": {
+                    "frequency": 5,
+                    "varBinds": [
+                        ["SNMPv2-MIB", "sysDescr"],
+                        ["SNMPv2-MIB", "sysName", 0],
+                        ["IF-MIB"],
+                        ["TCP-MIB"],
+                        ["UDP-MIB"],
+                    ],
+                }
+            }
+        ]
+
+        profiles_manager = ProfilesManager(mongo_mock)
+        profiles = profiles_manager.gather_elements()
+        self.assertEqual(profiles, active_profiles)
+
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.os.listdir",
+        return_yaml_profiles,
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH", return_yaml_empty_profiles()
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
+        "true",
+    )
+    def test_all_profiles_from_mongo(self):
+        active_profiles = {
+            "BaseUpTime": {
+                "frequency": 300,
+                "condition": {"type": "base"},
+                "varBinds": [
+                    ["IF-MIB", "ifName"],
+                    ["IF-MIB", "ifAlias"],
+                    ["SNMPv2-MIB", "sysUpTime", 0],
+                ],
+            },
+            "EnirchIF": {
+                "frequency": 600,
+                "condition": {"type": "base"},
+                "varBinds": [
+                    ["IF-MIB", "ifDescr"],
+                    ["IF-MIB", "ifAdminStatus"],
+                    ["IF-MIB", "ifName"],
+                    ["IF-MIB", "ifAlias"],
+                ],
+            },
+            "test_2": {
+                "frequency": 120,
+                "varBinds": [
+                    ["IF-MIB", "ifInDiscards", 1],
+                    ["IF-MIB", "ifOutErrors"],
+                    ["SNMPv2-MIB", "sysDescr", 0],
+                ],
+            },
+            "new_profiles": {"frequency": 6, "varBinds": [["IP-MIB"]]},
+            "generic_switch": {
+                "frequency": 5,
+                "varBinds": [
+                    ["SNMPv2-MIB", "sysDescr"],
+                    ["SNMPv2-MIB", "sysName", 0],
+                    ["IF-MIB"],
+                    ["TCP-MIB"],
+                    ["UDP-MIB"],
+                ],
+            },
+        }
+
+        mongo_mock = Mock()
+        mongo_mock.sc4snmp.profiles_ui.find.return_value = [
+            {
+                "test_2": {
+                    "frequency": 120,
+                    "varBinds": [
+                        ["IF-MIB", "ifInDiscards", 1],
+                        ["IF-MIB", "ifOutErrors"],
+                        ["SNMPv2-MIB", "sysDescr", 0],
+                    ],
+                }
+            },
+            {
+                "new_profiles": {"frequency": 6, "varBinds": [["IP-MIB"]]}
+            },
+            {
+                "generic_switch": {
+                    "frequency": 5,
+                    "varBinds": [
+                        ["SNMPv2-MIB", "sysDescr"],
+                        ["SNMPv2-MIB", "sysName", 0],
+                        ["IF-MIB"],
+                        ["TCP-MIB"],
+                        ["UDP-MIB"],
+                    ],
+                }
+            }
+        ]
+
+        profiles_manager = ProfilesManager(mongo_mock)
         profiles = profiles_manager.gather_elements()
         self.assertEqual(profiles, active_profiles)

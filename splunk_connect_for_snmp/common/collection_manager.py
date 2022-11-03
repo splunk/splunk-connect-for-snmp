@@ -12,7 +12,7 @@ except:
     pass
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
-INVENTORY_FROM_MONGO = os.getenv("INVENTORY_FROM_MONGO", "false")
+CONFIG_FROM_MONGO = os.getenv("CONFIG_FROM_MONGO", "false")
 logger = get_task_logger(__name__)
 
 
@@ -71,7 +71,7 @@ class GroupsManager(CollectionManager):
     #@staticmethod
     def gather_elements(self):
         groups = {}
-        if INVENTORY_FROM_MONGO.lower() in ["true", "1", "t"]:
+        if CONFIG_FROM_MONGO.lower() in ["true", "1", "t"]:
             groups_list = list(self.mongo.sc4snmp.groups_ui.find({}, {"_id": 0}))
             for gr in groups_list:
                 groups.update(gr)
@@ -106,7 +106,7 @@ class ProfilesManager(CollectionManager):
                     )
                     for key, profile in profiles.items():
                         active_profiles[key] = profile
-        if INVENTORY_FROM_MONGO.lower() in ["true", "1", "t"]:
+        if CONFIG_FROM_MONGO.lower() in ["true", "1", "t"]:
             profiles_list = list(self.mongo.sc4snmp.profiles_ui.find({}, {"_id": 0}))
             for pr in profiles_list:
                 key = list(pr.keys())[0]

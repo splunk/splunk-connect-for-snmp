@@ -5,7 +5,7 @@ groups:
     - address: 178.8.8.1
       port: 999
   switches:
-    - address: 12.22.23
+    - address: 12.22.23.23
       port: 33
     - address: 1.1.1.1
       port: 162

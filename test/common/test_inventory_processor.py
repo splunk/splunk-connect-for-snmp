@@ -1,6 +1,7 @@
 import os
 from unittest import TestCase, mock
 from unittest.mock import Mock, mock_open, patch
+from bson import ObjectId
 
 from splunk_connect_for_snmp.common.inventory_processor import (
     InventoryProcessor,
@@ -17,6 +18,45 @@ mock_inventory_host_same_as_in_group = """address,port,version,community,secret,
 group1,,2c,public,,,1805,group_profile,False,False
 0.0.0.0,,2c,public,,,1805,solo_profile1,False,False
 0.0.0.0,1161,2c,public,,,1805,solo_profile2,False,False"""
+
+mock_inventory_host_same_as_in_group_from_mongo = [
+        {
+            "address": "group1",
+            "port": 161,
+            "version": "2c",
+            "community": "public",
+            "secret": "",
+            "walk_interval": 1805,
+            "security_engine": "",
+            "profiles": "group_profile",
+            "smart_profiles": False,
+            "delete": False
+        },
+        {
+            "address": "0.0.0.0",
+            "port": 161,
+            "version": "2c",
+            "community": "public",
+            "secret": "",
+            "walk_interval": 1805,
+            "security_engine": "",
+            "profiles": "solo_profile1",
+            "smart_profiles": False,
+            "delete": False
+        },
+        {
+            "address": "0.0.0.0",
+            "port": 1161,
+            "version": "2c",
+            "community": "public",
+            "secret": "",
+            "walk_interval": 1805,
+            "security_engine": "",
+            "profiles": "solo_profile2",
+            "smart_profiles": False,
+            "delete": False
+        }
+]
 
 
 class TestInventoryProcessor(TestCase):
@@ -175,7 +215,7 @@ class TestInventoryProcessor(TestCase):
                 "delete": "",
             },
         ]
-        inventory_processor = InventoryProcessor(group_manager, Mock())
+        inventory_processor = InventoryProcessor(group_manager, Mock(), Mock())
         group_manager.return_element.return_value = [
             {
                 "group1": [
@@ -192,6 +232,7 @@ class TestInventoryProcessor(TestCase):
     def test_get_group_hosts_no_group_found(self):
         group_manager = Mock()
         logger = Mock()
+        inventory_ui_collection = Mock()
         group_object = {
             "address": "group1",
             "port": "",
@@ -204,7 +245,7 @@ class TestInventoryProcessor(TestCase):
             "SmartProfiles": "f",
             "delete": "",
         }
-        inventory_processor = InventoryProcessor(group_manager, logger)
+        inventory_processor = InventoryProcessor(group_manager, logger, inventory_ui_collection)
         group_manager.return_element.return_value = []
         inventory_processor.get_group_hosts(group_object, "group1")
         logger.warning.assert_called_with(
@@ -214,7 +255,7 @@ class TestInventoryProcessor(TestCase):
     def test_process_line_comment(self):
         logger = Mock()
         source_record = {"address": "#54.234.85.76"}
-        inventory_processor = InventoryProcessor(Mock(), logger)
+        inventory_processor = InventoryProcessor(Mock(), logger, Mock())
         inventory_processor.process_line(source_record)
         logger.warning.assert_called_with(
             "Record: #54.234.85.76 is commented out. Skipping..."
@@ -224,18 +265,30 @@ class TestInventoryProcessor(TestCase):
         "builtins.open", new_callable=mock_open, read_data=mock_inventory_only_address
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.INVENTORY_FROM_MONGO",
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
         "false",
     )
     def test_process_line_host(self, m_inventory):
         source_record = {"address": "54.234.85.76"}
-        inventory_processor = InventoryProcessor(Mock(), Mock())
+        inventory_processor = InventoryProcessor(Mock(), Mock(), Mock())
+        inventory_processor.get_all_hosts()
+        self.assertEqual(inventory_processor.inventory_records, [source_record])
+
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
+        "true",
+    )
+    def test_process_line_host_from_mongo_config(self):
+        source_record = {"address": "54.234.85.76"}
+        inventory_ui_collection = Mock()
+        inventory_ui_collection.find.return_value = [{"address": "54.234.85.76"}]
+        inventory_processor = InventoryProcessor(Mock(), Mock(), inventory_ui_collection)
         inventory_processor.get_all_hosts()
         self.assertEqual(inventory_processor.inventory_records, [source_record])
 
     def test_process_line_group(self):
         source_record = {"address": "group1"}
-        inventory_processor = InventoryProcessor(Mock(), Mock())
+        inventory_processor = InventoryProcessor(Mock(), Mock(), Mock())
         inventory_processor.get_group_hosts = Mock()
         inventory_processor.process_line(source_record)
         inventory_processor.get_group_hosts.assert_called_with(source_record, "group1")
@@ -246,7 +299,7 @@ class TestInventoryProcessor(TestCase):
         read_data=mock_inventory_host_same_as_in_group,
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.INVENTORY_FROM_MONGO",
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
         "false",
     )
     def test_ignore_line_host_configured_in_group(self, m_load_element):
@@ -260,7 +313,7 @@ class TestInventoryProcessor(TestCase):
         ]
         group_manager = Mock()
         group_manager.return_element.return_value = returned_group
-        inventory_processor = InventoryProcessor(group_manager, Mock())
+        inventory_processor = InventoryProcessor(group_manager, Mock(), Mock())
         expected = [
             {
                 "address": "0.0.0.0",
@@ -299,6 +352,68 @@ class TestInventoryProcessor(TestCase):
                 "profiles": "solo_profile2",
                 "smart_profiles": "False",
                 "delete": "False",
+            },
+        ]
+        inventory_processor.get_all_hosts()
+        self.assertEqual(expected, inventory_processor.inventory_records)
+
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
+        "true",
+    )
+    @mock.patch("pymongo.collection.Collection.find")
+    def test_ignore_line_host_configured_in_group_config_from_mongo(self, m_find):
+        returned_group = [
+            {
+                "group1": [
+                    {"address": "0.0.0.0", "port": 161},
+                    {"address": "127.0.0.1", "port": 161},
+                ]
+            }
+        ]
+        group_manager = Mock()
+        group_manager.return_element.return_value = returned_group
+        inventory_ui_collection = Mock()
+        inventory_ui_collection.find.return_value = mock_inventory_host_same_as_in_group_from_mongo
+        inventory_processor = InventoryProcessor(group_manager, Mock(), inventory_ui_collection)
+        expected = [
+            {
+                "address": "0.0.0.0",
+                "port": 161,
+                "version": "2c",
+                "community": "public",
+                "secret": "",
+                "security_engine": "",
+                "walk_interval": 1805,
+                "profiles": "group_profile",
+                "smart_profiles": False,
+                "delete": False,
+                "group": "group1",
+            },
+            {
+                "address": "127.0.0.1",
+                "port": 161,
+                "version": "2c",
+                "community": "public",
+                "secret": "",
+                "security_engine": "",
+                "walk_interval": 1805,
+                "profiles": "group_profile",
+                "smart_profiles": False,
+                "delete": False,
+                "group": "group1",
+            },
+            {
+                "address": "0.0.0.0",
+                "port": 1161,
+                "version": "2c",
+                "community": "public",
+                "secret": "",
+                "security_engine": "",
+                "walk_interval": 1805,
+                "profiles": "solo_profile2",
+                "smart_profiles": False,
+                "delete": False,
             },
         ]
         inventory_processor.get_all_hosts()
