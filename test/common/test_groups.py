@@ -1,6 +1,7 @@
 import os
 from unittest import TestCase, mock
 from unittest.mock import Mock
+
 from bson import ObjectId
 
 from splunk_connect_for_snmp.common.collection_manager import GroupsManager
@@ -57,13 +58,13 @@ class TestGroups(TestCase):
     def test_return_yaml_groups_more_than_one(self):
         active_groups = {
             "group1": [
-                    {"address": "123.0.0.1", "port": 161},
-                    {"address": "178.8.8.1", "port": 999},
-                ],
+                {"address": "123.0.0.1", "port": 161},
+                {"address": "178.8.8.1", "port": 999},
+            ],
             "switches": [
-                    {"address": "12.22.23.23", "port": 33},
-                    {"address": "1.1.1.1", "port": 162},
-                ],
+                {"address": "12.22.23.23", "port": 33},
+                {"address": "1.1.1.1", "port": 162},
+            ],
         }
         groups_manager = GroupsManager(Mock())
         groups = groups_manager.gather_elements()
@@ -125,7 +126,7 @@ class TestGroups(TestCase):
                     {"address": "12.22.23.23", "port": 33},
                     {"address": "1.1.1.1", "port": 162},
                 ]
-            }
+            },
         ]
         groups_manager = GroupsManager(mongo_mock)
         groups = groups_manager.gather_elements()

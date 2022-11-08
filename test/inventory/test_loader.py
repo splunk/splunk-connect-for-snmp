@@ -1,5 +1,5 @@
 from unittest import TestCase, mock
-from unittest.mock import Mock, mock_open, patch, call
+from unittest.mock import Mock, call, mock_open, patch
 
 from celery.schedules import schedule
 from pymongo.results import UpdateResult
@@ -27,48 +27,48 @@ mock_inventory_small_walk = """address,port,version,community,secret,securityEng
 192.168.0.1,,2c,public,,,1805,test_1;walk1;walk2,False,False"""
 
 mock_inventory_from_inventory_ui = [
-        {
-            "address": "192.168.0.1",
-            "port": 161,
-            "version": "2c",
-            "community": "public",
-            "secret": "",
-            "walk_interval": 1805,
-            "security_engine": "",
-            "profiles": "test_1",
-            "smart_profiles": False,
-            "delete": False
-        }
+    {
+        "address": "192.168.0.1",
+        "port": 161,
+        "version": "2c",
+        "community": "public",
+        "secret": "",
+        "walk_interval": 1805,
+        "security_engine": "",
+        "profiles": "test_1",
+        "smart_profiles": False,
+        "delete": False,
+    }
 ]
 
 mock_inventory_delete_from_inventory_ui = [
-        {
-            "address": "192.168.0.1",
-            "port": 161,
-            "version": "2c",
-            "community": "public",
-            "secret": "",
-            "walk_interval": 1805,
-            "security_engine": "",
-            "profiles": "test_1",
-            "smart_profiles": False,
-            "delete": True
-        }
+    {
+        "address": "192.168.0.1",
+        "port": 161,
+        "version": "2c",
+        "community": "public",
+        "secret": "",
+        "walk_interval": 1805,
+        "security_engine": "",
+        "profiles": "test_1",
+        "smart_profiles": False,
+        "delete": True,
+    }
 ]
 
 mock_inventory_delete_group_from_inventory_ui = [
-        {
-            "address": "group1",
-            "port": 161,
-            "version": "2c",
-            "community": "public",
-            "secret": "",
-            "walk_interval": 1805,
-            "security_engine": "",
-            "profiles": "test_1",
-            "smart_profiles": False,
-            "delete": True
-        }
+    {
+        "address": "group1",
+        "port": 161,
+        "version": "2c",
+        "community": "public",
+        "secret": "",
+        "walk_interval": 1805,
+        "security_engine": "",
+        "profiles": "test_1",
+        "smart_profiles": False,
+        "delete": True,
+    }
 ]
 
 expected_managed_task = {"some": 1, "test": 2, "data": 3}
@@ -175,17 +175,12 @@ class TestLoader(TestCase):
         self.assertTrue(result["run_immediately"])
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "false"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "false"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "false"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "false")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory_small_walk)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
@@ -211,7 +206,7 @@ class TestLoader(TestCase):
         m_migrate,
         m_mongo_collection,
         m_taskManager,
-        m_open
+        m_open,
     ):
         profiles = {
             "walk1": {
@@ -245,17 +240,12 @@ class TestLoader(TestCase):
         )
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "false"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "false"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "false"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "false")
     @patch("splunk_connect_for_snmp.common.inventory_processor.gen_walk_task")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
@@ -296,19 +286,13 @@ class TestLoader(TestCase):
 
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
-
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "true"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "true"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "true"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "true"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "true"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "true")
     @patch("splunk_connect_for_snmp.common.inventory_processor.gen_walk_task")
     @mock.patch("pymongo.collection.Collection.find")
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
@@ -351,17 +335,12 @@ class TestLoader(TestCase):
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "false"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "false"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "false"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "false")
     @patch("splunk_connect_for_snmp.common.inventory_processor.gen_walk_task")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
@@ -403,17 +382,12 @@ class TestLoader(TestCase):
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "true"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "true"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "true"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "true"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "true"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "true")
     @patch("splunk_connect_for_snmp.common.inventory_processor.gen_walk_task")
     @patch("pymongo.collection.Collection.find")
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
@@ -456,17 +430,12 @@ class TestLoader(TestCase):
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "false"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "false"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "false"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "false")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
@@ -504,19 +473,13 @@ class TestLoader(TestCase):
 
         periodic_obj_mock.manage_task.assert_not_called()
 
-
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "true"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "true"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "true"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "true"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "true"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "true")
     @patch("pymongo.collection.Collection.find")
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.update_one")
@@ -555,19 +518,13 @@ class TestLoader(TestCase):
 
         periodic_obj_mock.manage_task.assert_not_called()
 
-
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "false"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "false"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "false"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "false")
     @patch(
         "builtins.open", new_callable=mock_open, read_data=mock_inventory_with_comment
     )
@@ -606,17 +563,12 @@ class TestLoader(TestCase):
         periodic_obj_mock.manage_task.assert_not_called()
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "false"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "false"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "false"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "false")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory_delete)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.delete_one")
@@ -660,19 +612,13 @@ class TestLoader(TestCase):
         self.assertEqual(({"address": "192.168.0.1"},), calls[0].args)
         self.assertEqual(({"address": "192.168.0.1"},), calls[1].args)
 
-
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "true"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "true"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "true"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "true"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "true"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "true")
     @patch("pymongo.collection.Collection.find")
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.delete_one")
@@ -712,7 +658,7 @@ class TestLoader(TestCase):
 
         delete_calls = [
             call({"address": "192.168.0.1", "port": 161}),
-            call({"address": "192.168.0.1", "port": 161})
+            call({"address": "192.168.0.1", "port": 161}),
         ]
 
         m_delete.assert_has_calls(delete_calls)
@@ -723,19 +669,13 @@ class TestLoader(TestCase):
         self.assertEqual(({"address": "192.168.0.1"},), calls[0].args)
         self.assertEqual(({"address": "192.168.0.1"},), calls[1].args)
 
-
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "false"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "false"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "false"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "false")
     @patch(
         "builtins.open",
         new_callable=mock_open,
@@ -784,17 +724,12 @@ class TestLoader(TestCase):
         self.assertEqual(({"address": "192.168.0.1:345"},), calls[1].args)
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "false"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "false"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "false"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "false")
     @patch(
         "builtins.open",
         new_callable=mock_open,
@@ -820,17 +755,17 @@ class TestLoader(TestCase):
         "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_element"
     )
     def test_delete_configured_group(
-            self,
-            m_return_group,
-            m_load_groups,
-            m_update_groups,
-            m_load_profiles,
-            m_update_profiles,
-            m_migrate,
-            m_remove,
-            m_delete,
-            m_taskManager,
-            m_load,
+        self,
+        m_return_group,
+        m_load_groups,
+        m_update_groups,
+        m_load_profiles,
+        m_update_profiles,
+        m_migrate,
+        m_remove,
+        m_delete,
+        m_taskManager,
+        m_load,
     ):
         m_load_groups.return_value = {"group1": [{"address": "192.168.0.1"}]}
 
@@ -854,17 +789,12 @@ class TestLoader(TestCase):
         self.assertEqual(({"address": "192.168.0.1"},), calls[1].args)
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "false"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "false"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "false"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "false")
     @patch(
         "builtins.open",
         new_callable=mock_open,
@@ -890,22 +820,19 @@ class TestLoader(TestCase):
         "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_element"
     )
     def test_delete_unconfigured_group(
-            self,
-            m_return_no_groups,
-            m_load_groups,
-            m_update_groups,
-            m_load_profiles,
-            m_update_profiles,
-            m_migrate,
-            m_remove,
-            m_delete,
-            m_taskManager,
-            m_load,
+        self,
+        m_return_no_groups,
+        m_load_groups,
+        m_update_groups,
+        m_load_profiles,
+        m_update_profiles,
+        m_migrate,
+        m_remove,
+        m_delete,
+        m_taskManager,
+        m_load,
     ):
-        m_load_groups.side_effect = [
-            {"group1": [{"address": "192.168.0.1"}]},
-            {}
-        ]
+        m_load_groups.side_effect = [{"group1": [{"address": "192.168.0.1"}]}, {}]
 
         m_return_no_groups.return_value = []
         m_load_profiles.return_value = default_profiles
@@ -926,17 +853,12 @@ class TestLoader(TestCase):
         self.assertEqual(({"address": "192.168.0.1"},), calls[1].args)
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "true"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "true"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "true"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "true"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "true"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "true")
     @patch("pymongo.collection.Collection.find")
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.delete_one")
@@ -958,17 +880,17 @@ class TestLoader(TestCase):
         "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_element"
     )
     def test_delete_configured_group_config_from_mongo(
-            self,
-            m_return_group,
-            m_load_groups,
-            m_update_groups,
-            m_load_profiles,
-            m_update_profiles,
-            m_migrate,
-            m_remove,
-            m_delete,
-            m_taskManager,
-            m_find,
+        self,
+        m_return_group,
+        m_load_groups,
+        m_update_groups,
+        m_load_profiles,
+        m_update_profiles,
+        m_migrate,
+        m_remove,
+        m_delete,
+        m_taskManager,
+        m_find,
     ):
         m_load_groups.return_value = {"group1": [{"address": "192.168.0.1"}]}
 
@@ -986,7 +908,7 @@ class TestLoader(TestCase):
 
         delete_calls = [
             call({"address": "192.168.0.1", "port": 161}),
-            call({"address": "group1"})
+            call({"address": "group1"}),
         ]
 
         m_delete.assert_has_calls(delete_calls)
@@ -998,17 +920,12 @@ class TestLoader(TestCase):
         self.assertEqual(({"address": "192.168.0.1"},), calls[1].args)
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "true"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "true"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "true"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "true"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "true"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "true")
     @patch("pymongo.collection.Collection.find")
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.delete_one")
@@ -1030,22 +947,19 @@ class TestLoader(TestCase):
         "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_element"
     )
     def test_delete_unconfigured_group_config_from_mongo(
-            self,
-            m_return_no_groups,
-            m_load_groups,
-            m_update_groups,
-            m_load_profiles,
-            m_update_profiles,
-            m_migrate,
-            m_remove,
-            m_delete,
-            m_taskManager,
-            m_find,
+        self,
+        m_return_no_groups,
+        m_load_groups,
+        m_update_groups,
+        m_load_profiles,
+        m_update_profiles,
+        m_migrate,
+        m_remove,
+        m_delete,
+        m_taskManager,
+        m_find,
     ):
-        m_load_groups.side_effect = [
-            {"group1": [{"address": "192.168.0.1"}]},
-            {}
-        ]
+        m_load_groups.side_effect = [{"group1": [{"address": "192.168.0.1"}]}, {}]
 
         m_return_no_groups.return_value = []
         m_load_profiles.return_value = default_profiles
@@ -1060,7 +974,7 @@ class TestLoader(TestCase):
 
         delete_calls = [
             call({"address": "group1"}),
-            call({"address": "192.168.0.1", "port": 161})
+            call({"address": "192.168.0.1", "port": 161}),
         ]
 
         m_delete.assert_has_calls(delete_calls)
@@ -1072,17 +986,12 @@ class TestLoader(TestCase):
         self.assertEqual(({"address": "192.168.0.1"},), calls[1].args)
 
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", "false"
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
-        "false"
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", "false"
     )
-    @mock.patch(
-        "splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO",
-        "false"
-    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", "false")
     @patch("splunk_connect_for_snmp.common.inventory_processor.gen_walk_task")
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("pymongo.collection.Collection.update_one")

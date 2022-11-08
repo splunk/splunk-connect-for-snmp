@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import ANY, MagicMock, Mock, patch, mock_open, call
+from unittest.mock import ANY, MagicMock, Mock, call, mock_open, patch
 
 from celery import chain, group, signature
 from celery.schedules import schedule
@@ -18,7 +18,8 @@ from splunk_connect_for_snmp.common.schema_migration import (
 )
 from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
 
-files_contents = ["""address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+files_contents = [
+    """address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
 group1,,2c,public,,,1805,group_profile,False,False
 0.0.0.0,162,3,,my_secret,112233445566aabbcc,18,solo_profile1;solo_profile2,True,False""",
     """
@@ -34,7 +35,7 @@ group1,,2c,public,,,1805,group_profile,False,False
           - [ "IF-MIB","ifInDiscards",1 ]
           - [ "IF-MIB","ifOutErrors" ]
           - [ "SNMPv2-MIB", "sysDescr",0 ]
-          """
+          """,
 ]
 
 
@@ -277,56 +278,71 @@ class TestSchemaMigration(TestCase):
         self.assertEqual(calls[0].kwargs, new_schedule[0])
         self.assertEqual(calls[1].kwargs, new_schedule[1])
 
-    @patch(
-        "builtins.open", new_callable=mock_open, read_data=files_contents[0]
-    )
+    @patch("builtins.open", new_callable=mock_open, read_data=files_contents[0])
     def test_migrate_to_version_6(self, m_inventory):
-        m_inventory.side_effect = [mock_open(read_data=content).return_value for content in files_contents]
+        m_inventory.side_effect = [
+            mock_open(read_data=content).return_value for content in files_contents
+        ]
         periodic_obj_mock = Mock()
         mongo_client = MagicMock()
 
         calls_inventory = [
-            call({
-                "address": "group1",
-                "port": 161,
-                "version": "2c",
-                "community": "public",
-                "secret": "",
-                "security_engine": "",
-                "walk_interval": 1805,
-                "profiles": "group_profile",
-                "smart_profiles": False,
-                "delete": False
-            }),
-            call({
-                "address": "0.0.0.0",
-                "port": 162,
-                "version": "3",
-                "community": "",
-                "secret": "my_secret",
-                "security_engine": "112233445566aabbcc",
-                "walk_interval": 1800,
-                "profiles": "solo_profile1;solo_profile2",
-                "smart_profiles": True,
-                "delete": False
-            })
+            call(
+                {
+                    "address": "group1",
+                    "port": 161,
+                    "version": "2c",
+                    "community": "public",
+                    "secret": "",
+                    "security_engine": "",
+                    "walk_interval": 1805,
+                    "profiles": "group_profile",
+                    "smart_profiles": False,
+                    "delete": False,
+                }
+            ),
+            call(
+                {
+                    "address": "0.0.0.0",
+                    "port": 162,
+                    "version": "3",
+                    "community": "",
+                    "secret": "my_secret",
+                    "security_engine": "112233445566aabbcc",
+                    "walk_interval": 1800,
+                    "profiles": "solo_profile1;solo_profile2",
+                    "smart_profiles": True,
+                    "delete": False,
+                }
+            ),
         ]
 
-        call_group = [{
-            "switches": [
-                {"address": "18.223.238.221", "port": 1161, "community": "public"}
-            ]
-        }]
-
-        call_profiles = [{
-            "single_profile_1": {
-                "frequency": 6,
-                "varBinds": [["IF-MIB", "ifInDiscards", 1], ["IF-MIB", "ifOutErrors"], ["SNMPv2-MIB", "sysDescr", 0]]
+        call_group = [
+            {
+                "switches": [
+                    {"address": "18.223.238.221", "port": 1161, "community": "public"}
+                ]
             }
-        }]
+        ]
+
+        call_profiles = [
+            {
+                "single_profile_1": {
+                    "frequency": 6,
+                    "varBinds": [
+                        ["IF-MIB", "ifInDiscards", 1],
+                        ["IF-MIB", "ifOutErrors"],
+                        ["SNMPv2-MIB", "sysDescr", 0],
+                    ],
+                }
+            }
+        ]
 
         migrate_to_version_6(mongo_client, periodic_obj_mock)
         mongo_client.sc4snmp.inventory_ui.insert.assert_has_calls(calls_inventory)
-        self.assertEqual(mongo_client.sc4snmp.groups_ui.insert_many.call_args, call(call_group))
-        self.assertEqual(mongo_client.sc4snmp.profiles_ui.insert_many.call_args, call(call_profiles))
-
+        self.assertEqual(
+            mongo_client.sc4snmp.groups_ui.insert_many.call_args, call(call_group)
+        )
+        self.assertEqual(
+            mongo_client.sc4snmp.profiles_ui.insert_many.call_args, call(call_profiles)
+        )

@@ -2,6 +2,7 @@ import copy
 import os
 from csv import DictReader
 from typing import List
+
 import pymongo
 
 from splunk_connect_for_snmp.common.collection_manager import GroupsManager

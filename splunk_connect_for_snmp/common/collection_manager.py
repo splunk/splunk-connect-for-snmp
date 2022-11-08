@@ -68,7 +68,6 @@ class GroupsManager(CollectionManager):
     def __init__(self, mongo):
         super().__init__(mongo, "groups")
 
-    #@staticmethod
     def gather_elements(self):
         groups = {}
         if CONFIG_FROM_MONGO.lower() in ["true", "1", "t"]:
@@ -90,7 +89,6 @@ class ProfilesManager(CollectionManager):
     def __init__(self, mongo):
         super().__init__(mongo, "profiles")
 
-    #@staticmethod
     def gather_elements(self):
         active_profiles = {}
 

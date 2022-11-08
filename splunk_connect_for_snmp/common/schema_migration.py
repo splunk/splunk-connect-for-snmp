@@ -16,10 +16,10 @@
 import logging
 import os
 import sys
-
-from pymongo import ASCENDING
 from csv import DictReader
+
 import yaml
+from pymongo import ASCENDING
 
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
@@ -47,7 +47,7 @@ INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
 
 INVENTORY_KEYS_TRANSFORM = {
     "securityEngine": "security_engine",
-    "SmartProfiles": "smart_profiles"
+    "SmartProfiles": "smart_profiles",
 }
 BOOLEAN_INVENTORY_FIELDS = ["delete", "smart_profiles"]
 
@@ -141,10 +141,16 @@ def migrate_to_version_6(mongo_client, task_manager):
                 else:
                     inventory_line[field] = True
 
-            port = int(inventory_line['port']) if len(inventory_line['port']) > 0 else 161
-            walk_interval = int(inventory_line["walk_interval"]) if int(inventory_line["walk_interval"]) >= 1800 else 1800
-            inventory_line['port'] = port
-            inventory_line['walk_interval'] = walk_interval
+            port = (
+                int(inventory_line["port"]) if len(inventory_line["port"]) > 0 else 161
+            )
+            walk_interval = (
+                int(inventory_line["walk_interval"])
+                if int(inventory_line["walk_interval"]) >= 1800
+                else 1800
+            )
+            inventory_line["port"] = port
+            inventory_line["walk_interval"] = walk_interval
             inventory_collection.insert(inventory_line)
 
     groups = {}

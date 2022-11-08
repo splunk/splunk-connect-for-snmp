@@ -245,7 +245,8 @@ class TestProfiles(TestCase):
         return_yaml_empty_profiles,
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH", return_disabled_config()
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH",
+        return_disabled_config(),
     )
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
@@ -286,9 +287,7 @@ class TestProfiles(TestCase):
                     ],
                 }
             },
-            {
-                "new_profiles": {"frequency": 6, "varBinds": [["IP-MIB"]]}
-            },
+            {"new_profiles": {"frequency": 6, "varBinds": [["IP-MIB"]]}},
             {
                 "generic_switch": {
                     "frequency": 5,
@@ -300,7 +299,7 @@ class TestProfiles(TestCase):
                         ["UDP-MIB"],
                     ],
                 }
-            }
+            },
         ]
 
         profiles_manager = ProfilesManager(mongo_mock)
@@ -312,7 +311,8 @@ class TestProfiles(TestCase):
         return_yaml_profiles,
     )
     @mock.patch(
-        "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH", return_yaml_empty_profiles()
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH",
+        return_yaml_empty_profiles(),
     )
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
@@ -372,9 +372,7 @@ class TestProfiles(TestCase):
                     ],
                 }
             },
-            {
-                "new_profiles": {"frequency": 6, "varBinds": [["IP-MIB"]]}
-            },
+            {"new_profiles": {"frequency": 6, "varBinds": [["IP-MIB"]]}},
             {
                 "generic_switch": {
                     "frequency": 5,
@@ -386,7 +384,7 @@ class TestProfiles(TestCase):
                         ["UDP-MIB"],
                     ],
                 }
-            }
+            },
         ]
 
         profiles_manager = ProfilesManager(mongo_mock)

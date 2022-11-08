@@ -86,7 +86,9 @@ def load():
     new_groups = groups_manager.return_collection()
 
     inventory_ui_collection = mongo_client.sc4snmp.inventory_ui
-    inventory_processor = InventoryProcessor(groups_manager, logger, inventory_ui_collection)
+    inventory_processor = InventoryProcessor(
+        groups_manager, logger, inventory_ui_collection
+    )
     inventory_record_manager = InventoryRecordManager(
         mongo_client, periodic_obj, logger
     )
@@ -107,9 +109,13 @@ def load():
                 inventory_record_manager.delete(target)
                 if CONFIG_FROM_MONGO.lower() in ["true", "1", "t"]:
                     if ir.group is None:
-                        mongo_client.sc4snmp.inventory_ui.delete_one({"address": ir.address, "port": ir.port})
+                        mongo_client.sc4snmp.inventory_ui.delete_one(
+                            {"address": ir.address, "port": ir.port}
+                        )
                     else:
-                        mongo_client.sc4snmp.inventory_ui.delete_one({"address": ir.group})
+                        mongo_client.sc4snmp.inventory_ui.delete_one(
+                            {"address": ir.group}
+                        )
             else:
                 inventory_record_manager.update(ir, new_source_record, config_profiles)
 

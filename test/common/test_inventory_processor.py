@@ -1,6 +1,7 @@
 import os
 from unittest import TestCase, mock
 from unittest.mock import Mock, mock_open, patch
+
 from bson import ObjectId
 
 from splunk_connect_for_snmp.common.inventory_processor import (
@@ -20,42 +21,42 @@ group1,,2c,public,,,1805,group_profile,False,False
 0.0.0.0,1161,2c,public,,,1805,solo_profile2,False,False"""
 
 mock_inventory_host_same_as_in_group_from_mongo = [
-        {
-            "address": "group1",
-            "port": 161,
-            "version": "2c",
-            "community": "public",
-            "secret": "",
-            "walk_interval": 1805,
-            "security_engine": "",
-            "profiles": "group_profile",
-            "smart_profiles": False,
-            "delete": False
-        },
-        {
-            "address": "0.0.0.0",
-            "port": 161,
-            "version": "2c",
-            "community": "public",
-            "secret": "",
-            "walk_interval": 1805,
-            "security_engine": "",
-            "profiles": "solo_profile1",
-            "smart_profiles": False,
-            "delete": False
-        },
-        {
-            "address": "0.0.0.0",
-            "port": 1161,
-            "version": "2c",
-            "community": "public",
-            "secret": "",
-            "walk_interval": 1805,
-            "security_engine": "",
-            "profiles": "solo_profile2",
-            "smart_profiles": False,
-            "delete": False
-        }
+    {
+        "address": "group1",
+        "port": 161,
+        "version": "2c",
+        "community": "public",
+        "secret": "",
+        "walk_interval": 1805,
+        "security_engine": "",
+        "profiles": "group_profile",
+        "smart_profiles": False,
+        "delete": False,
+    },
+    {
+        "address": "0.0.0.0",
+        "port": 161,
+        "version": "2c",
+        "community": "public",
+        "secret": "",
+        "walk_interval": 1805,
+        "security_engine": "",
+        "profiles": "solo_profile1",
+        "smart_profiles": False,
+        "delete": False,
+    },
+    {
+        "address": "0.0.0.0",
+        "port": 1161,
+        "version": "2c",
+        "community": "public",
+        "secret": "",
+        "walk_interval": 1805,
+        "security_engine": "",
+        "profiles": "solo_profile2",
+        "smart_profiles": False,
+        "delete": False,
+    },
 ]
 
 
@@ -245,7 +246,9 @@ class TestInventoryProcessor(TestCase):
             "SmartProfiles": "f",
             "delete": "",
         }
-        inventory_processor = InventoryProcessor(group_manager, logger, inventory_ui_collection)
+        inventory_processor = InventoryProcessor(
+            group_manager, logger, inventory_ui_collection
+        )
         group_manager.return_element.return_value = []
         inventory_processor.get_group_hosts(group_object, "group1")
         logger.warning.assert_called_with(
@@ -282,7 +285,9 @@ class TestInventoryProcessor(TestCase):
         source_record = {"address": "54.234.85.76"}
         inventory_ui_collection = Mock()
         inventory_ui_collection.find.return_value = [{"address": "54.234.85.76"}]
-        inventory_processor = InventoryProcessor(Mock(), Mock(), inventory_ui_collection)
+        inventory_processor = InventoryProcessor(
+            Mock(), Mock(), inventory_ui_collection
+        )
         inventory_processor.get_all_hosts()
         self.assertEqual(inventory_processor.inventory_records, [source_record])
 
@@ -374,8 +379,12 @@ class TestInventoryProcessor(TestCase):
         group_manager = Mock()
         group_manager.return_element.return_value = returned_group
         inventory_ui_collection = Mock()
-        inventory_ui_collection.find.return_value = mock_inventory_host_same_as_in_group_from_mongo
-        inventory_processor = InventoryProcessor(group_manager, Mock(), inventory_ui_collection)
+        inventory_ui_collection.find.return_value = (
+            mock_inventory_host_same_as_in_group_from_mongo
+        )
+        inventory_processor = InventoryProcessor(
+            group_manager, Mock(), inventory_ui_collection
+        )
         expected = [
             {
                 "address": "0.0.0.0",
