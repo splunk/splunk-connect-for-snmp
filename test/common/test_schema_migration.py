@@ -343,7 +343,6 @@ class TestSchemaMigration(TestCase):
         self.assertEqual(
             mongo_client.sc4snmp.groups_ui.insert_many.call_args, call(call_group)
         )
-
         self.assertEqual(
             mongo_client.sc4snmp.profiles_ui.insert_many.call_args, call(call_profiles)
         )
