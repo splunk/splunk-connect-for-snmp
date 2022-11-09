@@ -45,6 +45,8 @@ spec:
             value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/standard.txt"
           - name: LOG_LEVEL
             value: {{ .Values.scheduler.logLevel | default "INFO" }}
+          - name: CONFIG_FROM_MONGO
+            value: {{ .Values.UI.enable | default "false" }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"
