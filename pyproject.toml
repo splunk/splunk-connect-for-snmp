@@ -36,7 +36,7 @@ requests-cache = "^0.9.3"
 requests-ratelimiter = "^0.2.1"
 mongoengine = "^0.24.1"
 celery-redbeat = {git = "https://github.com/splunk/redbeat", rev = "main"}
-pysnmplib = "^5.0.5"
+pysnmplib = "^5.0.19"
 PyYAML = "^6.0"
 #Note this is temporary PR to upstream project is issued
 wait-for-dep = {extras = ["redis"], git="https://github.com/omrozowicz-splunk/wait-for-dep.git"}
