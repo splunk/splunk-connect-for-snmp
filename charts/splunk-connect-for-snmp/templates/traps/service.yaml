@@ -24,7 +24,7 @@ spec:
   ports:
     - port: {{ .Values.traps.service.port }}
       {{- if and .Values.traps.nodePort (eq .Values.traps.service.type "NodePort")}}
-      nodePort: {{ .Values.traps.nodePort | default 3000 }}
+      nodePort: {{ .Values.traps.service.nodePort | default 30000 }}
       {{- end }}
       targetPort: 2162
       protocol: UDP
