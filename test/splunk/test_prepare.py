@@ -83,7 +83,7 @@ class TestPrepare(TestCase):
                 "SOME_GROUP_KEY1": {
                     "metrics": {
                         "metric_one": {"value": 23},
-                        "metric_two": {"value": 26},
+                        "metric_two": {"value": 26, "index": "6"},
                     },
                     "fields": {
                         "field_one": {"value": "on"},
@@ -125,6 +125,7 @@ class TestPrepare(TestCase):
         self.assertEqual("listening", fields1["field_two"])
         self.assertEqual(23.0, fields1["metric_name:sc4snmp.metric_one"])
         self.assertEqual(26.0, fields1["metric_name:sc4snmp.metric_two"])
+        self.assertEqual("6", fields1["mibIndex"])
         self.assertEqual(15, fields1["frequency"])
         self.assertEqual("profile1,profile2", fields1["profiles"])
 

@@ -216,6 +216,22 @@ def extract_index_number(index):
     return index_number
 
 
+def extract_index_oid_part(varBind):
+    """
+    Extracts index from OIDs of metrics.
+    Not always MIB files are structurized the way one of the field is a meaningful index.
+    https://stackoverflow.com/questions/58886693/how-to-standardize-oid-index-retrieval-in-pysnmp
+    :param varBind: pysnmp object retrieved from a device
+    :return: str
+    """
+    object_identity, value = varBind
+    mib_node = object_identity.getMibNode()
+    object_instance_oid = object_identity.getOid()
+    object_oid = mib_node.getName()
+    index_part = object_instance_oid[len(object_oid):]
+    return str(index_part)
+
+
 class Poller(Task):
     def __init__(self, **kwargs):
         self.standard_mibs = []
@@ -484,6 +500,7 @@ class Poller(Task):
                     metric_value = valueAsBest(snmp_val.prettyPrint())
 
                     index_number = extract_index_number(index)
+                    oid_index_part = extract_index_oid_part(varBind)
                     metric_value = fill_empty_value(index_number, metric_value, target)
 
                     profile = None
@@ -500,6 +517,7 @@ class Poller(Task):
                             "time": time.time(),
                             "type": metric_type,
                             "value": metric_value,
+                            "index": oid_index_part,
                             "oid": oid,
                         }
                         if profile and profile not in metrics[group_key]["profiles"]:
