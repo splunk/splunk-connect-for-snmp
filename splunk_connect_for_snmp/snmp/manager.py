@@ -224,7 +224,7 @@ def extract_index_oid_part(varBind):
     :param varBind: pysnmp object retrieved from a device
     :return: str
     """
-    object_identity, value = varBind
+    object_identity, _ = varBind
     mib_node = object_identity.getMibNode()
     object_instance_oid = object_identity.getOid()
     object_oid = mib_node.getName()
