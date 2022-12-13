@@ -187,6 +187,7 @@ worker:
   podAntiAffinity: soft
 
 poller:
+  metricsIndexingEnabled: false
   usernameSecrets: []
 
 sim:
