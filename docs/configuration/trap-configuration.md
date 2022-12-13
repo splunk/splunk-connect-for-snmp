@@ -109,8 +109,8 @@ Using this method, SNMP trap will always be forwarded to one of the trap receive
 example above, remember - you can configure any other port). So doesn't matter IP address of which node you use, adding
 nodePort will make it end up in a correct place everytime. 
 
-Here, good practice is to create IP floating address/Anycast pointing to healthy nodes, so the traffic is forwarded in case of the
-failover. The best way is to create LoadBalancer which balance the traffic between nodes.
+Here, good practice is to create IP floating address/Anycast pointing to the healthy nodes, so the traffic is forwarded in case of the
+failover. The best way is to create external LoadBalancer which balance the traffic between nodes.
 
 ### Define number of traps server replica
 `replicaCount` defines that the number of replicas for trap container should be 2x number of nodes. The default value is `2`. 

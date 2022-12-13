@@ -23,7 +23,7 @@ spec:
   {{- end }}
   ports:
     - port: {{ .Values.traps.service.port }}
-      {{- if and .Values.traps.nodePort (eq .Values.traps.service.type "NodePort")}}
+      {{- if and .Values.traps.service.nodePort (eq .Values.traps.service.type "NodePort")}}
       nodePort: {{ .Values.traps.service.nodePort | default 30000 }}
       {{- end }}
       targetPort: 2162
