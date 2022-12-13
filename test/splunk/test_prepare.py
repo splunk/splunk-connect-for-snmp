@@ -8,6 +8,7 @@ from splunk_connect_for_snmp.splunk.tasks import apply_custom_translations, prep
 @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS", "test_index")
 @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_METRICS", "test_index_2")
 class TestPrepare(TestCase):
+
     @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_trap(self, m_custom):
         task_input = {
@@ -73,6 +74,7 @@ class TestPrepare(TestCase):
         self.assertEqual(67.0, event2["metric_three"]["value"])
         self.assertEqual(90.0, event2["metric_four"]["value"])
 
+    @patch("splunk_connect_for_snmp.splunk.tasks.METRICS_INDEXING_ENABLED", True)
     @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_metrics(self, m_custom):
         task_input = {
@@ -143,6 +145,50 @@ class TestPrepare(TestCase):
         self.assertEqual(90, fields2["metric_name:sc4snmp.metric_four"])
         self.assertEqual(15, fields2["frequency"])
         self.assertEqual("profile1,profile2", fields2["profiles"])
+
+    @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
+    def test_prepare_metrics_no_indexing(self, m_custom):
+        task_input = {
+            "time": 1234567,
+            "address": "192.168.0.1",
+            "frequency": 15,
+            "result": {
+                "SOME_GROUP_KEY1": {
+                    "metrics": {
+                        "metric_one": {"value": 23},
+                        "metric_two": {"value": 26, "index": "6"},
+                    },
+                    "fields": {
+                        "field_one": {"value": "on"},
+                        "field_two": {"value": "listening"},
+                    },
+                    "profiles": "profile1,profile2",
+                },
+                "SOME_GROUP_KEY2": {
+                    "metrics": {
+                        "metric_three": {"value": 67},
+                        "metric_four": {"value": 90},
+                    },
+                    "fields": {
+                        "field_three": {"value": "OFF"},
+                        "field_four": {"value": "stopping"},
+                    },
+                    "profiles": "profile1,profile2",
+                },
+            },
+        }
+
+        m_custom.return_value = task_input
+        result = prepare(task_input)
+
+        self.assertEqual("list", type(result["metrics"]).__name__)
+        self.assertEqual(2, len(result))
+        self.assertEqual(0, len(result["events"]))
+        self.assertEqual(2, len(result["metrics"]))
+
+        item1 = json.loads(result["metrics"][0])
+        fields1 = item1["fields"]
+        self.assertNotIn("mibIndex", fields1)
 
     @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_metrics_group(self, m_custom):
