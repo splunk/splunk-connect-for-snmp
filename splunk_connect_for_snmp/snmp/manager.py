@@ -228,7 +228,7 @@ def extract_index_oid_part(varBind):
     mib_node = object_identity.getMibNode()
     object_instance_oid = object_identity.getOid()
     object_oid = mib_node.getName()
-    index_part = object_instance_oid[len(object_oid):]
+    index_part = object_instance_oid[len(object_oid) :]
     return str(index_part)
 
 

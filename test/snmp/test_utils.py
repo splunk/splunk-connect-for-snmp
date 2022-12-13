@@ -1,5 +1,6 @@
 from unittest import TestCase, mock
 from unittest.mock import Mock
+
 from pysnmp.proto.rfc1902 import ObjectName
 
 from splunk_connect_for_snmp.snmp.context import get_context_data
@@ -7,11 +8,12 @@ from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 from splunk_connect_for_snmp.snmp.manager import (
     _any_failure_happened,
     extract_index_number,
+    extract_index_oid_part,
     fill_empty_value,
     get_inventory,
     is_increasing_oids_ignored,
     map_metric_type,
-    return_address_and_port, extract_index_oid_part,
+    return_address_and_port,
 )
 
 
@@ -175,7 +177,9 @@ class TestUtils(TestCase):
 
     def test_extract_index_oid_part(self):
         object_identity, mib_node, object_instance_id = Mock(), Mock(), Mock()
-        mib_node.getName.return_value = ObjectName((1, 3, 6, 1, 4, 1, 9, 9, 109, 1, 1, 1, 1, 2))
+        mib_node.getName.return_value = ObjectName(
+            (1, 3, 6, 1, 4, 1, 9, 9, 109, 1, 1, 1, 1, 2)
+        )
         object_instance_id = ObjectName("1.3.6.1.4.1.9.9.109.1.1.1.1.2.7")
         object_identity.getOid.return_value = object_instance_id
         object_identity.getMibNode.return_value = mib_node
@@ -185,7 +189,9 @@ class TestUtils(TestCase):
 
     def test_extract_index_oid_part_complex_index(self):
         object_identity, mib_node, object_instance_id = Mock(), Mock(), Mock()
-        mib_node.getName.return_value = ObjectName((1, 3, 6, 1, 4, 1, 9, 9, 109, 1, 2, 2, 1, 1))
+        mib_node.getName.return_value = ObjectName(
+            (1, 3, 6, 1, 4, 1, 9, 9, 109, 1, 2, 2, 1, 1)
+        )
         object_instance_id = ObjectName("1.3.6.1.4.1.9.9.109.1.2.2.1.1.7.12147")
         object_identity.getOid.return_value = object_instance_id
         object_identity.getMibNode.return_value = mib_node

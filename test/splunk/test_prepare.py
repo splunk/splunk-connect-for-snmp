@@ -8,7 +8,6 @@ from splunk_connect_for_snmp.splunk.tasks import apply_custom_translations, prep
 @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS", "test_index")
 @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_METRICS", "test_index_2")
 class TestPrepare(TestCase):
-
     @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_trap(self, m_custom):
         task_input = {

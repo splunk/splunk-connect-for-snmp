@@ -102,7 +102,7 @@ class TestProcessSnmpData(TestCase):
         m_get_group_key.side_effect = ["GROUP1", "GROUP2"]
         m_map_metric_type.side_effect = ["g", "g"]
         m_extract_index_number.return_value = 1
-        m_extract_index_oid_part.side_effect = ['7', '6']
+        m_extract_index_oid_part.side_effect = ["7", "6"]
 
         m_time.return_value = 1640609779.473053
 
@@ -183,7 +183,7 @@ class TestProcessSnmpData(TestCase):
         m_get_group_key.return_value = "GROUP1"
         m_map_metric_type.side_effect = ["g", "r"]
         m_extract_index_number.return_value = 1
-        m_extract_index_oid_part.return_value = '6'
+        m_extract_index_oid_part.return_value = "6"
 
         m_time.return_value = 1640609779.473053
 
@@ -259,7 +259,7 @@ class TestProcessSnmpData(TestCase):
         m_get_group_key.return_value = "QWERTYUIOP"
         m_map_metric_type.side_effect = ["g", "g"]
         m_extract_index_number.return_value = 1
-        m_extract_index_oid_part.side_effect = ['6.7', '6']
+        m_extract_index_oid_part.side_effect = ["6.7", "6"]
 
         m_time.return_value = 1640609779.473053
 
