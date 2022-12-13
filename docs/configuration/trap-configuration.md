@@ -84,8 +84,9 @@ An example of SNMPv3 trap is:
 snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 '' 1.3.6.1.2.1.2.2.1.1.1
 ```
 
-### Define load balancer IP
+### Define external gateway for traps
 
+If you use SC4SNMP standalone, configure `loadBalancerIP`.
 `loadBalancerIP` is the IP address in the metallb pool. 
 Example:
 
@@ -93,6 +94,23 @@ Example:
 traps:
   loadBalancerIP: 10.202.4.202
 ```
+
+If you want to use SC4SNMP trap receiver in K8S cluster, configure `NodePort` instead. The snippet of config is:
+
+```yaml
+traps:
+  service: 
+    type: NodePort
+    externalTrafficPolicy: Cluster
+    nodePort: 30000
+```
+
+Using this method, SNMP trap will always be forwarded to one of the trap receiver pods listening on port 30000 (as in the
+example above, remember - you can configure any other port). So doesn't matter IP address of which node you use, adding
+nodePort will make it end up in a correct place everytime. 
+
+Here, good practice is to create IP floating address/Anycast pointing to the healthy nodes, so the traffic is forwarded in case of the
+failover. The best way is to create external LoadBalancer which balance the traffic between nodes.
 
 ### Define number of traps server replica
 `replicaCount` defines that the number of replicas for trap container should be 2x number of nodes. The default value is `2`. 
