@@ -36,6 +36,36 @@ The default value is `WARNING`.
 ### Define usernameSecrets
 Secrets are required to run SNMPv3 polling. To add v3 authentication details, create the k8s Secret object: [SNMPv3 Configuration](snmpv3-configuration.md), and put its name in `poller.usernameSecrets`.
 
+### Append OID index part to the metrics
+
+Not every SNMP metric object is structured the way it has its index as a one of the field value.
+We can append the index part of OID with:
+
+```yaml
+poller:
+  metricsIndexingEnabled: true
+```
+
+So the following change will make this metric object (derived from the OID `1.3.6.1.2.1.6.20.1.4.0.0.443`)
+
+```
+{
+   frequency: 5
+   metric_name:sc4snmp.TCP-MIB.tcpListenerProcess: 309
+   mibIndex: 0.0.443
+   profiles: generic_switch
+}
+```
+
+out of this object:
+```
+{
+   frequency: 5
+   metric_name:sc4snmp.TCP-MIB.tcpListenerProcess: 309
+   profiles: generic_switch
+}
+```
+
 ### Configure inventory 
 To update inventory, see: [Update Inventory and Profile](#update-inventory-and-profile).
 
