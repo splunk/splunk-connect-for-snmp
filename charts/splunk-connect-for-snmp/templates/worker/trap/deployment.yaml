@@ -50,11 +50,6 @@ spec:
             - name: tmp
               mountPath: "/tmp/"
               readOnly: false
-            {{- range (.Values.poller).usernameSecrets }}
-            - name: {{ . }}-snmpv3-secrets
-              mountPath: /app/secrets/snmpv3/{{ . }}
-              readOnly: true
-            {{- end }}
           resources:
             {{- toYaml .Values.worker.trap.resources | nindent 12 }}
       {{- with .Values.worker.nodeSelector }}
@@ -94,11 +89,6 @@ spec:
             items:
               - key: "config.yaml"
                 path: "config.yaml"
-        {{- range .Values.poller.usernameSecrets }}
-        - name: {{ . }}-snmpv3-secrets
-          secret:
-            secretName: {{ . }}
-        {{- end }}
         - name: pysnmp-cache-volume
           emptyDir: {}
         - name: tmp
