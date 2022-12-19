@@ -50,7 +50,7 @@ spec:
             - name: tmp
               mountPath: "/tmp/"
               readOnly: false
-            {{- range .Values.poller.usernameSecrets }}
+            {{- range (.Values.poller).usernameSecrets }}
             - name: {{ . }}-snmpv3-secrets
               mountPath: /app/secrets/snmpv3/{{ . }}
               readOnly: true
