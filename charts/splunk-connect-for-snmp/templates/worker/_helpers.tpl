@@ -117,7 +117,7 @@ Create the name of the service account to use
 - name: WALK_RETRY_MAX_INTERVAL
   value: {{ .Values.worker.walkRetryMaxInterval | default "600" | quote }}
 - name: METRICS_INDEXING_ENABLED
-  value: {{ .Values.poller.metricsIndexingEnabled | default "false" | quote }}
+  value: {{ (.Values.poller).metricsIndexingEnabled | default "false" | quote }}
 {{- if .Values.worker.ignoreNotIncreasingOid }}
 - name: IGNORE_NOT_INCREASING_OIDS
   value: {{ join "," .Values.worker.ignoreNotIncreasingOid }}
