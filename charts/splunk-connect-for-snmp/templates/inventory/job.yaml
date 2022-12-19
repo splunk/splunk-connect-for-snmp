@@ -58,11 +58,6 @@ spec:
             - name: tmp
               mountPath: "/tmp/"
               readOnly: false
-            {{- range .Values.poller.usernameSecrets }}
-            - name: {{ . }}-snmpv3-secrets
-              mountPath: /app/secrets/snmpv3/{{ . }}
-              readOnly: true
-            {{- end }}
 
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
@@ -74,11 +69,6 @@ spec:
             items:
               - key: "config.yaml"
                 path: "config.yaml"
-        {{- range .Values.poller.usernameSecrets }}
-        - name: {{ . }}-snmpv3-secrets
-          secret:
-            secretName: {{ . }}
-        {{- end }}
         - name: inventory
           configMap:
             # Provide the name of the ConfigMap you want to mount.
