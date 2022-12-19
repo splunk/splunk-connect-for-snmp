@@ -89,7 +89,7 @@ scheduler:
 #        - ['TCP-MIB', 'tcpActiveOpens']
 #        - ['TCP-MIB', 'tcpAttemptFails']
 #        - ['IF-MIB']
-poller:
+#poller:
  # usernameSecrets:
  #   - sc4snmp-hlab-sha-aes
  #   - sc4snmp-hlab-sha-des
