@@ -46,7 +46,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker meta
         id: docker_meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: ghcr.io/splunk/splunk-connect-for-snmp/container
           tags: |
@@ -59,7 +59,7 @@ jobs:
             type=ref,event=branch
       - name: Build and push action
         id: docker_action_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           push: false

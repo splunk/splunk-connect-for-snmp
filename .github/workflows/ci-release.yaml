@@ -47,7 +47,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker meta
         id: docker_meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: ghcr.io/splunk/splunk-connect-for-snmp/container
           tags: |
@@ -61,7 +61,7 @@ jobs:
             type=ref,event=pr
       - name: Build and push action
         id: docker_action_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           push: true
@@ -74,7 +74,7 @@ jobs:
           node-version: "14"
       - name: Semantic Release
         id: version
-        uses: cycjimmy/semantic-release-action@v2.6.0
+        uses: cycjimmy/semantic-release-action@v3.2.0
         with:
           semantic_version: 17
           extra_plugins: |
