@@ -93,7 +93,7 @@ jobs:
         run: |
           poetry run pytest --cov=./splunk_connect_for_snmp --cov-report=xml --junitxml=test-results/junit.xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
