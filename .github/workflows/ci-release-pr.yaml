@@ -59,7 +59,7 @@ jobs:
             type=ref,event=branch
       - name: Build and push action
         id: docker_action_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           push: false
