@@ -128,7 +128,6 @@ pull_image(){
 
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo add pysnmp-mibs https://pysnmp.github.io/mibs/charts
-helm repo add bitnami-pre https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
 helm dependency build charts/splunk-connect-for-snmp
 helm package charts/splunk-connect-for-snmp -d /tmp/package
 cd /tmp/package || exit
