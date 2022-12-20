@@ -21,7 +21,7 @@ jobs:
           SCRIPT_NAME: create_packages.sh
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: /tmp/package/packages
