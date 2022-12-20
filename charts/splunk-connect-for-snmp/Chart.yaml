@@ -23,11 +23,11 @@ appVersion: "1.8.5-beta.4"
 #
 dependencies:
   - name: mongodb
-    version: ~10.30
-    repository: https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
+    version: ~13.6
+    repository: https://charts.bitnami.com/bitnami
   - name: redis
-    version: ~16.8
-    repository: https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
+    version: ~17.3
+    repository: https://charts.bitnami.com/bitnami
   - name: mibserver
     version: ~1.14.0
     repository: https://pysnmp.github.io/mibs/charts/
