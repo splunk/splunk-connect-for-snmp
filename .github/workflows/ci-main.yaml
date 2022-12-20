@@ -48,7 +48,7 @@ jobs:
         env:
           FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
       - name: upload THIRDPARTY file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: THIRDPARTY
           path: /tmp/THIRDPARTY
@@ -71,7 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - uses: pre-commit/action@v2.0.3
+      - uses: pre-commit/action@v3.0.0
   test-unit:
     name: Test Unit Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
@@ -93,7 +93,7 @@ jobs:
         run: |
           poetry run pytest --cov=./splunk_connect_for_snmp --cov-report=xml --junitxml=test-results/junit.xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
@@ -102,7 +102,7 @@ jobs:
           fail_ci_if_error: true
           path_to_write_report: ./coverage/codecov_report.txt
           verbose: true
-      - uses: actions/upload-artifact@v2 # upload test results
+      - uses: actions/upload-artifact@v3 # upload test results
         if: success() || failure() # run this step even if previous step failed
         with:
           name: test-results-unit-python_${{ matrix.python-version }}

@@ -26,14 +26,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to GitHub Packages Docker Registry
-        uses: docker/login-action@v1.9.0
+        uses: docker/login-action@v2.1.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker meta
         id: docker_meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: ghcr.io/splunk/splunk-connect-for-snmp/container
           tags: |
@@ -49,7 +49,7 @@ jobs:
             type=sha,format=long
       - name: Build and push action
         id: docker_action_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           push: true
@@ -91,7 +91,6 @@ jobs:
           echo $VERSION
           wget https://splunk.github.io/splunk-connect-for-snmp/index.yaml -P /tmp/origin || true
           helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm repo add bitnami-pre https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
           helm repo add pysnmp-mibs https://pysnmp.github.io/mibs/charts
           helm dependency build charts/splunk-connect-for-snmp
           helm package charts/splunk-connect-for-snmp -d /tmp/package
