@@ -37,6 +37,7 @@ SPLUNK_HEC_SCHEME = os.getenv("SPLUNK_HEC_SCHEME", "https")
 SPLUNK_HEC_HOST = os.getenv("SPLUNK_HEC_HOST", "127.0.0.1")
 SPLUNK_HEC_PORT = os.getenv("SPLUNK_HEC_PORT", None)
 SPLUNK_HEC_PATH = os.getenv("SPLUNK_HEC_PATH", "services/collector")
+METRICS_INDEXING_ENABLED = human_bool(os.getenv("METRICS_INDEXING_ENABLED", "false"))
 
 url = {
     "scheme": SPLUNK_HEC_SCHEME,
@@ -141,9 +142,7 @@ def do_send(data, destination_url, self):
             pass
         # These errors can't be retried
         elif response.status_code in (403, 401, 400):
-            logger.error(
-                f"Response code is {response.status_code} {response.text} headers were {SPLUNK_HEC_HEADERS}"
-            )
+            logger.error(f"Response code is {response.status_code} {response.text}")
         # These can be but are not exceptions so we will setup retry ourself
         elif response.status_code in (500, 503):
             logger.warning(f"Response code is {response.status_code} {response.text}")
@@ -198,6 +197,8 @@ def prepare(self, work):
                 metric["fields"][f"metric_name:sc4snmp.{field}"] = valueAsBest(
                     values["value"]
                 )
+                if METRICS_INDEXING_ENABLED and "index" in values:
+                    metric["fields"]["mibIndex"] = values["index"]
             metrics.append(json.dumps(metric, indent=None))
         else:
             event = {

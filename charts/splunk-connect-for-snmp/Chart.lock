@@ -1,12 +1,12 @@
 dependencies:
 - name: mongodb
   repository: https://charts.bitnami.com/bitnami
-  version: 10.30.12
+  version: 12.1.31
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 16.8.10
+  version: 17.3.18
 - name: mibserver
   repository: https://pysnmp.github.io/mibs/charts/
-  version: 1.14.9
-digest: sha256:0547c9ace910e4d9a6632f714a37763d378372336b0106ec003028d023ce6b31
-generated: "2022-09-30T13:31:07.322275+02:00"
+  version: 1.14.10
+digest: sha256:b61c0d0538c3807103c2556767940aa4bd5b1e93bffb985dcbb5f3036d4e5412
+generated: "2023-01-03T14:36:18.257302+01:00"

@@ -137,41 +137,25 @@ spec:
                 path: "config.yaml"
         {{- range .Values.traps.usernameSecrets }}
         - name: {{ . }}
-        {{- $secret := (lookup "v1" "Secret" $.Release.Namespace . ) -}}
-        {{- if $secret }}
           secret:
             secretName: {{ . }}
+            optional: true
             items:
-              {{ if $secret.data.userName -}}
               - key: userName
                 path: {{ . }}/userName
-              {{- end }}
-              {{ if $secret.data.authKey -}}
               - key: authKey
                 path: {{ . }}/authKey
-              {{- end }}
-              {{ if $secret.data.privKey -}}
               - key: privKey
                 path: {{ . }}/privKey
-              {{- end }}
-              {{ if $secret.data.authProtocol -}}
               - key: authProtocol
                 path: {{ . }}/authProtocol
-              {{- end }}
-              {{ if $secret.data.privProtocol -}}
               - key: privProtocol
                 path: {{ . }}/privProtocol
-              {{- end }}
-              {{ if $secret.data.contextEngineId -}}
               - key: contextEngineId
                 path: {{ . }}/contextEngineId
-              {{- end }}
-              {{ if $secret.data.contextName -}}
               - key: contextName
                 path: {{ . }}/contextName
-              {{- end }}
         {{- end }}
-      {{- end }}
         - name: pysnmp-cache-volume
           emptyDir: {}    
         - name: tmp
