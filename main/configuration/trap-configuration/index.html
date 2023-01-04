@@ -481,8 +481,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#define-load-balancer-ip" class="md-nav__link">
-    Define load balancer IP
+  <a href="#define-external-gateway-for-traps" class="md-nav__link">
+    Define external gateway for traps
   </a>
   
 </li>
@@ -829,8 +829,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#define-load-balancer-ip" class="md-nav__link">
-    Define load balancer IP
+  <a href="#define-external-gateway-for-traps" class="md-nav__link">
+    Define external gateway for traps
   </a>
   
 </li>
@@ -942,13 +942,27 @@ An example of SNMPv3 trap is:</p>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 &#39;&#39; 1.3.6.1.2.1.2.2.1.1.1</span><span class="w"></span>
 </code></pre></div>
 
-<h3 id="define-load-balancer-ip">Define load balancer IP<a class="headerlink" href="#define-load-balancer-ip" title="Permanent link">&para;</a></h3>
-<p><code>loadBalancerIP</code> is the IP address in the metallb pool. 
+<h3 id="define-external-gateway-for-traps">Define external gateway for traps<a class="headerlink" href="#define-external-gateway-for-traps" title="Permanent link">&para;</a></h3>
+<p>If you use SC4SNMP standalone, configure <code>loadBalancerIP</code>.
+<code>loadBalancerIP</code> is the IP address in the metallb pool. 
 Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">loadBalancerIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.202</span><span class="w"></span>
 </code></pre></div>
 
+<p>If you want to use SC4SNMP trap receiver in K8S cluster, configure <code>NodePort</code> instead. The snippet of config is:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NodePort</span><span class="w"></span>
+<span class="w">    </span><span class="nt">externalTrafficPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Cluster</span><span class="w"></span>
+<span class="w">    </span><span class="nt">nodePort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30000</span><span class="w"></span>
+</code></pre></div>
+
+<p>Using this method, SNMP trap will always be forwarded to one of the trap receiver pods listening on port 30000 (as in the
+example above, remember - you can configure any other port). So doesn&rsquo;t matter IP address of which node you use, adding
+nodePort will make it end up in a correct place everytime. </p>
+<p>Here, good practice is to create IP floating address/Anycast pointing to the healthy nodes, so the traffic is forwarded in case of the
+failover. The best way is to create external LoadBalancer which balance the traffic between nodes.</p>
 <h3 id="define-number-of-traps-server-replica">Define number of traps server replica<a class="headerlink" href="#define-number-of-traps-server-replica" title="Permanent link">&para;</a></h3>
 <p><code>replicaCount</code> defines that the number of replicas for trap container should be 2x number of nodes. The default value is <code>2</code>. 
 Example:</p>
