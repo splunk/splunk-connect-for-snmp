@@ -394,3 +394,6 @@ redis:
   auth:
     enabled: false
 commonAnnotations: {}
+mibserver:
+  image:
+    tag: develop
