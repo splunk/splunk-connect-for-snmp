@@ -56,10 +56,14 @@ spec:
               value: "http://release-name-mibserver/standard.txt"
             - name: LOG_LEVEL
               value: INFO
+            - name: SPLUNK_HEC_SCHEME
+              value: "https"
             - name: SPLUNK_HEC_HOST
-              value: 
+              value: "10.202.18.152"
+            - name: SPLUNK_HEC_PORT
+              value: "8088"
             - name: SPLUNK_HEC_INSECURESSL
-              value: "false"
+              value: "true"
             - name: SNMP_V3_SECURITY_ENGINE_ID
               value: 80003a8c04
             - name: SPLUNK_HEC_TOKEN

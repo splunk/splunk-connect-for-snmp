@@ -12,4 +12,5 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 data:
   inventory.csv: |
-    address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+    54.82.41.24,,2c,public,,,1800,IF_profile,false,

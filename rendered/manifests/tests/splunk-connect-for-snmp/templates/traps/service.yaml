@@ -16,6 +16,7 @@ metadata:
 spec:
   type: LoadBalancer
   externalTrafficPolicy: Local
+  loadBalancerIP: 10.202.6.213
   ports:
     - port: 162
       targetPort: 2162

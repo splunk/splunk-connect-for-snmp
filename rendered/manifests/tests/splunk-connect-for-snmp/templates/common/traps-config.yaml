@@ -12,3 +12,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 data:
   config.yaml: |-
+      communities:
+        2c:
+        - public
+        - homelab

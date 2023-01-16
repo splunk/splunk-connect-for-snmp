@@ -68,12 +68,16 @@ spec:
               value: "http://release-name-mibserver/index.csv"
             - name: MIB_STANDARD
               value: "http://release-name-mibserver/standard.txt"
+            - name: SPLUNK_HEC_SCHEME
+              value: "https"
             - name: SPLUNK_HEC_HOST
-              value: 
+              value: "10.202.18.152"
             - name: IGNORE_EMPTY_VARBINDS
               value: "false"
+            - name: SPLUNK_HEC_PORT
+              value: "8088"
             - name: SPLUNK_HEC_INSECURESSL
-              value: "false"
+              value: "true"
             - name: SPLUNK_HEC_TOKEN
               valueFrom:
                 secretKeyRef:
