@@ -22,7 +22,7 @@ spec:
         app.kubernetes.io/name: splunk-connect-for-snmp-worker-poller
         app.kubernetes.io/instance: release-name
     spec:
-      serviceAccountName: release-name-splunk-connect-for-snmp-worker
+      serviceAccountName: release-name-splunk-connect-for-snmp-user
       securityContext:
         fsGroup: 10001
       containers:
@@ -30,11 +30,11 @@ spec:
           securityContext:
             capabilities:
               drop:
-              - ALL
+                - ALL
             readOnlyRootFilesystem: true
-            runAsGroup: 10001
             runAsNonRoot: true
             runAsUser: 10001
+            runAsGroup: 10001
           image: "ghcr.io/splunk/splunk-connect-for-snmp/container:1.8.5"
           imagePullPolicy: Always
           args:

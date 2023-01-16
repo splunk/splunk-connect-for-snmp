@@ -51,17 +51,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Create the name of the service account to use
-*/}}
-{{- define "splunk-connect-for-snmp.sim.serviceAccountName" -}}
-{{- if .Values.sim.serviceAccount.create }}
-{{- default (include "splunk-connect-for-snmp.sim.fullname" .) .Values.sim.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.sim.serviceAccount.name }}
-{{- end }}
-{{- end }}
-
-{{/*
 Define name for the Splunk Secret
 */}}
 {{- define "splunk-connect-for-snmp.sim.secret" -}}

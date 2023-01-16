@@ -49,14 +49,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.scheduler.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "splunk-connect-for-snmp.scheduler.serviceAccountName" -}}
-{{- if .Values.scheduler.serviceAccount.create }}
-{{- default (include "splunk-connect-for-snmp.scheduler.fullname" .) .Values.scheduler.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.scheduler.serviceAccount.name }}
-{{- end }}
-{{- end }}

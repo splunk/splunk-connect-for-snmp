@@ -49,14 +49,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.traps.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "splunk-connect-for-snmp.traps.serviceAccountName" -}}
-{{- if .Values.traps.serviceAccount.create }}
-{{- default (include "splunk-connect-for-snmp.traps.fullname" .) .Values.traps.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.traps.serviceAccount.name }}
-{{- end }}
-{{- end }}

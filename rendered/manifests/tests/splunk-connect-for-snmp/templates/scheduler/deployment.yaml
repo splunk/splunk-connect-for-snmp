@@ -11,7 +11,8 @@ metadata:
     app.kubernetes.io/version: "1.8.5"
     app.kubernetes.io/managed-by: Helm
 spec:
-  replicas: 
+  # we shouldn't have more than one scheduler
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
@@ -22,7 +23,7 @@ spec:
         app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
         app.kubernetes.io/instance: release-name
     spec:
-      serviceAccountName: release-name-splunk-connect-for-snmp-scheduler
+      serviceAccountName: release-name-splunk-connect-for-snmp-user
       securityContext:
         fsGroup: 10001
       containers:
@@ -30,11 +31,11 @@ spec:
           securityContext:
             capabilities:
               drop:
-              - ALL
+                - ALL
             readOnlyRootFilesystem: true
-            runAsGroup: 10001
             runAsNonRoot: true
             runAsUser: 10001
+            runAsGroup: 10001
           image: "ghcr.io/splunk/splunk-connect-for-snmp/container:1.8.5"
           imagePullPolicy: Always
           args:

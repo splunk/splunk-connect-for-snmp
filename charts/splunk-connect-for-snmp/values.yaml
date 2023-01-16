@@ -11,66 +11,29 @@ image:
   tag: ""
 
 imagePullSecrets: []
-
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
 splunk:
   enabled: true
 
 inventory:
   nameOverride: ""
   fullnameOverride: ""
-
   podAnnotations: {}
 
-  podSecurityContext:
-    fsGroup: 10001
-
-  securityContext:
-    capabilities:
-      drop:
-        - ALL
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 10001
-    runAsGroup: 10001
-
-  resources: {}
-    # limits:
-    #   cpu: 500m
-    #   memory: 512Mi
-    # requests:
-    #   cpu: 200m
-    #   memory: 256Mi
-
-  nodeSelector: {}
-
-  tolerations: []
 
 scheduler:
   nameOverride: ""
   fullnameOverride: ""
 
-  serviceAccount:
-    # Specifies whether a service account should be created
-    create: true
-    # Annotations to add to the service account
-    annotations: {}
-    # The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
 
   podAnnotations: {}
-
-  podSecurityContext:
-    fsGroup: 10001
-
-  securityContext:
-    capabilities:
-      drop:
-        - ALL
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 10001
-    runAsGroup: 10001
 
   resources: {}
 #     limits:
@@ -79,13 +42,6 @@ scheduler:
 #     requests:
 #       cpu: 500m
 #       memory: 256Mi
-
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
 
   nodeSelector: {}
 
@@ -142,28 +98,7 @@ worker:
   nameOverride: ""
   fullnameOverride: ""
 
-  serviceAccount:
-    # Specifies whether a service account should be created
-    create: true
-    # Annotations to add to the service account
-    annotations: {}
-    # The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
-
   podAnnotations: {}
-
-  podSecurityContext:
-    fsGroup: 10001
-
-  securityContext:
-    capabilities:
-      drop:
-        - ALL
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 10001
-    runAsGroup: 10001
 
   resources:
      limits:
@@ -200,19 +135,9 @@ sim:
   autoscaling:
     enabled: false
 
-  podSecurityContext:
-    fsGroup: 10001
   ingress:
     enabled: false
-  securityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 10001
-    runAsGroup: 10001
+
 
   resources: {}
     # limits:
@@ -225,14 +150,6 @@ sim:
   nodeSelector: {}
 
   tolerations: []
-  serviceAccount:
-    # Specifies whether a service account should be created
-    create: false
-    # Annotations to add to the service account
-    annotations: { }
-    # The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
 
   service:
     annotations: {}
@@ -254,28 +171,7 @@ traps:
   nameOverride: ""
   fullnameOverride: ""
 
-  serviceAccount:
-    # Specifies whether a service account should be created
-    create: true
-    # Annotations to add to the service account
-    annotations: {}
-    # The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
-
   podAnnotations: {}
-
-  podSecurityContext:
-    fsGroup: 10001
-
-  securityContext:
-    capabilities:
-      drop:
-        - ALL
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 10001
-    runAsGroup: 10001
 
   service:
     annotations: {}

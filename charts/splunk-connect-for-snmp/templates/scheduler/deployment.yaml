@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "splunk-connect-for-snmp.scheduler.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.scheduler.autoscaling.enabled }}
   replicas: {{ .Values.scheduler.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "splunk-connect-for-snmp.scheduler.selectorLabels" . | nindent 6 }}
@@ -24,13 +22,19 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "splunk-connect-for-snmp.scheduler.serviceAccountName" . }}
+      serviceAccountName: {{ include "splunk-connect-for-snmp.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.scheduler.podSecurityContext | nindent 8 }}
+        fsGroup: 10001
       containers:
         - name: {{ .Chart.Name }}-scheduler
           securityContext:
-            {{- toYaml .Values.scheduler.securityContext | nindent 12 }}
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
