@@ -2,142 +2,59 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
+################################################################################
+# SC4SNMP image settings
+################################################################################
 
 image:
+  # The registry and name of the SC4SNMP image to pull
   repository: ghcr.io/splunk/splunk-connect-for-snmp/container
+  # The policy that specifies when the user wants the SC4SNMP images to be pulled
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
+# Secrets to attach to the respective serviceaccount to pull docker images
 imagePullSecrets: []
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
+
+
+################################################################################
+# Splunk Data-to-Everything Platform configuration
+################################################################################
+
 splunk:
+  # Enables sending data to Splunk
   enabled: true
+  # the protocol of the HEC endpoint: https or http
+  protocol: ""
+  # the port of the HEC endpoint
+  port: "8088"
+  # IP address or a domain name of a Splunk instance to send data to.
+  host: ""
+  # the protocol, host and port given here makes up to a HEC endpoint
+  # according to the pattern: {{protocol}}://{{host}}:{{port}}/services/collector
+  # for ex. https://splunk-endpoint:8088/services/collector
 
-inventory:
-  nameOverride: ""
-  fullnameOverride: ""
-  podAnnotations: {}
+  # Required for Splunk Enterprise/Cloud (if `enabled` is set to true). Splunk
+  # HTTP Event Collector token.
+  token: 00000000-0000-0000-0000-000000000000
+  # Whether to skip checking the certificate of the HEC endpoint when sending
+  # data over HTTPS.
+  insecureSSL: "true"
 
-
-scheduler:
-  nameOverride: ""
-  fullnameOverride: ""
-
-
-  podAnnotations: {}
-
-  resources: {}
-#     limits:
-#       cpu: 800m
-#       memory: 512Mi
-#     requests:
-#       cpu: 500m
-#       memory: 256Mi
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  podAntiAffinity: soft
-
-worker:
-  taskTimeout: 2400
-  walkRetryMaxInterval: 600
-  ignoreNotIncreasingOid: []
-  poller:
-    replicaCount: 2
-    concurrency: 4
-    prefetch: 1
-    autoscaling:
-      enabled: false
-      minReplicas: 2
-      maxReplicas: 10
-      targetCPUUtilizationPercentage: 80
-    resources:
-      limits:
-        cpu: 500m
-      requests:
-        cpu: 250m
-  trap:
-    replicaCount: 2
-    concurrency: 4
-    prefetch: 30
-    autoscaling:
-      enabled: false
-      minReplicas: 2
-      maxReplicas: 10
-      targetCPUUtilizationPercentage: 80
-    resources:
-      limits:
-        cpu: 500m
-      requests:
-        cpu: 250m
-  sender:
-    replicaCount: 1
-    concurrency: 4
-    prefetch: 30
-    autoscaling:
-      enabled: false
-      minReplicas: 2
-      maxReplicas: 10
-      targetCPUUtilizationPercentage: 80
-    resources:
-      limits:
-        cpu: 500m
-      requests:
-        cpu: 250m
-  nameOverride: ""
-  fullnameOverride: ""
-
-  podAnnotations: {}
-
-  resources:
-     limits:
-       cpu: 500m
-       memory: 5128Mi
-     requests:
-       cpu: 300m
-       memory: 256Mi
-
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  podAntiAffinity: soft
-
-poller:
-  metricsIndexingEnabled: false
-  usernameSecrets: []
+################################################################################
+# Splunk Observability configuration
+################################################################################
 
 sim:
+  # Enables sending data to Splunk Observability/SignalFx.
   enabled: false
-  nameOverride: ""
-  fullnameOverride: ""
 
-  podAnnotations: {}
-
-  autoscaling:
-    enabled: false
-
-  ingress:
-    enabled: false
-
+  # Splunk Observability realm to send telemetry data to.
+  signalfxToken: ""
+  # Required for Splunk Observability (if `realm` is specified). Splunk
+  # Observability org access token.
+  signalfxRealm: ""
 
   resources: {}
     # limits:
@@ -146,6 +63,189 @@ sim:
     # requests:
     #   cpu: 200m
     #   memory: 256Mi
+
+
+  service:
+    # Here you can define annotations to append under sim service
+    annotations: {}
+
+  secret:
+    # Option for creating a new secret or using an existing one.
+    # When secret.create=true, a new kubernetes secret will be created by the helm chart that will contain the
+    # values from sim.signalfxToken and sim.signalfxRealm.
+    # When secret.create=false, the user must set secret.name to a name of a k8s secret the user created.
+    create: true
+    name: ""
+
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+
+################################################################################
+# SC4SNMP components settings
+################################################################################
+
+scheduler:
+
+  ### Group definitions ###
+  # Create the group definition in case you want to configure polling from multiple hosts
+  # at once, more on this: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-groups/
+
+  #groups: |
+  #  example_group_1:
+  #    - address: 10.202.4.202
+  #      port: 161
+  #    - address: 63.2.40.0
+  #      port: 161
+
+
+  ### Profiles definitions ###
+  # Create a profile definition to set varbinds you want to poll from the device.
+  # more on this: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-profiles/
+
+  #profiles: |
+  #  smart_profile:
+  #    frequency: 100
+  #    condition:
+  #      type: field
+  #      field: "SNMPv2-MIB.sysDescr"
+  #      patterns:
+  #        - '.*linux.*'
+  #    varBinds:
+  #      - ['SNMPv2-MIB']
+  #      - ['SNMPv2-MIB', 'sysName']
+  #      - ['SNMPv2-MIB', 'sysUpTime',0]
+  #  static_profile:
+  #    frequency: 300
+  #    varBinds:
+  #      - ['IP-MIB']
+
+  podAnnotations: {}
+
+
+  # set CPU and Memory limits for a scheduler pod
+  resources: {}
+#     limits:
+#       cpu: 800m
+#       memory: 512Mi
+#     requests:
+#       cpu: 500m
+#       memory: 256Mi
+  podAntiAffinity: soft
+  nodeSelector: {}
+
+poller:
+  # list of kubernetes secrets name that will be used for polling
+  # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#define-usernamesecrets
+  usernameSecrets: []
+
+  # Here is where polling happens. Learn more on how to configure it here:
+  # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/
+
+  #inventory: |
+  #  address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+  #  example_group_1,,2c,public,,,3000,static_profile,t,
+
+worker:
+  # workers are responsible for the actual execution of polling, processing trap messages, and sending data to Splunk.
+  # More: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/worker-configuration/
+
+  # The poller worker consumes all the tasks related to polling
+  poller:
+    # number of the poller replicas when autoscaling is set to false
+    replicaCount: 2
+    # minimum number of threads in a pod
+    concurrency: 4
+    # how many tasks are consumed from the queue at once
+    prefetch: 1
+    autoscaling:
+      # enabling autoscaling for poller worker pods
+      enabled: false
+      # minimum number of running poller worker pods when autoscaling is enabled
+      minReplicas: 2
+      # maximum number of running poller worker pods when autoscaling is enabled
+      maxReplicas: 10
+      # CPU % threshold that must be exceeded on poller worker pods to spawn another replica
+      targetCPUUtilizationPercentage: 80
+
+    resources:
+      # the resources limits for poller worker container
+      limits:
+        cpu: 500m
+      # the resources requests for poller worker container
+      requests:
+        cpu: 250m
+
+  # The trap worker consumes all the trap related tasks produced by the trap pod
+  trap:
+    # number of the trap replicas when autoscaling is set to false
+    replicaCount: 2
+    # minimum number of threads in a pod
+    concurrency: 4
+    # how many tasks are consumed from the queue at once
+    prefetch: 30
+    autoscaling:
+      # enabling autoscaling for trap worker pods
+      enabled: false
+      # minimum number of running poller trap pods when autoscaling is enabled
+      minReplicas: 2
+      # maximum number of running poller trap pods when autoscaling is enabled
+      maxReplicas: 10
+      # CPU % threshold that must be exceeded on traps worker pods to spawn another replica
+      targetCPUUtilizationPercentage: 80
+    resources:
+      # the resources limits for poller worker container
+      limits:
+        cpu: 500m
+      requests:
+        # the resources requests for poller worker container
+        cpu: 250m
+
+  # The sender worker handles sending data to Splunk
+  sender:
+    # number of the poller replicas when autoscaling is set to false
+    replicaCount: 1
+    # minimum number of threads in a pod
+    concurrency: 4
+    # how many tasks are consumed from the queue at once
+    prefetch: 30
+    autoscaling:
+      # enabling autoscaling for sender worker pods
+      enabled: false
+      # minimum number of running sender trap pods when autoscaling is enabled
+      minReplicas: 2
+      # maximum number of running sender trap pods when autoscaling is enabled
+      maxReplicas: 10
+      # CPU % threshold that must be exceeded on sender worker pods to spawn another replica
+      targetCPUUtilizationPercentage: 80
+    resources:
+      # the resources limits for poller worker container
+      limits:
+        cpu: 500m
+        # the resources requests for poller worker container
+      requests:
+        cpu: 250m
+  # task timeout in seconds (usually necessary when walk process takes a long time)
+  taskTimeout: 2400
+  # maximum time interval between walk attempts
+  walkRetryMaxInterval: 600
+  # ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex:
+  #   ignoreNotIncreasingOid:
+  #    - "127.0.0.1:164"
+  #    - "127.0.0.6"
+  ignoreNotIncreasingOid: []
+
+  podAntiAffinity: soft
+
+inventory:
+  # set CPU and Memory limits for an inventory pod
+  resources: {}
+  #  limits:
+  #    cpu: 800m
+  #    memory: 512Mi
+  #  requests:
+  #    cpu: 500m
+  #    memory: 256Mi
 
   nodeSelector: {}
 
@@ -161,41 +261,29 @@ sim:
     # When secret.create=false, the user must set secret.name to a name of a k8s secret the user created.
     create: true
     name: ""
+
 traps:
+  # this is a simple server that can handle SNMP traps sent by SNMP devices like routers or switches.
+
+  # number of the traps receivers replicas when autoscaling is set to false
+  # it makes sense to increase it in case there are hundreds of traps per seconds
   replicaCount: 2
+  # usernameSecrets section define SNMPv3 secrets for trap messages sent by SNMP device
   usernameSecrets: []
+  # SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table
+  # of the TRAP receiving application for each USM user
   securityEngineId:
     - "80003a8c04"
 
+  # communities define a version of SNMP protocol and SNMP community string, which should be used
   communities: {}
-  nameOverride: ""
-  fullnameOverride: ""
-
-  podAnnotations: {}
-
+  podAntiAffinity: soft
   service:
     annotations: {}
     usemetallb: true
     metallbsharingkey: "splunk-connect"
     type: LoadBalancer
     port: 162
-
-  ingress:
-    enabled: false
-    className: ""
-    annotations:
-      {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
 
   resources: {}
     # limits:
@@ -216,7 +304,15 @@ traps:
 
   tolerations: []
 
-  podAntiAffinity: soft
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
 
 #############################################################################
 ### Please do not modify below values, unless you know what you're doing! ###

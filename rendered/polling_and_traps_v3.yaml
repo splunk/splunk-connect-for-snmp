@@ -1,0 +1,27 @@
+splunk:
+  enabled: true
+  protocol: https
+  host: i-0d903f60788be4c68.ec2.splunkit.io
+  token: 00000000-0000-0000-0000-000000000000
+  insecureSSL: "true"
+  port: "8088"
+traps:
+  usernameSecrets:
+    - sc4snmp-homesecure-sha-aes
+    - sc4snmp-homesecure-sha-des
+  securityEngineId:
+    - "80003a8c04"
+  loadBalancerIP: 10.202.4.202
+scheduler:
+  profiles: |
+    switch_profile:
+      frequency: 60
+      varBinds:
+        - ['IF-MIB']
+        - ['UCD-SNMP-MIB']
+poller:
+  usernameSecrets:
+    - sc4snmp-hlab-sha-aes
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+    54.82.4.248,,3,public,sc4snmp-hlab-sha-aes,,2000,switch_profile,,

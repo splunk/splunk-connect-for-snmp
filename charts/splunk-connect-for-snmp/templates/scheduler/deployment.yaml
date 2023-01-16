@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "splunk-connect-for-snmp.scheduler.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.scheduler.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       {{- include "splunk-connect-for-snmp.scheduler.selectorLabels" . | nindent 6 }}

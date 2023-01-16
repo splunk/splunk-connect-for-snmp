@@ -1,0 +1,13 @@
+splunk:
+  enabled: true
+  protocol: https
+  host: i-0d903f60788be4c68.ec2.splunkit.io
+  token: 00000000-0000-0000-0000-000000000000
+  insecureSSL: "true"
+  port: "8088"
+traps:
+  communities:
+    2c:
+      - public
+      - homelab
+  loadBalancerIP: 10.202.6.213
