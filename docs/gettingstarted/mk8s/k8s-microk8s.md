@@ -22,7 +22,7 @@ may be found in the MicroK8s [documentation](https://microk8s.io/docs) including
 ## Install MicroK8s using Snap
 
 ```bash
-sudo snap install microk8s --classic
+sudo snap install microk8s --classic --channel=1.25/stable
 ```
 
 Add a user to the microk8s group so the `sudo` command is no longer necessary:
