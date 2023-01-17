@@ -1,4 +1,4 @@
-#MIB submission process
+# MIB submission process
 
 To achieve human-readable OIDs, the corresponding MIB files are necessary.
 They are being stored in one of the components of SC4SNMP - the MIB server. 
@@ -39,7 +39,7 @@ mibserver:
   image:
     tag: "1.14.5"
 ```
-Check all of the MIB server releases [here](https://github.com/pysnmp/mibs/releases).
+Check all the MIB server releases [here](https://github.com/pysnmp/mibs/releases).
 
 2. Run `microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace`
 
@@ -49,3 +49,38 @@ Check all of the MIB server releases [here](https://github.com/pysnmp/mibs/relea
 microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-trap -n sc4snmp
 microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-poller -n sc4snmp
 ```
+
+## Experimental: use MIB server with local MIBs
+
+From the `1.15.0` version of the MIB server, there is a way to use local MIB files. This may be useful when your MIB 
+files are proprietary, or you use SC4SNMP offline - this way you can update necessary MIBs by yourself, without a need
+of going through the MIB request procedure.
+
+In order to add your MIB files to the MIB server in standalone SC4SNMP installation:
+
+1. Create/Choose a directory on the machine where SC4SNMP is installed. For example: `/home/user/local_mibs`.
+2. Create vendor directories inside. For example, if you have MIB files from `VENDOR1` and `VENDOR2`, create
+`/home/user/local_mibs/VENDOR1` and `/home/user/local_mibs/VENDOR2` and put files inside accordingly. Putting wrong 
+vendor names won't make compilation fail, this is more for the logging purposes. Segregating your files will make 
+troubleshooting easier.
+3.  Add following config to the `values.yaml`:
+
+```yaml
+localMibs:
+  pathToMibs: "/home/user/local_mibs"
+```
+
+It creates a Kubernetes pvc with MIB files inside and maps it to MIB server pod.
+Also, you can change the storageClass and size of persistence according to the `mibserver` schema: [check here](https://github.com/pysnmp/mibs/blob/develop/charts/mibserver/values.yaml).
+
+4. Whenever you add new MIB files, rollout restart MIB server pods to compile them again:
+
+```yaml
+microk8s kubectl rollout restart deployment snmp-mibserver -n sc4snmp
+```
+
+NOTE: In case of multi-node Kubernetes installation, create pvc beforehand, copy files onto it and add to the MIB server
+using `persistence.existingClaim`. If you go with `localMibs.pathToMibs` solution in case of multi-node installation
+(with `nodeSelector` set up to schedule MIB server pods on the same node where the MIB files are),
+it will work - but when the Node with hostPath mapped fails, you'll use access to the MIB files on another node.
+
