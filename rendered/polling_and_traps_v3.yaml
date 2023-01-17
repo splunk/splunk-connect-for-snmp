@@ -6,6 +6,8 @@ splunk:
   insecureSSL: "true"
   port: "8088"
 traps:
+  # Remember to create sc4snmp-homesecure-sha-aes and sc4snmp-homesecure-sha-des secrets beforehand
+  # this is how to do it: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/snmpv3-configuration/
   usernameSecrets:
     - sc4snmp-homesecure-sha-aes
     - sc4snmp-homesecure-sha-des
@@ -20,6 +22,8 @@ scheduler:
         - ['IF-MIB']
         - ['UCD-SNMP-MIB']
 poller:
+  # Remember to create sc4snmp-hlab-sha-aes secret beforehand
+  # this is how to do it: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/snmpv3-configuration/
   usernameSecrets:
     - sc4snmp-hlab-sha-aes
   inventory: |

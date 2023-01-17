@@ -120,9 +120,6 @@ scheduler:
   #    varBinds:
   #      - ['IP-MIB']
 
-  podAnnotations: {}
-
-
   # set CPU and Memory limits for a scheduler pod
   resources: {}
 #     limits:
@@ -131,10 +128,16 @@ scheduler:
 #     requests:
 #       cpu: 500m
 #       memory: 256Mi
+
+  podAnnotations: {}
   podAntiAffinity: soft
   nodeSelector: {}
 
 poller:
+  # Appending OID indexes to metrics.
+  # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#append-oid-index-part-to-the-metrics
+  metricsIndexingEnabled: false
+
   # list of kubernetes secrets name that will be used for polling
   # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#define-usernamesecrets
   usernameSecrets: []
@@ -238,6 +241,17 @@ worker:
   podAntiAffinity: soft
 
 inventory:
+  secret:
+    # Option for creating a new secret or using an existing one.
+    # When secret.create=true, a new kubernetes secret will be created by the helm chart that will contain the
+    # values from sim.signalfxToken and sim.signalfxRealm.
+    # When secret.create=false, the user must set secret.name to a name of a k8s secret the user created.
+    create: true
+    name: ""
+
+  service:
+    annotations: { }
+
   # set CPU and Memory limits for an inventory pod
   resources: {}
   #  limits:
@@ -248,19 +262,7 @@ inventory:
   #    memory: 256Mi
 
   nodeSelector: {}
-
   tolerations: []
-
-  service:
-    annotations: {}
-
-  secret:
-    # Option for creating a new secret or using an existing one.
-    # When secret.create=true, a new kubernetes secret will be created by the helm chart that will contain the
-    # values from sim.signalfxToken and sim.signalfxRealm.
-    # When secret.create=false, the user must set secret.name to a name of a k8s secret the user created.
-    create: true
-    name: ""
 
 traps:
   # this is a simple server that can handle SNMP traps sent by SNMP devices like routers or switches.
@@ -280,10 +282,16 @@ traps:
   podAntiAffinity: soft
   service:
     annotations: {}
+    # this settings set metallb.universe.tf/allow-shared-ip annotation in trap service
+    # was introduced to allow using splunk-connect-for-syslog on the same machine
     usemetallb: true
     metallbsharingkey: "splunk-connect"
+    # when using SC4SNMP on a standalone k8s installation, LoadBalancer is a good choice
+    # on a multi-node it's better to set this as NodePort and configure traps.service.nodePort
     type: LoadBalancer
     port: 162
+    # nodePort will be set only when type of service is a NodePort
+    #nodePort: 30000
 
   resources: {}
     # limits:
@@ -301,7 +309,6 @@ traps:
     # targetMemoryUtilizationPercentage: 80
 
   nodeSelector: {}
-
   tolerations: []
 
 
