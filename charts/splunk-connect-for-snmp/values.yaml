@@ -120,6 +120,10 @@ scheduler:
   #    varBinds:
   #      - ['IP-MIB']
 
+  # mapping MIB fields to custom names
+  # more: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-profiles/#custom-translations
+  customTranslations: {}
+
   # set CPU and Memory limits for a scheduler pod
   resources: {}
 #     limits:
@@ -231,7 +235,7 @@ worker:
   # task timeout in seconds (usually necessary when walk process takes a long time)
   taskTimeout: 2400
   # maximum time interval between walk attempts
-  walkRetryMaxInterval: 600
+  walkRetryMaxInterval: 60
   # ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex:
   #   ignoreNotIncreasingOid:
   #    - "127.0.0.1:164"
