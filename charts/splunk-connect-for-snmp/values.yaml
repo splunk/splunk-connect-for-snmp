@@ -279,7 +279,7 @@ traps:
 
   # communities define a version of SNMP protocol and SNMP community string, which should be used
   communities: {}
-  podAntiAffinity: soft
+
   service:
     annotations: {}
     # this settings set metallb.universe.tf/allow-shared-ip annotation in trap service
@@ -310,6 +310,7 @@ traps:
 
   nodeSelector: {}
   tolerations: []
+  podAntiAffinity: soft
 
 
 serviceAccount:

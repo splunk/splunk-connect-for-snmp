@@ -50,13 +50,3 @@ app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.inventory.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "splunk-connect-for-snmp.inventory.serviceAccountName" -}}
-{{- if .Values.inventory.serviceAccount.create }}
-{{- default (include "splunk-connect-for-snmp.inventory.fullname" .) .Values.inventory.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.inventory.serviceAccount.name }}
-{{- end }}
-{{- end }}
