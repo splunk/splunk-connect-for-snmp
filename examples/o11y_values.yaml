@@ -1,3 +1,5 @@
+splunk:
+  enabled: false
 sim:
   enabled: true
   signalfxToken: xxxxxx
@@ -10,7 +12,7 @@ scheduler:
       varBinds:
         - ["TCP-MIB"]
         - ["IF-MIB"]
-        - ["ICMP-MIB"]
+        - ["IP-MIB"]
     IF_profile:
       frequency: 600
       varBinds:
@@ -33,7 +35,7 @@ scheduler:
     ICMP_profile:
       frequency: 500
       varBinds:
-        - ["ICMP-MIB"]
+        - ["IP-MIB", "icmp"]
 poller:
   inventory: |
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete

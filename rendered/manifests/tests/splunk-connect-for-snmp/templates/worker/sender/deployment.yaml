@@ -53,7 +53,7 @@ spec:
             - name: MONGO_URI
               value: mongodb://release-name-mongodb:27017
             - name: WALK_RETRY_MAX_INTERVAL
-              value: "600"
+              value: "60"
             - name: METRICS_INDEXING_ENABLED
               value: "false"
             - name: LOG_LEVEL

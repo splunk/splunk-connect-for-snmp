@@ -3,7 +3,7 @@ splunk:
   protocol: https
   host: i-0d903f60788be4c68.ec2.splunkit.io
   token: 00000000-0000-0000-0000-000000000000
-  insecureSSL: "true"
+  insecureSSL: "false"
   port: "8088"
 scheduler:
   profiles: |
@@ -36,7 +36,7 @@ scheduler:
     ICMP_profile:
       frequency: 500
       varBinds:
-        - ["ICMP-MIB"]
+        - ["IP-MIB", "icmp"]
 poller:
   inventory: |
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete

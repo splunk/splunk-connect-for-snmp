@@ -31,6 +31,8 @@ def load_custom_translations():
     try:
         with open(CONFIG_PATH, encoding="utf-8") as file:
             config_runtime = yaml.safe_load(file)
+            if not config_runtime:
+                return None
             return config_runtime.get("customTranslations")
 
     except FileNotFoundError:
