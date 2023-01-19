@@ -77,8 +77,8 @@ microk8s kubectl deployments/snmp-mibserver
 ```
 
 It creates a Kubernetes pvc with MIB files inside and maps it to MIB server pod.
-Also, you can change the storageClass and size of persistence according to the `mibserver` schema: [check here](https://github.com/pysnmp/mibs/blob/develop/charts/mibserver/values.yaml).
-
+Also, you can change the storageClass and size of persistence according to the `mibserver` schema: [check here](https://github.com/pysnmp/mibs/blob/main/charts/mibserver/values.yaml).
+The default persistence size is 3 Gibibytes, so consider reducing it to the amount you actually need.
 Whenever you add new MIB files, rollout restart MIB server pods to compile them again:
 
 ```bash
