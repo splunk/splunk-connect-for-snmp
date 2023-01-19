@@ -73,7 +73,7 @@ localMibs:
 To verify if the process of compilation was completed successfully, check the mibserver logs with:
 
 ```bash
-microk8s kubectl deployments/snmp-mibserver
+microk8s kubectl logs -f deployments/snmp-mibserver -n sc4snmp
 ```
 
 It creates a Kubernetes pvc with MIB files inside and maps it to MIB server pod.
