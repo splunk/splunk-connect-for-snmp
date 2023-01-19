@@ -50,7 +50,7 @@ microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-
 microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-poller -n sc4snmp
 ```
 
-## Experimental: use MIB server with local MIBs
+## Beta: use MIB server with local MIBs
 
 From the `1.15.0` version of the MIB server, there is a way to use local MIB files. This may be useful when your MIB 
 files are proprietary, or you use SC4SNMP offline - this way you can update necessary MIBs by yourself, without a need
@@ -70,12 +70,18 @@ localMibs:
   pathToMibs: "/home/user/local_mibs"
 ```
 
+To verify if the process of compilation was completed successfully, check the mibserver logs with:
+
+```bash
+microk8s kubectl deployments/snmp-mibserver
+```
+
 It creates a Kubernetes pvc with MIB files inside and maps it to MIB server pod.
 Also, you can change the storageClass and size of persistence according to the `mibserver` schema: [check here](https://github.com/pysnmp/mibs/blob/develop/charts/mibserver/values.yaml).
 
-4. Whenever you add new MIB files, rollout restart MIB server pods to compile them again:
+Whenever you add new MIB files, rollout restart MIB server pods to compile them again:
 
-```yaml
+```bash
 microk8s kubectl rollout restart deployment snmp-mibserver -n sc4snmp
 ```
 
