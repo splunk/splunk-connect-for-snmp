@@ -1,6 +1,7 @@
 # splunk-connect-for-snmp
 Splunk Connect for SNMP Gets SNMP data in to Splunk Enterprise and Splunk Cloud Platform.
 
+
 # Badges
 
 [![codecov](https://codecov.io/gh/splunk/splunk-connect-for-snmp/branch/main/graph/badge.svg?token=8EALM9BT38)](https://codecov.io/gh/splunk/splunk-connect-for-snmp)
