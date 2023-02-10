@@ -128,10 +128,10 @@ def enrich(self, result):
         if not current_attributes and group_data["fields"]:
             attributes_collection.update_one(
                 {"address": address, "group_key_hash": group_key_hash},
-                {"$set": {"id": group_key}},
+                {"$set": {"id": group_key, "fields": {}}},
                 upsert=True,
             )
-        fields = {}
+        new_fields = []
         for field_key, field_value in group_data["fields"].items():
             field_key_hash = field_key.replace(".", "|")
             field_value["name"] = field_key
@@ -141,10 +141,11 @@ def enrich(self, result):
             ):
                 cv = current_attributes["fields"][field_key_hash]
 
+            # if new field_value is different than the previous one, update
             if cv and not cv == field_value:
                 # modifed
                 attribute_updates.append(
-                    {"$set": {"fields": {field_key_hash: field_value}}}
+                    {"$set": {f"fields.{field_key_hash}": field_value}}
                 )
 
             elif cv:
@@ -152,7 +153,7 @@ def enrich(self, result):
                 pass
             else:
                 # new
-                fields[field_key_hash] = field_value
+                new_fields.append({"$set": {f"fields.{field_key_hash}": field_value}})
             if field_key in TRACKED_F:
                 updates.append(
                     {"$set": {"state": {field_key.replace(".", "|"): field_value}}}
@@ -171,16 +172,15 @@ def enrich(self, result):
                     upsert=True,
                 )
                 attribute_updates.clear()
-
-        if fields:
+        if new_fields:
             attributes_bulk_write_operations.append(
                 UpdateOne(
                     {"address": address, "group_key_hash": group_key_hash},
-                    {"$set": {"fields": fields.copy()}},
+                    new_fields.copy(),
                     upsert=True,
                 )
             )
-            fields.clear()
+            new_fields.clear()
 
         if updates:
             targets_collection.update_one({"address": address}, updates, upsert=True)
