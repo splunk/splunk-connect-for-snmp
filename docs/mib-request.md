@@ -66,8 +66,9 @@ troubleshooting easier.
 3.  Add following config to the `values.yaml`:
 
 ```yaml
-localMibs:
-  pathToMibs: "/home/user/local_mibs"
+mibserver:
+  localMibs:
+    pathToMibs: "/home/user/local_mibs"
 ```
 
 To verify if the process of compilation was completed successfully, check the mibserver logs with:
