@@ -64,7 +64,7 @@ check_metallb_status() {
 
 wait_for_rabbitmq_to_be_up() {
   while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep 0/1)" != "" ] ; do
-    echo "Waiting for RabbitMQ POD initialization..."
+    echo "Waiting for SC4SNMP pods initialization..."
     sleep 1
   done
 }
@@ -110,7 +110,6 @@ sudo microk8s enable storage
 sudo microk8s enable dns
 sudo microk8s enable rbac
 sudo microk8s enable community
-sudo microk8s enable openebs
 sudo microk8s enable metrics-server
 sudo systemctl enable iscsid
 yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
