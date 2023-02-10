@@ -40,7 +40,7 @@ resource "aws_key_pair" "aws_key" {
 }
 
 resource "aws_instance" "snmp-test" {
-  ami                         = "ami-04505e74c0741db8d"
+  ami                         = "ami-0b9fa30c2667fde2f"
   instance_type               = "m5.xlarge"
   key_name                    = aws_key_pair.aws_key.key_name
   monitoring                  = true

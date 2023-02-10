@@ -37,8 +37,8 @@ function define_python() {
 }
 
 deploy_poetry() {
-  sudo apt -y install python3-venv
-  curl -sSL https://install.python-poetry.org | $PYTHON -
+#  sudo apt -y install python3-venv
+#  curl -sSL https://install.python-poetry.org | $PYTHON -
   export PATH="/home/ubuntu/.local/bin:$PATH"
   poetry install
   poetry add -D splunk-sdk
@@ -69,15 +69,15 @@ wait_for_rabbitmq_to_be_up() {
   done
 }
 
-sudo apt update -y
-sudo apt install snmpd -y
-sudo sed -i -E 's/agentaddress[[:space:]]+127.0.0.1,\[::1\]/#agentaddress  127.0.0.1,\[::1\]\nagentaddress udp:1161,udp6:[::1]:1161/g' /etc/snmp/snmpd.conf
-echo "" | sudo tee -a /etc/snmp/snmpd.conf
-echo "createUser r-wuser SHA admin1234 AES admin1234" | sudo tee -a /etc/snmp/snmpd.conf
-echo "rwuser r-wuser priv" | sudo tee -a /etc/snmp/snmpd.conf
-sudo systemctl restart snmpd
+#sudo apt update -y
+#sudo apt install snmpd -y
+#sudo sed -i -E 's/agentaddress[[:space:]]+127.0.0.1,\[::1\]/#agentaddress  127.0.0.1,\[::1\]\nagentaddress udp:1161,udp6:[::1]:1161/g' /etc/snmp/snmpd.conf
+#echo "" | sudo tee -a /etc/snmp/snmpd.conf
+#echo "createUser r-wuser SHA admin1234 AES admin1234" | sudo tee -a /etc/snmp/snmpd.conf
+#echo "rwuser r-wuser priv" | sudo tee -a /etc/snmp/snmpd.conf
+#sudo systemctl restart snmpd
 
-sudo apt -y install docker.io
+#sudo apt -y install docker.io
 cd ~/splunk-connect-for-snmp
 
 echo $(green "Building Docker image")
