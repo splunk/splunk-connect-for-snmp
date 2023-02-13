@@ -182,6 +182,7 @@ jobs:
   test-integration:
     name: Run integration tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout Project
         uses: actions/checkout@v3
