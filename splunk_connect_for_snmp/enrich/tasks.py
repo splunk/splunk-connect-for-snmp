@@ -197,14 +197,8 @@ def enrich(self, result):
             attribute_group_id = current_attributes["id"]
             fields = current_attributes.get("fields", {})
             if attribute_group_id in result["result"]:
-                for persist_data in fields.values():
-                    if (
-                        persist_data["name"]
-                        not in result["result"][attribute_group_id]["fields"]
-                    ):
-                        result["result"][attribute_group_id]["fields"][
-                            persist_data["name"]
-                        ] = persist_data
+                snmp_object = result["result"][attribute_group_id]
+                enrich_metric_with_fields_from_db(snmp_object, fields)
     if attributes_bulk_write_operations:
         logger.debug("Start of bulk_write")
         start = time.time()
@@ -218,3 +212,14 @@ def enrich(self, result):
         logger.debug(f"result api: {bulk_result.bulk_api_result}")
     logger.debug(f"End of enrich task: {address}")
     return result
+
+
+def enrich_metric_with_fields_from_db(snmp_object, fields_from_db):
+    metrics = snmp_object.get("metrics", {})
+    # We don't want to enrich SNMP objects that doesn't contain any metrics
+    if not metrics:
+        return
+    for persist_data in fields_from_db.values():
+        if persist_data["name"] not in snmp_object["fields"]:
+            logger.info(f"persist_data: {persist_data}")
+            snmp_object["fields"][persist_data["name"]] = persist_data
