@@ -186,6 +186,10 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v3
       - name: run install_microk8s.sh
-        run: integration_tests/install_microk8s.sh
+        run: |
+          snap install microk8s --classic --channel=1.25/stable
+          snap install docker
+          apt-get install snmp -y
+          apt-get install python3-dev -y
       - name: run automatic_setup.sh
         run: integration_tests/automatic_setup.sh
