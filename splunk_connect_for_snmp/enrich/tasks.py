@@ -156,7 +156,7 @@ def enrich(self, result):
                 new_fields.append({"$set": {f"fields.{field_key_hash}": field_value}})
             if field_key in TRACKED_F:
                 updates.append(
-                    {"$set": {f"state.{field_key.replace('.', '|')}": field_value}}
+                    {"$set": {"state": {field_key.replace(".", "|"): field_value}}}
                 )
 
             if len(updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
@@ -211,6 +211,9 @@ def enrich(self, result):
         )
         logger.debug(f"result api: {bulk_result.bulk_api_result}")
     logger.debug(f"End of enrich task: {address}")
+    logger.info(f"*****************************************")
+    logger.info(f"Result after enrich: {result}")
+    logger.info(f"*****************************************")
     return result
 
 
