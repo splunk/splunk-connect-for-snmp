@@ -38,12 +38,12 @@ attributes2 = {
     "id": "GROUP2",
     "address": "192.168.0.1",
     "fields": {
-        "SNMPv2-MIB|sysDescr": {
+        "UDP-MIB|extraAttr": {
             "time": 1234,
             "type": "f",
-            "value": "Linux zeus 4.8.6.5-smp #2 SMP Sun Nov 13 14:58:11 CDT 2016 i686",
+            "value": "UDP-MIB extra attribute",
             "oid": "1.3.6.1.2.1.1.1.0",
-            "name": "SNMPv2-MIB.sysDescr",
+            "name": "UDP-MIB.extraAttr",
         }
     },
 }
@@ -59,7 +59,15 @@ input_dict = {
                     "type": "f",
                     "value": "Linux zeus 4.8.6.5-smp #2 SMP Sun Nov 13 14:58:11 CDT 2016 i686",
                 }
-            }
+            },
+            "metrics": {
+                "SNMPv2-MIB.sysUpTime": {
+                    "time": 1676291974.981197,
+                    "type": "g",
+                    "value": 1575532.0,
+                    "oid": "1.3.6.1.4.1.9",
+                }
+            },
         },
         "GROUP2": {
             "fields": {
@@ -69,7 +77,15 @@ input_dict = {
                     "type": "g",
                     "value": "some_value2",
                 }
-            }
+            },
+            "metrics": {
+                "UDP-MIB.field3": {
+                    "time": 1676291974.981197,
+                    "type": "g",
+                    "value": 1575532.0,
+                    "oid": "1.3.6.1.4.1.9",
+                }
+            },
         },
     },
 }
@@ -254,6 +270,17 @@ class TestEnrich(TestCase):
             result["result"]["GROUP1"]["fields"]["SNMPv2-MIB.sysContact"],
         )
 
+        self.assertEqual(
+            {
+                "time": 1234,
+                "type": "f",
+                "value": "UDP-MIB extra attribute",
+                "oid": "1.3.6.1.2.1.1.1.0",
+                "name": "UDP-MIB.extraAttr",
+            },
+            result["result"]["GROUP2"]["fields"]["UDP-MIB.extraAttr"],
+        )
+
         self.assertEqual("192.168.0.1", result["address"])
 
         m_check_restart.assert_called()
@@ -373,7 +400,7 @@ class TestEnrich(TestCase):
                 "value": "random_value",
                 "oid": "1.3.6.1.4.1.9.9.109.1.1.1.1.24.0.0.0.0.0",
                 "name": "CISCO-PROCESS-MIB.extraFieldSecond",
-            }
+            },
         }
         snmp_object = input_enrich["result"].get("CISCO-PROCESS-MIB::int=7")
         enrich_metric_with_fields_from_db(snmp_object, additional_field)
@@ -431,6 +458,7 @@ class TestEnrich(TestCase):
             "profiles": "DCN_profile",
         }
         self.assertEqual(result, snmp_object)
+
     def test_enrich_metric_with_fields_no_additional_fields(self):
         additional_field = {}
         snmp_object = input_enrich["result"].get("CISCO-PROCESS-MIB::int=7")
