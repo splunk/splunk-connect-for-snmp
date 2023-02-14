@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 import typing
-import random
 
 from pysnmp.proto.errind import EmptyResponse
 from pysnmp.smi import error
@@ -211,9 +210,6 @@ def fill_empty_value(index_number, metric_value, target):
 def extract_index_number(index):
     if not index:
         return 0
-    random_exception = random.randint(0,9)
-    if random_exception == 3:
-        raise Exception("Weird exception!")
     index_number = index[0]._value
     if isinstance(index_number, typing.Tuple):
         index_number = index_number[0]
@@ -507,7 +503,6 @@ class Poller(Task):
                     oid_index_part = extract_index_oid_part(varBind)
                     metric_value = fill_empty_value(index_number, metric_value, target)
 
-                    logger.info(f"metric value of {varBind} is {metric_value}")
                     profile = None
                     if mapping:
                         profile = mapping.get(
@@ -534,10 +529,7 @@ class Poller(Task):
                             "value": metric_value,
                             "oid": oid,
                         }
-                    logger.info(f"Currently processed varbind: {varBind}")
                 except:
-                    logger.info(f"VarBind before the exception: {varBind}")
-                    logger.info(f"VarBind before the exception: {varBind}")
                     logger.exception(
                         f"Exception processing data from {target} {varBind}"
                     )
