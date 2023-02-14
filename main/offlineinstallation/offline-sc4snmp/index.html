@@ -404,6 +404,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/snmp-data-format/" class="md-nav__link">
+        SNMP data format
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -788,12 +802,17 @@
 
 <h1 id="offline-sc4snmp-installation">Offline SC4SNMP installation<a class="headerlink" href="#offline-sc4snmp-installation" title="Permanent link">&para;</a></h1>
 <h2 id="local-machine-with-internet-access">Local machine with internet access<a class="headerlink" href="#local-machine-with-internet-access" title="Permanent link">&para;</a></h2>
-<p>To install the SC4SNMP offline, first, some packages must be downloaded from the Github release and then moved
-to the SC4sNMP installation server. Those packages are:</p>
+<p>To install the SC4SNMP offline, first, some packages must be downloaded from the <a href="https://github.com/splunk/splunk-connect-for-snmp/releases">Github release</a> and then moved
+to the SC4SNMP installation server. Those packages are:</p>
 <ul>
 <li><code>dependencies-images.tar</code></li>
 <li><code>splunk-connect-for-snmp-chart.tar</code></li>
 </ul>
+<p>Additionally, you&rsquo;ll need </p>
+<ul>
+<li><code>pull_mibserver.sh</code> script</li>
+</ul>
+<p>to easily pull and export mibserver image.</p>
 <p>Moreover, SC4SNMP Docker image must be pulled, saved as a <code>.tar</code> package, and then moved to the server as well. 
 This process requires Docker to be installed locally.</p>
 <p>Images can be pulled from the following repository: <code>ghcr.io/splunk/splunk-connect-for-snmp/container:&lt;tag&gt;</code>. 
@@ -806,7 +825,14 @@ The latest tag can be found <a href="https://github.com/splunk/splunk-connect-fo
 <div class="codehilite"><pre><span></span><code>docker save ghcr.io/splunk/splunk-connect-for-snmp/container:&lt;tag&gt; &gt; snmp_image.tar
 </code></pre></div>
 
-<p>All three packages, <code>snmp_image.tar</code>, <code>dependencies-images.tar</code>, and <code>splunk-connect-for-snmp-chart.tar</code>, must be moved to the SC4SNMP installation server.</p>
+<p>Another package you have to pull is the mibserver image. You can do it by executing <code>pull_mibserver.sh</code> script from
+the Release section, or copy-pasting its content.</p>
+<div class="codehilite"><pre><span></span><code>chmod a+x pull_mibserver.sh <span class="c1"># you&#39;ll probably need to make file executable</span>
+./pull_mibserver.sh
+</code></pre></div>
+
+<p>This script should produce <code>mibserver.tar</code> with the image of the mibserver inside.</p>
+<p>All four packages, <code>mibserver.tar</code>, <code>snmp_image.tar</code>, <code>dependencies-images.tar</code>, and <code>splunk-connect-for-snmp-chart.tar</code>, must be moved to the SC4SNMP installation server.</p>
 <h2 id="installation-on-the-server">Installation on the server<a class="headerlink" href="#installation-on-the-server" title="Permanent link">&para;</a></h2>
 <p>On the server, all the images must be imported to the microk8s cluster. This can be done with the following command:</p>
 <div class="codehilite"><pre><span></span><code>microk8s ctr image import &lt;name_of_tar_image&gt;
@@ -814,7 +840,8 @@ The latest tag can be found <a href="https://github.com/splunk/splunk-connect-fo
 
 <p>In case of this installation the following commands must be run:</p>
 <div class="codehilite"><pre><span></span><code>microk8s ctr image import dependencies-images.tar
-microk8s ctr image import snmp_image.tar 
+microk8s ctr image import snmp_image.tar
+microk8s ctr image import mibserver.tar
 </code></pre></div>
 
 <p>Then create <code>values.yaml</code>. It&rsquo;s a little different from <code>values.yaml</code> used in an online installation. 
