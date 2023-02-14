@@ -45,6 +45,7 @@ nav:
         - Configuring Profiles: "configuration/configuring-profiles.md"
         - Configuring Groups: "configuration/configuring-groups.md"
         - Step by Step polling example: "configuration/step-by-step-poll.md"
+        - SNMP data format: "configuration/snmp-data-format.md"
       - Traps: "configuration/trap-configuration.md"
       - Worker: "configuration/worker-configuration.md"
       - Mongo DB: "configuration/mongo-configuration.md"
