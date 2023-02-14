@@ -7,8 +7,8 @@ metadata:
   labels:
     app.kubernetes.io/name: splunk-connect-for-snmp-trap
     app.kubernetes.io/instance: release-name
-    helm.sh/chart: splunk-connect-for-snmp-1.8.6-beta.1
-    app.kubernetes.io/version: "1.8.6-beta.1"
+    helm.sh/chart: splunk-connect-for-snmp-1.8.6
+    app.kubernetes.io/version: "1.8.6"
     app.kubernetes.io/managed-by: Helm
 spec:
   minAvailable: 80%
