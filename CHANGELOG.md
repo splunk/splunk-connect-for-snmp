@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [1.8.6]
+
 ### Changed
 
 - update mibserver to 1.15.0 and document how to use local MIBs feature
