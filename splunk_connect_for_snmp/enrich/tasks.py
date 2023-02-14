@@ -156,7 +156,7 @@ def enrich(self, result):
                 new_fields.append({"$set": {f"fields.{field_key_hash}": field_value}})
             if field_key in TRACKED_F:
                 updates.append(
-                    {"$set": {"state": {field_key.replace(".", "|"): field_value}}}
+                    {"$set": {f"state.{field_key.replace('.', '|')}": field_value}}
                 )
 
             if len(updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
