@@ -1,4 +1,4 @@
-{{- if .Values.traps.networkPolicy -}}
+{{- if and .Values.traps.networkPolicy ( eq (include "splunk-connect-for-snmp.traps.enable" .) "true" ) -}}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:

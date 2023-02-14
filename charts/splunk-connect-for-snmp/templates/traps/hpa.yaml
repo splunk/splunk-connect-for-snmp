@@ -1,5 +1,5 @@
-{{- if .Values.traps.autoscaling.enabled }}
-apiVersion: autoscaling/v2beta1
+{{- if and .Values.traps.autoscaling.enabled (eq (include "splunk-connect-for-snmp.traps.enable" .) "true" ) ( eq ( toString .Values.useDeprecatedAPI ) "false" ) }}
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "splunk-connect-for-snmp.traps.fullname" . }}
@@ -17,12 +17,16 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.traps.autoscaling.targetCPUUtilizationPercentage }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.traps.autoscaling.targetCPUUtilizationPercentage }}
     {{- end }}
     {{- if .Values.traps.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.traps.autoscaling.targetMemoryUtilizationPercentage }}
+        target:
+          type: Value
+          averageValue: {{ .Values.traps.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
 {{- end }}

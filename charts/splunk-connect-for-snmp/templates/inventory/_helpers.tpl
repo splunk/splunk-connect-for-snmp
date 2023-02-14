@@ -31,18 +31,6 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
-Common labels
-*/}}
-{{- define "splunk-connect-for-snmp.inventory.labels" -}}
-helm.sh/chart: {{ include "splunk-connect-for-snmp.inventory.chart" . }}
-{{ include "splunk-connect-for-snmp.inventory.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
 Selector labels
 */}}
 {{- define "splunk-connect-for-snmp.inventory.selectorLabels" -}}
@@ -50,13 +38,3 @@ app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.inventory.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "splunk-connect-for-snmp.inventory.serviceAccountName" -}}
-{{- if .Values.inventory.serviceAccount.create }}
-{{- default (include "splunk-connect-for-snmp.inventory.fullname" .) .Values.inventory.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.inventory.serviceAccount.name }}
-{{- end }}
-{{- end }}

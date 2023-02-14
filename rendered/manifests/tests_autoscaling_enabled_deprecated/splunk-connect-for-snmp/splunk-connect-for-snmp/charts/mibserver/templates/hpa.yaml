@@ -1,0 +1,32 @@
+---
+# Source: splunk-connect-for-snmp/charts/mibserver/templates/hpa.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: release-name-mibserver
+  labels:
+    helm.sh/chart: mibserver-1.15.1-beta.1
+    app.kubernetes.io/name: mibserver
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "1.15.1-beta.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-mibserver
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80

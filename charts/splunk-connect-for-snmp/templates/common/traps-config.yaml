@@ -1,9 +1,10 @@
+{{- if eq (include "splunk-connect-for-snmp.traps.enable" .) "true" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "splunk-connect-for-snmp.name" . }}-traps
   labels:
-    {{- include "splunk-connect-for-snmp.scheduler.labels" . | nindent 4 }}
+    {{- include "splunk-connect-for-snmp.labels" . | nindent 4 }}
 data:
   config.yaml: |-
 {{- if .Values.traps.communities }}
@@ -14,3 +15,4 @@ data:
       usernameSecrets:
 {{- toYaml .Values.traps.usernameSecrets | nindent 8 }}
 {{ end }}
+{{- end -}}

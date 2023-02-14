@@ -1,0 +1,25 @@
+---
+# Source: splunk-connect-for-snmp/charts/mongodb/templates/standalone/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-mongodb
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: mongodb
+    helm.sh/chart: mongodb-12.1.31
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: mongodb
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: "mongodb"
+      port: 27017
+      targetPort: mongodb
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: mongodb

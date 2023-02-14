@@ -31,18 +31,6 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
-Common labels
-*/}}
-{{- define "splunk-connect-for-snmp.scheduler.labels" -}}
-helm.sh/chart: {{ include "splunk-connect-for-snmp.scheduler.chart" . }}
-{{ include "splunk-connect-for-snmp.scheduler.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
 Selector labels
 */}}
 {{- define "splunk-connect-for-snmp.scheduler.selectorLabels" -}}
@@ -51,12 +39,9 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Create the name of the service account to use
+Common labels
 */}}
-{{- define "splunk-connect-for-snmp.scheduler.serviceAccountName" -}}
-{{- if .Values.scheduler.serviceAccount.create }}
-{{- default (include "splunk-connect-for-snmp.scheduler.fullname" .) .Values.scheduler.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.scheduler.serviceAccount.name }}
-{{- end }}
+{{- define "splunk-connect-for-snmp.scheduler.labels" -}}
+{{ include "splunk-connect-for-snmp.scheduler.selectorLabels" . }}
+{{ include "splunk-connect-for-snmp.labels" . }}
 {{- end }}

@@ -1,0 +1,24 @@
+---
+# Source: splunk-connect-for-snmp/templates/worker/poller/deprecated_hpa.yaml
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: release-name-splunk-connect-for-snmp-worker-poller
+  labels:
+    app.kubernetes.io/name: splunk-connect-for-snmp-worker-poller
+    app.kubernetes.io/instance: release-name
+    helm.sh/chart: splunk-connect-for-snmp-1.8.6-beta.1
+    app.kubernetes.io/version: "1.8.6-beta.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-splunk-connect-for-snmp-worker-poller
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: 80

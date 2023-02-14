@@ -1,3 +1,4 @@
+{{- if eq (include "splunk-connect-for-snmp.polling.enable" .) "true" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,13 +25,19 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "splunk-connect-for-snmp.worker.serviceAccountName" . }}
+      serviceAccountName: {{ include "splunk-connect-for-snmp.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.worker.podSecurityContext | nindent 8 }}
+        fsGroup: 10001
       containers:
         - name: {{ .Chart.Name }}-worker-poller
           securityContext:
-            {{- toYaml .Values.worker.securityContext | nindent 12 }}
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
@@ -103,3 +110,4 @@ spec:
           emptyDir: {}
         - name: tmp
           emptyDir: {}
+  {{- end -}}

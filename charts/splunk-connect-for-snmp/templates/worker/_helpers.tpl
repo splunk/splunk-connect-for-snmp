@@ -30,22 +30,10 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{/*
-Common labels
-*/}}
-{{- define "splunk-connect-for-snmp.worker.labels" -}}
-helm.sh/chart: {{ include "splunk-connect-for-snmp.worker.chart" . }}
-{{ include "splunk-connect-for-snmp.worker.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
 
 {{/*
 Selector labels
 */}}
-
 {{- define "splunk-connect-for-snmp.worker.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
@@ -66,41 +54,28 @@ app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-tr
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{- define "splunk-connect-for-snmp.worker.trap.labels" -}}
-helm.sh/chart: {{ include "splunk-connect-for-snmp.worker.chart" . }}
-{{ include "splunk-connect-for-snmp.worker.trap.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
+
+{{/*
+Common labels
+*/}}
+{{- define "splunk-connect-for-snmp.worker.poller.labels" -}}
+{{ include "splunk-connect-for-snmp.worker.poller.selectorLabels" . }}
+{{ include "splunk-connect-for-snmp.labels" . }}
 {{- end }}
 
-{{- define "splunk-connect-for-snmp.worker.poller.labels" -}}
-helm.sh/chart: {{ include "splunk-connect-for-snmp.worker.chart" . }}
-{{ include "splunk-connect-for-snmp.worker.poller.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- define "splunk-connect-for-snmp.worker.trap.labels" -}}
+{{ include "splunk-connect-for-snmp.worker.trap.selectorLabels" . }}
+{{ include "splunk-connect-for-snmp.labels" . }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.worker.sender.labels" -}}
-helm.sh/chart: {{ include "splunk-connect-for-snmp.worker.chart" . }}
 {{ include "splunk-connect-for-snmp.worker.sender.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{ include "splunk-connect-for-snmp.labels" . }}
 {{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "splunk-connect-for-snmp.worker.serviceAccountName" -}}
-{{- if .Values.worker.serviceAccount.create }}
-{{- default (include "splunk-connect-for-snmp.worker.fullname" .) .Values.worker.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.worker.serviceAccount.name }}
-{{- end }}
+
+{{- define "splunk-connect-for-snmp.worker.labels" -}}
+{{ include "splunk-connect-for-snmp.worker.selectorLabels" . }}
+{{ include "splunk-connect-for-snmp.labels" . }}
 {{- end }}
 
 {{- define "environmental-variables" -}}

@@ -1,5 +1,5 @@
-{{- if .Values.sim.autoscaling.enabled }}
-apiVersion: autoscaling/v2beta1
+{{- if and (eq ( toString .Values.sim.autoscaling.enabled ) "true") ( eq ( toString .Values.useDeprecatedAPI ) "false" ) }}
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "splunk-connect-for-snmp.sim.fullname" . }}
@@ -17,12 +17,14 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.sim.autoscaling.targetCPUUtilizationPercentage }}
+        target:
+          averageValue: {{ .Values.sim.autoscaling.targetCPUUtilizationPercentage }}
     {{- end }}
     {{- if .Values.sim.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.sim.autoscaling.targetMemoryUtilizationPercentage }}
+        target:
+          averageValue: {{ .Values.sim.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
 {{- end }}

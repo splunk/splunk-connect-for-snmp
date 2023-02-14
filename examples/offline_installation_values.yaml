@@ -1,0 +1,61 @@
+splunk:
+  enabled: true
+  protocol: https
+  host: i-0d903f60788be4c68.ec2.splunkit.io
+  token: 00000000-0000-0000-0000-000000000000
+  insecureSSL: "false"
+  port: "8088"
+image:
+  #Fill ###TAG## with the SC4SNMP version downloaded before with docker pull command
+  # according to the documentation: https://splunk.github.io/splunk-connect-for-snmp/main/offlineinstallation/offline-sc4snmp/
+  tag: ###TAG###
+  pullPolicy: Never
+traps:
+  communities:
+    2c:
+      - public
+      - homelab
+  loadBalancerIP: 10.202.6.213
+scheduler:
+  profiles: |
+    small_walk:
+      condition:
+        type: walk
+      varBinds:
+        - ["TCP-MIB"]
+        - ["IF-MIB"]
+        - ["IP-MIB"]
+    IF_profile:
+      frequency: 600
+      varBinds:
+        - [ 'IF-MIB', 'ifDescr' ]
+        - [ 'IF-MIB', 'ifAdminStatus' ]
+        - [ 'IF-MIB', 'ifName' ]
+        - [ 'IF-MIB', 'ifAlias' ]
+        - [ 'IF-MIB', 'ifInDiscards' ]
+        - [ 'IF-MIB', 'ifInErrors' ]
+        - [ 'IF-MIB', 'ifInNUcastPkts' ]
+        - [ 'IF-MIB', 'ifInOctets' ]
+        - [ 'IF-MIB', 'ifInUcastPkts' ]
+        - [ 'IF-MIB', 'ifInUnknownProtos' ]
+        - [ 'IF-MIB', 'ifOutDiscards' ]
+        - [ 'IF-MIB', 'ifOutErrors' ]
+        - [ 'IF-MIB', 'ifOutNUcastPkts' ]
+        - [ 'IF-MIB', 'ifOutOctets' ]
+        - [ 'IF-MIB', 'ifOutQLen' ]
+        - [ 'IF-MIB', 'ifOutUcastPkts' ]
+    ICMP_profile:
+      frequency: 500
+      varBinds:
+        - ["IP-MIB", "icmp"]
+poller:
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+    54.82.4.248,,2c,public,,,4000,small_walk;IF_profile;ICMP_profile,,
+    54.82.4.249,,2c,public,,,1800,small_walk;IF_profile,,
+mongodb:
+  image:
+    pullPolicy: Never
+redis:
+  image:
+    pullPolicy: Never

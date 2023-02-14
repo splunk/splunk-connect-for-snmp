@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "splunk-connect-for-snmp.name" . }}-config
   labels:
-    {{- include "splunk-connect-for-snmp.scheduler.labels" . | nindent 4 }}
+    {{- include "splunk-connect-for-snmp.labels" . | nindent 4 }}
 data:
   config.yaml: |-
 {{- if (.Values.scheduler).usernames }}

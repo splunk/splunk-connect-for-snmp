@@ -25,129 +25,26 @@ splunk-connect-for-snmp/splunk-connect-for-snmp        1.0.0        1.0.0       
 ```
 
 ### Download and modify values.yaml
-```yaml
-splunk:
-  enabled: true
-  protocol: https
-  host: ###SPLUNK_HOST###
-  token: ###SPLUNK_TOKEN###
-  insecureSSL: "false"
-  port: "###SPLUNK_PORT###"
-image:
-  pullPolicy: "Always"
-traps:
-  communities:
-    2c:
-      - public
-      - homelab
-  #usernameSecrets:
-  #  - sc4snmp-hlab-sha-aes
-  #  - sc4snmp-hlab-sha-des
 
-  #loadBalancerIP: The IP address in the metallb pool
-  loadBalancerIP: ###X.X.X.X###
-worker:
-  # There are 3 types of workers 
-  trap:
-    # replicaCount: number of trap-worker pods which consumes trap tasks
-    replicaCount: 2
-    #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
-    #autoscaling:
-    #  enabled: true
-    #  minReplicas: 2
-    #  maxReplicas: 10
-    #  targetCPUUtilizationPercentage: 80
-  poller:
-    # replicaCount: number of poller-worker pods which consumes polling tasks
-    replicaCount: 2
-    #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
-    #autoscaling:
-    #  enabled: true
-    #  minReplicas: 2
-    #  maxReplicas: 10
-    #  targetCPUUtilizationPercentage: 80
-  sender:
-    # replicaCount: number of sender-worker pods which consumes sending tasks
-    replicaCount: 1
-    # autoscaling: use it instead of replicaCount in order to make pods scalable by itself
-    #autoscaling:
-    #  enabled: true
-    #  minReplicas: 2
-    #  maxReplicas: 10
-    #  targetCPUUtilizationPercentage: 80
-  # udpConnectionTimeout: timeout in seconds for SNMP operations
-  #udpConnectionTimeout: 5
-  logLevel: "INFO"
-scheduler:
-  logLevel: "INFO"
-#  profiles: |
-#    generic_switch:
-#      frequency: 300
-#      varBinds:
-#        - ['SNMPv2-MIB', 'sysDescr']
-#        - ['SNMPv2-MIB', 'sysName', 0]
-#        - ['TCP-MIB', 'tcpActiveOpens']
-#        - ['TCP-MIB', 'tcpAttemptFails']
-#        - ['IF-MIB']
-#poller:
- # usernameSecrets:
- #   - sc4snmp-hlab-sha-aes
- #   - sc4snmp-hlab-sha-des
- # inventory: |
- #   address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
- #   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,1800,,,
- #   10.0.0.199,,2c,public,,,3000,,,True
- #   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,1800,,,
-sim:
-  # sim must be enabled if you want to use signalFx
-  enabled: false
-#  signalfxToken: BCwaJ_Ands4Xh7Nrg
-#  signalfxRealm: us0
-mongodb:
-  pdb:
-    create: true
-  persistence:
-    storageClass: "microk8s-hostpath"
-  volumePermissions:
-    enabled: true
+SC4SNMP installation requires creating `values.yaml` file, where you can specify its configuration.
+Check the default `values.yaml` with all parameters described using the command:
+
+```bash
+microk8s helm3 show values splunk-connect-for-snmp/splunk-connect-for-snmp 
 ```
 
-`values.yaml` is used during the installation process for configuring Kubernetes values.
+or view them directly on GitHub: [values.yaml](https://github.com/splunk/splunk-connect-for-snmp/blob/main/charts/splunk-connect-for-snmp/values.yaml).
 
-### Configure Splunk Enterprise or Splunk Cloud Connection
-Splunk Enterprise or Splunk Cloud Connection is enabled by default. To disable Splunk Enterprise or Splunk Cloud `splunk.enabled` property, set it to `false`.
-Additionally, the connection parameters for Splunk Enterprise or Splunk Cloud need to be set in the `splunk` section: 
+To successfully run SC4SNMP you need to at least configure `splunk` or/and `sim` section - depending on where you want 
+to send the data and traps or polling sections that are described here: [basic values.yaml template](https://github.com/splunk/splunk-connect-for-snmp/tree/main/examples/basic_template.md),
 
-| Placeholder   | Description  | Example  | 
-|---|---|---|
-| ###SPLUNK_HOST###  | host address of splunk instance   | "i-08c221389a3b9899a.ec2.splunkit.io"  | 
-| ###SPLUNK_PORT###  | port number of splunk instance   | "8088"  | 
-| ###SPLUNK_TOKEN### | Splunk HTTP Event Collector token  | 450a69af-16a9-4f87-9628-c26f04ad3785  |
-| ###X.X.X.X###  | SHARED IP address used for SNMP Traps   | 10.202.18.166  |
+Here you can find the examples of the certain use-cases: [EXAMPLES](https://github.com/splunk/splunk-connect-for-snmp/tree/main/examples).
 
-Other optional variables can be configured:
-
-| variable | description | default |
-| --- | --- | --- |
-| splunk.protocol | port of splunk instance| https |
-| splunk.insecure_ssl| is insecure ssl allowed | "true" |
-| splunk.eventIndex | name of the events index | "netops" |
-| splunk.metricsIndex | name of the metrics index | "netmetrics" |
-
-
-### Configure Splunk Infrastructure Monitoring Connection
-Splunk Infrastructure Monitoring is disabled by default. To enable the Splunk Infrastructure Monitoring 
-`sim.enabled` property, set it to `true`.
-Additionally, connection parameters for Splunk Infrastructure Monitoring need to be set in the `sim` section:
-
-| variable | description | default |
-| --- | --- | --- |
-|signalfxToken | SIM token which can be use for ingesting date vi API | not set|
-|signalfxRealm | Real of SIM | not set |
-
-For more details please check [SIM Configuration](../configuration/sim-configuration.md)
+To explore all the possible configuration parameters check [configuration section](../configuration).
 
 ### Install SC4SNMP
+After you create `values.yaml` of your choice, you can proceed with the SC4SNMP installation:
+
 ``` bash
 microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```

@@ -1,0 +1,28 @@
+---
+# Source: splunk-connect-for-snmp/charts/mongodb/templates/metrics-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-mongodb-metrics
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: mongodb
+    helm.sh/chart: mongodb-12.1.31
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: metrics
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "9216"
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9216
+      targetPort: metrics
+      protocol: TCP
+      name: http-metrics
+  selector:
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: mongodb

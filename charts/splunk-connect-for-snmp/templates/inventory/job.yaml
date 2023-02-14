@@ -1,9 +1,10 @@
+{{- if eq (include "splunk-connect-for-snmp.polling.enable" .) "true" }}
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ include "splunk-connect-for-snmp.inventory.fullname" . }}
   labels:
-    {{- include "splunk-connect-for-snmp.inventory.labels" . | nindent 4 }}
+    {{- include "splunk-connect-for-snmp.labels" . | nindent 4 }}
 spec:
   ttlSecondsAfterFinished: 300
   template:
@@ -82,3 +83,4 @@ spec:
         - name: tmp
           emptyDir: {}                        
       restartPolicy: OnFailure
+{{- end -}}
