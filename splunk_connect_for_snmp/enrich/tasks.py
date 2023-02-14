@@ -128,10 +128,10 @@ def enrich(self, result):
         if not current_attributes and group_data["fields"]:
             attributes_collection.update_one(
                 {"address": address, "group_key_hash": group_key_hash},
-                {"$set": {"id": group_key}},
+                {"$set": {"id": group_key, "fields": {}}},
                 upsert=True,
             )
-        fields = {}
+        new_fields = []
         for field_key, field_value in group_data["fields"].items():
             field_key_hash = field_key.replace(".", "|")
             field_value["name"] = field_key
@@ -141,10 +141,11 @@ def enrich(self, result):
             ):
                 cv = current_attributes["fields"][field_key_hash]
 
+            # if new field_value is different than the previous one, update
             if cv and not cv == field_value:
                 # modifed
                 attribute_updates.append(
-                    {"$set": {"fields": {field_key_hash: field_value}}}
+                    {"$set": {f"fields.{field_key_hash}": field_value}}
                 )
 
             elif cv:
@@ -152,10 +153,10 @@ def enrich(self, result):
                 pass
             else:
                 # new
-                fields[field_key_hash] = field_value
+                new_fields.append({"$set": {f"fields.{field_key_hash}": field_value}})
             if field_key in TRACKED_F:
                 updates.append(
-                    {"$set": {"state": {field_key.replace(".", "|"): field_value}}}
+                    {"$set": {f"state.{field_key.replace('.', '|')}": field_value}}
                 )
 
             if len(updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
@@ -171,16 +172,15 @@ def enrich(self, result):
                     upsert=True,
                 )
                 attribute_updates.clear()
-
-        if fields:
+        if new_fields:
             attributes_bulk_write_operations.append(
                 UpdateOne(
                     {"address": address, "group_key_hash": group_key_hash},
-                    {"$set": {"fields": fields.copy()}},
+                    new_fields.copy(),
                     upsert=True,
                 )
             )
-            fields.clear()
+            new_fields.clear()
 
         if updates:
             targets_collection.update_one({"address": address}, updates, upsert=True)
@@ -197,14 +197,8 @@ def enrich(self, result):
             attribute_group_id = current_attributes["id"]
             fields = current_attributes.get("fields", {})
             if attribute_group_id in result["result"]:
-                for persist_data in fields.values():
-                    if (
-                        persist_data["name"]
-                        not in result["result"][attribute_group_id]["fields"]
-                    ):
-                        result["result"][attribute_group_id]["fields"][
-                            persist_data["name"]
-                        ] = persist_data
+                snmp_object = result["result"][attribute_group_id]
+                enrich_metric_with_fields_from_db(snmp_object, fields)
     if attributes_bulk_write_operations:
         logger.debug("Start of bulk_write")
         start = time.time()
@@ -216,5 +210,14 @@ def enrich(self, result):
             f"ELAPSED TIME OF BULK: {end - start} for {len(attributes_bulk_write_operations)} operations"
         )
         logger.debug(f"result api: {bulk_result.bulk_api_result}")
-    logger.debug(f"End of enrich task: {address}")
     return result
+
+
+def enrich_metric_with_fields_from_db(snmp_object, fields_from_db):
+    metrics = snmp_object.get("metrics", {})
+    # We don't want to enrich SNMP objects that doesn't contain any metrics
+    if not metrics:
+        return
+    for persist_data in fields_from_db.values():
+        if persist_data["name"] not in snmp_object["fields"]:
+            snmp_object["fields"][persist_data["name"]] = persist_data

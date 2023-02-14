@@ -136,6 +136,7 @@ tar -xvf "$SPLUNK_FILE"
 
 DIRS=$(ls)
 SPLUNK_DIR=""
+
 for d in $DIRS
 do
   #Find a directory name to the unpacked splunk chart
@@ -149,6 +150,15 @@ then
   exit
 fi
 cd "$SPLUNK_DIR" || exit
+
+mkdir /tmp/package/packages
+
+# Export script to pull mibserver
+MIBSERVER_VERSION=$(grep -A2 'mibserver' Chart.lock | grep version | cut -d : -f2 | xargs)
+MIBSERVER_IMAGE="ghcr.io/pysnmp/mibs/container:$MIBSERVER_VERSION"
+echo "docker pull $MIBSERVER_IMAGE" > pull_mibserver.sh
+echo "docker save $MIBSERVER_IMAGE > mibserver.tar" >> pull_mibserver.sh
+cp pull_mibserver.sh /tmp/package/packages
 
 rm -rf charts
 mkdir charts
@@ -167,10 +177,11 @@ done
 DIRS=$(ls)
 for d in $DIRS
 do
-  pull_image "$d"
+  if [ "$d" != "mibserver" ]; then
+    pull_image "$d"
+  fi
 done
 
-mkdir /tmp/package/packages
 docker save $images_to_pack > /tmp/package/packages/dependencies-images.tar
 cd ../..
 tar -czvf packages/splunk-connect-for-snmp-chart.tar splunk-connect-for-snmp

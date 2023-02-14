@@ -1,0 +1,98 @@
+---
+# Source: splunk-connect-for-snmp/templates/scheduler/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-splunk-connect-for-snmp-scheduler
+  labels:
+    helm.sh/chart: splunk-connect-for-snmp-1.8.5
+    app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "1.8.5"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
+      app.kubernetes.io/instance: release-name
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
+        app.kubernetes.io/instance: release-name
+    spec:
+      serviceAccountName: release-name-splunk-connect-for-snmp-scheduler
+      securityContext:
+        fsGroup: 10001
+      containers:
+        - name: splunk-connect-for-snmp-scheduler
+          securityContext:
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 10001
+            runAsNonRoot: true
+            runAsUser: 10001
+          image: "ghcr.io/splunk/splunk-connect-for-snmp/container:1.8.5"
+          imagePullPolicy: Always
+          args:
+            [
+              "celery", "beat",
+            ]          
+          env:
+            - name: CONFIG_PATH
+              value: /app/config/config.yaml
+            - name: REDIS_URL
+              value: redis://release-name-redis-headless:6379/1
+            - name: CELERY_BROKER_URL
+              value: redis://release-name-redis-headless:6379/0
+            - name: MONGO_URI
+              value: mongodb://release-name-mongodb:27017
+            - name: MIB_SOURCES
+              value: "http://release-name-mibserver/asn1/@mib@"
+            - name: MIB_INDEX
+              value: "http://release-name-mibserver/index.csv"
+            - name: MIB_STANDARD
+              value: "http://release-name-mibserver/standard.txt"
+            - name: LOG_LEVEL
+              value: INFO
+            - name: INVENTORY_REFRESH_RATE
+              value: "600"
+          volumeMounts:
+            - name: config
+              mountPath: "/app/config"
+              readOnly: true
+            - name: pysnmp-cache-volume
+              mountPath: "/.pysnmp/"
+              readOnly: false            
+            - name: tmp
+              mountPath: "/tmp/"
+              readOnly: false
+          resources:
+            {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                      app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
+                      app.kubernetes.io/instance: release-name
+      volumes:
+        # You set volumes at the Pod level, then mount them into containers inside that Pod
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: splunk-connect-for-snmp-config
+            # An array of keys from the ConfigMap to create as files
+            items:
+              - key: "config.yaml"
+                path: "config.yaml"
+        - name: pysnmp-cache-volume
+          emptyDir: {}    
+        - name: tmp
+          emptyDir: {}

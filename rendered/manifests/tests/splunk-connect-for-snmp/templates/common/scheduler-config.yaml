@@ -1,0 +1,42 @@
+---
+# Source: splunk-connect-for-snmp/templates/common/scheduler-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: splunk-connect-for-snmp-config
+  labels:
+    helm.sh/chart: splunk-connect-for-snmp-1.8.5
+    app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "1.8.5"
+    app.kubernetes.io/managed-by: Helm
+data:
+  config.yaml: |-
+      profiles:
+        IF_profile:
+          frequency: 600
+          varBinds:
+            - [ "IF-MIB", "ifDescr" ]
+            - [ "IF-MIB", "ifAdminStatus" ]
+            - [ "IF-MIB", "ifName" ]
+            - [ 'IF-MIB','ifAlias' ]
+            - [ "IF-MIB", "ifInDiscards" ]
+            - [ "IF-MIB", "ifInErrors" ]
+            - [ "IF-MIB", "ifInNUcastPkts" ]
+            - [ "IF-MIB", "ifInOctets" ]
+            - [ "IF-MIB", "ifInUcastPkts" ]
+            - [ "IF-MIB", "ifInUnknownProtos" ]
+            - [ "IF-MIB", "ifOutDiscards" ]
+            - [ "IF-MIB", "ifOutErrors" ]
+            - [ "IF-MIB", "ifOutNUcastPkts" ]
+            - [ "IF-MIB", "ifOutOctets" ]
+            - [ "IF-MIB", "ifOutQLen" ]
+            - [ "IF-MIB", "ifOutUcastPkts" ]
+        
+      communities:
+        public:
+          communityIndex:
+          contextEngineId:
+          contextName:
+          tag:
+          securityName:

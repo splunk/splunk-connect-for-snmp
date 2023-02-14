@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## [1.8.6]
+
+### Changed
+
+- update mibserver to 1.15.0 and document how to use local MIBs feature
+- update mibserver to 1.15.1 to allow local MIB compilation in offline environment
+
+### Fixed
+
+- fix metrics enrichment issue - context were overwritten in some cases in the MongoDB, and the results looked not coherent
+
 ## [1.8.5]
 
 ### Changed
