@@ -210,10 +210,6 @@ def enrich(self, result):
             f"ELAPSED TIME OF BULK: {end - start} for {len(attributes_bulk_write_operations)} operations"
         )
         logger.debug(f"result api: {bulk_result.bulk_api_result}")
-    logger.debug(f"End of enrich task: {address}")
-    logger.info(f"*****************************************")
-    logger.info(f"Result after enrich: {result}")
-    logger.info(f"*****************************************")
     return result
 
 
@@ -224,5 +220,4 @@ def enrich_metric_with_fields_from_db(snmp_object, fields_from_db):
         return
     for persist_data in fields_from_db.values():
         if persist_data["name"] not in snmp_object["fields"]:
-            logger.info(f"persist_data: {persist_data}")
             snmp_object["fields"][persist_data["name"]] = persist_data

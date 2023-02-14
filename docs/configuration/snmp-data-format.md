@@ -39,7 +39,7 @@ numeric value to float. If the check fails, the values is classified as a textua
 Let's go through a simple example. We've just added a device and didn't configure anything special. The data from a walk
 in Splunk's metrics index is:
 
-```json
+```
 {
    ifAdminStatus: up
    ifDescr: GigabitEthernet1
@@ -152,7 +152,7 @@ profile_with_only_textual_fields:
 
 In this case no additional enrichment will be done. The events in event index `index=netops` of Splunk will look like:
 
-```json
+```
 { [-]
    IF-MIB.ifDescr: { [-]
      name: IF-MIB.ifDescr
