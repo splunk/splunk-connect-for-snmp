@@ -141,7 +141,7 @@ jobs:
         run: tar -czf splunk-connect-for-snmp.tgz splunk-connect-for-snmp
       - name: Copy archived repository to scripts directory
         run: cp /home/runner/work/splunk-connect-for-snmp/splunk-connect-for-snmp.tgz $GITHUB_WORKSPACE/integration_tests/scripts
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2
       - name: Install apt packages
         run: sudo apt-get install ansible
       - name: Install python packages
