@@ -38,3 +38,11 @@ app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.inventory.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{/*
+Common labels
+*/}}
+{{- define "splunk-connect-for-snmp.inventory.labels" -}}
+{{ include "splunk-connect-for-snmp.inventory.selectorLabels" . }}
+{{ include "splunk-connect-for-snmp.labels" . }}
+{{- end }}
+
