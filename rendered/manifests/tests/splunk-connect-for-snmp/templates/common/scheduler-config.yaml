@@ -5,6 +5,8 @@ kind: ConfigMap
 metadata:
   name: splunk-connect-for-snmp-config
   labels:
+    app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
+    app.kubernetes.io/instance: release-name
     helm.sh/chart: splunk-connect-for-snmp-1.8.6
     app.kubernetes.io/version: "1.8.6"
     app.kubernetes.io/managed-by: Helm
