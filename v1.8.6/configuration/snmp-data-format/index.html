@@ -1,0 +1,1068 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.2">
+    
+    
+      
+        <title>SNMP data format - Splunk Connect for SNMP (SC4SNMP)</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.69437709.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#000000">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="black" data-md-color-accent="orange">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#snmp-data-format" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Splunk Connect for SNMP (SC4SNMP)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              SNMP data format
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Splunk Connect for SNMP (SC4SNMP)
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Getting Started
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Getting Started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/splunk-requirements/" class="md-nav__link">
+        Splunk Requirements
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/mk8s/k8s-microk8s/" class="md-nav__link">
+        Platform Microk8s
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/sck-installation/" class="md-nav__link">
+        Install Splunk OpenTelemetry Collector for Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/sc4snmp-installation/" class="md-nav__link">
+        Install SC4SNMP
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ha/" class="md-nav__link">
+        High Availability
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Configuration" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment-configuration/" class="md-nav__link">
+        Deployment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2">
+          Polling
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Polling" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          Polling
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../poller-configuration/" class="md-nav__link">
+        Poller
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scheduler-configuration/" class="md-nav__link">
+        Scheduler
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuring-profiles/" class="md-nav__link">
+        Configuring Profiles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuring-groups/" class="md-nav__link">
+        Configuring Groups
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-by-step-poll/" class="md-nav__link">
+        Step by Step polling example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          SNMP data format
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        SNMP data format
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#to-which-splunk-index-will-my-data-go" class="md-nav__link">
+    To which Splunk index will my data go?
+  </a>
+  
+    <nav class="md-nav" aria-label="To which Splunk index will my data go?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metric-index" class="md-nav__link">
+    Metric index
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-index" class="md-nav__link">
+    Event index
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../trap-configuration/" class="md-nav__link">
+        Traps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../worker-configuration/" class="md-nav__link">
+        Worker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mongo-configuration/" class="md-nav__link">
+        Mongo DB
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../redis-configuration/" class="md-nav__link">
+        Redis
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../snmpv3-configuration/" class="md-nav__link">
+        SNMPv3 configuration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sim-configuration/" class="md-nav__link">
+        Splunk Infrastructure Monitoring
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/" class="md-nav__link">
+        Planning
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/" class="md-nav__link">
+        Security
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mib-request/" class="md-nav__link">
+        Request MIB
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../upgrade/" class="md-nav__link">
+        Upgrade SC4SNMP
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../bestpractices/" class="md-nav__link">
+        Troubleshooting
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/" class="md-nav__link">
+        Releases
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" type="checkbox" id="__nav_11" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11">
+          Offline Installation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Offline Installation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          Offline Installation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../offlineinstallation/offline-microk8s/" class="md-nav__link">
+        Install Microk8s
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../offlineinstallation/offline-sck/" class="md-nav__link">
+        Install Splunk OpenTelemetry Collector for Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../offlineinstallation/offline-sc4snmp/" class="md-nav__link">
+        Install SC4SNMP
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../small-environment/" class="md-nav__link">
+        Lightweight installation
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#to-which-splunk-index-will-my-data-go" class="md-nav__link">
+    To which Splunk index will my data go?
+  </a>
+  
+    <nav class="md-nav" aria-label="To which Splunk index will my data go?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metric-index" class="md-nav__link">
+    Metric index
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-index" class="md-nav__link">
+    Event index
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="snmp-data-format">SNMP Data Format<a class="headerlink" href="#snmp-data-format" title="Permanent link">&para;</a></h1>
+<p>SC4SNMP classifies SNMP data elements as metrics or textual fields. We assume that the metric types are the indicators worth monitoring, 
+that changes dynamically, and textual fields are the context helpful to understand what an SNMP object really means.</p>
+<p>SC4SNMP classify the data element as a metric when its type is one of:</p>
+<ul>
+<li><code>Unsigned</code></li>
+<li><code>Counter</code></li>
+<li><code>TimeTicks</code></li>
+<li><code>Gauge</code></li>
+<li><code>Integer</code></li>
+</ul>
+<p>Every other type is interpreted as a field value.</p>
+<p>Sometimes, the MIB file indicates a field as an <code>INTEGER</code>, but there is also some mapping defined, like for
+example in case of <code>IF-MIB.ifOperStatus</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">ifOperStatus</span><span class="w"> </span><span class="nv">OBJECT</span><span class="o">-</span><span class="nv">TYPE</span><span class="w"></span>
+<span class="w">    </span><span class="nv">SYNTAX</span><span class="w">  </span><span class="nv">INTEGER</span><span class="w"> </span>{<span class="w"></span>
+<span class="w">                </span><span class="nv">up</span><span class="ss">(</span><span class="mi">1</span><span class="ss">)</span>,<span class="w">        </span><span class="o">--</span><span class="w"> </span><span class="nv">ready</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">pass</span><span class="w"> </span><span class="nv">packets</span><span class="w"></span>
+<span class="w">                </span><span class="nv">down</span><span class="ss">(</span><span class="mi">2</span><span class="ss">)</span>,<span class="w"></span>
+<span class="w">                </span><span class="nv">testing</span><span class="ss">(</span><span class="mi">3</span><span class="ss">)</span>,<span class="w">   </span><span class="o">--</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">some</span><span class="w"> </span><span class="nv">test</span><span class="w"> </span><span class="nv">mode</span><span class="w"></span>
+<span class="w">                </span><span class="nv">unknown</span><span class="ss">(</span><span class="mi">4</span><span class="ss">)</span>,<span class="w">   </span><span class="o">--</span><span class="w"> </span><span class="nv">status</span><span class="w"> </span><span class="nv">can</span><span class="w"> </span><span class="nv">not</span><span class="w"> </span><span class="nv">be</span><span class="w"> </span><span class="nv">determined</span><span class="w"></span>
+<span class="w">                              </span><span class="o">--</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">some</span><span class="w"> </span><span class="nv">reason</span>.<span class="w"></span>
+<span class="w">                </span><span class="nv">dormant</span><span class="ss">(</span><span class="mi">5</span><span class="ss">)</span>,<span class="w"></span>
+<span class="w">                </span><span class="nv">notPresent</span><span class="ss">(</span><span class="mi">6</span><span class="ss">)</span>,<span class="w">    </span><span class="o">--</span><span class="w"> </span><span class="nv">some</span><span class="w"> </span><span class="nv">component</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">missing</span><span class="w"></span>
+<span class="w">                </span><span class="nv">lowerLayerDown</span><span class="ss">(</span><span class="mi">7</span><span class="ss">)</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="nv">down</span><span class="w"> </span><span class="nv">due</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">state</span><span class="w"> </span><span class="nv">of</span><span class="w"></span>
+<span class="w">                                  </span><span class="o">--</span><span class="w"> </span><span class="nv">lower</span><span class="o">-</span><span class="nv">layer</span><span class="w"> </span><span class="nv">interface</span><span class="ss">(</span><span class="nv">s</span><span class="ss">)</span><span class="w"></span>
+<span class="w">            </span>}<span class="w"></span>
+</code></pre></div>
+
+<p><a href="https://www.circitor.fr/Mibs/Mib/I/IF-MIB.mib">source</a></p>
+<p>Here we expect some numeric value, but actually what SNMP Agents gets from the device is a <code>string</code> value,
+like <code>up</code>. To avoid setting textual value as a metrics, SC4SNMP does an additional check and tries to cast the
+numeric value to float. If the check fails, the values is classified as a textual field.</p>
+<p>Let&rsquo;s go through a simple example. We&rsquo;ve just added a device and didn&rsquo;t configure anything special. The data from a walk
+in Splunk&rsquo;s metrics index is:</p>
+<div class="codehilite"><pre><span></span><code>{<span class="w"></span>
+<span class="w">   </span><span class="nv">ifAdminStatus</span>:<span class="w"> </span><span class="nv">up</span><span class="w"></span>
+<span class="w">   </span><span class="nv">ifDescr</span>:<span class="w"> </span><span class="nv">GigabitEthernet1</span><span class="w"></span>
+<span class="w">   </span><span class="nv">ifIndex</span>:<span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">   </span><span class="nv">ifOperStatus</span>:<span class="w"> </span><span class="nv">up</span><span class="w"></span>
+<span class="w">   </span><span class="nv">ifPhysAddress</span>:<span class="w"> </span><span class="mi">0</span><span class="nv">a</span>:<span class="nv">aa</span>:<span class="nv">ef</span>:<span class="mi">53</span>:<span class="mi">67</span>:<span class="mi">15</span><span class="w"></span>
+<span class="w">   </span><span class="nv">ifType</span>:<span class="w"> </span><span class="nv">ethernetCsmacd</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInDiscards</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInErrors</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInOctets</span>:<span class="w"> </span><span class="mi">3873878708</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUcastPkts</span>:<span class="w"> </span><span class="mi">47512921</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUnknownProtos</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifLastChange</span>:<span class="w"> </span><span class="mi">454107556</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifMtu</span>:<span class="w"> </span><span class="mi">1500</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutDiscards</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutErrors</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutOctets</span>:<span class="w"> </span><span class="mi">1738565177</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutUcastPkts</span>:<span class="w"> </span><span class="mi">44295751</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifSpeed</span>:<span class="w"> </span><span class="mi">1000000000</span><span class="w"></span>
+}<span class="w"></span>
+</code></pre></div>
+
+<p>Clearly we can see the textual part:</p>
+<div class="codehilite"><pre><span></span><code>   ifAdminStatus: up
+   ifDescr: GigabitEthernet1
+   ifIndex: 1
+   ifOperStatus: up
+   ifPhysAddress: 0a:aa:ef:53:67:15
+   ifType: ethernetCsmacd
+</code></pre></div>
+
+<p>And a metric one:</p>
+<div class="codehilite"><pre><span></span><code><span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInDiscards</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInErrors</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInOctets</span>:<span class="w"> </span><span class="mi">3873878708</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUcastPkts</span>:<span class="w"> </span><span class="mi">47512921</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUnknownProtos</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifLastChange</span>:<span class="w"> </span><span class="mi">454107556</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifMtu</span>:<span class="w"> </span><span class="mi">1500</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutDiscards</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutErrors</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutOctets</span>:<span class="w"> </span><span class="mi">1738565177</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutUcastPkts</span>:<span class="w"> </span><span class="mi">44295751</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifSpeed</span>:<span class="w"> </span><span class="mi">1000000000</span><span class="w"></span>
+</code></pre></div>
+
+<h2 id="to-which-splunk-index-will-my-data-go">To which Splunk index will my data go?<a class="headerlink" href="#to-which-splunk-index-will-my-data-go" title="Permanent link">&para;</a></h2>
+<h3 id="metric-index">Metric index<a class="headerlink" href="#metric-index" title="Permanent link">&para;</a></h3>
+<p>The rule is, if we poll a profile with AT LEAST one metric value, it will go to the metric index and will be
+enriched with all the textual fields we have for this object. For example, when polling:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">profile_with_one_metric</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"></span>
+<span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOutUcastPkts&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifInUcastPkts&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+</code></pre></div>
+
+<p>The record that we&rsquo;ll see in Splunk <code>| mpreview index=net*</code> for the same case as above would be:</p>
+<div class="codehilite"><pre><span></span><code><span class="w">   </span><span class="nv">ifAdminStatus</span>:<span class="w"> </span><span class="nv">up</span><span class="w"></span>
+<span class="w">   </span><span class="nv">ifDescr</span>:<span class="w"> </span><span class="nv">GigabitEthernet1</span><span class="w"></span>
+<span class="w">   </span><span class="nv">ifIndex</span>:<span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">   </span><span class="nv">ifOperStatus</span>:<span class="w"> </span><span class="nv">up</span><span class="w"></span>
+<span class="w">   </span><span class="nv">ifPhysAddress</span>:<span class="w"> </span><span class="mi">0</span><span class="nv">a</span>:<span class="nv">aa</span>:<span class="nv">ef</span>:<span class="mi">53</span>:<span class="mi">67</span>:<span class="mi">15</span><span class="w"></span>
+<span class="w">   </span><span class="nv">ifType</span>:<span class="w"> </span><span class="nv">ethernetCsmacd</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutUcastPkts</span>:<span class="w"> </span><span class="mi">44295751</span><span class="w"></span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUcastPkts</span>:<span class="w"> </span><span class="mi">47512921</span><span class="w"></span>
+</code></pre></div>
+
+<p>Note, that only fields specified in <code>varBinds</code> are actively polled form the device. In case of <code>profile_with_one_metric</code>
+shown above, the textual fields <code>ifAdminStatus</code>, <code>ifDescr</code>, <code>ifIndex</code>, <code>ifOperStatus</code> and <code>ifPhysAddress</code> are taken from 
+the database cache, which is updated on every <code>walk</code> process. This is fine for the most of the cases, as things like
+MAC address, interface type or interface status shouldn&rsquo;t change frequently if ever.</p>
+<p>If you want to keep <code>ifOperStatus</code> and <code>ifAdminStatus</code> up to date all the time, define profile like:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">profile_with_one_metric</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"></span>
+<span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOutUcastPkts&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifInUcastPkts&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOperStatus&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifAdminStatus&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+</code></pre></div>
+
+<p>The result in Splunk will look the same, but <code>ifOperStatus</code> and <code>ifAdminStatus</code> will be actively polled.</p>
+<h3 id="event-index">Event index<a class="headerlink" href="#event-index" title="Permanent link">&para;</a></h3>
+<p>It is possible to create an event without a single metric value, in such scenario it will go to an event index.
+An example of such profile would be:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">profile_with_only_textual_fields</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"></span>
+<span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifDescr&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifName&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOperStatus&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+</code></pre></div>
+
+<p>In this case no additional enrichment will be done. The events in event index <code>index=netops</code> of Splunk will look like:</p>
+<div class="codehilite"><pre><span></span><code><span class="c">{ </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span><span class="c"></span>
+<span class="c">   IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifDescr: { </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span><span class="c"></span>
+<span class="c">     name: IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifDescr</span>
+<span class="c">     oid: 1</span><span class="nt">.</span><span class="c">3</span><span class="nt">.</span><span class="c">6</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">5</span>
+<span class="c">     time: 1676302789</span><span class="nt">.</span><span class="c">9729967</span>
+<span class="c">     type: f</span>
+<span class="c">     value: VirtualPortGroup0</span>
+<span class="c">   }</span>
+<span class="c">   IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifName: { </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span><span class="c"></span>
+<span class="c">     name: IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifName</span>
+<span class="c">     oid: 1</span><span class="nt">.</span><span class="c">3</span><span class="nt">.</span><span class="c">6</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">31</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">5</span>
+<span class="c">     time: 1676302789</span><span class="nt">.</span><span class="c">6655216</span>
+<span class="c">     type: f</span>
+<span class="c">     value: Vi0</span>
+<span class="c">   }</span>
+<span class="c">   IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifOperStatus: { </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span><span class="c"></span>
+<span class="c">     name: IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifOperStatus</span>
+<span class="c">     oid: 1</span><span class="nt">.</span><span class="c">3</span><span class="nt">.</span><span class="c">6</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">8</span><span class="nt">.</span><span class="c">5</span>
+<span class="c">     time: 1676302789</span><span class="nt">.</span><span class="c">6655502</span>
+<span class="c">     type: g</span>
+<span class="c">     value: up</span>
+<span class="c">   }</span>
+<span class="c">}</span>
+</code></pre></div>
+
+
+
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../step-by-step-poll/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Step by Step polling example" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Step by Step polling example
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../trap-configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Traps" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Traps
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      <p>Webpages built on GitHub Pages | <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">Github Terms</a> | <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement">GitHub Privacy</a></p>
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.9c69f0bc.min.js"></script>
+      
+        <script src="../../javascripts/footer.js"></script>
+      
+    
+  </body>
+</html>
