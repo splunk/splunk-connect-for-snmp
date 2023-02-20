@@ -154,8 +154,16 @@ class TestGetVarbinds(TestCase):
 
     def test_get_varbinds_for_walk_with_profiles(self):
         profiles = {
-            "profile1": {"condition": {"type": "walk"}, "frequency": 20, "varBinds": [["IF-MIB"]]},
-            "profile2": {"condition": {"type": "walk"}, "frequency": 20, "varBinds": [["UDP-MIB"]]},
+            "profile1": {
+                "condition": {"type": "walk"},
+                "frequency": 20,
+                "varBinds": [["IF-MIB"]],
+            },
+            "profile2": {
+                "condition": {"type": "walk"},
+                "frequency": 20,
+                "varBinds": [["UDP-MIB"]],
+            },
         }
 
         poller = Poller.__new__(Poller)
@@ -188,8 +196,16 @@ class TestGetVarbinds(TestCase):
 
     def test_get_varbinds_for_walk_with_profiles_changed_sequence(self):
         profiles = {
-            "profile1": {"condition": {"type": "walk"}, "frequency": 20, "varBinds": [["IF-MIB"]]},
-            "profile2": {"condition": {"type": "walk"}, "frequency": 20, "varBinds": [["UDP-MIB"]]},
+            "profile1": {
+                "condition": {"type": "walk"},
+                "frequency": 20,
+                "varBinds": [["IF-MIB"]],
+            },
+            "profile2": {
+                "condition": {"type": "walk"},
+                "frequency": 20,
+                "varBinds": [["UDP-MIB"]],
+            },
         }
 
         poller = Poller.__new__(Poller)
@@ -409,7 +425,10 @@ class TestGetVarbinds(TestCase):
 
         self.assertEqual(("IF-MIB", "ifDescr", 0), names[0])
         self.assertEqual(("IF-MIB", "ifDescr", 1), names[1])
-        self.assertEqual(("TCP-MIB", "tcpListenerProcess", 0, 443), varbinds_get[2]._ObjectType__args[0]._ObjectIdentity__args)
+        self.assertEqual(
+            ("TCP-MIB", "tcpListenerProcess", 0, 443),
+            varbinds_get[2]._ObjectType__args[0]._ObjectIdentity__args,
+        )
 
         self.assertEqual(
             {
@@ -518,5 +537,3 @@ class TestGetVarbinds(TestCase):
         self.assertEqual({"UDP-MIB:udpOutDatagrams": "profile1"}, bulk_mapping)
 
         poller.load_mibs.assert_called_with(["UDP-MIB"])
-
-

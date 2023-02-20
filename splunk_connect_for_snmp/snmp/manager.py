@@ -392,12 +392,23 @@ class Poller(Task):
             varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
             return set(), {}, varbinds_bulk, {}
 
-        joined_profile_object = self.profiles_collection.get_profiles(profiles, walk)
+        joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
+            profiles, walk
+        )
         mib_families = joined_profile_object.get_mib_families()
-        mib_files_to_load = [mib_family for mib_family in mib_families if mib_family not in self.already_loaded_mibs]
+        mib_files_to_load = [
+            mib_family
+            for mib_family in mib_families
+            if mib_family not in self.already_loaded_mibs
+        ]
         if mib_files_to_load:
             self.load_mibs(mib_files_to_load)
-        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = joined_profile_object.return_mapping_and_varbinds()
+        (
+            varbinds_get,
+            get_mapping,
+            varbinds_bulk,
+            bulk_mapping,
+        ) = joined_profile_object.return_mapping_and_varbinds()
         logger.debug(f"host={address} varbinds_get={varbinds_get}")
         logger.debug(f"host={address} get_mapping={get_mapping}")
         logger.debug(f"host={address} varbinds_bulk={varbinds_bulk}")

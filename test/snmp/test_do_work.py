@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 from splunk_connect_for_snmp.snmp.manager import Poller
+from splunk_connect_for_snmp.snmp.varbinds_resolver import ProfileCollection
 
 inventory_record = InventoryRecord(
     **{
@@ -34,7 +35,9 @@ class TestDoWork(TestCase):
         poller.last_modified = 1609675634
         poller.snmpEngine = None
         poller.profiles_manager = MagicMock()
-
+        poller.profiles_collection = MagicMock()
+        poller.profiles_collection.process_profiles = MagicMock()
+        poller.already_loaded_mibs = {}
         varbinds_bulk, varbinds_get = set(), set()
         get_mapping, bulk_mapping = {}, {}
 
@@ -68,13 +71,16 @@ class TestDoWork(TestCase):
         m_process_data.return_value = (False, [], {})
         poller.process_snmp_data = m_process_data
         requested_profiles = ["profile1", "profile2"]
-        poller.profiles_manager.return_collection.return_value = {
+        poller.profiles = {
             "profile1": {
                 "frequency": 20,
                 "varBinds": [["IF-MIB", "ifDescr"], ["IF-MIB", "ifSpeed"]],
             },
             "profile2": {"frequency": 20, "varBinds": [["UDP-MIB", "udpOutDatagrams"]]},
         }
+        poller.already_loaded_mibs = {}
+        poller.profiles_collection = ProfileCollection(poller.profiles)
+        poller.profiles_collection.process_profiles()
         bulkCmd.return_value = [(None, 0, 0, "Oid1"), (None, 0, 0, "Oid2")]
         poller.do_work(inventory_record, profiles=requested_profiles)
         self.assertEqual(poller.process_snmp_data.call_count, 2)
@@ -101,7 +107,7 @@ class TestDoWork(TestCase):
         poller.process_snmp_data = MagicMock()
         poller.profiles_manager = MagicMock()
         requested_profiles = ["profile1", "profile2"]
-        poller.profiles_manager.return_collection.return_value = {
+        poller.profiles = {
             "profile1": {
                 "frequency": 20,
                 "varBinds": [["IF-MIB", "ifDescr", 1], ["IF-MIB", "ifSpeed", 2]],
@@ -111,6 +117,9 @@ class TestDoWork(TestCase):
                 "varBinds": [["UDP-MIB", "udpOutDatagrams", 1]],
             },
         }
+        poller.already_loaded_mibs = {}
+        poller.profiles_collection = ProfileCollection(poller.profiles)
+        poller.profiles_collection.process_profiles()
         getCmd.return_value = [
             (None, 0, 0, "Oid1"),
             (None, 0, 0, "Oid2"),
@@ -141,9 +150,12 @@ class TestDoWork(TestCase):
         poller.process_snmp_data = MagicMock()
         poller.profiles_manager = MagicMock()
         requested_profiles = ["profile1"]
-        poller.profiles_manager.return_collection.return_value = {
+        poller.profiles = {
             "profile1": {"frequency": 20, "varBinds": [["IF-MIB", "ifDescr", 1]]}
         }
+        poller.already_loaded_mibs = {}
+        poller.profiles_collection = ProfileCollection(poller.profiles)
+        poller.profiles_collection.process_profiles()
         getCmd.return_value = [(True, True, 2, [])]
         with self.assertRaises(SnmpActionError):
             poller.do_work(inventory_record, profiles=requested_profiles)
