@@ -67,7 +67,7 @@ out of this object:
 ```
 
 ### Configure inventory 
-To update inventory, see: [Update Inventory and Profile](#update-inventory-and-profile).
+To update inventory, see: [Update Inventory and Profile](#update-inventory).
 
 `inventory` section in `poller` has the following fields to configure:
 

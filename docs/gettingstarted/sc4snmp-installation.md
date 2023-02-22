@@ -36,11 +36,11 @@ microk8s helm3 show values splunk-connect-for-snmp/splunk-connect-for-snmp
 or view them directly on GitHub: [values.yaml](https://github.com/splunk/splunk-connect-for-snmp/blob/main/charts/splunk-connect-for-snmp/values.yaml).
 
 To successfully run SC4SNMP you need to at least configure `splunk` or/and `sim` section - depending on where you want 
-to send the data and traps or polling sections that are described here: [basic values.yaml template](https://github.com/splunk/splunk-connect-for-snmp/tree/main/examples/basic_template.md),
+to send the data and traps or polling sections that are described here: [basic values.yaml template][basic_template_link],
 
-Here you can find the examples of the certain use-cases: [EXAMPLES](https://github.com/splunk/splunk-connect-for-snmp/tree/main/examples).
+Here you can find the examples of the certain use-cases: [EXAMPLES][examples_link].
 
-To explore all the possible configuration parameters check [configuration section](../configuration).
+To explore all the possible configuration parameters check [configuration section](../configuration/deployment-configuration.md).
 
 ### Install SC4SNMP
 After you create `values.yaml` of your choice, you can proceed with the SC4SNMP installation:
@@ -143,3 +143,6 @@ index="netops" sourcetype="sc4snmp:event"
 ``` bash
 | mpreview index="netmetrics" | search sourcetype="sc4snmp:metric"
 ```
+
+[examples_link]: https://github.com/splunk/splunk-connect-for-snmp/tree/main/examples
+[basic_template_link]: https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.md

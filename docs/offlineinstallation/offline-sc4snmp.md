@@ -67,105 +67,7 @@ image:
   pullPolicy: "Never"
 ```
 
-Example `values.yaml` file:
-```yaml
-splunk:
-  enabled: true
-  protocol: https
-  host: ###SPLUNK_HOST###
-  token: ###SPLUNK_TOKEN###
-  insecureSSL: "false"
-  port: "###SPLUNK_PORT###"
-image:
-  tag: ###TAG###
-  pullPolicy: "Never"
-traps:
-  communities:
-    2c:
-      - public
-      - homelab
-  #usernameSecrets:
-  #  - sc4snmp-hlab-sha-aes
-  #  - sc4snmp-hlab-sha-des
-
-  #loadBalancerIP: The IP address in the metallb pool
-  loadBalancerIP: ###X.X.X.X###
-worker:
-  # There are 3 types of workers 
-  trap:
-    # replicaCount: number of trap-worker pods which consumes trap tasks
-    replicaCount: 2
-    #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
-    #autoscaling:
-    #  enabled: true
-    #  minReplicas: 2
-    #  maxReplicas: 40
-    #  targetCPUUtilizationPercentage: 80
-  poller:
-    # replicaCount: number of poller-worker pods which consumes polling tasks
-    replicaCount: 2
-    #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
-    #autoscaling:
-    #  enabled: true
-    #  minReplicas: 2
-    #  maxReplicas: 40
-    #  targetCPUUtilizationPercentage: 80
-  sender:
-    # replicaCount: number of sender-worker pods which consumes sending tasks
-    replicaCount: 1
-    # autoscaling: use it instead of replicaCount in order to make pods scalable by itself
-    #autoscaling:
-    #  enabled: true
-    #  minReplicas: 2
-    #  maxReplicas: 40
-    #  targetCPUUtilizationPercentage: 80
-  # udpConnectionTimeout: timeout in seconds for SNMP operations
-  #udpConnectionTimeout: 5
-  logLevel: "INFO"
-scheduler:
-  logLevel: "INFO"
-#  profiles: |
-#    generic_switch:
-#      frequency: 300
-#      varBinds:
-#        - ['SNMPv2-MIB', 'sysDescr']
-#        - ['SNMPv2-MIB', 'sysName', 0]
-#        - ['TCP-MIB', 'tcpActiveOpens']
-#        - ['TCP-MIB', 'tcpAttemptFails']
-#        - ['IF-MIB']
-poller:
- # usernameSecrets:
- #   - sc4snmp-hlab-sha-aes
- #   - sc4snmp-hlab-sha-des
- # inventory: |
- #   address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
- #   10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,1800,,,
- #   10.0.0.199,,2c,public,,,3000,,,True
- #   10.0.0.100,,3,,sc4snmp-hlab-sha-des,,1800,,,
-sim:
-  # sim must be enabled if you want to use signalFx
-  enabled: false
-  image:
-    pullPolicy: "Never"
-#  signalfxToken: BCwaJ_Ands4Xh7Nrg
-#  signalfxRealm: us0
-mongodb:
-  image:
-    pullPolicy: "Never"
-  pdb:
-    create: true
-  persistence:
-    storageClass: "microk8s-hostpath"
-  volumePermissions:
-    enabled: true
-redis:
-  image:
-    pullPolicy: "Never"
-```
-
-Fill `###` variables according to the description from [online installation](../gettingstarted/sc4snmp-installation.md#configure-splunk-enterprise-or-splunk-cloud-connection).
-
-Additionally, fill `###TAG###` with the same tag you used before to `docker pull` an SC4SNMP image.
+Example `values.yaml` file can be found [here][offline_doc_link].
 
 The next step is to unpack the chart package `splunk-connect-for-snmp-chart.tar`. It will result in creating the `splunk-connect-for-snmp` directory:
 
@@ -178,3 +80,5 @@ Finally, run the helm install command in the directory where both the `values.ya
 ```bash
 microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
+
+[offline_doc_link]: https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/offline_installation_values.md
