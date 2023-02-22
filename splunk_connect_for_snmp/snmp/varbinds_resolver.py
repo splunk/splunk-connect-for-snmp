@@ -17,8 +17,14 @@ class Varbind:
         self.object_identity = ObjectType(ObjectIdentity(*varbind_list))
 
     def mapping_key(self):
-        string_list_of_varbinds = [str(varbind) for varbind in self.list]
-        return ":".join(string_list_of_varbinds)
+        if len(self.list) == 1:
+            return self.list[0]
+        elif len(self.list) == 2:
+            return f"{self.list[0]}::{self.list[1]}"
+        else:
+            mib_prefix = f"{self.list[0]}::{self.list[1]}"
+            mib_index = ".".join(str(varbind) for varbind in self.list[2:])
+            return f"{mib_prefix}.{mib_index}"
 
     def __repr__(self):
         return f"{self.list}"
@@ -149,7 +155,6 @@ class Profile:
     def __init__(self, name, profile_dict):
         self.name = name
         self.type = profile_dict.get("condition", {}).get("type")
-        self.frequency = profile_dict.get("frequency", None)
         self.varbinds = profile_dict.get("varBinds", None)
         self.varbinds_bulk = VarBindContainer()
         self.varbinds_get = VarBindContainer()

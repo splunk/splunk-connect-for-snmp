@@ -23,11 +23,11 @@ class TestVarbind(unittest.TestCase):
 
     def test_mapping_key(self):
         varbind = Varbind(["SNMPv2-MIB", "sysDescr", "0"])
-        self.assertEqual(varbind.mapping_key(), "SNMPv2-MIB:sysDescr:0")
+        self.assertEqual(varbind.mapping_key(), "SNMPv2-MIB::sysDescr.0")
 
     def test_mapping_key_multiple(self):
         varbind = Varbind(["TCP-MIB", "tcpListenerProcess", 0, 443])
-        self.assertEqual(varbind.mapping_key(), "TCP-MIB:tcpListenerProcess:0:443")
+        self.assertEqual(varbind.mapping_key(), "TCP-MIB::tcpListenerProcess.0.443")
 
     def test_repr(self):
         varbind = Varbind(["SNMPv2-MIB", "sysDescr", "0"])
@@ -65,7 +65,7 @@ class TestVarBindContainer(unittest.TestCase):
         self.assertIn(varbind1.mapping_key(), varbind_keys)
         self.assertIn(varbind2.mapping_key(), varbind_keys)
         self.assertCountEqual(
-            varbind_keys, ["IF-MIB:ifInOctets:1", "IP-MIB:ipInReceives"]
+            varbind_keys, ["IF-MIB::ifInOctets.1", "IP-MIB::ipInReceives"]
         )
 
     def test_return_varbind_values(self):
@@ -100,7 +100,7 @@ class TestVarBindContainer(unittest.TestCase):
         self.assertIn(varbind2.mapping_key(), profile_mapping)
         self.assertEqual(len(profile_mapping), 2)
         self.assertEqual(
-            {"IF-MIB:ifInOctets:1": "profile1", "IP-MIB:ipInReceives": "profile1"},
+            {"IF-MIB::ifInOctets.1": "profile1", "IP-MIB::ipInReceives": "profile1"},
             profile_mapping,
         )
 
@@ -144,7 +144,7 @@ class TestProfile(unittest.TestCase):
         profile.varbinds = [varbind]
         profile.divide_on_bulk_and_get()
         expected_result = {
-            "IF-MIB:ifOutOctets:1": Varbind(["IF-MIB", "ifOutOctets", 1])
+            "IF-MIB::ifOutOctets.1": Varbind(["IF-MIB", "ifOutOctets", 1])
         }
         self.assertEqual(str(expected_result), str(profile.varbinds_get.map))
 
@@ -159,8 +159,8 @@ class TestProfile(unittest.TestCase):
         profile.varbinds = varbinds
         profile.divide_on_bulk_and_get()
         expected_result_get = {
-            "IF-MIB:ifOutOctets:1": Varbind(["IF-MIB", "ifOutOctets", 1]),
-            "TCP-MIB:tcpField:0:1": Varbind(["TCP-MIB", "tcpField", 0, 1]),
+            "IF-MIB::ifOutOctets.1": Varbind(["IF-MIB", "ifOutOctets", 1]),
+            "TCP-MIB::tcpField.0.1": Varbind(["TCP-MIB", "tcpField", 0, 1]),
         }
         expected_result_bulk = {"IP-MIB": Varbind(["IP-MIB"])}
         self.assertEqual(str(expected_result_get), str(profile.varbinds_get.map))
