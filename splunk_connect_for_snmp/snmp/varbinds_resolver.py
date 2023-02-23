@@ -124,11 +124,12 @@ class VarBindContainer:
         :param varbind:
         :return:
         """
-        varbind_root, varbind_field = varbind.split(":")[:2]
+        varbind_root, varbind_field = varbind.split("::")
+        varbind_field = varbind_field.split(".")[0]
         current_varbinds = self.return_varbind_keys()
         return (
             varbind_root in current_varbinds
-            or f"{varbind_root}:{varbind_field}" in current_varbinds
+            or f"{varbind_root}::{varbind_field}" in current_varbinds
         )
 
     def __repr__(self):

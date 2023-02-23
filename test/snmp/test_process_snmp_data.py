@@ -285,7 +285,7 @@ class TestProcessSnmpData(TestCase):
             (var_bind_mock2_1, var_bind_mock2_2),
         ]
         metrics = {}
-        mapping = {"IF-MIB:some_metric": "profile1", "UDP-MIB:next_metric": "profile2"}
+        mapping = {"IF-MIB::some_metric": "profile1", "UDP-MIB::next_metric": "profile2"}
 
         poller.process_snmp_data(varBindTable, metrics, "some_target", mapping)
 

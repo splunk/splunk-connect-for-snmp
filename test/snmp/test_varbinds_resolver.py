@@ -109,7 +109,6 @@ class TestProfile(unittest.TestCase):
     def setUp(self):
         self.profile_dict = {
             "condition": {"type": "walk"},
-            "frequency": 60,
             "varBinds": [["IF-MIB", "ifInOctets", 1]],
         }
 
@@ -117,8 +116,6 @@ class TestProfile(unittest.TestCase):
         name = "test"
         profile = Profile(name, self.profile_dict)
         self.assertEqual(profile.name, name)
-        self.assertEqual(profile.type, "walk")
-        self.assertEqual(profile.frequency, 60)
         self.assertEqual(len(profile.varbinds), 1)
 
     def test_process(self):

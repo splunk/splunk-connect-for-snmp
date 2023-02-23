@@ -317,9 +317,9 @@ class TestGetVarbinds(TestCase):
 
         self.assertEqual(
             {
-                "IF-MIB:ifDescr": "profile1",
-                "IF-MIB:ifSpeed": "profile1",
-                "UDP-MIB:udpOutDatagrams": "profile2",
+                "IF-MIB::ifDescr": "profile1",
+                "IF-MIB::ifSpeed": "profile1",
+                "UDP-MIB::udpOutDatagrams": "profile2",
             },
             bulk_mapping,
         )
@@ -373,9 +373,9 @@ class TestGetVarbinds(TestCase):
 
         self.assertEqual(
             {
-                "IF-MIB:ifDescr:0": "profile1",
-                "IF-MIB:ifDescr:1": "profile1",
-                "UDP-MIB:udpOutDatagrams:1": "profile2",
+                "IF-MIB::ifDescr.0": "profile1",
+                "IF-MIB::ifDescr.1": "profile1",
+                "UDP-MIB::udpOutDatagrams.1": "profile2",
             },
             get_mapping,
         )
@@ -432,9 +432,9 @@ class TestGetVarbinds(TestCase):
 
         self.assertEqual(
             {
-                "IF-MIB:ifDescr:0": "profile1",
-                "IF-MIB:ifDescr:1": "profile1",
-                "TCP-MIB:tcpListenerProcess:0:443": "profile2",
+                "IF-MIB::ifDescr.0": "profile1",
+                "IF-MIB::ifDescr.1": "profile1",
+                "TCP-MIB::tcpListenerProcess.0.443": "profile2",
             },
             get_mapping,
         )
@@ -534,6 +534,6 @@ class TestGetVarbinds(TestCase):
 
         self.assertEqual(("UDP-MIB", "udpOutDatagrams"), names[0])
 
-        self.assertEqual({"UDP-MIB:udpOutDatagrams": "profile1"}, bulk_mapping)
+        self.assertEqual({"UDP-MIB::udpOutDatagrams": "profile1"}, bulk_mapping)
 
         poller.load_mibs.assert_called_with(["UDP-MIB"])
