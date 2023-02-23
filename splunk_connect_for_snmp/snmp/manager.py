@@ -450,7 +450,7 @@ class Poller(Task):
                     profile = None
                     if mapping:
                         profile = mapping.get(
-                            id.replace('"', ''),
+                            id.replace('"', ""),
                             mapping.get(f"{mib}::{metric}", mapping.get(mib)),
                         )
                     if metric_value == "No more variables left in this MIB View":
