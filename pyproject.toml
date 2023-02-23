@@ -43,7 +43,7 @@ mongolock = "^1.3.4"
 pika = "^1.2.0"
 JSON-log-formatter ="^0.5.1"
 "ruamel.yaml" = "^0.17.21"
-mkdocs-video = "^1.3.0"
+mkdocs-video = "^1.4.0"
 pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", rev = "main"}
 
 [tool.poetry.group.dev.dependencies]
