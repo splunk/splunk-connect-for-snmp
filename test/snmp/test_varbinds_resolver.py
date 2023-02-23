@@ -127,9 +127,9 @@ class TestProfile(unittest.TestCase):
         profile = Profile("test", profile_dict)
         profile.process()
         expected_get_varbinds = VarBindContainer()
-        expected_get_varbinds.insert_varbind(Varbind(["IF-MIB", "ifOutOctets", 1]))
         expected_bulk_varbinds = VarBindContainer()
         expected_bulk_varbinds.insert_varbind(Varbind(["SNMPv2-MIB"]))
+        expected_bulk_varbinds.insert_varbind(Varbind(["IF-MIB"]))
         self.assertEqual(
             str(expected_bulk_varbinds.map), str(profile.varbinds_bulk.map)
         )

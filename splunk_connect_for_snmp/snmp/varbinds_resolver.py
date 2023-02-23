@@ -166,17 +166,14 @@ class Profile:
         if self.type == "walk":
             varbind_obj = Varbind(["SNMPv2-MIB"])
             self.varbinds_bulk.insert_varbind(varbind_obj)
+            varbind_obj = Varbind(["IF-MIB"])
+            self.varbinds_bulk.insert_varbind(varbind_obj)
         self.divide_on_bulk_and_get()
         if self.type != "walk":
             self.varbinds_bulk_mapping = self.varbinds_bulk.get_profile_mapping(
                 self.name
             )
             self.varbinds_get_mapping = self.varbinds_get.get_profile_mapping(self.name)
-        else:
-            mib_families = self.get_mib_families()
-            if "IF-MIB" not in mib_families:
-                varbind_obj = Varbind(["IF-MIB"])
-                self.varbinds_bulk.insert_varbind(varbind_obj)
 
     def divide_on_bulk_and_get(self):
         for varbind in sorted(self.varbinds, key=len):
@@ -263,7 +260,7 @@ class ProfileCollection:
             profile = self.list_of_profiles.get(profile_name)
             if not profile.varbinds and profile.type != "walk":
                 logger.warning(
-                    f"or varBinds section not present inside the profile {profile_name}"
+                    f"VarBinds section not present inside the profile {profile_name}"
                 )
                 return {}
             return self.list_of_profiles.get(profile_name)

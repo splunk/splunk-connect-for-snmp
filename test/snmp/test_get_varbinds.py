@@ -49,7 +49,7 @@ class TestGetVarbinds(TestCase):
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
             "192.168.0.1", walk=True, profiles=["test1"]
         )
-        self.assertEqual(1, len(varbinds_get))
+        self.assertEqual(0, len(varbinds_get))
         self.assertEqual(3, len(varbinds_bulk))
         self.assertEqual(0, len(get_mapping))
         self.assertEqual(0, len(bulk_mapping))
