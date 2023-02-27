@@ -37,9 +37,11 @@ jobs:
 
       - name: Upload Docs
         run: |
+          sudo apt update
+          sudo apt install gnome-keyring
           BRANCH=$(echo $GITHUB_REF | cut -d / -f 3)
           echo $BRANCH
-          pip3 install poetry=="1.1.15"
+          pip3 install poetry=="1.2.2"
           poetry install
           poetry run pip install 'setuptools==65.6.3'
           poetry run mike deploy -p $BRANCH
