@@ -3,7 +3,7 @@
 Profiles are the units where you can configure what you want to poll, and then assign them to the device. The definition of profile can be found in the `values.yaml` file
 under the `scheduler` section.
 
-Here are the instructions on how to use profiles: [Update Inventory and Profile](../deployment-configuration/#update-inventory-and-profile). 
+Here are the instructions on how to use profiles: [Update Inventory and Profile](../poller-configuration/#update-inventory). 
 
 There are two types of profiles in general:
 

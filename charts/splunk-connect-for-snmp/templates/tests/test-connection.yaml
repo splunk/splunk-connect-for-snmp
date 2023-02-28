@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: "{{ include "splunk-connect-for-snmp.traps.fullname" . }}-test-connection"
   labels:
-    {{- include "splunk-connect-for-snmp.traps.labels" . | nindent 4 }}
+    {{- include "splunk-connect-for-snmp.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test
     "kube-score/ignore": "pod-probes,pod-networkpolicy"

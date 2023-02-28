@@ -1,0 +1,45 @@
+splunk:
+  # splunk integration is enabled by default, so in order to use only o11y, you need to disable splunk
+  # alternatively, use both of them at once
+  enabled: false
+sim:
+  enabled: true
+  signalfxToken: xxxxxx
+  signalfxRealm: us0
+scheduler:
+  profiles: |
+    small_walk:
+      condition:
+        type: walk
+      varBinds:
+        - ['TCP-MIB']
+        - ['IF-MIB']
+        - ['IP-MIB']
+    IF_profile:
+      frequency: 600
+      varBinds:
+        - [ 'IF-MIB', 'ifDescr' ]
+        - [ 'IF-MIB', 'ifAdminStatus' ]
+        - [ 'IF-MIB', 'ifName' ]
+        - [ 'IF-MIB','ifAlias' ]
+        - [ 'IF-MIB', 'ifInDiscards' ]
+        - [ 'IF-MIB', 'ifInErrors' ]
+        - [ 'IF-MIB', 'ifInNUcastPkts' ]
+        - [ 'IF-MIB', 'ifInOctets' ]
+        - [ 'IF-MIB', 'ifInUcastPkts' ]
+        - [ 'IF-MIB', 'ifInUnknownProtos' ]
+        - [ 'IF-MIB', 'ifOutDiscards' ]
+        - [ 'IF-MIB', 'ifOutErrors' ]
+        - [ 'IF-MIB', 'ifOutNUcastPkts' ]
+        - [ 'IF-MIB', 'ifOutOctets' ]
+        - [ 'IF-MIB', 'ifOutQLen' ]
+        - [ 'IF-MIB', 'ifOutUcastPkts' ]
+    ICMP_profile:
+      frequency: 500
+      varBinds:
+        - ['IP-MIB', 'icmp']
+poller:
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+    54.82.4.248,,2c,public,,,4000,small_walk;IF_profile;ICMP_profile,,
+    54.82.4.249,,2c,public,,,1800,small_walk;IF_profile,,

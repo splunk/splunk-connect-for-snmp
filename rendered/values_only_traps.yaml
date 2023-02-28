@@ -1,0 +1,14 @@
+splunk:
+  enabled: true
+  protocol: https
+  host: 10.202.18.152
+  token: 00000000-0000-0000-0000-000000000000
+  insecureSSL: "true"
+  port: "8088"
+traps:
+  communities:
+    2c:
+      - public
+      - homelab
+  #loadBalancerIP: The IP address in the metallb pool
+  loadBalancerIP: 10.202.6.213

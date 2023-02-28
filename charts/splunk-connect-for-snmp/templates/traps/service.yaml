@@ -1,3 +1,4 @@
+{{- if eq (include "splunk-connect-for-snmp.traps.enable" .) "true" }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -31,3 +32,4 @@ spec:
       name: snmp-udp
   selector:
     {{- include "splunk-connect-for-snmp.traps.selectorLabels" . | nindent 4 }}
+{{- end -}}

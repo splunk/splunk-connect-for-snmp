@@ -1,3 +1,4 @@
+{{- if eq (include "splunk-connect-for-snmp.polling.enable" .) "true" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,3 +12,4 @@ data:
 {{ else }}
     address,port,version,community,secret,securityEngine,walk_interval,profiles,SmartProfiles,delete
 {{- end }}
+{{- end -}}

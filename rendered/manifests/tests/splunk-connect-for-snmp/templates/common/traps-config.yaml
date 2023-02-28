@@ -5,10 +5,10 @@ kind: ConfigMap
 metadata:
   name: splunk-connect-for-snmp-traps
   labels:
-    helm.sh/chart: splunk-connect-for-snmp-1.8.5
     app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
     app.kubernetes.io/instance: release-name
-    app.kubernetes.io/version: "1.8.5"
+    helm.sh/chart: splunk-connect-for-snmp-1.8.6
+    app.kubernetes.io/version: "1.8.6"
     app.kubernetes.io/managed-by: Helm
 data:
   config.yaml: |-

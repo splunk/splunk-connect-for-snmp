@@ -5,10 +5,10 @@ kind: Job
 metadata:
   name: release-name-splunk-connect-for-snmp-inventory
   labels:
-    helm.sh/chart: splunk-connect-for-snmp-1.8.5
     app.kubernetes.io/name: splunk-connect-for-snmp-inventory
     app.kubernetes.io/instance: release-name
-    app.kubernetes.io/version: "1.8.5"
+    helm.sh/chart: splunk-connect-for-snmp-1.8.6
+    app.kubernetes.io/version: "1.8.6"
     app.kubernetes.io/managed-by: Helm
 spec:
   ttlSecondsAfterFinished: 300
@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: splunk-connect-for-snmp-inventory
-          image: "ghcr.io/splunk/splunk-connect-for-snmp/container:1.8.5"
+          image: "ghcr.io/splunk/splunk-connect-for-snmp/container:1.8.6"
           imagePullPolicy: Always
           args:
               ["inventory"]
