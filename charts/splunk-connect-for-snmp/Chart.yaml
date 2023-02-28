@@ -31,6 +31,9 @@ dependencies:
   - name: mibserver
     version: ~1.15
     repository: https://pysnmp.github.io/mibs/charts/
+  - name: rabbitmq
+    version: ~11.9
+    repository: https://charts.bitnami.com/bitnami
 #    condition: (optional) A yaml path that resolves to a boolean, used for enabling/disabling charts (e.g. subchart1.enabled )
 #    tags: # (optional)
 #      - Tags can be used to group charts for enabling/disabling together

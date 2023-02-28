@@ -37,7 +37,7 @@ redbeat_lock_key = None
 
 # Optimization for long running tasks
 # https://docs.celeryproject.org/en/stable/userguide/optimizing.html#reserve-one-task-at-a-time
-task_acks_late = True
+task_acks_late = False
 worker_prefetch_multiplier = PREFETCH_COUNT
 task_acks_on_failure_or_timeout = True
 task_reject_on_worker_lost = True

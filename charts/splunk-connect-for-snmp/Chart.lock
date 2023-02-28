@@ -8,5 +8,8 @@ dependencies:
 - name: mibserver
   repository: https://pysnmp.github.io/mibs/charts/
   version: 1.15.1
-digest: sha256:9e01a49851f1ea1ba6b1c75785ac2b9a03ab5142588ef8a071f694d904c0c1f1
-generated: "2023-02-09T15:52:42.216766+01:00"
+- name: rabbitmq
+  repository: https://charts.bitnami.com/bitnami
+  version: 11.9.3
+digest: sha256:9a296c35b7f36e7d7e7ef632cb26c7495743201bcbf77f0aac0978ed9ff0f0f2
+generated: "2023-02-28T13:19:34.012978+01:00"
