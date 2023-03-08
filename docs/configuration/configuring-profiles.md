@@ -215,6 +215,63 @@ scheduler:
 NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 1 minute for changes to propagate. In case you changed frequency, or a profile type, the change will be reflected only after the next walk.
 There is also 5 minute TTL for an inventory pod. Basically, SC4SNMP allows one inventory upgrade and then block updates for the next 5 minutes.
 
+## Conditional profiles
+There is a way to not explicitly give what SNMP objects we want to poll - only the conditions that must be fulfilled to
+qualify object for polling.
+
+The example of a conditional profile is:
+
+```yaml
+IF_conditional_profile:
+  frequency: 30
+  conditions:
+    - field: IF-MIB.ifAdminStatus
+      operation: "equals" 
+      value: "up"
+    - field: IF-MIB.ifOperStatus
+      operation: "equals"
+      value: "up"
+  varBinds:
+    - [ 'IF-MIB', 'ifDescr' ]
+    - [ 'IF-MIB', 'ifAlias' ]
+    - [ 'IF-MIB', 'ifInErrors' ]
+    - [ 'IF-MIB', 'ifOutDiscards' ]
+```
+
+When such profile is defined and added to a device in an inventory, it will poll all interfaces where `ifAdminStatus`
+and `ifOperStatus` are up. Note that conditional profiles are being evaluated during the walk process (on every `walk_interval`)
+and if the status changes in between, the scope of the conditional profile won't be modified.
+
+These are operations possible to use in conditional profiles:
+
+1. `equals` - value gathered from `field` is equal to `value`
+2. `gt` - value gathered from `field` is bigger than `value` (works only for numeric values)
+3. `lt` - value gathered from `field` is smaller than `value` (works only for numeric values)
+4. `in` - value gathered from `field` is equal to one of the element provided in `value`, for ex.:
+
+```yaml
+conditions:
+  - field: IF-MIB.ifAdminStatus
+    operation: "in"
+    value: 
+      - "down"
+      - 0
+```
+
+`field` part of `conditions` must fulfill the pattern `MIB-family.field`. Fields must represent textual value (not metric one),
+you can learn more about it [here](snmp-data-format.md).
+
+You have to explicitly define `varBinds` (not only the MIB family, but also the field to poll), so such config:
+
+```yaml
+varBinds:
+- [ 'IF-MIB' ]
+```
+
+is not correct.
+
+
+
 ## Custom translations
 If the user wants to use custom names/translations of MIB names, it can be configured under the customTranslations section under scheduler config.
 Translations are grouped by MIB family. In the example below IF-MIB.ifInDiscards will be translated to IF-MIB.myCustomName1:

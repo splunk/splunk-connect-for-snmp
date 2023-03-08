@@ -50,6 +50,10 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
 
 
+class BadlyFormattedFieldError(Exception):
+    pass
+
+
 class InventoryTask(Task):
     def __init__(self):
         self.mongo_client = pymongo.MongoClient(MONGO_URI)
@@ -77,8 +81,28 @@ def inventory_setup_poller(self, work):
         {"address": address},
         {"target": True, "state": True, "config": True},
     )
-    assigned_profiles = assign_profiles(ir, self.profiles, target)
 
+    assigned_profiles, computed_conditional_profiles = assign_profiles(
+        ir, self.profiles, target
+    )
+    for profile in computed_conditional_profiles:
+        conditional_profile_name = list(profile.keys())[0]
+        mongo_profile_tag = f"{list(profile.keys())[0]}__{address.replace('.', '|')}"
+        profile_body = list(profile.values())[0]
+        try:
+            new_profile = generate_conditional_profile(
+                mongo_db, mongo_profile_tag, profile_body, address
+            )
+        except Exception as e:
+            logger.warning(f"Profile {conditional_profile_name} for {address} couldn't be processed: {e}")
+            continue
+        mongo_db.profiles.replace_one(
+            {mongo_profile_tag: {"$exists": True}}, new_profile, upsert=True
+        )
+        add_profile_to_assigned_list(
+            assigned_profiles, profile_body["frequency"], mongo_profile_tag
+        )
+    logger.debug(f"Profiles Assigned for host {address}: {assigned_profiles}")
     active_schedules: list[str] = []
     for period in assigned_profiles:
         task_config = generate_poll_task_definition(
@@ -87,7 +111,6 @@ def inventory_setup_poller(self, work):
         periodic_obj.manage_task(**task_config)
 
     periodic_obj.delete_unused_poll_tasks(f"{address}", active_schedules)
-    # periodic_obj.delete_disabled_poll_tasks()
 
 
 def generate_poll_task_definition(
@@ -106,9 +129,18 @@ def generate_poll_task_definition(
     return task_config
 
 
+def add_profile_to_assigned_list(
+    assigned_profiles: dict[int, list[str]], frequency: int, profile_name: str
+):
+    if frequency not in assigned_profiles:
+        assigned_profiles[frequency] = []
+    assigned_profiles[frequency].append(profile_name)
+
+
 def assign_profiles(ir, profiles, target):
     assigned_profiles: dict[int, list[str]] = {}
     address = transform_address_to_key(ir.address, ir.port)
+    computed_profiles = []
     if ir.smart_profiles:
         for profile_name, profile in profiles.items():
 
@@ -118,9 +150,9 @@ def assign_profiles(ir, profiles, target):
             # skip this profile it is static
             if profile["condition"]["type"] == "base":
                 logger.debug(f"Adding base profile {profile_name}")
-                if profile["frequency"] not in assigned_profiles:
-                    assigned_profiles[profile["frequency"]] = []
-                assigned_profiles[profile["frequency"]].append(profile_name)
+                add_profile_to_assigned_list(
+                    assigned_profiles, profile["frequency"], profile_name
+                )
 
             elif profile["condition"]["type"] == "field":
                 logger.debug(f"profile is a field condition {profile_name}")
@@ -137,10 +169,10 @@ def assign_profiles(ir, profiles, target):
                                 result = re.search(pattern, cs["value"])
                                 if result:
                                     logger.debug(f"Adding smart profile {profile_name}")
-                                    if profile["frequency"] not in assigned_profiles:
-                                        assigned_profiles[profile["frequency"]] = []
-                                    assigned_profiles[profile["frequency"]].append(
-                                        profile_name
+                                    add_profile_to_assigned_list(
+                                        assigned_profiles,
+                                        profile["frequency"],
+                                        profile_name,
                                     )
                                     continue
 
@@ -158,12 +190,15 @@ def assign_profiles(ir, profiles, target):
                 logger.warning(
                     f"profile {profile_name} is a smart profile, it does not need to be configured as a static one"
                 )
+            elif "conditions" in profile:
+                computed_profiles.append({profile_name: profile})
+                continue
             if "frequency" not in profile:
                 logger.warning(f"profile {profile_name} does not have frequency")
                 continue
-            if profile["frequency"] not in assigned_profiles:
-                assigned_profiles[profile["frequency"]] = []
-            assigned_profiles[profile["frequency"]].append(profile_name)
+            add_profile_to_assigned_list(
+                assigned_profiles, profile["frequency"], profile_name
+            )
         else:
             logger.warning(
                 f"profile {profile_name} was assigned for the host: {address}, no such profile in the config"
@@ -175,12 +210,11 @@ def assign_profiles(ir, profiles, target):
         if profile.get("condition", {}).get("type") == "mandatory"
     ]
     for m_profile_name, m_profile_frequency in mandatory_profiles:
-        if m_profile_frequency not in assigned_profiles:
-            assigned_profiles[m_profile_frequency] = []
-        assigned_profiles[m_profile_frequency].append(m_profile_name)
+        add_profile_to_assigned_list(
+            assigned_profiles, m_profile_frequency, m_profile_name
+        )
 
-    logger.debug(f"Profiles Assigned for host {address}: {assigned_profiles}")
-    return assigned_profiles
+    return assigned_profiles, computed_profiles
 
 
 def is_smart_profile_valid(profile_name, profile):
@@ -222,3 +256,93 @@ def is_smart_profile_valid(profile_name, profile):
         logger.warning(f"Patterns for profile {profile_name} must be a list")
         return False
     return True
+
+
+def filter_condition_on_database(mongo_client, address: str, conditions: list):
+    attributes = mongo_client.attributes
+    query = create_query(conditions, address)
+    result = attributes.find(
+        query, {"address": 1, "group_key_hash": 1, "_id": 0, "indexes": 1}
+    )
+    return list(result)
+
+
+def create_profile(profile_name, frequency, varBinds, records):
+    # Connecting general fields from varBinds with filtered object indexes
+    # like ["IF-MIB", "ifDescr"] + [1] = ["IF-MIB", "ifDescr", 1]
+    varbind_list = [
+        varbind + record["indexes"] for record in records for varbind in varBinds if len(varbind) == 2
+    ]
+    profile = {profile_name: {"frequency": frequency, "varBinds": varbind_list}}
+    return profile
+
+
+def create_query(conditions: typing.List[dict], address: str) -> dict:
+
+    conditional_profiles_mapping = {
+        "equals": "$eq",
+        "gt": "$gt",
+        "lt": "$lt",
+        "in": "$in",
+    }
+
+    def _parse_mib_component(field: str) -> str:
+        mib_component = field.split("|")
+        if len(mib_component) < 2:
+            raise BadlyFormattedFieldError(f"Field {field} is badly formatted")
+        return mib_component[0]
+
+    def _convert_to_float(value: typing.Any, ignore_error=False) -> typing.Any:
+        try:
+            return float(value)
+        except ValueError:
+            if ignore_error:
+                return value
+            else:
+                raise BadlyFormattedFieldError(f"Value '{value}' should be numeric")
+
+    def _get_value_for_operation(operation: str, value: str) -> typing.Any:
+        if operation in ["lt", "gt"]:
+            return _convert_to_float(value)
+        elif operation == "in":
+            return [_convert_to_float(v, True) for v in value]
+        return value
+
+    filters = []
+    field = ""
+    for condition in conditions:
+        field = condition["field"]
+        # fields in databases are written in convention "IF-MIB|ifInOctets"
+        field = field.replace(".", "|")
+        value = condition["value"]
+        operation = condition["operation"].lower()
+        value_for_querying = _get_value_for_operation(operation, value)
+        mongo_operation = conditional_profiles_mapping.get(operation)
+        filters.append({f"fields.{field}.value": {mongo_operation: value_for_querying}})
+    mib_component = _parse_mib_component(field)
+    return {
+        "$and": [
+            {"address": address},
+            {"group_key_hash": {"$regex": f"^{mib_component}"}},
+            *filters,
+        ]
+    }
+
+
+def generate_conditional_profile(
+    mongo_client, profile_name, conditional_profile_body, address
+):
+    profile_conditions = conditional_profile_body.get("conditions")
+    profile_varbinds = conditional_profile_body.get("varBinds")
+    profile_frequency = conditional_profile_body.get("frequency")
+    if not profile_varbinds:
+        raise BadlyFormattedFieldError(
+            f"No varBinds provided in the profile"
+        )
+    filtered_snmp_objects = filter_condition_on_database(
+        mongo_client, address, profile_conditions
+    )
+    new_conditional_profile = create_profile(
+        profile_name, profile_frequency, profile_varbinds, filtered_snmp_objects
+    )
+    return new_conditional_profile

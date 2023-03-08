@@ -256,17 +256,26 @@ class ProfileCollection:
             self.process_profiles()
 
     def get_profile(self, profile_name):
+        is_profile_conditional = bool("__" in profile_name)
         if profile_name in self.list_of_profiles:
             profile = self.list_of_profiles.get(profile_name)
-            if not profile.varbinds and profile.type != "walk":
+            if (
+                not profile.varbinds
+                and profile.type != "walk"
+                and not is_profile_conditional
+            ):
                 logger.warning(
                     f"VarBinds section not present inside the profile {profile_name}"
                 )
                 return {}
             return self.list_of_profiles.get(profile_name)
         else:
-            logger.warning(
-                f"There is either profile: {profile_name} missing from the configuration, or varBinds section not"
-                f"present inside the profile"
-            )
+            if is_profile_conditional:
+                conditional_profile_name = profile_name.split("__")[0]
+                logger.warning(f"Conditional profile {conditional_profile_name} initialization in progress...")
+            else:
+                logger.warning(
+                    f"There is either profile: {profile_name} missing from the configuration, or varBinds section not "
+                    f"present inside the profile"
+                )
             return {}

@@ -127,7 +127,11 @@ def enrich(self, result):
 
         if not current_attributes and group_data["fields"]:
             attributes_collection.update_one(
-                {"address": address, "group_key_hash": group_key_hash},
+                {
+                    "address": address,
+                    "group_key_hash": group_key_hash,
+                    "indexes": group_data.get("indexes", []),
+                },
                 {"$set": {"id": group_key, "fields": {}}},
                 upsert=True,
             )
