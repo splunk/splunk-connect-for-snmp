@@ -272,7 +272,9 @@ class ProfileCollection:
         else:
             if is_profile_conditional:
                 conditional_profile_name = profile_name.split("__")[0]
-                logger.warning(f"Conditional profile {conditional_profile_name} initialization in progress...")
+                logger.warning(
+                    f"Conditional profile {conditional_profile_name} initialization in progress..."
+                )
             else:
                 logger.warning(
                     f"There is either profile: {profile_name} missing from the configuration, or varBinds section not "

@@ -94,7 +94,9 @@ def inventory_setup_poller(self, work):
                 mongo_db, mongo_profile_tag, profile_body, address
             )
         except Exception as e:
-            logger.warning(f"Profile {conditional_profile_name} for {address} couldn't be processed: {e}")
+            logger.warning(
+                f"Profile {conditional_profile_name} for {address} couldn't be processed: {e}"
+            )
             continue
         mongo_db.profiles.replace_one(
             {mongo_profile_tag: {"$exists": True}}, new_profile, upsert=True
@@ -271,7 +273,10 @@ def create_profile(profile_name, frequency, varBinds, records):
     # Connecting general fields from varBinds with filtered object indexes
     # like ["IF-MIB", "ifDescr"] + [1] = ["IF-MIB", "ifDescr", 1]
     varbind_list = [
-        varbind + record["indexes"] for record in records for varbind in varBinds if len(varbind) == 2
+        varbind + record["indexes"]
+        for record in records
+        for varbind in varBinds
+        if len(varbind) == 2
     ]
     profile = {profile_name: {"frequency": frequency, "varBinds": varbind_list}}
     return profile
@@ -336,9 +341,7 @@ def generate_conditional_profile(
     profile_varbinds = conditional_profile_body.get("varBinds")
     profile_frequency = conditional_profile_body.get("frequency")
     if not profile_varbinds:
-        raise BadlyFormattedFieldError(
-            f"No varBinds provided in the profile"
-        )
+        raise BadlyFormattedFieldError(f"No varBinds provided in the profile")
     filtered_snmp_objects = filter_condition_on_database(
         mongo_client, address, profile_conditions
     )
