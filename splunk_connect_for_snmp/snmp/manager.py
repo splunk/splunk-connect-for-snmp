@@ -217,20 +217,27 @@ def extract_index_number(index):
     return index_number
 
 
-def extract_index_oid_part(varBind):
+def extract_indexes(index):
     """
-    Extracts index from OIDs of metrics.
+    Extracts indexes from OIDs of metrics.
     Not always MIB files are structurized the way one of the field is a meaningful index.
-    https://stackoverflow.com/questions/58886693/how-to-standardize-oid-index-retrieval-in-pysnmp
-    :param varBind: pysnmp object retrieved from a device
-    :return: str
+    :param index: pysnmp object retrieved from a device
+    :return: list
     """
-    object_identity, _ = varBind
-    mib_node = object_identity.getMibNode()
-    object_instance_oid = object_identity.getOid()
-    object_oid = mib_node.getName()
-    index_part = object_instance_oid[len(object_oid) :]
-    return str(index_part)
+    indexes_to_return = []
+    if not index:
+        return [0]
+    if isinstance(index, tuple):
+        for element in index:
+            if isinstance(element._value, bytes):
+                element_value = ".".join(str(byte) for byte in element._value)
+                indexes_to_return.append(element_value)
+            elif isinstance(element._value, tuple):
+                element_value = list(element)
+                indexes_to_return += element_value
+            else:
+                indexes_to_return.append(element._value)
+    return indexes_to_return
 
 
 class Poller(Task):
@@ -388,27 +395,31 @@ class Poller(Task):
 
     def get_var_binds(self, address, walk=False, profiles=[]):
         varbinds_bulk = set()
+        varbinds_get = set()
+        get_mapping = {}
+        bulk_mapping = {}
         if walk and not profiles:
             varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
-            return set(), {}, varbinds_bulk, {}
+            return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
         joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
             profiles, walk
         )
-        mib_families = joined_profile_object.get_mib_families()
-        mib_files_to_load = [
-            mib_family
-            for mib_family in mib_families
-            if mib_family not in self.already_loaded_mibs
-        ]
-        if mib_files_to_load:
-            self.load_mibs(mib_files_to_load)
-        (
-            varbinds_get,
-            get_mapping,
-            varbinds_bulk,
-            bulk_mapping,
-        ) = joined_profile_object.return_mapping_and_varbinds()
+        if joined_profile_object:
+            mib_families = joined_profile_object.get_mib_families()
+            mib_files_to_load = [
+                mib_family
+                for mib_family in mib_families
+                if mib_family not in self.already_loaded_mibs
+            ]
+            if mib_files_to_load:
+                self.load_mibs(mib_files_to_load)
+            (
+                varbinds_get,
+                get_mapping,
+                varbinds_bulk,
+                bulk_mapping,
+            ) = joined_profile_object.return_mapping_and_varbinds()
         logger.debug(f"host={address} varbinds_get={varbinds_get}")
         logger.debug(f"host={address} get_mapping={get_mapping}")
         logger.debug(f"host={address} varbinds_bulk={varbinds_bulk}")
@@ -429,9 +440,11 @@ class Poller(Task):
             if isMIBResolved(id):
                 group_key = get_group_key(mib, oid, index)
                 if group_key not in metrics:
+                    indexes = extract_indexes(index)
                     metrics[group_key] = {
                         "metrics": {},
                         "fields": {},
+                        "indexes": indexes,
                     }
                     if mapping:
                         metrics[group_key]["profiles"] = []
@@ -444,7 +457,6 @@ class Poller(Task):
                     metric_value = valueAsBest(snmp_val.prettyPrint())
 
                     index_number = extract_index_number(index)
-                    oid_index_part = extract_index_oid_part(varBind)
                     metric_value = fill_empty_value(index_number, metric_value, target)
 
                     profile = None
@@ -453,6 +465,8 @@ class Poller(Task):
                             id.replace('"', ""),
                             mapping.get(f"{mib}::{metric}", mapping.get(mib)),
                         )
+                        if "__" in profile:
+                            profile = profile.split("__")[0]
                     if metric_value == "No more variables left in this MIB View":
                         continue
 
@@ -461,7 +475,6 @@ class Poller(Task):
                             "time": time.time(),
                             "type": metric_type,
                             "value": metric_value,
-                            "index": oid_index_part,
                             "oid": oid,
                         }
                         if profile and profile not in metrics[group_key]["profiles"]:

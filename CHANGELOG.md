@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Changed
+- add option to automatically poll SNMP objects based on provided conditions with conditional profiles
+
 ## [1.8.6]
 
 ### Changed

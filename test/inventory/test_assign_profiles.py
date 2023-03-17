@@ -57,7 +57,7 @@ class TestProfilesAssignment(TestCase):
             }
         )
 
-        result = assign_profiles(ir, profiles, {})
+        result, _ = assign_profiles(ir, profiles, {})
         self.assertEqual({20: ["profile1"], 30: ["profile2"]}, result)
 
     def test_assignment_of_base_profiles(self, return_all_profiles):
@@ -68,7 +68,7 @@ class TestProfilesAssignment(TestCase):
             "profile2": {"frequency": 30, "condition": {"type": "base"}},
         }
 
-        result = assign_profiles(ir_smart, profiles, {})
+        result, _ = assign_profiles(ir_smart, profiles, {})
         self.assertEqual({60: ["BaseUpTime"], 30: ["profile2"]}, result)
 
     def test_assignment_of_field_profiles(self, return_all_profiles):
@@ -109,13 +109,13 @@ class TestProfilesAssignment(TestCase):
             }
         }
 
-        result = assign_profiles(ir_smart, profiles, target)
+        result, _ = assign_profiles(ir_smart, profiles, target)
         self.assertEqual({60: ["BaseUpTime", "MyProfile", "OtherProfile"]}, result)
 
     def test_assignment_of_field_profiles_missing_state(self, return_all_profiles):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
 
-        result = assign_profiles(ir_smart, simple_profiles, {})
+        result, _ = assign_profiles(ir_smart, simple_profiles, {})
         self.assertEqual({}, result)
 
     def test_assignment_of_field_profiles_db_missing_field_value(
@@ -125,7 +125,7 @@ class TestProfilesAssignment(TestCase):
 
         target = {"state": {"SNMPv2-MIB|sysDescr": {}}}
 
-        result = assign_profiles(ir_smart, simple_profiles, target)
+        result, _ = assign_profiles(ir_smart, simple_profiles, target)
         self.assertEqual({}, result)
 
     def test_assignment_of_field_not_matching_regex(self, return_all_profiles):
@@ -133,7 +133,7 @@ class TestProfilesAssignment(TestCase):
 
         target = {"state": {"SNMPv2-MIB|sysDescr": {"value": "WRONG"}}}
 
-        result = assign_profiles(ir_smart, simple_profiles, target)
+        result, _ = assign_profiles(ir_smart, simple_profiles, target)
         self.assertEqual({}, result)
 
     def test_assignment_of_static_and_smart_profiles(self, return_all_profiles):
@@ -161,9 +161,70 @@ class TestProfilesAssignment(TestCase):
             }
         )
 
-        result = assign_profiles(ir, profiles, {})
+        result, _ = assign_profiles(ir, profiles, {})
         self.assertEqual(
             {60: ["BaseUpTime"], 30: ["profile5", "profile2"], 20: ["profile1"]}, result
+        )
+
+    def test_assignment_of_static_and_smart_profiles_and_conditional_profiles(
+        self, return_all_profiles
+    ):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
+        profiles = {
+            "profile1": {"frequency": 20},
+            "profile2": {"frequency": 30},
+            "BaseUpTime": {"frequency": 60, "condition": {"type": "base"}},
+            "profile5": {"frequency": 30, "condition": {"type": "base"}},
+            "conditional_profile": {
+                "frequency": 120,
+                "conditions": [
+                    {
+                        "operation": "equals",
+                        "field": "IF-MIB.ifAdminStatus",
+                        "value": "up",
+                    }
+                ],
+                "varBinds": [["IF-MIB", "IfDescr"]],
+            },
+        }
+
+        ir = InventoryRecord(
+            **{
+                "address": "192.168.0.1",
+                "port": "34",
+                "version": "2c",
+                "community": "public",
+                "secret": "secret",
+                "securityEngine": "ENGINE",
+                "walk_interval": 1850,
+                "profiles": "profile1;profile2;conditional_profile",
+                "SmartProfiles": True,
+                "delete": False,
+            }
+        )
+
+        result, computed_result = assign_profiles(ir, profiles, {})
+        self.assertEqual(
+            {60: ["BaseUpTime"], 30: ["profile5", "profile2"], 20: ["profile1"]}, result
+        )
+        self.assertEqual(
+            [
+                {
+                    "conditional_profile": {
+                        "frequency": 120,
+                        "conditions": [
+                            {
+                                "operation": "equals",
+                                "field": "IF-MIB.ifAdminStatus",
+                                "value": "up",
+                            }
+                        ],
+                        "varBinds": [["IF-MIB", "IfDescr"]],
+                    }
+                }
+            ],
+            computed_result,
         )
 
     def test_assignment_of_walk_profile_as_a_static_profile(self, return_all_profiles):
@@ -191,7 +252,7 @@ class TestProfilesAssignment(TestCase):
             }
         )
 
-        result = assign_profiles(ir, profiles, {})
+        result, _ = assign_profiles(ir, profiles, {})
         self.assertEqual({30: ["profile5", "profile2"], 20: ["profile1"]}, result)
 
     def test_assignment_of_walk_profile_as_a_static_profile_without_frequency(
@@ -221,7 +282,7 @@ class TestProfilesAssignment(TestCase):
             }
         )
 
-        result = assign_profiles(ir, profiles, {})
+        result, _ = assign_profiles(ir, profiles, {})
         self.assertEqual({30: ["profile5", "profile2"], 20: ["profile1"]}, result)
 
     def test_smart_profiles_as_static_ones(self, return_all_profiles):
@@ -247,7 +308,7 @@ class TestProfilesAssignment(TestCase):
             }
         )
 
-        result = assign_profiles(ir, profiles, {})
+        result, _ = assign_profiles(ir, profiles, {})
         self.assertEqual({30: ["profile5"], 20: ["profile1"]}, result)
 
     def test_smart_profiles_disabled_mandatory_profile(self, return_all_profiles):
@@ -274,7 +335,7 @@ class TestProfilesAssignment(TestCase):
             }
         )
 
-        result = assign_profiles(ir, profiles, {})
+        result, _ = assign_profiles(ir, profiles, {})
         self.assertEqual(
             {30: ["profile5", "profile_mandatory"], 20: ["profile1"]}, result
         )
@@ -305,7 +366,7 @@ class TestProfilesAssignment(TestCase):
             }
         )
 
-        result = assign_profiles(ir, profiles, {})
+        result, _ = assign_profiles(ir, profiles, {})
         self.assertEqual({30: ["profile_mandatory"], 20: ["profile1"]}, result)
 
     def test_assign_profiles_no_profiles(self, return_all_profiles):
@@ -328,5 +389,29 @@ class TestProfilesAssignment(TestCase):
             }
         )
 
-        result = assign_profiles(ir, profiles, {})
+        result, _ = assign_profiles(ir, profiles, {})
         self.assertEqual({}, result)
+
+    def test_add_profile_to_assigned_list(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import add_profile_to_assigned_list
+
+        assigned_list = {}
+        add_profile_to_assigned_list(assigned_list, 30, "profile1")
+        add_profile_to_assigned_list(assigned_list, 30, "profile2")
+        add_profile_to_assigned_list(assigned_list, 10, "profile3")
+        self.assertEqual(
+            {30: ["profile1", "profile2"], 10: ["profile3"]}, assigned_list
+        )
+
+    def test_add_profile_to_assigned_list_with_something_already_inside(
+        self, return_all_profiles
+    ):
+        from splunk_connect_for_snmp.inventory.tasks import add_profile_to_assigned_list
+
+        assigned_list = {30: ["profile5"]}
+        add_profile_to_assigned_list(assigned_list, 30, "profile1")
+        add_profile_to_assigned_list(assigned_list, 30, "profile2")
+        add_profile_to_assigned_list(assigned_list, 10, "profile3")
+        self.assertEqual(
+            {30: ["profile5", "profile1", "profile2"], 10: ["profile3"]}, assigned_list
+        )
