@@ -219,7 +219,7 @@ There is also 5 minute TTL for an inventory pod. Basically, SC4SNMP allows one i
 There is a way to not explicitly give what SNMP objects we want to poll - only the conditions that must be fulfilled to
 qualify object for polling.
 
-The example of a conditional profile is:
+An example of a conditional profile is:
 
 ```yaml
 IF_conditional_profile:
@@ -238,8 +238,8 @@ IF_conditional_profile:
     - [ 'IF-MIB', 'ifOutDiscards' ]
 ```
 
-When such profile is defined and added to a device in an inventory, it will poll all interfaces where `ifAdminStatus`
-and `ifOperStatus` are up. Note that conditional profiles are being evaluated during the walk process (on every `walk_interval`)
+When the such profile is defined and added to a device in an inventory, it will poll all interfaces where `ifAdminStatus`
+and `ifOperStatus` is up. Note that conditional profiles are being evaluated during the walk process (on every `walk_interval`)
 and if the status changes in between, the scope of the conditional profile won't be modified.
 
 These are operations possible to use in conditional profiles:
@@ -247,7 +247,7 @@ These are operations possible to use in conditional profiles:
 1. `equals` - value gathered from `field` is equal to `value`
 2. `gt` - value gathered from `field` is bigger than `value` (works only for numeric values)
 3. `lt` - value gathered from `field` is smaller than `value` (works only for numeric values)
-4. `in` - value gathered from `field` is equal to one of the element provided in `value`, for ex.:
+4. `in` - value gathered from `field` is equal to one of the elements provided in `value`, for ex.:
 
 ```yaml
 conditions:
@@ -261,7 +261,7 @@ conditions:
 `field` part of `conditions` must fulfill the pattern `MIB-family.field`. Fields must represent textual value (not metric one),
 you can learn more about it [here](snmp-data-format.md).
 
-You have to explicitly define `varBinds` (not only the MIB family, but also the field to poll), so such config:
+You have to explicitly define `varBinds` (not only the MIB family but also the field to poll), so such config:
 
 ```yaml
 varBinds:
