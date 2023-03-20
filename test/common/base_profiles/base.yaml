@@ -6,7 +6,7 @@ BaseUpTime:
     - [ "IF-MIB", "ifName" ]
     - [ "IF-MIB", "ifAlias" ]
     - ["SNMPv2-MIB", "sysUpTime", 0]
-EnirchIF:
+EnrichIF:
   frequency: 600
   condition:
     type: "base"

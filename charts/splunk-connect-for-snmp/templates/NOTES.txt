@@ -1,9 +1,2 @@
-Version 1.7 of SC4SNMP add new feature which enables horizontal worker pods autoscaling, in order to use it you will need to turn on microk8s metrics-server addon:
-
-microk8s enable metrics-server
-
-and you should also update worker configuration in values.yaml file according to the documentation:
-https://splunk.github.io/splunk-connect-for-snmp/main/configuration/worker-configuration
-
-values.yaml template is available here:
-https://splunk.github.io/splunk-connect-for-snmp/main/gettingstarted/sc4snmp-installation
+Walk profiles no longer include IF-MIB family by default.
+If you've used this functionality before, please update the walk profile with ['IF-MIB'] varBind.

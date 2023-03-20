@@ -66,9 +66,9 @@ class VarBindContainer:
     def return_varbind_keys(self) -> List[str]:
         """
         Returns all keys from the map. When the map is:
-        {'IF-MIB:ifOutOctets': ['IF-MIB', 'ifOutOctets'],
-         'IF-MIB:ifInOctets': ['IF-MIB', 'ifInOctets'],
-         'TCP-MIB:tcpOutRsts': ['TCP-MIB', 'tcpOutRsts']}
+        {'IF-MIB::ifOutOctets': ['IF-MIB', 'ifOutOctets'],
+         'IF-MIB::ifInOctets': ['IF-MIB', 'ifInOctets'],
+         'TCP-MIB::tcpOutRsts': ['TCP-MIB', 'tcpOutRsts']}
 
          It will return ['IF-MIB:ifOutOctets', 'IF-MIB:ifInOctets', 'TCP-MIB:tcpOutRsts']
         :return:
@@ -78,9 +78,9 @@ class VarBindContainer:
     def return_varbind_values(self) -> List[Varbind]:
         """
         Returns all values from the map. When the map is:
-        {'IF-MIB:ifOutOctets': ['IF-MIB', 'ifOutOctets'],
-         'IF-MIB:ifInOctets': ['IF-MIB', 'ifInOctets'],
-         'TCP-MIB:tcpOutRsts': ['TCP-MIB', 'tcpOutRsts']}
+        {'IF-MIB::ifOutOctets': ['IF-MIB', 'ifOutOctets'],
+         'IF-MIB::ifInOctets': ['IF-MIB', 'ifInOctets'],
+         'TCP-MIB::tcpOutRsts': ['TCP-MIB', 'tcpOutRsts']}
 
          It will return [['IF-MIB', 'ifOutOctets'], ['IF-MIB', 'ifInOctets'], ['TCP-MIB', 'tcpOutRsts']]
          Remember, ['IF-MIB', 'ifOutOctets'] objects represent Varbind structures.
@@ -91,9 +91,9 @@ class VarBindContainer:
     def get_mib_families(self):
         """
         Gathers all MIB families to load it from mibserver whenever they're missing. When the map is:
-        {'IF-MIB:ifOutOctets': ['IF-MIB', 'ifOutOctets'],
-         'IF-MIB:ifInOctets': ['IF-MIB', 'ifInOctets'],
-         'TCP-MIB:tcpOutRsts': ['TCP-MIB', 'tcpOutRsts']}
+        {'IF-MIB::ifOutOctets': ['IF-MIB', 'ifOutOctets'],
+         'IF-MIB::ifInOctets': ['IF-MIB', 'ifInOctets'],
+         'TCP-MIB::tcpOutRsts': ['TCP-MIB', 'tcpOutRsts']}
 
          It will return ['IF-MIB, 'TCP-MIB']
         :return:
@@ -165,8 +165,6 @@ class Profile:
     def process(self):
         if self.type == "walk":
             varbind_obj = Varbind(["SNMPv2-MIB"])
-            self.varbinds_bulk.insert_varbind(varbind_obj)
-            varbind_obj = Varbind(["IF-MIB"])
             self.varbinds_bulk.insert_varbind(varbind_obj)
         self.divide_on_bulk_and_get()
         if self.type != "walk":
