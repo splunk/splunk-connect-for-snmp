@@ -48,6 +48,7 @@ MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
+POLL_BASE_PROFILES = human_bool(os.getenv("POLL_BASE_PROFILES", "true"))
 
 
 class BadlyFormattedFieldError(Exception):
@@ -150,7 +151,7 @@ def assign_profiles(ir, profiles, target):
                 continue
 
             # skip this profile it is static
-            if profile["condition"]["type"] == "base":
+            if profile["condition"]["type"] == "base" and POLL_BASE_PROFILES:
                 logger.debug(f"Adding base profile {profile_name}")
                 add_profile_to_assigned_list(
                     assigned_profiles, profile["frequency"], profile_name

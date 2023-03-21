@@ -96,7 +96,7 @@ class TestProfiles(TestCase):
                     ["SNMPv2-MIB", "sysUpTime", 0],
                 ],
             },
-            "EnirchIF": {
+            "EnrichIF": {
                 "frequency": 600,
                 "condition": {"type": "base"},
                 "varBinds": [
@@ -162,7 +162,7 @@ class TestProfiles(TestCase):
                     ["SNMPv2-MIB", "sysUpTime", 0],
                 ],
             },
-            "EnirchIF": {
+            "EnrichIF": {
                 "frequency": 600,
                 "condition": {"type": "base"},
                 "varBinds": [
@@ -206,7 +206,7 @@ class TestProfiles(TestCase):
     )
     def test_disabled_profiles(self):
         active_profiles = {
-            "EnirchIF": {
+            "EnrichIF": {
                 "frequency": 200,
                 "condition": {"type": "base"},
                 "varBinds": [

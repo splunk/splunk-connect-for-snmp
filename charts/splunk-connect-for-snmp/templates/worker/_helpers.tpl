@@ -93,6 +93,8 @@ Common labels
   value: {{ .Values.worker.walkRetryMaxInterval | default "600" | quote }}
 - name: METRICS_INDEXING_ENABLED
   value: {{ (.Values.poller).metricsIndexingEnabled | default "false" | quote }}
+- name: POLL_BASE_PROFILES
+  value: {{ (.Values.poller).pollBaseProfiles | quote }}
 {{- if .Values.worker.ignoreNotIncreasingOid }}
 - name: IGNORE_NOT_INCREASING_OIDS
   value: {{ join "," .Values.worker.ignoreNotIncreasingOid }}

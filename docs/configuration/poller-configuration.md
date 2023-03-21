@@ -66,6 +66,26 @@ out of this object:
 }
 ```
 
+Not every SNMP metric object is structured the way it has its index as a one of the field value.
+We can append the index part of OID with:
+
+```yaml
+poller:
+  metricsIndexingEnabled: true
+```
+
+
+### Disable automatic polling of base profiles
+
+There are [two profiles](https://github:com/splunk/splunk-connect-for-snmp/blob/main/splunk_connect_for_snmp/profiles/base.yaml) that are being polled by default - so that even without any configuration you can see
+the data in Splunk. You can disable it with `pollBaseProfiles` parameter.
+
+```yaml
+poller:
+  pollBaseProfiles: false
+```
+
+
 ### Configure inventory 
 To update inventory, see: [Update Inventory and Profile](#update-inventory).
 

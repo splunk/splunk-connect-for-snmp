@@ -160,8 +160,8 @@ poller:
 ```
 
 NOTE: When small walk is configured, you can set up polling only of OIDs belonging to the walk profile varBinds. 
-Additionally, there are two MIB families that are enabled by default (we need them to create the state of the device in the database and poll base profiles): `IF-MIB` and `SNMPv2-MIB`.
-For example, if you've decided to use `small_walk` from the example above, you'll be able to poll only `UDP-MIB`, `IF-MIB`, and `SNMPv2-MIB` OIDs.
+Additionally, `SNMPv2-MIB` that is enabled by default (we need it to create the state of the device in the database).
+For example, if you've decided to use `small_walk` from the example above, you'll be able to poll only `UDP-MIB`, and `SNMPv2-MIB` OIDs.
 
 
 ## SmartProfile configuration

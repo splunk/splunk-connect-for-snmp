@@ -49,7 +49,7 @@ class TestGetVarbinds(TestCase):
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
             "192.168.0.1", walk=True, profiles=["test1"]
         )
-        self.assertEqual(0, len(varbinds_get))
+        self.assertEqual(1, len(varbinds_get))
         self.assertEqual(3, len(varbinds_bulk))
         self.assertEqual(0, len(get_mapping))
         self.assertEqual(0, len(bulk_mapping))
@@ -84,7 +84,7 @@ class TestGetVarbinds(TestCase):
             "192.168.0.1", walk=True, profiles=["test1"]
         )
         self.assertEqual(0, len(varbinds_get))
-        self.assertEqual(2, len(varbinds_bulk))
+        self.assertEqual(1, len(varbinds_bulk))
         self.assertEqual(0, len(get_mapping))
         self.assertEqual(0, len(bulk_mapping))
 
@@ -93,9 +93,8 @@ class TestGetVarbinds(TestCase):
         self.assertEqual(
             {
                 walk_var_bind[0]._ObjectType__args[0]._ObjectIdentity__args[0],
-                walk_var_bind[1]._ObjectType__args[0]._ObjectIdentity__args[0],
             },
-            {"SNMPv2-MIB", "IF-MIB"},
+            {"SNMPv2-MIB"},
         )
 
     def test_get_varbinds_for_walk_with_three_profiles(self):
@@ -117,7 +116,7 @@ class TestGetVarbinds(TestCase):
             "192.168.0.1", walk=True, profiles=["test1"]
         )
         self.assertEqual(0, len(varbinds_get))
-        self.assertEqual(5, len(varbinds_bulk))
+        self.assertEqual(4, len(varbinds_bulk))
         self.assertEqual(0, len(get_mapping))
         self.assertEqual(0, len(bulk_mapping))
 
@@ -129,9 +128,8 @@ class TestGetVarbinds(TestCase):
                 walk_var_bind[1]._ObjectType__args[0]._ObjectIdentity__args[0],
                 walk_var_bind[2]._ObjectType__args[0]._ObjectIdentity__args[0],
                 walk_var_bind[3]._ObjectType__args[0]._ObjectIdentity__args[0],
-                walk_var_bind[4]._ObjectType__args[0]._ObjectIdentity__args[0],
             },
-            {"SNMPv2-MIB", "IF-MIB", "UDP-MIB", "IP-MIB", "TCP-MIB"},
+            {"SNMPv2-MIB", "UDP-MIB", "IP-MIB", "TCP-MIB"},
         )
 
     def test_get_varbinds_for_walk_next_time_no_profiles(self):
@@ -220,7 +218,7 @@ class TestGetVarbinds(TestCase):
         )
 
         self.assertEqual(0, len(varbinds_get))
-        self.assertEqual(3, len(varbinds_bulk))
+        self.assertEqual(2, len(varbinds_bulk))
         self.assertEqual(0, len(get_mapping))
         self.assertEqual(0, len(bulk_mapping))
 
@@ -233,9 +231,8 @@ class TestGetVarbinds(TestCase):
             )
         )
 
-        self.assertEqual("IF-MIB", names[0])
-        self.assertEqual("SNMPv2-MIB", names[1])
-        self.assertEqual("UDP-MIB", names[2])
+        self.assertEqual("SNMPv2-MIB", names[0])
+        self.assertEqual("UDP-MIB", names[1])
 
     def test_get_varbinds_for_poll_family_only(self):
         poller = Poller.__new__(Poller)

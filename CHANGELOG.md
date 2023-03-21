@@ -4,6 +4,7 @@
 
 ### Changed
 - add option to automatically poll SNMP objects based on provided conditions with conditional profiles
+- remove IF-MIB from the scope of the default small walk
 
 ## [1.8.6]
 

@@ -7,8 +7,8 @@ metadata:
   labels:
     app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
     app.kubernetes.io/instance: release-name
-    helm.sh/chart: splunk-connect-for-snmp-1.8.6
-    app.kubernetes.io/version: "1.8.6"
+    helm.sh/chart: splunk-connect-for-snmp-1.8.7-beta.3
+    app.kubernetes.io/version: "1.8.7-beta.3"
     app.kubernetes.io/managed-by: Helm
 spec:
   minAvailable: 1

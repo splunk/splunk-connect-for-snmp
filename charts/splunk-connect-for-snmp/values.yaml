@@ -141,6 +141,10 @@ poller:
   # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#append-oid-index-part-to-the-metrics
   metricsIndexingEnabled: false
 
+  # Enable polling base profiles (with IF-MIB and SNMPv2-MIB) from
+  # https://github:com/splunk/splunk-connect-for-snmp/blob/main/splunk_connect_for_snmp/profiles/base.yaml
+  pollBaseProfiles: true
+
   # list of kubernetes secrets name that will be used for polling
   # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#define-usernamesecrets
   usernameSecrets: []
