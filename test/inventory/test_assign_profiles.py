@@ -72,7 +72,7 @@ class TestProfilesAssignment(TestCase):
         result, _ = assign_profiles(ir_smart, profiles, {})
         self.assertEqual({60: ["BaseUpTime"], 30: ["profile2"]}, result)
 
-    @mock.patch.dict(os.environ, {"POLL_BASE_PROFILES": "false"})
+    @mock.patch("splunk_connect_for_snmp.inventory.tasks.POLL_BASE_PROFILES", False)
     def test_assignment_of_base_profiles_polling_disabled(self, return_all_profiles):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
 
