@@ -1040,8 +1040,8 @@ If multiple profiles of type <code>walk</code> is placed in profiles, the last o
 </code></pre></div>
 
 <p>NOTE: When small walk is configured, you can set up polling only of OIDs belonging to the walk profile varBinds. 
-Additionally, there are two MIB families that are enabled by default (we need them to create the state of the device in the database and poll base profiles): <code>IF-MIB</code> and <code>SNMPv2-MIB</code>.
-For example, if you&rsquo;ve decided to use <code>small_walk</code> from the example above, you&rsquo;ll be able to poll only <code>UDP-MIB</code>, <code>IF-MIB</code>, and <code>SNMPv2-MIB</code> OIDs.</p>
+Additionally, <code>SNMPv2-MIB</code> that is enabled by default (we need it to create the state of the device in the database).
+For example, if you&rsquo;ve decided to use <code>small_walk</code> from the example above, you&rsquo;ll be able to poll only <code>UDP-MIB</code>, and <code>SNMPv2-MIB</code> OIDs.</p>
 <h2 id="smartprofile-configuration">SmartProfile configuration<a class="headerlink" href="#smartprofile-configuration" title="Permanent link">&para;</a></h2>
 <p>SmartProfile is executed when the SmartProfile flag in inventory is set to true and the condition defined in profile match. 
 More information about configuring inventory can be found in <a href="../poller-configuration/#configure-inventory">Inventory configuration</a>.</p>
