@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase, mock
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
@@ -70,6 +71,18 @@ class TestProfilesAssignment(TestCase):
 
         result, _ = assign_profiles(ir_smart, profiles, {})
         self.assertEqual({60: ["BaseUpTime"], 30: ["profile2"]}, result)
+
+    @mock.patch.dict(os.environ, {"POLL_BASE_PROFILES": "false"})
+    def test_assignment_of_base_profiles_polling_disabled(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import assign_profiles
+
+        profiles = {
+            "BaseUpTime": {"frequency": 60, "condition": {"type": "base"}},
+            "profile2": {"frequency": 30, "condition": {"type": "base"}},
+        }
+
+        result, _ = assign_profiles(ir_smart, profiles, {})
+        self.assertEqual({}, result)
 
     def test_assignment_of_field_profiles(self, return_all_profiles):
         from splunk_connect_for_snmp.inventory.tasks import assign_profiles
