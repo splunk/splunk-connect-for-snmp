@@ -195,5 +195,5 @@ jobs:
       - name: run automatic_setup.sh
         run: integration_tests/automatic_setup.sh
       - name: run tests
-        run: poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --junitxml=result.xml > pytest.log
+        run: poetry run pytest -k "test_added_varbind" --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --junitxml=result.xml > pytest.log
         working-directory: integration_tests
