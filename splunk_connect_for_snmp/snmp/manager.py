@@ -62,6 +62,7 @@ IGNORE_EMPTY_VARBINDS = human_bool(os.getenv("IGNORE_EMPTY_VARBINDS", False))
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "60"))
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 3))
+MAX_OID_TO_PROCESS = int(os.getenv("MAX_OID_TO_PROCESS", 70))
 
 DEFAULT_STANDARD_MIBS = [
     "HOST-RESOURCES-MIB",
@@ -319,7 +320,6 @@ class Poller(Task):
             return False, {}
 
         if varbinds_bulk:
-
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
                 self.snmpEngine,
                 authData,
@@ -349,18 +349,24 @@ class Poller(Task):
                         )
 
         if varbinds_get:
-            for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
-                self.snmpEngine, authData, transport, contextData, *varbinds_get
+            # some devices cannot process more OID than X, so it is necessary to divide it on chunks
+            for varbind_chunk in self.get_varbind_chunk(
+                varbinds_get, MAX_OID_TO_PROCESS
             ):
-                if not _any_failure_happened(
-                    errorIndication,
-                    errorStatus,
-                    errorIndex,
-                    varBindTable,
-                    ir.address,
-                    walk,
+                for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
+                    self.snmpEngine, authData, transport, contextData, *varbind_chunk
                 ):
-                    self.process_snmp_data(varBindTable, metrics, address, get_mapping)
+                    if not _any_failure_happened(
+                        errorIndication,
+                        errorStatus,
+                        errorIndex,
+                        varBindTable,
+                        ir.address,
+                        walk,
+                    ):
+                        self.process_snmp_data(
+                            varBindTable, metrics, address, get_mapping
+                        )
 
         for group_key, metric in metrics.items():
             if "profiles" in metrics[group_key]:
@@ -369,6 +375,10 @@ class Poller(Task):
                 )
 
         return retry, metrics
+
+    def get_varbind_chunk(self, lst, n):
+        for i in range(0, len(lst), n):
+            yield lst[i : i + n]
 
     def load_mibs(self, mibs: List[str]) -> None:
         logger.info(f"loading mib modules {mibs}")
@@ -465,7 +475,7 @@ class Poller(Task):
                             id.replace('"', ""),
                             mapping.get(f"{mib}::{metric}", mapping.get(mib)),
                         )
-                        if "__" in profile:
+                        if profile and "__" in profile:
                             profile = profile.split("__")[0]
                     if metric_value == "No more variables left in this MIB View":
                         continue

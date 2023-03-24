@@ -145,6 +145,10 @@ poller:
   # https://github:com/splunk/splunk-connect-for-snmp/blob/main/splunk_connect_for_snmp/profiles/base.yaml
   pollBaseProfiles: true
 
+  # Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs,
+  # decrease the number
+  maxOidToProcess: 70
+
   # list of kubernetes secrets name that will be used for polling
   # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#define-usernamesecrets
   usernameSecrets: []
