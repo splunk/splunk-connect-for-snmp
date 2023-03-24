@@ -351,7 +351,9 @@ class Poller(Task):
 
         if varbinds_get:
             # some devices cannot process more OID than X, so it is necessary to divide it on chunks
-            for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
+            for varbind_chunk in self.get_varbind_chunk(
+                varbinds_get, MAX_OID_TO_PROCESS
+            ):
                 for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
                     self.snmpEngine, authData, transport, contextData, *varbind_chunk
                 ):
