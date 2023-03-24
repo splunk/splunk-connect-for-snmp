@@ -534,3 +534,22 @@ class TestGetVarbinds(TestCase):
         self.assertEqual({"UDP-MIB::udpOutDatagrams": "profile1"}, bulk_mapping)
 
         poller.load_mibs.assert_called_with(["UDP-MIB"])
+
+    def test_get_varbind_chunk(self):
+        poller = Poller.__new__(Poller)
+
+        initial_list = list(range(1, 13))
+        expected_result = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]]
+        expected_result_4 = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]
+        expected_result_5 = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12]]
+
+        self.assertEqual(
+            list(poller.get_varbind_chunk(initial_list, 3)), expected_result
+        )
+        self.assertEqual(
+            list(poller.get_varbind_chunk(initial_list, 4)), expected_result_4
+        )
+        self.assertEqual(
+            list(poller.get_varbind_chunk(initial_list, 5)), expected_result_5
+        )
+        self.assertEqual([], [])
