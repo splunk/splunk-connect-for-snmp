@@ -17,6 +17,7 @@ import logging
 import time
 
 import pytest
+from ruamel.yaml.scalarstring import DoubleQuotedScalarString as dq
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
 from integration_tests.splunk_test_utils import (
@@ -50,8 +51,8 @@ class TestSanity:
 
     def test_enrich_works_for_IFMIB(self, setup_splunk):
         logger.info("Integration test for enrichment")
-        search_string = """| mpreview index=netmetrics | search sourcetype="sc4snmp:metric" 
-        | search "metric_name:sc4snmp.IF-MIB*if" 
+        search_string = """| mpreview index=netmetrics | search sourcetype="sc4snmp:metric"
+        | search "metric_name:sc4snmp.IF-MIB*if"
         | search "ifDescr" AND "ifAdminStatus" AND "ifOperStatus" AND "ifPhysAddress" AND "ifIndex" """
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         assert result_count > 0
@@ -59,7 +60,7 @@ class TestSanity:
 
     def test_default_profiles_events(self, setup_splunk):
         logger.info("Integration test for sc4snmp:event")
-        search_string = """search index=netops | search "IF-MIB.ifAlias" AND "IF-MIB.ifAdminStatus" 
+        search_string = """search index=netops | search "IF-MIB.ifAlias" AND "IF-MIB.ifAdminStatus"
         AND "IF-MIB.ifDescr" AND "IF-MIB.ifName" sourcetype="sc4snmp:event" """
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         assert result_count > 0
@@ -92,7 +93,7 @@ def setup_profile(request):
 @pytest.mark.usefixtures("setup_profile")
 class TestProfiles:
     def test_static_profiles_metrics(self, setup_splunk):
-        search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch 
+        search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch
         | search "TCP-MIB" """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -622,8 +623,323 @@ class TestIgnoreSingleIfInGroup:
         assert metric_count == 0
 
 
+@pytest.fixture(scope="class")
+def setup_single_gt_and_lt_profiles(request):
+    """
+    Expected values for IF-MIB.ifIndex:
+        - IF-MIB.ifIndex.1 = 21
+        - IF-MIB.ifIndex.2 = 10
+
+    gt_profile should result in polling IF-MIB.ifOutDiscards.1
+    lt_profile should result in polling IF-MIB.ifOutDiscards.2
+    """
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    profiles = {
+        "gt_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
+            "conditions": [
+                {"field": "IF-MIB.ifIndex", "operation": dq("gt"), "value": 20}
+            ],
+        },
+        "lt_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
+            "conditions": [
+                {"field": "IF-MIB.ifIndex", "operation": dq("lt"), "value": 20}
+            ],
+        },
+    }
+
+    update_profiles(profiles)
+    update_file(
+        [
+            f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    time.sleep(120)
+    yield
+    update_file(
+        [
+            f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,t",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml"])
+    time.sleep(120)
+
+
+@pytest.mark.usefixtures("setup_single_gt_and_lt_profiles")
+class TestSingleGtAndLtCorrectCondition:
+    def test_gt_profile(self, request, setup_splunk):
+        time.sleep(20)
+        search_string = """| mpreview index=netmetrics | search profiles=gt_profile """
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+    def test_lt_profile(self, request, setup_splunk):
+        time.sleep(20)
+        search_string = """| mpreview index=netmetrics | search profiles=lt_profile """
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+
+@pytest.fixture(scope="class")
+def setup_single_in_and_equals_profiles(request):
+    """
+    Expected values for IF-MIB.ifDescr:
+        - IF-MIB.ifDescr.1 = lo
+        - IF-MIB.ifDescr.2 = eth0
+
+    in_profile should result in polling IF-MIB.ifOutDiscards.2
+    equals_profile should result in polling IF-MIB.ifOutDiscards.1
+    """
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    profiles = {
+        "in_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
+            "conditions": [
+                {
+                    "field": "IF-MIB.ifDescr",
+                    "operation": dq("in"),
+                    "value": [dq("eth0"), dq("test value")],
+                }
+            ],
+        },
+        "equals_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
+            "conditions": [
+                {
+                    "field": "IF-MIB.ifDescr",
+                    "operation": dq("equals"),
+                    "value": dq("lo"),
+                }
+            ],
+        },
+    }
+
+    update_profiles(profiles)
+    update_file(
+        [
+            f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    time.sleep(120)
+    yield
+    update_file(
+        [
+            f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,t",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml"])
+    time.sleep(120)
+
+
+@pytest.mark.usefixtures("setup_single_in_and_equals_profiles")
+class TestSingleInAndEqualsCorrectCondition:
+    def test_in_profile(self, request, setup_splunk):
+        time.sleep(20)
+        search_string = """| mpreview index=netmetrics | search profiles=in_profile """
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+    def test_equals_profile(self, request, setup_splunk):
+        time.sleep(20)
+        search_string = (
+            """| mpreview index=netmetrics | search profiles=equals_profile """
+        )
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+
+@pytest.fixture(scope="class")
+def setup_multiple_conditions_profiles(request):
+    """
+    Expected values for IF-MIB.ifDescr:
+        - IF-MIB.ifDescr.1 = lo
+        - IF-MIB.ifDescr.2 = eth0
+
+    Expected values for IF-MIB.ifIndex:
+        - IF-MIB.ifIndex.1 = 21
+        - IF-MIB.ifIndex.2 = 10
+
+    gt_and_equals_profile should result in polling IF-MIB.ifOutDiscards.1
+    lt_and_in_profile should result in polling IF-MIB.ifOutDiscards.2
+    """
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    profiles = {
+        "gt_and_equals_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
+            "conditions": [
+                {"field": "IF-MIB.ifIndex", "operation": dq("gt"), "value": 20},
+                {
+                    "field": "IF-MIB.ifDescr",
+                    "operation": dq("equals"),
+                    "value": dq("lo"),
+                },
+            ],
+        },
+        "lt_and_in_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
+            "conditions": [
+                {"field": "IF-MIB.ifIndex", "operation": dq("lt"), "value": 20},
+                {
+                    "field": "IF-MIB.ifDescr",
+                    "operation": dq("in"),
+                    "value": [dq("eth0"), dq("test value")],
+                },
+            ],
+        },
+    }
+
+    update_profiles(profiles)
+    update_file(
+        [
+            f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    time.sleep(120)
+    yield
+    update_file(
+        [
+            f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,t",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml"])
+    time.sleep(120)
+
+
+@pytest.mark.usefixtures("setup_multiple_conditions_profiles")
+class TestMultipleCorrectConditions:
+    def test_gt_and_equals_profile(self, request, setup_splunk):
+        time.sleep(20)
+        search_string = (
+            """| mpreview index=netmetrics | search profiles=gt_and_equals_profile """
+        )
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+    def test_lt_and_in_profile(self, request, setup_splunk):
+        time.sleep(20)
+        search_string = (
+            """| mpreview index=netmetrics | search profiles=lt_and_in_profile """
+        )
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+
+@pytest.fixture(scope="class")
+def setup_wrong_conditions_profiles(request):
+    """
+    Expected values for IF-MIB.ifDescr:
+        - IF-MIB.ifDescr.1 = lo
+        - IF-MIB.ifDescr.2 = eth0
+
+    Expected values for IF-MIB.ifIndex:
+        - IF-MIB.ifIndex.1 = 21
+        - IF-MIB.ifIndex.2 = 10
+
+    None of the profiles below should poll anything.
+    """
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    profiles = {
+        "wrong_gt_and_equals_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
+            "conditions": [
+                {"field": "IF-MIB.ifIndex", "operation": dq("gt"), "value": 20},
+                {
+                    "field": "IF-MIB.ifDescr",
+                    "operation": dq("equals"),
+                    "value": dq("eth0"),
+                },
+            ],
+        },
+        "wrong_lt_and_in_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
+            "conditions": [
+                {"field": "IF-MIB.ifIndex", "operation": dq("lt"), "value": 20},
+                {
+                    "field": "IF-MIB.ifDescr",
+                    "operation": dq("in"),
+                    "value": [dq("test value 1"), dq("test value 2")],
+                },
+            ],
+        },
+        "wrong_equals_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
+            "conditions": [
+                {"field": "IF-MIB.ifIndex", "operation": dq("equals"), "value": 200}
+            ],
+        },
+    }
+
+    update_profiles(profiles)
+    update_file(
+        [
+            f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    time.sleep(120)
+    yield
+    update_file(
+        [
+            f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,t",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml"])
+    time.sleep(120)
+
+
+@pytest.mark.usefixtures("setup_wrong_conditions_profiles")
+class TestWrongConditions:
+    def test_wrong_profiles(self, request, setup_splunk):
+        time.sleep(20)
+        search_string = """| mpreview index=netmetrics | search profiles=wrong_gt_and_equals_profile OR profiles=wrong_lt_and_in_profile OR profiles=wrong_equals_profile """
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count == 0
+        assert metric_count == 0
+
+
 def run_retried_single_search(setup_splunk, search_string, retries):
-    for i in range(retries):
+    for _ in range(retries):
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         if result_count or metric_count:
             return result_count, metric_count
