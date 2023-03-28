@@ -17,13 +17,13 @@ celery)
         celery -A splunk_connect_for_snmp.poller beat -l "$LOG_LEVEL" --max-interval=10
         ;;
     worker-trap)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q traps --autoscale=8,"$WORKER_CONCURRENCY"
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -O fair -Q traps -c "$WORKER_CONCURRENCY" --without-heartbeat --without-gossip --without-mingle
         ;;
     worker-poller)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL"  -O fair -Q poll --autoscale=8,"$WORKER_CONCURRENCY"
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL"  -O fair -Q poll -c "$WORKER_CONCURRENCY" --without-heartbeat --without-gossip --without-mingle
         ;;
     worker-sender)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q send --autoscale=6,"$WORKER_CONCURRENCY"
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -O fair -Q send -c "$WORKER_CONCURRENCY" --without-heartbeat --without-gossip --without-mingle
         ;;
     *)
         celery "$2"
