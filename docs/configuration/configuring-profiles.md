@@ -159,8 +159,7 @@ poller:
     10.202.4.202,,2c,public,,,2000,small_walk,,
 ```
 
-NOTE: When small walk is configured, you can set up polling only of OIDs belonging to the walk profile varBinds. 
-Additionally, `SNMPv2-MIB` that is enabled by default (we need it to create the state of the device in the database).
+NOTE: When small walk is configured, `SNMPv2-MIB` is enabled by default (we need it to create the state of the device in the database).
 For example, if you've decided to use `small_walk` from the example above, you'll be able to poll only `UDP-MIB`, and `SNMPv2-MIB` OIDs.
 
 

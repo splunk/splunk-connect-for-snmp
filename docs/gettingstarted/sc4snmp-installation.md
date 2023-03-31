@@ -166,6 +166,14 @@ Its purpose is to gather all the data and provide meaningful context for the pol
 In such cases, enable the small walk. See: [walk takes too much time](../../bestpractices/#walking-a-device-takes-too-much-time).
 When the walk finishes, events appear in Splunk. Confirm the walk with the following queries:
 
+## Next Steps
+
+A good way to start with SC4SNMP polling is to follow the [Step by Step guide for polling](../configuration/step-by-step-poll.md).
+Advanced configuration of polling is available in [Poller configuration](../configuration/poller-configuration.md) section
+SNMP data format is explained in [SNMP data format](../configuration/snmp-data-format.md) section.
+
+For advanced trap configuration, check the [Traps configuration](../configuration/trap-configuration.md) section.
+
 
 
 [examples_link]: https://github.com/splunk/splunk-connect-for-snmp/tree/main/examples

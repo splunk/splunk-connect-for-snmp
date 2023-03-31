@@ -36,7 +36,6 @@ nav:
       - Platform Microk8s: "gettingstarted/mk8s/k8s-microk8s.md"
       - Install Splunk OpenTelemetry Collector for Kubernetes: "gettingstarted/sck-installation.md"
       - Install SC4SNMP: "gettingstarted/sc4snmp-installation.md"
-  - High Availability: ha.md  
   - Configuration:
       - Deployment: "configuration/deployment-configuration.md"
       - Polling:
@@ -52,15 +51,16 @@ nav:
       - Redis: "configuration/redis-configuration.md"
       - SNMPv3 configuration: "configuration/snmpv3-configuration.md"
       - Splunk Infrastructure Monitoring: "configuration/sim-configuration.md"
+  - Offline Installation:
+      - Install Microk8s: "offlineinstallation/offline-microk8s.md"
+      - Install Splunk OpenTelemetry Collector for Kubernetes: "offlineinstallation/offline-sck.md"
+      - Install SC4SNMP: "offlineinstallation/offline-sc4snmp.md"
+  - Lightweight installation: "small-environment.md"
   - Planning: "planning.md"
   - Security: "security.md"
   - Request MIB: "mib-request.md"
   - Upgrade SC4SNMP: "upgrade.md"
   - Troubleshooting : "bestpractices.md"
   - Releases: "releases.md"
-  - Offline Installation:
-      - Install Microk8s: "offlineinstallation/offline-microk8s.md"
-      - Install Splunk OpenTelemetry Collector for Kubernetes: "offlineinstallation/offline-sck.md"
-      - Install SC4SNMP: "offlineinstallation/offline-sc4snmp.md"
-  - Lightweight installation: "small-environment.md"
+  - High Availability: ha.md
 
