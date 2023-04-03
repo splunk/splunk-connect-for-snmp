@@ -13,6 +13,8 @@ markdown_extensions:
   - codehilite
 
 plugins:
+    - search:
+        lang: en
     - mkdocs-video:
         is_video: True
 
