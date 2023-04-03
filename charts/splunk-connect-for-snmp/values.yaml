@@ -85,7 +85,6 @@ sim:
 ################################################################################
 
 scheduler:
-
   ### Group definitions ###
   # Create the group definition in case you want to configure polling from multiple hosts
   # at once, more on this: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-groups/
@@ -155,7 +154,8 @@ scheduler:
 #     requests:
 #       cpu: 500m
 #       memory: 256Mi
-
+  # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
+  logLevel: "INFO"
   podAnnotations: {}
   podAntiAffinity: soft
   nodeSelector: {}
@@ -272,7 +272,8 @@ worker:
   #    - "127.0.0.1:164"
   #    - "127.0.0.6"
   ignoreNotIncreasingOid: []
-
+  # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
+  logLevel: "INFO"
   podAntiAffinity: soft
 
 inventory:
@@ -343,6 +344,8 @@ traps:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
+  # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
+  logLevel: "INFO"
   nodeSelector: {}
   tolerations: []
   podAntiAffinity: soft
