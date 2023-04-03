@@ -11,6 +11,9 @@ jobs:
   mike:
     name: Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -70,6 +73,9 @@ jobs:
   #          fi
   helm:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     needs:
       - mike
     steps:

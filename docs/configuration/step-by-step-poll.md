@@ -7,20 +7,46 @@ We have 4 hosts we want to poll from:
 3. `10.202.4.203:161`
 4. `10.202.4.204:163`
    
-Let's say that we're interested mostly in information about interfaces and some CPU related data. For this purposes,
-we need to configure the `IF-MIB` family for interfaces, and `UCD-SNMP-MIB` for the CPU.
+At the outset, it is essential to determine the specific data to be retrieved from the device. 
+By default, SC4SNMP executes a walk of the entire `1.3.6.1`. However, conducting a full walk may not always be necessary, 
+especially when the device contains an extensive range of Object Identifiers (OIDs). Hence, it is advisable to impose 
+a walk limitation to poll only the required data.
 
-We'll do two things under the `scheduler` section: define the group from which we want to poll, and the profile of what exactly will be polled:
+For instance, if our primary interest is in gathering information about interfaces and some CPU-related statistics, 
+it is recommended to configure the `IF-MIB` family for interfaces and the `UCD-SNMP-MIB` for the CPU. This approach ensures 
+that only the necessary data is polled, improving the efficiency of the polling process.
+
+Within the `scheduler` section in `values.yaml`, two key actions will be taken. Firstly, we will define the target group 
+from which the desired data will be polled. Secondly, we will establish the specific polling parameters, known as the 
+profile, to determine precisely what data is to be gathered:
 
 ```yaml
 scheduler:
   logLevel: "INFO"
   profiles: |
+    small_walk:
+      condition:
+        type: "walk"
+      varBinds:
+        - ["IF-MIB"]
+        - ["UCD-SNMP-MIB"]
     switch_profile:
       frequency: 60
       varBinds:
-        - ['IF-MIB']
-        - ['UCD-SNMP-MIB']
+        - ["IF-MIB", "ifDescr"]
+        - ["IF-MIB", "ifAdminStatus"]
+        - ["IF-MIB", "ifOperStatus"]
+        - ["IF-MIB", "ifName"]
+        - ["IF-MIB", "ifAlias"]
+        - ["IF-MIB", "ifIndex"]
+        - ["IF-MIB", "ifInDiscards"]
+        - ["IF-MIB", "ifInErrors"]
+        - ["IF-MIB", "ifInOctets"]
+        - ["IF-MIB", "ifOutDiscards"]
+        - ["IF-MIB", "ifOutErrors"]
+        - ["IF-MIB", "ifOutOctets"]
+        - ["IF-MIB", "ifOutQLen"]
+        - ["UCD-SNMP-MIB"]
   groups: |
     switch_group:
       - address: 10.202.4.201
@@ -30,7 +56,7 @@ scheduler:
         port: 163
 ```
 
-Then we need to pass the proper instruction of what to do for SC4SNMP instance. This can be done by appending a new row
+Then it is required to pass the proper instruction of what to do for SC4SNMP instance. This can be done by appending a new row
 to `poller.inventory`:
 
 ```yaml
@@ -38,8 +64,45 @@ poller:
   logLevel: "WARN"
   inventory: |
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    switch_group,,2c,public,,,2000,switch_profile,,
+    switch_group,,2c,public,,,2000,small_walk;switch_profile,,
 ```
+
+The provided configuration will make:
+
+1. Walk devices from `switch_group` with `IF-MIB` and `UCD-SNMP-MIB` every 2000 seconds
+2. Poll specific `IF-MIB` fields and the whole `UCD-SNMP-MIB` every 60 seconds
+
+Note: you could as well limit walk profile even more if you want to enhance the performance.
+
+It makes sense to put in the walk the textual values that don't required to be constantly monitored, and monitor only the metrics
+you're interested in:
+
+```
+small_walk:
+  condition:
+    type: "walk"
+  varBinds:
+    - ["IF-MIB", "ifDescr"]
+    - ["IF-MIB", "ifAdminStatus"]
+    - ["IF-MIB", "ifOperStatus"]
+    - ["IF-MIB", "ifName"]
+    - ["IF-MIB", "ifAlias"]
+    - ["IF-MIB", "ifIndex"]
+switch_profile:
+  frequency: 60
+  varBinds:
+    - ["IF-MIB", "ifInDiscards"]
+    - ["IF-MIB", "ifInErrors"]
+    - ["IF-MIB", "ifInOctets"]
+    - ["IF-MIB", "ifOutDiscards"]
+    - ["IF-MIB", "ifOutErrors"]
+    - ["IF-MIB", "ifOutOctets"]
+    - ["IF-MIB", "ifOutQLen"]
+```
+
+Then every metric object will be enriched with the textual values gathered from a walk process. Learn more about
+SNMP format [here](snmp-data-format.md).
+
 
 Now we're ready to reload SC4SNMP. We run the `helm3 upgrade` command:
 

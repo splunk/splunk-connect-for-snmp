@@ -3,11 +3,14 @@
 ## Unreleased
 
 ### Changed
+- add possibility to poll compound indexes (more than one value, ex. `['IP-MIB', 'ipAddressStatus', 'ipv4', '172.31.27.144']`)
 - add option to automatically poll SNMP objects based on provided conditions with conditional profiles
 - remove IF-MIB from the scope of the default small walk
 
 ### Fixed
 - possibility to use hostname instead of the bare ip address in polling
+- getting rid off `An error of SNMP isWalk=False for a host 54.91.99.113 occurred: tooBig at ?` with limiting maximum 
+number of varBinds polled at once `maxOidToProcess`
 
 ## [1.8.6]
 
