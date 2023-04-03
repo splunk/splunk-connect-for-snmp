@@ -7,18 +7,10 @@ We have 4 hosts we want to poll from:
 3. `10.202.4.203:161`
 4. `10.202.4.204:163`
    
-At the outset, it is essential to determine the specific data to be retrieved from the device. 
-By default, SC4SNMP executes a walk of the entire `1.3.6.1`. However, conducting a full walk may not always be necessary, 
-especially when the device contains an extensive range of Object Identifiers (OIDs). Hence, it is advisable to impose 
-a walk limitation to poll only the required data.
-
-For instance, if our primary interest is in gathering information about interfaces and some CPU-related statistics, 
-it is recommended to configure the `IF-MIB` family for interfaces and the `UCD-SNMP-MIB` for the CPU. This approach ensures 
-that only the necessary data is polled, improving the efficiency of the polling process.
-
-Within the `scheduler` section in `values.yaml`, two key actions will be taken. Firstly, we will define the target group 
-from which the desired data will be polled. Secondly, we will establish the specific polling parameters, known as the 
-profile, to determine precisely what data is to be gathered:
+To retrieve data from the device efficiently, first determine the specific data needed. Instead of walking through 
+the entire `1.3.6.1`, limit the walk to poll only the necessary data. Configure the `IF-MIB` family for interfaces and 
+the `UCD-SNMP-MIB` for CPU-related statistics. In the `scheduler` section of `values.yaml`, define the target group and 
+establish the polling parameters, known as the profile, to gather the desired data precisely:
 
 ```yaml
 scheduler:
@@ -155,7 +147,7 @@ Successfully connected to http://snmp-mibserver/index.csv
 {"message": "New Record address='10.202.4.204' port=163 version='2c' community='public' secret=None security_engine=None walk_interval=2000 profiles=['switch_profile'] smart_profiles=True delete=False", "time": "2022-09-05T14:30:30.607641", "level": "INFO"}
 ```
 
-In some time (depending of how long the walk takes), we'll see events under:
+In some time (depending on how long the walk takes), we'll see events under:
 
 ```yaml
 | mpreview index=netmetrics | search profiles=switch_profile
