@@ -1,4 +1,4 @@
-# Example polling scenario
+# An example of a polling scenario
 
 We have 4 hosts we want to poll from:
 
