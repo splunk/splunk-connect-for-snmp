@@ -8,7 +8,7 @@ on:
 jobs:
   call-workflow-preview:
     permissions:
-      contents: read
+      contents: write
       packages: write
     uses: splunk/addonfactory-github-workflows/.github/workflows/reusable-release-notes.yaml@v1.2.1
     secrets:
