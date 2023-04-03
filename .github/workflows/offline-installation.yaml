@@ -9,7 +9,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - name: Check out code
