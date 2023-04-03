@@ -1085,7 +1085,7 @@ replacing the IP address <code>10.0.101.22</code> with the server IP address whe
 <p>NOTE: Before polling starts, SC4SNMP must perform SNMP WALK process on the device. It is run first time after configuring the new device, and then the run time in every <code>walk_interval</code>. 
 Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
 In such cases, enable the small walk. See: <a href="../../bestpractices/#walking-a-device-takes-too-much-time">walk takes too much time</a>.
-When the walk finishes, events appear in Splunk. Confirm the walk with the following queries:</p>
+When the walk finishes, events appear in Splunk.</p>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <p>A good way to start with SC4SNMP polling is to follow the <a href="../../configuration/step-by-step-poll/">Step by Step guide for polling</a>.
 Advanced configuration of polling is available in <a href="../../configuration/poller-configuration/">Poller configuration</a> section
