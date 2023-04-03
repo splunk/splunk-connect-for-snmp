@@ -7,6 +7,12 @@ on production configuration.
 
 ## Installation process
 
+
+### Offline installation
+
+For offline installation instructions see [this page](../offlineinstallation/offline-sc4snmp.md).
+
+
 ### Online installation
 
 #### Add SC4SNMP repository
@@ -19,7 +25,7 @@ Now the package should be visible in `helm3` search command result:
 microk8s helm3 search repo snmp
 ```
 Example output:
-``` 
+```
 NAME                                               CHART VERSION  APP VERSION    DESCRIPTION                           
 splunk-connect-for-snmp/splunk-connect-for-snmp        1.0.0        1.0.0       A Helm chart for SNMP Connect for SNMP
 ```
@@ -52,10 +58,6 @@ Use the following command to propagate configuration changes:
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
 
-### Offline installation
-
-For offline installation instructions see [this page](../offlineinstallation/offline-sc4snmp.md).
-
 ## Verification of the deployment
 
 In a few minutes, all pods should be up and running. It can be verified with:
@@ -79,7 +81,7 @@ snmp-splunk-connect-for-snmp-trap-78759bfc8b-79m6d            1/1     Running   
 snmp-splunk-connect-for-snmp-inventory-mjccw                  0/1     Completed 0          6s
 ```
 
-The output may differ depending on the config. The example from the above have both polling and traps configured,
+The output may vary depending on the configuration. In the above example, both polling and traps are configured, 
 and the data is being sent to Splunk.
 
 If you have `traps` configured, you should see `EXTERNAL-IP` in `snmp-splunk-connect-for-snmp-trap` service.
@@ -89,7 +91,7 @@ Check it using the command:
 microk8s kubectl get svc -n sc4snmp 
 ```
 
-An example the correct setup is:
+Here is an example of the correct setup:
 
 ```
 NAME                                TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
@@ -128,7 +130,7 @@ index="netops" sourcetype="sc4snmp:traps"
 #### Test SNMP Poller
 
 1. To test SNMP poller, you can either use the device you already have, or configure snmpd on your Linux system. 
-Snmpd needs to be configured to listen on the external IP. To enable listening snmpd to external IP, go to the `/etc/snmp/snmpd.conf` configuration file, and replace the IP address `10.0.101.22` with the server IP address where snmpd is configured.
+Snmpd needs to be configured to listen on the external IP. To enable listening snmpd to external IP, go to the `/etc/snmp/snmpd.conf` configuration file, and replace the IP address `10.0.101.22` with the server IP address where snmpd is configured:
 `agentaddress  10.0.101.22,127.0.0.1,[::1]`. Restart snmpd through the execute command:
 
 ``` bash
@@ -169,7 +171,7 @@ When the walk finishes, events appear in Splunk.
 ## Next Steps
 
 A good way to start with SC4SNMP polling is to follow the [Step by Step guide for polling](../configuration/step-by-step-poll.md).
-Advanced configuration of polling is available in [Poller configuration](../configuration/poller-configuration.md) section
+Advanced configuration of polling is available in [Poller configuration](../configuration/poller-configuration.md) section.
 SNMP data format is explained in [SNMP data format](../configuration/snmp-data-format.md) section.
 
 For advanced trap configuration, check the [Traps configuration](../configuration/trap-configuration.md) section.
