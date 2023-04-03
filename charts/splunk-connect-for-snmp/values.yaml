@@ -101,46 +101,46 @@ scheduler:
   # Create a profile definition to set varbinds you want to poll from the device.
   # more on this: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-profiles/
 
-#  profiles: |
-#    smart_profile:
-#      frequency: 100
-#      condition:
-#        type: field
-#        field: "SNMPv2-MIB.sysDescr"
-#        patterns:
-#          - '.*linux.*'
-#      varBinds:
-#        - ['SNMPv2-MIB']
-#        - ['SNMPv2-MIB', 'sysName']
-#        - ['SNMPv2-MIB', 'sysUpTime',0]
-#    static_profile:
-#      frequency: 300
-#      varBinds:
-#        - ['IP-MIB']
-#    small_walk:
-#      condition:
-#        type: "walk"
-#      varBinds:
-#        - ['IF-MIB', 'ifDescr']
-#        - ['IF-MIB', 'ifAdminStatus']
-#        - ['IF-MIB', 'ifOperStatus']
-#        - ['IF-MIB', 'ifName']
-#        - ['IF-MIB', 'ifAlias']
-#        - ['IF-MIB', 'ifIndex']
-#    conditional_profile:
-#      frequency: 30
-#      conditions:
-#        - field: IF-MIB.ifAdminStatus
-#          operation: "equals"
-#          value: "up"
-#        - field: IF-MIB.ifOperStatus
-#          operation: "equals"
-#          value: "up"
-#      varBinds:
-#        - ['IF-MIB', 'ifDescr']
-#        - ['IF-MIB', 'ifAlias']
-#        - ['IF-MIB', 'ifInErrors']
-#        - ['IF-MIB', 'ifOutDiscards']
+  #profiles: |
+  #  smart_profile:
+  #    frequency: 100
+  #    condition:
+  #      type: field
+  #      field: "SNMPv2-MIB.sysDescr"
+  #      patterns:
+  #        - '.*linux.*'
+  #    varBinds:
+  #      - ['SNMPv2-MIB']
+  #      - ['SNMPv2-MIB', 'sysName']
+  #      - ['SNMPv2-MIB', 'sysUpTime',0]
+  #  static_profile:
+  #    frequency: 300
+  #    varBinds:
+  #      - ['IP-MIB']
+  #  small_walk:
+  #    condition:
+  #      type: "walk"
+  #    varBinds:
+  #      - ['IF-MIB', 'ifDescr']
+  #      - ['IF-MIB', 'ifAdminStatus']
+  #      - ['IF-MIB', 'ifOperStatus']
+  #      - ['IF-MIB', 'ifName']
+  #      - ['IF-MIB', 'ifAlias']
+  #      - ['IF-MIB', 'ifIndex']
+  #  conditional_profile:
+  #    frequency: 30
+  #    conditions:
+  #      - field: IF-MIB.ifAdminStatus
+  #        operation: "equals"
+  #        value: "up"
+  #      - field: IF-MIB.ifOperStatus
+  #        operation: "equals"
+  #        value: "up"
+  #    varBinds:
+  #      - ['IF-MIB', 'ifDescr']
+  #      - ['IF-MIB', 'ifAlias']
+  #      - ['IF-MIB', 'ifInErrors']
+  #      - ['IF-MIB', 'ifOutDiscards']
 
   # mapping MIB fields to custom names
   # more: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-profiles/#custom-translations
