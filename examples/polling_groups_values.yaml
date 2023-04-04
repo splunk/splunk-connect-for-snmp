@@ -1,0 +1,25 @@
+splunk:
+  enabled: true
+  protocol: https
+  host: i-0d903f60788be4c68.ec2.splunkit.io
+  token: 00000000-0000-0000-0000-000000000000
+  insecureSSL: "true"
+  port: "8088"
+scheduler:
+  groups: |
+    switch_group:
+      - address: 10.202.4.201
+      - address: 10.202.4.202
+      - address: 10.202.4.203
+      - address: 10.202.4.204
+        port: 163
+  profiles: |
+    switch_profile:
+      frequency: 60
+      varBinds:
+        - ['IF-MIB']
+        - ['UCD-SNMP-MIB']
+poller:
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+    switch_group,,2c,public,,,2000,switch_profile,,

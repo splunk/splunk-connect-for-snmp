@@ -82,9 +82,10 @@ class TestPrepare(TestCase):
             "frequency": 15,
             "result": {
                 "SOME_GROUP_KEY1": {
+                    "indexes": [6],
                     "metrics": {
                         "metric_one": {"value": 23},
-                        "metric_two": {"value": 26, "index": "6"},
+                        "metric_two": {"value": 26},
                     },
                     "fields": {
                         "field_one": {"value": "on"},

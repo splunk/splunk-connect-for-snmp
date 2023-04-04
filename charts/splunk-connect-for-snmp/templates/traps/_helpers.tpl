@@ -31,18 +31,6 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
-Common labels
-*/}}
-{{- define "splunk-connect-for-snmp.traps.labels" -}}
-helm.sh/chart: {{ include "splunk-connect-for-snmp.traps.chart" . }}
-{{ include "splunk-connect-for-snmp.traps.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
 Selector labels
 */}}
 {{- define "splunk-connect-for-snmp.traps.selectorLabels" -}}
@@ -51,12 +39,9 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Create the name of the service account to use
+Common labels
 */}}
-{{- define "splunk-connect-for-snmp.traps.serviceAccountName" -}}
-{{- if .Values.traps.serviceAccount.create }}
-{{- default (include "splunk-connect-for-snmp.traps.fullname" .) .Values.traps.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.traps.serviceAccount.name }}
-{{- end }}
+{{- define "splunk-connect-for-snmp.traps.labels" -}}
+{{ include "splunk-connect-for-snmp.traps.selectorLabels" . }}
+{{ include "splunk-connect-for-snmp.labels" . }}
 {{- end }}

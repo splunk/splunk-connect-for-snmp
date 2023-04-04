@@ -3,7 +3,7 @@
 Profiles are the units where you can configure what you want to poll, and then assign them to the device. The definition of profile can be found in the `values.yaml` file
 under the `scheduler` section.
 
-Here are the instructions on how to use profiles: [Update Inventory and Profile](../deployment-configuration/#update-inventory-and-profile). 
+Here are the instructions on how to use profiles: [Update Inventory and Profile](../poller-configuration/#update-inventory). 
 
 There are two types of profiles in general:
 
@@ -159,9 +159,8 @@ poller:
     10.202.4.202,,2c,public,,,2000,small_walk,,
 ```
 
-NOTE: When small walk is configured, you can set up polling only of OIDs belonging to the walk profile varBinds. 
-Additionally, there are two MIB families that are enabled by default (we need them to create the state of the device in the database and poll base profiles): `IF-MIB` and `SNMPv2-MIB`.
-For example, if you've decided to use `small_walk` from the example above, you'll be able to poll only `UDP-MIB`, `IF-MIB`, and `SNMPv2-MIB` OIDs.
+NOTE: When small walk is configured, `SNMPv2-MIB` is enabled by default (we need it to create the state of the device in the database).
+For example, if you've decided to use `small_walk` from the example above, you'll be able to poll only `UDP-MIB`, and `SNMPv2-MIB` OIDs.
 
 
 ## SmartProfile configuration
@@ -214,6 +213,63 @@ scheduler:
 
 NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 1 minute for changes to propagate. In case you changed frequency, or a profile type, the change will be reflected only after the next walk.
 There is also 5 minute TTL for an inventory pod. Basically, SC4SNMP allows one inventory upgrade and then block updates for the next 5 minutes.
+
+## Conditional profiles
+There is a way to not explicitly give what SNMP objects we want to poll - only the conditions that must be fulfilled to
+qualify object for polling.
+
+An example of a conditional profile is:
+
+```yaml
+IF_conditional_profile:
+  frequency: 30
+  conditions:
+    - field: IF-MIB.ifAdminStatus
+      operation: "equals" 
+      value: "up"
+    - field: IF-MIB.ifOperStatus
+      operation: "equals"
+      value: "up"
+  varBinds:
+    - [ 'IF-MIB', 'ifDescr' ]
+    - [ 'IF-MIB', 'ifAlias' ]
+    - [ 'IF-MIB', 'ifInErrors' ]
+    - [ 'IF-MIB', 'ifOutDiscards' ]
+```
+
+When the such profile is defined and added to a device in an inventory, it will poll all interfaces where `ifAdminStatus`
+and `ifOperStatus` is up. Note that conditional profiles are being evaluated during the walk process (on every `walk_interval`)
+and if the status changes in between, the scope of the conditional profile won't be modified.
+
+These are operations possible to use in conditional profiles:
+
+1. `equals` - value gathered from `field` is equal to `value`
+2. `gt` - value gathered from `field` is bigger than `value` (works only for numeric values)
+3. `lt` - value gathered from `field` is smaller than `value` (works only for numeric values)
+4. `in` - value gathered from `field` is equal to one of the elements provided in `value`, for ex.:
+
+```yaml
+conditions:
+  - field: IF-MIB.ifAdminStatus
+    operation: "in"
+    value: 
+      - "down"
+      - 0
+```
+
+`field` part of `conditions` must fulfill the pattern `MIB-family.field`. Fields must represent textual value (not metric one),
+you can learn more about it [here](snmp-data-format.md).
+
+You have to explicitly define `varBinds` (not only the MIB family but also the field to poll), so such config:
+
+```yaml
+varBinds:
+- [ 'IF-MIB' ]
+```
+
+is not correct.
+
+
 
 ## Custom translations
 If the user wants to use custom names/translations of MIB names, it can be configured under the customTranslations section under scheduler config.

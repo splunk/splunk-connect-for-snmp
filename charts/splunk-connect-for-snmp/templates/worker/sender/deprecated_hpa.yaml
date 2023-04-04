@@ -1,0 +1,22 @@
+{{- if and ( eq ( toString .Values.worker.sender.autoscaling.enabled) "true") ( eq ( toString .Values.useDeprecatedAPI ) "true" ) }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-sender
+  labels:
+    {{- include "splunk-connect-for-snmp.worker.sender.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-sender
+  minReplicas: {{ .Values.worker.sender.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.worker.sender.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.worker.sender.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.worker.sender.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+{{- end }}

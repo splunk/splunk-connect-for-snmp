@@ -26,13 +26,20 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "splunk-connect-for-snmp.sim.serviceAccountName" . }}
+      serviceAccountName: {{ include "splunk-connect-for-snmp.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.sim.podSecurityContext | nindent 8 }}
+        fsGroup: 10001
       containers:
         - name: {{ .Chart.Name }}-sim
           securityContext:
-            {{- toYaml .Values.sim.securityContext | nindent 12 }}
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
           image: {{ .Values.sim.image | default "quay.io/signalfx/splunk-otel-collector" }}:{{ .Values.sim.tag | default "0.41.0" }}
           imagePullPolicy: {{ .Values.sim.pullPolicy | default "IfNotPresent" }}
           args: ["--config=/config/otel-collector-config.yaml"]

@@ -63,7 +63,9 @@ In order to add your MIB files to the MIB server in standalone SC4SNMP installat
 `/home/user/local_mibs/VENDOR1` and `/home/user/local_mibs/VENDOR2` and put files inside accordingly. Putting wrong 
 vendor names won't make compilation fail, this is more for the logging purposes. Segregating your files will make 
 troubleshooting easier.
-3.  Add following config to the `values.yaml`:
+3. MIB files should be named the same as the contained MIB module. The MIB module name is specified at the beginning of
+the MIB file before `::= BEGIN` keyword.
+4. Add following config to the `values.yaml`:
 
 ```yaml
 mibserver:

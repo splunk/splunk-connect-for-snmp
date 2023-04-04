@@ -1,4 +1,4 @@
-{{- if .Values.worker.trap.autoscaling.enabled }}
+{{- if and ( eq (include "splunk-connect-for-snmp.traps.enable" .) "true" ) ( eq ( toString .Values.worker.trap.autoscaling.enabled) "true") ( eq (toString .Values.useDeprecatedAPI) "false" ) }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

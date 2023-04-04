@@ -197,8 +197,9 @@ def prepare(self, work):
                 metric["fields"][f"metric_name:sc4snmp.{field}"] = valueAsBest(
                     values["value"]
                 )
-                if METRICS_INDEXING_ENABLED and "index" in values:
-                    metric["fields"]["mibIndex"] = values["index"]
+            if METRICS_INDEXING_ENABLED and "indexes" in data:
+                indexes_to_string = [str(index) for index in data["indexes"]]
+                metric["fields"]["mibIndex"] = ".".join(indexes_to_string)
             metrics.append(json.dumps(metric, indent=None))
         else:
             event = {

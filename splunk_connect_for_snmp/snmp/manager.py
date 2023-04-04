@@ -21,6 +21,7 @@ from requests import Session
 
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
 from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
+from splunk_connect_for_snmp.snmp.varbinds_resolver import ProfileCollection
 
 try:
     from dotenv import load_dotenv
@@ -61,6 +62,7 @@ IGNORE_EMPTY_VARBINDS = human_bool(os.getenv("IGNORE_EMPTY_VARBINDS", False))
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "60"))
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 3))
+MAX_OID_TO_PROCESS = int(os.getenv("MAX_OID_TO_PROCESS", 70))
 
 DEFAULT_STANDARD_MIBS = [
     "HOST-RESOURCES-MIB",
@@ -216,20 +218,27 @@ def extract_index_number(index):
     return index_number
 
 
-def extract_index_oid_part(varBind):
+def extract_indexes(index):
     """
-    Extracts index from OIDs of metrics.
+    Extracts indexes from OIDs of metrics.
     Not always MIB files are structurized the way one of the field is a meaningful index.
-    https://stackoverflow.com/questions/58886693/how-to-standardize-oid-index-retrieval-in-pysnmp
-    :param varBind: pysnmp object retrieved from a device
-    :return: str
+    :param index: pysnmp object retrieved from a device
+    :return: list
     """
-    object_identity, _ = varBind
-    mib_node = object_identity.getMibNode()
-    object_instance_oid = object_identity.getOid()
-    object_oid = mib_node.getName()
-    index_part = object_instance_oid[len(object_oid) :]
-    return str(index_part)
+    indexes_to_return = []
+    if not index:
+        return [0]
+    if isinstance(index, tuple):
+        for element in index:
+            if isinstance(element._value, bytes):
+                element_value = ".".join(str(byte) for byte in element._value)
+                indexes_to_return.append(element_value)
+            elif isinstance(element._value, tuple):
+                element_value = list(element)
+                indexes_to_return += element_value
+            else:
+                indexes_to_return.append(element._value)
+    return indexes_to_return
 
 
 class Poller(Task):
@@ -252,6 +261,8 @@ class Poller(Task):
 
         self.profiles_manager = ProfilesManager(self.mongo_client)
         self.profiles = self.profiles_manager.return_collection()
+        self.profiles_collection = ProfileCollection(self.profiles)
+        self.profiles_collection.process_profiles()
         self.last_modified = time.time()
         self.snmpEngine = SnmpEngine()
         self.already_loaded_mibs = set()
@@ -288,6 +299,7 @@ class Poller(Task):
 
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY or walk:
             self.profiles = self.profiles_manager.return_collection()
+            self.profiles_collection.update(self.profiles)
             self.last_modified = time.time()
             logger.debug("Profiles reloaded")
 
@@ -308,7 +320,6 @@ class Poller(Task):
             return False, {}
 
         if varbinds_bulk:
-
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
                 self.snmpEngine,
                 authData,
@@ -338,18 +349,24 @@ class Poller(Task):
                         )
 
         if varbinds_get:
-            for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
-                self.snmpEngine, authData, transport, contextData, *varbinds_get
+            # some devices cannot process more OID than X, so it is necessary to divide it on chunks
+            for varbind_chunk in self.get_varbind_chunk(
+                varbinds_get, MAX_OID_TO_PROCESS
             ):
-                if not _any_failure_happened(
-                    errorIndication,
-                    errorStatus,
-                    errorIndex,
-                    varBindTable,
-                    ir.address,
-                    walk,
+                for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
+                    self.snmpEngine, authData, transport, contextData, *varbind_chunk
                 ):
-                    self.process_snmp_data(varBindTable, metrics, address, get_mapping)
+                    if not _any_failure_happened(
+                        errorIndication,
+                        errorStatus,
+                        errorIndex,
+                        varBindTable,
+                        ir.address,
+                        walk,
+                    ):
+                        self.process_snmp_data(
+                            varBindTable, metrics, address, get_mapping
+                        )
 
         for group_key, metric in metrics.items():
             if "profiles" in metrics[group_key]:
@@ -358,6 +375,10 @@ class Poller(Task):
                 )
 
         return retry, metrics
+
+    def get_varbind_chunk(self, lst, n):
+        for i in range(0, len(lst), n):
+            yield lst[i : i + n]
 
     def load_mibs(self, mibs: List[str]) -> None:
         logger.info(f"loading mib modules {mibs}")
@@ -389,86 +410,30 @@ class Poller(Task):
         bulk_mapping = {}
         if walk and not profiles:
             varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
-        else:
-            needed_mibs = []
-            if walk and profiles:
-                # as we have base profile configured, we need to make sure that those two MIB families are walked
-                required_bulk = {"IF-MIB": None, "SNMPv2-MIB": None}
-            else:
-                required_bulk = {}
+            return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
-            # First pass we only look at profiles for a full mib walk
-            for profile in profiles:
-                # In case scheduler processes doesn't yet updated profiles information
-                if profile not in self.profiles:
-                    self.profiles = self.profiles_manager.return_collection()
-                    self.last_modified = time.time()
-                # Its possible a profile is removed on upgrade but schedule doesn't yet know
-                if profile in self.profiles and "varBinds" in self.profiles[profile]:
-                    profile_spec = self.profiles[profile]
-                    profile_varbinds = profile_spec["varBinds"]
-                    for vb in profile_varbinds:
-                        if len(vb) == 1:
-                            if vb[0] not in required_bulk:
-                                required_bulk[vb[0]] = None
-                                if not walk:
-                                    bulk_mapping[f"{vb[0]}"] = profile
-                        if vb[0] not in needed_mibs:
-                            needed_mibs.append(vb[0])
-                else:
-                    logger.warning(
-                        f"There is either profile: {profile} missing from the configuration, or varBinds section not"
-                        f"present inside the profile"
-                    )
-
-            for profile in profiles:
-                # Its possible a profile is removed on upgrade but schedule doesn't yet know
-                if profile in self.profiles and "varBinds" in self.profiles[profile]:
-                    profile_spec = self.profiles[profile]
-                    profile_varbinds = profile_spec["varBinds"]
-                    for vb in profile_varbinds:
-                        if len(vb) == 2:
-                            if vb[0] not in required_bulk or (
-                                required_bulk[vb[0]]
-                                and vb[1] not in required_bulk[vb[0]]
-                            ):
-                                if vb[0] not in required_bulk:
-                                    required_bulk[vb[0]] = [vb[1]]
-                                else:
-                                    required_bulk[vb[0]].append(vb[1])
-                                if not walk:
-                                    bulk_mapping[f"{vb[0]}:{vb[1]}"] = profile
-
-            for mib, entries in required_bulk.items():
-                if entries is None:
-                    varbinds_bulk.add(ObjectType(ObjectIdentity(mib)))
-                else:
-                    for entry in entries:
-                        varbinds_bulk.add(ObjectType(ObjectIdentity(mib, entry)))
-
-            for profile in profiles:
-                # Its possible a profile is removed on upgrade but schedule doesn't yet know
-                if profile in self.profiles and "varBinds" in self.profiles[profile]:
-                    profile_spec = self.profiles[profile]
-                    profile_varbinds = profile_spec["varBinds"]
-                    for vb in profile_varbinds:
-                        if len(vb) == 3:
-                            if vb[0] not in required_bulk or (
-                                required_bulk[vb[0]]
-                                and vb[1] not in required_bulk[vb[0]]
-                            ):
-                                varbinds_get.add(
-                                    ObjectType(ObjectIdentity(vb[0], vb[1], vb[2]))
-                                )
-                                if not walk:
-                                    get_mapping[f"{vb[0]}:{vb[1]}:{vb[2]}"] = profile
-            self.load_mibs(needed_mibs)
-
+        joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
+            profiles, walk
+        )
+        if joined_profile_object:
+            mib_families = joined_profile_object.get_mib_families()
+            mib_files_to_load = [
+                mib_family
+                for mib_family in mib_families
+                if mib_family not in self.already_loaded_mibs
+            ]
+            if mib_files_to_load:
+                self.load_mibs(mib_files_to_load)
+            (
+                varbinds_get,
+                get_mapping,
+                varbinds_bulk,
+                bulk_mapping,
+            ) = joined_profile_object.return_mapping_and_varbinds()
         logger.debug(f"host={address} varbinds_get={varbinds_get}")
         logger.debug(f"host={address} get_mapping={get_mapping}")
         logger.debug(f"host={address} varbinds_bulk={varbinds_bulk}")
         logger.debug(f"host={address} bulk_mapping={bulk_mapping}")
-
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
     def process_snmp_data(self, varBindTable, metrics, target, mapping={}):
@@ -485,9 +450,11 @@ class Poller(Task):
             if isMIBResolved(id):
                 group_key = get_group_key(mib, oid, index)
                 if group_key not in metrics:
+                    indexes = extract_indexes(index)
                     metrics[group_key] = {
                         "metrics": {},
                         "fields": {},
+                        "indexes": indexes,
                     }
                     if mapping:
                         metrics[group_key]["profiles"] = []
@@ -500,15 +467,16 @@ class Poller(Task):
                     metric_value = valueAsBest(snmp_val.prettyPrint())
 
                     index_number = extract_index_number(index)
-                    oid_index_part = extract_index_oid_part(varBind)
                     metric_value = fill_empty_value(index_number, metric_value, target)
 
                     profile = None
                     if mapping:
                         profile = mapping.get(
-                            f"{mib}:{metric}:{index_number}",
-                            mapping.get(f"{mib}:{metric}", mapping.get(mib)),
+                            id.replace('"', ""),
+                            mapping.get(f"{mib}::{metric}", mapping.get(mib)),
                         )
+                        if profile and "__" in profile:
+                            profile = profile.split("__")[0]
                     if metric_value == "No more variables left in this MIB View":
                         continue
 
@@ -517,7 +485,6 @@ class Poller(Task):
                             "time": time.time(),
                             "type": metric_type,
                             "value": metric_value,
-                            "index": oid_index_part,
                             "oid": oid,
                         }
                         if profile and profile not in metrics[group_key]["profiles"]:

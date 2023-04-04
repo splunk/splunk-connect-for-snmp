@@ -1,3 +1,4 @@
+{{- if eq (include "splunk-connect-for-snmp.traps.enable" .) "true" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -14,3 +15,4 @@ data:
       usernameSecrets:
 {{- toYaml .Values.traps.usernameSecrets | nindent 8 }}
 {{ end }}
+{{- end -}}

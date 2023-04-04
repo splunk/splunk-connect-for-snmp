@@ -1,4 +1,4 @@
-{{- if .Values.worker.sender.autoscaling.enabled }}
+{{- if and ( eq ( toString .Values.worker.sender.autoscaling.enabled) "true") ( eq ( toString .Values.useDeprecatedAPI ) "false" ) }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

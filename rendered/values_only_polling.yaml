@@ -1,0 +1,32 @@
+splunk:
+  enabled: true
+  protocol: https
+  host: 10.202.18.152
+  token: 00000000-0000-0000-0000-000000000000
+  insecureSSL: "true"
+  port: "8088"
+scheduler:
+  profiles: |
+    IF_profile:
+      frequency: 600
+      varBinds:
+        - [ "IF-MIB", "ifDescr" ]
+        - [ "IF-MIB", "ifAdminStatus" ]
+        - [ "IF-MIB", "ifName" ]
+        - [ 'IF-MIB','ifAlias' ]
+        - [ "IF-MIB", "ifInDiscards" ]
+        - [ "IF-MIB", "ifInErrors" ]
+        - [ "IF-MIB", "ifInNUcastPkts" ]
+        - [ "IF-MIB", "ifInOctets" ]
+        - [ "IF-MIB", "ifInUcastPkts" ]
+        - [ "IF-MIB", "ifInUnknownProtos" ]
+        - [ "IF-MIB", "ifOutDiscards" ]
+        - [ "IF-MIB", "ifOutErrors" ]
+        - [ "IF-MIB", "ifOutNUcastPkts" ]
+        - [ "IF-MIB", "ifOutOctets" ]
+        - [ "IF-MIB", "ifOutQLen" ]
+        - [ "IF-MIB", "ifOutUcastPkts" ]
+poller:
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+    54.91.99.113,,2c,public,,,1800,IF_profile,false,
