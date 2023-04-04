@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#example-polling-scenario" class="md-skip">
+        <a href="#an-example-of-a-polling-scenario" class="md-skip">
           Skip to content
         </a>
       
@@ -109,6 +109,39 @@
     </div>
     
     
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
     
     
   </nav>
@@ -257,21 +290,6 @@
 
   
   
-  
-    <li class="md-nav__item">
-      <a href="../../ha/" class="md-nav__link">
-        High Availability
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
     
   
   
@@ -279,18 +297,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_4">
+        <label class="md-nav__link" for="__nav_3">
           Configuration
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Configuration" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
+        <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
           Configuration
         </label>
@@ -321,18 +339,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_2">
+        <label class="md-nav__link" for="__nav_3_2">
           Polling
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Polling" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_2">
+        <label class="md-nav__title" for="__nav_3_2">
           <span class="md-nav__icon md-icon"></span>
           Polling
         </label>
@@ -536,6 +554,97 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Offline Installation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Offline Installation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Offline Installation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../offlineinstallation/offline-microk8s/" class="md-nav__link">
+        Install Microk8s
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../offlineinstallation/offline-sck/" class="md-nav__link">
+        Install Splunk OpenTelemetry Collector for Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../offlineinstallation/offline-sc4snmp/" class="md-nav__link">
+        Install SC4SNMP
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../small-environment/" class="md-nav__link">
+        Lightweight installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../planning/" class="md-nav__link">
         Planning
@@ -626,85 +735,9 @@
   
   
   
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" type="checkbox" id="__nav_11" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_11">
-          Offline Installation
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Offline Installation" data-md-level="1">
-        <label class="md-nav__title" for="__nav_11">
-          <span class="md-nav__icon md-icon"></span>
-          Offline Installation
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
     <li class="md-nav__item">
-      <a href="../../offlineinstallation/offline-microk8s/" class="md-nav__link">
-        Install Microk8s
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../offlineinstallation/offline-sck/" class="md-nav__link">
-        Install Splunk OpenTelemetry Collector for Kubernetes
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../offlineinstallation/offline-sc4snmp/" class="md-nav__link">
-        Install SC4SNMP
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../small-environment/" class="md-nav__link">
-        Lightweight installation
+      <a href="../../ha/" class="md-nav__link">
+        High Availability
       </a>
     </li>
   
@@ -742,7 +775,7 @@
                 
 
 
-<h1 id="example-polling-scenario">Example polling scenario<a class="headerlink" href="#example-polling-scenario" title="Permanent link">&para;</a></h1>
+<h1 id="an-example-of-a-polling-scenario">An example of a polling scenario<a class="headerlink" href="#an-example-of-a-polling-scenario" title="Permanent link">&para;</a></h1>
 <p>We have 4 hosts we want to poll from:</p>
 <ol>
 <li><code>10.202.4.201:161</code></li>
@@ -750,17 +783,36 @@
 <li><code>10.202.4.203:161</code></li>
 <li><code>10.202.4.204:163</code></li>
 </ol>
-<p>Let&rsquo;s say that we&rsquo;re interested mostly in information about interfaces and some CPU related data. For this purposes,
-we need to configure the <code>IF-MIB</code> family for interfaces, and <code>UCD-SNMP-MIB</code> for the CPU.</p>
-<p>We&rsquo;ll do two things under the <code>scheduler</code> section: define the group from which we want to poll, and the profile of what exactly will be polled:</p>
+<p>To retrieve data from the device efficiently, first determine the specific data needed. Instead of walking through 
+the entire <code>1.3.6.1</code>, limit the walk to poll only the necessary data. Configure the <code>IF-MIB</code> family for interfaces and 
+the <code>UCD-SNMP-MIB</code> for CPU-related statistics. In the <code>scheduler</code> section of <code>values.yaml</code>, define the target group and 
+establish the polling parameters, known as the profile, to gather the desired data precisely:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INFO&quot;</span><span class="w"></span>
 <span class="w">  </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
+<span class="w">    </span><span class="no">small_walk:</span><span class="w"></span>
+<span class="w">      </span><span class="no">condition:</span><span class="w"></span>
+<span class="w">        </span><span class="no">type: &quot;walk&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="no">varBinds:</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;UCD-SNMP-MIB&quot;]</span><span class="w"></span>
 <span class="w">    </span><span class="no">switch_profile:</span><span class="w"></span>
 <span class="w">      </span><span class="no">frequency: 60</span><span class="w"></span>
 <span class="w">      </span><span class="no">varBinds:</span><span class="w"></span>
-<span class="w">        </span><span class="no">- [&#39;IF-MIB&#39;]</span><span class="w"></span>
-<span class="w">        </span><span class="no">- [&#39;UCD-SNMP-MIB&#39;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifDescr&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifAdminStatus&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifOperStatus&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifName&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifAlias&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifIndex&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifInDiscards&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifInErrors&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifInOctets&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifOutDiscards&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifOutErrors&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifOutOctets&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;IF-MIB&quot;, &quot;ifOutQLen&quot;]</span><span class="w"></span>
+<span class="w">        </span><span class="no">- [&quot;UCD-SNMP-MIB&quot;]</span><span class="w"></span>
 <span class="w">  </span><span class="nt">groups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">    </span><span class="no">switch_group:</span><span class="w"></span>
 <span class="w">      </span><span class="no">- address: 10.202.4.201</span><span class="w"></span>
@@ -770,15 +822,47 @@ we need to configure the <code>IF-MIB</code> family for interfaces, and <code>UC
 <span class="w">        </span><span class="no">port: 163</span><span class="w"></span>
 </code></pre></div>
 
-<p>Then we need to pass the proper instruction of what to do for SC4SNMP instance. This can be done by appending a new row
+<p>Then it is required to pass the proper instruction of what to do for SC4SNMP instance. This can be done by appending a new row
 to <code>poller.inventory</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;WARN&quot;</span><span class="w"></span>
 <span class="w">  </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">    </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span><span class="w"></span>
-<span class="w">    </span><span class="no">switch_group,,2c,public,,,2000,switch_profile,,</span><span class="w"></span>
+<span class="w">    </span><span class="no">switch_group,,2c,public,,,2000,small_walk;switch_profile,,</span><span class="w"></span>
 </code></pre></div>
 
+<p>The provided configuration will make:</p>
+<ol>
+<li>Walk devices from <code>switch_group</code> with <code>IF-MIB</code> and <code>UCD-SNMP-MIB</code> every 2000 seconds</li>
+<li>Poll specific <code>IF-MIB</code> fields and the whole <code>UCD-SNMP-MIB</code> every 60 seconds</li>
+</ol>
+<p>Note: you could as well limit walk profile even more if you want to enhance the performance.</p>
+<p>It makes sense to put in the walk the textual values that don&rsquo;t required to be constantly monitored, and monitor only the metrics
+you&rsquo;re interested in:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">small_walk</span><span class="o">:</span><span class="w"></span>
+<span class="w">  </span><span class="n">condition</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">type</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;walk&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="n">varBinds</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifDescr&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifAdminStatus&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifOperStatus&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifName&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifAlias&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifIndex&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="n">switch_profile</span><span class="o">:</span><span class="w"></span>
+<span class="w">  </span><span class="n">frequency</span><span class="o">:</span><span class="w"> </span><span class="mi">60</span><span class="w"></span>
+<span class="w">  </span><span class="n">varBinds</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifInDiscards&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifInErrors&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifInOctets&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifOutDiscards&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifOutErrors&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifOutOctets&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;IF-MIB&quot;</span><span class="o">,</span><span class="w"> </span><span class="s2">&quot;ifOutQLen&quot;</span><span class="o">]</span><span class="w"></span>
+</code></pre></div>
+
+<p>Then every metric object will be enriched with the textual values gathered from a walk process. Learn more about
+SNMP format <a href="../snmp-data-format/">here</a>.</p>
 <p>Now we&rsquo;re ready to reload SC4SNMP. We run the <code>helm3 upgrade</code> command:</p>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</span><span class="w"></span>
 </code></pre></div>
@@ -821,7 +905,7 @@ to <code>poller.inventory</code>:</p>
 <span class="p p-Indicator">{</span><span class="s">&quot;message&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;New</span><span class="nv"> </span><span class="s">Record</span><span class="nv"> </span><span class="s">address=&#39;10.202.4.204&#39;</span><span class="nv"> </span><span class="s">port=163</span><span class="nv"> </span><span class="s">version=&#39;2c&#39;</span><span class="nv"> </span><span class="s">community=&#39;public&#39;</span><span class="nv"> </span><span class="s">secret=None</span><span class="nv"> </span><span class="s">security_engine=None</span><span class="nv"> </span><span class="s">walk_interval=2000</span><span class="nv"> </span><span class="s">profiles=[&#39;switch_profile&#39;]</span><span class="nv"> </span><span class="s">smart_profiles=True</span><span class="nv"> </span><span class="s">delete=False&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;time&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;2022-09-05T14:30:30.607641&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;level&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;INFO&quot;</span><span class="p p-Indicator">}</span><span class="w"></span>
 </code></pre></div>
 
-<p>In some time (depending of how long the walk takes), we&rsquo;ll see events under:</p>
+<p>In some time (depending on how long the walk takes), we&rsquo;ll see events under:</p>
 <div class="codehilite"><pre><span></span><code><span class="p p-Indicator">|</span><span class="err"> mpreview index=netmetrics | search profiles=switch_profile</span><span class="w"></span>
 </code></pre></div>
 
