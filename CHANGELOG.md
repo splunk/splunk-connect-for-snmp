@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [1.9.0]
+
 ### Changed
 - add possibility to poll compound indexes (more than one value, ex. `['IP-MIB', 'ipAddressStatus', 'ipv4', '172.31.27.144']`)
 - add option to automatically poll SNMP objects based on provided conditions with conditional profiles
