@@ -139,8 +139,9 @@ class InventoryProcessor:
                 self.inventory_records.append(host_group_object)
         else:
             self.logger.warning(
-                f"Group {group_name} doesn't exist in the configuration. Skipping..."
+                f"Group {group_name} doesn't exist in the configuration. Treating {group_name} as a hostname"
             )
+            self.single_hosts.append(source_object)
 
 
 class InventoryRecordManager:

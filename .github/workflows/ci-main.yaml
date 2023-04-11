@@ -136,7 +136,7 @@ jobs:
     if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
     steps:
       - uses: actions/checkout@v2
-      - name: Archieve repository
+      - name: Archive repository
         working-directory: /home/runner/work/splunk-connect-for-snmp
         run: tar -czf splunk-connect-for-snmp.tgz splunk-connect-for-snmp
       - name: Copy archived repository to scripts directory

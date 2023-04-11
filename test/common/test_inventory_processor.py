@@ -189,11 +189,11 @@ class TestInventoryProcessor(TestCase):
             inventory_processor.inventory_records, group_object_returned
         )
 
-    def test_get_group_hosts_no_group_found(self):
+    def test_get_group_hosts_hostname(self):
         group_manager = Mock()
         logger = Mock()
         group_object = {
-            "address": "group1",
+            "address": "ec2-54-91-99-115.compute-1.amazonaws.com",
             "port": "",
             "version": "2c",
             "community": "public",
@@ -206,10 +206,14 @@ class TestInventoryProcessor(TestCase):
         }
         inventory_processor = InventoryProcessor(group_manager, logger)
         group_manager.return_element.return_value = []
-        inventory_processor.get_group_hosts(group_object, "group1")
-        logger.warning.assert_called_with(
-            "Group group1 doesn't exist in the configuration. Skipping..."
+        inventory_processor.get_group_hosts(
+            group_object, "ec2-54-91-99-115.compute-1.amazonaws.com"
         )
+        logger.warning.assert_called_with(
+            "Group ec2-54-91-99-115.compute-1.amazonaws.com doesn't exist in the configuration. Treating ec2-54-91-99-115.compute-1.amazonaws.com as a hostname"
+        )
+        self.assertEqual(inventory_processor.single_hosts, [group_object])
+        self.assertEqual(inventory_processor.inventory_records, [])
 
     def test_process_line_comment(self):
         logger = Mock()
