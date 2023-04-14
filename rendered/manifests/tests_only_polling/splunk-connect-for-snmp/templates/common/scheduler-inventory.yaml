@@ -13,4 +13,4 @@ metadata:
 data:
   inventory.csv: |
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    54.82.41.24,,2c,public,,,1800,IF_profile,false,
+    54.91.99.113,,2c,public,,,1800,IF_profile,false,

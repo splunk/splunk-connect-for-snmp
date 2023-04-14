@@ -1,9 +1,9 @@
 ---
-# Source: splunk-connect-for-snmp/templates/common/scheduler-inventory.yaml
+# Source: splunk-connect-for-snmp/templates/common/scheduler-config.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: splunk-connect-for-snmp-inventory
+  name: splunk-connect-for-snmp-config
   labels:
     app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
     app.kubernetes.io/instance: release-name
@@ -11,6 +11,11 @@ metadata:
     app.kubernetes.io/version: "1.9.0"
     app.kubernetes.io/managed-by: Helm
 data:
-  inventory.csv: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    54.82.41.24,,2c,public,,,1800,IF_profile,false,
+  config.yaml: |-
+      communities:
+        public:
+          communityIndex:
+          contextEngineId:
+          contextName:
+          tag:
+          securityName:
