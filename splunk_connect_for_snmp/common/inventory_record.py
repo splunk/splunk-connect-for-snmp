@@ -96,24 +96,15 @@ class InventoryRecord(BaseModel):
 
     @validator("community", pre=True)
     def community_validator(cls, value):
-        if value is None or (isinstance(value, str) and value.strip() == ""):
-            return None
-        else:
-            return value
+        return cls.validate_str_return_none(value)
 
     @validator("secret", pre=True)
     def secret_validator(cls, value):
-        if value is None or (isinstance(value, str) and value.strip() == ""):
-            return None
-        else:
-            return value
+        return cls.validate_str_return_none(value)
 
     @validator("security_engine", pre=True)
     def security_engine_validator(cls, value):
-        if value is None or (isinstance(value, str) and value.strip() == ""):
-            return None
-        else:
-            return value
+        return cls.validate_str_return_none(value)
 
     @validator("walk_interval", pre=True)
     def walk_interval_validator(cls, value):
@@ -159,3 +150,10 @@ class InventoryRecord(BaseModel):
 
     def asdict(self) -> dict:
         return self.dict()
+
+    @classmethod
+    def validate_str_return_none(cls, value):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
+            return None
+        else:
+            return value

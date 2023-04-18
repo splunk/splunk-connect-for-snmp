@@ -27,7 +27,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except:
+except ModuleNotFoundError:
     pass
 import csv
 import os
@@ -46,7 +46,7 @@ from requests_cache import MongoCache
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
-from splunk_connect_for_snmp.snmp.auth import GetAuth
+from splunk_connect_for_snmp.snmp.auth import get_auth
 from splunk_connect_for_snmp.snmp.context import get_context_data
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
@@ -130,11 +130,11 @@ def _any_failure_happened(
     return False
 
 
-def isMIBResolved(id):
+def is_mib_resolved(mib_id):
     if (
-        id.startswith("RFC1213-MIB::")
-        or id.startswith("SNMPv2-SMI::enterprises.")
-        or id.startswith("SNMPv2-SMI::mib-2")
+        mib_id.startswith("RFC1213-MIB::")
+        or mib_id.startswith("SNMPv2-SMI::enterprises.")
+        or mib_id.startswith("SNMPv2-SMI::mib-2")
     ):
         return False
     else:
@@ -169,10 +169,10 @@ MTYPES_R = tuple(["ObjectIdentifier", "ObjectIdentity"])
 MTYPES = tuple(["cc", "c", "g"])
 
 
-def valueAsBest(value) -> Union[str, float]:
+def value_as_best(value) -> Union[str, float]:
     try:
         return float(value)
-    except:
+    except ValueError:
         return value
 
 
@@ -189,7 +189,7 @@ def map_metric_type(t, snmp_value):
     if metric_type in MTYPES:
         try:
             float(snmp_value)
-        except:
+        except ValueError:
             metric_type = "te"
     return metric_type
 
@@ -307,8 +307,8 @@ class Poller(Task):
             address, walk=walk, profiles=profiles
         )
 
-        authData = GetAuth(logger, ir, self.snmpEngine)
-        contextData = get_context_data()
+        auth_data = get_auth(logger, ir, self.snmpEngine)
+        context_data = get_context_data()
 
         transport = UdpTransportTarget(
             (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
@@ -320,11 +320,11 @@ class Poller(Task):
             return False, {}
 
         if varbinds_bulk:
-            for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
+            for (error_indication, error_status, error_index, var_bind_table,) in bulkCmd(
                 self.snmpEngine,
-                authData,
+                auth_data,
                 transport,
-                contextData,
+                context_data,
                 1,
                 10,
                 *varbinds_bulk,
@@ -332,20 +332,20 @@ class Poller(Task):
                 ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
             ):
                 if not _any_failure_happened(
-                    errorIndication,
-                    errorStatus,
-                    errorIndex,
-                    varBindTable,
+                    error_indication,
+                    error_status,
+                    error_index,
+                    var_bind_table,
                     ir.address,
                     walk,
                 ):
                     tmp_retry, tmp_mibs, _ = self.process_snmp_data(
-                        varBindTable, metrics, address, bulk_mapping
+                        var_bind_table, metrics, address, bulk_mapping
                     )
                     if tmp_mibs:
                         self.load_mibs(tmp_mibs)
                         self.process_snmp_data(
-                            varBindTable, metrics, address, bulk_mapping
+                            var_bind_table, metrics, address, bulk_mapping
                         )
 
         if varbinds_get:
@@ -353,19 +353,19 @@ class Poller(Task):
             for varbind_chunk in self.get_varbind_chunk(
                 varbinds_get, MAX_OID_TO_PROCESS
             ):
-                for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
-                    self.snmpEngine, authData, transport, contextData, *varbind_chunk
+                for (error_indication, error_status, error_index, var_bind_table,) in getCmd(
+                    self.snmpEngine, auth_data, transport, context_data, *varbind_chunk
                 ):
                     if not _any_failure_happened(
-                        errorIndication,
-                        errorStatus,
-                        errorIndex,
-                        varBindTable,
+                        error_indication,
+                        error_status,
+                        error_index,
+                        var_bind_table,
                         ir.address,
                         walk,
                     ):
                         self.process_snmp_data(
-                            varBindTable, metrics, address, get_mapping
+                            var_bind_table, metrics, address, get_mapping
                         )
 
         for group_key, metric in metrics.items():
@@ -436,18 +436,18 @@ class Poller(Task):
         logger.debug(f"host={address} bulk_mapping={bulk_mapping}")
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
-    def process_snmp_data(self, varBindTable, metrics, target, mapping={}):
+    def process_snmp_data(self, var_bind_table, metrics, target, mapping={}):
         i = 0
         retry = False
         remotemibs = []
-        for varBind in varBindTable:
+        for var_bind in var_bind_table:
             i += 1
-            mib, metric, index = varBind[0].getMibSymbol()
+            mib, metric, index = var_bind[0].getMibSymbol()
 
-            id = varBind[0].prettyPrint()
-            oid = str(varBind[0].getOid())
+            id_ = var_bind[0].prettyPrint()
+            oid = str(var_bind[0].getOid())
 
-            if isMIBResolved(id):
+            if is_mib_resolved(id_):
                 group_key = get_group_key(mib, oid, index)
                 if group_key not in metrics:
                     indexes = extract_indexes(index)
@@ -460,11 +460,11 @@ class Poller(Task):
                         metrics[group_key]["profiles"] = []
                 try:
 
-                    snmp_val = varBind[1]
+                    snmp_val = var_bind[1]
                     snmp_type = type(snmp_val).__name__
 
                     metric_type = map_metric_type(snmp_type, snmp_val)
-                    metric_value = valueAsBest(snmp_val.prettyPrint())
+                    metric_value = value_as_best(snmp_val.prettyPrint())
 
                     index_number = extract_index_number(index)
                     metric_value = fill_empty_value(index_number, metric_value, target)
@@ -472,7 +472,7 @@ class Poller(Task):
                     profile = None
                     if mapping:
                         profile = mapping.get(
-                            id.replace('"', ""),
+                            id_.replace('"', ""),
                             mapping.get(f"{mib}::{metric}", mapping.get(mib)),
                         )
                         if profile and "__" in profile:
@@ -498,10 +498,10 @@ class Poller(Task):
                         }
                 except:
                     logger.exception(
-                        f"Exception processing data from {target} {varBind}"
+                        f"Exception processing data from {target} {var_bind}"
                     )
             else:
-                found, mib = self.is_mib_known(id, oid, target)
+                found, mib = self.is_mib_known(id_, oid, target)
                 if mib and mib not in remotemibs:
                     remotemibs.append(mib)
                 if found:

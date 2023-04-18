@@ -26,7 +26,7 @@ def splunk_single_search(service, search):
         job = service.jobs.create(search, **kwargs_normal_search)
         while True:
             while not job.is_ready():
-                pass
+                continue
             stats = {
                 "isDone": job["isDone"],
                 "doneProgress": float(job["doneProgress"]) * 100,
@@ -170,7 +170,7 @@ def create_v3_secrets(
 
 
 def wait_for_pod_initialization():
-    script_body = f""" 
+    script_body = """ 
     while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep "worker-trap" | grep Running | wc -l)" != "1" ] ; do
         echo "Waiting for POD initialization..."
         sleep 1

@@ -5,7 +5,7 @@ from splunk_connect_for_snmp.snmp.manager import Poller
 
 
 class TestProcessSnmpData(TestCase):
-    @patch("splunk_connect_for_snmp.snmp.manager.isMIBResolved")
+    @patch("splunk_connect_for_snmp.snmp.manager.is_mib_resolved")
     @patch("splunk_connect_for_snmp.snmp.manager.get_group_key")
     @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number")
@@ -80,7 +80,7 @@ class TestProcessSnmpData(TestCase):
             metrics,
         )
 
-    @patch("splunk_connect_for_snmp.snmp.manager.isMIBResolved")
+    @patch("splunk_connect_for_snmp.snmp.manager.is_mib_resolved")
     @patch("splunk_connect_for_snmp.snmp.manager.get_group_key")
     @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number")
@@ -161,7 +161,7 @@ class TestProcessSnmpData(TestCase):
             metrics,
         )
 
-    @patch("splunk_connect_for_snmp.snmp.manager.isMIBResolved")
+    @patch("splunk_connect_for_snmp.snmp.manager.is_mib_resolved")
     @patch("splunk_connect_for_snmp.snmp.manager.get_group_key")
     @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number")
@@ -237,7 +237,7 @@ class TestProcessSnmpData(TestCase):
             metrics,
         )
 
-    @patch("splunk_connect_for_snmp.snmp.manager.isMIBResolved")
+    @patch("splunk_connect_for_snmp.snmp.manager.is_mib_resolved")
     @patch("splunk_connect_for_snmp.snmp.manager.get_group_key")
     @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number")

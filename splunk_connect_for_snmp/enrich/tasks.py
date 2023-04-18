@@ -23,7 +23,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except:
+except ModuleNotFoundError:
     pass
 
 import os
@@ -82,8 +82,8 @@ def check_restart(current_target, result, targets_collection, address):
 
 
 class EnrichTask(Task):
-    def __init__(self):
-        pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 @shared_task(bind=True, base=EnrichTask)
@@ -146,7 +146,7 @@ def enrich(self, result):
                 cv = current_attributes["fields"][field_key_hash]
 
             # if new field_value is different than the previous one, update
-            if cv and not cv == field_value:
+            if cv and cv != field_value:
                 # modifed
                 attribute_updates.append(
                     {"$set": {f"fields.{field_key_hash}": field_value}}

@@ -41,7 +41,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except:
+except ModuleNotFoundError:
     pass
 
 formatter = CustomisedJSONFormatter()

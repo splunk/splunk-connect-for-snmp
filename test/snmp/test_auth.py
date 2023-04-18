@@ -8,13 +8,13 @@ from pysnmp.entity.config import (
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.auth import (
-    GetAuth,
+    get_auth,
     fetch_security_engine_id,
     get_secret_value,
     get_security_engine_id,
-    getAuthV1,
-    getAuthV2c,
-    getAuthV3,
+    get_auth_v1,
+    get_auth_v2c,
+    get_auth_v3,
 )
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
@@ -161,7 +161,7 @@ class TestAuth(TestCase):
         logger = Mock()
         snmpEngine = Mock()
 
-        result = getAuthV3(logger, ir, snmpEngine)
+        result = get_auth_v3(logger, ir, snmpEngine)
 
         self.assertEqual("secret1", result.userName)
         self.assertEqual("secret2", result.authKey)
@@ -208,7 +208,7 @@ class TestAuth(TestCase):
             }
         )
 
-        result = getAuthV3(logger, ir2, snmpEngine)
+        result = get_auth_v3(logger, ir2, snmpEngine)
 
         m_get_security_engine_id.assert_called()
 
@@ -240,33 +240,33 @@ class TestAuth(TestCase):
         snmpEngine = Mock()
 
         with self.assertRaises(Exception) as e:
-            getAuthV3(logger, ir, snmpEngine)
+            get_auth_v3(logger, ir, snmpEngine)
         self.assertEqual("invalid username from secret secret_ir", e.exception.args[0])
 
     def test_getAuthV2c(self):
-        result = getAuthV2c(ir)
+        result = get_auth_v2c(ir)
         self.assertEqual("public", result.communityName)
         self.assertEqual(1, result.mpModel)
 
     def test_getAuthV1(self):
-        result = getAuthV1(ir)
+        result = get_auth_v1(ir)
         self.assertEqual("public", result.communityName)
         self.assertEqual(0, result.mpModel)
 
-    @patch("splunk_connect_for_snmp.snmp.auth.getAuthV1")
+    @patch("splunk_connect_for_snmp.snmp.auth.get_auth_v1")
     def test_getAuth1(self, m_get_auth):
         ir.version = "1"
-        GetAuth(Mock(), ir, Mock())
+        get_auth(Mock(), ir, Mock())
         m_get_auth.assert_called()
 
-    @patch("splunk_connect_for_snmp.snmp.auth.getAuthV2c")
+    @patch("splunk_connect_for_snmp.snmp.auth.get_auth_v2c")
     def test_getAuth2(self, m_get_auth):
         ir.version = "2c"
-        GetAuth(Mock(), ir, Mock())
+        get_auth(Mock(), ir, Mock())
         m_get_auth.assert_called()
 
-    @patch("splunk_connect_for_snmp.snmp.auth.getAuthV3")
+    @patch("splunk_connect_for_snmp.snmp.auth.get_auth_v3")
     def test_getAuth3(self, m_get_auth):
         ir.version = "3"
-        GetAuth(Mock(), ir, Mock())
+        get_auth(Mock(), ir, Mock())
         m_get_auth.assert_called()
