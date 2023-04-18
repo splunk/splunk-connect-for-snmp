@@ -1,4 +1,7 @@
-{{- if eq (include "splunk-connect-for-snmp.polling.enable" .) "true" }}
+{{/*
+Create a job config template which will be included in configMap for UI backend.
+*/}}
+{{- define "splunk-connect-for-snmp.job-config" -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -10,7 +13,7 @@ spec:
   template:
     metadata:
       {{- with .Values.inventory.podAnnotations }}
-      annotations:      
+      annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
@@ -46,8 +49,6 @@ spec:
             value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/standard.txt"
           - name: LOG_LEVEL
             value: {{ .Values.scheduler.logLevel | default "INFO" }}
-          - name: CHAIN_OF_TASKS_EXPIRY_TIME
-            value: {{ .Values.scheduler.tasksExpiryTime | quote }}
           - name: CONFIG_FROM_MONGO
             value: {{ quote .Values.UI.enable | default "false" }}
           volumeMounts:
@@ -83,8 +84,34 @@ spec:
               - key: "inventory.csv"
                 path: "inventory.csv"
         - name: pysnmp-cache-volume
-          emptyDir: {}    
+          emptyDir: {}
         - name: tmp
-          emptyDir: {}                        
+          emptyDir: {}
       restartPolicy: OnFailure
-{{- end -}}
+{{- end }}
+
+{{/*
+Return full image for thr UI front end.
+*/}}
+{{- define "splunk-connect-for-snmp.uiFrontImage" -}}
+{{ .Values.UI.frontEnd.repository }}:{{ .Values.UI.frontEnd.tag | default "latest" }}
+{{- end }}
+
+{{/*
+Return full image for thr UI back end.
+*/}}
+{{- define "splunk-connect-for-snmp.uiBackImage" -}}
+{{ .Values.UI.backEnd.repository }}:{{ .Values.UI.backEnd.tag | default "latest" }}
+{{- end }}
+
+{{- define "splunk-connect-for-snmp-ui.celery_url" -}}
+{{- printf "redis://%s-redis-headless:6379/2" .Release.Name }}
+{{- end }}
+
+{{- define "splunk-connect-for-snmp-ui.redis_url" -}}
+{{- printf "redis://%s-redis-headless:6379/3" .Release.Name }}
+{{- end }}
+
+{{- define "splunk-connect-for-snmp-ui.hostMountPath" -}}
+/var/values_dir
+{{- end }}

@@ -1,0 +1,88 @@
+{{ if .Values.UI.enable }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-backend-deployment
+  labels:
+    app: ui-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui-backend
+  template:
+    metadata:
+      labels:
+        app: ui-backend
+    spec:
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        fsGroup: 10000
+      {{- if .Values.UI.valuesFileDirectory }}
+      initContainers:
+        - name: patch-log-dirs
+          image: {{ .Values.UI.init.repository }}
+          imagePullPolicy: {{ .Values.UI.init.pullPolicy }}
+          command: [ 'sh', '-c', '
+                mkdir -p {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }};
+                chmod -v g+rwxs {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }};
+                if [ -d "{{ include "splunk-connect-for-snmp-ui.hostMountPath" . }}" ];
+                then
+                    setfacl -n -Rm d:m::rwx,m::rwx,d:g:10000:rwx,g:10000:rwx {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }};
+                fi;' ]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+          - name: values-directory
+            mountPath: {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }}
+      {{- end }}
+      containers:
+      - name: ui-backend
+        image: {{ include "splunk-connect-for-snmp.uiBackImage" . | quote }}
+        imagePullPolicy: {{ .Values.UI.backEnd.pullPolicy }}
+        command: ["sh","-c","/flask_start.sh"]
+        env:
+        - name: MONGO_URI
+          value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
+        - name: REDIS_URL
+          value: {{ include "splunk-connect-for-snmp-ui.redis_url" . }}
+        - name: JOB_CONFIG_PATH
+          value: /config/job_config.yaml
+        - name: JOB_NAMESPACE
+          value: sc4snmp
+        - name: CELERY_BROKER_URL
+          value: {{ include "splunk-connect-for-snmp-ui.celery_url" . }}
+        - name: VALUES_DIRECTORY
+          {{- if .Values.UI.valuesFileDirectory }}
+          value: {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }}
+          {{- else }}
+          value:
+          {{- end }}
+        - name: VALUES_FILE
+          value: {{ .Values.UI.valuesFileName }}
+        - name: KEEP_TEMP_FILES
+          value: {{ quote .Values.UI.keepSectionFiles | default "false" }}
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: backend-configmap
+          mountPath: /config
+        {{- if .Values.UI.valuesFileDirectory }}
+        - name: values-directory
+          mountPath: {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }}
+        {{- end }}
+      serviceAccountName: job-robot
+      volumes:
+        - name: backend-configmap
+          configMap:
+            name: {{ include "splunk-connect-for-snmp.name" . }}-job-configmap
+            items:
+              - key: job_config
+                path: job_config.yaml
+        {{- if .Values.UI.valuesFileDirectory }}
+        - name: values-directory
+          hostPath:
+            path: {{ .Values.UI.valuesFileDirectory }}
+        {{- end }}
+{{- end }}

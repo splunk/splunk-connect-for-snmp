@@ -17,6 +17,37 @@ image:
 # Secrets to attach to the respective serviceaccount to pull docker images
 imagePullSecrets: []
 
+# SC4SNMP UI configuration
+UI:
+  enable: false
+  frontEnd:
+    NodePort: 30001
+    repository: ghcr.io/splunk/sc4snmp-ui/frontend/container
+    tag: "main"
+    pullPolicy: "Always"
+  backEnd:
+    NodePort: 30002
+    repository: ghcr.io/splunk/sc4snmp-ui/backend/container
+    tag: "main"
+    pullPolicy: "Always"
+  init:
+    repository: registry.access.redhat.com/ubi9/ubi
+    pullPolicy: IfNotPresent
+
+  # valuesFileDirectory is obligatory if UI is used. It is a location of values.yaml and configuration files generated from the UI.
+  valuesFileDirectory: ""
+
+  # valuesFileName is an exact name of yaml file with user's configuration, located inside directory specified in
+  # valuesFileDirectory. It is optional. If it is provided then this file fill be updated with configuration from the UI.
+  # If the valuesFileName is empty, or provided file name can't be found inside valuesFileDirectory directory,
+  # then configuration from the UI will be saved in few files, each file for different section, inside
+  # valuesFileDirectory directory.
+  valuesFileName: ""
+
+  # If keepSectionFiles is set to true, separate configration files for different sections will be saved in
+  # valuesFileDirectory directory regardless of valuesFileName proper configuration.
+  keepSectionFiles: false
+
 ################################################################################
 # Splunk Cloud / Splunk Enterprise configuration.
 ################################################################################
