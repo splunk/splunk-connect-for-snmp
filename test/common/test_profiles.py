@@ -54,6 +54,10 @@ class TestProfiles(TestCase):
             profiles_manager.gather_elements()
 
     @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
+        "false",
+    )
+    @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.os.listdir",
         return_yaml_profiles,
     )
@@ -77,6 +81,10 @@ class TestProfiles(TestCase):
                 )
             )
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
+        "false",
+    )
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.os.listdir",
         return_yaml_profiles,
@@ -112,6 +120,10 @@ class TestProfiles(TestCase):
         self.assertEqual(profiles, active_profiles)
 
     @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
+        "false",
+    )
+    @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.os.listdir",
         return_yaml_empty_profiles,
     )
@@ -144,6 +156,10 @@ class TestProfiles(TestCase):
         profiles = profiles_manager.gather_elements()
         self.assertEqual(profiles, active_profiles)
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
+        "false",
+    )
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.os.listdir",
         return_yaml_profiles,
@@ -196,6 +212,10 @@ class TestProfiles(TestCase):
         profiles = profiles_manager.gather_elements()
         self.assertEqual(profiles, active_profiles)
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
+        "false",
+    )
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.os.listdir",
         return_yaml_profiles,

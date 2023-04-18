@@ -3,6 +3,8 @@ import os
 from csv import DictReader
 from typing import List
 
+import pymongo
+
 from splunk_connect_for_snmp.common.collection_manager import GroupsManager
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
@@ -18,6 +20,7 @@ except:
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
+CONFIG_FROM_MONGO = os.getenv("CONFIG_FROM_MONGO", "false")
 ALLOWED_KEYS_VALUES = [
     "address",
     "port",
@@ -79,30 +82,35 @@ def get_groups_keys(list_of_groups):
 
 
 class InventoryProcessor:
-    def __init__(self, group_manager: GroupsManager, logger):
+    def __init__(self, group_manager: GroupsManager, logger, inventory_ui_collection):
         self.inventory_records: List[dict] = []
         self.group_manager = group_manager
         self.logger = logger
         self.hosts_from_groups: dict = {}
         self.single_hosts: List[dict] = []
+        self.inventory_ui_collection = inventory_ui_collection
 
     def get_all_hosts(self):
-        self.logger.info(f"Loading inventory from {INVENTORY_PATH}")
-        with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
-            ir_reader = DictReader(csv_file)
-            for inventory_line in ir_reader:
-                self.process_line(inventory_line)
-            for source_record in self.single_hosts:
-                address = source_record["address"]
-                port = source_record.get("port")
-                host = transform_address_to_key(address, port)
-                was_present = self.hosts_from_groups.get(host, None)
-                if was_present is None:
-                    self.inventory_records.append(source_record)
-                else:
-                    self.logger.warning(
-                        f"Record: {host} has been already configured in group. Skipping..."
-                    )
+        if CONFIG_FROM_MONGO.lower() in ["true", "1", "t"]:
+            self.logger.info(f"Loading inventory from inventory_ui collection")
+            ir_reader = list(self.inventory_ui_collection.find({}, {"_id": 0}))
+        else:
+            with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
+                self.logger.info(f"Loading inventory from {INVENTORY_PATH}")
+                ir_reader = list(DictReader(csv_file))
+        for inventory_line in ir_reader:
+            self.process_line(inventory_line)
+        for source_record in self.single_hosts:
+            address = source_record["address"]
+            port = source_record.get("port")
+            host = transform_address_to_key(address, port)
+            was_present = self.hosts_from_groups.get(host, None)
+            if was_present is None:
+                self.inventory_records.append(source_record)
+            else:
+                self.logger.warning(
+                    f"Record: {host} has been already configured in group. Skipping..."
+                )
         return self.inventory_records
 
     def process_line(self, source_record):
@@ -138,6 +146,8 @@ class InventoryProcessor:
                 host_group_object["group"] = group_name
                 self.inventory_records.append(host_group_object)
         else:
+            # If record with group was deleted and the group itself also was deleted, delete appropriate record from
+            # inventory_ui collection.
             self.logger.warning(
                 f"Group {group_name} doesn't exist in the configuration. Treating {group_name} as a hostname"
             )

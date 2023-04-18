@@ -26,6 +26,10 @@ class TestGroups(TestCase):
         "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH",
         return_yaml_groups(),
     )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
+        "false",
+    )
     def test_read_one_group(self):
         active_groups = {
             "group1": [
@@ -63,6 +67,10 @@ class TestGroups(TestCase):
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.CONFIG_PATH",
         return_not_existing_config(),
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
+        "false",
     )
     def test_base_files_not_found(self):
         with self.assertLogs(

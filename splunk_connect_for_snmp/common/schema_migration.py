@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 import logging
-import os
 import sys
 
 from pymongo import ASCENDING
@@ -39,7 +38,6 @@ logger.addHandler(handler)
 
 
 CURRENT_SCHEMA_VERSION = 5
-MONGO_URI = os.getenv("MONGO_URI")
 
 
 def fetch_schema_version(mongo_client):
