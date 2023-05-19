@@ -86,6 +86,12 @@ spec:
                 secretKeyRef:
                   name: splunk-connect-for-snmp-splunk
                   key: hec_token
+            - name: SPLUNK_SOURCETYPE_TRAPS
+              value: "sc4snmp:traps"
+            - name: SPLUNK_SOURCETYPE_POLLING_EVENTS
+              value: "sc4snmp:event"
+            - name: SPLUNK_SOURCETYPE_POLLING_METRICS
+              value: "sc4snmp:metric"
             - name: WORKER_CONCURRENCY
               value: "4"
             - name: PREFETCH_COUNT
