@@ -149,6 +149,12 @@ Common labels
 - name: SPLUNK_HEC_INDEX_METRICS
   value: {{ .Values.splunk.metricsIndex | default "netmetrics" }}
 {{- end}}
+- name: SPLUNK_SOURCETYPE_TRAPS
+  value: {{ .Values.splunk.sourcetypeTraps | default "sc4snmp:traps" | quote }}
+- name: SPLUNK_SOURCETYPE_POLLING_EVENTS
+  value: {{ .Values.splunk.sourcetypePollingEvents | default "sc4snmp:event" | quote }}
+- name: SPLUNK_SOURCETYPE_POLLING_METRICS
+  value: {{ .Values.splunk.sourcetypePollingMetrics | default "sc4snmp:metric" | quote }}
 {{- end}}
 {{- end }}
 
