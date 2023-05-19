@@ -27,7 +27,7 @@ jobs:
   mike:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       packages: write
       pages: write
     steps:
