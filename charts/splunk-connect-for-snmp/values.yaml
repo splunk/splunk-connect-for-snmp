@@ -41,6 +41,16 @@ splunk:
   # data over HTTPS.
   insecureSSL: "true"
 
+  # sourcetype for trap events
+  sourcetypeTraps: "sc4snmp:traps"
+
+  # sourcetype for non-metric polling event
+  sourcetypePollingEvents: "sc4snmp:event"
+
+  # sourcetype for metric polling event
+  sourcetypePollingMetrics: "sc4snmp:metric"
+
+
 ################################################################################
 # Splunk Observability configuration
 ################################################################################

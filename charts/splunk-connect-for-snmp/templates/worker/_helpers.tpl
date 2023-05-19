@@ -164,6 +164,12 @@ Common labels
   value: {{ .Values.worker.sender.concurrency | default "2" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.sender.prefetch | default "1" | quote }}
+- name: SPLUNK_SOURCETYPE_TRAPS
+  value: {{ .Values.splunk.sourcetypeTraps | default "sc4snmp:traps" | quote }}
+- name: SPLUNK_SOURCETYPE_POLLING_EVENTS
+  value: {{ .Values.splunk.sourcetypePollingEvents | default "sc4snmp:event" | quote }}
+- name: SPLUNK_SOURCETYPE_POLLING_METRICS
+  value: {{ .Values.splunk.sourcetypePollingMetrics | default "sc4snmp:metric" | quote }}
 {{- end }}
 
 {{- define "environmental-variables-trap" -}}

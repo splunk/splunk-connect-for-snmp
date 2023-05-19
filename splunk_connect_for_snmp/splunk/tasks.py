@@ -65,6 +65,9 @@ SPLUNK_HEC_URI = urlunsplit(
 SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN", None)
 SPLUNK_HEC_INDEX_EVENTS = os.getenv("SPLUNK_HEC_INDEX_EVENTS", "netops")
 SPLUNK_HEC_INDEX_METRICS = os.getenv("SPLUNK_HEC_INDEX_METRICS", "netmetrics")
+SPLUNK_SOURCETYPE_TRAPS = os.getenv("SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")
+SPLUNK_SOURCETYPE_POLLING_METRICS = os.getenv("SPLUNK_SOURCETYPE_POLLING_METRICS", "sc4snmp:metric")
+SPLUNK_SOURCETYPE_POLLING_EVENTS = os.getenv("SPLUNK_SOURCETYPE_POLLING_EVENTS", "sc4snmp:event")
 SC4SNMP_VERSION = os.getenv("SC4SNMP_VERSION", "0.0.0")
 if human_bool(os.getenv("SPLUNK_HEC_INSECURESSL", "yes"), default=True):
     SPLUNK_HEC_TLSVERIFY = False
@@ -163,7 +166,7 @@ def valueAsBest(value) -> Union[str, float]:
 def prepare(self, work):
     events = []
     metrics = []
-    if work.get("sourcetype") == "sc4snmp:traps":
+    if work.get("sourcetype") == SPLUNK_SOURCETYPE_TRAPS:
         return {
             "events": prepare_trap_data(
                 apply_custom_translations(work, self.custom_translations)
@@ -179,7 +182,7 @@ def prepare(self, work):
                 "time": work["time"],
                 "event": "metric",
                 "source": "sc4snmp",
-                "sourcetype": "sc4snmp:metric",
+                "sourcetype": SPLUNK_SOURCETYPE_POLLING_METRICS,
                 "host": work["address"],
                 "index": SPLUNK_HEC_INDEX_METRICS,
                 "fields": {},
@@ -206,7 +209,7 @@ def prepare(self, work):
                 "time": work["time"],
                 "event": json.dumps(data["fields"]),
                 "source": "sc4snmp",
-                "sourcetype": "sc4snmp:event",
+                "sourcetype": SPLUNK_SOURCETYPE_POLLING_EVENTS,
                 "host": work["address"],
                 "index": SPLUNK_HEC_INDEX_EVENTS,
             }
