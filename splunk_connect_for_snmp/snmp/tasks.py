@@ -44,6 +44,7 @@ MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 WALK_RETRY_MAX_INTERVAL = int(os.getenv("WALK_RETRY_MAX_INTERVAL", "600"))
+SPLUNK_SOURCETYPE_TRAPS = os.getenv("SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")
 OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
 
 
@@ -173,5 +174,5 @@ def trap(self, work):
         "result": result,
         "address": work["host"],
         "detectchange": False,
-        "sourcetype": "sc4snmp:traps",
+        "sourcetype": SPLUNK_SOURCETYPE_TRAPS,
     }
