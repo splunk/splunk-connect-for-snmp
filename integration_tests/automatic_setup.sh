@@ -118,9 +118,15 @@ sudo microk8s status --wait-ready
 yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
 sudo microk8s status --wait-ready
 
-cd ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp
+
+echo " CHARTS  ==============> "
+ls
+pwd
+cd splunk-connect-for-snmp/charts/splunk-connect-for-snmp
 microk8s helm3 dep update
-cd ~/splunk-connect-for-snmp/integration_tests
+cd
+pwd
+#cd splunk-connect-for-snmp/integration_tests
 
 echo $(green "Installing SC4SNMP on Kubernetes")
 sudo microk8s helm3 install snmp -f values.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
