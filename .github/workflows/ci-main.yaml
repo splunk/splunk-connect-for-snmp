@@ -142,8 +142,6 @@ jobs:
       - name: run install_microk8s.sh
         run: |
           sudo snap install microk8s --classic --channel=1.25/stable
-          docker ps
-          sudo snap install docker
           sudo apt-get install snmp -y
           sudo apt-get install python3-dev -y
           pwd
@@ -152,6 +150,15 @@ jobs:
         run: integration_tests/automatic_setup.sh
       - name: run tests
         run: |
+          echo "pods namespace "
+          echo "----"
+          sudo microk8s kubectl get pods -n sc4snmp
+          echo "pods all "
+          echo "----"
+          sudo microk8s kubectl get pods -n sc4snmp
+          echo "----"
+          echo "----"
+          echo "----"
           hostname -I | cut -d " " -f1
           poetry run pytest
 
