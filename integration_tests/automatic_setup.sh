@@ -112,8 +112,11 @@ sudo microk8s enable dns
 sudo microk8s enable rbac
 sudo microk8s enable community
 sudo microk8s enable metrics-server
+sudo microk8s status --wait-ready
 sudo systemctl enable iscsid
+sudo microk8s status --wait-ready
 yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
+sudo microk8s status --wait-ready
 
 cd ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp
 microk8s helm3 dep update
