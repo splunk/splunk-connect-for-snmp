@@ -131,8 +131,8 @@ jobs:
 
   test-integration:
     name: Run integration tests
-    needs:
-      - integration-tests-check
+#    needs:
+#      - integration-tests-check
     runs-on: ubuntu-latest
 #    if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
     timeout-minutes: 20
