@@ -151,7 +151,7 @@ jobs:
         run: integration_tests/automatic_setup.sh
       - name: run tests
         run: |
-          poetry run pytest   --junitxml=result.xml > pytest.log
+          poetry run pytest
           ip="$(hostname -I | cut -d " " -f1)"
           echo $ip
 #        run: poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --junitxml=result.xml > pytest.log
