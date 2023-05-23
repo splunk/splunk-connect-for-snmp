@@ -21,6 +21,7 @@ on:
       - "main"
       - "develop"
       - "next"
+      - "github-integration-tests-pipeline"
     tags-ignore:
       - "v*"
   pull_request:
@@ -133,49 +134,60 @@ jobs:
     needs:
       - integration-tests-check
     runs-on: ubuntu-latest
-    if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
+#    if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v2
-      - name: Archive repository
-        working-directory: /home/runner/work/splunk-connect-for-snmp
-        run: tar -czf splunk-connect-for-snmp.tgz splunk-connect-for-snmp
-      - name: Copy archived repository to scripts directory
-        run: cp /home/runner/work/splunk-connect-for-snmp/splunk-connect-for-snmp.tgz $GITHUB_WORKSPACE/integration_tests/scripts
-      - uses: hashicorp/setup-terraform@v1
-      - name: Install apt packages
-        run: sudo apt-get install ansible
-      - name: Install python packages
-        run: pip install junitparser awscli
-      - name: Set AWS varaibles in terraform file
-        working-directory: ./integration_tests/scripts
-        run: envsubst < main.tf.tmpl > main.tf
-        env:
-          AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP_INT_TESTS }}
-          AWS_SUBNET: ${{ secrets.AWS_SUBNET_INT_TESTS }}
-      - name: Create AWS test environment
-        run: terraform init && terraform apply -auto-approve
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_INT_TESTS }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_INT_TESTS }}
-        working-directory: ./integration_tests/scripts
-      - name: Run integration tests
-        run: sleep 30 && timeout 60m ansible-playbook -v playbook.yml || true
-        working-directory: ./integration_tests/scripts
-      - name: Download and analyze logs
+      - name: Checkout Project
+        uses: actions/checkout@v3
+      - name: run install_microk8s.sh
         run: |
-          aws s3 cp s3://snmp-integration-tests/$GITHUB_RUN_ID/result.xml . && cat result.xml
-          aws s3 cp s3://snmp-integration-tests/$GITHUB_RUN_ID/pytest.log . && cat pytest.log
-          python result_analyzer.py
-        working-directory: ./integration_tests/scripts
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_INT_TESTS }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_INT_TESTS }}
-      - name: Destroy AWS test environment
-        if: always()
-        run: terraform destroy -auto-approve
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_INT_TESTS }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_INT_TESTS }}
-        working-directory: ./integration_tests/scripts
+          sudo snap install microk8s --classic --channel=1.25/stable
+          sudo snap install docker
+          sudo apt-get install snmp -y
+          sudo apt-get install python3-dev -y
+          pwd
+          microk8s kubectl get pods -n sc4snmp
+#      - uses: actions/checkout@v2
+#      - name: Archive repository
+#        working-directory: /home/runner/work/splunk-connect-for-snmp
+#        run: tar -czf splunk-connect-for-snmp.tgz splunk-connect-for-snmp
+#      - name: Copy archived repository to scripts directory
+#        run: cp /home/runner/work/splunk-connect-for-snmp/splunk-connect-for-snmp.tgz $GITHUB_WORKSPACE/integration_tests/scripts
+#      - uses: hashicorp/setup-terraform@v1
+#      - name: Install apt packages
+#        run: sudo apt-get install ansible
+#      - name: Install python packages
+#        run: pip install junitparser awscli
+#      - name: Set AWS varaibles in terraform file
+#        working-directory: ./integration_tests/scripts
+#        run: envsubst < main.tf.tmpl > main.tf
+#        env:
+#          AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP_INT_TESTS }}
+#          AWS_SUBNET: ${{ secrets.AWS_SUBNET_INT_TESTS }}
+#      - name: Create AWS test environment
+#        run: terraform init && terraform apply -auto-approve
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_INT_TESTS }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_INT_TESTS }}
+#        working-directory: ./integration_tests/scripts
+#      - name: Run integration tests
+#        run: sleep 30 && timeout 60m ansible-playbook -v playbook.yml || true
+#        working-directory: ./integration_tests/scripts
+#      - name: Download and analyze logs
+#        run: |
+#          aws s3 cp s3://snmp-integration-tests/$GITHUB_RUN_ID/result.xml . && cat result.xml
+#          aws s3 cp s3://snmp-integration-tests/$GITHUB_RUN_ID/pytest.log . && cat pytest.log
+#          python result_analyzer.py
+#        working-directory: ./integration_tests/scripts
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_INT_TESTS }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_INT_TESTS }}
+#      - name: Destroy AWS test environment
+#        if: always()
+#        run: terraform destroy -auto-approve
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_INT_TESTS }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_INT_TESTS }}
+#        working-directory: ./integration_tests/scripts
 
 
