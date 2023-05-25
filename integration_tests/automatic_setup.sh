@@ -122,8 +122,6 @@ ls
 pwd
 cd ../charts/splunk-connect-for-snmp
 microk8s helm3 dep update
-cd
-pwd
 cd ../../integration_tests
 
 echo $(green "Installing SC4SNMP on Kubernetes")
