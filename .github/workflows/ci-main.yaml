@@ -135,7 +135,7 @@ jobs:
 #      - integration-tests-check
     runs-on: ubuntu-latest
 #    if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout Project
         uses: actions/checkout@v3
