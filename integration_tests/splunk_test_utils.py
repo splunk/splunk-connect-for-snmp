@@ -147,7 +147,6 @@ def upgrade_helm(yaml_files):
     )
     os.system(
         f"sudo microk8s helm3 upgrade --install snmp {files_string} ./../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
-        # f"sudo microk8s helm3 upgrade --install snmp {files_string} ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
     )
 
 
