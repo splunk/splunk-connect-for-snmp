@@ -62,7 +62,7 @@ check_metallb_status() {
   done
 }
 
-wait_for_rabbitmq_to_be_up() {
+wait_for_sc4snmp_pods_to_be_up() {
   while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep 0/1)" != "" ] ; do
     echo "Waiting for SC4SNMP pods initialization..."
     sleep 1
@@ -129,8 +129,12 @@ sudo microk8s helm3 install snmp -f values.yaml ../charts/splunk-connect-for-snm
 sudo microk8s kubectl create -n sc4snmp secret generic sv3poller --from-literal=userName=r-wuser --from-literal=authKey=admin1234 --from-literal=privKey=admin1234 --from-literal=authProtocol=SHA --from-literal=privProtocol=AES --from-literal=securityEngineId=8000000903000A397056B8AC
 
 wait_for_pod_initialization
-wait_for_rabbitmq_to_be_up
+wait_for_sc4snmp_pods_to_be_up
 check_metallb_status
+
+echo "------"
+python --version
+echo "------"
 
 define_python
 

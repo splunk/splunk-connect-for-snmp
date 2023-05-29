@@ -145,21 +145,10 @@ jobs:
           sudo apt-get install snmp -y
           sudo apt-get install python3-dev -y
           pwd
-#          microk8s kubectl get pods -n sc4snmp
       - name: run automatic_setup.sh
         run: integration_tests/automatic_setup.sh
       - name: run tests
         run: |
-          echo "pods namespace "
-          echo "----"
-          sudo microk8s kubectl get pods -n sc4snmp
-          echo "pods all "
-          echo "----"
-          sudo microk8s kubectl get pods 
-          echo "----"
-          echo "----"
-          echo "----"
-          hostname -I | cut -d " " -f1
           poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)"
 
 #        run: poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --junitxml=result.xml > pytest.log
