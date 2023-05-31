@@ -131,4 +131,3 @@ check_metallb_status
 define_python
 
 deploy_poetry
-
