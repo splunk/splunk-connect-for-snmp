@@ -21,7 +21,6 @@ on:
       - "main"
       - "develop"
       - "next"
-      - "github-integration-tests-pipeline"
     tags-ignore:
       - "v*"
   pull_request:
