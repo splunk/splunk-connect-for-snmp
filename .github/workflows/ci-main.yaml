@@ -109,32 +109,32 @@ jobs:
           name: test-results-unit-python_${{ matrix.python-version }}
           path: test-results/*
 
-#  integration-tests-check:
-#    name: Check if run integration tests
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout Project
-#        uses: actions/checkout@v2
-#        with:
-#          fetch-depth: 2
-#      - name: Get commit message
-#        id: get_commit_message
-#        run: |
-#          if [[ '${{ github.event_name }}' == 'push' ]]; then
-#            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD)
-#          elif [[ '${{ github.event_name }}' == 'pull_request' ]]; then
-#            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD^2)
-#          fi
-#    outputs:
-#      commit_message:
-#        echo "${{ steps.get_commit_message.outputs.commit_message }}"
+  integration-tests-check:
+    name: Check if run integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - name: Get commit message
+        id: get_commit_message
+        run: |
+          if [[ '${{ github.event_name }}' == 'push' ]]; then
+            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD)
+          elif [[ '${{ github.event_name }}' == 'pull_request' ]]; then
+            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD^2)
+          fi
+    outputs:
+      commit_message:
+        echo "${{ steps.get_commit_message.outputs.commit_message }}"
 
   test-integration:
     name: Run integration tests
-#    needs:
-#      - integration-tests-check
+    needs:
+      - integration-tests-check
     runs-on: ubuntu-latest
-#    if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
+    if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
     timeout-minutes: 120
     steps:
       - name: Checkout Project
@@ -144,13 +144,11 @@ jobs:
           sudo snap install microk8s --classic --channel=1.25/stable
           sudo apt-get install snmp -y
           sudo apt-get install python3-dev -y
-          pwd
       - name: run automatic_setup.sh
         run: integration_tests/automatic_setup.sh
       - name: run tests
         working-directory: integration_tests
         run: |
-          pwd
           poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)"
 
 

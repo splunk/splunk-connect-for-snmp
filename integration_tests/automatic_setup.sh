@@ -116,10 +116,6 @@ sudo systemctl enable iscsid
 yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
 sudo microk8s status --wait-ready
 
-
-echo " CHARTS  ==============> "
-ls
-pwd
 cd ../charts/splunk-connect-for-snmp
 microk8s helm3 dep update
 cd ../../integration_tests
@@ -132,18 +128,7 @@ wait_for_pod_initialization
 wait_for_sc4snmp_pods_to_be_up
 check_metallb_status
 
-echo "------"
-python --version
-echo "------"
-
 define_python
 
 deploy_poetry
 
-#poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" \
-#  --trap_external_ip="$(hostname -I | cut -d " " -f1)" --junitxml=result.xml > pytest.log
-
-#if [ ! -z "${S3_PATH}" ]; then
-#  aws s3 cp /home/ubuntu/splunk-connect-for-snmp/integration_tests/result.xml s3://snmp-integration-tests/$S3_PATH/
-#  aws s3 cp /home/ubuntu/splunk-connect-for-snmp/integration_tests/pytest.log s3://snmp-integration-tests/$S3_PATH/
-#fi
