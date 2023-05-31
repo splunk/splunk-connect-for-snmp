@@ -147,13 +147,6 @@ jobs:
           pwd
       - name: run automatic_setup.sh
         run: integration_tests/automatic_setup.sh
-      - name: check home
-        run: |
-          echo "starting dir -> "
-          pwd
-          echo "home dir -> "
-          cd
-          pwd
       - name: run tests
         working-directory: integration_tests
         run: |
