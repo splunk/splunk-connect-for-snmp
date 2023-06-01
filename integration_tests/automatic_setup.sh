@@ -62,7 +62,7 @@ check_metallb_status() {
   done
 }
 
-wait_for_rabbitmq_to_be_up() {
+wait_for_sc4snmp_pods_to_be_up() {
   while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep 0/1)" != "" ] ; do
     echo "Waiting for SC4SNMP pods initialization..."
     sleep 1
@@ -114,27 +114,20 @@ sudo microk8s enable community
 sudo microk8s enable metrics-server
 sudo systemctl enable iscsid
 yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
+sudo microk8s status --wait-ready
 
-cd ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp
+cd ../charts/splunk-connect-for-snmp
 microk8s helm3 dep update
-cd ~/splunk-connect-for-snmp/integration_tests
+cd ../../integration_tests
 
 echo $(green "Installing SC4SNMP on Kubernetes")
-sudo microk8s helm3 install snmp -f values.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
+sudo microk8s helm3 install snmp -f values.yaml ../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 sudo microk8s kubectl create -n sc4snmp secret generic sv3poller --from-literal=userName=r-wuser --from-literal=authKey=admin1234 --from-literal=privKey=admin1234 --from-literal=authProtocol=SHA --from-literal=privProtocol=AES --from-literal=securityEngineId=8000000903000A397056B8AC
 
 wait_for_pod_initialization
-wait_for_rabbitmq_to_be_up
+wait_for_sc4snmp_pods_to_be_up
 check_metallb_status
 
 define_python
 
 deploy_poetry
-
-poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" \
-  --trap_external_ip="$(hostname -I | cut -d " " -f1)" --junitxml=result.xml > pytest.log
-
-if [ ! -z "${S3_PATH}" ]; then
-  aws s3 cp /home/ubuntu/splunk-connect-for-snmp/integration_tests/result.xml s3://snmp-integration-tests/$S3_PATH/
-  aws s3 cp /home/ubuntu/splunk-connect-for-snmp/integration_tests/pytest.log s3://snmp-integration-tests/$S3_PATH/
-fi
