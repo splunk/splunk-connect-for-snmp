@@ -42,6 +42,7 @@ from pysnmp.hlapi import SnmpEngine, UdpTransportTarget, bulkCmd, getCmd
 from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
+from pysnmp.proto.api.v2c import OctetString
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
@@ -63,6 +64,7 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "60"))
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 3))
 MAX_OID_TO_PROCESS = int(os.getenv("MAX_OID_TO_PROCESS", 70))
+SECURITY_ENGINE_ID = str(os.getenv("SECURITY_ENGINE_ID", ""))
 
 DEFAULT_STANDARD_MIBS = [
     "HOST-RESOURCES-MIB",
@@ -264,7 +266,10 @@ class Poller(Task):
         self.profiles_collection = ProfileCollection(self.profiles)
         self.profiles_collection.process_profiles()
         self.last_modified = time.time()
-        self.snmpEngine = SnmpEngine()
+        if len(SECURITY_ENGINE_ID) > 0:
+            self.snmpEngine = SnmpEngine(OctetString(hexValue=SECURITY_ENGINE_ID))
+        else:
+            self.snmpEngine = SnmpEngine()
         self.already_loaded_mibs = set()
         self.builder = self.snmpEngine.getMibBuilder()
         self.mib_view_controller = view.MibViewController(self.builder)

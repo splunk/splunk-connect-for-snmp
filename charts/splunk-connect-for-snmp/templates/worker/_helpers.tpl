@@ -163,6 +163,8 @@ Common labels
   value: {{ .Values.worker.poller.concurrency | default "2" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.poller.prefetch | default "1" | quote }}
+- name: SECURITY_ENGINE_ID
+  value: {{ .Values.poller.securityEngineId | default "" | quote }}
 {{- end }}
 
 {{- define "environmental-variables-sender" -}}
