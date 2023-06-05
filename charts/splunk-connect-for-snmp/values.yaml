@@ -41,6 +41,16 @@ splunk:
   # data over HTTPS.
   insecureSSL: "true"
 
+  # sourcetype for trap events
+  sourcetypeTraps: "sc4snmp:traps"
+
+  # sourcetype for non-metric polling event
+  sourcetypePollingEvents: "sc4snmp:event"
+
+  # sourcetype for metric polling event
+  sourcetypePollingMetrics: "sc4snmp:metric"
+
+
 ################################################################################
 # Splunk Observability configuration
 ################################################################################
@@ -329,6 +339,10 @@ traps:
     # nodePort will be set only when type of service is a NodePort
     #nodePort: 30000
 
+  #loadBalancerIP must be set to the IP address in the metallb pool.
+  #It is required when service type is set to LoadBalancer.
+  #loadBalancerIP: 18.117.100.37
+
   resources: {}
     # limits:
     #   cpu: 1
@@ -430,6 +444,17 @@ mongodb:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9216"
+  pdb:
+    create: true
+
+  ## In MicroK8s there is an addon providing PersistentVolumes.
+  ## "microk8s-hostpath" is the default storageClassName ref: https://microk8s.io/docs/addon-hostpath-storage.
+  ## If something else than MicroK8s is used, then persistence.storageClass needs to be adjusted accordingly:
+  ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1
+  persistence:
+    storageClass: "microk8s-hostpath"
+  volumePermissions:
+    enabled: true
 redis:
   architecture: standalone
   auth:
