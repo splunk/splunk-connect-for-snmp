@@ -190,7 +190,6 @@ poller:
   # Here is where polling happens. Learn more on how to configure it here:
   # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/
 
-  securityEngineId: ""
 
   #inventory: |
   #  address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
