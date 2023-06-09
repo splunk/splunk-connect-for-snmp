@@ -1,11 +1,11 @@
 from unittest import TestCase
 from unittest.mock import Mock, mock_open, patch
 
-from pysnmp.proto.rfc1902 import OctetString
 from pysnmp.entity.config import (
     usmAesBlumenthalCfb192Protocol,
     usmHMAC128SHA224AuthProtocol,
 )
+from pysnmp.proto.rfc1902 import OctetString
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.auth import (
