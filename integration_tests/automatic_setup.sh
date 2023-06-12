@@ -79,7 +79,7 @@ sudo systemctl restart snmpd
 
 #sudo apt -y install docker.io
 cat /etc/snmp/snmpd.conf
-echo "WALK"
+echo "WALK 1"
 snmpwalk -v3  -l authPriv -u r-wuser -a SHA -A "admin1234"  -x AES -X "admin1234" localhost
 snmpwalk -v3  -l authPriv -u r-wuser -a SHA -A "admin1234"  -x AES -X "admin1234" $(hostname -I | cut -d " " -f1)
 echo "PWD >>>>"
