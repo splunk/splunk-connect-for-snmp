@@ -81,6 +81,7 @@ sudo systemctl restart snmpd
 cat /etc/snmp/snmpd.conf
 echo "WALK"
 snmpwalk -v3  -l authPriv -u r-wuser -a SHA -A "admin1234"  -x AES -X "admin1234" localhost
+snmpwalk -v3  -l authPriv -u r-wuser -a SHA -A "admin1234"  -x AES -X "admin1234" $(hostname -I | cut -d " " -f1)
 echo "PWD >>>>"
 pwd
 cd ~/splunk-connect-for-snmp
