@@ -80,11 +80,11 @@ sudo systemctl restart snmpd
 #sudo apt -y install docker.io
 cat /etc/snmp/snmpd.conf
 echo "WALK 1"
-snmpwalk -v3  -l authPriv -u r-wuser -a SHA -A "admin1234"  -x AES -X "admin1234" localhost
-snmpwalk -v3  -l authPriv -u r-wuser -a SHA -A "admin1234"  -x AES -X "admin1234" $(hostname -I | cut -d " " -f1)
-echo "PWD >>>>"
+hostname -I | cut -d " " -f1
+snmpwalk -v3  -l authPriv -u r-wuser -a SHA -A "admin1234"  -x AES -X "admin1234" localhost:1161
+snmpwalk -v3  -l authPriv -u r-wuser -a SHA -A "admin1234"  -x AES -X "admin1234" $(hostname -I | cut -d " " -f1):1161
+echo "Show working directory:"
 pwd
-cd ~/splunk-connect-for-snmp
 
 echo $(green "Building Docker image")
 
