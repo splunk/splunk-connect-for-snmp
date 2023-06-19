@@ -69,16 +69,16 @@ wait_for_sc4snmp_pods_to_be_up() {
   done
 }
 
-sudo apt update -y
-sudo apt install snmpd -y
+sudo apt-get update -y
+sudo apt-get install snmpd -y
 sudo sed -i -E 's/agentaddress[[:space:]]+127.0.0.1,\[::1\]/#agentaddress  127.0.0.1,\[::1\]\nagentaddress udp:1161,udp6:[::1]:1161/g' /etc/snmp/snmpd.conf
 echo "" | sudo tee -a /etc/snmp/snmpd.conf
 echo "createUser r-wuser SHA admin1234 AES admin1234" | sudo tee -a /etc/snmp/snmpd.conf
 echo "rwuser r-wuser priv" | sudo tee -a /etc/snmp/snmpd.conf
 sudo systemctl restart snmpd
 
-sudo apt -y install docker.io
-cd ~/splunk-connect-for-snmp
+echo "Show working directory:"
+pwd
 
 echo $(green "Building Docker image")
 
