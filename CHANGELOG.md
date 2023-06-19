@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## [1.9.1]
+
+### Changed
+- add option to configure sourcetype for traps and polling events
+- integration tests moved from AWS to github-actions
+
+### Fixed
+- missing mongodb's persistence and trap's loadBalancerIp in values.yaml file
+- securityEngineId set from inventory.csv
+
 ## [1.9.0]
 
 ### Changed
