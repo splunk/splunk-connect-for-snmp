@@ -234,7 +234,7 @@ def prepare_trap_data(work):
             "time": work["time"],
             "event": json.dumps({**data["fields"], **processed}),
             "source": "sc4snmp",
-            "sourcetype": "sc4snmp:traps",
+            "sourcetype": SPLUNK_SOURCETYPE_TRAPS,
             "host": work["address"],
             "index": SPLUNK_HEC_INDEX_EVENTS,
         }
