@@ -5,6 +5,7 @@ from pysnmp.entity.config import (
     usmAesBlumenthalCfb192Protocol,
     usmHMAC128SHA224AuthProtocol,
 )
+from pysnmp.proto.rfc1902 import OctetString
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.auth import (
@@ -28,7 +29,7 @@ ir = InventoryRecord(
         "version": "2c",
         "community": "public",
         "secret": "secret_ir",
-        "securityEngine": "ENGINE",
+        "securityEngine": "80003a8c04",
         "walk_interval": 1850,
         "profiles": "",
         "SmartProfiles": True,
@@ -162,13 +163,13 @@ class TestAuth(TestCase):
         snmpEngine = Mock()
 
         result = getAuthV3(logger, ir, snmpEngine)
-
+        security_engine_result = OctetString(hexValue="80003a8c04")
         self.assertEqual("secret1", result.userName)
         self.assertEqual("secret2", result.authKey)
         self.assertEqual("secret3", result.privKey)
         self.assertEqual(usmHMAC128SHA224AuthProtocol, result.authProtocol)
         self.assertEqual(usmAesBlumenthalCfb192Protocol, result.privProtocol)
-        self.assertEqual("ENGINE", result.securityEngineId)
+        self.assertEqual(security_engine_result._value, result.securityEngineId._value)
         self.assertEqual("secret1", result.securityName)
         self.assertEqual(1, result.authKeyType)
         self.assertEqual(2, result.privKeyType)

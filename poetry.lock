@@ -750,14 +750,14 @@ develop = false
 
 [package.dependencies]
 pycryptodomex = "^3.11.0"
-pysnmp-pyasn1 = "^1.0.3"
+pysnmp-pyasn1 = "^1.1.3"
 pysnmp-pysmi = "^1.0.4"
 
 [package.source]
 type = "git"
 url = "https://github.com/pysnmp/pysnmp.git"
 reference = "main"
-resolved_reference = "8f492d3782b26db88e2ea861da9ece413b074777"
+resolved_reference = "bc1fb3c39764f36c1b7c9551b52ef8246b9aea7c"
 
 [[package]]
 name = "pytest"
@@ -845,16 +845,14 @@ pyyaml = "*"
 
 [[package]]
 name = "redis"
-version = "4.3.4"
+version = "4.4.4"
 description = "Python client for Redis database and key-value store"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 async-timeout = ">=4.0.2"
-deprecated = ">=1.2.3"
-packaging = ">=20.4"
 
 [package.extras]
 hiredis = ["hiredis (>=1.0.0)"]
@@ -1128,7 +1126,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "cc8ac61bad91cfe1a3a6f28bbd7faf0e1c0b27921183579a1bdadf57c008373a"
+content-hash = "213620e0367113b58e2cfde59d610a3c37e61d2660791ff3af13f10b6f011844"
 
 [metadata.files]
 amqp = [
@@ -1677,8 +1675,8 @@ pyyaml-env-tag = [
     {file = "pyyaml_env_tag-0.1.tar.gz", hash = "sha256:70092675bda14fdec33b31ba77e7543de9ddc88f2e5b99160396572d11525bdb"},
 ]
 redis = [
-    {file = "redis-4.3.4-py3-none-any.whl", hash = "sha256:a52d5694c9eb4292770084fa8c863f79367ca19884b329ab574d5cb2036b3e54"},
-    {file = "redis-4.3.4.tar.gz", hash = "sha256:ddf27071df4adf3821c4f2ca59d67525c3a82e5f268bed97b813cb4fabf87880"},
+    {file = "redis-4.4.4-py3-none-any.whl", hash = "sha256:da92a39fec86438d3f1e2a1db33c312985806954fe860120b582a8430e231d8f"},
+    {file = "redis-4.4.4.tar.gz", hash = "sha256:68226f7ede928db8302f29ab088a157f41061fa946b7ae865452b6d7838bbffb"},
 ]
 requests = [
     {file = "requests-2.28.1-py3-none-any.whl", hash = "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"},

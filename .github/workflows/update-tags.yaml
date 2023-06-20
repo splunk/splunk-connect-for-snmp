@@ -8,6 +8,9 @@ on:
 jobs:
   update-semver:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v2
       - uses: haya14busa/action-update-semver@v1

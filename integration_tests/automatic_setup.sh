@@ -62,23 +62,23 @@ check_metallb_status() {
   done
 }
 
-wait_for_rabbitmq_to_be_up() {
+wait_for_sc4snmp_pods_to_be_up() {
   while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep 0/1)" != "" ] ; do
     echo "Waiting for SC4SNMP pods initialization..."
     sleep 1
   done
 }
 
-sudo apt update -y
-sudo apt install snmpd -y
+sudo apt-get update -y
+sudo apt-get install snmpd -y
 sudo sed -i -E 's/agentaddress[[:space:]]+127.0.0.1,\[::1\]/#agentaddress  127.0.0.1,\[::1\]\nagentaddress udp:1161,udp6:[::1]:1161/g' /etc/snmp/snmpd.conf
 echo "" | sudo tee -a /etc/snmp/snmpd.conf
 echo "createUser r-wuser SHA admin1234 AES admin1234" | sudo tee -a /etc/snmp/snmpd.conf
 echo "rwuser r-wuser priv" | sudo tee -a /etc/snmp/snmpd.conf
 sudo systemctl restart snmpd
 
-sudo apt -y install docker.io
-cd ~/splunk-connect-for-snmp
+echo "Show working directory:"
+pwd
 
 echo $(green "Building Docker image")
 
@@ -104,6 +104,7 @@ sudo docker run -d -p 1162:161/udp tandrup/snmpsim
 sudo docker run -d -p 1163:161/udp tandrup/snmpsim
 sudo docker run -d -p 1164:161/udp tandrup/snmpsim
 sudo docker run -d -p 1165:161/udp tandrup/snmpsim
+sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
 sudo microk8s enable helm3
 sudo microk8s enable storage
@@ -113,27 +114,20 @@ sudo microk8s enable community
 sudo microk8s enable metrics-server
 sudo systemctl enable iscsid
 yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
+sudo microk8s status --wait-ready
 
-cd ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp
+cd ../charts/splunk-connect-for-snmp
 microk8s helm3 dep update
-cd ~/splunk-connect-for-snmp/integration_tests
+cd ../../integration_tests
 
 echo $(green "Installing SC4SNMP on Kubernetes")
-sudo microk8s helm3 install snmp -f values.yaml ~/splunk-connect-for-snmp/charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
+sudo microk8s helm3 install snmp -f values.yaml ../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 sudo microk8s kubectl create -n sc4snmp secret generic sv3poller --from-literal=userName=r-wuser --from-literal=authKey=admin1234 --from-literal=privKey=admin1234 --from-literal=authProtocol=SHA --from-literal=privProtocol=AES --from-literal=securityEngineId=8000000903000A397056B8AC
 
 wait_for_pod_initialization
-wait_for_rabbitmq_to_be_up
+wait_for_sc4snmp_pods_to_be_up
 check_metallb_status
 
 define_python
 
 deploy_poetry
-
-poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" \
-  --trap_external_ip="$(hostname -I | cut -d " " -f1)" --junitxml=result.xml > pytest.log
-
-if [ ! -z "${S3_PATH}" ]; then
-  aws s3 cp /home/ubuntu/splunk-connect-for-snmp/integration_tests/result.xml s3://snmp-integration-tests/$S3_PATH/
-  aws s3 cp /home/ubuntu/splunk-connect-for-snmp/integration_tests/pytest.log s3://snmp-integration-tests/$S3_PATH/
-fi

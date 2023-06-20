@@ -24,6 +24,7 @@ from pysnmp.hlapi import (
     UsmUserData,
     getCmd,
 )
+from pysnmp.proto.api.v2c import OctetString
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
@@ -121,8 +122,8 @@ def getAuthV3(logger, ir: InventoryRecord, snmpEngine: SnmpEngine) -> UsmUserDat
             and ir.security_engine != ""
             and not ir.security_engine.isdigit()
         ):
-            securityEngineId = ir.security_engine
-            logger.debug(f"Security eng from profile {ir.security_engine}")
+            securityEngineId = OctetString(hexValue=ir.security_engine)
+            logger.debug(f"Security eng from profile {securityEngineId}")
         else:
             securityEngineId = get_security_engine_id(logger, ir, snmpEngine)
             logger.debug(f"Security eng dynamic {securityEngineId}")
