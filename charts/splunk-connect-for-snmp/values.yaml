@@ -223,6 +223,21 @@ worker:
       # the resources requests for poller worker container
       requests:
         cpu: 250m
+    livenessProbe:
+      exec:
+        command:
+          - test
+          - -e /tmp/worker_heartbeat
+      initialDelaySeconds: 10
+      periodSeconds: 5
+
+    readinessProbe:
+      exec:
+        command:
+          - test
+          - -e /tmp/worker_ready
+      initialDelaySeconds: 10
+      periodSeconds: 5
 
   # The trap worker consumes all the trap related tasks produced by the trap pod
   trap:

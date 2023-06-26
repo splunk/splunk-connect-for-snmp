@@ -17,9 +17,6 @@ import logging
 
 from pysnmp.proto.api import v2c
 
-from splunk_connect_for_snmp.common.customised_json_formatter import (
-    CustomisedJSONFormatter,
-)
 from splunk_connect_for_snmp.snmp.auth import get_secret_value
 
 try:
@@ -33,12 +30,8 @@ import asyncio
 import os
 
 import yaml
-from celery import Celery, chain, signals
+from celery import Celery, chain
 from opentelemetry import trace
-
-# from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-from opentelemetry.instrumentation.celery import CeleryInstrumentor
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
 
 # from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -46,6 +39,9 @@ from pysnmp.carrier.asyncio.dgram import udp
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
 
+from splunk_connect_for_snmp import (
+    celery_signals_handlers,
+)  # pylint: disable=unused-import
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.tasks import trap
 from splunk_connect_for_snmp.splunk.tasks import prepare, send
@@ -63,7 +59,6 @@ logging.basicConfig(
     level=getattr(logging, LOG_LEVEL), format="%(asctime)s %(levelname)s %(message)s"
 )
 
-formatter = CustomisedJSONFormatter()
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
@@ -72,23 +67,13 @@ trap_task_signature = trap.s
 prepare_task_signature = prepare.s
 send_task_signature = send.s
 
-
-@signals.worker_process_init.connect(weak=False)
-def init_celery_tracing(*args, **kwargs):
-    CeleryInstrumentor().instrument()
-    LoggingInstrumentor().instrument()
-
-
-@signals.beat_init.connect(weak=False)
-def init_celery_beat_tracing(*args, **kwargs):
-    CeleryInstrumentor().instrument()
-    LoggingInstrumentor().instrument()
-
-
-@signals.after_setup_task_logger.connect
-def setup_task_logger(logger, *args, **kwargs):
-    for handler in logger.handlers:
-        handler.setFormatter(formatter)
+# setup celery signals
+# init_celery_tracing()
+# init_celery_beat_tracing()
+# setup_task_logger()
+# liveness_indicator()
+# readiness_indicator()
+# worker_shutdown()
 
 
 # Callback function for receiving notifications
