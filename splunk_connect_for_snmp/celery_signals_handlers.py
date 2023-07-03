@@ -26,7 +26,6 @@ from splunk_connect_for_snmp.common.customised_json_formatter import (
 
 formatter = CustomisedJSONFormatter()
 HEARTBEAT_FILE = Path("/tmp/worker_heartbeat")
-TEST_FILE = Path("/tmp/test2")
 READINESS_FILE = Path("/tmp/worker_ready")
 
 
@@ -56,7 +55,6 @@ def liveness_indicator(**_):
 @signals.worker_ready.connect
 def readiness_indicator(**_):
     READINESS_FILE.touch()
-    TEST_FILE.touch()
 
 
 @signals.worker_shutdown.connect

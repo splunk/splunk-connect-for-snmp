@@ -57,14 +57,6 @@ app.config_from_object("splunk_connect_for_snmp.celery_config")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
 INVENTORY_REFRESH_RATE = int(os.getenv("INVENTORY_REFRESH_RATE", "600"))
 
-# setup celery signals
-# init_celery_tracing()
-# init_celery_beat_tracing()
-# setup_task_logger()
-# liveness_indicator()
-# readiness_indicator()
-# worker_shutdown()
-
 app.autodiscover_tasks(
     packages=[
         "splunk_connect_for_snmp",

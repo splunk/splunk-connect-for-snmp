@@ -67,14 +67,6 @@ trap_task_signature = trap.s
 prepare_task_signature = prepare.s
 send_task_signature = send.s
 
-# setup celery signals
-# init_celery_tracing()
-# init_celery_beat_tracing()
-# setup_task_logger()
-# liveness_indicator()
-# readiness_indicator()
-# worker_shutdown()
-
 
 # Callback function for receiving notifications
 # noinspection PyUnusedLocal
