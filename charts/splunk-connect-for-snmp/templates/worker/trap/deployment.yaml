@@ -59,6 +59,23 @@ spec:
               readOnly: false
           resources:
             {{- toYaml .Values.worker.trap.resources | nindent 12 }}
+      {{- if .Values.worker.trap.livenessProbe }}
+      livenessProbe:
+        exec:
+          command:
+          {{- toYaml .Values.worker.trap.livenessProbe.exec.command | nindent 16 }}
+        initialDelaySeconds: {{ .Values.worker.trap.livenessProbe.initialDelaySeconds }}
+        periodSeconds: {{ .Values.worker.trap.livenessProbe.periodSeconds }}
+      {{- end }}
+      {{- if .Values.worker.trap.readinessProbe }}
+      readinessProbe:
+        exec:
+          command:
+          {{- toYaml .Values.worker.trap.readinessProbe.exec.command | nindent 16 }}
+        initialDelaySeconds: {{ .Values.worker.trap.readinessProbe.initialDelaySeconds }}
+        periodSeconds: {{ .Values.worker.trap.readinessProbe.periodSeconds }}
+      {{- end }}
+
       {{- with .Values.worker.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
