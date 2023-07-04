@@ -1,6 +1,6 @@
+from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
-from pathlib import Path
 
 from splunk_connect_for_snmp.celery_signals_handlers import (
     liveness_indicator,

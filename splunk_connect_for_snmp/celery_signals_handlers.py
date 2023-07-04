@@ -14,11 +14,11 @@
 # limitations under the License.
 #
 
+from pathlib import Path
+
 from celery import Celery, signals
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
-from pathlib import Path
-
 
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,

@@ -39,9 +39,7 @@ from pysnmp.carrier.asyncio.dgram import udp
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
 
-from splunk_connect_for_snmp import (
-    celery_signals_handlers,
-)  # pylint: disable=unused-import
+from splunk_connect_for_snmp import *
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.tasks import trap
 from splunk_connect_for_snmp.splunk.tasks import prepare, send

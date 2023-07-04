@@ -31,14 +31,7 @@ from opentelemetry import trace
 # from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.trace import TracerProvider
 
-from splunk_connect_for_snmp.celery_signals_handlers import (
-    init_celery_beat_tracing,
-    init_celery_tracing,
-    liveness_indicator,
-    readiness_indicator,
-    setup_task_logger,
-    worker_shutdown,
-)
+from splunk_connect_for_snmp.celery_signals_handlers import *
 
 # from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
