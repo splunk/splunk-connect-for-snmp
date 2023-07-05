@@ -7,8 +7,8 @@ metadata:
   labels:
     app.kubernetes.io/name: splunk-connect-for-snmp-worker-sender
     app.kubernetes.io/instance: release-name
-    helm.sh/chart: splunk-connect-for-snmp-1.9.1-beta.4
-    app.kubernetes.io/version: "1.9.1-beta.4"
+    helm.sh/chart: splunk-connect-for-snmp-1.9.1
+    app.kubernetes.io/version: "1.9.1"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -35,7 +35,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 10001
             runAsGroup: 10001
-          image: "ghcr.io/splunk/splunk-connect-for-snmp/container:1.9.1-beta.4"
+          image: "ghcr.io/splunk/splunk-connect-for-snmp/container:1.9.1"
           imagePullPolicy: Always
           args:
             [
@@ -47,7 +47,7 @@ spec:
             - name: REDIS_URL
               value: redis://release-name-redis-headless:6379/1
             - name: SC4SNMP_VERSION
-              value: 1.9.1-beta.4
+              value: 1.9.1
             - name: CELERY_BROKER_URL
               value: redis://release-name-redis-headless:6379/0
             - name: MONGO_URI
@@ -97,6 +97,21 @@ spec:
               value: "4"
             - name: PREFETCH_COUNT
               value: "30"
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - test $(($(date +%s) - $(stat -c %Y /tmp/worker_heartbeat))) -lt 10
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - test
+                - -e /tmp/worker_ready
+            initialDelaySeconds: 10
+            periodSeconds: 5
           volumeMounts:
             - name: config
               mountPath: "/app/config"

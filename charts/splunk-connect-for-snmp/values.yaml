@@ -538,63 +538,20 @@ mongodb:
   volumePermissions:
     enabled: true
   livenessProbe:
-    # The liveness probe checks if the MongoDB instance is running and responsive.
-    exec:
-      # The exec command for the liveness probe to run in the container.
-      command:
-        - mongo
-        - --eval
-        - 'db.adminCommand("ping")'
-    # Number of seconds after the container has started before liveness probes are initiated.
-    initialDelaySeconds: 30
-    # How often (in seconds) to perform the probe.
-    periodSeconds: 10
-
+    enabled: true
+  # Readiness probes are used to know when a pod is ready to serve traffic.
+  # Until a pod is ready, it won't receive traffic from Kubernetes services.
   readinessProbe:
-    # The readiness probe checks if the MongoDB instance is ready to accept traffic.
-    # This configuration is similar to the liveness probe but with shorter intervals.
-    # It checks if the MongoDB instance is ready to accept traffic. The probe runs every
-    # 5 seconds after an initial delay of 10 seconds.
-    exec:
-    # The exec command for the readiness probe to run in the container.
-    command:
-      - mongo
-      - --eval
-      - 'db.adminCommand("ping")'
-    # Number of seconds after the container has started before readiness probes are initiated.
-    initialDelaySeconds: 10
-    # How often (in seconds) to perform the probe.
-    periodSeconds: 5
+  # Liveness probes are used in Kubernetes to know when a pod is alive or dead.
+  # A pod can be in a dead state for a number of reasons;
+  # the application could be crashed, some error in the application etc
+    enabled: false
 redis:
   architecture: standalone
   auth:
     enabled: false
   livenessProbe:
-    # The liveness probe checks if the Redis instance is running and responsive.
-    exec:
-      # The exec command for the liveness probe to run in the container.
-      command:
-        - sh
-        - -c
-        - "redis-cli ping"
-    # Number of seconds after the container has started before liveness probes are initiated.
-    initialDelaySeconds: 30
-    # How often (in seconds) to perform the probe.
-    periodSeconds: 10
-
+    enabled: false
   readinessProbe:
-    # The readiness probe checks if the Redis instance is ready to accept traffic.
-    # This configuration is similar to the liveness probe but with shorter intervals.
-    # It checks if the Redis instance is ready to accept traffic. The probe runs every
-    # 5 seconds after an initial delay of 10 seconds.
-    exec:
-    # The exec command for the readiness probe to run in the container.
-    command:
-      - sh
-      - -c
-      - "redis-cli ping"
-    # Number of seconds after the container has started before readiness probes are initiated.
-    initialDelaySeconds: 10
-    # How often (in seconds) to perform the probe.
-    periodSeconds: 5
+    enabled: false
 commonAnnotations: {}
