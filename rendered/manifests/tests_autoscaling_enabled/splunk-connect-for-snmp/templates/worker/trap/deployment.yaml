@@ -111,21 +111,6 @@ spec:
               cpu: 500m
             requests:
               cpu: 250m
-      livenessProbe:
-        exec:
-          command:
-                - sh
-                - -c
-                - test $(($(date +%s) - $(stat -c %Y /tmp/worker_heartbeat))) -lt 10
-        initialDelaySeconds: 10
-        periodSeconds: 5
-      readinessProbe:
-        exec:
-          command:
-                - test
-                - -e /tmp/worker_ready
-        initialDelaySeconds: 10
-        periodSeconds: 5
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

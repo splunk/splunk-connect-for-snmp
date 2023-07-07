@@ -46,21 +46,13 @@ spec:
           env:
             {{- include "environmental-variables" . | nindent 12 }}
             {{- include "environmental-variables-sender" . | nindent 12 }}
-          {{- if .Values.worker.poller.livenessProbe }}
+          {{- if .Values.worker.sender.livenessProbe.enabled }}
           livenessProbe:
-            exec:
-              command:
-              {{- toYaml .Values.worker.sender.livenessProbe.exec.command | nindent 16 }}
-            initialDelaySeconds: {{ .Values.worker.sender.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.worker.sender.livenessProbe.periodSeconds }}
+          {{- .Values.worker.sender.livenessProbe | toYaml | nindent 12 }}
           {{- end }}
-          {{- if .Values.worker.poller.readinessProbe }}
+          {{- if .Values.worker.sender.readinessProbe.enabled }}
           readinessProbe:
-            exec:
-              command:
-              {{- toYaml .Values.worker.sender.readinessProbe.exec.command | nindent 16 }}
-            initialDelaySeconds: {{ .Values.worker.sender.readinessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.worker.sender.readinessProbe.periodSeconds }}
+            {{- .Values.worker.sender.readinessProbe | toYaml | nindent 12 }}
           {{- end }}
           volumeMounts:
             - name: config

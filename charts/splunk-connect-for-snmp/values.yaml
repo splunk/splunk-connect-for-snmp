@@ -538,7 +538,7 @@ mongodb:
   volumePermissions:
     enabled: true
   livenessProbe:
-    enabled: true
+    enabled: false
   # Readiness probes are used to know when a pod is ready to serve traffic.
   # Until a pod is ready, it won't receive traffic from Kubernetes services.
   readinessProbe:

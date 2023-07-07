@@ -97,19 +97,12 @@ spec:
               value: "4"
             - name: PREFETCH_COUNT
               value: "30"
-          livenessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - test $(($(date +%s) - $(stat -c %Y /tmp/worker_heartbeat))) -lt 10
-            initialDelaySeconds: 10
-            periodSeconds: 5
           readinessProbe:
+            enabled: true
             exec:
               command:
-                - test
-                - -e /tmp/worker_ready
+              - test
+              - -e /tmp/worker_ready
             initialDelaySeconds: 10
             periodSeconds: 5
           volumeMounts:
