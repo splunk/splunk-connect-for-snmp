@@ -59,13 +59,21 @@ spec:
               readOnly: false
           resources:
             {{- toYaml .Values.worker.trap.resources | nindent 12 }}
-          {{- if .Values.worker.trap.livenessProbe.enabled }}
+          {{- if .Values.worker.livenessProbe.enabled }}
           livenessProbe:
-            {{- .Values.worker.trap.livenessProbe | toYaml | nindent 12 }}
+            exec:
+              command:
+                {{- toYaml .Values.worker.livenessProbe.exec.command | nindent 16 }}
+            initialDelaySeconds: {{ .Values.worker.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.worker.livenessProbe.periodSeconds }}
           {{- end }}
-          {{- if .Values.worker.trap.readinessProbe.enabled }}
+          {{- if .Values.worker.readinessProbe.enabled }}
           readinessProbe:
-            {{- .Values.worker.trap.readinessProbe | toYaml | nindent 12 }}
+            exec:
+              command:
+                {{- toYaml .Values.worker.readinessProbe.exec.command | nindent 16 }}
+            initialDelaySeconds: {{ .Values.worker.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.worker.readinessProbe.periodSeconds }}
           {{- end }}
       {{- with .Values.worker.nodeSelector }}
       nodeSelector:

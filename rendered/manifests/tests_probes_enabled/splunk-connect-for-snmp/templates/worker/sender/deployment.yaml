@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/version: "1.9.1"
     app.kubernetes.io/managed-by: Helm
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: splunk-connect-for-snmp-worker-sender
@@ -97,13 +97,21 @@ spec:
               value: "4"
             - name: PREFETCH_COUNT
               value: "30"
-          readinessProbe:
-            enabled: true
+          livenessProbe:
             exec:
               command:
-              - test
-              - -e /tmp/worker_ready
-            initialDelaySeconds: 10
+                - sh
+                - -c
+                - test $(($(date +%s) - $(stat -c %Y /tmp/worker_heartbeat))) -lt 10
+            initialDelaySeconds: 60
+            periodSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - test -e /tmp/worker_ready
+            initialDelaySeconds: 30
             periodSeconds: 5
           volumeMounts:
             - name: config

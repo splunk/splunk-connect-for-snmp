@@ -4,8 +4,3 @@ render:
 	helm template -n default --values rendered/values.yaml --output-dir rendered/manifests/tests charts/splunk-connect-for-snmp
 	rm -rf rendered/manifests/tests/splunk-connect-for-snmp/charts
 	./render_manifests.sh
-render-debug:
-	rm -rf rendered/manifests
-	helm template -n default --debug --values rendered/values.yaml --output-dir rendered/manifests/tests charts/splunk-connect-for-snmp
-	rm -rf rendered/manifests/tests/splunk-connect-for-snmp/charts
-	./render_manifests.sh
