@@ -272,9 +272,9 @@ worker:
         # the resources requests for poller worker container
       requests:
         cpu: 250m
-      # Liveness probes are used in Kubernetes to know when a pod is alive or dead.
-    # A pod can be in a dead state for a number of reasons;
-    # the application could be crashed, some error in the application etc.
+  # Liveness probes are used in Kubernetes to know when a pod is alive or dead.
+  # A pod can be in a dead state for a number of reasons;
+  # the application could be crashed, some error in the application etc.
   livenessProbe:
     # whether it should be turned on or not
     enabled: false
@@ -488,21 +488,8 @@ mongodb:
     storageClass: "microk8s-hostpath"
   volumePermissions:
     enabled: true
-  livenessProbe:
-    enabled: false
-  # Readiness probes are used to know when a pod is ready to serve traffic.
-  # Until a pod is ready, it won't receive traffic from Kubernetes services.
-  readinessProbe:
-  # Liveness probes are used in Kubernetes to know when a pod is alive or dead.
-  # A pod can be in a dead state for a number of reasons;
-  # the application could be crashed, some error in the application etc
-    enabled: false
 redis:
   architecture: standalone
   auth:
-    enabled: false
-  livenessProbe:
-    enabled: false
-  readinessProbe:
     enabled: false
 commonAnnotations: {}
