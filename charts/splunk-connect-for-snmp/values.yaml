@@ -248,7 +248,6 @@ worker:
       requests:
         # the resources requests for poller worker container
         cpu: 250m
-
   # The sender worker handles sending data to Splunk
   sender:
     # number of the poller replicas when autoscaling is set to false
@@ -273,6 +272,40 @@ worker:
         # the resources requests for poller worker container
       requests:
         cpu: 250m
+  # Liveness probes are used in Kubernetes to know when a pod is alive or dead.
+  # A pod can be in a dead state for a number of reasons;
+  # the application could be crashed, some error in the application etc.
+  livenessProbe:
+    # whether it should be turned on or not
+    enabled: false
+    # The exec command for the liveness probe to run in the container.
+    exec:
+      command:
+        - sh
+        - -c
+        - test $(($(date +%s) - $(stat -c %Y /tmp/worker_heartbeat))) -lt 10
+    # Number of seconds after the container has started before liveness probes are initiated.
+    initialDelaySeconds: 80
+    # How often (in seconds) to perform the probe.
+    periodSeconds: 10
+
+  # Readiness probes are used to know when a pod is ready to serve traffic.
+  # Until a pod is ready, it won't receive traffic from Kubernetes services.
+  readinessProbe:
+    # whether it should be turned on or not
+    enabled: false
+    # The exec command for the readiness probe to run in the container.
+    exec:
+      command:
+        - sh
+        - -c
+        - test -e /tmp/worker_ready
+    # Number of seconds after the container has started before readiness probes are initiated.
+    initialDelaySeconds: 30
+    # How often (in seconds) to perform the probe.
+    periodSeconds: 5
+
+
   # task timeout in seconds (usually necessary when walk process takes a long time)
   taskTimeout: 2400
   # maximum time interval between walk attempts

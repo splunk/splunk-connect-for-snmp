@@ -47,6 +47,22 @@ spec:
           env:
             {{- include "environmental-variables" . | nindent 12 }}
             {{- include "environmental-variables-poller" . | nindent 12 }}
+          {{- if .Values.worker.livenessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command:
+                {{- toYaml .Values.worker.livenessProbe.exec.command | nindent 16 }}
+            initialDelaySeconds: {{ .Values.worker.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.worker.livenessProbe.periodSeconds }}
+          {{- end }}
+          {{- if .Values.worker.readinessProbe.enabled }}
+          readinessProbe:
+            exec:
+              command:
+                {{- toYaml .Values.worker.readinessProbe.exec.command | nindent 16 }}
+            initialDelaySeconds: {{ .Values.worker.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.worker.readinessProbe.periodSeconds }}
+          {{- end }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"
@@ -75,7 +91,7 @@ spec:
             - topologyKey: "kubernetes.io/hostname"
               labelSelector:
                 matchLabels:
-                    {{- include "splunk-connect-for-snmp.worker.poller.selectorLabels" . | nindent 22 }}
+                  {{- include "splunk-connect-for-snmp.worker.poller.selectorLabels" . | nindent 22 }}
       {{- else if eq .Values.worker.podAntiAffinity "soft" }}
       affinity:
         podAntiAffinity:
