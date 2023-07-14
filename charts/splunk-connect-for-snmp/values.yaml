@@ -61,8 +61,8 @@ sim:
 
   # Splunk Observability realm to send telemetry data to.
   signalfxToken: ""
-  # Required for Splunk Observability (if `realm` is specified). Splunk
-  # Observability org access token.
+  # Required for Splunk Observability (if `realm` is specified). 
+  # Splunk Observability org access token.
   signalfxRealm: ""
 
   resources: {}
@@ -235,22 +235,22 @@ worker:
     autoscaling:
       # enabling autoscaling for trap worker pods
       enabled: false
-      # minimum number of running poller trap pods when autoscaling is enabled
+      # minimum number of running trap worker pods when autoscaling is enabled
       minReplicas: 2
-      # maximum number of running poller trap pods when autoscaling is enabled
+      # maximum number of running trap worker pods when autoscaling is enabled
       maxReplicas: 10
       # CPU % threshold that must be exceeded on traps worker pods to spawn another replica
       targetCPUUtilizationPercentage: 80
     resources:
-      # the resources limits for poller worker container
+      # the resources limits for trap worker container
       limits:
         cpu: 500m
       requests:
-        # the resources requests for poller worker container
+        # the resources requests for trap worker container
         cpu: 250m
   # The sender worker handles sending data to Splunk
   sender:
-    # number of the poller replicas when autoscaling is set to false
+    # number of the sender replicas when autoscaling is set to false
     replicaCount: 1
     # minimum number of threads in a pod
     concurrency: 4
@@ -259,17 +259,17 @@ worker:
     autoscaling:
       # enabling autoscaling for sender worker pods
       enabled: false
-      # minimum number of running sender trap pods when autoscaling is enabled
+      # minimum number of running sender worker pods when autoscaling is enabled
       minReplicas: 2
-      # maximum number of running sender trap pods when autoscaling is enabled
+      # maximum number of running sender worker pods when autoscaling is enabled
       maxReplicas: 10
       # CPU % threshold that must be exceeded on sender worker pods to spawn another replica
       targetCPUUtilizationPercentage: 80
     resources:
-      # the resources limits for poller worker container
+      # the resources limits for sender worker container
       limits:
         cpu: 500m
-        # the resources requests for poller worker container
+        # the resources requests for sender worker container
       requests:
         cpu: 250m
   # Liveness probes are used in Kubernetes to know when a pod is alive or dead.
