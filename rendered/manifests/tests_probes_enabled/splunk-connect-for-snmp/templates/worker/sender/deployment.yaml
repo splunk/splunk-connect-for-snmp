@@ -87,6 +87,10 @@ spec:
                 secretKeyRef:
                   name: splunk-connect-for-snmp-splunk
                   key: hec_token
+            - name: SPLUNK_HEC_INDEX_EVENTS
+              value: netops
+            - name: SPLUNK_HEC_INDEX_METRICS
+              value: netmetrics
             - name: SPLUNK_SOURCETYPE_TRAPS
               value: "sc4snmp:traps"
             - name: SPLUNK_SOURCETYPE_POLLING_EVENTS
