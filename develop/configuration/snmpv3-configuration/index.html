@@ -827,12 +827,12 @@ by third-party password managers, then consumed without storing sensitive data i
 <span class="c1"># &lt;authProtocol&gt;=One of SHA (SHA1) or MD5 </span>
 <span class="c1"># &lt;privProtocol&gt;=One of AES or DES </span>
 <span class="c1"># Note MD5 and DES are considered insecure but must be supported for standards compliance</span>
-microk8s kubectl create -n &lt;namespace&gt; secret generic &lt;secretname&gt; <span class="se">\</span>
-  --from-literal<span class="o">=</span><span class="nv">userName</span><span class="o">=</span>&lt;username&gt; <span class="se">\</span>
-  --from-literal<span class="o">=</span><span class="nv">authKey</span><span class="o">=</span>&lt;key&gt; <span class="se">\</span>
-  --from-literal<span class="o">=</span><span class="nv">privKey</span><span class="o">=</span>&lt;key&gt; <span class="se">\</span>
-  --from-literal<span class="o">=</span><span class="nv">authProtocol</span><span class="o">=</span>&lt;authProtocol&gt; <span class="se">\</span>
-  --from-literal<span class="o">=</span><span class="nv">privProtocol</span><span class="o">=</span>&lt;privProtocol&gt; 
+microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>&lt;secretname&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">userName</span><span class="o">=</span>&lt;username&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">authKey</span><span class="o">=</span>&lt;key&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">privKey</span><span class="o">=</span>&lt;key&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">authProtocol</span><span class="o">=</span>&lt;authProtocol&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">privProtocol</span><span class="o">=</span>&lt;privProtocol&gt;<span class="w"> </span>
 </code></pre></div>
 
 <p>Configured credentials can be used in <a href="../poller-configuration/">poller</a> and <a href="../trap-configuration/">trap</a> services. 
