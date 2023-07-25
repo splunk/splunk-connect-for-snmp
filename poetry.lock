@@ -1125,12 +1125,13 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pyrate-limiter"
-version = "2.8.1"
+version = "2.10.0"
 description = "Python Rate-Limiter using Leaky-Bucket Algorithm"
 optional = false
-python-versions = ">=3.6.2,<4.0.0"
+python-versions = ">=3.7,<4.0"
 files = [
-    {file = "pyrate-limiter-2.8.1.tar.gz", hash = "sha256:0741b7db4b3facdce60bd836e0fcc43911bc52c443f674f924afba7e02e79c18"},
+    {file = "pyrate_limiter-2.10.0-py3-none-any.whl", hash = "sha256:a99e52159f5ed5eb58118bed8c645e30818e7c0e0d127a0585c8277c776b0f7f"},
+    {file = "pyrate_limiter-2.10.0.tar.gz", hash = "sha256:98cc52cdbe058458e945ae87d4fd5a73186497ffa545ee6e98372f8599a5bd34"},
 ]
 
 [package.extras]
@@ -1784,4 +1785,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "64bc72fb5e27a3c1104c20597635422c8f8bcdf2d6742d7e37bbc47fc30494b4"
+content-hash = "ca03c518bcf9dd94214d99042f918174ca816455d65f8c586a859ac8d0f7116a"
