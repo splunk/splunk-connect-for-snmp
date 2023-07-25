@@ -929,7 +929,7 @@
                 
 
 
-<h1 id="configuring-profiles">Configuring profiles<a class="headerlink" href="#configuring-profiles" title="Permanent link">&para;</a></h1>
+<div><h1 id="configuring-profiles">Configuring profiles<a class="headerlink" href="#configuring-profiles" title="Permanent link">¶</a></h1>
 <p>Profiles are the units where you can configure what you want to poll, and then assign them to the device. The definition of profile can be found in the <code>values.yaml</code> file
 under the <code>scheduler</code> section.</p>
 <p>Here are the instructions on how to use profiles: <a href="../poller-configuration/#update-inventory">Update Inventory and Profile</a>. </p>
@@ -938,7 +938,7 @@ under the <code>scheduler</code> section.</p>
 <li>Static profile - polling starts when the profile is added to the <code>profiles</code> field in the <code>inventory</code> of the device.</li>
 <li>
 <p>Smart profile - polling starts when configured conditions are fulfilled, and the device to poll from has <code>smart_profiles</code> enabled in inventory.
-Smart profiles are useful when we have many devices of a certain kind, and we don&rsquo;t want to configure each of them individually with static profiles.</p>
+Smart profiles are useful when we have many devices of a certain kind, and we don’t want to configure each of them individually with static profiles.</p>
 <p>In order to configure smart profile, do the following:</p>
 <ol>
 <li>Choose one of the fields polled from the device, most commonly sysDescr. </li>
@@ -958,16 +958,16 @@ Smart profiles are useful when we have many devices of a certain kind, and we do
 <span class="w">        </span><span class="no">condition:</span>
 <span class="w">          </span><span class="no"># Define type of condition. Allowed value field, base and walk</span>
 <span class="w">          </span><span class="no">type: field</span>
-<span class="w">          </span><span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span>
+<span class="w">          </span><span class="no">field: "SNMPv2-MIB.sysDescr"</span>
 <span class="w">          </span><span class="no"># Define paterns</span>
 <span class="w">          </span><span class="no">patterns:</span>
-<span class="w">            </span><span class="no">- &#39;.*STRING_TO_BE_MATCHED.*&#39;</span>
+<span class="w">            </span><span class="no">- '.*STRING_TO_BE_MATCHED.*'</span>
 <span class="w">        </span><span class="no">#Define varbinds to query</span>
 <span class="w">        </span><span class="no">varBinds:</span>
-<span class="w">          </span><span class="no"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span>
-<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
-<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
-<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysUpTime&#39;,0]</span>
+<span class="w">          </span><span class="no"># Syntax: [ "MIB-Component", "MIB object name"[Optional], "MIB index number"[Optional]]</span>
+<span class="w">          </span><span class="no">- ['SNMPv2-MIB']</span>
+<span class="w">          </span><span class="no">- ['SNMPv2-MIB', 'sysName']</span>
+<span class="w">          </span><span class="no">- ['SNMPv2-MIB', 'sysUpTime',0]</span>
 </code></pre></div>
 
 <p>For example, we have configured two profiles. One is smart, and the other one is static:</p>
@@ -977,17 +977,17 @@ Smart profiles are useful when we have many devices of a certain kind, and we do
 <span class="w">        </span><span class="no">frequency: 100</span>
 <span class="w">        </span><span class="no">condition:</span>
 <span class="w">          </span><span class="no">type: field</span>
-<span class="w">          </span><span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span>
+<span class="w">          </span><span class="no">field: "SNMPv2-MIB.sysDescr"</span>
 <span class="w">          </span><span class="no">patterns:</span>
-<span class="w">            </span><span class="no">- &#39;.*linux.*&#39;</span>
+<span class="w">            </span><span class="no">- '.*linux.*'</span>
 <span class="w">        </span><span class="no">varBinds:</span>
-<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
-<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
-<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysUpTime&#39;,0]</span>
+<span class="w">          </span><span class="no">- ['SNMPv2-MIB']</span>
+<span class="w">          </span><span class="no">- ['SNMPv2-MIB', 'sysName']</span>
+<span class="w">          </span><span class="no">- ['SNMPv2-MIB', 'sysUpTime',0]</span>
 <span class="w">      </span><span class="no">static_profile:</span>
 <span class="w">        </span><span class="no">frequency: 300</span>
 <span class="w">        </span><span class="no">varBinds:</span>
-<span class="w">          </span><span class="no">- [&#39;IP-MIB&#39;]</span>
+<span class="w">          </span><span class="no">- ['IP-MIB']</span>
 </code></pre></div>
 
 <p>If we want to enable only <code>static_profile</code> polling for the host <code>10.202.4.202</code>, we will configure similar inventory:</p>
@@ -1005,11 +1005,11 @@ Smart profiles are useful when we have many devices of a certain kind, and we do
 </code></pre></div>
 
 <p>Then, if the device <code>sysDescr</code> matches the <code>'.*linux.*'</code> filter, the <code>smart_profile</code> profile will be polled.</p>
-<h2 id="varbinds-configuration">varBinds configuration<a class="headerlink" href="#varbinds-configuration" title="Permanent link">&para;</a></h2>
-<p><code>varBinds</code> is short for &ldquo;variable binding&rdquo; in the SNMP. It is the combination of an Object Identifier (OID) and a value. 
+<h2 id="varbinds-configuration">varBinds configuration<a class="headerlink" href="#varbinds-configuration" title="Permanent link">¶</a></h2>
+<p><code>varBinds</code> is short for “variable binding” in the SNMP. It is the combination of an Object Identifier (OID) and a value. 
 <code>varBinds</code> are used for defining what OIDs should be requested from SNMP Agents. <code>varBinds</code> is a required 
 subsection of each profile. The syntax configuration of <code>varBinds</code> looks like the following:</p>
-<p>[ &ldquo;MIB-Component&rdquo;, &ldquo;MIB object&rdquo;[Optional], &ldquo;MIB index number&rdquo;[Optional]]</p>
+<p>[ “MIB-Component”, “MIB object”[Optional], “MIB index number”[Optional]]</p>
 <ul>
 <li><code>MIB-Component</code> - The SNMP MIB itself consists of distinct component MIBs, each of which refers to a specific 
  defined collection of management information that is part of the overall SNMP MIB, eg., <code>SNMPv2-MIB</code>. 
@@ -1021,13 +1021,13 @@ subsection of each profile. The syntax configuration of <code>varBinds</code> lo
 </ul>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">    </span><span class="c1"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysName&#39;</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysUpTime&#39;</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="c1"># Syntax: [ "MIB-Component", "MIB object name"[Optional], "MIB index number"[Optional]]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'SNMPv2-MIB'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'SNMPv2-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'sysName'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'SNMPv2-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'sysUpTime'</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 
-<h2 id="static-profile-configuration">Static Profile configuration<a class="headerlink" href="#static-profile-configuration" title="Permanent link">&para;</a></h2>
+<h2 id="static-profile-configuration">Static Profile configuration<a class="headerlink" href="#static-profile-configuration" title="Permanent link">¶</a></h2>
 <p>Static Profile is used when they are defined on a list of profiles in the inventory configuration in the <code>poller</code> 
 service <a href="../poller-configuration/#configure-inventory">Inventory configuration</a>. Static Profiles are executed 
 even if the SmartProfile flag in inventory is set to false. 
@@ -1045,22 +1045,22 @@ To configure Static Profile value needs to be set in the <code>profiles</code> s
 <span class="w">    </span><span class="no">static_profile_example:</span>
 <span class="w">      </span><span class="no">frequency: 20</span>
 <span class="w">      </span><span class="no">varBinds:</span>
-<span class="w">        </span><span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
-<span class="w">        </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
-<span class="w">        </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysUpTime&#39;,0]</span>
+<span class="w">        </span><span class="no">- ['SNMPv2-MIB']</span>
+<span class="w">        </span><span class="no">- ['SNMPv2-MIB', 'sysName']</span>
+<span class="w">        </span><span class="no">- ['SNMPv2-MIB', 'sysUpTime',0]</span>
 </code></pre></div>
 
-<h3 id="particular-kinds-of-static-profiles">Particular kinds of static profiles<a class="headerlink" href="#particular-kinds-of-static-profiles" title="Permanent link">&para;</a></h3>
+<h3 id="particular-kinds-of-static-profiles">Particular kinds of static profiles<a class="headerlink" href="#particular-kinds-of-static-profiles" title="Permanent link">¶</a></h3>
 <p>Sometimes static profiles have additional functionalities to be used in specific scenarios. </p>
-<h4 id="walk-profile">WALK profile<a class="headerlink" href="#walk-profile" title="Permanent link">&para;</a></h4>
+<h4 id="walk-profile">WALK profile<a class="headerlink" href="#walk-profile" title="Permanent link">¶</a></h4>
 <p>If you would like to limit the scope of the walk, you should set one of the profiles in the inventory to point to the profile definition of type <code>walk</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
 <span class="w">      </span><span class="no">small_walk:</span>
 <span class="w">        </span><span class="no">condition: </span>
-<span class="w">          </span><span class="no">type: &quot;walk&quot;</span>
+<span class="w">          </span><span class="no">type: "walk"</span>
 <span class="w">        </span><span class="no">varBinds:</span>
-<span class="w">          </span><span class="no">- [&#39;UDP-MIB&#39;]</span>
+<span class="w">          </span><span class="no">- ['UDP-MIB']</span>
 </code></pre></div>
 
 <p>This profile should be placed in the profiles section of the inventory definition. It will be executed with the frequency defined in <code>walk_interval</code>.
@@ -1073,27 +1073,27 @@ If multiple profiles of type <code>walk</code> is placed in profiles, the last o
 </code></pre></div>
 
 <p>NOTE: When small walk is configured, <code>SNMPv2-MIB</code> is enabled by default (we need it to create the state of the device in the database).
-For example, if you&rsquo;ve decided to use <code>small_walk</code> from the example above, you&rsquo;ll be able to poll only <code>UDP-MIB</code>, and <code>SNMPv2-MIB</code> OIDs.</p>
-<h2 id="smartprofile-configuration">SmartProfile configuration<a class="headerlink" href="#smartprofile-configuration" title="Permanent link">&para;</a></h2>
+For example, if you’ve decided to use <code>small_walk</code> from the example above, you’ll be able to poll only <code>UDP-MIB</code>, and <code>SNMPv2-MIB</code> OIDs.</p>
+<h2 id="smartprofile-configuration">SmartProfile configuration<a class="headerlink" href="#smartprofile-configuration" title="Permanent link">¶</a></h2>
 <p>SmartProfile is executed when the SmartProfile flag in inventory is set to true and the condition defined in profile match. 
 More information about configuring inventory can be found in <a href="../poller-configuration/#configure-inventory">Inventory configuration</a>.</p>
 <p>To configure Smart Profile, the following value needs to be set in the <code>profiles</code> section:</p>
 <ul>
 <li><code>ProfileName</code> - define as subsection key in <code>profiles</code>. <ul>
-<li><code>frequency</code> - define an interval between executing SNMP&rsquo;s gets in second.</li>
+<li><code>frequency</code> - define an interval between executing SNMP’s gets in second.</li>
 <li><code>condition</code> - section define conditions to match profile<ul>
-<li><code>type</code> - key of <code>condition</code> section which defines type of condition. The allowed values are <code>base</code> and <code>field</code> (<code>walk</code> type is also allowed here, but it&rsquo;s not part of smart profiles).<ul>
+<li><code>type</code> - key of <code>condition</code> section which defines type of condition. The allowed values are <code>base</code> and <code>field</code> (<code>walk</code> type is also allowed here, but it’s not part of smart profiles).<ul>
 <li><code>base</code> type of condition will be executed when <code>SmartProfile</code> in inventory is set to true.</li>
 <li><code>field</code> type of condition will be executed if it matches <code>pattern</code> for defined <code>field</code>. Supported fields are:<ul>
-<li>&ldquo;SNMPv2-MIB.sysDescr&rdquo;</li>
-<li>&ldquo;SNMPv2-MIB.sysObjectID&rdquo;</li>
+<li>“SNMPv2-MIB.sysDescr”</li>
+<li>“SNMPv2-MIB.sysObjectID”</li>
 </ul>
 </li>
 </ul>
 </li>
 <li><code>field</code> Define field name for condition type field. </li>
 <li><code>pattern</code> Define list of regular expression patterns for MIB object field defined in <code>field</code> section. For example:
-        - &ldquo;.<em>linux.</em>&ldquo;</li>
+        - “.<em>linux.</em>“</li>
 </ul>
 </li>
 <li><code>varBinds</code> - define var binds to query. </li>
@@ -1106,10 +1106,10 @@ More information about configuring inventory can be found in <a href="../poller-
 <span class="w">      </span><span class="no">SmartProfile_base_example:</span>
 <span class="w">        </span><span class="no">frequency: 100</span>
 <span class="w">        </span><span class="no">condition: </span>
-<span class="w">          </span><span class="no">type: &quot;base&quot;</span>
+<span class="w">          </span><span class="no">type: "base"</span>
 <span class="w">        </span><span class="no">varBinds:</span>
-<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
-<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
+<span class="w">          </span><span class="no">- ['SNMPv2-MIB']</span>
+<span class="w">          </span><span class="no">- ['SNMPv2-MIB', 'sysName']</span>
 </code></pre></div>
 
 <p>Example of <code>field</code>  type profile, also called an automatic profile:</p>
@@ -1118,18 +1118,18 @@ More information about configuring inventory can be found in <a href="../poller-
 <span class="w">      </span><span class="no">SmartProfile_field_example:</span>
 <span class="w">        </span><span class="no">frequency: 100</span>
 <span class="w">        </span><span class="no">condition: </span>
-<span class="w">          </span><span class="no">type: &quot;field&quot;</span>
-<span class="w">          </span><span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span>
+<span class="w">          </span><span class="no">type: "field"</span>
+<span class="w">          </span><span class="no">field: "SNMPv2-MIB.sysDescr"</span>
 <span class="w">          </span><span class="no">patterns:</span>
-<span class="w">            </span><span class="no">- &#39;.*STRING_TO_BE_MATCHED.*&#39;</span>
+<span class="w">            </span><span class="no">- '.*STRING_TO_BE_MATCHED.*'</span>
 <span class="w">        </span><span class="no">varBinds:</span>
-<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;]</span>
-<span class="w">          </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
+<span class="w">          </span><span class="no">- ['SNMPv2-MIB']</span>
+<span class="w">          </span><span class="no">- ['SNMPv2-MIB', 'sysName']</span>
 </code></pre></div>
 
 <p>NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 1 minute for changes to propagate. In case you changed frequency, or a profile type, the change will be reflected only after the next walk.
 There is also 5 minute TTL for an inventory pod. Basically, SC4SNMP allows one inventory upgrade and then block updates for the next 5 minutes.</p>
-<h2 id="conditional-profiles">Conditional profiles<a class="headerlink" href="#conditional-profiles" title="Permanent link">&para;</a></h2>
+<h2 id="conditional-profiles">Conditional profiles<a class="headerlink" href="#conditional-profiles" title="Permanent link">¶</a></h2>
 <p>There is a way to not explicitly give what SNMP objects we want to poll - only the conditions that must be fulfilled to
 qualify object for polling.</p>
 <p>An example of a conditional profile is:</p>
@@ -1137,21 +1137,21 @@ qualify object for polling.</p>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <span class="w">  </span><span class="nt">conditions</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
-<span class="w">      </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;equals&quot;</span><span class="w"> </span>
-<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;up&quot;</span>
+<span class="w">      </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">"equals"</span><span class="w"> </span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">"up"</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifOperStatus</span>
-<span class="w">      </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;equals&quot;</span>
-<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;up&quot;</span>
+<span class="w">      </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">"equals"</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">"up"</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifDescr&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifAlias&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifInErrors&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOutDiscards&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifDescr'</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifAlias'</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifInErrors'</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOutDiscards'</span><span class="w"> </span><span class="p p-Indicator">]</span>
 </code></pre></div>
 
 <p>When the such profile is defined and added to a device in an inventory, it will poll all interfaces where <code>ifAdminStatus</code>
 and <code>ifOperStatus</code> is up. Note that conditional profiles are being evaluated during the walk process (on every <code>walk_interval</code>)
-and if the status changes in between, the scope of the conditional profile won&rsquo;t be modified.</p>
+and if the status changes in between, the scope of the conditional profile won’t be modified.</p>
 <p>These are operations possible to use in conditional profiles:</p>
 <ol>
 <li><code>equals</code> - value gathered from <code>field</code> is equal to <code>value</code></li>
@@ -1161,9 +1161,9 @@ and if the status changes in between, the scope of the conditional profile won&r
 </ol>
 <div class="codehilite"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
-<span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;in&quot;</span>
+<span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">"in"</span>
 <span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;down&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"down"</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </code></pre></div>
 
@@ -1171,11 +1171,11 @@ and if the status changes in between, the scope of the conditional profile won&r
 you can learn more about it <a href="../snmp-data-format/">here</a>.</p>
 <p>You have to explicitly define <code>varBinds</code> (not only the MIB family but also the field to poll), so such config:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">varBinds</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="w"> </span><span class="p p-Indicator">]</span>
 </code></pre></div>
 
 <p>is not correct.</p>
-<h2 id="custom-translations">Custom translations<a class="headerlink" href="#custom-translations" title="Permanent link">&para;</a></h2>
+<h2 id="custom-translations">Custom translations<a class="headerlink" href="#custom-translations" title="Permanent link">¶</a></h2>
 <p>If the user wants to use custom names/translations of MIB names, it can be configured under the customTranslations section under scheduler config.
 Translations are grouped by MIB family. In the example below IF-MIB.ifInDiscards will be translated to IF-MIB.myCustomName1:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
@@ -1185,7 +1185,7 @@ Translations are grouped by MIB family. In the example below IF-MIB.ifInDiscards
 <span class="w">        </span><span class="nt">ifOutErrors</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName2</span>
 <span class="w">      </span><span class="nt">SNMPv2-MIB</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">sysDescr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName3</span>
-</code></pre></div>
+</code></pre></div></div>
 
 
 

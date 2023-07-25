@@ -861,7 +861,7 @@
                 
 
 
-<h1 id="snmp-data-format">SNMP Data Format<a class="headerlink" href="#snmp-data-format" title="Permanent link">&para;</a></h1>
+<div><h1 id="snmp-data-format">SNMP Data Format<a class="headerlink" href="#snmp-data-format" title="Permanent link">¶</a></h1>
 <p>SC4SNMP classifies SNMP data elements as metrics or textual fields. We assume that the metric types are the indicators worth monitoring, 
 that changes dynamically, and textual fields are the context helpful to understand what an SNMP object really means.</p>
 <p>SC4SNMP classify the data element as a metric when its type is one of:</p>
@@ -893,8 +893,8 @@ example in case of <code>IF-MIB.ifOperStatus</code>:</p>
 <p>Here we expect some numeric value, but actually what SNMP Agents gets from the device is a <code>string</code> value,
 like <code>up</code>. To avoid setting textual value as a metrics, SC4SNMP does an additional check and tries to cast the
 numeric value to float. If the check fails, the values is classified as a textual field.</p>
-<p>Let&rsquo;s go through a simple example. We&rsquo;ve just added a device and didn&rsquo;t configure anything special. The data from a walk
-in Splunk&rsquo;s metrics index is:</p>
+<p>Let’s go through a simple example. We’ve just added a device and didn’t configure anything special. The data from a walk
+in Splunk’s metrics index is:</p>
 <div class="codehilite"><pre><span></span><code>{
 <span class="w">   </span><span class="nv">ifAdminStatus</span>:<span class="w"> </span><span class="nv">up</span>
 <span class="w">   </span><span class="nv">ifDescr</span>:<span class="w"> </span><span class="nv">GigabitEthernet1</span>
@@ -941,18 +941,18 @@ in Splunk&rsquo;s metrics index is:</p>
 <span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifSpeed</span>:<span class="w"> </span><span class="mi">1000000000</span>
 </code></pre></div>
 
-<h2 id="to-which-splunk-index-will-my-data-go">To which Splunk index will my data go?<a class="headerlink" href="#to-which-splunk-index-will-my-data-go" title="Permanent link">&para;</a></h2>
-<h3 id="metric-index">Metric index<a class="headerlink" href="#metric-index" title="Permanent link">&para;</a></h3>
+<h2 id="to-which-splunk-index-will-my-data-go">To which Splunk index will my data go?<a class="headerlink" href="#to-which-splunk-index-will-my-data-go" title="Permanent link">¶</a></h2>
+<h3 id="metric-index">Metric index<a class="headerlink" href="#metric-index" title="Permanent link">¶</a></h3>
 <p>The rule is, if we poll a profile with AT LEAST one metric value, it will go to the metric index and will be
 enriched with all the textual fields we have for this object. For example, when polling:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">profile_with_one_metric</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOutUcastPkts&#39;</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifInUcastPkts&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOutUcastPkts'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifInUcastPkts'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 
-<p>The record that we&rsquo;ll see in Splunk <code>| mpreview index=net*</code> for the same case as above would be:</p>
+<p>The record that we’ll see in Splunk <code>| mpreview index=net*</code> for the same case as above would be:</p>
 <div class="codehilite"><pre><span></span><code><span class="w">   </span><span class="nv">ifAdminStatus</span>:<span class="w"> </span><span class="nv">up</span>
 <span class="w">   </span><span class="nv">ifDescr</span>:<span class="w"> </span><span class="nv">GigabitEthernet1</span>
 <span class="w">   </span><span class="nv">ifIndex</span>:<span class="w"> </span><span class="mi">1</span>
@@ -966,27 +966,27 @@ enriched with all the textual fields we have for this object. For example, when 
 <p>Note, that only fields specified in <code>varBinds</code> are actively polled form the device. In case of <code>profile_with_one_metric</code>
 shown above, the textual fields <code>ifAdminStatus</code>, <code>ifDescr</code>, <code>ifIndex</code>, <code>ifOperStatus</code> and <code>ifPhysAddress</code> are taken from 
 the database cache, which is updated on every <code>walk</code> process. This is fine for the most of the cases, as things like
-MAC address, interface type or interface status shouldn&rsquo;t change frequently if ever.</p>
+MAC address, interface type or interface status shouldn’t change frequently if ever.</p>
 <p>If you want to keep <code>ifOperStatus</code> and <code>ifAdminStatus</code> up to date all the time, define profile like:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">profile_with_one_metric</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOutUcastPkts&#39;</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifInUcastPkts&#39;</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOperStatus&#39;</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifAdminStatus&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOutUcastPkts'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifInUcastPkts'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOperStatus'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifAdminStatus'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 
 <p>The result in Splunk will look the same, but <code>ifOperStatus</code> and <code>ifAdminStatus</code> will be actively polled.</p>
-<h3 id="event-index">Event index<a class="headerlink" href="#event-index" title="Permanent link">&para;</a></h3>
+<h3 id="event-index">Event index<a class="headerlink" href="#event-index" title="Permanent link">¶</a></h3>
 <p>It is possible to create an event without a single metric value, in such scenario it will go to an event index.
 An example of such profile would be:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">profile_with_only_textual_fields</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifDescr&#39;</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifName&#39;</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOperStatus&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifDescr'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifName'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOperStatus'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 
 <p>In this case no additional enrichment will be done. The events in event index <code>index=netops</code> of Splunk will look like:</p>
@@ -1013,7 +1013,7 @@ An example of such profile would be:</p>
 <span class="c">     value: up</span>
 <span class="c">   }</span>
 <span class="c">}</span>
-</code></pre></div>
+</code></pre></div></div>
 
 
 

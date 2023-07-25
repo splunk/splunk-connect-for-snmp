@@ -901,10 +901,10 @@
                 
 
 
-<h1 id="offline-microk8s-installation-issues">Offline Microk8s installation issues<a class="headerlink" href="#offline-microk8s-installation-issues" title="Permanent link">&para;</a></h1>
+<div><h1 id="offline-microk8s-installation-issues">Offline Microk8s installation issues<a class="headerlink" href="#offline-microk8s-installation-issues" title="Permanent link">¶</a></h1>
 <p>Offline installation of Microk8s is described <a href="https://microk8s.io/docs/install-alternatives#heading--offline">here</a>, but
 there are additional steps to install microk8s offline. </p>
-<h2 id="importing-images">Importing images<a class="headerlink" href="#importing-images" title="Permanent link">&para;</a></h2>
+<h2 id="importing-images">Importing images<a class="headerlink" href="#importing-images" title="Permanent link">¶</a></h2>
 <p>After running:</p>
 <div class="codehilite"><pre><span></span><code>snap ack microk8s_{microk8s_version}.assert
 snap install microk8s_{microk8s_version}.snap --classic
@@ -920,16 +920,16 @@ kube-system    calico-kube-controllers-7c9c8dd885-fg8f2   0/1     Pending    0  
 kube-system    calico-node-zg4c4                          0/1     Init:0/3   0          23s
 </code></pre></div>
 
-<p>The pods are in the <code>Pending</code>/<code>Init</code> state because they&rsquo;re trying to download images, which is impossible to do offline.
+<p>The pods are in the <code>Pending</code>/<code>Init</code> state because they’re trying to download images, which is impossible to do offline.
 In order to make them work you need to download all the images on a different server with an internet connection, pack it up, and
 import it to a microk8s image registry on your offline server. </p>
-<h3 id="packing-up-images-for-offline-environment">Packing up images for offline environment<a class="headerlink" href="#packing-up-images-for-offline-environment" title="Permanent link">&para;</a></h3>
+<h3 id="packing-up-images-for-offline-environment">Packing up images for offline environment<a class="headerlink" href="#packing-up-images-for-offline-environment" title="Permanent link">¶</a></h3>
 <p>You need to monitor</p>
 <div class="codehilite"><pre><span></span><code>microk8s kubectl get events -A
 </code></pre></div>
 
 <p>to see if <code>microk8s</code> fails to pull images, and then import anything it needs. An example of such information is:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="w">    </span><span class="mh">0</span><span class="n">s</span><span class="w">          </span><span class="n">Warning</span><span class="w">   </span><span class="n">Failed</span><span class="w">              </span><span class="n">pod</span><span class="o">/</span><span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="n">sc784</span><span class="w">                           </span><span class="n">Failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">pull</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="s">&quot;docker.io/calico/cni:v3.21.4&quot;</span><span class="o">:</span><span class="w"> </span><span class="n">rpc</span><span class="w"> </span><span class="nl">error:</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Unknown</span><span class="w"> </span><span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">pull</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">unpack</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="s">&quot;docker.io/calico/cni:v3.21.4&quot;</span><span class="o">:</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">resolve</span><span class="w"> </span><span class="n">reference</span><span class="w"> </span><span class="s">&quot;docker.io/calico/cni:v3.21.4&quot;</span><span class="o">:</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nl">request:</span><span class="w"> </span><span class="n">Head</span><span class="w"> </span><span class="s">&quot;https://registry-1.docker.io/v2/calico/cni/manifests/v3.21.4&quot;</span><span class="o">:</span><span class="w"> </span><span class="n">dial</span><span class="w"> </span><span class="n">tcp</span><span class="w"> </span><span class="mf">54.83.42.45</span><span class="o">:</span><span class="mh">443</span><span class="o">:</span><span class="w"> </span><span class="n">i</span><span class="o">/</span><span class="n">o</span><span class="w"> </span><span class="n">timeout</span>
+<div class="codehilite"><pre><span></span><code><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="w">    </span><span class="mh">0</span><span class="n">s</span><span class="w">          </span><span class="n">Warning</span><span class="w">   </span><span class="n">Failed</span><span class="w">              </span><span class="n">pod</span><span class="o">/</span><span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="n">sc784</span><span class="w">                           </span><span class="n">Failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">pull</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="s">"docker.io/calico/cni:v3.21.4"</span><span class="o">:</span><span class="w"> </span><span class="n">rpc</span><span class="w"> </span><span class="nl">error:</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Unknown</span><span class="w"> </span><span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">pull</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">unpack</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="s">"docker.io/calico/cni:v3.21.4"</span><span class="o">:</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">resolve</span><span class="w"> </span><span class="n">reference</span><span class="w"> </span><span class="s">"docker.io/calico/cni:v3.21.4"</span><span class="o">:</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nl">request:</span><span class="w"> </span><span class="n">Head</span><span class="w"> </span><span class="s">"https://registry-1.docker.io/v2/calico/cni/manifests/v3.21.4"</span><span class="o">:</span><span class="w"> </span><span class="n">dial</span><span class="w"> </span><span class="n">tcp</span><span class="w"> </span><span class="mf">54.83.42.45</span><span class="o">:</span><span class="mh">443</span><span class="o">:</span><span class="w"> </span><span class="n">i</span><span class="o">/</span><span class="n">o</span><span class="w"> </span><span class="n">timeout</span>
 <span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="w">    </span><span class="mh">0</span><span class="n">s</span><span class="w">          </span><span class="n">Warning</span><span class="w">   </span><span class="n">Failed</span><span class="w">              </span><span class="n">pod</span><span class="o">/</span><span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="n">sc784</span><span class="w">                           </span><span class="nl">Error:</span><span class="w"> </span><span class="n">ErrImagePull</span>
 </code></pre></div>
 
@@ -943,7 +943,7 @@ docker save &lt;needed_image&gt; &gt; image.tar
 <div class="codehilite"><pre><span></span><code><span class="n">microk8s</span> <span class="n">ctr</span> <span class="n">image</span> <span class="kn">import</span> <span class="nn">image.tar</span>
 </code></pre></div>
 
-<h3 id="example-of-the-offline-installation">Example of the offline installation<a class="headerlink" href="#example-of-the-offline-installation" title="Permanent link">&para;</a></h3>
+<h3 id="example-of-the-offline-installation">Example of the offline installation<a class="headerlink" href="#example-of-the-offline-installation" title="Permanent link">¶</a></h3>
 <p>For example, <code>microk8s</code> version <code>3597</code> requires these images to work correctly:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">docker</span><span class="w"> </span><span class="nv">pull</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">kube</span><span class="o">-</span><span class="nv">controllers</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span><span class="w"> </span>
 <span class="nv">docker</span><span class="w"> </span><span class="nv">pull</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">node</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span>
@@ -988,17 +988,17 @@ kube-system    hostpath-provisioner-f57964d5f-zs4sj       1/1     Running       
 kube-system    metrics-server-5f8f64cb86-x7k29            1/1     Running                 0          2m15s
 </code></pre></div>
 
-<h2 id="enabling-dns-and-metallb">Enabling DNS and Metallb<a class="headerlink" href="#enabling-dns-and-metallb" title="Permanent link">&para;</a></h2>
-<p>The <code>dns</code> and <code>metallb</code> don&rsquo;t require importing any images, so you can enable them simply by:</p>
+<h2 id="enabling-dns-and-metallb">Enabling DNS and Metallb<a class="headerlink" href="#enabling-dns-and-metallb" title="Permanent link">¶</a></h2>
+<p>The <code>dns</code> and <code>metallb</code> don’t require importing any images, so you can enable them simply by:</p>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s enable dns</span>
 <span class="l l-Scalar l-Scalar-Plain">microk8s enable metallb</span>
 </code></pre></div>
 
 <p>More on <code>metallb</code> <a href="../../gettingstarted/mk8s/k8s-microk8s/#install-metallb">here</a>.</p>
-<h2 id="installing-helm3">Installing helm3<a class="headerlink" href="#installing-helm3" title="Permanent link">&para;</a></h2>
+<h2 id="installing-helm3">Installing helm3<a class="headerlink" href="#installing-helm3" title="Permanent link">¶</a></h2>
 <p>The additional problem is the installation of <code>helm3</code> add-on. You need to do a few things to make it work.</p>
 <ol>
-<li>Check your server&rsquo;s platform with:</li>
+<li>Check your server’s platform with:</li>
 </ol>
 <div class="codehilite"><pre><span></span><code>dpkg --print-architecture
 </code></pre></div>
@@ -1026,14 +1026,14 @@ replaced with the result from the previous command. Example: <code>https://get.h
 </code></pre></div>
 
 <p>Open <code>enable</code> file with vi, nano, or some other editor. Comment this line:</p>
-<div class="codehilite"><pre><span></span><code>#fetch_as<span class="w"> </span><span class="nv">$SOURCE_URI</span>/helm-<span class="nv">$HELM_VERSION</span>-linux-<span class="cp">${</span><span class="n">SNAP_ARCH</span><span class="cp">}</span>.tar.gz<span class="w"> </span>&quot;<span class="nv">$SNAP_DATA</span>/tmp/helm3/helm.tar.gz&quot;
+<div class="codehilite"><pre><span></span><code>#fetch_as<span class="w"> </span><span class="nv">$SOURCE_URI</span>/helm-<span class="nv">$HELM_VERSION</span>-linux-<span class="cp">${</span><span class="n">SNAP_ARCH</span><span class="cp">}</span>.tar.gz<span class="w"> </span>"<span class="nv">$SNAP_DATA</span>/tmp/helm3/helm.tar.gz"
 </code></pre></div>
 
 <p>Save file.</p>
 <ol start="6">
 <li>Run <code>microk8s enable helm3</code></li>
 </ol>
-<h2 id="verify-your-instance">Verify your instance<a class="headerlink" href="#verify-your-instance" title="Permanent link">&para;</a></h2>
+<h2 id="verify-your-instance">Verify your instance<a class="headerlink" href="#verify-your-instance" title="Permanent link">¶</a></h2>
 <p>Check if all the add-ons were installed successfully with command: <code>microk8s status --wait-ready</code>. An example of
 a correct output is:</p>
 <div class="codehilite"><pre><span></span><code><span class="nx">microk8s</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="nx">running</span>
@@ -1060,7 +1060,7 @@ a correct output is:</p>
 <span class="w">    </span><span class="nx">mayastor</span><span class="w">             </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">OpenEBS</span><span class="w"> </span><span class="nx">MayaStor</span>
 <span class="w">    </span><span class="nx">prometheus</span><span class="w">           </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Prometheus</span><span class="w"> </span><span class="nx">operator</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nx">monitoring</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="nx">logging</span>
 <span class="w">    </span><span class="nx">registry</span><span class="w">             </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Private</span><span class="w"> </span><span class="nx">image</span><span class="w"> </span><span class="nx">registry</span><span class="w"> </span><span class="nx">exposed</span><span class="w"> </span><span class="nx">on</span><span class="w"> </span><span class="nx">localhost</span><span class="p">:</span><span class="mi">32000</span>
-</code></pre></div>
+</code></pre></div></div>
 
 
 

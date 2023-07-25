@@ -815,12 +815,12 @@
 
   <h1>SNMPv3 configuration</h1>
 
-<h3 id="create-snmp-v3-users">Create SNMP v3 users<a class="headerlink" href="#create-snmp-v3-users" title="Permanent link">&para;</a></h3>
+<div><h3 id="create-snmp-v3-users">Create SNMP v3 users<a class="headerlink" href="#create-snmp-v3-users" title="Permanent link">¶</a></h3>
 <p>Configuration of SNMP v3, when supported by the monitored devices, is the most secure choice available
-for authentication and data privacy. Each set of credentials will be stored as &ldquo;Secret&rdquo; objects in k8s,
+for authentication and data privacy. Each set of credentials will be stored as “Secret” objects in k8s,
 and will be referenced in values.yaml. This allows the secret to be created once, including automation
 by third-party password managers, then consumed without storing sensitive data in plain text.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with &quot;sc4snmp-&quot;</span>
+<div class="codehilite"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with "sc4snmp-"</span>
 <span class="c1"># &lt;namespace&gt;=Namespace used to install sc4snmp</span>
 <span class="c1"># &lt;username&gt;=the SNMPv3 Username</span>
 <span class="c1"># &lt;key&gt;=key note must be at least 8 char long subject to target limitations</span>
@@ -836,7 +836,7 @@ microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class
 </code></pre></div>
 
 <p>Configured credentials can be used in <a href="../poller-configuration/">poller</a> and <a href="../trap-configuration/">trap</a> services. 
-In service configuration, <code>secretname</code> needs to be provided. </p>
+In service configuration, <code>secretname</code> needs to be provided. </p></div>
 
 
 

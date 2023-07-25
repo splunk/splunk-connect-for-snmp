@@ -833,15 +833,15 @@
                 
 
 
-<h1 id="offline-sc4snmp-installation">Offline SC4SNMP installation<a class="headerlink" href="#offline-sc4snmp-installation" title="Permanent link">&para;</a></h1>
-<h2 id="local-machine-with-internet-access">Local machine with internet access<a class="headerlink" href="#local-machine-with-internet-access" title="Permanent link">&para;</a></h2>
+<div><h1 id="offline-sc4snmp-installation">Offline SC4SNMP installation<a class="headerlink" href="#offline-sc4snmp-installation" title="Permanent link">¶</a></h1>
+<h2 id="local-machine-with-internet-access">Local machine with internet access<a class="headerlink" href="#local-machine-with-internet-access" title="Permanent link">¶</a></h2>
 <p>To install the SC4SNMP offline, first, some packages must be downloaded from the <a href="https://github.com/splunk/splunk-connect-for-snmp/releases">Github release</a> and then moved
 to the SC4SNMP installation server. Those packages are:</p>
 <ul>
 <li><code>dependencies-images.tar</code></li>
 <li><code>splunk-connect-for-snmp-chart.tar</code></li>
 </ul>
-<p>Additionally, you&rsquo;ll need </p>
+<p>Additionally, you’ll need </p>
 <ul>
 <li><code>pull_mibserver.sh</code> script</li>
 </ul>
@@ -860,13 +860,13 @@ The latest tag can be found <a href="https://github.com/splunk/splunk-connect-fo
 
 <p>Another package you have to pull is the mibserver image. You can do it by executing <code>pull_mibserver.sh</code> script from
 the Release section, or copy-pasting its content.</p>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>a+x<span class="w"> </span>pull_mibserver.sh<span class="w"> </span><span class="c1"># you&#39;ll probably need to make file executable</span>
+<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>a+x<span class="w"> </span>pull_mibserver.sh<span class="w"> </span><span class="c1"># you'll probably need to make file executable</span>
 ./pull_mibserver.sh
 </code></pre></div>
 
 <p>This script should produce <code>mibserver.tar</code> with the image of the mibserver inside.</p>
 <p>All four packages, <code>mibserver.tar</code>, <code>snmp_image.tar</code>, <code>dependencies-images.tar</code>, and <code>splunk-connect-for-snmp-chart.tar</code>, must be moved to the SC4SNMP installation server.</p>
-<h2 id="installation-on-the-server">Installation on the server<a class="headerlink" href="#installation-on-the-server" title="Permanent link">&para;</a></h2>
+<h2 id="installation-on-the-server">Installation on the server<a class="headerlink" href="#installation-on-the-server" title="Permanent link">¶</a></h2>
 <p>On the server, all the images must be imported to the microk8s cluster. This can be done with the following command:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>ctr<span class="w"> </span>image<span class="w"> </span>import<span class="w"> </span>&lt;name_of_tar_image&gt;
 </code></pre></div>
@@ -877,20 +877,20 @@ microk8s<span class="w"> </span>ctr<span class="w"> </span>image<span class="w">
 microk8s<span class="w"> </span>ctr<span class="w"> </span>image<span class="w"> </span>import<span class="w"> </span>mibserver.tar
 </code></pre></div>
 
-<p>Then create <code>values.yaml</code>. It&rsquo;s a little different from <code>values.yaml</code> used in an online installation. 
+<p>Then create <code>values.yaml</code>. It’s a little different from <code>values.yaml</code> used in an online installation. 
 The difference between the two files is the following, which is used for automatic image pulling:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">image</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Never&quot;</span>
+<span class="w">  </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">"Never"</span>
 </code></pre></div>
 
 <p>Example <code>values.yaml</code> file can be found <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/offline_installation_values.md">here</a>.</p>
 <p>The next step is to unpack the chart package <code>splunk-connect-for-snmp-chart.tar</code>. It will result in creating the <code>splunk-connect-for-snmp</code> directory:</p>
-<div class="codehilite"><pre><span></span><code>tar<span class="w"> </span>-xvf<span class="w"> </span>splunk-connect-for-snmp-chart.tar<span class="w"> </span>--exclude<span class="o">=</span><span class="s1">&#39;._*&#39;</span>
+<div class="codehilite"><pre><span></span><code>tar<span class="w"> </span>-xvf<span class="w"> </span>splunk-connect-for-snmp-chart.tar<span class="w"> </span>--exclude<span class="o">=</span><span class="s1">'._*'</span>
 </code></pre></div>
 
 <p>Finally, run the helm install command in the directory where both the <code>values.yaml</code> and <code>splunk-connect-for-snmp</code> directories are located:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
-</code></pre></div>
+</code></pre></div></div>
 
 
 
