@@ -10,5 +10,8 @@
   "prConcurrentLimit": 10,
   "prHourlyLimit": 2,
   "lockFileMaintenance": { "enabled": true },
-  "labels": ["dependencies"]
+  "labels": ["dependencies"],
+  "vulnerabilityAlerts": {
+    "labels": ["dependencies", "security"]
+  }
 }
