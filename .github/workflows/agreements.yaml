@@ -8,12 +8,13 @@ on:
 jobs:
   call-workflow-agreements:
     uses: splunk/addonfactory-github-workflows/.github/workflows/reusable-agreements.yaml@v1.3.4
-    permissions:
-      contents: read
-      packages: write
-      pull-requests: write
-      actions: read
-      statuses: read
+    with:
+      permissions:
+        contents: read
+        packages: write
+        pull-requests: write
+        actions: read
+        statuses: read
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PERSONAL_ACCESS_TOKEN: ${{ secrets.PAT_CLATOOL }}
