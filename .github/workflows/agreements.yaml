@@ -15,12 +15,6 @@ jobs:
         pull-requests: write
         actions: read
         statuses: read
-    permissions:
-      contents: read
-      packages: write
-      pull-requests: write
-      actions: read
-      statuses: read
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PERSONAL_ACCESS_TOKEN: ${{ secrets.PAT_CLATOOL }}
