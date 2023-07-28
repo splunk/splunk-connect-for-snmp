@@ -393,6 +393,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#uninstall-splunk-connect-for-snmp" class="md-nav__link">
+    Uninstall Splunk Connect for SNMP
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -967,6 +974,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#uninstall-splunk-connect-for-snmp" class="md-nav__link">
+    Uninstall Splunk Connect for SNMP
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1123,7 +1137,12 @@ When the walk finishes, events appear in Splunk.</p>
 <p>A good way to start with SC4SNMP polling is to follow the <a href="../../configuration/step-by-step-poll/">Step by Step guide for polling</a>.
 Advanced configuration of polling is available in <a href="../../configuration/poller-configuration/">Poller configuration</a> section.
 SNMP data format is explained in <a href="../../configuration/snmp-data-format/">SNMP data format</a> section.</p>
-<p>For advanced trap configuration, check the <a href="../../configuration/trap-configuration/">Traps configuration</a> section.</p></div>
+<p>For advanced trap configuration, check the <a href="../../configuration/trap-configuration/">Traps configuration</a> section.</p>
+<h2 id="uninstall-splunk-connect-for-snmp">Uninstall Splunk Connect for SNMP<a class="headerlink" href="#uninstall-splunk-connect-for-snmp" title="Permanent link">¶</a></h2>
+<p>To uninstall SC4SNMP run the following commands:</p>
+<div class="codehilite"><pre><span></span><code> microk8s helm3 uninstall snmp -n sc4snmp
+ microk8s kubectl delete pvc --all -n sc4snmp
+</code></pre></div></div>
 
 
 

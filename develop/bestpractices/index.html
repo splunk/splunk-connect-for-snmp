@@ -741,13 +741,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#uninstall-splunk-connect-for-snmp" class="md-nav__link">
-    Uninstall Splunk Connect for SNMP
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#installing-splunk-connect-for-snmp-on-linux-redhat" class="md-nav__link">
     Installing Splunk Connect for SNMP on Linux RedHat
   </a>
@@ -887,13 +880,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#uninstall-splunk-connect-for-snmp" class="md-nav__link">
-    Uninstall Splunk Connect for SNMP
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#installing-splunk-connect-for-snmp-on-linux-redhat" class="md-nav__link">
     Installing Splunk Connect for SNMP on Linux RedHat
   </a>
@@ -975,12 +961,6 @@
 <li>Go to your Splunk and execute search: <code>index="em_logs"   "Sending due task" "sc4snmp;&lt;IP_ADDRESS&gt;;walk"</code> 
 and replace <ip_address> with the pertinent IP Address. </ip_address></li>
 </ol>
-<h3 id="uninstall-splunk-connect-for-snmp">Uninstall Splunk Connect for SNMP<a class="headerlink" href="#uninstall-splunk-connect-for-snmp" title="Permanent link">¶</a></h3>
-<p>To uninstall SC4SNMP run the following commands:</p>
-<div class="codehilite"><pre><span></span><code> microk8s helm3 uninstall snmp -n sc4snmp
- microk8s kubectl delete pvc --all -n sc4snmp
-</code></pre></div>
-
 <h3 id="installing-splunk-connect-for-snmp-on-linux-redhat">Installing Splunk Connect for SNMP on Linux RedHat<a class="headerlink" href="#installing-splunk-connect-for-snmp-on-linux-redhat" title="Permanent link">¶</a></h3>
 <p>Installation of RedHat may be blocking ports required by microk8s. Installing microk8s on RedHat 
 requires checking to see if the firewall is not blocking any of <a href="https://microk8s.io/docs/ports">required microk8s ports</a>. </p>
