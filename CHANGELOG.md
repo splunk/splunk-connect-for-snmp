@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## [1.9.2]
+
+### Changed
+- add option to enable liveness and readiness probes on workers
+
 ## [1.9.1]
 
 ### Changed
