@@ -7,14 +7,6 @@
 2. Go to your Splunk and execute search: `index="em_logs"   "Sending due task" "sc4snmp;<IP_ADDRESS>;walk"` 
 and replace <IP_ADDRESS> with the pertinent IP Address. 
 
-### Uninstall Splunk Connect for SNMP
-To uninstall SC4SNMP run the following commands:
-
-```
- microk8s helm3 uninstall snmp -n sc4snmp
- microk8s kubectl delete pvc --all -n sc4snmp
-```
-
 ### Installing Splunk Connect for SNMP on Linux RedHat 
 Installation of RedHat may be blocking ports required by microk8s. Installing microk8s on RedHat 
 requires checking to see if the firewall is not blocking any of [required microk8s ports](https://microk8s.io/docs/ports). 
