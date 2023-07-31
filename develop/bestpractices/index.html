@@ -795,6 +795,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#field-is-immutable-error-during-helm-upgrade" class="md-nav__link">
+    "Field is immutable" error during helm upgrade
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -934,6 +941,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#field-is-immutable-error-during-helm-upgrade" class="md-nav__link">
+    "Field is immutable" error during helm upgrade
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1017,7 +1031,24 @@ An example for a SPLUNK query like that (interface counter), would be:</p>
 <span class="o">|</span><span class="w"> </span><span class="nv">eval</span><span class="w"> </span><span class="nv">max</span><span class="o">=</span><span class="nv">pow</span><span class="ss">(</span><span class="mi">2</span>,<span class="mi">64</span><span class="ss">)</span>
 <span class="o">|</span><span class="w"> </span><span class="nv">eval</span><span class="w"> </span><span class="nv">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="ss">(</span><span class="nv">out_delta</span><span class="o">&lt;</span><span class="mi">0</span>,<span class="ss">((</span><span class="nv">max</span><span class="o">+</span><span class="nv">out_delta</span><span class="ss">)</span><span class="o">*</span><span class="mi">8</span><span class="o">/</span><span class="ss">(</span><span class="mi">5</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="ss">))</span>,<span class="ss">(</span><span class="nv">out_delta</span><span class="ss">)</span><span class="o">*</span><span class="mi">8</span><span class="o">/</span><span class="ss">(</span><span class="mi">5</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="ss">))</span>
 <span class="o">|</span><span class="w"> </span><span class="nv">timechart</span><span class="w"> </span><span class="nv">span</span><span class="o">=</span><span class="mi">5</span><span class="nv">m</span><span class="w"> </span><span class="nv">avg</span><span class="ss">(</span><span class="nv">in</span><span class="ss">)</span><span class="w"> </span><span class="nv">AS</span><span class="w"> </span><span class="nv">in</span>,<span class="w"> </span><span class="nv">avg</span><span class="ss">(</span><span class="nv">out</span><span class="ss">)</span><span class="w"> </span><span class="nv">AS</span><span class="w"> </span><span class="nv">out</span><span class="w"> </span><span class="nv">by</span><span class="w"> </span><span class="nv">ifAlias</span>
-</code></pre></div></div>
+</code></pre></div>
+
+<h3 id="field-is-immutable-error-during-helm-upgrade">“Field is immutable” error during helm upgrade<a class="headerlink" href="#field-is-immutable-error-during-helm-upgrade" title="Permanent link">¶</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">helm3</span><span class="w"> </span><span class="nv">upgrade</span><span class="w"> </span><span class="o">--</span><span class="nv">install</span><span class="w"> </span><span class="nv">snmp</span><span class="w"> </span><span class="o">-</span><span class="nv">f</span><span class="w"> </span><span class="nv">values</span>.<span class="nv">yaml</span><span class="w"> </span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">charts</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="w"> </span><span class="o">--</span><span class="nv">namespace</span><span class="o">=</span><span class="nv">sc4snmp</span><span class="w"> </span><span class="o">--</span><span class="nv">create</span><span class="o">-</span><span class="nv">namespace</span>
+<span class="nv">Error</span>:<span class="w"> </span><span class="nv">UPGRADE</span><span class="w"> </span><span class="nv">FAILED</span>:<span class="w"> </span><span class="nv">cannot</span><span class="w"> </span><span class="nv">patch</span><span class="w"> </span><span class="s2">"snmp-splunk-connect-for-snmp-inventory"</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">kind</span><span class="w"> </span><span class="nv">Job</span>:<span class="w"> </span><span class="nv">Job</span>.<span class="nv">batch</span><span class="w"> </span><span class="s2">"snmp-splunk-connect-for-snmp-inventory"</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">invalid</span>:<span class="w"> </span><span class="ss">(</span>...<span class="ss">)</span><span class="w"> </span>:<span class="w"> </span><span class="nv">field</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">immutable</span>
+</code></pre></div>
+
+<p>The immutable error is due to the limitation placed on an inventory job. As the SC4SNMP requires several checks before applying updates, it is designed to allow changes in the inventory task after 5 minutes. </p>
+<p>The status of the inventory can be checked with a command:</p>
+<div class="codehilite"><pre><span></span><code>microk8s kubectl -n sc4snmp get pods | grep inventory
+</code></pre></div>
+
+<p>If the command is not empty, wait and execute it again after the inventory job finishes (no longer visible in the output).</p>
+<p>If the changes are required to be applied immedietly, the previous inventory job can be deleted with the command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">delete</span><span class="w"> </span><span class="nv">job</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">inventory</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
+</code></pre></div>
+
+<p>The upgrade command can be executed again. </p></div>
 
 
 
