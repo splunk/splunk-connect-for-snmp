@@ -84,3 +84,23 @@ An example for a SPLUNK query like that (interface counter), would be:
 | eval out = if(out_delta<0,((max+out_delta)*8/(5*60*1000*1000*1000)),(out_delta)*8/(5*60*1000*1000*1000))
 | timechart span=5m avg(in) AS in, avg(out) AS out by ifAlias
 ```
+### Field is immutable error during helm upgrade
+
+```
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/charts/splunk-connect-for-snmp/ --namespace=sc4snmp --create-namespace
+Error: UPGRADE FAILED: cannot patch "snmp-splunk-connect-for-snmp-inventory" with kind Job: Job.batch "snmp-splunk-connect-for-snmp-inventory" is invalid: (...) : field is immutable
+```
+
+The immutable error is due to limitation placed on inventory job. As SNMP requires several checks before applying updates, it is designed to allow changes in inventory task after 5 minutes passes. 
+
+The status of the inventory can be checked with command:
+```
+microk8s kubectl -n sc4snmp get pods | grep inventory
+```
+If command returns pod, wait and execute it again until the moment when inventory job finishes (is no longer visible).
+
+If the changes are required to be applied immadietly, the previous inventory job can be deleted with command:
+```
+microk8s kubectl delete job/snmp-splunk-connect-for-snmp-inventory -n sc4snmp
+```
+And upgrade command can be executed again. 
