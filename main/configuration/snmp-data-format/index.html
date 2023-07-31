@@ -861,7 +861,7 @@
                 
 
 
-<h1 id="snmp-data-format">SNMP Data Format<a class="headerlink" href="#snmp-data-format" title="Permanent link">&para;</a></h1>
+<div><h1 id="snmp-data-format">SNMP Data Format<a class="headerlink" href="#snmp-data-format" title="Permanent link">¶</a></h1>
 <p>SC4SNMP classifies SNMP data elements as metrics or textual fields. We assume that the metric types are the indicators worth monitoring, 
 that changes dynamically, and textual fields are the context helpful to understand what an SNMP object really means.</p>
 <p>SC4SNMP classify the data element as a metric when its type is one of:</p>
@@ -875,46 +875,46 @@ that changes dynamically, and textual fields are the context helpful to understa
 <p>Every other type is interpreted as a field value.</p>
 <p>Sometimes, the MIB file indicates a field as an <code>INTEGER</code>, but there is also some mapping defined, like for
 example in case of <code>IF-MIB.ifOperStatus</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">ifOperStatus</span><span class="w"> </span><span class="nv">OBJECT</span><span class="o">-</span><span class="nv">TYPE</span><span class="w"></span>
-<span class="w">    </span><span class="nv">SYNTAX</span><span class="w">  </span><span class="nv">INTEGER</span><span class="w"> </span>{<span class="w"></span>
-<span class="w">                </span><span class="nv">up</span><span class="ss">(</span><span class="mi">1</span><span class="ss">)</span>,<span class="w">        </span><span class="o">--</span><span class="w"> </span><span class="nv">ready</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">pass</span><span class="w"> </span><span class="nv">packets</span><span class="w"></span>
-<span class="w">                </span><span class="nv">down</span><span class="ss">(</span><span class="mi">2</span><span class="ss">)</span>,<span class="w"></span>
-<span class="w">                </span><span class="nv">testing</span><span class="ss">(</span><span class="mi">3</span><span class="ss">)</span>,<span class="w">   </span><span class="o">--</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">some</span><span class="w"> </span><span class="nv">test</span><span class="w"> </span><span class="nv">mode</span><span class="w"></span>
-<span class="w">                </span><span class="nv">unknown</span><span class="ss">(</span><span class="mi">4</span><span class="ss">)</span>,<span class="w">   </span><span class="o">--</span><span class="w"> </span><span class="nv">status</span><span class="w"> </span><span class="nv">can</span><span class="w"> </span><span class="nv">not</span><span class="w"> </span><span class="nv">be</span><span class="w"> </span><span class="nv">determined</span><span class="w"></span>
-<span class="w">                              </span><span class="o">--</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">some</span><span class="w"> </span><span class="nv">reason</span>.<span class="w"></span>
-<span class="w">                </span><span class="nv">dormant</span><span class="ss">(</span><span class="mi">5</span><span class="ss">)</span>,<span class="w"></span>
-<span class="w">                </span><span class="nv">notPresent</span><span class="ss">(</span><span class="mi">6</span><span class="ss">)</span>,<span class="w">    </span><span class="o">--</span><span class="w"> </span><span class="nv">some</span><span class="w"> </span><span class="nv">component</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">missing</span><span class="w"></span>
-<span class="w">                </span><span class="nv">lowerLayerDown</span><span class="ss">(</span><span class="mi">7</span><span class="ss">)</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="nv">down</span><span class="w"> </span><span class="nv">due</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">state</span><span class="w"> </span><span class="nv">of</span><span class="w"></span>
-<span class="w">                                  </span><span class="o">--</span><span class="w"> </span><span class="nv">lower</span><span class="o">-</span><span class="nv">layer</span><span class="w"> </span><span class="nv">interface</span><span class="ss">(</span><span class="nv">s</span><span class="ss">)</span><span class="w"></span>
-<span class="w">            </span>}<span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="nv">ifOperStatus</span><span class="w"> </span><span class="nv">OBJECT</span><span class="o">-</span><span class="nv">TYPE</span>
+<span class="w">    </span><span class="nv">SYNTAX</span><span class="w">  </span><span class="nv">INTEGER</span><span class="w"> </span>{
+<span class="w">                </span><span class="nv">up</span><span class="ss">(</span><span class="mi">1</span><span class="ss">)</span>,<span class="w">        </span><span class="o">--</span><span class="w"> </span><span class="nv">ready</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">pass</span><span class="w"> </span><span class="nv">packets</span>
+<span class="w">                </span><span class="nv">down</span><span class="ss">(</span><span class="mi">2</span><span class="ss">)</span>,
+<span class="w">                </span><span class="nv">testing</span><span class="ss">(</span><span class="mi">3</span><span class="ss">)</span>,<span class="w">   </span><span class="o">--</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">some</span><span class="w"> </span><span class="nv">test</span><span class="w"> </span><span class="nv">mode</span>
+<span class="w">                </span><span class="nv">unknown</span><span class="ss">(</span><span class="mi">4</span><span class="ss">)</span>,<span class="w">   </span><span class="o">--</span><span class="w"> </span><span class="nv">status</span><span class="w"> </span><span class="nv">can</span><span class="w"> </span><span class="nv">not</span><span class="w"> </span><span class="nv">be</span><span class="w"> </span><span class="nv">determined</span>
+<span class="w">                              </span><span class="o">--</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">some</span><span class="w"> </span><span class="nv">reason</span>.
+<span class="w">                </span><span class="nv">dormant</span><span class="ss">(</span><span class="mi">5</span><span class="ss">)</span>,
+<span class="w">                </span><span class="nv">notPresent</span><span class="ss">(</span><span class="mi">6</span><span class="ss">)</span>,<span class="w">    </span><span class="o">--</span><span class="w"> </span><span class="nv">some</span><span class="w"> </span><span class="nv">component</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">missing</span>
+<span class="w">                </span><span class="nv">lowerLayerDown</span><span class="ss">(</span><span class="mi">7</span><span class="ss">)</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="nv">down</span><span class="w"> </span><span class="nv">due</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">state</span><span class="w"> </span><span class="nv">of</span>
+<span class="w">                                  </span><span class="o">--</span><span class="w"> </span><span class="nv">lower</span><span class="o">-</span><span class="nv">layer</span><span class="w"> </span><span class="nv">interface</span><span class="ss">(</span><span class="nv">s</span><span class="ss">)</span>
+<span class="w">            </span>}
 </code></pre></div>
 
 <p><a href="https://www.circitor.fr/Mibs/Mib/I/IF-MIB.mib">source</a></p>
 <p>Here we expect some numeric value, but actually what SNMP Agents gets from the device is a <code>string</code> value,
 like <code>up</code>. To avoid setting textual value as a metrics, SC4SNMP does an additional check and tries to cast the
 numeric value to float. If the check fails, the values is classified as a textual field.</p>
-<p>Let&rsquo;s go through a simple example. We&rsquo;ve just added a device and didn&rsquo;t configure anything special. The data from a walk
-in Splunk&rsquo;s metrics index is:</p>
-<div class="codehilite"><pre><span></span><code>{<span class="w"></span>
-<span class="w">   </span><span class="nv">ifAdminStatus</span>:<span class="w"> </span><span class="nv">up</span><span class="w"></span>
-<span class="w">   </span><span class="nv">ifDescr</span>:<span class="w"> </span><span class="nv">GigabitEthernet1</span><span class="w"></span>
-<span class="w">   </span><span class="nv">ifIndex</span>:<span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="w">   </span><span class="nv">ifOperStatus</span>:<span class="w"> </span><span class="nv">up</span><span class="w"></span>
-<span class="w">   </span><span class="nv">ifPhysAddress</span>:<span class="w"> </span><span class="mi">0</span><span class="nv">a</span>:<span class="nv">aa</span>:<span class="nv">ef</span>:<span class="mi">53</span>:<span class="mi">67</span>:<span class="mi">15</span><span class="w"></span>
-<span class="w">   </span><span class="nv">ifType</span>:<span class="w"> </span><span class="nv">ethernetCsmacd</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInDiscards</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInErrors</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInOctets</span>:<span class="w"> </span><span class="mi">3873878708</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUcastPkts</span>:<span class="w"> </span><span class="mi">47512921</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUnknownProtos</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifLastChange</span>:<span class="w"> </span><span class="mi">454107556</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifMtu</span>:<span class="w"> </span><span class="mi">1500</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutDiscards</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutErrors</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutOctets</span>:<span class="w"> </span><span class="mi">1738565177</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutUcastPkts</span>:<span class="w"> </span><span class="mi">44295751</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifSpeed</span>:<span class="w"> </span><span class="mi">1000000000</span><span class="w"></span>
-}<span class="w"></span>
+<p>Let’s go through a simple example. We’ve just added a device and didn’t configure anything special. The data from a walk
+in Splunk’s metrics index is:</p>
+<div class="codehilite"><pre><span></span><code>{
+<span class="w">   </span><span class="nv">ifAdminStatus</span>:<span class="w"> </span><span class="nv">up</span>
+<span class="w">   </span><span class="nv">ifDescr</span>:<span class="w"> </span><span class="nv">GigabitEthernet1</span>
+<span class="w">   </span><span class="nv">ifIndex</span>:<span class="w"> </span><span class="mi">1</span>
+<span class="w">   </span><span class="nv">ifOperStatus</span>:<span class="w"> </span><span class="nv">up</span>
+<span class="w">   </span><span class="nv">ifPhysAddress</span>:<span class="w"> </span><span class="mi">0</span><span class="nv">a</span>:<span class="nv">aa</span>:<span class="nv">ef</span>:<span class="mi">53</span>:<span class="mi">67</span>:<span class="mi">15</span>
+<span class="w">   </span><span class="nv">ifType</span>:<span class="w"> </span><span class="nv">ethernetCsmacd</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInDiscards</span>:<span class="w"> </span><span class="mi">0</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInErrors</span>:<span class="w"> </span><span class="mi">0</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInOctets</span>:<span class="w"> </span><span class="mi">3873878708</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUcastPkts</span>:<span class="w"> </span><span class="mi">47512921</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUnknownProtos</span>:<span class="w"> </span><span class="mi">0</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifLastChange</span>:<span class="w"> </span><span class="mi">454107556</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifMtu</span>:<span class="w"> </span><span class="mi">1500</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutDiscards</span>:<span class="w"> </span><span class="mi">0</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutErrors</span>:<span class="w"> </span><span class="mi">0</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutOctets</span>:<span class="w"> </span><span class="mi">1738565177</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutUcastPkts</span>:<span class="w"> </span><span class="mi">44295751</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifSpeed</span>:<span class="w"> </span><span class="mi">1000000000</span>
+}
 </code></pre></div>
 
 <p>Clearly we can see the textual part:</p>
@@ -927,85 +927,85 @@ in Splunk&rsquo;s metrics index is:</p>
 </code></pre></div>
 
 <p>And a metric one:</p>
-<div class="codehilite"><pre><span></span><code><span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInDiscards</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInErrors</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInOctets</span>:<span class="w"> </span><span class="mi">3873878708</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUcastPkts</span>:<span class="w"> </span><span class="mi">47512921</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUnknownProtos</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifLastChange</span>:<span class="w"> </span><span class="mi">454107556</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifMtu</span>:<span class="w"> </span><span class="mi">1500</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutDiscards</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutErrors</span>:<span class="w"> </span><span class="mi">0</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutOctets</span>:<span class="w"> </span><span class="mi">1738565177</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutUcastPkts</span>:<span class="w"> </span><span class="mi">44295751</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifSpeed</span>:<span class="w"> </span><span class="mi">1000000000</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInDiscards</span>:<span class="w"> </span><span class="mi">0</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInErrors</span>:<span class="w"> </span><span class="mi">0</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInOctets</span>:<span class="w"> </span><span class="mi">3873878708</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUcastPkts</span>:<span class="w"> </span><span class="mi">47512921</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUnknownProtos</span>:<span class="w"> </span><span class="mi">0</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifLastChange</span>:<span class="w"> </span><span class="mi">454107556</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifMtu</span>:<span class="w"> </span><span class="mi">1500</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutDiscards</span>:<span class="w"> </span><span class="mi">0</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutErrors</span>:<span class="w"> </span><span class="mi">0</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutOctets</span>:<span class="w"> </span><span class="mi">1738565177</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutUcastPkts</span>:<span class="w"> </span><span class="mi">44295751</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifSpeed</span>:<span class="w"> </span><span class="mi">1000000000</span>
 </code></pre></div>
 
-<h2 id="to-which-splunk-index-will-my-data-go">To which Splunk index will my data go?<a class="headerlink" href="#to-which-splunk-index-will-my-data-go" title="Permanent link">&para;</a></h2>
-<h3 id="metric-index">Metric index<a class="headerlink" href="#metric-index" title="Permanent link">&para;</a></h3>
+<h2 id="to-which-splunk-index-will-my-data-go">To which Splunk index will my data go?<a class="headerlink" href="#to-which-splunk-index-will-my-data-go" title="Permanent link">¶</a></h2>
+<h3 id="metric-index">Metric index<a class="headerlink" href="#metric-index" title="Permanent link">¶</a></h3>
 <p>The rule is, if we poll a profile with AT LEAST one metric value, it will go to the metric index and will be
 enriched with all the textual fields we have for this object. For example, when polling:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">profile_with_one_metric</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"></span>
-<span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOutUcastPkts&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifInUcastPkts&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="nt">profile_with_one_metric</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOutUcastPkts'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifInUcastPkts'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 
-<p>The record that we&rsquo;ll see in Splunk <code>| mpreview index=net*</code> for the same case as above would be:</p>
-<div class="codehilite"><pre><span></span><code><span class="w">   </span><span class="nv">ifAdminStatus</span>:<span class="w"> </span><span class="nv">up</span><span class="w"></span>
-<span class="w">   </span><span class="nv">ifDescr</span>:<span class="w"> </span><span class="nv">GigabitEthernet1</span><span class="w"></span>
-<span class="w">   </span><span class="nv">ifIndex</span>:<span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="w">   </span><span class="nv">ifOperStatus</span>:<span class="w"> </span><span class="nv">up</span><span class="w"></span>
-<span class="w">   </span><span class="nv">ifPhysAddress</span>:<span class="w"> </span><span class="mi">0</span><span class="nv">a</span>:<span class="nv">aa</span>:<span class="nv">ef</span>:<span class="mi">53</span>:<span class="mi">67</span>:<span class="mi">15</span><span class="w"></span>
-<span class="w">   </span><span class="nv">ifType</span>:<span class="w"> </span><span class="nv">ethernetCsmacd</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutUcastPkts</span>:<span class="w"> </span><span class="mi">44295751</span><span class="w"></span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUcastPkts</span>:<span class="w"> </span><span class="mi">47512921</span><span class="w"></span>
+<p>The record that we’ll see in Splunk <code>| mpreview index=net*</code> for the same case as above would be:</p>
+<div class="codehilite"><pre><span></span><code><span class="w">   </span><span class="nv">ifAdminStatus</span>:<span class="w"> </span><span class="nv">up</span>
+<span class="w">   </span><span class="nv">ifDescr</span>:<span class="w"> </span><span class="nv">GigabitEthernet1</span>
+<span class="w">   </span><span class="nv">ifIndex</span>:<span class="w"> </span><span class="mi">1</span>
+<span class="w">   </span><span class="nv">ifOperStatus</span>:<span class="w"> </span><span class="nv">up</span>
+<span class="w">   </span><span class="nv">ifPhysAddress</span>:<span class="w"> </span><span class="mi">0</span><span class="nv">a</span>:<span class="nv">aa</span>:<span class="nv">ef</span>:<span class="mi">53</span>:<span class="mi">67</span>:<span class="mi">15</span>
+<span class="w">   </span><span class="nv">ifType</span>:<span class="w"> </span><span class="nv">ethernetCsmacd</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutUcastPkts</span>:<span class="w"> </span><span class="mi">44295751</span>
+<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUcastPkts</span>:<span class="w"> </span><span class="mi">47512921</span>
 </code></pre></div>
 
 <p>Note, that only fields specified in <code>varBinds</code> are actively polled form the device. In case of <code>profile_with_one_metric</code>
 shown above, the textual fields <code>ifAdminStatus</code>, <code>ifDescr</code>, <code>ifIndex</code>, <code>ifOperStatus</code> and <code>ifPhysAddress</code> are taken from 
 the database cache, which is updated on every <code>walk</code> process. This is fine for the most of the cases, as things like
-MAC address, interface type or interface status shouldn&rsquo;t change frequently if ever.</p>
+MAC address, interface type or interface status shouldn’t change frequently if ever.</p>
 <p>If you want to keep <code>ifOperStatus</code> and <code>ifAdminStatus</code> up to date all the time, define profile like:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">profile_with_one_metric</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"></span>
-<span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOutUcastPkts&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifInUcastPkts&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOperStatus&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifAdminStatus&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="nt">profile_with_one_metric</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOutUcastPkts'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifInUcastPkts'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOperStatus'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifAdminStatus'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 
 <p>The result in Splunk will look the same, but <code>ifOperStatus</code> and <code>ifAdminStatus</code> will be actively polled.</p>
-<h3 id="event-index">Event index<a class="headerlink" href="#event-index" title="Permanent link">&para;</a></h3>
+<h3 id="event-index">Event index<a class="headerlink" href="#event-index" title="Permanent link">¶</a></h3>
 <p>It is possible to create an event without a single metric value, in such scenario it will go to an event index.
 An example of such profile would be:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">profile_with_only_textual_fields</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"></span>
-<span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifDescr&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifName&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOperStatus&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="nt">profile_with_only_textual_fields</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifDescr'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifName'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOperStatus'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 
 <p>In this case no additional enrichment will be done. The events in event index <code>index=netops</code> of Splunk will look like:</p>
-<div class="codehilite"><pre><span></span><code><span class="c">{ </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span><span class="c"></span>
-<span class="c">   IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifDescr: { </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span><span class="c"></span>
+<div class="codehilite"><pre><span></span><code><span class="c">{ </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span>
+<span class="c">   IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifDescr: { </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span>
 <span class="c">     name: IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifDescr</span>
 <span class="c">     oid: 1</span><span class="nt">.</span><span class="c">3</span><span class="nt">.</span><span class="c">6</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">5</span>
 <span class="c">     time: 1676302789</span><span class="nt">.</span><span class="c">9729967</span>
 <span class="c">     type: f</span>
 <span class="c">     value: VirtualPortGroup0</span>
 <span class="c">   }</span>
-<span class="c">   IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifName: { </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span><span class="c"></span>
+<span class="c">   IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifName: { </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span>
 <span class="c">     name: IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifName</span>
 <span class="c">     oid: 1</span><span class="nt">.</span><span class="c">3</span><span class="nt">.</span><span class="c">6</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">31</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">5</span>
 <span class="c">     time: 1676302789</span><span class="nt">.</span><span class="c">6655216</span>
 <span class="c">     type: f</span>
 <span class="c">     value: Vi0</span>
 <span class="c">   }</span>
-<span class="c">   IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifOperStatus: { </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span><span class="c"></span>
+<span class="c">   IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifOperStatus: { </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span>
 <span class="c">     name: IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifOperStatus</span>
 <span class="c">     oid: 1</span><span class="nt">.</span><span class="c">3</span><span class="nt">.</span><span class="c">6</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">2</span><span class="nt">.</span><span class="c">1</span><span class="nt">.</span><span class="c">8</span><span class="nt">.</span><span class="c">5</span>
 <span class="c">     time: 1676302789</span><span class="nt">.</span><span class="c">6655502</span>
@@ -1013,7 +1013,7 @@ An example of such profile would be:</p>
 <span class="c">     value: up</span>
 <span class="c">   }</span>
 <span class="c">}</span>
-</code></pre></div>
+</code></pre></div></div>
 
 
 

@@ -831,42 +831,42 @@
                 
 
 
-<h1 id="upgrading-sc4snmp">Upgrading SC4SNMP<a class="headerlink" href="#upgrading-sc4snmp" title="Permanent link">&para;</a></h1>
-<h2 id="upgrade-to-the-latest-version">Upgrade to the latest version<a class="headerlink" href="#upgrade-to-the-latest-version" title="Permanent link">&para;</a></h2>
+<div><h1 id="upgrading-sc4snmp">Upgrading SC4SNMP<a class="headerlink" href="#upgrading-sc4snmp" title="Permanent link">¶</a></h1>
+<h2 id="upgrade-to-the-latest-version">Upgrade to the latest version<a class="headerlink" href="#upgrade-to-the-latest-version" title="Permanent link">¶</a></h2>
 <p>To upgrade SC4SNMP to the latest version, simply run the following command:</p>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 repo update</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 repo update</span>
 </code></pre></div>
 
 <p>Afterwards, run:</p>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</span>
 </code></pre></div>
 
 <p>SC4SNMP will be upgraded to the newest version. You can see the latest version after hitting the command:</p>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 search repo snmp</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 search repo snmp</span>
 </code></pre></div>
 
 <p>The output looks like that:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">NAME</span><span class="w">                                            </span><span class="nv">CHART</span><span class="w"> </span><span class="nv">VERSION</span><span class="w">   </span><span class="nv">APP</span><span class="w"> </span><span class="nv">VERSION</span><span class="w"> </span><span class="nv">DESCRIPTION</span><span class="w">                           </span>
-<span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="w"> </span><span class="mi">1</span>.<span class="mi">6</span>.<span class="mi">2</span><span class="w">           </span><span class="mi">1</span>.<span class="mi">6</span>.<span class="mi">2</span><span class="w">       </span><span class="nv">A</span><span class="w"> </span><span class="nv">Helm</span><span class="w"> </span><span class="nv">chart</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">SNMP</span><span class="w"> </span><span class="k">Connect</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">SNMP</span><span class="w"></span>
+<span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="w"> </span><span class="mi">1</span>.<span class="mi">6</span>.<span class="mi">2</span><span class="w">           </span><span class="mi">1</span>.<span class="mi">6</span>.<span class="mi">2</span><span class="w">       </span><span class="nv">A</span><span class="w"> </span><span class="nv">Helm</span><span class="w"> </span><span class="nv">chart</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">SNMP</span><span class="w"> </span><span class="k">Connect</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">SNMP</span>
 </code></pre></div>
 
 <p>So in this case, the latest version is <code>1.6.2</code> and it will be installed after <code>helm3 upgrade</code> command.</p>
-<h2 id="upgrade-to-a-specific-version">Upgrade to a specific version<a class="headerlink" href="#upgrade-to-a-specific-version" title="Permanent link">&para;</a></h2>
+<h2 id="upgrade-to-a-specific-version">Upgrade to a specific version<a class="headerlink" href="#upgrade-to-a-specific-version" title="Permanent link">¶</a></h2>
 <p>Alternatively, you can install one of the previous versions, or a development one. You can list all the previous versions with:</p>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 search repo snmp --versions</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 search repo snmp --versions</span>
 </code></pre></div>
 
 <p>And all the development versions:</p>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 search repo snmp --devel</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 search repo snmp --devel</span>
 </code></pre></div>
 
 <p>To upgrade your SC4SNMP instance to any of the listed versions, run <code>helm3 upgrade</code> with the <code>--version</code> flag:</p>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version &lt;VERSION&gt;</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version &lt;VERSION&gt;</span>
 </code></pre></div>
 
 <p>For example:</p>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version 1.6.3-beta.13</span><span class="w"></span>
-</code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version 1.6.3-beta.13</span>
+</code></pre></div></div>
 
 
 

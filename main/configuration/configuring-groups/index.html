@@ -775,7 +775,7 @@
                 
 
 
-<h1 id="configuring-groups">Configuring Groups<a class="headerlink" href="#configuring-groups" title="Permanent link">&para;</a></h1>
+<div><h1 id="configuring-groups">Configuring Groups<a class="headerlink" href="#configuring-groups" title="Permanent link">¶</a></h1>
 <p>It is common to configure whole groups of devices instead of just single ones. 
 SC4SNMP allows both types of configuration. Group consists of many hosts. Each of them is configured in the <code>values.yaml</code> 
 file, in the <code>scheduler</code> section. After configuring a group, its name can be used in the <code>address</code>
@@ -787,37 +787,37 @@ unless specific host configuration overrides it.</p>
 </ul>
 <p>If the host is configured in the group and both the group and the single host are included in the inventory (like in the example below), the
 configuration for the single host will be ignored in favour of group configuration:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">groups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">    </span><span class="no">example_group_1:</span><span class="w"></span>
-<span class="w">      </span><span class="no">- address: 10.202.4.202</span><span class="w"></span>
-<span class="w">        </span><span class="no">port: 161</span><span class="w"></span>
-<span class="w">      </span><span class="no">- address: 63.2.40.0</span><span class="w"></span>
-<span class="w">        </span><span class="no">port: 161</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">groups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">example_group_1:</span>
+<span class="w">      </span><span class="no">- address: 10.202.4.202</span>
+<span class="w">        </span><span class="no">port: 161</span>
+<span class="w">      </span><span class="no">- address: 63.2.40.0</span>
+<span class="w">        </span><span class="no">port: 161</span>
 </code></pre></div>
 
-<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span><span class="w"></span>
-<span class="w">      </span><span class="no">example_group_1,,2c,public,,,2000,my_profile2,,</span><span class="w"></span>
-<span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,my_profile1,,</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span>
+<span class="w">      </span><span class="no">example_group_1,,2c,public,,,2000,my_profile2,,</span>
+<span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,my_profile1,,</span>
 </code></pre></div>
 
 <p>If the specific host from the group has to be configured separately, first it must be deleted from the group configuration,
 and then it can be inserted as a new record in the inventory (like in the example below):</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">groups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">    </span><span class="no">example_group_1:</span><span class="w"></span>
-<span class="w">      </span><span class="no">- address: 63.2.40.0</span><span class="w"></span>
-<span class="w">        </span><span class="no">port: 161</span><span class="w"></span>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">groups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">example_group_1:</span>
+<span class="w">      </span><span class="no">- address: 63.2.40.0</span>
+<span class="w">        </span><span class="no">port: 161</span>
 </code></pre></div>
 
-<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span><span class="w"></span>
-<span class="w">      </span><span class="no">example_group_1,,2c,public,,,2000,my_profile2,,</span><span class="w"></span>
-<span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,my_profile1,,</span><span class="w"></span>
-</code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span>
+<span class="w">      </span><span class="no">example_group_1,,2c,public,,,2000,my_profile2,,</span>
+<span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,my_profile1,,</span>
+</code></pre></div></div>
 
 
 

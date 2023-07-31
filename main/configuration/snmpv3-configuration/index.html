@@ -815,28 +815,28 @@
 
   <h1>SNMPv3 configuration</h1>
 
-<h3 id="create-snmp-v3-users">Create SNMP v3 users<a class="headerlink" href="#create-snmp-v3-users" title="Permanent link">&para;</a></h3>
+<div><h3 id="create-snmp-v3-users">Create SNMP v3 users<a class="headerlink" href="#create-snmp-v3-users" title="Permanent link">¶</a></h3>
 <p>Configuration of SNMP v3, when supported by the monitored devices, is the most secure choice available
-for authentication and data privacy. Each set of credentials will be stored as &ldquo;Secret&rdquo; objects in k8s,
+for authentication and data privacy. Each set of credentials will be stored as “Secret” objects in k8s,
 and will be referenced in values.yaml. This allows the secret to be created once, including automation
 by third-party password managers, then consumed without storing sensitive data in plain text.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with &quot;sc4snmp-&quot;</span>
+<div class="codehilite"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with "sc4snmp-"</span>
 <span class="c1"># &lt;namespace&gt;=Namespace used to install sc4snmp</span>
 <span class="c1"># &lt;username&gt;=the SNMPv3 Username</span>
 <span class="c1"># &lt;key&gt;=key note must be at least 8 char long subject to target limitations</span>
 <span class="c1"># &lt;authProtocol&gt;=One of SHA (SHA1) or MD5 </span>
 <span class="c1"># &lt;privProtocol&gt;=One of AES or DES </span>
 <span class="c1"># Note MD5 and DES are considered insecure but must be supported for standards compliance</span>
-microk8s kubectl create -n &lt;namespace&gt; secret generic &lt;secretname&gt; <span class="se">\</span>
-  --from-literal<span class="o">=</span><span class="nv">userName</span><span class="o">=</span>&lt;username&gt; <span class="se">\</span>
-  --from-literal<span class="o">=</span><span class="nv">authKey</span><span class="o">=</span>&lt;key&gt; <span class="se">\</span>
-  --from-literal<span class="o">=</span><span class="nv">privKey</span><span class="o">=</span>&lt;key&gt; <span class="se">\</span>
-  --from-literal<span class="o">=</span><span class="nv">authProtocol</span><span class="o">=</span>&lt;authProtocol&gt; <span class="se">\</span>
-  --from-literal<span class="o">=</span><span class="nv">privProtocol</span><span class="o">=</span>&lt;privProtocol&gt; 
+microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>&lt;secretname&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">userName</span><span class="o">=</span>&lt;username&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">authKey</span><span class="o">=</span>&lt;key&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">privKey</span><span class="o">=</span>&lt;key&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">authProtocol</span><span class="o">=</span>&lt;authProtocol&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">privProtocol</span><span class="o">=</span>&lt;privProtocol&gt;<span class="w"> </span>
 </code></pre></div>
 
 <p>Configured credentials can be used in <a href="../poller-configuration/">poller</a> and <a href="../trap-configuration/">trap</a> services. 
-In service configuration, <code>secretname</code> needs to be provided. </p>
+In service configuration, <code>secretname</code> needs to be provided. </p></div>
 
 
 

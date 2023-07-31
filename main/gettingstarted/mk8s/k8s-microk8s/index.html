@@ -773,7 +773,7 @@
                 
 
 
-<h1 id="splunk-connect-for-snmp-using-microk8s">Splunk Connect for SNMP using MicroK8s<a class="headerlink" href="#splunk-connect-for-snmp-using-microk8s" title="Permanent link">&para;</a></h1>
+<div><h1 id="splunk-connect-for-snmp-using-microk8s">Splunk Connect for SNMP using MicroK8s<a class="headerlink" href="#splunk-connect-for-snmp-using-microk8s" title="Permanent link">¶</a></h1>
 <p>See the following requirements to use any Linux deployment of Microk8s to support SC4SMP. The minimum requirements below are suitable for proof of value and small installations, and actual requirements will differ.</p>
 <p>Single node minimum: </p>
 <ul>
@@ -787,59 +787,59 @@
 <li>8 GB of memory per node</li>
 <li>50 GB mounted /</li>
 </ul>
-<h1 id="microk8s-installation-on-ubuntu">MicroK8s installation on Ubuntu<a class="headerlink" href="#microk8s-installation-on-ubuntu" title="Permanent link">&para;</a></h1>
+<h1 id="microk8s-installation-on-ubuntu">MicroK8s installation on Ubuntu<a class="headerlink" href="#microk8s-installation-on-ubuntu" title="Permanent link">¶</a></h1>
 <p>The following quick start guidance is based on Ubuntu 20.04LTS with MicroK8s with internet access. Other deployment options
 may be found in the MicroK8s <a href="https://microk8s.io/docs">documentation</a> including offline and with proxy. </p>
-<h2 id="install-microk8s-using-snap">Install MicroK8s using Snap<a class="headerlink" href="#install-microk8s-using-snap" title="Permanent link">&para;</a></h2>
-<div class="codehilite"><pre><span></span><code>sudo snap install microk8s --classic --channel<span class="o">=</span><span class="m">1</span>.25/stable
+<h2 id="install-microk8s-using-snap">Install MicroK8s using Snap<a class="headerlink" href="#install-microk8s-using-snap" title="Permanent link">¶</a></h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>microk8s<span class="w"> </span>--classic<span class="w"> </span>--channel<span class="o">=</span><span class="m">1</span>.25/stable
 </code></pre></div>
 
 <p>Add a user to the microk8s group so the <code>sudo</code> command is no longer necessary:</p>
-<div class="codehilite"><pre><span></span><code>sudo usermod -a -G microk8s <span class="nv">$USER</span>
-sudo chown -f -R <span class="nv">$USER</span> ~/.kube
-su - <span class="nv">$USER</span>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>microk8s<span class="w"> </span><span class="nv">$USER</span>
+sudo<span class="w"> </span>chown<span class="w"> </span>-f<span class="w"> </span>-R<span class="w"> </span><span class="nv">$USER</span><span class="w"> </span>~/.kube
+su<span class="w"> </span>-<span class="w"> </span><span class="nv">$USER</span>
 </code></pre></div>
 
 <p>Wait for Installation of Mk8S to complete:</p>
-<div class="codehilite"><pre><span></span><code>microk8s status --wait-ready
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
 
-<h2 id="add-additional-nodes-optional">Add additional nodes (optional)<a class="headerlink" href="#add-additional-nodes-optional" title="Permanent link">&para;</a></h2>
+<h2 id="add-additional-nodes-optional">Add additional nodes (optional)<a class="headerlink" href="#add-additional-nodes-optional" title="Permanent link">¶</a></h2>
 <ul>
 <li>Repeat the steps above for each additional node (minimum total 3)</li>
 <li>On the first node issue the following to return the instructions to join: </li>
 </ul>
-<div class="codehilite"><pre><span></span><code>microk8s add-node
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>add-node
 </code></pre></div>
 
 <ul>
 <li>On each additional node, use the output from the command above</li>
 </ul>
-<h2 id="install-basic-services-required-for-sc4snmp">Install basic services required for sc4snmp<a class="headerlink" href="#install-basic-services-required-for-sc4snmp" title="Permanent link">&para;</a></h2>
+<h2 id="install-basic-services-required-for-sc4snmp">Install basic services required for sc4snmp<a class="headerlink" href="#install-basic-services-required-for-sc4snmp" title="Permanent link">¶</a></h2>
 <p>The following commands can be issued from any one node in a cluster:</p>
-<div class="codehilite"><pre><span></span><code>sudo systemctl <span class="nb">enable</span> iscsid
-microk8s <span class="nb">enable</span> helm3
-microk8s <span class="nb">enable</span> hostpath-storage
-microk8s <span class="nb">enable</span> rbac
-microk8s <span class="nb">enable</span> metrics-server
-microk8s status --wait-ready
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>iscsid
+microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>helm3
+microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>hostpath-storage
+microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>rbac
+microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>metrics-server
+microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
 
 <p>Install the DNS server for mk8s and configure the forwarding DNS servers. Replace the IP addressed below (opendns) with
 allowed values for your network: </p>
-<div class="codehilite"><pre><span></span><code>microk8s <span class="nb">enable</span> dns:208.67.222.222,208.67.220.220
-microk8s status --wait-ready
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>dns:208.67.222.222,208.67.220.220
+microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
 
-<h2 id="install-metallb">Install Metallb<a class="headerlink" href="#install-metallb" title="Permanent link">&para;</a></h2>
+<h2 id="install-metallb">Install Metallb<a class="headerlink" href="#install-metallb" title="Permanent link">¶</a></h2>
 <p>Note: when installing Metallb you will be prompted for one or more IPs to use as entry points
 into the cluster. If your plan to enable clustering, this IP should not be assigned to the host (floats).
 If you do not plan to cluster, then this IP should be the IP of your host.</p>
 <p>Note2: a single IP in cidr format is x.x.x.x/32. Use CIDR or range syntax for single server installations. This can be
 the same as the primary IP.</p>
-<div class="codehilite"><pre><span></span><code>microk8s <span class="nb">enable</span> metallb
-microk8s status --wait-ready
-</code></pre></div>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>metallb
+microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
+</code></pre></div></div>
 
 
 
