@@ -91,13 +91,13 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/cha
 Error: UPGRADE FAILED: cannot patch "snmp-splunk-connect-for-snmp-inventory" with kind Job: Job.batch "snmp-splunk-connect-for-snmp-inventory" is invalid: (...) : field is immutable
 ```
 
-The immutable error is due to the limitation placed on an inventory job. As the SC4SNMP requires several checks before applying updates, it is designed to allow changes in inventory task after 5 minutes. 
+The immutable error is due to the limitation placed on an inventory job. As the SC4SNMP requires several checks before applying updates, it is designed to allow changes in the inventory task after 5 minutes. 
 
-The status of the inventory can be checked with command:
+The status of the inventory can be checked with a command:
 ```
 microk8s kubectl -n sc4snmp get pods | grep inventory
 ```
-If the command is not empty, wait and execute it again after inventory job finishes (no longer visible in the output).
+If the command is not empty, wait and execute it again after the inventory job finishes (no longer visible in the output).
 
 If the changes are required to be applied immedietly, the previous inventory job can be deleted with the command:
 ```
