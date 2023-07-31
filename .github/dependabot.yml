@@ -4,6 +4,7 @@ updates:
     commit-message:
       prefix: "ci(actions): "
     directory: "/.github/workflows"
+    rebase-strategy: "disabled"
     target-branch: "develop"
     schedule:
       interval: "daily"

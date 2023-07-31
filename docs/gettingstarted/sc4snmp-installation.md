@@ -176,6 +176,13 @@ SNMP data format is explained in [SNMP data format](../configuration/snmp-data-f
 
 For advanced trap configuration, check the [Traps configuration](../configuration/trap-configuration.md) section.
 
+## Uninstall Splunk Connect for SNMP
+To uninstall SC4SNMP run the following commands:
+
+```
+ microk8s helm3 uninstall snmp -n sc4snmp
+ microk8s kubectl delete pvc --all -n sc4snmp
+```
 
 
 [examples_link]: https://github.com/splunk/splunk-connect-for-snmp/tree/main/examples
