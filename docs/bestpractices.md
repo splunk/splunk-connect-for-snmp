@@ -84,7 +84,7 @@ An example for a SPLUNK query like that (interface counter), would be:
 | eval out = if(out_delta<0,((max+out_delta)*8/(5*60*1000*1000*1000)),(out_delta)*8/(5*60*1000*1000*1000))
 | timechart span=5m avg(in) AS in, avg(out) AS out by ifAlias
 ```
-### Field is immutable error during helm upgrade
+### "Field is immutable" error during helm upgrade
 
 ```
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/charts/splunk-connect-for-snmp/ --namespace=sc4snmp --create-namespace
