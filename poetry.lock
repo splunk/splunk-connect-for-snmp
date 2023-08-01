@@ -440,12 +440,12 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "json-log-formatter"
-version = "0.5.1"
+version = "0.5.2"
 description = "JSON log formatter"
 optional = false
-python-versions = "*"
+python-versions = ">=2.7"
 files = [
-    {file = "JSON-log-formatter-0.5.1.tar.gz", hash = "sha256:53246bcc5be5452bd46020326c50556ac6d35be20f00733d7235e0ca90d0c5f1"},
+    {file = "JSON-log-formatter-0.5.2.tar.gz", hash = "sha256:7b191ae4056468baf2b7445c5ce651bd9ee6b76b4162a479a7d85db6ae029f2d"},
 ]
 
 [[package]]
@@ -1893,4 +1893,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "0a25b11b18d4b918c06adc0ba3eb0a13beb1f57de815464d2d9f34369efdee6a"
+content-hash = "c177ca110a8dabab70e073946f58d516c6b505f935ab5ab013fe189b250c10f6"
