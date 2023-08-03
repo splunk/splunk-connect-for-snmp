@@ -66,18 +66,28 @@ files = [
 
 [[package]]
 name = "cattrs"
-version = "22.1.0"
+version = "23.1.2"
 description = "Composable complex class support for attrs and dataclasses."
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.7"
 files = [
-    {file = "cattrs-22.1.0-py3-none-any.whl", hash = "sha256:d55c477b4672f93606e992049f15d526dc7867e6c756cd6256d4af92e2b1e364"},
-    {file = "cattrs-22.1.0.tar.gz", hash = "sha256:94b67b64cf92c994f8784c40c082177dc916e0489a73a9a36b24eb18a9db40c6"},
+    {file = "cattrs-23.1.2-py3-none-any.whl", hash = "sha256:b2bb14311ac17bed0d58785e5a60f022e5431aca3932e3fc5cc8ed8639de50a4"},
+    {file = "cattrs-23.1.2.tar.gz", hash = "sha256:db1c821b8c537382b2c7c66678c3790091ca0275ac486c76f3c8f3920e83c657"},
 ]
 
 [package.dependencies]
 attrs = ">=20"
-exceptiongroup = {version = "*", markers = "python_version <= \"3.10\""}
+exceptiongroup = {version = "*", markers = "python_version < \"3.11\""}
+typing_extensions = {version = ">=4.1.0", markers = "python_version < \"3.11\""}
+
+[package.extras]
+bson = ["pymongo (>=4.2.0,<5.0.0)"]
+cbor2 = ["cbor2 (>=5.4.6,<6.0.0)"]
+msgpack = ["msgpack (>=1.0.2,<2.0.0)"]
+orjson = ["orjson (>=3.5.2,<4.0.0)"]
+pyyaml = ["PyYAML (>=6.0,<7.0)"]
+tomlkit = ["tomlkit (>=0.11.4,<0.12.0)"]
+ujson = ["ujson (>=5.4.0,<6.0.0)"]
 
 [[package]]
 name = "celery"
@@ -1476,19 +1486,19 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "requests-cache"
-version = "0.9.6"
+version = "0.9.8"
 description = "A transparent persistent cache for the requests library"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "requests-cache-0.9.6.tar.gz", hash = "sha256:b1672c99ccce9ee53b49504c9f6a6d6de5cf6a9956bda46cf7dda0a4a5fc1bb5"},
-    {file = "requests_cache-0.9.6-py3-none-any.whl", hash = "sha256:7397c0effb7e824c21e3f9fca8293cad01eb40152be67e53093f5399acd2d251"},
+    {file = "requests_cache-0.9.8-py3-none-any.whl", hash = "sha256:3a16021a4b5014b5b32af9c34f07cb911e99a69074d664dfd4fddb62a2997c21"},
+    {file = "requests_cache-0.9.8.tar.gz", hash = "sha256:eaed4eb5fd5c392ba5e7cfa000d4ab96b1d32c1a1620f37aa558c43741ac362b"},
 ]
 
 [package.dependencies]
 appdirs = ">=1.4.4"
 attrs = ">=21.2"
-cattrs = ">=1.8"
+cattrs = ">=22.2"
 requests = ">=2.22"
 url-normalize = ">=1.4"
 urllib3 = ">=1.25.5"
