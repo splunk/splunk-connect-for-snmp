@@ -73,6 +73,62 @@ class TestPrepare(TestCase):
         self.assertEqual(67.0, event2["metric_three"]["value"])
         self.assertEqual(90.0, event2["metric_four"]["value"])
 
+    @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_AGGREGATE_TRAPS_EVENTS", True)
+    @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
+    def test_prepare_aggregated_trap(self, m_custom):
+        task_input = {
+            "sourcetype": "sc4snmp:traps",
+            "time": 1234567,
+            "address": "192.168.0.1",
+            "result": {
+                "SOME_GROUP_KEY1": {
+                    "metrics": {
+                        "metric_one": {"value": 23},
+                        "metric_two": {"value": 26},
+                    },
+                    "fields": {
+                        "field_one": {"value": "on"},
+                        "field_two": {"value": "listening"},
+                    },
+                },
+                "SOME_GROUP_KEY2": {
+                    "metrics": {
+                        "metric_three": {"value": 67},
+                        "metric_four": {"value": 90},
+                    },
+                    "fields": {
+                        "field_three": {"value": "OFF"},
+                        "field_four": {"value": "stopping"},
+                    },
+                },
+            },
+        }
+
+        m_custom.return_value = task_input
+        result = prepare(task_input)
+
+        self.assertEqual("list", type(result["events"]).__name__)
+        self.assertEqual(2, len(result))
+        self.assertEqual(1, len(result["events"]))
+        self.assertEqual(0, len(result["metrics"]))
+
+        item1 = json.loads(result["events"][0])
+        event1 = json.loads(item1["event"])
+        self.assertEqual(1234567, item1["time"])
+        self.assertEqual("192.168.0.1", item1["host"])
+        self.assertEqual("test_index", item1["index"])
+        self.assertEqual("sc4snmp", item1["source"])
+        self.assertEqual("sc4snmp:traps", item1["sourcetype"])
+        self.assertEqual("192.168.0.1", item1["host"])
+        self.assertEqual("on", event1["field_one"]["value"])
+        self.assertEqual("listening", event1["field_two"]["value"])
+        self.assertEqual(23.0, event1["metric_one"]["value"])
+        self.assertEqual(26.0, event1["metric_two"]["value"])
+        self.assertEqual("OFF", event1["field_three"]["value"])
+        self.assertEqual("stopping", event1["field_four"]["value"])
+        self.assertEqual(67.0, event1["metric_three"]["value"])
+        self.assertEqual(90.0, event1["metric_four"]["value"])
+
     @patch("splunk_connect_for_snmp.splunk.tasks.METRICS_INDEXING_ENABLED", True)
     @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_metrics(self, m_custom):
