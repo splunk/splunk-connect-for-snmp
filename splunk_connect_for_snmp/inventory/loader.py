@@ -89,11 +89,11 @@ def load():
         mongo_client, periodic_obj, logger
     )
     logger.info(f"Loading inventory from {INVENTORY_PATH}")
-    inventory_lines = inventory_processor.get_all_hosts()
+    inventory_lines, inventory_group_port_mapping = inventory_processor.get_all_hosts()
 
     # Function to delete inventory records that are
     hosts_from_groups_to_delete = return_hosts_from_deleted_groups(
-        previous_groups, new_groups
+        previous_groups, new_groups, inventory_group_port_mapping
     )
     for host in hosts_from_groups_to_delete:
         inventory_record_manager.delete(host)
