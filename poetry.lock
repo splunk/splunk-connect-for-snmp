@@ -403,22 +403,22 @@ files = [
 
 [[package]]
 name = "importlib-metadata"
-version = "4.12.0"
+version = "6.8.0"
 description = "Read metadata from Python packages"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "importlib_metadata-4.12.0-py3-none-any.whl", hash = "sha256:7401a975809ea1fdc658c3aa4f78cc2195a0e019c5cbc4c06122884e9ae80c23"},
-    {file = "importlib_metadata-4.12.0.tar.gz", hash = "sha256:637245b8bab2b6502fcbc752cc4b7a6f6243bb02b31c5c26156ad103d3d45670"},
+    {file = "importlib_metadata-6.8.0-py3-none-any.whl", hash = "sha256:3ebb78df84a805d7698245025b975d9d67053cd94c79245ba4b3eb694abe68bb"},
+    {file = "importlib_metadata-6.8.0.tar.gz", hash = "sha256:dbace7892d8c0c4ac1ad096662232f831d4e64f4c4545bd53016a3e9d4654743"},
 ]
 
 [package.dependencies]
 zipp = ">=0.5"
 
 [package.extras]
-docs = ["jaraco.packaging (>=9)", "rst.linker (>=1.9)", "sphinx"]
+docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
 perf = ["ipython"]
-testing = ["flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pyfakefs", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)", "pytest-perf (>=0.9.2)"]
+testing = ["flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pyfakefs", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy (>=0.9.1)", "pytest-perf (>=0.9.2)", "pytest-ruff"]
 
 [[package]]
 name = "iniconfig"
@@ -696,58 +696,64 @@ test = ["coverage", "flake8 (>=3.0)", "shtab"]
 
 [[package]]
 name = "mkdocs"
-version = "1.3.1"
+version = "1.5.2"
 description = "Project documentation with Markdown."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "mkdocs-1.3.1-py3-none-any.whl", hash = "sha256:fda92466393127d2da830bc6edc3a625a14b436316d1caf347690648e774c4f0"},
-    {file = "mkdocs-1.3.1.tar.gz", hash = "sha256:a41a2ff25ce3bbacc953f9844ba07d106233cd76c88bac1f59cb1564ac0d87ed"},
+    {file = "mkdocs-1.5.2-py3-none-any.whl", hash = "sha256:60a62538519c2e96fe8426654a67ee177350451616118a41596ae7c876bb7eac"},
+    {file = "mkdocs-1.5.2.tar.gz", hash = "sha256:70d0da09c26cff288852471be03c23f0f521fc15cf16ac89c7a3bfb9ae8d24f9"},
 ]
 
 [package.dependencies]
-click = ">=3.3"
+click = ">=7.0"
+colorama = {version = ">=0.4", markers = "platform_system == \"Windows\""}
 ghp-import = ">=1.0"
-importlib-metadata = ">=4.3"
-Jinja2 = ">=2.10.2"
-Markdown = ">=3.2.1,<3.4"
+importlib-metadata = {version = ">=4.3", markers = "python_version < \"3.10\""}
+jinja2 = ">=2.11.1"
+markdown = ">=3.2.1"
+markupsafe = ">=2.0.1"
 mergedeep = ">=1.3.4"
 packaging = ">=20.5"
-PyYAML = ">=3.10"
+pathspec = ">=0.11.1"
+platformdirs = ">=2.2.0"
+pyyaml = ">=5.1"
 pyyaml-env-tag = ">=0.1"
 watchdog = ">=2.0"
 
 [package.extras]
 i18n = ["babel (>=2.9.0)"]
+min-versions = ["babel (==2.9.0)", "click (==7.0)", "colorama (==0.4)", "ghp-import (==1.0)", "importlib-metadata (==4.3)", "jinja2 (==2.11.1)", "markdown (==3.2.1)", "markupsafe (==2.0.1)", "mergedeep (==1.3.4)", "packaging (==20.5)", "pathspec (==0.11.1)", "platformdirs (==2.2.0)", "pyyaml (==5.1)", "pyyaml-env-tag (==0.1)", "typing-extensions (==3.10)", "watchdog (==2.0)"]
 
 [[package]]
 name = "mkdocs-material"
-version = "8.4.2"
+version = "8.5.11"
 description = "Documentation that simply works"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "mkdocs-material-8.4.2.tar.gz", hash = "sha256:704c64c3fff126a3923c2961d95f26b19be621342a6a4e49ed039f0bb7a5c540"},
-    {file = "mkdocs_material-8.4.2-py2.py3-none-any.whl", hash = "sha256:166287bb0e4197804906bf0389a852d5ced43182c30127ac8b48a4e497ecd7e5"},
+    {file = "mkdocs_material-8.5.11-py3-none-any.whl", hash = "sha256:c907b4b052240a5778074a30a78f31a1f8ff82d7012356dc26898b97559f082e"},
+    {file = "mkdocs_material-8.5.11.tar.gz", hash = "sha256:b0ea0513fd8cab323e8a825d6692ea07fa83e917bb5db042e523afecc7064ab7"},
 ]
 
 [package.dependencies]
 jinja2 = ">=3.0.2"
 markdown = ">=3.2"
-mkdocs = ">=1.3.0"
-mkdocs-material-extensions = ">=1.0.3"
+mkdocs = ">=1.4.0"
+mkdocs-material-extensions = ">=1.1"
 pygments = ">=2.12"
 pymdown-extensions = ">=9.4"
+requests = ">=2.26"
 
 [[package]]
 name = "mkdocs-material-extensions"
-version = "1.0.3"
-description = "Extension pack for Python Markdown."
+version = "1.1.1"
+description = "Extension pack for Python Markdown and MkDocs Material."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "mkdocs-material-extensions-1.0.3.tar.gz", hash = "sha256:bfd24dfdef7b41c312ede42648f9eb83476ea168ec163b613f9abd12bbfddba2"},
-    {file = "mkdocs_material_extensions-1.0.3-py3-none-any.whl", hash = "sha256:a82b70e533ce060b2a5d9eb2bc2e1be201cf61f901f93704b4acf6e3d5983a44"},
+    {file = "mkdocs_material_extensions-1.1.1-py3-none-any.whl", hash = "sha256:e41d9f38e4798b6617ad98ca8f7f1157b1e4385ac1459ca1e4ea219b556df945"},
+    {file = "mkdocs_material_extensions-1.1.1.tar.gz", hash = "sha256:9c003da71e2cc2493d910237448c672e00cefc800d3d6ae93d2fc69979e3bd93"},
 ]
 
 [[package]]
@@ -767,13 +773,13 @@ mkdocs = ">=1.1.0,<2"
 
 [[package]]
 name = "mongoengine"
-version = "0.24.2"
+version = "0.27.0"
 description = "MongoEngine is a Python Object-Document Mapper for working with MongoDB."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "mongoengine-0.24.2-py3-none-any.whl", hash = "sha256:f5c4e1b206b2ccffe4adc7a6283ed26dd799bd115a5fb1d2e885a075132cdb88"},
-    {file = "mongoengine-0.24.2.tar.gz", hash = "sha256:c76d49658575bb995682e2e77c8ef7cda63faf939415b32ee923745d120f8b02"},
+    {file = "mongoengine-0.27.0-py3-none-any.whl", hash = "sha256:c3523b8f886052f3deb200b3218bcc13e4b781661e3bea38587cc936c80ea358"},
+    {file = "mongoengine-0.27.0.tar.gz", hash = "sha256:8f38df7834dc4b192d89f2668dcf3091748d12f74d55648ce77b919167a4a49b"},
 ]
 
 [package.dependencies]
@@ -794,28 +800,28 @@ pymongo = ">=2.6.0"
 
 [[package]]
 name = "opentelemetry-api"
-version = "1.12.0"
+version = "1.19.0"
 description = "OpenTelemetry Python API"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "opentelemetry-api-1.12.0.tar.gz", hash = "sha256:740c2cf9aa75e76c208b3ee04b3b3b3721f58bbac8e97019174f07ec12cde7af"},
-    {file = "opentelemetry_api-1.12.0-py3-none-any.whl", hash = "sha256:2e1cef8ce175be6464f240422babfe1dfb581daec96f0daad5d0d0e951b38f7b"},
+    {file = "opentelemetry_api-1.19.0-py3-none-any.whl", hash = "sha256:dcd2a0ad34b691964947e1d50f9e8c415c32827a1d87f0459a72deb9afdf5597"},
+    {file = "opentelemetry_api-1.19.0.tar.gz", hash = "sha256:db374fb5bea00f3c7aa290f5d94cea50b659e6ea9343384c5f6c2bb5d5e8db65"},
 ]
 
 [package.dependencies]
-Deprecated = ">=1.2.6"
-setuptools = ">=16.0"
+deprecated = ">=1.2.6"
+importlib-metadata = ">=6.0,<7.0"
 
 [[package]]
 name = "opentelemetry-exporter-jaeger-thrift"
-version = "1.12.0"
+version = "1.19.0"
 description = "Jaeger Thrift Exporter for OpenTelemetry"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "opentelemetry-exporter-jaeger-thrift-1.12.0.tar.gz", hash = "sha256:8a87b0e63c62dee13ef9fa9a28ad1ca612e06f29e3fa9266f40d2f4969be3af3"},
-    {file = "opentelemetry_exporter_jaeger_thrift-1.12.0-py3-none-any.whl", hash = "sha256:c60cac61637fef57bda4917432493c80f4168654067be24e2a3eb9065d76963e"},
+    {file = "opentelemetry_exporter_jaeger_thrift-1.19.0-py3-none-any.whl", hash = "sha256:ed22f3c3dab822e5bf7e190302b51eafccce9dd58d43226fc6546676076acecc"},
+    {file = "opentelemetry_exporter_jaeger_thrift-1.19.0.tar.gz", hash = "sha256:f73daebd2cfb630e391098b11d1aa0d8bcaadb504197d2ecf6dfa8708c7c48ac"},
 ]
 
 [package.dependencies]
@@ -825,13 +831,13 @@ thrift = ">=0.10.0"
 
 [[package]]
 name = "opentelemetry-instrumentation"
-version = "0.33b0"
+version = "0.40b0"
 description = "Instrumentation Tools & Auto Instrumentation for OpenTelemetry Python"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "opentelemetry-instrumentation-0.33b0.tar.gz", hash = "sha256:763eb288b1c0fff9f6baa5494752cc9997f1f03ae3b03dd1fe0d667b1a04eecf"},
-    {file = "opentelemetry_instrumentation-0.33b0-py3-none-any.whl", hash = "sha256:90f1eff6e134ad6c1fc2cbd8e0b652c5057deed7b567bfcb40150d8001742161"},
+    {file = "opentelemetry_instrumentation-0.40b0-py3-none-any.whl", hash = "sha256:789d3726e698aa9526dd247b461b9172f99a4345571546c4aecf40279679fc8e"},
+    {file = "opentelemetry_instrumentation-0.40b0.tar.gz", hash = "sha256:08bebe6a752514ed61e901e9fee5ccf06ae7533074442e707d75bb65f3e0aa17"},
 ]
 
 [package.dependencies]
@@ -841,68 +847,67 @@ wrapt = ">=1.0.0,<2.0.0"
 
 [[package]]
 name = "opentelemetry-instrumentation-celery"
-version = "0.33b0"
+version = "0.40b0"
 description = "OpenTelemetry Celery Instrumentation"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "opentelemetry-instrumentation-celery-0.33b0.tar.gz", hash = "sha256:60183fb6242592c956864d7c6d477d63e4cb4062d565d0870c5928cf50b4c045"},
-    {file = "opentelemetry_instrumentation_celery-0.33b0-py3-none-any.whl", hash = "sha256:0599d83ff6c0686a5c2831fab36c7cdd0a033afc7085891e185f013d0b96eb78"},
+    {file = "opentelemetry_instrumentation_celery-0.40b0-py3-none-any.whl", hash = "sha256:2e7d4403537075585c2f64b47b722041f7df87877e3233b55f4f60900ead988d"},
+    {file = "opentelemetry_instrumentation_celery-0.40b0.tar.gz", hash = "sha256:273412b9994290339e9d7a6fbf6ee8a776f3a2cf4c2632277d5f83d4ddd41276"},
 ]
 
 [package.dependencies]
 opentelemetry-api = ">=1.12,<2.0"
-opentelemetry-instrumentation = "0.33b0"
-opentelemetry-semantic-conventions = "0.33b0"
+opentelemetry-instrumentation = "0.40b0"
+opentelemetry-semantic-conventions = "0.40b0"
 
 [package.extras]
 instruments = ["celery (>=4.0,<6.0)"]
-test = ["celery (>=4.0,<6.0)", "opentelemetry-test-utils (==0.33b0)", "pytest"]
+test = ["opentelemetry-instrumentation-celery[instruments]", "opentelemetry-test-utils (==0.40b0)", "pytest"]
 
 [[package]]
 name = "opentelemetry-instrumentation-logging"
-version = "0.33b0"
+version = "0.40b0"
 description = "OpenTelemetry Logging instrumentation"
 optional = false
 python-versions = "*"
 files = [
-    {file = "opentelemetry-instrumentation-logging-0.33b0.tar.gz", hash = "sha256:b583aa940ab656dc087fa67c1bdd32584b06a12ce2acfe53516351e967ecc0e3"},
-    {file = "opentelemetry_instrumentation_logging-0.33b0-py3-none-any.whl", hash = "sha256:e582397722c40c9621b596d7095033854d8a523235651e2ea01ecf0903b2cb4a"},
+    {file = "opentelemetry_instrumentation_logging-0.40b0-py2.py3-none-any.whl", hash = "sha256:7328c7f57500d6bbe5ca3d0a5b01e0d4b89a3db386732e19160f2e7ba3ee696b"},
+    {file = "opentelemetry_instrumentation_logging-0.40b0.tar.gz", hash = "sha256:9ae5d9aaa433b2bd8f8e785851a7f2c83ae6dcb92c8780852ec4e96b6a49046c"},
 ]
 
 [package.dependencies]
 opentelemetry-api = ">=1.12,<2.0"
-opentelemetry-instrumentation = "0.33b0"
+opentelemetry-instrumentation = "0.40b0"
 
 [package.extras]
-test = ["opentelemetry-test-utils (==0.33b0)"]
+test = ["opentelemetry-test-utils (==0.40b0)"]
 
 [[package]]
 name = "opentelemetry-sdk"
-version = "1.12.0"
+version = "1.19.0"
 description = "OpenTelemetry Python SDK"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "opentelemetry-sdk-1.12.0.tar.gz", hash = "sha256:bf37830ca4f93d0910cf109749237c5cb4465e31a54dfad8400011e9822a2a14"},
-    {file = "opentelemetry_sdk-1.12.0-py3-none-any.whl", hash = "sha256:d13be09765441c0513a3de01b7a2f56a7da36d902f60bff7c97f338903a57c34"},
+    {file = "opentelemetry_sdk-1.19.0-py3-none-any.whl", hash = "sha256:bb67ad676b1bc671766a40d7fc9d9563854c186fa11f0dc8fa2284e004bd4263"},
+    {file = "opentelemetry_sdk-1.19.0.tar.gz", hash = "sha256:765928956262c7a7766eaba27127b543fb40ef710499cad075f261f52163a87f"},
 ]
 
 [package.dependencies]
-opentelemetry-api = "1.12.0"
-opentelemetry-semantic-conventions = "0.33b0"
-setuptools = ">=16.0"
+opentelemetry-api = "1.19.0"
+opentelemetry-semantic-conventions = "0.40b0"
 typing-extensions = ">=3.7.4"
 
 [[package]]
 name = "opentelemetry-semantic-conventions"
-version = "0.33b0"
+version = "0.40b0"
 description = "OpenTelemetry Semantic Conventions"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "opentelemetry-semantic-conventions-0.33b0.tar.gz", hash = "sha256:67d62461c87b683b958428ced79162ec4d567dabf30b050f270bbd01eff89ced"},
-    {file = "opentelemetry_semantic_conventions-0.33b0-py3-none-any.whl", hash = "sha256:56b67b3f8f49413cbfbbeb32e9cf7b4c7dfb27a83064d959733766376ba11bc7"},
+    {file = "opentelemetry_semantic_conventions-0.40b0-py3-none-any.whl", hash = "sha256:7ebbaf86755a0948902e68637e3ae516c50222c30455e55af154ad3ffe283839"},
+    {file = "opentelemetry_semantic_conventions-0.40b0.tar.gz", hash = "sha256:5a7a491873b15ab7c4907bbfd8737645cc87ca55a0a326c1755d1b928d8a0fae"},
 ]
 
 [[package]]
@@ -920,6 +925,17 @@ files = [
 pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
 
 [[package]]
+name = "pathspec"
+version = "0.11.2"
+description = "Utility library for gitignore style pattern matching of file paths."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pathspec-0.11.2-py3-none-any.whl", hash = "sha256:1d6ed233af05e679efb96b1851550ea95bbb64b7c490b0f5aa52996c11e92a20"},
+    {file = "pathspec-0.11.2.tar.gz", hash = "sha256:e0d8d0ac2f12da61956eb2306b69f9469b42f4deb0f3cb6ed47b9cce9996ced3"},
+]
+
+[[package]]
 name = "pika"
 version = "1.3.2"
 description = "Pika Python AMQP Client Library"
@@ -934,6 +950,21 @@ files = [
 gevent = ["gevent"]
 tornado = ["tornado"]
 twisted = ["twisted"]
+
+[[package]]
+name = "platformdirs"
+version = "3.10.0"
+description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "platformdirs-3.10.0-py3-none-any.whl", hash = "sha256:d7c24979f292f916dc9cbf8648319032f551ea8c49a4c9bf2fb556a02070ec1d"},
+    {file = "platformdirs-3.10.0.tar.gz", hash = "sha256:b45696dab2d7cc691a3226759c0d3b00c47c8b6e293d96f6436f733303f77f6d"},
+]
+
+[package.extras]
+docs = ["furo (>=2023.7.26)", "proselint (>=0.13)", "sphinx (>=7.1.1)", "sphinx-autodoc-typehints (>=1.24)"]
+test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.4)", "pytest-cov (>=4.1)", "pytest-mock (>=3.11.1)"]
 
 [[package]]
 name = "pluggy"
@@ -1903,4 +1934,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "c177ca110a8dabab70e073946f58d516c6b505f935ab5ab013fe189b250c10f6"
+content-hash = "7770f4b7c218463f6523eb334eeadf5e19a73d95efa032a2e880d2585b2043b2"
