@@ -34,7 +34,7 @@ opentelemetry-exporter-jaeger-thrift = "^1.10.0"
 pyrate-limiter = "^2.10.0"
 requests-cache = "^0.9.3"
 requests-ratelimiter = "^0.2.1"
-mongoengine = "^0.24.1"
+mongoengine = "^0.27.0"
 celery-redbeat = {git = "https://github.com/splunk/redbeat", rev = "main"}
 PyYAML = "^6.0"
 #Note this is temporary PR to upstream project is issued
