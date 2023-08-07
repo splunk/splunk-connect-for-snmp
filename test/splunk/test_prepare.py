@@ -53,36 +53,40 @@ class TestPrepare(TestCase):
         item2["event"] = event2
         result["events"][1] = item2
 
-        self.assertEqual({'events': [
+        self.assertEqual(
             {
-                'time': 1234567,
-                'event': {
-                    'field_one': {'value': 'on'},
-                    'field_two': {'value': 'listening'},
-                    'metric_one': {'value': 23.0},
-                    'metric_two': {'value': 26.0}
-                },
-                'source': 'sc4snmp',
-                'sourcetype': 'sc4snmp:traps',
-                'host': '192.168.0.1',
-                'index': 'test_index'
+                "events": [
+                    {
+                        "time": 1234567,
+                        "event": {
+                            "field_one": {"value": "on"},
+                            "field_two": {"value": "listening"},
+                            "metric_one": {"value": 23.0},
+                            "metric_two": {"value": 26.0},
+                        },
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:traps",
+                        "host": "192.168.0.1",
+                        "index": "test_index",
+                    },
+                    {
+                        "time": 1234567,
+                        "event": {
+                            "field_three": {"value": "OFF"},
+                            "field_four": {"value": "stopping"},
+                            "metric_three": {"value": 67.0},
+                            "metric_four": {"value": 90.0},
+                        },
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:traps",
+                        "host": "192.168.0.1",
+                        "index": "test_index",
+                    },
+                ],
+                "metrics": [],
             },
-            {
-                'time': 1234567,
-                'event': {
-                    "field_three": {"value": "OFF"},
-                    "field_four": {"value": "stopping"},
-                    "metric_three": {"value": 67.0},
-                    "metric_four": {"value": 90.0}
-                },
-                'source': 'sc4snmp',
-                'sourcetype': 'sc4snmp:traps',
-                'host': '192.168.0.1',
-                'index': 'test_index'
-            }
-        ],
-            'metrics': []
-        }, result)
+            result,
+        )
 
     @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_AGGREGATE_TRAPS_EVENTS", True)
     @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
@@ -125,24 +129,31 @@ class TestPrepare(TestCase):
         item1["event"] = event1
         result["events"][0] = item1
 
-        self.assertEqual({'events': [
-            {'time': 1234567,
-             'event': {'field_one': {'value': 'on'},
-                       'field_two': {'value': 'listening'},
-                       'metric_one': {'value': 23.0},
-                       'metric_two': {'value': 26.0},
-                       'field_three': {'value': 'OFF'},
-                       'field_four': {'value': 'stopping'},
-                       'metric_three': {'value': 67.0},
-                       'metric_four': {'value': 90.0}
-                       },
-             'source': 'sc4snmp',
-             'sourcetype': 'sc4snmp:traps',
-             'host': '192.168.0.1', 'index': 'test_index'
-             }
-        ],
-            'metrics': []
-        }, result)
+        self.assertEqual(
+            {
+                "events": [
+                    {
+                        "time": 1234567,
+                        "event": {
+                            "field_one": {"value": "on"},
+                            "field_two": {"value": "listening"},
+                            "metric_one": {"value": 23.0},
+                            "metric_two": {"value": 26.0},
+                            "field_three": {"value": "OFF"},
+                            "field_four": {"value": "stopping"},
+                            "metric_three": {"value": 67.0},
+                            "metric_four": {"value": 90.0},
+                        },
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:traps",
+                        "host": "192.168.0.1",
+                        "index": "test_index",
+                    }
+                ],
+                "metrics": [],
+            },
+            result,
+        )
 
     @patch("splunk_connect_for_snmp.splunk.tasks.METRICS_INDEXING_ENABLED", True)
     @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
@@ -189,43 +200,47 @@ class TestPrepare(TestCase):
         item2 = json.loads(result["metrics"][1])
         result["metrics"][1] = item2
 
-        self.assertEqual({'metrics': [
+        self.assertEqual(
             {
-                'time': 1234567,
-                'event': 'metric',
-                'source': 'sc4snmp',
-                'sourcetype': 'sc4snmp:metric',
-                'host': '192.168.0.1',
-                'index': 'test_index_2',
-                'fields': {
-                    'frequency': 15,
-                    'profiles': 'profile1,profile2',
-                    'field_one': 'on',
-                    'field_two': 'listening',
-                    'metric_name:sc4snmp.metric_one': 23.0,
-                    'metric_name:sc4snmp.metric_two': 26.0,
-                    'mibIndex': '6'
-                }
+                "metrics": [
+                    {
+                        "time": 1234567,
+                        "event": "metric",
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:metric",
+                        "host": "192.168.0.1",
+                        "index": "test_index_2",
+                        "fields": {
+                            "frequency": 15,
+                            "profiles": "profile1,profile2",
+                            "field_one": "on",
+                            "field_two": "listening",
+                            "metric_name:sc4snmp.metric_one": 23.0,
+                            "metric_name:sc4snmp.metric_two": 26.0,
+                            "mibIndex": "6",
+                        },
+                    },
+                    {
+                        "time": 1234567,
+                        "event": "metric",
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:metric",
+                        "host": "192.168.0.1",
+                        "index": "test_index_2",
+                        "fields": {
+                            "frequency": 15,
+                            "profiles": "profile1,profile2",
+                            "field_three": "OFF",
+                            "field_four": "stopping",
+                            "metric_name:sc4snmp.metric_three": 67.0,
+                            "metric_name:sc4snmp.metric_four": 90.0,
+                        },
+                    },
+                ],
+                "events": [],
             },
-            {
-                'time': 1234567,
-                'event': 'metric',
-                'source': 'sc4snmp',
-                'sourcetype': 'sc4snmp:metric',
-                'host': '192.168.0.1',
-                'index': 'test_index_2',
-                'fields': {
-                    'frequency': 15,
-                    'profiles': 'profile1,profile2',
-                    'field_three': 'OFF',
-                    'field_four': 'stopping',
-                    'metric_name:sc4snmp.metric_three': 67.0,
-                    'metric_name:sc4snmp.metric_four': 90.0
-                }
-            }
-        ],
-            'events': []
-        }, result)
+            result,
+        )
 
     @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_metrics_no_indexing(self, m_custom):
@@ -315,44 +330,48 @@ class TestPrepare(TestCase):
         item2 = json.loads(result["metrics"][1])
         result["metrics"][1] = item2
 
-        self.assertEqual({'metrics': [
+        self.assertEqual(
             {
-                'time': 1234567,
-                'event': 'metric',
-                'source': 'sc4snmp',
-                'sourcetype': 'sc4snmp:metric',
-                'host': '192.168.0.1',
-                'index': 'test_index_2',
-                'fields': {
-                    'frequency': 15,
-                    'profiles': 'profile1,profile2',
-                    'group': 'group1',
-                    'field_one': 'on',
-                    'field_two': 'listening',
-                    'metric_name:sc4snmp.metric_one': 23.0,
-                    'metric_name:sc4snmp.metric_two': 26.0
-                }
+                "metrics": [
+                    {
+                        "time": 1234567,
+                        "event": "metric",
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:metric",
+                        "host": "192.168.0.1",
+                        "index": "test_index_2",
+                        "fields": {
+                            "frequency": 15,
+                            "profiles": "profile1,profile2",
+                            "group": "group1",
+                            "field_one": "on",
+                            "field_two": "listening",
+                            "metric_name:sc4snmp.metric_one": 23.0,
+                            "metric_name:sc4snmp.metric_two": 26.0,
+                        },
+                    },
+                    {
+                        "time": 1234567,
+                        "event": "metric",
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:metric",
+                        "host": "192.168.0.1",
+                        "index": "test_index_2",
+                        "fields": {
+                            "frequency": 15,
+                            "profiles": "profile1,profile2",
+                            "group": "group1",
+                            "field_three": "OFF",
+                            "field_four": "stopping",
+                            "metric_name:sc4snmp.metric_three": 67.0,
+                            "metric_name:sc4snmp.metric_four": 90.0,
+                        },
+                    },
+                ],
+                "events": [],
             },
-            {
-                'time': 1234567,
-                'event': 'metric',
-                'source': 'sc4snmp',
-                'sourcetype': 'sc4snmp:metric',
-                'host': '192.168.0.1',
-                'index': 'test_index_2',
-                'fields': {
-                    'frequency': 15,
-                    'profiles': 'profile1,profile2',
-                    'group': 'group1',
-                    'field_three': 'OFF',
-                    'field_four': 'stopping',
-                    'metric_name:sc4snmp.metric_three': 67.0,
-                    'metric_name:sc4snmp.metric_four': 90.0
-                }
-            }
-        ],
-            'events': []
-        }, result)
+            result,
+        )
 
     @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_only_events(self, m_custom):
@@ -392,33 +411,36 @@ class TestPrepare(TestCase):
         item2["event"] = event2
         result["events"][1] = item2
 
-        self.assertEqual({
-            'metrics': [],
-            'events': [
-                {
-                    'time': 1234567,
-                    'event': {
-                        'field_one': {'value': 'on'},
-                        'field_two': {'value': 'listening'}
+        self.assertEqual(
+            {
+                "metrics": [],
+                "events": [
+                    {
+                        "time": 1234567,
+                        "event": {
+                            "field_one": {"value": "on"},
+                            "field_two": {"value": "listening"},
+                        },
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:event",
+                        "host": "192.168.0.1",
+                        "index": "test_index",
                     },
-                    'source': 'sc4snmp',
-                    'sourcetype': 'sc4snmp:event',
-                    'host': '192.168.0.1',
-                    'index': 'test_index'
-                },
-                {
-                    'time': 1234567,
-                    'event': {
-                        'field_three': {'value': 'OFF'},
-                        'field_four': {'value': 'stopping'}
+                    {
+                        "time": 1234567,
+                        "event": {
+                            "field_three": {"value": "OFF"},
+                            "field_four": {"value": "stopping"},
+                        },
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:event",
+                        "host": "192.168.0.1",
+                        "index": "test_index",
                     },
-                    'source': 'sc4snmp',
-                    'sourcetype': 'sc4snmp:event',
-                    'host': '192.168.0.1',
-                    'index': 'test_index'
-                }
-            ]
-        }, result)
+                ],
+            },
+            result,
+        )
 
     def test_apply_custom_translation(self):
         work = {
