@@ -138,9 +138,9 @@ traps:
 ```
 
 ### Aggregate traps
-In case you want to see traps events collected as one event inside splunk you can enable it by setting `splunk.aggregateTrapsEvents`.
+In case you want to see traps events collected as one event inside splunk you can enable it by setting `traps.aggregateTrapsEvents`.
 Example:
 ```yaml
-splunk:
+traps:
   aggregateTrapsEvents: "true"
 ```

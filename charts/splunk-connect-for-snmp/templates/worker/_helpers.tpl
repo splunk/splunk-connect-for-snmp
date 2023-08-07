@@ -137,7 +137,7 @@ Common labels
 - name: SPLUNK_HEC_INSECURESSL
   value: {{ .Values.splunk.insecureSSL | default "false" | quote }}
 - name: SPLUNK_AGGREGATE_TRAPS_EVENTS
-  value: {{ .Values.splunk.aggregateTrapsEvents | default "false" | quote }}
+  value: {{ .Values.traps.aggregateTrapsEvents | default "false" | quote }}
 - name: SPLUNK_HEC_TOKEN
   valueFrom:
     secretKeyRef:
