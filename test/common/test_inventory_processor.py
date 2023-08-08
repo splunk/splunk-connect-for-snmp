@@ -72,7 +72,11 @@ class TestInventoryProcessor(TestCase):
         }
 
         self.assertEqual(
-            return_hosts_from_deleted_groups(previous_groups, new_groups),
+            return_hosts_from_deleted_groups(
+                previous_groups,
+                new_groups,
+                {"group1": {"port": 161}, "switches": {"port": 161}},
+            ),
             ["1.1.1.1:162"],
         )
 
@@ -95,7 +99,11 @@ class TestInventoryProcessor(TestCase):
         }
 
         self.assertEqual(
-            return_hosts_from_deleted_groups(previous_groups, new_groups),
+            return_hosts_from_deleted_groups(
+                previous_groups,
+                new_groups,
+                {"group1": 161, "switches": 161},
+            ),
             ["12.22.23.33", "1.1.1.1:162"],
         )
 
@@ -115,7 +123,11 @@ class TestInventoryProcessor(TestCase):
         }
 
         self.assertEqual(
-            return_hosts_from_deleted_groups(previous_groups, new_groups),
+            return_hosts_from_deleted_groups(
+                previous_groups,
+                new_groups,
+                {"group1": 161, "switches": 161},
+            ),
             ["123.0.0.1", "178.8.8.1:999", "1.1.1.1:162"],
         )
 
@@ -123,14 +135,37 @@ class TestInventoryProcessor(TestCase):
         previous_groups = {}
         new_groups = {}
         self.assertEqual(
-            return_hosts_from_deleted_groups(previous_groups, new_groups), []
+            return_hosts_from_deleted_groups(previous_groups, new_groups, {}), []
         )
 
     def test_return_hosts_new_ones(self):
         previous_groups = {}
         new_groups = {"switches": [{"address": "12.22.23.33", "port": 161}]}
         self.assertEqual(
-            return_hosts_from_deleted_groups(previous_groups, new_groups), []
+            return_hosts_from_deleted_groups(
+                previous_groups, new_groups, {"switches": {"port": 161}}
+            ),
+            [],
+        )
+
+    def test_return_deleted_host_without_port_config(self):
+        previous_groups = {
+            "group1": [
+                {"address": "123.0.0.1", "port": 161},
+                {"address": "178.8.8.1"},
+            ]
+        }
+        new_groups = {
+            "group1": [
+                {"address": "123.0.0.1", "port": 161},
+                {"address": "178.8.8.1", "port": 162},
+            ]
+        }
+        self.assertEqual(
+            ["178.8.8.1:1161"],
+            return_hosts_from_deleted_groups(
+                previous_groups, new_groups, {"group1": 1161}
+            ),
         )
 
     def test_get_group_hosts(self):

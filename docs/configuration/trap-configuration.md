@@ -136,3 +136,11 @@ traps:
     annotations:
       annotation_key: annotation_value
 ```
+
+### Aggregate traps
+In case you want to see traps events collected as one event inside splunk you can enable it by setting `traps.aggregateTrapsEvents`.
+Example:
+```yaml
+traps:
+  aggregateTrapsEvents: "true"
+```
