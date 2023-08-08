@@ -57,22 +57,29 @@ def gen_walk_task(ir: InventoryRecord, profile=None, group=None):
     return task_config
 
 
-def return_hosts_from_deleted_groups(previous_groups, new_groups):
+def return_hosts_from_deleted_groups(
+    previous_groups, new_groups, inventory_group_port_mapping
+):
     inventory_lines_to_delete = []
     for group_name in previous_groups.keys():
-        previous_groups_keys = get_groups_keys(previous_groups[group_name])
+        previous_groups_keys = get_groups_keys(
+            previous_groups[group_name], group_name, inventory_group_port_mapping
+        )
         if group_name not in new_groups:
             inventory_lines_to_delete += previous_groups_keys
         else:
-            new_groups_keys = get_groups_keys(new_groups[group_name])
+            new_groups_keys = get_groups_keys(
+                new_groups[group_name], group_name, inventory_group_port_mapping
+            )
             deleted_hosts = set(previous_groups_keys) - set(new_groups_keys)
             inventory_lines_to_delete += deleted_hosts
     return inventory_lines_to_delete
 
 
-def get_groups_keys(list_of_groups):
+def get_groups_keys(list_of_groups, group_name, inventory_group_port_mapping):
+    group_port = inventory_group_port_mapping.get(group_name, 161)
     groups_keys = [
-        f"{transform_address_to_key(element.get('address'), element.get('port', 161))}"
+        f"{transform_address_to_key(element.get('address'), element.get('port', group_port))}"
         for element in list_of_groups
     ]
     return groups_keys
@@ -84,6 +91,7 @@ class InventoryProcessor:
         self.group_manager = group_manager
         self.logger = logger
         self.hosts_from_groups: dict = {}
+        self.inventory_group_port_mapping: dict = {}
         self.single_hosts: List[dict] = []
 
     def get_all_hosts(self):
@@ -103,7 +111,7 @@ class InventoryProcessor:
                     self.logger.warning(
                         f"Record: {host} has been already configured in group. Skipping..."
                     )
-        return self.inventory_records
+        return self.inventory_records, self.inventory_group_port_mapping
 
     def process_line(self, source_record):
         address = source_record["address"]
@@ -122,6 +130,9 @@ class InventoryProcessor:
         group_list = list(groups)
         if group_list:
             groups_object_list = list(group_list[0].values())
+            self.inventory_group_port_mapping[group_name] = (
+                source_object["port"] if source_object["port"] else 161
+            )
             for group_object in groups_object_list[0]:
                 host_group_object = copy.copy(source_object)
                 for key in group_object.keys():
