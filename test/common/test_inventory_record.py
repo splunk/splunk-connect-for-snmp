@@ -160,14 +160,14 @@ class TestInventoryRecord(TestCase):
             "community": "public",
             "secret": "secret",
             "security_engine": "ENGINE",
-            "walk_interval": 50000,
+            "walk_interval": 650000,
             "profiles": "",
             "smart_profiles": True,
             "delete": False,
         }
 
         ir = InventoryRecord(**ir_dict)
-        self.assertEqual(42000, ir.walk_interval)
+        self.assertEqual(604800, ir.walk_interval)
 
     def test_profiles_not_string(self):
         ir_dict = {
@@ -332,14 +332,14 @@ class TestInventoryRecord(TestCase):
             "community": "public",
             "secret": "secret",
             "securityEngine": "ENGINE",
-            "walk_interval": 50000,
+            "walk_interval": 650000,
             "profiles": "",
             "SmartProfiles": True,
             "delete": False,
         }
 
         ir = InventoryRecord(**ir_dict)
-        self.assertEqual(42000, ir.walk_interval)
+        self.assertEqual(604800, ir.walk_interval)
 
     def test_profiles_not_string_camel_case(self):
         ir_dict = {
