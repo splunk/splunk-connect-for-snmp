@@ -430,7 +430,7 @@ def setup_v3_connection(request):
 @pytest.mark.usefixtures("setup_v3_connection")
 class TestSNMPv3Connection:
     def test_snmpv3_walk(self, setup_splunk):
-        time.sleep(100)
+        time.sleep(200)
         search_string = """| mpreview index=netmetrics | search profiles=v3profile"""
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
