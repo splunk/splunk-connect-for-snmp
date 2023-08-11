@@ -67,6 +67,7 @@ def walk(self, **kwargs):
     address = kwargs["address"]
     profile = kwargs.get("profile", [])
     group = kwargs.get("group")
+    chain_of_tasks_expiry_time = kwargs.get("chain_of_tasks_expiry_time")
     if profile:
         profile = [profile]
     mongo_client = pymongo.MongoClient(MONGO_URI)
@@ -79,7 +80,12 @@ def walk(self, **kwargs):
         retry, result = self.do_work(ir, walk=True, profiles=profile)
 
     # After a Walk tell schedule to recalc
-    work = {"time": time.time(), "address": address, "result": result}
+    work = {
+        "time": time.time(),
+        "address": address,
+        "result": result,
+        "chain_of_tasks_expiry_time": chain_of_tasks_expiry_time,
+    }
     if group:
         work["group"] = group
 

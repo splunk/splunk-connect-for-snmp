@@ -99,7 +99,17 @@ class TestSchemaMigration(TestCase):
         migrate_to_version_4(mc, periodic_obj_mock)
         mc.sc4snmp.schedules.drop.assert_called()
 
+    @patch(
+        "splunk_connect_for_snmp.common.task_generator.CHAIN_OF_TASKS_EXPIRY_TIME", 120
+    )
     def test_transform_mongodb_periodic_to_redbeat(self):
+        task_generator = WalkTaskGenerator(
+            target=Mock(),
+            schedule_period=Mock(),
+            app=Mock(),
+            profile=Mock(),
+            host_group=None,
+        )
         old_schedules = [
             {
                 "name": f"sc4snmp;127.0.0.1;walk",
@@ -133,15 +143,16 @@ class TestSchemaMigration(TestCase):
             }
         ]
         new_schedule = {
-            "name": f"sc4snmp;127.0.0.1;walk",
+            "name": "sc4snmp;127.0.0.1;walk",
             "task": "splunk_connect_for_snmp.snmp.tasks.walk",
             "target": "127.0.0.1",
             "args": [],
             "kwargs": {
                 "address": "127.0.0.1",
                 "profile": "walk1",
+                "chain_of_tasks_expiry_time": 120,
             },
-            "options": WalkTaskGenerator.WALK_CHAIN_OF_TASKS,
+            "options": task_generator.WALK_CHAIN_OF_TASKS,
             "schedule": schedule(30),
             "enabled": True,
             "run_immediately": True,
@@ -153,10 +164,20 @@ class TestSchemaMigration(TestCase):
         transform_mongodb_periodic_to_redbeat(mc, periodic_obj_mock)
         periodic_obj_mock.manage_task.assert_called_with(**new_schedule)
 
+    @patch(
+        "splunk_connect_for_snmp.common.task_generator.CHAIN_OF_TASKS_EXPIRY_TIME", 120
+    )
     def test_transform_mongodb_periodic_to_redbeat_more_than_one_walk(self):
+        task_generator = WalkTaskGenerator(
+            target=Mock(),
+            schedule_period=Mock(),
+            app=Mock(),
+            profile=Mock(),
+            host_group=None,
+        )
         old_schedules = [
             {
-                "name": f"sc4snmp;127.0.0.1;walk",
+                "name": "sc4snmp;127.0.0.1;walk",
                 "task": "splunk_connect_for_snmp.snmp.tasks.walk",
                 "target": "127.0.0.1",
                 "args": [],
@@ -225,8 +246,9 @@ class TestSchemaMigration(TestCase):
                 "kwargs": {
                     "address": "127.0.0.1",
                     "profile": "walk1",
+                    "chain_of_tasks_expiry_time": 120,
                 },
-                "options": WalkTaskGenerator.WALK_CHAIN_OF_TASKS,
+                "options": task_generator.WALK_CHAIN_OF_TASKS,
                 "schedule": schedule(30),
                 "enabled": True,
                 "run_immediately": True,
@@ -240,8 +262,9 @@ class TestSchemaMigration(TestCase):
                 "kwargs": {
                     "address": "127.0.0.2",
                     "profile": None,
+                    "chain_of_tasks_expiry_time": 120,
                 },
-                "options": WalkTaskGenerator.WALK_CHAIN_OF_TASKS,
+                "options": task_generator.WALK_CHAIN_OF_TASKS,
                 "schedule": schedule(400),
                 "enabled": True,
                 "run_immediately": True,

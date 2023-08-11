@@ -171,7 +171,9 @@ class InventoryRecordManager:
         self.attributes_collection.remove({"address": target})
         self.logger.info(f"Deleting record: {target}")
 
-    def update(self, inventory_record, new_source_record, runtime_profiles):
+    def update(
+        self, inventory_record, new_source_record, runtime_profiles, expiry_time_changed
+    ):
         profiles = new_source_record["profiles"].split(";")
         walk_profile = self.return_walk_profile(runtime_profiles, profiles)
         if walk_profile:
@@ -187,9 +189,16 @@ class InventoryRecordManager:
             self.logger.info(f"Modified Record {inventory_record}")
         else:
             self.logger.info(f"Unchanged Record {inventory_record}")
-            return
+            if expiry_time_changed:
+                self.logger.info(
+                    f"Task expiry time was modified, generating new tasks for record {inventory_record}"
+                )
+            else:
+                return
         task_config = gen_walk_task(
-            inventory_record, walk_profile, new_source_record.get("group")
+            inventory_record,
+            walk_profile,
+            new_source_record.get("group"),
         )
         self.periodic_object_collection.manage_task(**task_config)
 

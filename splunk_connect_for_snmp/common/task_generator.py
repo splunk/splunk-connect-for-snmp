@@ -1,9 +1,19 @@
+import os
+
 from celery import Celery, chain, group, signature
 from celery.schedules import schedule
 
+CHAIN_OF_TASKS_EXPIRY_TIME = int(os.getenv("CHAIN_OF_TASKS_EXPIRY_TIME", "60"))
+
 
 class TaskGenerator:
-    def __init__(self, target: str, schedule_period: int, app: Celery, host_group=None):
+    def __init__(
+        self,
+        target: str,
+        schedule_period: int,
+        app: Celery,
+        host_group=None,
+    ):
         self.target = target
         self.schedule_period = schedule_period
         self.app = app
@@ -24,8 +34,8 @@ class TaskGenerator:
 
 
 class WalkTaskGenerator(TaskGenerator):
-
     WALK_CHAIN_OF_TASKS = {
+        "expires": CHAIN_OF_TASKS_EXPIRY_TIME,
         "link": chain(
             signature("splunk_connect_for_snmp.enrich.tasks.enrich")
             .set(queue="poll")
@@ -48,7 +58,14 @@ class WalkTaskGenerator(TaskGenerator):
         ),
     }
 
-    def __init__(self, target, schedule_period, app, host_group, profile):
+    def __init__(
+        self,
+        target,
+        schedule_period,
+        app,
+        host_group,
+        profile,
+    ):
         super().__init__(target, schedule_period, app, host_group)
         self.profile = profile
 
@@ -59,32 +76,42 @@ class WalkTaskGenerator(TaskGenerator):
         task_data["task"] = "splunk_connect_for_snmp.snmp.tasks.walk"
         task_data["options"] = self.WALK_CHAIN_OF_TASKS
         task_data["run_immediately"] = True
-        walk_kwargs = {"profile": self.profile}
+        walk_kwargs = {
+            "profile": self.profile,
+            "chain_of_tasks_expiry_time": CHAIN_OF_TASKS_EXPIRY_TIME,
+        }
         task_data["kwargs"].update(walk_kwargs)
         return task_data
 
 
 class PollTaskGenerator(TaskGenerator):
-
-    POLL_CHAIN_OF_TASKS = {
-        "link": chain(
-            signature("splunk_connect_for_snmp.enrich.tasks.enrich")
-            .set(queue="poll")
-            .set(priority=4),
-            chain(
-                signature("splunk_connect_for_snmp.splunk.tasks.prepare")
-                .set(queue="send")
-                .set(priority=1),
-                signature("splunk_connect_for_snmp.splunk.tasks.send")
-                .set(queue="send")
-                .set(priority=0),
-            ),
-        ),
-    }
-
-    def __init__(self, target, schedule_period, app, host_group, profiles):
+    def __init__(
+        self,
+        target,
+        schedule_period,
+        app,
+        host_group,
+        profiles,
+        chain_of_tasks_expiry_time,
+    ):
         super().__init__(target, schedule_period, app, host_group)
         self.profiles = profiles
+        self.POLL_CHAIN_OF_TASKS = {
+            "expires": chain_of_tasks_expiry_time,
+            "link": chain(
+                signature("splunk_connect_for_snmp.enrich.tasks.enrich")
+                .set(queue="poll")
+                .set(priority=4),
+                chain(
+                    signature("splunk_connect_for_snmp.splunk.tasks.prepare")
+                    .set(queue="send")
+                    .set(priority=1),
+                    signature("splunk_connect_for_snmp.splunk.tasks.send")
+                    .set(queue="send")
+                    .set(priority=0),
+                ),
+            ),
+        }
 
     def generate_task_definition(self):
         task_data = super().generate_task_definition()

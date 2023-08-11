@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from celery.schedules import schedule
 
@@ -9,6 +9,7 @@ from splunk_connect_for_snmp.common.task_generator import (
 )
 
 
+@patch("splunk_connect_for_snmp.common.task_generator.CHAIN_OF_TASKS_EXPIRY_TIME", 120)
 class TestTaskGenerator(TestCase):
     def test_walk_generator(self):
         app = Mock()
@@ -24,9 +25,13 @@ class TestTaskGenerator(TestCase):
             "app": app,
             "args": [],
             "enabled": True,
-            "kwargs": {"address": "127.0.0.1", "profile": None},
+            "kwargs": {
+                "address": "127.0.0.1",
+                "profile": None,
+                "chain_of_tasks_expiry_time": 120,
+            },
             "name": "sc4snmp;127.0.0.1;walk",
-            "options": WalkTaskGenerator.WALK_CHAIN_OF_TASKS,
+            "options": walk_task_generator.WALK_CHAIN_OF_TASKS,
             "run_immediately": True,
             "schedule": schedule(10),
             "target": "127.0.0.1",
@@ -48,9 +53,13 @@ class TestTaskGenerator(TestCase):
             "app": app,
             "args": [],
             "enabled": True,
-            "kwargs": {"address": "127.0.0.1", "profile": "walk1"},
+            "kwargs": {
+                "address": "127.0.0.1",
+                "profile": "walk1",
+                "chain_of_tasks_expiry_time": 120,
+            },
             "name": "sc4snmp;127.0.0.1;walk",
-            "options": WalkTaskGenerator.WALK_CHAIN_OF_TASKS,
+            "options": walk_task_generator.WALK_CHAIN_OF_TASKS,
             "run_immediately": True,
             "schedule": schedule(10),
             "target": "127.0.0.1",
@@ -72,9 +81,14 @@ class TestTaskGenerator(TestCase):
             "app": app,
             "args": [],
             "enabled": True,
-            "kwargs": {"address": "127.0.0.1", "profile": "walk1", "group": "group1"},
+            "kwargs": {
+                "address": "127.0.0.1",
+                "profile": "walk1",
+                "group": "group1",
+                "chain_of_tasks_expiry_time": 120,
+            },
             "name": "sc4snmp;127.0.0.1;walk",
-            "options": WalkTaskGenerator.WALK_CHAIN_OF_TASKS,
+            "options": walk_task_generator.WALK_CHAIN_OF_TASKS,
             "run_immediately": True,
             "schedule": schedule(10),
             "target": "127.0.0.1",
@@ -89,6 +103,7 @@ class TestTaskGenerator(TestCase):
             schedule_period=10,
             app=app,
             host_group=None,
+            chain_of_tasks_expiry_time=180,
             profiles=["BaseProfile", "IFProfile"],
         )
         generated_task = poll_task_generator.generate_task_definition()
@@ -103,7 +118,7 @@ class TestTaskGenerator(TestCase):
                 "profiles": ["BaseProfile", "IFProfile"],
             },
             "name": "sc4snmp;127.0.0.1;10;poll",
-            "options": PollTaskGenerator.POLL_CHAIN_OF_TASKS,
+            "options": poll_task_generator.POLL_CHAIN_OF_TASKS,
             "run_immediately": False,
             "schedule": schedule(10),
             "target": "127.0.0.1",
@@ -118,6 +133,7 @@ class TestTaskGenerator(TestCase):
             schedule_period=500,
             app=app,
             host_group=None,
+            chain_of_tasks_expiry_time=180,
             profiles=["BaseProfile", "IFProfile"],
         )
         generated_task = poll_task_generator.generate_task_definition()
@@ -132,7 +148,7 @@ class TestTaskGenerator(TestCase):
                 "profiles": ["BaseProfile", "IFProfile"],
             },
             "name": "sc4snmp;127.0.0.1;500;poll",
-            "options": PollTaskGenerator.POLL_CHAIN_OF_TASKS,
+            "options": poll_task_generator.POLL_CHAIN_OF_TASKS,
             "run_immediately": True,
             "schedule": schedule(500),
             "target": "127.0.0.1",
@@ -147,6 +163,7 @@ class TestTaskGenerator(TestCase):
             schedule_period=500,
             app=app,
             host_group="group1",
+            chain_of_tasks_expiry_time=180,
             profiles=[],
         )
         generated_task = poll_task_generator.generate_task_definition()
@@ -162,7 +179,7 @@ class TestTaskGenerator(TestCase):
                 "profiles": [],
             },
             "name": "sc4snmp;127.0.0.1;500;poll",
-            "options": PollTaskGenerator.POLL_CHAIN_OF_TASKS,
+            "options": poll_task_generator.POLL_CHAIN_OF_TASKS,
             "run_immediately": True,
             "schedule": schedule(500),
             "target": "127.0.0.1",
@@ -177,6 +194,7 @@ class TestTaskGenerator(TestCase):
             schedule_period=500,
             app=app,
             host_group="group1",
+            chain_of_tasks_expiry_time=180,
             profiles=["BaseProfile", "IFProfile"],
         )
         generated_task = poll_task_generator.generate_task_definition()
@@ -192,14 +210,10 @@ class TestTaskGenerator(TestCase):
                 "profiles": ["BaseProfile", "IFProfile"],
             },
             "name": "sc4snmp;127.0.0.1;500;poll",
-            "options": PollTaskGenerator.POLL_CHAIN_OF_TASKS,
+            "options": poll_task_generator.POLL_CHAIN_OF_TASKS,
             "run_immediately": True,
             "schedule": schedule(500),
             "target": "127.0.0.1",
             "task": "splunk_connect_for_snmp.snmp.tasks.poll",
         }
         self.assertEqual(generated_task, expected_task)
-
-    def test_global_variables(self):
-        self.assertTrue(WalkTaskGenerator.WALK_CHAIN_OF_TASKS)
-        self.assertTrue(PollTaskGenerator.POLL_CHAIN_OF_TASKS)
