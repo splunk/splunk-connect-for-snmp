@@ -360,6 +360,8 @@ traps:
   # of the TRAP receiving application for each USM user
   securityEngineId:
     - "80003a8c04"
+  # aggregateTrapsEvents flag set to true makes traps events collected as one event inside splunk
+  aggregateTrapsEvents: "false"
 
   # communities define a version of SNMP protocol and SNMP community string, which should be used
   communities: {}
