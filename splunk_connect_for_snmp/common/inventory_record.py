@@ -122,8 +122,8 @@ class InventoryRecord(BaseModel):
         v = int(value)
         if v < 1800:
             return 1800
-        elif v > 42000:
-            return 42000
+        elif v > 604800:
+            return 604800
         else:
             return v
 
