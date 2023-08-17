@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Changed
+- add regex and option to negate conditional profiles search
+
 ## [1.9.2]
 
 ### Changed

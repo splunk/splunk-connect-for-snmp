@@ -284,12 +284,20 @@ def create_profile(profile_name, frequency, varBinds, records):
 
 
 def create_query(conditions: typing.List[dict], address: str) -> dict:
-
     conditional_profiles_mapping = {
         "equals": "$eq",
         "gt": "$gt",
         "lt": "$lt",
         "in": "$in",
+        "regex": "$regex",
+    }
+
+    negative_profiles_mapping = {
+        "equals": "$ne",
+        "gt": "$lte",
+        "lt": "$gte",
+        "in": "$nin",
+        "regex": "$regex",
     }
 
     def _parse_mib_component(field: str) -> str:
@@ -307,12 +315,32 @@ def create_query(conditions: typing.List[dict], address: str) -> dict:
             else:
                 raise BadlyFormattedFieldError(f"Value '{value}' should be numeric")
 
+    def _prepare_regex(value: str) -> typing.Union[list, str]:
+        pattern = value.strip("/").split("/")
+        if len(pattern) > 1:
+            return pattern
+        else:
+            return pattern[0]
+
     def _get_value_for_operation(operation: str, value: str) -> typing.Any:
         if operation in ["lt", "gt"]:
             return _convert_to_float(value)
         elif operation == "in":
             return [_convert_to_float(v, True) for v in value]
+        elif operation == "regex":
+            return _prepare_regex(value)
         return value
+
+    def _prepare_query_input(
+        operation: str, value: typing.Any, field: str, negate_operation: bool
+    ) -> dict:
+        if operation == "regex" and type(value) == list:
+            query = {mongo_operation: value[0], "$options": value[1]}
+        else:
+            query = {mongo_operation: value}
+        if operation == "regex" and negate_operation:
+            query = {"$not": query}
+        return {f"fields.{field}.value": query}
 
     filters = []
     field = ""
@@ -321,10 +349,20 @@ def create_query(conditions: typing.List[dict], address: str) -> dict:
         # fields in databases are written in convention "IF-MIB|ifInOctets"
         field = field.replace(".", "|")
         value = condition["value"]
+        negate_operation = human_bool(
+            condition.get("negate_operation", False), default=False
+        )
         operation = condition["operation"].lower()
         value_for_querying = _get_value_for_operation(operation, value)
-        mongo_operation = conditional_profiles_mapping.get(operation)
-        filters.append({f"fields.{field}.value": {mongo_operation: value_for_querying}})
+        mongo_operation = (
+            negative_profiles_mapping.get(operation)
+            if negate_operation
+            else conditional_profiles_mapping.get(operation)
+        )
+        query = _prepare_query_input(
+            operation, value_for_querying, field, negate_operation
+        )
+        filters.append(query)
     mib_component = _parse_mib_component(field)
     return {
         "$and": [
