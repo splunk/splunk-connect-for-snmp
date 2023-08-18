@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
+python_script=$1
 combine_image_name(){
   #Function to combine registry, repository and tag
   # into one image, so that it can be pulled by docker
@@ -32,7 +33,7 @@ combine_image_name(){
 }
 
 images_to_pack=""
-pull_image(){
+pull_dependencies_images_sc4snmp(){
   #Function to pull image required for specified chart
 
   chart_dir="$1"
@@ -52,15 +53,10 @@ pull_image(){
       values_file="$chart_dir/values.yml"
     fi
 
-    #Get all the lines with information about docker image from values.yaml
-    docker_info=$(sed -nE '/^image:/,/^[a-zA-Z#]/p' "$values_file")
-
-    #Get appVersion from Chart.yaml in case there is no tag specified in values.yaml
-    app_version=$(grep -Eo 'appVersion:\s\S+$' "$chart_file" | cut -d : -f2 | xargs)
-
-    image_registry=$(grep -Eo 'registry:\s\S+$' <<< "$docker_info" | cut -d : -f2 | xargs)
-    image_repository=$(grep -Eo 'repository:\s\S+$' <<< "$docker_info" | cut -d : -f2 | xargs)
-    image_tag=$(grep -Eo 'tag:\s\S+$' <<< "$docker_info" | cut -d : -f2 | xargs)
+    app_version=$(python3 "$python_script" "$chart_file" "appVersion")
+    image_registry=$(python3 "$python_script" "$values_file" "image.registry")
+    image_repository=$(python3 "$python_script" "$values_file" "image.repository")
+    image_tag=$(python3 "$python_script" "$values_file" "image.tag")
 
     docker_pull_image=""
     docker_pull_image=$(combine_image_name "$image_registry" "$image_repository" "$image_tag" "$app_version")
@@ -79,12 +75,9 @@ pull_image(){
     if [[ "$chart_dir" == *"mongodb"* ]]
     then
       docker_pull_image=""
-      metrics_info=$(sed -nE '/^metrics:/,/^[a-zA-Z#]/p' "$values_file")
-      docker_info=$(sed -nE '/image:/,/[#]/p' <<< "$metrics_info")
-
-      image_registry=$(grep -Eo 'registry:\s\S+$' <<< "$docker_info" | cut -d : -f2 | xargs)
-      image_repository=$(grep -Eo 'repository:\s\S+$' <<< "$docker_info" | cut -d : -f2 | xargs)
-      image_tag=$(grep -Eo 'tag:\s\S+$' <<< "$docker_info" | cut -d : -f2 | xargs)
+      image_registry=$(python3 "$python_script" "$values_file" "metrics.image.registry")
+      image_repository=$(python3 "$python_script" "$values_file" "metrics.image.repository")
+      image_tag=$(python3 "$python_script" "$values_file" "metrics.image.tag")
 
       docker_pull_image=$(combine_image_name "$image_registry" "$image_repository" "$image_tag" "$app_version")
 
@@ -99,12 +92,9 @@ pull_image(){
       images_to_pack="$images_to_pack""$docker_pull_image "
 
       docker_pull_image=""
-      volumePermissions_info=$(sed -nE '/^volumePermissions:/,/^[a-zA-Z#]/p' "$values_file")
-      docker_info=$(sed -nE '/image:/,/[#]/p' <<< "$volumePermissions_info")
-
-      image_registry=$(grep -Eo 'registry:\s\S+$' <<< "$docker_info" | cut -d : -f2 | xargs)
-      image_repository=$(grep -Eo 'repository:\s\S+$' <<< "$docker_info" | cut -d : -f2 | xargs)
-      image_tag=$(grep -Eo 'tag:\s\S+$' <<< "$docker_info" | cut -d : -f2 | xargs)
+      image_registry=$(python3 "$python_script" "$values_file" "volumePermissions.image.registry")
+      image_repository=$(python3 "$python_script" "$values_file" "volumePermissions.image.repository")
+      image_tag=$(python3 "$python_script" "$values_file" "volumePermissions.image.tag")
 
       docker_pull_image=$(combine_image_name "$image_registry" "$image_repository" "$image_tag" "$app_version")
 
@@ -165,7 +155,7 @@ mkdir charts
 helm dep update
 cd charts || exit
 
-#Unpack charts and delete .tgz files
+#Unpack dependencies charts and delete .tgz files
 FILES=$(ls)
 for f in $FILES
 do
@@ -178,7 +168,8 @@ DIRS=$(ls)
 for d in $DIRS
 do
   if [ "$d" != "mibserver" ]; then
-    pull_image "$d"
+    full_dir=$(pwd)"/$d"
+    pull_dependencies_images_sc4snmp "$full_dir"
   fi
 done
 
@@ -199,9 +190,8 @@ else
   values_file="values.yml"
 fi
 
-sim_info=$(sed -nE '/^sim:/,/^[a-zA-Z#]/p' "$values_file")
-docker_link=$(grep -oE 'image:.+' <<< "$sim_info" | cut -d : -f2 | xargs)
-docker_tag=$(grep -oE 'tag:.+' <<< "$sim_info" | cut -d : -f2 | xargs)
+docker_link=$(python3 "$python_script" "$(pwd)/$values_file" "sim.image")
+docker_tag=$(python3 "$python_script" "$(pwd)/$values_file" "sim.tag")
 
 
 if [ -z "$docker_link" ]
@@ -240,11 +230,25 @@ LOCATION=$(curl -s https://api.github.com/repos/signalfx/splunk-otel-collector-c
 curl -L -o otel-repo.zip $LOCATION
 unzip otel-repo.zip
 rm otel-repo.zip
-OTEL_DIR=$(ls | grep -E "signalfx-splunk.+")
-CHART_DIT="$OTEL_DIR/helm-charts/splunk-otel-collector"
-OTEL_IMAGE_TAG=$(cat $CHART_DIT/Chart.yaml | grep appVersion | sed 's/.*: //g')
+OTEL_DIR=$(pwd)"/"$(ls | grep -E "signalfx-splunk.+")
+CHART_DIR="$OTEL_DIR/helm-charts/splunk-otel-collector"
+OTEL_IMAGE_TAG=$(python3 "$python_script" "$CHART_DIR/Chart.yaml" "appVersion")
 otel_image=quay.io/signalfx/splunk-otel-collector:"$OTEL_IMAGE_TAG"
+cd "$CHART_DIR" || exit
+helm dep update
+cd charts || exit
+
+#Unpack dependencies charts and delete .tgz files
+FILES=$(ls)
+for f in $FILES
+do
+  tar -xvf "$f"
+  rm "$f"
+done
+
 docker pull "$otel_image"
-docker save $otel_image > /tmp/package/packages/otel_image.tar
-helm package $CHART_DIT -d /tmp/package/packages/
-rm -rf $OTEL_DIR
+docker save "$otel_image" > /tmp/package/packages/otel_image.tar
+cd "$OTEL_DIR" || exit
+helm package "$CHART_DIR" -d /tmp/package/packages/
+cd .. || exit
+rm -rf "$OTEL_DIR"
