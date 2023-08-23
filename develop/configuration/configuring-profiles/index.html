@@ -1377,6 +1377,30 @@ and if the status changes in between, the scope of the conditional profile wonâ€
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </code></pre></div>
 
+<ol start="5">
+<li><code>regex</code> - value gathered from <code>field</code> match the pattern provided in <code>value</code>. 
+You can add options for regular expression after <code>/</code>. Possible options match ones used in <a href="https://www.mongodb.com/docs/manual/reference/operator/query/regex/">mongodb regex operator</a>.</li>
+</ol>
+<div class="codehilite"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
+<span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">"regex"</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">".own/i"</span>
+</code></pre></div>
+
+<p>To negate operation you can add flag <code>negate_operation: "true"</code> to specified <code>field</code>.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
+<span class="w">      </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">"equals"</span><span class="w"> </span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">"up"</span>
+<span class="w">      </span><span class="nt">negate_operation</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
+</code></pre></div>
+
+<p>It will negate the operator specified in <code>operation</code>. Possible negation:
+1. <code>negate_operation + equals</code> - value gathered from <code>field</code> is NOT equal to <code>value</code>
+2. <code>negate_operation + gt</code> - value gathered from <code>field</code> is SMALLER or EQUAL to <code>value</code> (works only for numeric values)
+3. <code>negate_operation + lt</code> - value gathered from <code>field</code> is BIGGER or EQUAL to <code>value</code> (works only for numeric values)
+4. <code>negate_operation + in</code> - value gathered from <code>field</code> is NOT equal to any of the elements provided in <code>value</code>
+5. <code>negate_operation + regex</code> - value gathered from <code>field</code> is NOT matching the pattern provided in <code>value</code>. </p>
 <p><code>field</code> part of <code>conditions</code> must fulfill the pattern <code>MIB-family.field</code>. Fields must represent textual value (not metric one),
 you can learn more about it <a href="../snmp-data-format/">here</a>.</p>
 <p>You have to explicitly define <code>varBinds</code> (not only the MIB family but also the field to poll), so such config:</p>
