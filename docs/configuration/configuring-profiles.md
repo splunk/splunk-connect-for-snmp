@@ -276,6 +276,7 @@ conditions:
       negate_operation: "true"
 ```
 It will negate the operator specified in `operation`. Possible negation:
+
 1. `negate_operation + equals` - value gathered from `field` is NOT equal to `value`
 2. `negate_operation + gt` - value gathered from `field` is SMALLER or EQUAL to `value` (works only for numeric values)
 3. `negate_operation + lt` - value gathered from `field` is BIGGER or EQUAL to `value` (works only for numeric values)
