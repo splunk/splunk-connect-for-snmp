@@ -1395,12 +1395,14 @@ You can add options for regular expression after <code>/</code>. Possible option
 <span class="w">      </span><span class="nt">negate_operation</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
 </code></pre></div>
 
-<p>It will negate the operator specified in <code>operation</code>. Possible negation:
-1. <code>negate_operation + equals</code> - value gathered from <code>field</code> is NOT equal to <code>value</code>
-2. <code>negate_operation + gt</code> - value gathered from <code>field</code> is SMALLER or EQUAL to <code>value</code> (works only for numeric values)
-3. <code>negate_operation + lt</code> - value gathered from <code>field</code> is BIGGER or EQUAL to <code>value</code> (works only for numeric values)
-4. <code>negate_operation + in</code> - value gathered from <code>field</code> is NOT equal to any of the elements provided in <code>value</code>
-5. <code>negate_operation + regex</code> - value gathered from <code>field</code> is NOT matching the pattern provided in <code>value</code>. </p>
+<p>It will negate the operator specified in <code>operation</code>. Possible negation:</p>
+<ol>
+<li><code>negate_operation + equals</code> - value gathered from <code>field</code> is NOT equal to <code>value</code></li>
+<li><code>negate_operation + gt</code> - value gathered from <code>field</code> is SMALLER or EQUAL to <code>value</code> (works only for numeric values)</li>
+<li><code>negate_operation + lt</code> - value gathered from <code>field</code> is BIGGER or EQUAL to <code>value</code> (works only for numeric values)</li>
+<li><code>negate_operation + in</code> - value gathered from <code>field</code> is NOT equal to any of the elements provided in <code>value</code></li>
+<li><code>negate_operation + regex</code> - value gathered from <code>field</code> is NOT matching the pattern provided in <code>value</code>. </li>
+</ol>
 <p><code>field</code> part of <code>conditions</code> must fulfill the pattern <code>MIB-family.field</code>. Fields must represent textual value (not metric one),
 you can learn more about it <a href="../snmp-data-format/">here</a>.</p>
 <p>You have to explicitly define <code>varBinds</code> (not only the MIB family but also the field to poll), so such config:</p>
