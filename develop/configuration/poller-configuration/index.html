@@ -526,6 +526,19 @@
     Update Inventory
   </a>
   
+    <nav class="md-nav" aria-label="Update Inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#upgrade-with-the-csv-file" class="md-nav__link">
+    Upgrade with the csv file
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1098,6 +1111,19 @@
     Update Inventory
   </a>
   
+    <nav class="md-nav" aria-label="Update Inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#upgrade-with-the-csv-file" class="md-nav__link">
+    Upgrade with the csv file
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1238,7 +1264,17 @@ when inventory job finishes. </p>
 </code></pre></div>
 
 <p>NOTE: If you decide to change the frequency of the profile without changing the inventory data, the change will be reflected after 
-next the walk process for the host. The walk happens every <code>walk_interval</code>, or on any change in inventory.</p></div>
+next the walk process for the host. The walk happens every <code>walk_interval</code>, or on any change in inventory.</p>
+<h4 id="upgrade-with-the-csv-file">Upgrade with the csv file<a class="headerlink" href="#upgrade-with-the-csv-file" title="Permanent link">¶</a></h4>
+<p>There is a possibility to update inventory by making changes outside the <code>values.yaml</code>. It can be put to separate csv file and upgraded passing <code>--set-file poller.inventory=&lt;path_to_file&gt;</code>.</p>
+<p>Example of the CSV file configuration:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">address</span><span class="p">,</span><span class="nx">port</span><span class="p">,</span><span class="nx">version</span><span class="p">,</span><span class="nx">community</span><span class="p">,</span><span class="nx">secret</span><span class="p">,</span><span class="nx">security_engine</span><span class="p">,</span><span class="nx">walk_interval</span><span class="p">,</span><span class="nx">profiles</span><span class="p">,</span><span class="nx">smart_profiles</span><span class="p">,</span><span class="nx">delete</span>
+<span class="m m-Double">10.202.4.2</span><span class="mi">02</span><span class="p">,,</span><span class="mi">2</span><span class="nx">c</span><span class="p">,</span><span class="nx">public</span><span class="p">,,,</span><span class="mi">3000</span><span class="p">,</span><span class="nx">my_profile</span><span class="p">,,</span>
+</code></pre></div>
+
+<p>Example of upgrade command with the csv file:</p>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>--set-file<span class="w"> </span>poller.inventory<span class="o">=</span>inventory.csv<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+</code></pre></div></div>
 
 
 
