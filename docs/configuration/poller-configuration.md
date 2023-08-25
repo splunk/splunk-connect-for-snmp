@@ -148,3 +148,20 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 
 NOTE: If you decide to change the frequency of the profile without changing the inventory data, the change will be reflected after 
 next the walk process for the host. The walk happens every `walk_interval`, or on any change in inventory.
+
+#### Upgrade with the csv file
+
+There is a possibility to update inventory by making changes outside the `values.yaml`. It can be put to separate csv file and upgraded passing `--set-file poller.inventory=<path_to_file>`.
+
+Example of the CSV file configuration:
+
+```csv
+address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+10.202.4.202,,2c,public,,,3000,my_profile,,
+```
+
+Example of upgrade command with the csv file:
+
+```shell
+microk8s helm3 upgrade --install snmp -f values.yaml --set-file poller.inventory=inventory.csv splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
+```
