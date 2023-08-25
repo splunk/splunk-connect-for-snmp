@@ -207,6 +207,98 @@ class TestCustomTaskManager(TestCase):
 
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
+    def test_delete_all_walk_tasks(self, m_from_key, m_objects):
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+        task1 = Mock()
+        task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
+        task1.name = "test1"
+
+        task2 = Mock()
+        task2.task = "splunk_connect_for_snmp.snmp.tasks.walk"
+        task2.name = "test2"
+
+        task3 = Mock()
+        task3.task = "splunk_connect_for_snmp.snmp.tasks.poll"
+        task3.name = "test3"
+
+        periodic_list = [task1, task2, task3]
+
+        m_objects.return_value = periodic_list
+        task_from_key1, task_from_key2, task_from_key3 = Mock(), Mock(), Mock()
+        m_from_key.side_effect = [task_from_key1, task_from_key2, task_from_key3]
+        task_manager.delete_all_walk_tasks()
+        self.assertTrue(task_from_key1.delete.called)
+        self.assertTrue(task_from_key2.delete.called)
+        self.assertFalse(task_from_key3.delete.called)
+
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
+    def test_get_chain_of_task_expiry(self, m_objects):
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+        task1 = Mock()
+        task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
+        task1.options = {"expires": 120}
+
+        task2 = Mock()
+        task2.task = "splunk_connect_for_snmp.snmp.tasks.walk"
+        task2.options = {"expires": 120}
+
+        periodic_list = [task1, task2]
+        m_objects.return_value = periodic_list
+        self.assertEqual(120, task_manager.get_chain_of_task_expiry())
+
+        m_objects.return_value = []
+        self.assertIsNone(task_manager.get_chain_of_task_expiry())
+
+        task1 = Mock()
+        task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
+        task1.options = {}
+        m_objects.return_value = [task1]
+        self.assertIsNone(task_manager.get_chain_of_task_expiry())
+
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
+    def test_did_expiry_time_change_true(self, m_objects):
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+        task_manager.delete_all_poll_tasks = Mock()
+        task_manager.delete_all_walk_tasks = Mock()
+
+        task1 = Mock()
+        task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
+        task1.options = {"expires": 120}
+        periodic_list = [task1]
+        m_objects.return_value = periodic_list
+
+        did_time_change = task_manager.did_expiry_time_change(300)
+        task_manager.delete_all_poll_tasks.assert_called()
+        task_manager.delete_all_walk_tasks.assert_called()
+        self.assertTrue(did_time_change)
+
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
+    def test_did_expiry_time_change_false(self, m_objects):
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+        task_manager.delete_all_poll_tasks = Mock()
+        task_manager.delete_all_walk_tasks = Mock()
+
+        task1 = Mock()
+        task1.task = "splunk_connect_for_snmp.snmp.tasks.walk"
+        task1.options = {"expires": 120}
+        periodic_list = [task1]
+        m_objects.return_value = periodic_list
+
+        m_objects.return_value = periodic_list
+        did_time_change = task_manager.did_expiry_time_change(120)
+        task_manager.delete_all_poll_tasks.assert_not_called()
+        task_manager.delete_all_walk_tasks.assert_not_called()
+        self.assertFalse(did_time_change)
+
+        task1.options = {}
+        m_objects.return_value = [task1]
+        did_time_change = task_manager.did_expiry_time_change(200)
+        task_manager.delete_all_poll_tasks.assert_not_called()
+        task_manager.delete_all_walk_tasks.assert_not_called()
+        self.assertFalse(did_time_change)
+
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
     def test_rerun_all_walks(self, m_from_key, m_objects):
         task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
 

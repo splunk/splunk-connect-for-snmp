@@ -66,6 +66,7 @@ class InventoryTask(Task):
 def inventory_setup_poller(self, work):
     address = work["address"]
     group = work.get("group")
+    chain_of_tasks_expiry_time = work.get("chain_of_tasks_expiry_time")
     self.profiles = self.profiles_manager.return_collection()
     logger.debug("Profiles reloaded")
 
@@ -109,7 +110,12 @@ def inventory_setup_poller(self, work):
     active_schedules: list[str] = []
     for period in assigned_profiles:
         task_config = generate_poll_task_definition(
-            active_schedules, address, assigned_profiles, period, group
+            active_schedules,
+            address,
+            assigned_profiles,
+            period,
+            chain_of_tasks_expiry_time,
+            group,
         )
         periodic_obj.manage_task(**task_config)
 
@@ -117,7 +123,12 @@ def inventory_setup_poller(self, work):
 
 
 def generate_poll_task_definition(
-    active_schedules, address, assigned_profiles, period, group=None
+    active_schedules,
+    address,
+    assigned_profiles,
+    period,
+    chain_of_tasks_expiry_time,
+    group=None,
 ):
     period_profiles = set(assigned_profiles[period])
     poll_definition = PollTaskGenerator(
@@ -125,6 +136,7 @@ def generate_poll_task_definition(
         schedule_period=period,
         app=app,
         host_group=group,
+        chain_of_tasks_expiry_time=chain_of_tasks_expiry_time,
         profiles=list(period_profiles),
     )
     task_config = poll_definition.generate_task_definition()

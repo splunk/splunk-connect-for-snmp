@@ -175,6 +175,9 @@ scheduler:
   podAntiAffinity: soft
   nodeSelector: {}
 
+  # tasks expirations time in seconds
+  tasksExpiryTime: 60
+
 poller:
   # Appending OID indexes to metrics.
   # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#append-oid-index-part-to-the-metrics

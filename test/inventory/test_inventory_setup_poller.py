@@ -50,7 +50,7 @@ class TestInventorySetupPoller(TestCase):
             }
         }
 
-        work = {"address": "192.168.0.1"}
+        work = {"address": "192.168.0.1", "chain_of_tasks_expiry_time": 120}
 
         m_assign_profiles.return_value = {
             60: ["BaseUpTime"],
@@ -155,7 +155,7 @@ class TestInventorySetupPoller(TestCase):
             }
         }
 
-        work = {"address": "192.168.0.1"}
+        work = {"address": "192.168.0.1", "chain_of_tasks_expiry_time": 120}
 
         m_assign_profiles.return_value = {
             60: ["BaseUpTime"],
@@ -249,7 +249,7 @@ class TestInventorySetupPoller(TestCase):
         }
         period = 30
         result = generate_poll_task_definition(
-            active_schedules, address, assigned_profiles, period
+            active_schedules, address, assigned_profiles, period, 180
         )
         result["kwargs"]["profiles"] = set(result["kwargs"]["profiles"])
         self.assertEqual("sc4snmp;192.168.0.1;30;poll", result["name"])

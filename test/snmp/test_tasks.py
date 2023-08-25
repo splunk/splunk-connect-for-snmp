@@ -97,7 +97,11 @@ class TestTasks(TestCase):
         m_mongo_client.return_value = MagicMock()
         m_time.return_value = 1640692955.365186
 
-        kwargs = {"address": "192.168.0.1", "group": "group1"}
+        kwargs = {
+            "address": "192.168.0.1",
+            "group": "group1",
+            "chain_of_tasks_expiry_time": 120,
+        }
         m_do_work.return_value = (False, {"test": "value1"})
 
         result = walk(**kwargs)
@@ -108,6 +112,7 @@ class TestTasks(TestCase):
                 "address": "192.168.0.1",
                 "group": "group1",
                 "result": {"test": "value1"},
+                "chain_of_tasks_expiry_time": 120,
             },
             result,
         )
