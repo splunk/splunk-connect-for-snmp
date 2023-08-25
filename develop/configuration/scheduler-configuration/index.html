@@ -527,6 +527,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#define-tasks-expiry-time" class="md-nav__link">
+    Define tasks expiry time
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1058,6 +1065,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#define-tasks-expiry-time" class="md-nav__link">
+    Define tasks expiry time
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1135,7 +1149,12 @@ The default value is <code>WARNING</code></p>
 
 <p>The one obligatory field for the host configuration is <code>address</code>. If <code>port</code> isn’t configured its default value is <code>161</code>. 
 Other fields that can be modified here are: <code>community</code>, <code>secret</code>, <code>version</code>, <code>security_engine</code>.
-However, if they remain unspecified in the host configuration, they will be derived from the inventory record regarding this specific group.</p></div>
+However, if they remain unspecified in the host configuration, they will be derived from the inventory record regarding this specific group.</p>
+<h3 id="define-tasks-expiry-time">Define tasks expiry time<a class="headerlink" href="#define-tasks-expiry-time" title="Permanent link">¶</a></h3>
+<p>Define time in second after which polling or walk tasks, that haven’t been picked up by the worker, will be revoked. Check the <a href="https://docs.celeryq.dev/en/stable/userguide/calling.html#expiration">celery documentation</a> for more details.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">tasksExpiryTime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
+</code></pre></div></div>
 
 
 
