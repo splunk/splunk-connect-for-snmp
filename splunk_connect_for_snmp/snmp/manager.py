@@ -437,11 +437,9 @@ class Poller(Task):
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
     def process_snmp_data(self, varBindTable, metrics, target, mapping={}):
-        i = 0
         retry = False
         remotemibs = []
         for varBind in varBindTable:
-            i += 1
             mib, metric, index = varBind[0].getMibSymbol()
 
             id = varBind[0].prettyPrint()
@@ -475,6 +473,16 @@ class Poller(Task):
                             id.replace('"', ""),
                             mapping.get(f"{mib}::{metric}", mapping.get(mib)),
                         )
+                        # when varbind name differs from mib-family,
+                        # we are checking if there's any key that includes this mib to get profile
+                        if not profile:
+                            key = [
+                                prof
+                                for mib_map, prof in mapping.items()
+                                if mib in mib_map
+                            ]
+                            if key:
+                                profile = key[0]
                         if profile and "__" in profile:
                             profile = profile.split("__")[0]
                     if metric_value == "No more variables left in this MIB View":

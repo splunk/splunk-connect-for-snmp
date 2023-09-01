@@ -5,6 +5,9 @@
 ### Changed
 - add regex and option to negate conditional profiles search
 
+### Fixed
+- empty profile name when MIB family name and a polled varbind differs
+
 ## [1.9.2]
 
 ### Changed

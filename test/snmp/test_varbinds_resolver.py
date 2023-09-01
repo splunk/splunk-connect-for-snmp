@@ -185,3 +185,38 @@ class TestProfile(unittest.TestCase):
         profile.varbinds_get.insert_varbind(Varbind(["UDP-MIB", "fiel1d", 2]))
         mib_families = profile.get_mib_families()
         self.assertEqual(mib_families, {"IF-MIB", "IP-MIB", "TCP-MIB", "UDP-MIB"})
+
+    def test_add_profiles(self):
+        profile_dict = {
+            "frequency": 30,
+            "condition": {"type": "walk"},
+            "varBinds": [["IF-MIB", "ifOutOctets", 1]],
+        }
+        profile = Profile("test", profile_dict)
+        profile.varbinds_get = VarBindContainer()
+        profile.varbinds_bulk = VarBindContainer()
+        profile.varbinds_bulk.insert_varbind(Varbind(["TCP-MIB", "field1", 1]))
+        profile.varbinds_bulk.insert_varbind(Varbind(["UDP-MIB", "field2", 2]))
+        profile.varbinds_bulk.insert_varbind(Varbind(["IF-MIB", "field3", 2]))
+        profile.varbinds_bulk_mapping.update(
+            {"TCP-MIB": "test", "UDP-MIB": "test", "IF-MIB": "test"}
+        )
+
+        profile2 = Profile("test2", profile_dict)
+        profile2.varbinds_get = VarBindContainer()
+        profile2.varbinds_bulk = VarBindContainer()
+        profile2.varbinds_bulk.insert_varbind(Varbind(["TCP-MIB", "field1", 1]))
+        profile2.varbinds_bulk.insert_varbind(Varbind(["UDP-MIB", "field3", 2]))
+        profile2.varbinds_bulk_mapping.update({"TCP-MIB": "test2", "UDP-MIB": "test2"})
+
+        profile3 = profile + profile2
+        print(profile3.varbinds_bulk)
+        varbinds = "{'IF-MIB::field3.2': ['IF-MIB', 'field3', 2], 'TCP-MIB::field1.1': ['TCP-MIB', 'field1', 1], 'UDP-MIB::field2.2': ['UDP-MIB', 'field2', 2], 'UDP-MIB::field3.2': ['UDP-MIB', 'field3', 2]}"
+        self.assertEqual(profile3.name, "test:test2")
+        self.assertEqual(str(profile3.varbinds_get), "{}")
+        self.assertEqual(str(profile3.varbinds_bulk), varbinds)
+        self.assertEqual(profile3.varbinds_get_mapping, {})
+        self.assertEqual(
+            profile3.varbinds_bulk_mapping,
+            {"TCP-MIB": "test,test2", "UDP-MIB": "test,test2", "IF-MIB": "test"},
+        )
