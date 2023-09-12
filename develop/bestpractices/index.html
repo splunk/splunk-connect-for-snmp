@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.85d0ee34.min.css">
@@ -1191,7 +1191,7 @@ requires checking to see if the firewall is not blocking any of <a href="https:/
 <h2 id="issues">Issues<a class="headerlink" href="#issues" title="Permanent link">¶</a></h2>
 <h3 id="empty-snmp-response-message-problem">“Empty SNMP response message” problem<a class="headerlink" href="#empty-snmp-response-message-problem" title="Permanent link">¶</a></h3>
 <p>In case you see the following line in the worker’s logs:</p>
-<div class="codehilite"><pre><span></span><code>[<span class="mi">2022</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span><span class="w"> </span><span class="mi">11</span>:<span class="mi">44</span>:<span class="mi">22</span>,<span class="mi">553</span>:<span class="w"> </span><span class="nv">INFO</span><span class="o">/</span><span class="nv">ForkPoolWorker</span><span class="o">-</span><span class="mi">1</span>]<span class="w"> </span><span class="nv">Task</span><span class="w"> </span><span class="nv">splunk_connect_for_snmp</span>.<span class="nv">snmp</span>.<span class="nv">tasks</span>.<span class="nv">walk</span>[<span class="mi">8</span><span class="nv">e62fc62</span><span class="o">-</span><span class="mi">569</span><span class="nv">c</span><span class="o">-</span><span class="mi">473</span><span class="nv">f</span><span class="o">-</span><span class="nv">a765</span><span class="o">-</span><span class="nv">ff92577774e5</span>]<span class="w"> </span><span class="nv">retry</span>:<span class="w"> </span><span class="nv">Retry</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="mi">3489</span><span class="nv">s</span>:<span class="w"> </span><span class="nv">SnmpActionError</span><span class="ss">(</span><span class="s1">'An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message'</span><span class="ss">)</span>
+<div class="codehilite"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message')
 </code></pre></div>
 
 <p>that causes infinite retry of walk operation, add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true.</p>
@@ -1202,7 +1202,7 @@ requires checking to see if the firewall is not blocking any of <a href="https:/
 
 <h3 id="oid-not-increasing-problem">“OID not increasing” problem<a class="headerlink" href="#oid-not-increasing-problem" title="Permanent link">¶</a></h3>
 <p>In case you see the following line in worker’s logs:</p>
-<div class="codehilite"><pre><span></span><code>[<span class="mi">2022</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span><span class="w"> </span><span class="mi">11</span>:<span class="mi">44</span>:<span class="mi">22</span>,<span class="mi">553</span>:<span class="w"> </span><span class="nv">INFO</span><span class="o">/</span><span class="nv">ForkPoolWorker</span><span class="o">-</span><span class="mi">1</span>]<span class="w"> </span><span class="nv">Task</span><span class="w"> </span><span class="nv">splunk_connect_for_snmp</span>.<span class="nv">snmp</span>.<span class="nv">tasks</span>.<span class="nv">walk</span>[<span class="mi">8</span><span class="nv">e62fc62</span><span class="o">-</span><span class="mi">569</span><span class="nv">c</span><span class="o">-</span><span class="mi">473</span><span class="nv">f</span><span class="o">-</span><span class="nv">a765</span><span class="o">-</span><span class="nv">ff92577774e5</span>]<span class="w"> </span><span class="nv">retry</span>:<span class="w"> </span><span class="nv">Retry</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="mi">3489</span><span class="nv">s</span>:<span class="w"> </span><span class="nv">SnmpActionError</span><span class="ss">(</span><span class="s1">'An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing'</span><span class="ss">)</span>
+<div class="codehilite"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing')
 </code></pre></div>
 
 <p>that causes infinite retry of walk operation, add <code>worker.ignoreNotIncreasingOid</code> array to <code>values.yaml</code> and fill with the addresses of hosts where the problem appears.</p>
@@ -1235,12 +1235,12 @@ For example, use <code>ifHCInOctets</code> instead of <code>ifInOctets</code>.</
 <p>If 64-bit counter are not supported on your device, you can write your own Splunk queries that calculate the shift based on
 maximum integer value + current state. The same works for values big enough that they’re not fitting a 64-bit value.
 An example for a SPLUNK query like that (interface counter), would be:</p>
-<div class="codehilite"><pre><span></span><code><span class="o">|</span><span class="w"> </span><span class="nv">streamstats</span><span class="w"> </span><span class="nv">current</span><span class="o">=</span><span class="nv">f</span><span class="w"> </span><span class="nv">last</span><span class="ss">(</span><span class="nv">ifInOctets</span><span class="ss">)</span><span class="w"> </span><span class="nv">as</span><span class="w"> </span><span class="nv">p_ifInOctets</span><span class="w"> </span><span class="nv">last</span><span class="ss">(</span><span class="nv">ifOutOctets</span><span class="ss">)</span><span class="w"> </span><span class="nv">as</span><span class="w"> </span><span class="nv">p_ifOutOctets</span><span class="w"> </span><span class="nv">by</span><span class="w"> </span><span class="nv">ifAlias</span><span class="w">             </span>
-<span class="o">|</span><span class="w"> </span><span class="nv">eval</span><span class="w"> </span><span class="nv">in_delta</span><span class="o">=</span><span class="ss">(</span><span class="nv">ifInOctets</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">p_ifInOctets</span><span class="ss">)</span>
-<span class="o">|</span><span class="w"> </span><span class="nv">eval</span><span class="w"> </span><span class="nv">out_delta</span><span class="o">=</span><span class="ss">(</span><span class="nv">ifOutOctets</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">p_ifOutOctets</span><span class="ss">)</span>
-<span class="o">|</span><span class="w"> </span><span class="nv">eval</span><span class="w"> </span><span class="nv">max</span><span class="o">=</span><span class="nv">pow</span><span class="ss">(</span><span class="mi">2</span>,<span class="mi">64</span><span class="ss">)</span>
-<span class="o">|</span><span class="w"> </span><span class="nv">eval</span><span class="w"> </span><span class="nv">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="ss">(</span><span class="nv">out_delta</span><span class="o">&lt;</span><span class="mi">0</span>,<span class="ss">((</span><span class="nv">max</span><span class="o">+</span><span class="nv">out_delta</span><span class="ss">)</span><span class="o">*</span><span class="mi">8</span><span class="o">/</span><span class="ss">(</span><span class="mi">5</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="ss">))</span>,<span class="ss">(</span><span class="nv">out_delta</span><span class="ss">)</span><span class="o">*</span><span class="mi">8</span><span class="o">/</span><span class="ss">(</span><span class="mi">5</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="ss">))</span>
-<span class="o">|</span><span class="w"> </span><span class="nv">timechart</span><span class="w"> </span><span class="nv">span</span><span class="o">=</span><span class="mi">5</span><span class="nv">m</span><span class="w"> </span><span class="nv">avg</span><span class="ss">(</span><span class="nv">in</span><span class="ss">)</span><span class="w"> </span><span class="nv">AS</span><span class="w"> </span><span class="nv">in</span>,<span class="w"> </span><span class="nv">avg</span><span class="ss">(</span><span class="nv">out</span><span class="ss">)</span><span class="w"> </span><span class="nv">AS</span><span class="w"> </span><span class="nv">out</span><span class="w"> </span><span class="nv">by</span><span class="w"> </span><span class="nv">ifAlias</span>
+<div class="codehilite"><pre><span></span><code>| streamstats current=f last(ifInOctets) as p_ifInOctets last(ifOutOctets) as p_ifOutOctets by ifAlias             
+| eval in_delta=(ifInOctets - p_ifInOctets)
+| eval out_delta=(ifOutOctets - p_ifOutOctets)
+| eval max=pow(2,64)
+| eval out = if(out_delta&lt;0,((max+out_delta)*8/(5*60*1000*1000*1000)),(out_delta)*8/(5*60*1000*1000*1000))
+| timechart span=5m avg(in) AS in, avg(out) AS out by ifAlias
 </code></pre></div>
 
 <h3 id="field-is-immutable-error-during-helm-upgrade">“Field is immutable” error during helm upgrade<a class="headerlink" href="#field-is-immutable-error-during-helm-upgrade" title="Permanent link">¶</a></h3>
@@ -1303,7 +1303,7 @@ An example for a SPLUNK query like that (interface counter), would be:</p>
     <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
         <script src="../javascripts/footer.js"></script>
       

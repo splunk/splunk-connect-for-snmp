@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
@@ -1106,24 +1106,24 @@ numeric value to float. If the check fails, the values is classified as a textua
 <p>Let’s go through a simple example. We’ve just added a device and didn’t configure anything special. The data from a walk
 in Splunk’s metrics index is:</p>
 <div class="codehilite"><pre><span></span><code>{
-<span class="w">   </span><span class="nv">ifAdminStatus</span>:<span class="w"> </span><span class="nv">up</span>
-<span class="w">   </span><span class="nv">ifDescr</span>:<span class="w"> </span><span class="nv">GigabitEthernet1</span>
-<span class="w">   </span><span class="nv">ifIndex</span>:<span class="w"> </span><span class="mi">1</span>
-<span class="w">   </span><span class="nv">ifOperStatus</span>:<span class="w"> </span><span class="nv">up</span>
-<span class="w">   </span><span class="nv">ifPhysAddress</span>:<span class="w"> </span><span class="mi">0</span><span class="nv">a</span>:<span class="nv">aa</span>:<span class="nv">ef</span>:<span class="mi">53</span>:<span class="mi">67</span>:<span class="mi">15</span>
-<span class="w">   </span><span class="nv">ifType</span>:<span class="w"> </span><span class="nv">ethernetCsmacd</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInDiscards</span>:<span class="w"> </span><span class="mi">0</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInErrors</span>:<span class="w"> </span><span class="mi">0</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInOctets</span>:<span class="w"> </span><span class="mi">3873878708</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUcastPkts</span>:<span class="w"> </span><span class="mi">47512921</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUnknownProtos</span>:<span class="w"> </span><span class="mi">0</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifLastChange</span>:<span class="w"> </span><span class="mi">454107556</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifMtu</span>:<span class="w"> </span><span class="mi">1500</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutDiscards</span>:<span class="w"> </span><span class="mi">0</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutErrors</span>:<span class="w"> </span><span class="mi">0</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutOctets</span>:<span class="w"> </span><span class="mi">1738565177</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutUcastPkts</span>:<span class="w"> </span><span class="mi">44295751</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifSpeed</span>:<span class="w"> </span><span class="mi">1000000000</span>
+   ifAdminStatus: up
+   ifDescr: GigabitEthernet1
+   ifIndex: 1
+   ifOperStatus: up
+   ifPhysAddress: 0a:aa:ef:53:67:15
+   ifType: ethernetCsmacd
+   metric_name:sc4snmp.IF-MIB.ifInDiscards: 0
+   metric_name:sc4snmp.IF-MIB.ifInErrors: 0
+   metric_name:sc4snmp.IF-MIB.ifInOctets: 3873878708
+   metric_name:sc4snmp.IF-MIB.ifInUcastPkts: 47512921
+   metric_name:sc4snmp.IF-MIB.ifInUnknownProtos: 0
+   metric_name:sc4snmp.IF-MIB.ifLastChange: 454107556
+   metric_name:sc4snmp.IF-MIB.ifMtu: 1500
+   metric_name:sc4snmp.IF-MIB.ifOutDiscards: 0
+   metric_name:sc4snmp.IF-MIB.ifOutErrors: 0
+   metric_name:sc4snmp.IF-MIB.ifOutOctets: 1738565177
+   metric_name:sc4snmp.IF-MIB.ifOutUcastPkts: 44295751
+   metric_name:sc4snmp.IF-MIB.ifSpeed: 1000000000
 }
 </code></pre></div>
 
@@ -1137,18 +1137,18 @@ in Splunk’s metrics index is:</p>
 </code></pre></div>
 
 <p>And a metric one:</p>
-<div class="codehilite"><pre><span></span><code><span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInDiscards</span>:<span class="w"> </span><span class="mi">0</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInErrors</span>:<span class="w"> </span><span class="mi">0</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInOctets</span>:<span class="w"> </span><span class="mi">3873878708</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUcastPkts</span>:<span class="w"> </span><span class="mi">47512921</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUnknownProtos</span>:<span class="w"> </span><span class="mi">0</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifLastChange</span>:<span class="w"> </span><span class="mi">454107556</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifMtu</span>:<span class="w"> </span><span class="mi">1500</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutDiscards</span>:<span class="w"> </span><span class="mi">0</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutErrors</span>:<span class="w"> </span><span class="mi">0</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutOctets</span>:<span class="w"> </span><span class="mi">1738565177</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutUcastPkts</span>:<span class="w"> </span><span class="mi">44295751</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifSpeed</span>:<span class="w"> </span><span class="mi">1000000000</span>
+<div class="codehilite"><pre><span></span><code>   metric_name:sc4snmp.IF-MIB.ifInDiscards: 0
+   metric_name:sc4snmp.IF-MIB.ifInErrors: 0
+   metric_name:sc4snmp.IF-MIB.ifInOctets: 3873878708
+   metric_name:sc4snmp.IF-MIB.ifInUcastPkts: 47512921
+   metric_name:sc4snmp.IF-MIB.ifInUnknownProtos: 0
+   metric_name:sc4snmp.IF-MIB.ifLastChange: 454107556
+   metric_name:sc4snmp.IF-MIB.ifMtu: 1500
+   metric_name:sc4snmp.IF-MIB.ifOutDiscards: 0
+   metric_name:sc4snmp.IF-MIB.ifOutErrors: 0
+   metric_name:sc4snmp.IF-MIB.ifOutOctets: 1738565177
+   metric_name:sc4snmp.IF-MIB.ifOutUcastPkts: 44295751
+   metric_name:sc4snmp.IF-MIB.ifSpeed: 1000000000
 </code></pre></div>
 
 <h2 id="to-which-splunk-index-will-my-data-go">To which Splunk index will my data go?<a class="headerlink" href="#to-which-splunk-index-will-my-data-go" title="Permanent link">¶</a></h2>
@@ -1163,14 +1163,14 @@ enriched with all the textual fields we have for this object. For example, when 
 </code></pre></div>
 
 <p>The record that we’ll see in Splunk <code>| mpreview index=net*</code> for the same case as above would be:</p>
-<div class="codehilite"><pre><span></span><code><span class="w">   </span><span class="nv">ifAdminStatus</span>:<span class="w"> </span><span class="nv">up</span>
-<span class="w">   </span><span class="nv">ifDescr</span>:<span class="w"> </span><span class="nv">GigabitEthernet1</span>
-<span class="w">   </span><span class="nv">ifIndex</span>:<span class="w"> </span><span class="mi">1</span>
-<span class="w">   </span><span class="nv">ifOperStatus</span>:<span class="w"> </span><span class="nv">up</span>
-<span class="w">   </span><span class="nv">ifPhysAddress</span>:<span class="w"> </span><span class="mi">0</span><span class="nv">a</span>:<span class="nv">aa</span>:<span class="nv">ef</span>:<span class="mi">53</span>:<span class="mi">67</span>:<span class="mi">15</span>
-<span class="w">   </span><span class="nv">ifType</span>:<span class="w"> </span><span class="nv">ethernetCsmacd</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifOutUcastPkts</span>:<span class="w"> </span><span class="mi">44295751</span>
-<span class="w">   </span><span class="nv">metric_name</span>:<span class="nv">sc4snmp</span>.<span class="k">IF</span><span class="o">-</span><span class="nv">MIB</span>.<span class="nv">ifInUcastPkts</span>:<span class="w"> </span><span class="mi">47512921</span>
+<div class="codehilite"><pre><span></span><code>   ifAdminStatus: up
+   ifDescr: GigabitEthernet1
+   ifIndex: 1
+   ifOperStatus: up
+   ifPhysAddress: 0a:aa:ef:53:67:15
+   ifType: ethernetCsmacd
+   metric_name:sc4snmp.IF-MIB.ifOutUcastPkts: 44295751
+   metric_name:sc4snmp.IF-MIB.ifInUcastPkts: 47512921
 </code></pre></div>
 
 <p>Note, that only fields specified in <code>varBinds</code> are actively polled form the device. In case of <code>profile_with_one_metric</code>
@@ -1268,7 +1268,7 @@ An example of such profile would be:</p>
     <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       
