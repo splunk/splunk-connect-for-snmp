@@ -21,6 +21,12 @@ on:
     - "**"  
     tags:
       - "v*"
+
+permissions:
+  contents: write
+  pages: write
+  packages: write
+
 jobs:
   release:
     name: Release
