@@ -234,6 +234,10 @@ worker:
 
   # The trap worker consumes all the trap related tasks produced by the trap pod
   trap:
+    resolveAddress:
+      enable: false
+      cacheSize: 100
+      cacheTTL: 1800
     # number of the trap replicas when autoscaling is set to false
     replicaCount: 2
     # minimum number of threads in a pod
