@@ -63,7 +63,7 @@ worker:
   walkRetryMaxInterval: 60
 ```
 
-With the configuration from the above, 'walk' will retry exponentially until it reaches 60 seconds.
+With the configuration from the above, 'walk' will retry exponentially from 30 seconds until it reaches 60 seconds. Default value for `worker.walkRetryMaxInterval` is 180.
 
 ### SNMP Rollover
 The Rollover problem is due to the integer value stored (especially when the value is 32-bit) being finite. 

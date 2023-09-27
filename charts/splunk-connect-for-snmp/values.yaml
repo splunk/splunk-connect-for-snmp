@@ -317,7 +317,9 @@ worker:
   # task timeout in seconds (usually necessary when walk process takes a long time)
   taskTimeout: 2400
   # maximum time interval between walk attempts
-  walkRetryMaxInterval: 60
+  walkRetryMaxInterval: 180
+  # maximum number of walk retries
+  walkMaxRetries: 5
   # ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex:
   #   ignoreNotIncreasingOid:
   #    - "127.0.0.1:164"

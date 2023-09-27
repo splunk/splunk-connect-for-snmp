@@ -6,6 +6,8 @@
 - add regex and option to negate conditional profiles search
 - downgrade of some log messages from warning to info
 - upgrade of pymongo to v4
+- make max walk retries configurable and decrease it from 50 to 5 by default to not waste time and resources on 
+continuously ask devices that does not respond
 
 ### Fixed
 - empty profile name when MIB family name and a polled varbind differs
