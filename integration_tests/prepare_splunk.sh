@@ -15,5 +15,13 @@ create_splunk_hec() {
   fi
 }
 
+change_min_free_space() {
+  DOCKER_ID=$(sudo docker ps | grep 'splunk/splunk:latest' | awk '{ print $1 }')
+  sudo docker exec --user splunk "$DOCKER_ID" bash -c "echo -e '\n[diskUsage]\nminFreeSpace = 2000' >> /opt/splunk/etc/system/local/server.conf"
+  curl -k -u admin:changeme2 https://localhost:8089/services/server/control/restart -X POST
+  sleep 60
+}
+
+change_min_free_space
 create_splunk_indexes
 create_splunk_hec
