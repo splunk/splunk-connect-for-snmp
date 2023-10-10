@@ -198,11 +198,11 @@ def assign_profiles(ir, profiles, target):
             profile = profiles[profile_name]
             if "condition" in profile:
                 if profile["condition"].get("type") == "walk":
-                    logger.warning(
+                    logger.info(
                         f"profile {profile_name} is a walk profile, it cannot be used as a static profile"
                     )
                     continue
-                logger.warning(
+                logger.info(
                     f"profile {profile_name} is a smart profile, it does not need to be configured as a static one"
                 )
             elif "conditions" in profile:
@@ -240,7 +240,7 @@ def is_smart_profile_valid(profile_name, profile):
         return False
 
     if "frequency" not in profile:
-        logger.warning(f"Profile {profile_name} has no frequency")
+        logger.info(f"Profile {profile_name} has no frequency")
         return False
 
     if "condition" not in profile:
