@@ -4,6 +4,7 @@
 
 ### Changed
 - add regex and option to negate conditional profiles search
+- downgrade of some log messages from warning to info
 
 ### Fixed
 - empty profile name when MIB family name and a polled varbind differs
