@@ -8,6 +8,7 @@
 
 ### Fixed
 - empty profile name when MIB family name and a polled varbind differs
+- stop mib search on vendor if oid is for enterprise tree
 
 ## [1.9.2]
 
