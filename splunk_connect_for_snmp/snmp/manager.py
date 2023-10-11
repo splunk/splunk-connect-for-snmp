@@ -390,10 +390,9 @@ class Poller(Task):
                     logger.warning(f"Error loading mib for {mib}, {e}")
 
     def is_mib_known(self, id: str, oid: str, target: str) -> Tuple[bool, str]:
-
         oid_list = tuple(oid.split("."))
-
-        start = 5
+        # if oid match enterprise, then search should stop if there is no match to vendor
+        start = 6 if oid.startswith("1.3.6.1.4.1") else 5
         for i in range(len(oid_list), start, -1):
             oid_to_check = ".".join(oid_list[:i])
             if oid_to_check in self.mib_map:
