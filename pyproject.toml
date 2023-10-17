@@ -22,7 +22,7 @@ python_files = ["test_*.py"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pymongo = {extras = ["srv"], version = "^3.12.1"}
+pymongo = {extras = ["srv"], version = "^4.0.0"}
 requests = {extras = ["crypto"], version = "^2.31.0"}
 celery = {extras = ["tblib"], version = "5.3.4"}
 pydantic = "^1.9.0"
