@@ -62,12 +62,10 @@ class TestSchemaMigration(TestCase):
         mc = MagicMock()
         migrate_to_version_1(mc, periodic_obj_mock)
 
-        calls = mc.sc4snmp.targets.update.call_args_list
+        calls = mc.sc4snmp.targets.update_one.call_args_list
 
         self.assertEqual(1, len(calls))
-        self.assertEqual(
-            ({}, {"$unset": {"attributes": 1}}, False, True), calls[0].args
-        )
+        self.assertEqual(({}, {"$unset": {"attributes": 1}}, False), calls[0].args)
 
         periodic_obj_mock.delete_all_poll_tasks.assert_called()
         periodic_obj_mock.rerun_all_walks.assert_called()

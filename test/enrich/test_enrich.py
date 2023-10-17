@@ -297,7 +297,7 @@ class TestEnrich(TestCase):
     def test_enrich_no_target(
         self, m_check_restart, bulk_write, m_update_one, m_find_one
     ):
-        m_find_one.side_effect = [None, False]
+        m_find_one.side_effect = None
         result = enrich(input_dict)
 
         self.assertEqual(

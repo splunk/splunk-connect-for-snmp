@@ -453,7 +453,7 @@ class TestLoader(TestCase):
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory_delete)
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.delete_one")
-    @mock.patch("pymongo.collection.Collection.remove")
+    @mock.patch("pymongo.collection.Collection.delete_many")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.update_all"
@@ -500,7 +500,7 @@ class TestLoader(TestCase):
     )
     @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
     @mock.patch("pymongo.collection.Collection.delete_one")
-    @mock.patch("pymongo.collection.Collection.remove")
+    @mock.patch("pymongo.collection.Collection.delete_many")
     @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.update_all"

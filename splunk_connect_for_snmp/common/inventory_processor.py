@@ -167,8 +167,8 @@ class InventoryRecordManager:
         address, port = transform_key_to_address(target)
         self.periodic_object_collection.delete_all_tasks_of_host(target)
         self.inventory_collection.delete_one({"address": address, "port": port})
-        self.targets_collection.remove({"address": target})
-        self.attributes_collection.remove({"address": target})
+        self.targets_collection.delete_many({"address": target})
+        self.attributes_collection.delete_many({"address": target})
         self.logger.info(f"Deleting record: {target}")
 
     def update(
