@@ -674,6 +674,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#updating-trap-configuration" class="md-nav__link">
+    Updating trap configuration
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1134,6 +1141,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#updating-trap-configuration" class="md-nav__link">
+    Updating trap configuration
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1268,6 +1282,15 @@ The default value is <code>WARNING</code>.</p>
 Example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">aggregateTrapsEvents</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
+</code></pre></div>
+
+<h3 id="updating-trap-configuration">Updating trap configuration<a class="headerlink" href="#updating-trap-configuration" title="Permanent link">¶</a></h3>
+<p>If you need to update part of traps configuration, you can do it by editing the <code>values.yaml</code> and then running below command to restart the pod deployment.</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">rollout</span><span class="w"> </span><span class="nv">restart</span><span class="w"> </span><span class="nv">deployment</span><span class="w"> </span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">trap</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
+</code></pre></div>
+
+<p>NOTE: Name of the deployment can differ based on helm installation name and can be checked with:</p>
+<div class="codehilite"><pre><span></span><code>microk8s kubectl get deployments -n sc4snmp
 </code></pre></div></div>
 
 
