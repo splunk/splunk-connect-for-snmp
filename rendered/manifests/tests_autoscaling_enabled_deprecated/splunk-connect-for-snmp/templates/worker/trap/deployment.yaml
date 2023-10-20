@@ -52,7 +52,9 @@ spec:
             - name: MONGO_URI
               value: mongodb://release-name-mongodb:27017
             - name: WALK_RETRY_MAX_INTERVAL
-              value: "60"
+              value: "180"
+            - name: WALK_MAX_RETRIES
+              value: "5"
             - name: METRICS_INDEXING_ENABLED
               value: "false"
             - name: POLL_BASE_PROFILES
