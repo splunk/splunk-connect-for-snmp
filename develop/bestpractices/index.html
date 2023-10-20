@@ -1233,7 +1233,7 @@ the maximum retries time. You can do this by setting the variable <code>worker.w
 <span class="w">  </span><span class="nt">walkRetryMaxInterval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
 </code></pre></div>
 
-<p>With the configuration from the above, ‘walk’ will retry exponentially until it reaches 60 seconds.</p>
+<p>With the configuration from the above, ‘walk’ will retry exponentially from 30 seconds until it reaches 60 seconds. Default value for <code>worker.walkRetryMaxInterval</code> is 180.</p>
 <h3 id="snmp-rollover">SNMP Rollover<a class="headerlink" href="#snmp-rollover" title="Permanent link">¶</a></h3>
 <p>The Rollover problem is due to the integer value stored (especially when the value is 32-bit) being finite. 
 When it reaches its maximum, it gets rolled down to 0 again. This causes a strange drop in Analytics data.
