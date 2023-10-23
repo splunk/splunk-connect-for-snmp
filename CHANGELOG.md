@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [1.9.3]
+
 ### Changed
 - add regex and option to negate conditional profiles search
 - downgrade of some log messages from warning to info
