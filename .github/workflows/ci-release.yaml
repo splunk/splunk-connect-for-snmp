@@ -77,13 +77,14 @@ jobs:
           node-version: "14"
       - name: Semantic Release
         id: version
-        uses: cycjimmy/semantic-release-action@v4.0.0
+        uses: splunk/semantic-release-action@v1.3.3
         with:
-          semantic_version: 17
+          git_committer_name: ${{ secrets.SA_GH_USER_NAME }}
+          git_committer_email: ${{ secrets.SA_GH_USER_EMAIL }}
+          gpg_private_key: ${{ secrets.SA_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SA_GPG_PASSPHRASE }}
           extra_plugins: |
-            @semantic-release/exec
-            @semantic-release/git
-            @google/semantic-release-replace-plugin@1.2.0
+            @google/semantic-release-replace-plugin
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN_ADMIN }}
 
