@@ -60,6 +60,7 @@ MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
+CHAIN_OF_TASKS_EXPIRY_TIME = int(os.getenv("CHAIN_OF_TASKS_EXPIRY_TIME", "60"))
 
 
 def load():
@@ -73,6 +74,10 @@ def load():
 
     # DB migration in case of update of SC4SNMP
     migrate_database(mongo_client, periodic_obj)
+
+    expiry_time_changed = periodic_obj.did_expiry_time_change(
+        CHAIN_OF_TASKS_EXPIRY_TIME
+    )
 
     previous_groups = groups_manager.return_collection()
 
@@ -89,11 +94,11 @@ def load():
         mongo_client, periodic_obj, logger
     )
     logger.info(f"Loading inventory from {INVENTORY_PATH}")
-    inventory_lines = inventory_processor.get_all_hosts()
+    inventory_lines, inventory_group_port_mapping = inventory_processor.get_all_hosts()
 
     # Function to delete inventory records that are
     hosts_from_groups_to_delete = return_hosts_from_deleted_groups(
-        previous_groups, new_groups
+        previous_groups, new_groups, inventory_group_port_mapping
     )
     for host in hosts_from_groups_to_delete:
         inventory_record_manager.delete(host)
@@ -105,7 +110,9 @@ def load():
             if ir.delete:
                 inventory_record_manager.delete(target)
             else:
-                inventory_record_manager.update(ir, new_source_record, config_profiles)
+                inventory_record_manager.update(
+                    ir, new_source_record, config_profiles, expiry_time_changed
+                )
 
         except Exception as e:
             inventory_errors = True

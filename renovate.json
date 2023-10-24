@@ -7,8 +7,9 @@
     "schedule:daily"
   ],
   "baseBranches": ["develop"],
-  "prConcurrentLimit": 10,
-  "prHourlyLimit": 2,
+  "reviewers": ["ajasnosz"],
+  "prConcurrentLimit": 20,
+  "prHourlyLimit": 4,
   "lockFileMaintenance": { "enabled": true },
   "labels": ["dependencies"],
   "vulnerabilityAlerts": {

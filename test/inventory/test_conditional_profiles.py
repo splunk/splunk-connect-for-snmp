@@ -67,6 +67,168 @@ class TestCreateQuery(unittest.TestCase):
         }
         self.assertEqual(create_query(conditions, address), expected_query)
 
+    def test_single_regex_condition(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import create_query
+
+        conditions = [
+            {"field": "MIB-FAMILY.field1", "value": ".p", "operation": "regex"}
+        ]
+        address = "127.0.0.1"
+        expected_query = {
+            "$and": [
+                {"address": address},
+                {"group_key_hash": {"$regex": "^MIB-FAMILY"}},
+                {"fields.MIB-FAMILY|field1.value": {"$regex": ".p"}},
+            ]
+        }
+        self.assertEqual(create_query(conditions, address), expected_query)
+
+    def test_single_regex_with_options_condition(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import create_query
+
+        conditions = [
+            {"field": "MIB-FAMILY.field1", "value": "/.p/s", "operation": "regex"}
+        ]
+        address = "127.0.0.1"
+        expected_query = {
+            "$and": [
+                {"address": address},
+                {"group_key_hash": {"$regex": "^MIB-FAMILY"}},
+                {"fields.MIB-FAMILY|field1.value": {"$regex": ".p", "$options": "s"}},
+            ]
+        }
+        self.assertEqual(create_query(conditions, address), expected_query)
+
+    def test_single_equals_negate_condition(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import create_query
+
+        conditions = [
+            {
+                "field": "MIB-FAMILY.field1",
+                "value": "value1",
+                "operation": "equals",
+                "negate_operation": "true",
+            }
+        ]
+        address = "127.0.0.1"
+        expected_query = {
+            "$and": [
+                {"address": address},
+                {"group_key_hash": {"$regex": "^MIB-FAMILY"}},
+                {"fields.MIB-FAMILY|field1.value": {"$ne": "value1"}},
+            ]
+        }
+        self.assertEqual(create_query(conditions, address), expected_query)
+
+    def test_single_lt_negate_condition(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import create_query
+
+        conditions = [
+            {
+                "field": "MIB-FAMILY.field2",
+                "value": "10",
+                "operation": "lt",
+                "negate_operation": "true",
+            }
+        ]
+        address = "127.0.0.1"
+        expected_query = {
+            "$and": [
+                {"address": address},
+                {"group_key_hash": {"$regex": "^MIB-FAMILY"}},
+                {"fields.MIB-FAMILY|field2.value": {"$gte": 10.0}},
+            ]
+        }
+        self.assertEqual(create_query(conditions, address), expected_query)
+
+    def test_single_gt_negate_condition(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import create_query
+
+        conditions = [
+            {
+                "field": "MIB-FAMILY.field3",
+                "value": "20",
+                "operation": "gt",
+                "negate_operation": "true",
+            }
+        ]
+        address = "127.0.0.1"
+        expected_query = {
+            "$and": [
+                {"address": address},
+                {"group_key_hash": {"$regex": "^MIB-FAMILY"}},
+                {"fields.MIB-FAMILY|field3.value": {"$lte": 20.0}},
+            ]
+        }
+        self.assertEqual(create_query(conditions, address), expected_query)
+
+    def test_single_in_negate_condition(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import create_query
+
+        conditions = [
+            {
+                "field": "MIB-FAMILY.field4",
+                "value": [1, 2, 3],
+                "operation": "in",
+                "negate_operation": "true",
+            }
+        ]
+        address = "127.0.0.1"
+        expected_query = {
+            "$and": [
+                {"address": address},
+                {"group_key_hash": {"$regex": "^MIB-FAMILY"}},
+                {"fields.MIB-FAMILY|field4.value": {"$nin": [1.0, 2.0, 3.0]}},
+            ]
+        }
+        self.assertEqual(create_query(conditions, address), expected_query)
+
+    def test_single_regex_negate_condition(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import create_query
+
+        conditions = [
+            {
+                "field": "MIB-FAMILY.field1",
+                "value": ".own$",
+                "operation": "regex",
+                "negate_operation": "true",
+            }
+        ]
+        address = "127.0.0.1"
+        expected_query = {
+            "$and": [
+                {"address": address},
+                {"group_key_hash": {"$regex": "^MIB-FAMILY"}},
+                {"fields.MIB-FAMILY|field1.value": {"$not": {"$regex": ".own$"}}},
+            ]
+        }
+        self.assertEqual(create_query(conditions, address), expected_query)
+
+    def test_single_regex_with_options_negate_condition(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import create_query
+
+        conditions = [
+            {
+                "field": "MIB-FAMILY.field1",
+                "value": "/.own$/s",
+                "operation": "regex",
+                "negate_operation": "true",
+            }
+        ]
+        address = "127.0.0.1"
+        expected_query = {
+            "$and": [
+                {"address": address},
+                {"group_key_hash": {"$regex": "^MIB-FAMILY"}},
+                {
+                    "fields.MIB-FAMILY|field1.value": {
+                        "$not": {"$regex": ".own$", "$options": "s"}
+                    }
+                },
+            ]
+        }
+        self.assertEqual(create_query(conditions, address), expected_query)
+
     def test_multiple_conditions(self, return_all_profiles):
         from splunk_connect_for_snmp.inventory.tasks import create_query
 

@@ -90,7 +90,9 @@ Common labels
 - name: MONGO_URI
   value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
 - name: WALK_RETRY_MAX_INTERVAL
-  value: {{ .Values.worker.walkRetryMaxInterval | default "600" | quote }}
+  value: {{ .Values.worker.walkRetryMaxInterval | default "180" | quote }}
+- name: WALK_MAX_RETRIES
+  value: {{ .Values.worker.walkMaxRetries | default "5" | quote }}
 - name: METRICS_INDEXING_ENABLED
   value: {{ (.Values.poller).metricsIndexingEnabled | default "false" | quote }}
 - name: POLL_BASE_PROFILES
@@ -136,6 +138,8 @@ Common labels
 {{- end}}
 - name: SPLUNK_HEC_INSECURESSL
   value: {{ .Values.splunk.insecureSSL | default "false" | quote }}
+- name: SPLUNK_AGGREGATE_TRAPS_EVENTS
+  value: {{ .Values.traps.aggregateTrapsEvents | default "false" | quote }}
 - name: SPLUNK_HEC_TOKEN
   valueFrom:
     secretKeyRef:

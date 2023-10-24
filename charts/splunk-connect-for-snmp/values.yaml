@@ -175,6 +175,9 @@ scheduler:
   podAntiAffinity: soft
   nodeSelector: {}
 
+  # tasks expirations time in seconds
+  tasksExpiryTime: 60
+
 poller:
   # Appending OID indexes to metrics.
   # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#append-oid-index-part-to-the-metrics
@@ -314,7 +317,9 @@ worker:
   # task timeout in seconds (usually necessary when walk process takes a long time)
   taskTimeout: 2400
   # maximum time interval between walk attempts
-  walkRetryMaxInterval: 60
+  walkRetryMaxInterval: 180
+  # maximum number of walk retries
+  walkMaxRetries: 5
   # ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex:
   #   ignoreNotIncreasingOid:
   #    - "127.0.0.1:164"
@@ -323,6 +328,8 @@ worker:
   # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
   logLevel: "INFO"
   podAntiAffinity: soft
+  # udpConnectionTimeout timeout in seconds for SNMP operations
+  udpConnectionTimeout: 3
 
 inventory:
   secret:
@@ -360,6 +367,8 @@ traps:
   # of the TRAP receiving application for each USM user
   securityEngineId:
     - "80003a8c04"
+  # aggregateTrapsEvents flag set to true makes traps events collected as one event inside splunk
+  aggregateTrapsEvents: "false"
 
   # communities define a version of SNMP protocol and SNMP community string, which should be used
   communities: {}

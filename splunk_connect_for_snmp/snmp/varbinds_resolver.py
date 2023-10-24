@@ -209,16 +209,32 @@ class Profile:
         new_instance = Profile(f"{self.name}:{other.name}", {})
         new_instance.varbinds_bulk = self.varbinds_bulk + other.varbinds_bulk
         new_instance.varbinds_get = self.varbinds_get + other.varbinds_get
-        new_instance.varbinds_bulk_mapping = dict(
-            self.varbinds_bulk_mapping, **other.varbinds_bulk_mapping
+        new_instance.varbinds_bulk_mapping = self.add_mappings(
+            self.varbinds_bulk_mapping, other.varbinds_bulk_mapping
         )
-        new_instance.varbinds_get_mapping = dict(
-            self.varbinds_get_mapping, **other.varbinds_get_mapping
+        new_instance.varbinds_get_mapping = self.add_mappings(
+            self.varbinds_get_mapping, other.varbinds_get_mapping
         )
         return new_instance
 
     def __repr__(self):
-        return f"Profile: {self.name}, varbinds_get: {self.varbinds_get}, varbinds_bulk: {self.varbinds_bulk}"
+        return f"Profile: {self.name}, varbinds_get: {self.varbinds_get}, varbinds_bulk: {self.varbinds_bulk}, varbinds_get_mapping: {self.varbinds_get_mapping}, varbinds_bulk_mapping: {self.varbinds_bulk_mapping}"
+
+    def add_mappings(self, dict1, dict2) -> dict:
+        """
+        Helper to adding varbinds mapping dictionaries inside profiles.
+        When there are the same keys in both dictionaries they will be added after comma.
+        :param dict1:
+        :param dict2:
+        :return mapping:
+        """
+        mapping = dict1
+        for k, v in dict2.items():
+            if mapping.get(k) and v not in mapping.get(k):
+                mapping[k] = f"{mapping[k]},{v}"
+            elif not mapping.get(k):
+                mapping[k] = v
+        return mapping
 
 
 class ProfileCollection:

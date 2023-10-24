@@ -136,3 +136,22 @@ traps:
     annotations:
       annotation_key: annotation_value
 ```
+
+### Aggregate traps
+In case you want to see traps events collected as one event inside splunk you can enable it by setting `traps.aggregateTrapsEvents`.
+Example:
+```yaml
+traps:
+  aggregateTrapsEvents: "true"
+```
+
+### Updating trap configuration
+If you need to update part of traps configuration, you can do it by editing the `values.yaml` and then running below command to restart the pod deployment.
+```
+microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-trap -n sc4snmp
+```
+
+NOTE: Name of the deployment can differ based on helm installation name and can be checked with:
+```
+microk8s kubectl get deployments -n sc4snmp
+```
