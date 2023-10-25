@@ -10,8 +10,9 @@ to the SC4SNMP installation server. Those packages are:
 Additionally, you'll need 
 
 - `pull_mibserver.sh` script
+- `pull_gui_images.sh` script
 
-to easily pull and export mibserver image.
+to easily pull and export mibserver image and gui images.
 
 Moreover, SC4SNMP Docker image must be pulled, saved as a `.tar` package, and then moved to the server as well. 
 This process requires Docker to be installed locally.
@@ -31,17 +32,19 @@ Then save the image. Directory where this image will be saved can be specified a
 docker save ghcr.io/splunk/splunk-connect-for-snmp/container:<tag> > snmp_image.tar
 ```
 
-Another package you have to pull is the mibserver image. You can do it by executing `pull_mibserver.sh` script from
-the Release section, or copy-pasting its content.
+Another packages you have to pull is the mibserver and gui images. You can do it by executing `pull_mibserver.sh` and 
+`pull_gui_images.sh` scripts from the Release section, or copy-pasting its content.
 
 ```bash
 chmod a+x pull_mibserver.sh # you'll probably need to make file executable
 ./pull_mibserver.sh
+chmod a+x pull_gui_images.sh
+./pull_gui_images.sh
 ```
 
-This script should produce `mibserver.tar` with the image of the mibserver inside.
+Those scripts should produce `mibserver.tar` with the image of the mibserver and `sc4snmp-gui-images.tar` with gui images inside.
 
-All four packages, `mibserver.tar`, `snmp_image.tar`, `dependencies-images.tar`, and `splunk-connect-for-snmp-chart.tar`, must be moved to the SC4SNMP installation server.
+All five packages, `mibserver.tar`, `snmp_image.tar`, `dependencies-images.tar`, `sc4snmp-gui-images.tar` and `splunk-connect-for-snmp-chart.tar`, must be moved to the SC4SNMP installation server.
 
 ## Installation on the server
 

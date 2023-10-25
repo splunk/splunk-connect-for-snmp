@@ -1,0 +1,14 @@
+{{ if .Values.UI.enable }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui-frontend-entrypoint
+spec:
+  type: NodePort
+  selector:
+    app: ui-frontend
+  ports:
+  - port: {{ .Values.UI.frontEnd.NodePort }}
+    targetPort: {{ .Values.UI.frontEnd.NodePort }}
+    nodePort: {{ .Values.UI.frontEnd.NodePort }}
+{{- end }}

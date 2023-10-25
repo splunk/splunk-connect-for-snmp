@@ -1,0 +1,11 @@
+{{ if .Values.UI.enable }}
+{{ $ui := .Values.UI  }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "splunk-connect-for-snmp.name" . }}-job-configmap
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  job_config: |
+    {{- include "splunk-connect-for-snmp.job-config" . | nindent 4 }}
+{{- end }}

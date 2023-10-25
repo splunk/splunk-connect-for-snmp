@@ -1,0 +1,49 @@
+---
+# Source: splunk-connect-for-snmp/templates/ui/deployment-backend-worker.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-backend-worker-deployment
+  labels:
+    app: ui-backend-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui-backend-worker
+  template:
+    metadata:
+      labels:
+        app: ui-backend-worker
+    spec:
+      containers:
+      - name: ui-backend-worker
+        image: "ghcr.io/splunk/sc4snmp-ui/backend/container:main"
+        imagePullPolicy: Always
+        command: ["sh","-c","/celery_start.sh"]
+        env:
+        - name: MONGO_URI
+          value: mongodb://release-name-mongodb:27017
+        - name: REDIS_URL
+          value: redis://release-name-redis-headless:6379/3
+        - name: JOB_CONFIG_PATH
+          value: /config/job_config.yaml
+        - name: JOB_NAMESPACE
+          value: sc4snmp
+        - name: CELERY_BROKER_URL
+          value: redis://release-name-redis-headless:6379/2
+        - name: VALUES_DIRECTORY
+          value: /var/values_dir
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: backend-configmap
+          mountPath: /config
+      serviceAccountName: job-robot
+      volumes:
+        - name: backend-configmap
+          configMap:
+            name: splunk-connect-for-snmp-job-configmap
+            items:
+              - key: job_config
+                path: job_config.yaml
