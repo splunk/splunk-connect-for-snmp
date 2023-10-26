@@ -1,0 +1,29 @@
+{{ if .Values.UI.enable }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-frontend-deployment
+  labels:
+    app: ui-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui-frontend
+  template:
+    metadata:
+      labels:
+        app: ui-frontend
+    spec:
+      containers:
+      - name: ui-frontend
+        image: {{ include "splunk-connect-for-snmp.uiFrontImage" . | quote }}
+        imagePullPolicy: {{ .Values.UI.frontEnd.pullPolicy }}
+        env:
+          - name: REACT_APP_FLASK_PORT
+            value: {{ quote .Values.UI.backEnd.NodePort }}
+          - name: DEMO_PORT
+            value: {{ quote .Values.UI.frontEnd.NodePort }}
+        ports:
+        - containerPort: {{ .Values.UI.frontEnd.NodePort }}
+{{- end }}

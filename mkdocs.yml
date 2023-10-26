@@ -11,6 +11,8 @@ markdown_extensions:
   - fenced_code
   - sane_lists
   - codehilite
+  - attr_list
+  - md_in_html
 
 plugins:
     - search:
@@ -57,6 +59,12 @@ nav:
       - Install Microk8s: "offlineinstallation/offline-microk8s.md"
       - Install Splunk OpenTelemetry Collector for Kubernetes: "offlineinstallation/offline-sck.md"
       - Install SC4SNMP: "offlineinstallation/offline-sc4snmp.md"
+  - GUI:
+      - Enable GUI: "gui/enable-gui.md"
+      - Configuring Profiles: "gui/profiles-gui.md"
+      - Configuring Groups: "gui/groups-gui.md"
+      - Configuring Inventory: "gui/inventory-gui.md"
+      - Apply changes: "gui/apply-changes.md"
   - Lightweight installation: "small-environment.md"
   - Planning: "planning.md"
   - Security: "security.md"

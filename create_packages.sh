@@ -115,6 +115,41 @@ pull_dependencies_images_sc4snmp(){
   fi
 }
 
+images_ui_to_pack=""
+pull_ui_images() {
+  chart_dir="$1"
+  if [ -d "$chart_dir" ] && { [ -a "$chart_dir/values.yaml" ] || [ -a "$chart_dir/values.yml" ]; }
+  then
+    if [ -a "$chart_dir/values.yaml" ]
+    then
+      values_file="$chart_dir/values.yaml"
+    else
+      values_file="$chart_dir/values.yml"
+    fi
+    backend_image_repository=$(python3 "$python_script" "$values_file" "UI.backEnd.repository")
+    backend_image_tag=$(python3 "$python_script" "$values_file" "UI.backEnd.tag")
+    docker_pull_image=$(combine_image_name "" "$backend_image_repository" "$backend_image_tag" "")
+    echo "docker pull $docker_pull_image" >> /tmp/package/packages/pull_gui_images.sh
+    images_ui_to_pack="$images_ui_to_pack""$docker_pull_image "
+
+    frontend_image_repository=$(python3 "$python_script" "$values_file" "UI.frontEnd.repository")
+    frontend_image_tag=$(python3 "$python_script" "$values_file" "UI.frontEnd.tag")
+    docker_pull_image=$(combine_image_name "" "$frontend_image_repository" "$frontend_image_tag" "")
+    echo "docker pull $docker_pull_image" >> /tmp/package/packages/pull_gui_images.sh
+    images_ui_to_pack="$images_ui_to_pack""$docker_pull_image "
+
+    init_image_repository=$(python3 "$python_script" "$values_file" "UI.init.repository")
+    docker_pull_image=$(combine_image_name "" "$init_image_repository" "" "")
+    echo "docker pull $docker_pull_image" >> /tmp/package/packages/pull_gui_images.sh
+    images_ui_to_pack="$images_ui_to_pack""$docker_pull_image "
+
+    echo "docker save $images_ui_to_pack > sc4snmp-gui-images.tar" >> /tmp/package/packages/pull_gui_images.sh
+  else
+    echo "Invalid directory"
+    exit 0
+  fi
+}
+
 
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo add pysnmp-mibs https://pysnmp.github.io/mibs/charts
@@ -173,6 +208,7 @@ do
   fi
 done
 
+pull_ui_images "/tmp/package/$SPLUNK_DIR"
 docker save $images_to_pack > /tmp/package/packages/dependencies-images.tar
 cd ../..
 tar -czvf packages/splunk-connect-for-snmp-chart.tar splunk-connect-for-snmp

@@ -1,0 +1,14 @@
+---
+# Source: splunk-connect-for-snmp/templates/ui/service-backend.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui-backend-entrypoint
+spec:
+  selector:
+    app: ui-backend
+  type: NodePort
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 30002

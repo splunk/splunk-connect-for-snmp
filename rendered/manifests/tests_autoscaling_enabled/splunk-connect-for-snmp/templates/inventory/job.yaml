@@ -46,6 +46,8 @@ spec:
             value: INFO
           - name: CHAIN_OF_TASKS_EXPIRY_TIME
             value: "60"
+          - name: CONFIG_FROM_MONGO
+            value: "false"
           volumeMounts:
             - name: config
               mountPath: "/app/config"
