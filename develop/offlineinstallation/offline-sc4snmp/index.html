@@ -12,7 +12,7 @@
         <link rel="prev" href="../offline-sck/">
       
       
-        <link rel="next" href="../../small-environment/">
+        <link rel="next" href="../../gui/enable-gui/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -849,6 +849,149 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    GUI
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            GUI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gui/enable-gui/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Enable GUI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gui/profiles-gui/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuring Profiles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gui/groups-gui/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuring Groups
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gui/inventory-gui/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuring Inventory
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gui/apply-changes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Apply changes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../small-environment/" class="md-nav__link">
         
@@ -1062,8 +1205,9 @@ to the SC4SNMP installation server. Those packages are:</p>
 <p>Additionally, you’ll need </p>
 <ul>
 <li><code>pull_mibserver.sh</code> script</li>
+<li><code>pull_gui_images.sh</code> script</li>
 </ul>
-<p>to easily pull and export mibserver image.</p>
+<p>to easily pull and export mibserver image and gui images.</p>
 <p>Moreover, SC4SNMP Docker image must be pulled, saved as a <code>.tar</code> package, and then moved to the server as well. 
 This process requires Docker to be installed locally.</p>
 <p>Images can be pulled from the following repository: <code>ghcr.io/splunk/splunk-connect-for-snmp/container:&lt;tag&gt;</code>. 
@@ -1076,14 +1220,16 @@ The latest tag can be found <a href="https://github.com/splunk/splunk-connect-fo
 <div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>save<span class="w"> </span>ghcr.io/splunk/splunk-connect-for-snmp/container:&lt;tag&gt;<span class="w"> </span>&gt;<span class="w"> </span>snmp_image.tar
 </code></pre></div>
 
-<p>Another package you have to pull is the mibserver image. You can do it by executing <code>pull_mibserver.sh</code> script from
-the Release section, or copy-pasting its content.</p>
+<p>Another packages you have to pull is the mibserver and gui images. You can do it by executing <code>pull_mibserver.sh</code> and 
+<code>pull_gui_images.sh</code> scripts from the Release section, or copy-pasting its content.</p>
 <div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>a+x<span class="w"> </span>pull_mibserver.sh<span class="w"> </span><span class="c1"># you'll probably need to make file executable</span>
 ./pull_mibserver.sh
+chmod<span class="w"> </span>a+x<span class="w"> </span>pull_gui_images.sh
+./pull_gui_images.sh
 </code></pre></div>
 
-<p>This script should produce <code>mibserver.tar</code> with the image of the mibserver inside.</p>
-<p>All four packages, <code>mibserver.tar</code>, <code>snmp_image.tar</code>, <code>dependencies-images.tar</code>, and <code>splunk-connect-for-snmp-chart.tar</code>, must be moved to the SC4SNMP installation server.</p>
+<p>Those scripts should produce <code>mibserver.tar</code> with the image of the mibserver and <code>sc4snmp-gui-images.tar</code> with gui images inside.</p>
+<p>All five packages, <code>mibserver.tar</code>, <code>snmp_image.tar</code>, <code>dependencies-images.tar</code>, <code>sc4snmp-gui-images.tar</code> and <code>splunk-connect-for-snmp-chart.tar</code>, must be moved to the SC4SNMP installation server.</p>
 <h2 id="installation-on-the-server">Installation on the server<a class="headerlink" href="#installation-on-the-server" title="Permanent link">¶</a></h2>
 <p>On the server, all the images must be imported to the microk8s cluster. This can be done with the following command:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>ctr<span class="w"> </span>image<span class="w"> </span>import<span class="w"> </span>&lt;name_of_tar_image&gt;
