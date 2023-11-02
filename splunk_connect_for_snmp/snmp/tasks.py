@@ -28,6 +28,7 @@ except:
     pass
 
 import os
+import socket
 import time
 
 import pymongo
@@ -36,6 +37,8 @@ from celery.utils.log import get_task_logger
 from mongolock import MongoLock, MongoLockLocked
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
+from splunk_connect_for_snmp.common.custom_cache import ttl_lru_cache
+from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.snmp.manager import Poller, get_inventory
 
 logger = get_task_logger(__name__)
@@ -47,6 +50,9 @@ WALK_RETRY_MAX_INTERVAL = int(os.getenv("WALK_RETRY_MAX_INTERVAL", "180"))
 WALK_MAX_RETRIES = int(os.getenv("WALK_MAX_RETRIES", "5"))
 SPLUNK_SOURCETYPE_TRAPS = os.getenv("SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")
 OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
+RESOLVE_TRAP_ADDRESS = os.getenv("RESOLVE_TRAP_ADDRESS", "false")
+MAX_DNS_CACHE_SIZE_TRAPS = int(os.getenv("MAX_DNS_CACHE_SIZE_TRAPS", "100"))
+TTL_DNS_CACHE_TRAPS = int(os.getenv("TTL_DNS_CACHE_TRAPS", "1800"))
 
 
 @shared_task(
@@ -129,6 +135,17 @@ def poll(self, **kwargs):
     return work
 
 
+@ttl_lru_cache(maxsize=MAX_DNS_CACHE_SIZE_TRAPS, ttl=TTL_DNS_CACHE_TRAPS)
+def resolve_address(address: str):
+    try:
+        dns_result = socket.gethostbyaddr(address)
+        result = dns_result[0]
+    except socket.herror:
+        logger.info(f"Traps: address {address} can't be resolved.")
+        result = address
+    return result
+
+
 @shared_task(bind=True, base=Poller)
 def trap(self, work):
 
@@ -175,6 +192,9 @@ def trap(self, work):
                 logger.warning(f"No translation found for {w[0]}")
 
     _, _, result = self.process_snmp_data(var_bind_table, metrics, work["host"])
+
+    if human_bool(RESOLVE_TRAP_ADDRESS):
+        work["host"] = resolve_address(work["host"])
 
     return {
         "time": time.time(),

@@ -55,6 +55,7 @@ nav:
       - Redis: "configuration/redis-configuration.md"
       - SNMPv3 configuration: "configuration/snmpv3-configuration.md"
       - Splunk Infrastructure Monitoring: "configuration/sim-configuration.md"
+      - CoreDNS: "configuration/coredns-configuration.md"
   - Offline Installation:
       - Install Microk8s: "offlineinstallation/offline-microk8s.md"
       - Install Splunk OpenTelemetry Collector for Kubernetes: "offlineinstallation/offline-sck.md"

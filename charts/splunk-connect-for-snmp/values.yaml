@@ -267,6 +267,11 @@ worker:
   trap:
     # number of the trap replicas when autoscaling is set to false
     replicaCount: 2
+    # Use reverse dns lookup of trap ip address and send the hostname to splunk
+    resolveAddress:
+      enabled: false
+      cacheSize: 500 # maximum number of records in cache
+      cacheTTL: 1800 # time to live of the cached record in seconds
     # minimum number of threads in a pod
     concurrency: 4
     # how many tasks are consumed from the queue at once
