@@ -181,4 +181,10 @@ Common labels
   value: {{ .Values.worker.trap.concurrency | default "2" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.trap.prefetch | default "1" | quote }}
+- name: RESOLVE_TRAP_ADDRESS
+  value: {{ .Values.worker.trap.resolveAddress.enable | default "false" | quote }}
+- name: MAX_DNS_CACHE_SIZE_TRAPS
+  value: {{ .Values.worker.trap.resolveAddress.cacheSize | default "100" | quote }}
+- name: TTL_DNS_CACHE_TRAPS
+  value: {{ .Values.worker.trap.resolveAddress.cacheTTL | default "1800" | quote }}
 {{- end }}

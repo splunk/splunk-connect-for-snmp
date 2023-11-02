@@ -1,0 +1,14 @@
+{{ if .Values.testEndpoint.enable }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-endpoint-entrypoint
+spec:
+  selector:
+    testEndpoint: test-endpoint-deployment
+  type: NodePort
+  ports:
+  - port: 65432
+    targetPort: 65432
+    nodePort: {{ .Values.testEndpoint.nodePort }}
+{{- end }}

@@ -33,6 +33,9 @@ celery)
 trap)
     traps "$LOG_LEVEL"
     ;;
+test-endpoint)
+    test-endpoint
+    ;;
 *)
 echo -n unknown cmd "$@"
 ;;
