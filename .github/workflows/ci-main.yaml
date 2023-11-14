@@ -63,7 +63,7 @@ jobs:
     if: (github.actor != 'dependabot[bot]')
     steps:
       - uses: actions/checkout@v4
-      - uses: returntocorp/semgrep-action@v1
+      - uses: semgrep/semgrep-action@v1
         with:
           publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
   pre-commit:
