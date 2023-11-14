@@ -1,4 +1,4 @@
-FROM python:3.10.0-bullseye as base
+FROM python:3.10.0-bullseye AS base
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
@@ -6,7 +6,7 @@ ENV PYTHONFAULTHANDLER=1 \
 RUN mkdir /app
 WORKDIR /app
 
-FROM base as builder
+FROM base AS builder
 RUN pip install --upgrade pip ;\
     pip install poetry 
 
@@ -18,10 +18,7 @@ RUN poetry config virtualenvs.in-project true ;\
     . /app/.venv/bin/activate ;\
     pip install dist/*.whl
 
-
-
-
-FROM base as final
+FROM base AS final
 
 COPY --from=builder /app/.venv /app/.venv
 COPY entrypoint.sh ./
