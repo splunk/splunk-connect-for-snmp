@@ -24,6 +24,11 @@ worker:
   trap:
     # replicaCount: number of trap-worker pods which consumes trap tasks
     replicaCount: 2
+    # Use reverse dns lookup of trap ip address and send the hostname to splunk
+    resolveAddress:
+      enabled: false
+      cacheSize: 500 # maximum number of records in cache
+      cacheTTL: 1800 # time to live of the cached record in seconds
     #autoscaling: use it instead of replicaCount in order to make pods scalable by itself
     #autoscaling:
     #  enabled: true
@@ -197,31 +202,49 @@ you should enable autoscaling/increase maxReplicas or increase replicaCount with
 
 Here you can read about Horizontal Autoscaling and how to adjust maximum replica value to the resources you have: [Horizontal Autoscaling.](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
 
+### Reverse DNS lookup in trap worker
+
+If you want to see the hostname instead of IP address of the incoming traps in Splunk, you can enable reverse dns lookup
+for the incoming traps using the following configuration:
+
+```yaml
+worker:
+  trap:
+    resolveAddress:
+      enabled: true
+      cacheSize: 500 # maximum number of records in cache
+      cacheTTL: 1800 # time to live of the cached record in seconds
+```
+
+Trap worker uses in memory cache to store the results of the reverse dns lookup. If you restart the worker, cache will be cleared.
 
 ### Worker parameters
 
-| variable | description | default |
-| --- | --- |---------|
-| worker.taskTimeout | task timeout in seconds (usually necessary when walk process takes a long time) | 2400    |
-| worker.walkRetryMaxInterval | maximum time interval between walk attempts | 180     |
-| worker.poller.replicaCount | number of poller worker replicas | 2       |
-| worker.poller.autoscaling.enabled | enabling autoscaling for poller worker pods | false   |
-| worker.poller.autoscaling.minReplicas | minimum number of running poller worker pods when autoscaling is enabled | 2       |
-| worker.poller.autoscaling.maxReplicas | maximum number of running poller worker pods when autoscaling is enabled | 40      |
-| worker.poller.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on poller worker pods to spawn another replica  | 80      |
-| worker.poller.resources.limits | the resources limits for poller worker container | {}      |
-| worker.poller.resources.requests | the requested resources for poller worker container | {}      |
-| worker.trap.replicaCount | number of trap worker replicas | 2       |
-| worker.trap.autoscaling.enabled | enabling autoscaling for trap worker pods | false   |
-| worker.trap.autoscaling.minReplicas | minimum number of running trap worker pods when autoscaling is enabled | 2       |
-| worker.trap.autoscaling.maxReplicas | maximum number of running trap worker pods when autoscaling is enabled | 40      |
-| worker.trap.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on trap worker pods to spawn another replica  | 80      |
-| worker.trap.resources.limits | the resources limits for poller worker container | {}      |
-| worker.trap.resources.requests | the requested resources for poller worker container | {}      |
-| worker.sender.replicaCount | number of sender worker replicas | 2       |
-| worker.sender.autoscaling.enabled | enabling autoscaling for sender worker pods | false   |
-| worker.sender.autoscaling.minReplicas | minimum number of running sender worker pods when autoscaling is enabled | 2       |
-| worker.sender.autoscaling.maxReplicas | maximum number of running sender worker pods when autoscaling is enabled | 40      |
-| worker.sender.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on sender worker pods to spawn another replica  | 80      |
-| worker.sender.resources.limits | the resources limits for poller worker container | {}      |
-| worker.sender.resources.requests | the requested resources for poller worker container | {}      |
+| variable                                                  | description                                                                          | default |
+|-----------------------------------------------------------|--------------------------------------------------------------------------------------|---------|
+| worker.taskTimeout                                        | task timeout in seconds (usually necessary when walk process takes a long time)      | 2400    |
+| worker.walkRetryMaxInterval                               | maximum time interval between walk attempts                                          | 180     |
+| worker.poller.replicaCount                                | number of poller worker replicas                                                     | 2       |
+| worker.poller.autoscaling.enabled                         | enabling autoscaling for poller worker pods                                          | false   |
+| worker.poller.autoscaling.minReplicas                     | minimum number of running poller worker pods when autoscaling is enabled             | 2       |
+| worker.poller.autoscaling.maxReplicas                     | maximum number of running poller worker pods when autoscaling is enabled             | 40      |
+| worker.poller.autoscaling.targetCPUUtilizationPercentage  | CPU % threshold that must be exceeded on poller worker pods to spawn another replica | 80      |
+| worker.poller.resources.limits                            | the resources limits for poller worker container                                     | {}      |
+| worker.poller.resources.requests                          | the requested resources for poller worker container                                  | {}      |
+| worker.trap.replicaCount                                  | number of trap worker replicas                                                       | 2       |
+| worker.trap.resolveAddress.enabled                        | enable reverse dns lookup of the ip address of the processed trap                    | false   |
+| worker.trap.resolveAddress.cacheSize                      | maximum number of reverse dns lookup result records stored in cache                  | 500     |
+| worker.trap.resolveAddress.cacheTTL                       | time to live of the cached reverse dns lookup record in seconds                      | 1800    |
+| worker.trap.autoscaling.enabled                           | enabling autoscaling for trap worker pods                                            | false   |
+| worker.trap.autoscaling.minReplicas                       | minimum number of running trap worker pods when autoscaling is enabled               | 2       |
+| worker.trap.autoscaling.maxReplicas                       | maximum number of running trap worker pods when autoscaling is enabled               | 40      |
+| worker.trap.autoscaling.targetCPUUtilizationPercentage    | CPU % threshold that must be exceeded on trap worker pods to spawn another replica   | 80      |
+| worker.trap.resources.limits                              | the resources limits for poller worker container                                     | {}      |
+| worker.trap.resources.requests                            | the requested resources for poller worker container                                  | {}      |
+| worker.sender.replicaCount                                | number of sender worker replicas                                                     | 2       |
+| worker.sender.autoscaling.enabled                         | enabling autoscaling for sender worker pods                                          | false   |
+| worker.sender.autoscaling.minReplicas                     | minimum number of running sender worker pods when autoscaling is enabled             | 2       |
+| worker.sender.autoscaling.maxReplicas                     | maximum number of running sender worker pods when autoscaling is enabled             | 40      |
+| worker.sender.autoscaling.targetCPUUtilizationPercentage  | CPU % threshold that must be exceeded on sender worker pods to spawn another replica | 80      |
+| worker.sender.resources.limits                            | the resources limits for poller worker container                                     | {}      |
+| worker.sender.resources.requests                          | the requested resources for poller worker container                                  | {}      |
