@@ -687,6 +687,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reverse-dns-lookup-in-trap-worker" class="md-nav__link">
+    Reverse DNS lookup in trap worker
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#worker-parameters" class="md-nav__link">
     Worker parameters
   </a>
@@ -773,6 +780,26 @@
   
   <span class="md-ellipsis">
     Splunk Infrastructure Monitoring
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coredns-configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CoreDNS
   </span>
   
 
@@ -1269,6 +1296,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reverse-dns-lookup-in-trap-worker" class="md-nav__link">
+    Reverse DNS lookup in trap worker
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#worker-parameters" class="md-nav__link">
     Worker parameters
   </a>
@@ -1315,6 +1349,11 @@ The <code>worker</code> default configuration is:</p>
 <span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
 <span class="w">    </span><span class="c1"># replicaCount: number of trap-worker pods which consumes trap tasks</span>
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="c1"># Use reverse dns lookup of trap ip address and send the hostname to splunk</span>
+<span class="w">    </span><span class="nt">resolveAddress</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">cacheSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500</span><span class="w"> </span><span class="c1"># maximum number of records in cache</span>
+<span class="w">      </span><span class="nt">cacheTTL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1800</span><span class="w"> </span><span class="c1"># time to live of the cached record in seconds</span>
 <span class="w">    </span><span class="c1">#autoscaling: use it instead of replicaCount in order to make pods scalable by itself</span>
 <span class="w">    </span><span class="c1">#autoscaling:</span>
 <span class="w">    </span><span class="c1">#  enabled: true</span>
@@ -1457,6 +1496,18 @@ workers, so that it’s not going beyond the available CPU.</p>
 <p>Here you can see how much CPU and Memory is being used by the pods. If the CPU is close to 500m (which is the limit for one pod by default),
 you should enable autoscaling/increase maxReplicas or increase replicaCount with autoscaling off.</p>
 <p>Here you can read about Horizontal Autoscaling and how to adjust maximum replica value to the resources you have: <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/">Horizontal Autoscaling.</a></p>
+<h3 id="reverse-dns-lookup-in-trap-worker">Reverse DNS lookup in trap worker<a class="headerlink" href="#reverse-dns-lookup-in-trap-worker" title="Permanent link">¶</a></h3>
+<p>If you want to see the hostname instead of IP address of the incoming traps in Splunk, you can enable reverse dns lookup
+for the incoming traps using the following configuration:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">resolveAddress</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">cacheSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500</span><span class="w"> </span><span class="c1"># maximum number of records in cache</span>
+<span class="w">      </span><span class="nt">cacheTTL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1800</span><span class="w"> </span><span class="c1"># time to live of the cached record in seconds</span>
+</code></pre></div>
+
+<p>Trap worker uses in memory cache to store the results of the reverse dns lookup. If you restart the worker, cache will be cleared.</p>
 <h3 id="worker-parameters">Worker parameters<a class="headerlink" href="#worker-parameters" title="Permanent link">¶</a></h3>
 <table>
 <thead>
@@ -1516,6 +1567,21 @@ you should enable autoscaling/increase maxReplicas or increase replicaCount with
 <td>worker.trap.replicaCount</td>
 <td>number of trap worker replicas</td>
 <td>2</td>
+</tr>
+<tr>
+<td>worker.trap.resolveAddress.enabled</td>
+<td>enable reverse dns lookup of the ip address of the processed trap</td>
+<td>false</td>
+</tr>
+<tr>
+<td>worker.trap.resolveAddress.cacheSize</td>
+<td>maximum number of reverse dns lookup result records stored in cache</td>
+<td>500</td>
+</tr>
+<tr>
+<td>worker.trap.resolveAddress.cacheTTL</td>
+<td>time to live of the cached reverse dns lookup record in seconds</td>
+<td>1800</td>
 </tr>
 <tr>
 <td>worker.trap.autoscaling.enabled</td>
