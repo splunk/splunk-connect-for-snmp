@@ -1,0 +1,58 @@
+name: ui-tests
+on:
+  push:
+    branches:
+      - "main"
+      - "develop"
+      - "next"
+      - "sc4snmp-ui-tests"
+jobs:
+  run-ui-e2e-tests:
+    name: run UI e2e tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      CI_EXECUTION_TYPE: ci
+
+    strategy:
+      matrix:
+        execution-type: ["basic", "extended"]
+
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - name: prepare values.yaml for configuration storing
+        working-directory: integration_tests
+        run: |
+          sed -i "s|/home/splunker|$(pwd)|g" values.yaml
+
+      - name: install microk8s
+        run: |
+          sudo snap install microk8s --classic --channel=1.25/stable
+          sudo apt-get install snmp -y
+          sudo apt-get install python3-dev -y
+
+      - name: run automatic_setup.sh
+        run: integration_tests/automatic_setup.sh
+
+#      - name: run tests
+#        working-directory: integration_tests
+#        run: |
+#          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)"
+#
+      - name: install dependencies
+        working-directory: ui_tests
+        run: |
+          pip install -r requirements.txt
+          export PATH="/home/ubuntu/.local/bin:$PATH"
+
+      - name: run tests
+        working-directory: ui_tests
+        run: |
+          pytest -vvv --splunk-user=admin --splunk-password="changeme2" --splunk-host="localhost" --device-simulator="$(hostname -I | cut -d " " -f1)" -k ${{ matrix.execution-type }}

@@ -93,6 +93,10 @@ else:
     SPLUNK_HEC_HEADERS = {}
 SPLUNK_HEC_CHUNK_SIZE = int(os.getenv("SPLUNK_HEC_CHUNK_SIZE", "50"))
 
+SPLUNK_AGGREGATE_TRAPS_EVENTS = human_bool(
+    os.getenv("SPLUNK_AGGREGATE_TRAPS_EVENTS", "false"), default=False
+)
+
 
 class HECTask(Task):
     def __init__(self):
@@ -238,8 +242,10 @@ def prepare_trap_data(work):
             "host": work["address"],
             "index": SPLUNK_HEC_INDEX_EVENTS,
         }
-        events.append(json.dumps(event, indent=None))
-
+        events.append(event)
+    if SPLUNK_AGGREGATE_TRAPS_EVENTS:
+        events = aggregate_traps(events)
+    events = [json.dumps(e, indent=None) for e in events]
     return events
 
 
@@ -263,3 +269,13 @@ def apply_custom_translation_to_collection(custom_translations, data, key):
         else:
             new_data[field] = values
     data[key] = new_data
+
+
+def aggregate_traps(events):
+    tmp_events = {}
+    for event in events:
+        e = json.loads(event["event"])
+        tmp_events.update(e)
+    events[0]["event"] = json.dumps(tmp_events, indent=None)
+    events = events[:1]
+    return events

@@ -4,6 +4,8 @@ from abc import abstractmethod
 import yaml
 from celery.utils.log import get_task_logger
 
+from splunk_connect_for_snmp.common.hummanbool import human_bool
+
 try:
     from dotenv import load_dotenv
 
@@ -12,6 +14,7 @@ except:
     pass
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
+CONFIG_FROM_MONGO = human_bool(os.getenv("CONFIG_FROM_MONGO", "false").lower())
 logger = get_task_logger(__name__)
 
 
@@ -67,16 +70,20 @@ class GroupsManager(CollectionManager):
     def __init__(self, mongo):
         super().__init__(mongo, "groups")
 
-    @staticmethod
-    def gather_elements():
+    def gather_elements(self):
         groups = {}
-        try:
-            with open(CONFIG_PATH, encoding="utf-8") as file:
-                config_runtime = yaml.safe_load(file)
-                if "groups" in config_runtime:
-                    groups = config_runtime.get("groups", {})
-        except FileNotFoundError:
-            logger.info(f"File: {CONFIG_PATH} not found")
+        if CONFIG_FROM_MONGO:
+            groups_list = list(self.mongo.sc4snmp.groups_ui.find({}, {"_id": 0}))
+            for gr in groups_list:
+                groups.update(gr)
+        else:
+            try:
+                with open(CONFIG_PATH, encoding="utf-8") as file:
+                    config_runtime = yaml.safe_load(file)
+                    if "groups" in config_runtime:
+                        groups = config_runtime.get("groups", {})
+            except FileNotFoundError:
+                logger.info(f"File: {CONFIG_PATH} not found")
         return groups
 
 
@@ -84,8 +91,7 @@ class ProfilesManager(CollectionManager):
     def __init__(self, mongo):
         super().__init__(mongo, "profiles")
 
-    @staticmethod
-    def gather_elements():
+    def gather_elements(self):
         active_profiles = {}
 
         pkg_path = os.path.join(
@@ -100,24 +106,37 @@ class ProfilesManager(CollectionManager):
                     )
                     for key, profile in profiles.items():
                         active_profiles[key] = profile
-
-        try:
-            with open(CONFIG_PATH, encoding="utf-8") as file:
-                config_runtime = yaml.safe_load(file)
-                if "profiles" in config_runtime:
-                    profiles = config_runtime.get("profiles", {})
-                    logger.info(
-                        f"loading {len(profiles.keys())} profiles from runtime profile group"
-                    )
-                    for key, profile in profiles.items():
-                        if key in active_profiles:
-                            if not profile.get("enabled", True):
-                                logger.info(f"disabling profile {key}")
-                                del active_profiles[key]
+        if CONFIG_FROM_MONGO:
+            profiles_list = list(self.mongo.sc4snmp.profiles_ui.find({}, {"_id": 0}))
+            for pr in profiles_list:
+                key = list(pr.keys())[0]
+                profile = pr[key]
+                if key in active_profiles:
+                    if not profile.get("enabled", True):
+                        logger.info(f"disabling profile {key}")
+                        del active_profiles[key]
+                    else:
+                        active_profiles[key] = profile
+                else:
+                    active_profiles[key] = profile
+        else:
+            try:
+                with open(CONFIG_PATH, encoding="utf-8") as file:
+                    config_runtime = yaml.safe_load(file)
+                    if "profiles" in config_runtime:
+                        profiles = config_runtime.get("profiles", {})
+                        logger.info(
+                            f"loading {len(profiles.keys())} profiles from runtime profile group"
+                        )
+                        for key, profile in profiles.items():
+                            if key in active_profiles:
+                                if not profile.get("enabled", True):
+                                    logger.info(f"disabling profile {key}")
+                                    del active_profiles[key]
+                                else:
+                                    active_profiles[key] = profile
                             else:
                                 active_profiles[key] = profile
-                        else:
-                            active_profiles[key] = profile
-        except FileNotFoundError:
-            logger.info(f"File: {CONFIG_PATH} not found")
+            except FileNotFoundError:
+                logger.info(f"File: {CONFIG_PATH} not found")
         return active_profiles

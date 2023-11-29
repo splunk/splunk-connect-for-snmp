@@ -7,8 +7,8 @@ metadata:
   labels:
     app.kubernetes.io/name: splunk-connect-for-snmp-worker-sender
     app.kubernetes.io/instance: release-name
-    helm.sh/chart: splunk-connect-for-snmp-1.9.1-beta.4
-    app.kubernetes.io/version: "1.9.1-beta.4"
+    helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
+    app.kubernetes.io/version: "CURRENT-VERSION"
     app.kubernetes.io/managed-by: Helm
 spec:
   selector:
@@ -34,7 +34,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 10001
             runAsGroup: 10001
-          image: "ghcr.io/splunk/splunk-connect-for-snmp/container:1.9.1-beta.4"
+          image: "ghcr.io/splunk/splunk-connect-for-snmp/container:CURRENT-VERSION"
           imagePullPolicy: Always
           args:
             [
@@ -46,13 +46,15 @@ spec:
             - name: REDIS_URL
               value: redis://release-name-redis-headless:6379/1
             - name: SC4SNMP_VERSION
-              value: 1.9.1-beta.4
+              value: CURRENT-VERSION
             - name: CELERY_BROKER_URL
               value: redis://release-name-redis-headless:6379/0
             - name: MONGO_URI
               value: mongodb://release-name-mongodb:27017
             - name: WALK_RETRY_MAX_INTERVAL
-              value: "60"
+              value: "180"
+            - name: WALK_MAX_RETRIES
+              value: "5"
             - name: METRICS_INDEXING_ENABLED
               value: "false"
             - name: POLL_BASE_PROFILES
@@ -81,11 +83,17 @@ spec:
               value: "8088"
             - name: SPLUNK_HEC_INSECURESSL
               value: "true"
+            - name: SPLUNK_AGGREGATE_TRAPS_EVENTS
+              value: "false"
             - name: SPLUNK_HEC_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: splunk-connect-for-snmp-splunk
                   key: hec_token
+            - name: SPLUNK_HEC_INDEX_EVENTS
+              value: netops
+            - name: SPLUNK_HEC_INDEX_METRICS
+              value: netmetrics
             - name: SPLUNK_SOURCETYPE_TRAPS
               value: "sc4snmp:traps"
             - name: SPLUNK_SOURCETYPE_POLLING_EVENTS

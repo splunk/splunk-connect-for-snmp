@@ -1,0 +1,27 @@
+{{- if .Values.UI.valuesFileDirectory }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: revert-patch-log-dirs
+  annotations:
+    "helm.sh/hook": post-delete
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+  - name: revert-patch-log-dirs
+    image: {{ .Values.UI.init.repository }}
+    imagePullPolicy: {{ .Values.UI.init.pullPolicy }}
+    securityContext:
+      runAsUser: 0
+    command: ['sh', '-c', '
+    setfacl --recursive --remove-all {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }};
+    ']
+    volumeMounts:
+    - name: values-directory
+      mountPath: {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }}
+  volumes:
+    - name: values-directory
+      hostPath:
+        path: {{ .Values.UI.valuesFileDirectory }}
+{{- end }}

@@ -7,14 +7,6 @@
 2. Go to your Splunk and execute search: `index="em_logs"   "Sending due task" "sc4snmp;<IP_ADDRESS>;walk"` 
 and replace <IP_ADDRESS> with the pertinent IP Address. 
 
-### Uninstall Splunk Connect for SNMP
-To uninstall SC4SNMP run the following commands:
-
-```
- microk8s helm3 uninstall snmp -n sc4snmp
- microk8s kubectl delete pvc --all -n sc4snmp
-```
-
 ### Installing Splunk Connect for SNMP on Linux RedHat 
 Installation of RedHat may be blocking ports required by microk8s. Installing microk8s on RedHat 
 requires checking to see if the firewall is not blocking any of [required microk8s ports](https://microk8s.io/docs/ports). 
@@ -71,7 +63,7 @@ worker:
   walkRetryMaxInterval: 60
 ```
 
-With the configuration from the above, 'walk' will retry exponentially until it reaches 60 seconds.
+With the configuration from the above, 'walk' will retry exponentially from 30 seconds until it reaches 60 seconds. Default value for `worker.walkRetryMaxInterval` is 180.
 
 ### SNMP Rollover
 The Rollover problem is due to the integer value stored (especially when the value is 32-bit) being finite. 
@@ -92,3 +84,23 @@ An example for a SPLUNK query like that (interface counter), would be:
 | eval out = if(out_delta<0,((max+out_delta)*8/(5*60*1000*1000*1000)),(out_delta)*8/(5*60*1000*1000*1000))
 | timechart span=5m avg(in) AS in, avg(out) AS out by ifAlias
 ```
+### "Field is immutable" error during helm upgrade
+
+```
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/charts/splunk-connect-for-snmp/ --namespace=sc4snmp --create-namespace
+Error: UPGRADE FAILED: cannot patch "snmp-splunk-connect-for-snmp-inventory" with kind Job: Job.batch "snmp-splunk-connect-for-snmp-inventory" is invalid: (...) : field is immutable
+```
+
+The immutable error is due to the limitation placed on an inventory job. As the SC4SNMP requires several checks before applying updates, it is designed to allow changes in the inventory task after 5 minutes. 
+
+The status of the inventory can be checked with a command:
+```
+microk8s kubectl -n sc4snmp get pods | grep inventory
+```
+If the command is not empty, wait and execute it again after the inventory job finishes (no longer visible in the output).
+
+If the changes are required to be applied immedietly, the previous inventory job can be deleted with the command:
+```
+microk8s kubectl delete job/snmp-splunk-connect-for-snmp-inventory -n sc4snmp
+```
+The upgrade command can be executed again. 

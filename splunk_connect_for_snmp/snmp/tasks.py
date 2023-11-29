@@ -43,7 +43,8 @@ logger = get_task_logger(__name__)
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
-WALK_RETRY_MAX_INTERVAL = int(os.getenv("WALK_RETRY_MAX_INTERVAL", "600"))
+WALK_RETRY_MAX_INTERVAL = int(os.getenv("WALK_RETRY_MAX_INTERVAL", "180"))
+WALK_MAX_RETRIES = int(os.getenv("WALK_MAX_RETRIES", "5"))
 SPLUNK_SOURCETYPE_TRAPS = os.getenv("SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")
 OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
 
@@ -53,7 +54,7 @@ OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
     base=Poller,
     retry_backoff=30,
     retry_backoff_max=WALK_RETRY_MAX_INTERVAL,
-    max_retries=50,
+    max_retries=WALK_MAX_RETRIES,
     autoretry_for=(
         MongoLockLocked,
         SnmpActionError,
@@ -67,6 +68,7 @@ def walk(self, **kwargs):
     address = kwargs["address"]
     profile = kwargs.get("profile", [])
     group = kwargs.get("group")
+    chain_of_tasks_expiry_time = kwargs.get("chain_of_tasks_expiry_time")
     if profile:
         profile = [profile]
     mongo_client = pymongo.MongoClient(MONGO_URI)
@@ -79,7 +81,12 @@ def walk(self, **kwargs):
         retry, result = self.do_work(ir, walk=True, profiles=profile)
 
     # After a Walk tell schedule to recalc
-    work = {"time": time.time(), "address": address, "result": result}
+    work = {
+        "time": time.time(),
+        "address": address,
+        "result": result,
+        "chain_of_tasks_expiry_time": chain_of_tasks_expiry_time,
+    }
     if group:
         work["group"] = group
 

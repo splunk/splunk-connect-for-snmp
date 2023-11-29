@@ -3,7 +3,10 @@ import os
 from csv import DictReader
 from typing import List
 
+import pymongo
+
 from splunk_connect_for_snmp.common.collection_manager import GroupsManager
+from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
 from splunk_connect_for_snmp.poller import app
@@ -18,6 +21,7 @@ except:
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
+CONFIG_FROM_MONGO = human_bool(os.getenv("CONFIG_FROM_MONGO", "false").lower())
 ALLOWED_KEYS_VALUES = [
     "address",
     "port",
@@ -57,53 +61,66 @@ def gen_walk_task(ir: InventoryRecord, profile=None, group=None):
     return task_config
 
 
-def return_hosts_from_deleted_groups(previous_groups, new_groups):
+def return_hosts_from_deleted_groups(
+    previous_groups, new_groups, inventory_group_port_mapping
+):
     inventory_lines_to_delete = []
     for group_name in previous_groups.keys():
-        previous_groups_keys = get_groups_keys(previous_groups[group_name])
+        previous_groups_keys = get_groups_keys(
+            previous_groups[group_name], group_name, inventory_group_port_mapping
+        )
         if group_name not in new_groups:
             inventory_lines_to_delete += previous_groups_keys
         else:
-            new_groups_keys = get_groups_keys(new_groups[group_name])
+            new_groups_keys = get_groups_keys(
+                new_groups[group_name], group_name, inventory_group_port_mapping
+            )
             deleted_hosts = set(previous_groups_keys) - set(new_groups_keys)
             inventory_lines_to_delete += deleted_hosts
     return inventory_lines_to_delete
 
 
-def get_groups_keys(list_of_groups):
+def get_groups_keys(list_of_groups, group_name, inventory_group_port_mapping):
+    group_port = inventory_group_port_mapping.get(group_name, 161)
     groups_keys = [
-        f"{transform_address_to_key(element.get('address'), element.get('port', 161))}"
+        f"{transform_address_to_key(element.get('address'), element.get('port', group_port))}"
         for element in list_of_groups
     ]
     return groups_keys
 
 
 class InventoryProcessor:
-    def __init__(self, group_manager: GroupsManager, logger):
+    def __init__(self, group_manager: GroupsManager, logger, inventory_ui_collection):
         self.inventory_records: List[dict] = []
         self.group_manager = group_manager
         self.logger = logger
         self.hosts_from_groups: dict = {}
+        self.inventory_group_port_mapping: dict = {}
         self.single_hosts: List[dict] = []
+        self.inventory_ui_collection = inventory_ui_collection
 
     def get_all_hosts(self):
-        self.logger.info(f"Loading inventory from {INVENTORY_PATH}")
-        with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
-            ir_reader = DictReader(csv_file)
-            for inventory_line in ir_reader:
-                self.process_line(inventory_line)
-            for source_record in self.single_hosts:
-                address = source_record["address"]
-                port = source_record.get("port")
-                host = transform_address_to_key(address, port)
-                was_present = self.hosts_from_groups.get(host, None)
-                if was_present is None:
-                    self.inventory_records.append(source_record)
-                else:
-                    self.logger.warning(
-                        f"Record: {host} has been already configured in group. Skipping..."
-                    )
-        return self.inventory_records
+        if CONFIG_FROM_MONGO:
+            self.logger.info("Loading inventory from inventory_ui collection")
+            ir_reader = list(self.inventory_ui_collection.find({}, {"_id": 0}))
+        else:
+            with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
+                self.logger.info(f"Loading inventory from {INVENTORY_PATH}")
+                ir_reader = list(DictReader(csv_file))
+        for inventory_line in ir_reader:
+            self.process_line(inventory_line)
+        for source_record in self.single_hosts:
+            address = source_record["address"]
+            port = source_record.get("port")
+            host = transform_address_to_key(address, port)
+            was_present = self.hosts_from_groups.get(host, None)
+            if was_present is None:
+                self.inventory_records.append(source_record)
+            else:
+                self.logger.warning(
+                    f"Record: {host} has been already configured in group. Skipping..."
+                )
+        return self.inventory_records, self.inventory_group_port_mapping
 
     def process_line(self, source_record):
         address = source_record["address"]
@@ -122,6 +139,9 @@ class InventoryProcessor:
         group_list = list(groups)
         if group_list:
             groups_object_list = list(group_list[0].values())
+            self.inventory_group_port_mapping[group_name] = (
+                source_object["port"] if source_object["port"] else 161
+            )
             for group_object in groups_object_list[0]:
                 host_group_object = copy.copy(source_object)
                 for key in group_object.keys():
@@ -156,11 +176,13 @@ class InventoryRecordManager:
         address, port = transform_key_to_address(target)
         self.periodic_object_collection.delete_all_tasks_of_host(target)
         self.inventory_collection.delete_one({"address": address, "port": port})
-        self.targets_collection.remove({"address": target})
-        self.attributes_collection.remove({"address": target})
+        self.targets_collection.delete_many({"address": target})
+        self.attributes_collection.delete_many({"address": target})
         self.logger.info(f"Deleting record: {target}")
 
-    def update(self, inventory_record, new_source_record, runtime_profiles):
+    def update(
+        self, inventory_record, new_source_record, runtime_profiles, expiry_time_changed
+    ):
         profiles = new_source_record["profiles"].split(";")
         walk_profile = self.return_walk_profile(runtime_profiles, profiles)
         if walk_profile:
@@ -176,9 +198,16 @@ class InventoryRecordManager:
             self.logger.info(f"Modified Record {inventory_record}")
         else:
             self.logger.info(f"Unchanged Record {inventory_record}")
-            return
+            if expiry_time_changed:
+                self.logger.info(
+                    f"Task expiry time was modified, generating new tasks for record {inventory_record}"
+                )
+            else:
+                return
         task_config = gen_walk_task(
-            inventory_record, walk_profile, new_source_record.get("group")
+            inventory_record,
+            walk_profile,
+            new_source_record.get("group"),
         )
         self.periodic_object_collection.manage_task(**task_config)
 

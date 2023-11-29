@@ -99,7 +99,7 @@ def enrich(self, result):
     current_target = targets_collection.find_one(
         {"address": address}, {"target": True, "sysUpTime": True}
     )
-    if not current_target:
+    if current_target is None:
         logger.info(f"First time for {address}")
         current_target = {"address": address}
     else:
@@ -117,7 +117,7 @@ def enrich(self, result):
     for group_key, group_data in result["result"].items():
         group_key_hash = group_key.replace(".", "|")
 
-        if is_any_address_in_attributes_collection:
+        if is_any_address_in_attributes_collection is not None:
             current_attributes = attributes_collection.find_one(
                 {"address": address, "group_key_hash": group_key_hash},
                 {"fields": True, "id": True},
@@ -125,7 +125,7 @@ def enrich(self, result):
         else:
             current_attributes = None
 
-        if not current_attributes and group_data["fields"]:
+        if current_attributes is None and group_data["fields"]:
             attributes_collection.update_one(
                 {
                     "address": address,

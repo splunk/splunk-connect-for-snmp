@@ -257,6 +257,32 @@ conditions:
       - 0
 ```
 
+5. `regex` - value gathered from `field` match the pattern provided in `value`. 
+You can add options for regular expression after `/`. Possible options match ones used in [mongodb regex operator](https://www.mongodb.com/docs/manual/reference/operator/query/regex/).
+
+```yaml
+conditions:
+  - field: IF-MIB.ifAdminStatus
+    operation: "regex"
+    value: ".own/i"
+```
+
+To negate operation you can add flag `negate_operation: "true"` to specified `field`.
+```yaml
+conditions:
+    - field: IF-MIB.ifAdminStatus
+      operation: "equals" 
+      value: "up"
+      negate_operation: "true"
+```
+It will negate the operator specified in `operation`. Possible negation:
+
+1. `negate_operation + equals` - value gathered from `field` is NOT equal to `value`
+2. `negate_operation + gt` - value gathered from `field` is SMALLER or EQUAL to `value` (works only for numeric values)
+3. `negate_operation + lt` - value gathered from `field` is BIGGER or EQUAL to `value` (works only for numeric values)
+4. `negate_operation + in` - value gathered from `field` is NOT equal to any of the elements provided in `value`
+5. `negate_operation + regex` - value gathered from `field` is NOT matching the pattern provided in `value`. 
+
 `field` part of `conditions` must fulfill the pattern `MIB-family.field`. Fields must represent textual value (not metric one),
 you can learn more about it [here](snmp-data-format.md).
 

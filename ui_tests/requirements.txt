@@ -1,0 +1,4 @@
+pytest-splunk-addon
+selenium
+webdriver_manager
+pyyaml

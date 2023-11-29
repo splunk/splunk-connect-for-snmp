@@ -11,17 +11,29 @@ jobs:
     permissions:
       contents: write
       packages: write
+    strategy:
+      matrix:
+        python-version:
+          - 3.9
     steps:
       - name: Check out code
-        uses: actions/checkout@v1
-
+        uses: actions/checkout@v4
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install ruamel.yaml
+        run: |
+          pip3 install ruamel.yaml
       - name: Download images and upload them
         run: |
-          ./${{ env.SCRIPT_NAME }}
+          PYTHON_SCRIPT=$(pwd)/${{ env.GET_YAML_FIELD_SCRIPT }}
+          ./${{ env.CREATE_PACKAGES_SCRIPT }} "$PYTHON_SCRIPT"
           VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
           gh release upload $VERSION /tmp/package/packages/*
         env:
-          SCRIPT_NAME: create_packages.sh
+          CREATE_PACKAGES_SCRIPT: create_packages.sh
+          GET_YAML_FIELD_SCRIPT: get_yaml_fields.py
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create artifact
         uses: actions/upload-artifact@v3

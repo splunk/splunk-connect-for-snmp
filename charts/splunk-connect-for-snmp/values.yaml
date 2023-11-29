@@ -17,6 +17,37 @@ image:
 # Secrets to attach to the respective serviceaccount to pull docker images
 imagePullSecrets: []
 
+# SC4SNMP UI configuration
+UI:
+  enable: false
+  frontEnd:
+    NodePort: 30001
+    repository: ghcr.io/splunk/sc4snmp-ui/frontend/container
+    tag: "main"
+    pullPolicy: "Always"
+  backEnd:
+    NodePort: 30002
+    repository: ghcr.io/splunk/sc4snmp-ui/backend/container
+    tag: "main"
+    pullPolicy: "Always"
+  init:
+    repository: registry.access.redhat.com/ubi9/ubi
+    pullPolicy: IfNotPresent
+
+  # valuesFileDirectory is obligatory if UI is used. It is a location of values.yaml and configuration files generated from the UI.
+  valuesFileDirectory: ""
+
+  # valuesFileName is an exact name of yaml file with user's configuration, located inside directory specified in
+  # valuesFileDirectory. It is optional. If it is provided then this file fill be updated with configuration from the UI.
+  # If the valuesFileName is empty, or provided file name can't be found inside valuesFileDirectory directory,
+  # then configuration from the UI will be saved in few files, each file for different section, inside
+  # valuesFileDirectory directory.
+  valuesFileName: ""
+
+  # If keepSectionFiles is set to true, separate configration files for different sections will be saved in
+  # valuesFileDirectory directory regardless of valuesFileName proper configuration.
+  keepSectionFiles: false
+
 ################################################################################
 # Splunk Cloud / Splunk Enterprise configuration.
 ################################################################################
@@ -50,7 +81,12 @@ splunk:
   # sourcetype for metric polling event
   sourcetypePollingMetrics: "sc4snmp:metric"
 
+  # name of the event index
+  eventIndex: "netops"
 
+  # name of the metrics index
+  metricsIndex: "netmetrics"
+  
 ################################################################################
 # Splunk Observability configuration
 ################################################################################
@@ -61,8 +97,8 @@ sim:
 
   # Splunk Observability realm to send telemetry data to.
   signalfxToken: ""
-  # Required for Splunk Observability (if `realm` is specified). Splunk
-  # Observability org access token.
+  # Required for Splunk Observability (if `realm` is specified). 
+  # Splunk Observability org access token.
   signalfxRealm: ""
 
   resources: {}
@@ -170,6 +206,9 @@ scheduler:
   podAntiAffinity: soft
   nodeSelector: {}
 
+  # tasks expirations time in seconds
+  tasksExpiryTime: 60
+
 poller:
   # Appending OID indexes to metrics.
   # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#append-oid-index-part-to-the-metrics
@@ -235,23 +274,22 @@ worker:
     autoscaling:
       # enabling autoscaling for trap worker pods
       enabled: false
-      # minimum number of running poller trap pods when autoscaling is enabled
+      # minimum number of running trap worker pods when autoscaling is enabled
       minReplicas: 2
-      # maximum number of running poller trap pods when autoscaling is enabled
+      # maximum number of running trap worker pods when autoscaling is enabled
       maxReplicas: 10
       # CPU % threshold that must be exceeded on traps worker pods to spawn another replica
       targetCPUUtilizationPercentage: 80
     resources:
-      # the resources limits for poller worker container
+      # the resources limits for trap worker container
       limits:
         cpu: 500m
       requests:
-        # the resources requests for poller worker container
+        # the resources requests for trap worker container
         cpu: 250m
-
   # The sender worker handles sending data to Splunk
   sender:
-    # number of the poller replicas when autoscaling is set to false
+    # number of the sender replicas when autoscaling is set to false
     replicaCount: 1
     # minimum number of threads in a pod
     concurrency: 4
@@ -260,23 +298,59 @@ worker:
     autoscaling:
       # enabling autoscaling for sender worker pods
       enabled: false
-      # minimum number of running sender trap pods when autoscaling is enabled
+      # minimum number of running sender worker pods when autoscaling is enabled
       minReplicas: 2
-      # maximum number of running sender trap pods when autoscaling is enabled
+      # maximum number of running sender worker pods when autoscaling is enabled
       maxReplicas: 10
       # CPU % threshold that must be exceeded on sender worker pods to spawn another replica
       targetCPUUtilizationPercentage: 80
     resources:
-      # the resources limits for poller worker container
+      # the resources limits for sender worker container
       limits:
         cpu: 500m
-        # the resources requests for poller worker container
+        # the resources requests for sender worker container
       requests:
         cpu: 250m
+  # Liveness probes are used in Kubernetes to know when a pod is alive or dead.
+  # A pod can be in a dead state for a number of reasons;
+  # the application could be crashed, some error in the application etc.
+  livenessProbe:
+    # whether it should be turned on or not
+    enabled: false
+    # The exec command for the liveness probe to run in the container.
+    exec:
+      command:
+        - sh
+        - -c
+        - test $(($(date +%s) - $(stat -c %Y /tmp/worker_heartbeat))) -lt 10
+    # Number of seconds after the container has started before liveness probes are initiated.
+    initialDelaySeconds: 80
+    # How often (in seconds) to perform the probe.
+    periodSeconds: 10
+
+  # Readiness probes are used to know when a pod is ready to serve traffic.
+  # Until a pod is ready, it won't receive traffic from Kubernetes services.
+  readinessProbe:
+    # whether it should be turned on or not
+    enabled: false
+    # The exec command for the readiness probe to run in the container.
+    exec:
+      command:
+        - sh
+        - -c
+        - test -e /tmp/worker_ready
+    # Number of seconds after the container has started before readiness probes are initiated.
+    initialDelaySeconds: 30
+    # How often (in seconds) to perform the probe.
+    periodSeconds: 5
+
+
   # task timeout in seconds (usually necessary when walk process takes a long time)
   taskTimeout: 2400
   # maximum time interval between walk attempts
-  walkRetryMaxInterval: 60
+  walkRetryMaxInterval: 180
+  # maximum number of walk retries
+  walkMaxRetries: 5
   # ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex:
   #   ignoreNotIncreasingOid:
   #    - "127.0.0.1:164"
@@ -285,6 +359,8 @@ worker:
   # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
   logLevel: "INFO"
   podAntiAffinity: soft
+  # udpConnectionTimeout timeout in seconds for SNMP operations
+  udpConnectionTimeout: 3
 
 inventory:
   secret:
@@ -322,6 +398,8 @@ traps:
   # of the TRAP receiving application for each USM user
   securityEngineId:
     - "80003a8c04"
+  # aggregateTrapsEvents flag set to true makes traps events collected as one event inside splunk
+  aggregateTrapsEvents: "false"
 
   # communities define a version of SNMP protocol and SNMP community string, which should be used
   communities: {}

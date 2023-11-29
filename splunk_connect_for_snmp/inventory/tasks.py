@@ -66,6 +66,7 @@ class InventoryTask(Task):
 def inventory_setup_poller(self, work):
     address = work["address"]
     group = work.get("group")
+    chain_of_tasks_expiry_time = work.get("chain_of_tasks_expiry_time")
     self.profiles = self.profiles_manager.return_collection()
     logger.debug("Profiles reloaded")
 
@@ -109,7 +110,12 @@ def inventory_setup_poller(self, work):
     active_schedules: list[str] = []
     for period in assigned_profiles:
         task_config = generate_poll_task_definition(
-            active_schedules, address, assigned_profiles, period, group
+            active_schedules,
+            address,
+            assigned_profiles,
+            period,
+            chain_of_tasks_expiry_time,
+            group,
         )
         periodic_obj.manage_task(**task_config)
 
@@ -117,7 +123,12 @@ def inventory_setup_poller(self, work):
 
 
 def generate_poll_task_definition(
-    active_schedules, address, assigned_profiles, period, group=None
+    active_schedules,
+    address,
+    assigned_profiles,
+    period,
+    chain_of_tasks_expiry_time,
+    group=None,
 ):
     period_profiles = set(assigned_profiles[period])
     poll_definition = PollTaskGenerator(
@@ -125,6 +136,7 @@ def generate_poll_task_definition(
         schedule_period=period,
         app=app,
         host_group=group,
+        chain_of_tasks_expiry_time=chain_of_tasks_expiry_time,
         profiles=list(period_profiles),
     )
     task_config = poll_definition.generate_task_definition()
@@ -186,11 +198,11 @@ def assign_profiles(ir, profiles, target):
             profile = profiles[profile_name]
             if "condition" in profile:
                 if profile["condition"].get("type") == "walk":
-                    logger.warning(
+                    logger.info(
                         f"profile {profile_name} is a walk profile, it cannot be used as a static profile"
                     )
                     continue
-                logger.warning(
+                logger.info(
                     f"profile {profile_name} is a smart profile, it does not need to be configured as a static one"
                 )
             elif "conditions" in profile:
@@ -228,7 +240,7 @@ def is_smart_profile_valid(profile_name, profile):
         return False
 
     if "frequency" not in profile:
-        logger.warning(f"Profile {profile_name} has no frequency")
+        logger.info(f"Profile {profile_name} has no frequency")
         return False
 
     if "condition" not in profile:
@@ -284,12 +296,20 @@ def create_profile(profile_name, frequency, varBinds, records):
 
 
 def create_query(conditions: typing.List[dict], address: str) -> dict:
-
     conditional_profiles_mapping = {
         "equals": "$eq",
         "gt": "$gt",
         "lt": "$lt",
         "in": "$in",
+        "regex": "$regex",
+    }
+
+    negative_profiles_mapping = {
+        "equals": "$ne",
+        "gt": "$lte",
+        "lt": "$gte",
+        "in": "$nin",
+        "regex": "$regex",
     }
 
     def _parse_mib_component(field: str) -> str:
@@ -307,12 +327,32 @@ def create_query(conditions: typing.List[dict], address: str) -> dict:
             else:
                 raise BadlyFormattedFieldError(f"Value '{value}' should be numeric")
 
+    def _prepare_regex(value: str) -> typing.Union[list, str]:
+        pattern = value.strip("/").split("/")
+        if len(pattern) > 1:
+            return pattern
+        else:
+            return pattern[0]
+
     def _get_value_for_operation(operation: str, value: str) -> typing.Any:
         if operation in ["lt", "gt"]:
             return _convert_to_float(value)
         elif operation == "in":
             return [_convert_to_float(v, True) for v in value]
+        elif operation == "regex":
+            return _prepare_regex(value)
         return value
+
+    def _prepare_query_input(
+        operation: str, value: typing.Any, field: str, negate_operation: bool
+    ) -> dict:
+        if operation == "regex" and type(value) == list:
+            query = {mongo_operation: value[0], "$options": value[1]}
+        else:
+            query = {mongo_operation: value}
+        if operation == "regex" and negate_operation:
+            query = {"$not": query}
+        return {f"fields.{field}.value": query}
 
     filters = []
     field = ""
@@ -321,10 +361,20 @@ def create_query(conditions: typing.List[dict], address: str) -> dict:
         # fields in databases are written in convention "IF-MIB|ifInOctets"
         field = field.replace(".", "|")
         value = condition["value"]
+        negate_operation = human_bool(
+            condition.get("negate_operation", False), default=False
+        )
         operation = condition["operation"].lower()
         value_for_querying = _get_value_for_operation(operation, value)
-        mongo_operation = conditional_profiles_mapping.get(operation)
-        filters.append({f"fields.{field}.value": {mongo_operation: value_for_querying}})
+        mongo_operation = (
+            negative_profiles_mapping.get(operation)
+            if negate_operation
+            else conditional_profiles_mapping.get(operation)
+        )
+        query = _prepare_query_input(
+            operation, value_for_querying, field, negate_operation
+        )
+        filters.append(query)
     mib_component = _parse_mib_component(field)
     return {
         "$and": [

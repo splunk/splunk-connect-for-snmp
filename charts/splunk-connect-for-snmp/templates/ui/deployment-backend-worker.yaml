@@ -1,0 +1,53 @@
+{{ if .Values.UI.enable }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-backend-worker-deployment
+  labels:
+    app: ui-backend-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui-backend-worker
+  template:
+    metadata:
+      labels:
+        app: ui-backend-worker
+    spec:
+      containers:
+      - name: ui-backend-worker
+        image: {{ include "splunk-connect-for-snmp.uiBackImage" . | quote }}
+        imagePullPolicy: {{ .Values.UI.backEnd.pullPolicy }}
+        command: ["sh","-c","/celery_start.sh"]
+        env:
+        - name: MONGO_URI
+          value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
+        - name: REDIS_URL
+          value: {{ include "splunk-connect-for-snmp-ui.redis_url" . }}
+        - name: JOB_CONFIG_PATH
+          value: /config/job_config.yaml
+        - name: JOB_NAMESPACE
+          value: sc4snmp
+        - name: CELERY_BROKER_URL
+          value: {{ include "splunk-connect-for-snmp-ui.celery_url" . }}
+        - name: VALUES_DIRECTORY
+          {{- if .Values.UI.valuesFileDirectory }}
+          value: {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }}
+          {{- else }}
+          value:
+          {{- end }}
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: backend-configmap
+          mountPath: /config
+      serviceAccountName: job-robot
+      volumes:
+        - name: backend-configmap
+          configMap:
+            name: {{ include "splunk-connect-for-snmp.name" . }}-job-configmap
+            items:
+              - key: job_config
+                path: job_config.yaml
+{{- end }}

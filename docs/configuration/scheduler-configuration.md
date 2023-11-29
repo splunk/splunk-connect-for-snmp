@@ -69,3 +69,11 @@ scheduler:
 The one obligatory field for the host configuration is `address`. If `port` isn't configured its default value is `161`. 
 Other fields that can be modified here are: `community`, `secret`, `version`, `security_engine`.
 However, if they remain unspecified in the host configuration, they will be derived from the inventory record regarding this specific group.
+
+### Define tasks expiry time
+
+Define time in second after which polling or walk tasks, that haven't been picked up by the worker, will be revoked. Check the [celery documentation](https://docs.celeryq.dev/en/stable/userguide/calling.html#expiration) for more details.
+```yaml
+scheduler:
+  tasksExpiryTime: 300
+```

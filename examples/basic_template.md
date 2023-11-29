@@ -69,7 +69,7 @@ Splunk optional variables can be configured:
 | variable | description | default |
 | --- | --- | --- |
 | splunk.protocol | port of splunk instance| https |
-| splunk.insecure_ssl| is insecure ssl allowed | "true" |
+| splunk.insecureSSL | is insecure ssl allowed | "true" |
 | splunk.eventIndex | name of the events index | "netops" |
 | splunk.metricsIndex | name of the metrics index | "netmetrics" |
 

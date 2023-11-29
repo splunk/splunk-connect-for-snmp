@@ -72,7 +72,11 @@ class TestInventoryProcessor(TestCase):
         }
 
         self.assertEqual(
-            return_hosts_from_deleted_groups(previous_groups, new_groups),
+            return_hosts_from_deleted_groups(
+                previous_groups,
+                new_groups,
+                {"group1": {"port": 161}, "switches": {"port": 161}},
+            ),
             ["1.1.1.1:162"],
         )
 
@@ -95,7 +99,11 @@ class TestInventoryProcessor(TestCase):
         }
 
         self.assertEqual(
-            return_hosts_from_deleted_groups(previous_groups, new_groups),
+            return_hosts_from_deleted_groups(
+                previous_groups,
+                new_groups,
+                {"group1": 161, "switches": 161},
+            ),
             ["12.22.23.33", "1.1.1.1:162"],
         )
 
@@ -115,7 +123,11 @@ class TestInventoryProcessor(TestCase):
         }
 
         self.assertEqual(
-            return_hosts_from_deleted_groups(previous_groups, new_groups),
+            return_hosts_from_deleted_groups(
+                previous_groups,
+                new_groups,
+                {"group1": 161, "switches": 161},
+            ),
             ["123.0.0.1", "178.8.8.1:999", "1.1.1.1:162"],
         )
 
@@ -123,14 +135,37 @@ class TestInventoryProcessor(TestCase):
         previous_groups = {}
         new_groups = {}
         self.assertEqual(
-            return_hosts_from_deleted_groups(previous_groups, new_groups), []
+            return_hosts_from_deleted_groups(previous_groups, new_groups, {}), []
         )
 
     def test_return_hosts_new_ones(self):
         previous_groups = {}
         new_groups = {"switches": [{"address": "12.22.23.33", "port": 161}]}
         self.assertEqual(
-            return_hosts_from_deleted_groups(previous_groups, new_groups), []
+            return_hosts_from_deleted_groups(
+                previous_groups, new_groups, {"switches": {"port": 161}}
+            ),
+            [],
+        )
+
+    def test_return_deleted_host_without_port_config(self):
+        previous_groups = {
+            "group1": [
+                {"address": "123.0.0.1", "port": 161},
+                {"address": "178.8.8.1"},
+            ]
+        }
+        new_groups = {
+            "group1": [
+                {"address": "123.0.0.1", "port": 161},
+                {"address": "178.8.8.1", "port": 162},
+            ]
+        }
+        self.assertEqual(
+            ["178.8.8.1:1161"],
+            return_hosts_from_deleted_groups(
+                previous_groups, new_groups, {"group1": 1161}
+            ),
         )
 
     def test_get_group_hosts(self):
@@ -175,7 +210,7 @@ class TestInventoryProcessor(TestCase):
                 "delete": "",
             },
         ]
-        inventory_processor = InventoryProcessor(group_manager, Mock())
+        inventory_processor = InventoryProcessor(group_manager, Mock(), Mock())
         group_manager.return_element.return_value = [
             {
                 "group1": [
@@ -204,7 +239,7 @@ class TestInventoryProcessor(TestCase):
             "SmartProfiles": "f",
             "delete": "",
         }
-        inventory_processor = InventoryProcessor(group_manager, logger)
+        inventory_processor = InventoryProcessor(group_manager, logger, Mock())
         group_manager.return_element.return_value = []
         inventory_processor.get_group_hosts(
             group_object, "ec2-54-91-99-115.compute-1.amazonaws.com"
@@ -218,28 +253,44 @@ class TestInventoryProcessor(TestCase):
     def test_process_line_comment(self):
         logger = Mock()
         source_record = {"address": "#54.234.85.76"}
-        inventory_processor = InventoryProcessor(Mock(), logger)
+        inventory_processor = InventoryProcessor(Mock(), logger, Mock())
         inventory_processor.process_line(source_record)
         logger.warning.assert_called_with(
             "Record: #54.234.85.76 is commented out. Skipping..."
         )
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
+        False,
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
+        False,
+    )
     @patch(
         "builtins.open", new_callable=mock_open, read_data=mock_inventory_only_address
     )
     def test_process_line_host(self, m_inventory):
         source_record = {"address": "54.234.85.76"}
-        inventory_processor = InventoryProcessor(Mock(), Mock())
+        inventory_processor = InventoryProcessor(Mock(), Mock(), Mock())
         inventory_processor.get_all_hosts()
         self.assertEqual(inventory_processor.inventory_records, [source_record])
 
     def test_process_line_group(self):
         source_record = {"address": "group1"}
-        inventory_processor = InventoryProcessor(Mock(), Mock())
+        inventory_processor = InventoryProcessor(Mock(), Mock(), Mock())
         inventory_processor.get_group_hosts = Mock()
         inventory_processor.process_line(source_record)
         inventory_processor.get_group_hosts.assert_called_with(source_record, "group1")
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
+        False,
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO",
+        False,
+    )
     @patch(
         "builtins.open",
         new_callable=mock_open,
@@ -256,7 +307,7 @@ class TestInventoryProcessor(TestCase):
         ]
         group_manager = Mock()
         group_manager.return_element.return_value = returned_group
-        inventory_processor = InventoryProcessor(group_manager, Mock())
+        inventory_processor = InventoryProcessor(group_manager, Mock(), Mock())
         expected = [
             {
                 "address": "0.0.0.0",

@@ -46,7 +46,7 @@ def fetch_schema_version(mongo_client):
     schema_collection = mongo_client.sc4snmp.schema_version
     schema_version = schema_collection.find_one()
 
-    if schema_version:
+    if schema_version is not None:
         return schema_version["version"]
     else:
         return 0
@@ -77,7 +77,7 @@ def migrate_to_version_1(mongo_client, task_manager):
     targets_collection = mongo_client.sc4snmp.targets
 
     task_manager.delete_all_poll_tasks()
-    targets_collection.update({}, {"$unset": {"attributes": 1}}, False, True)
+    targets_collection.update_one({}, {"$unset": {"attributes": 1}}, False)
     task_manager.rerun_all_walks()
 
 
