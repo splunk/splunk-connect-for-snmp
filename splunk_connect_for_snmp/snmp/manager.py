@@ -161,11 +161,11 @@ def get_group_key(mib, oid, index) -> str:
     return mib + "::" + ";".join(parts)
 
 
-MTYPES_CC = tuple(["Counter32", "Counter64", "TimeTicks"])
-MTYPES_G = tuple(
-    ["Gauge32", "Gauge64", "Integer", "Integer32", "Unsigned32", "Unsigned64"]
-)
-MTYPES_R = tuple(["ObjectIdentifier", "ObjectIdentity"])
+MTYPES_DICT = {
+    "Counter32": "cc", "Counter64": "cc", "TimeTicks": "cc", "CounterBasedGauge64": "cc", "ZeroBasedCounter64": "cc",
+    "Gauge32": "g", "Gauge64": "g", "Integer": "g", "Integer32": "g", "Unsigned32": "g", "Unsigned64": "g",
+    "ObjectIdentifier": "r", "ObjectIdentity": "r"
+}
 MTYPES = tuple(["cc", "c", "g"])
 
 
@@ -177,15 +177,10 @@ def valueAsBest(value) -> Union[str, float]:
 
 
 def map_metric_type(t, snmp_value):
-    if t in MTYPES_CC:
-        metric_type = "cc"
-    elif t in MTYPES_G:
-        metric_type = "g"
-    elif t in MTYPES_R:
-        metric_type = "r"
+    if t in MTYPES_DICT:
+        metric_type = MTYPES_DICT[t]
     else:
         metric_type = "f"
-    # If this claims to be a metric type but isn't a number make it a te (type error)
     if metric_type in MTYPES:
         try:
             float(snmp_value)
