@@ -10,7 +10,7 @@ driver = WebDriverFactory.get_driver()
 
 
 class GroupsPage:
-    def checkIfGroupsTableIsDisplayed(self):
+    def check_if_groups_table_is_displayed(self):
         logger.info("Check if groups page is displayed")
         groups_table_xpath = "//div[@data-test='sc4snmp:group-table']"
         groups_container = driver.find_element(By.XPATH, groups_table_xpath)
@@ -181,21 +181,21 @@ class GroupsPage:
 
     def set_device_port(self, port, edit=False):
         logger.info(f"set device port: {port}")
-        self._set_group_filed("port", port, edit)
+        self._set_group_field("port", port, edit)
 
     def set_community_string(self, community_string, edit=False):
         logger.info(f"set device community string: {community_string}")
-        self._set_group_filed("community_string", community_string, edit)
+        self._set_group_field("community_string", community_string, edit)
 
     def set_secret(self, secret, edit=False):
         logger.info(f"set device secret: {secret}")
-        self._set_group_filed("secret", secret, edit)
+        self._set_group_field("secret", secret, edit)
 
     def set_security_engine(self, security_engine, edit=False):
         logger.info(f"set security engine: {security_engine}")
-        self._set_group_filed("security_engine", security_engine, edit)
+        self._set_group_field("security_engine", security_engine, edit)
 
-    def _set_group_filed(self, field_name, value, edit=False):
+    def _set_group_field(self, field_name, value, edit=False):
         xpath = {
             "port": "//div[@data-test='sc4snmp:form:port-input']//span//input",
             "community_string": "//div[@data-test='sc4snmp:form:community-input']//span//input",

@@ -42,7 +42,7 @@ def test_check_selected_tab_behaviour():
     p_header.switch_to_groups()
     url = driver.current_url
     assert "/?tab=Groups" in url
-    assert p_groups.checkIfGroupsTableIsDisplayed()
+    assert p_groups.check_if_groups_table_is_displayed()
     driver.refresh()
     url = driver.current_url
     assert "/?tab=Groups" in url
