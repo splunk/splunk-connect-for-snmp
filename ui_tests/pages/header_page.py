@@ -1,10 +1,10 @@
 import re
 import time
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 from logger.logger import Logger
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 from webdriver.webriver_factory import WebDriverFactory
 
 logger = Logger().get_logger()
