@@ -140,17 +140,21 @@ class InventoryPage:
 
     def get_community_string_missing_error(self):
         logger.info(f"Get community string missing error")
-        return self._get_error_for_missing_or_invalid_inventory_field("community_string_missing")
+        return self._get_error_for_missing_or_invalid_inventory_field(
+            "community_string_missing"
+        )
 
     def get_walk_invalid_value_error(self):
         logger.info(f"Get walk interval invalid value error")
-        return self._get_error_for_missing_or_invalid_inventory_field("walk_invalid_value")
+        return self._get_error_for_missing_or_invalid_inventory_field(
+            "walk_invalid_value"
+        )
 
     def _get_error_for_missing_or_invalid_inventory_field(self, field):
         xpath = {
             "host_missing": f"//p[@data-test='sc4snmp:ip-group-error']",
             "community_string_missing": f"//p[@data-test='sc4snmp:community-error']",
-            "walk_invalid_value": f"//p[@data-test='sc4snmp:walk-interval-error']"
+            "walk_invalid_value": f"//p[@data-test='sc4snmp:walk-interval-error']",
         }
         try:
             error_msg = driver.find_element(By.XPATH, xpath[field])
@@ -199,7 +203,7 @@ class InventoryPage:
         xpath = {
             "host_group_name": "//div[@data-test='sc4snmp:form:group-ip-input']//span//input",
             "secret": "//div[@data-test='sc4snmp:form:secret-input']//span//input",
-            "security_engine": "//div[@data-test='sc4snmp:form:security-engine-input']//span//input"
+            "security_engine": "//div[@data-test='sc4snmp:form:security-engine-input']//span//input",
         }
         field_input = driver.find_element(By.XPATH, xpath[field])
         if edit:
@@ -259,7 +263,8 @@ class InventoryPage:
             "security_engine": f"//td[@data-test='sc4snmp:inventory-security-engine' and ancestor::tr//td[text()='{host}']]",
             "walk_interval": f"//td[@data-test='sc4snmp:inventory-walk-interval' and ancestor::tr//td[text()='{host}']]",
             "profiles": f"//td[@data-test='sc4snmp:inventory-profiles' and ancestor::tr//td[text()='{host}']]",
-            "smart_profiles": f"//td[@data-test='sc4snmp:inventory-smart-profiles' and ancestor::tr//td[text()='{host}']]"}
+            "smart_profiles": f"//td[@data-test='sc4snmp:inventory-smart-profiles' and ancestor::tr//td[text()='{host}']]",
+        }
         field = driver.find_element(By.XPATH, field_xpath[field])
         return field.text
 

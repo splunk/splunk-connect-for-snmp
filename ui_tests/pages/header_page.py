@@ -26,7 +26,7 @@ class HeaderPage:
         page_button_xpath = {
             "profiles": "//button[@data-test='sc4snmp:profiles-tab']",
             "groups": "//button[@data-test='sc4snmp:groups-tab']",
-            "inventory": "//button[@data-test='sc4snmp:inventory-tab']"
+            "inventory": "//button[@data-test='sc4snmp:inventory-tab']",
         }
         xpath_button = page_button_xpath[page_name]
         tab = driver.find_element(By.XPATH, xpath_button)
@@ -34,9 +34,11 @@ class HeaderPage:
         page_table_xpath = {
             "profiles": "//div[@data-test='sc4snmp:profiles-table']",
             "groups": "//div[@data-test='sc4snmp:group-table']",
-            "inventory": "//div[@data-test='sc4snmp:inventory-table']"
+            "inventory": "//div[@data-test='sc4snmp:inventory-table']",
         }
-        WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, page_table_xpath[page_name])))
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, page_table_xpath[page_name]))
+        )
 
     def apply_changes(self):
         logger.info("Apply changes")

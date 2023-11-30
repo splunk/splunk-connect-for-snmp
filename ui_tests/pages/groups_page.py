@@ -200,7 +200,7 @@ class GroupsPage:
             "port": "//div[@data-test='sc4snmp:form:port-input']//span//input",
             "community_string": "//div[@data-test='sc4snmp:form:community-input']//span//input",
             "secret": "//div[@data-test='sc4snmp:form:secret-input']//span//input",
-            "security_engine": "//div[@data-test='sc4snmp:form:security-engine-input']//span//input"
+            "security_engine": "//div[@data-test='sc4snmp:form:security-engine-input']//span//input",
         }
         field_input = driver.find_element(By.XPATH, xpath[field_name])
         if edit:
@@ -250,7 +250,7 @@ class GroupsPage:
             "snmp_version": f"//td[@data-test='sc4snmp:host-version' and ancestor::tr//td[text()='{device_ip}']]",
             "community_string": f"//td[@data-test='sc4snmp:host-community' and ancestor::tr//td[text()='{device_ip}']]",
             "secret": f"//td[@data-test='sc4snmp:host-secret' and ancestor::tr//td[text()='{device_ip}']]",
-            "security_engine": f"//td[@data-test='sc4snmp:host-security-engine' and ancestor::tr//td[text()='{device_ip}']]"
+            "security_engine": f"//td[@data-test='sc4snmp:host-security-engine' and ancestor::tr//td[text()='{device_ip}']]",
         }
         community = driver.find_element(By.XPATH, xpath[field])
         return community.text
