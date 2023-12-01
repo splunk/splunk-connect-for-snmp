@@ -1,6 +1,6 @@
 create_splunk_indexes() {
-  index_names=("netmetrics" "netops")
-  index_types=("metric" "event")
+  index_names=("netmetrics" "em_metrics" "netops" "em_logs")
+  index_types=("metric" "metric" "event" "event")
   for index in "${!index_names[@]}" ; do
     if ! curl -k -u admin:"changeme2" "https://localhost:8089/services/data/indexes" \
       -d datatype="${index_types[${index}]}" -d name="${index_names[${index}]}" ; then
