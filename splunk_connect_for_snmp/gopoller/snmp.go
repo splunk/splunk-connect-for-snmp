@@ -80,56 +80,6 @@ func getVersion(version string) gosnmp.SnmpVersion {
 	}
 }
 
-//func PerformBulkGet(authData string, target string, community string, oid string, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
-//	var appOpts = map[string]interface{}{"c": !ignoreNonIncreasingOid}
-//	params := &gosnmp.GoSNMP{
-//		Target:    target,
-//		Port:      uint16(port),
-//		Transport: "udp", //missing how to set UDP_TIMEOUT_CONNECTION ??
-//		//contexdata: it is in different variables below, they are defined for snmp v3
-//		ContextEngineID: "", //defined in contextData
-//		ContextName:     "", //defined in contextData
-//		MaxRepetitions:  1,
-//		NonRepeaters:    10,
-//		//varbinds
-//		//lexicographicMode=False don't see similar option
-//		// ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port)
-//		AppOpts:   appOpts, //have to set AppOpts to c if ignore=false, no c if ignore=true
-//		Community: community,
-//		Version:   gosnmp.Version2c,                  // have to set to correct version and add necessary params for v3
-//		Timeout:   time.Duration(1800) * time.Second, // timeout of one request, i don't think it's the same as udp connection timeout above
-//
-//	}
-//
-//	err := params.Connect()
-//	if err != nil {
-//		return nil, fmt.Errorf("error connecting to %s: %v", target, err)
-//	}
-//	defer params.Conn.Close()
-//	oids := []string{"1.3.6.1.2.1.31.0", "1.3.6.1.2.1.1.5"} //oids has tu be number not names
-//	res, err := params.GetBulk(oids, 10, 1)
-//	if err != nil {
-//		return nil, fmt.Errorf("walk Error: %v", err)
-//	}
-//
-//	var pdus []Pdu
-//	for _, snmppdu := range res.Variables {
-//		pdu := Pdu{gosnmp.ToBigInt(snmppdu.Value).String(),
-//			snmppdu.Name,
-//			snmppdu.Type.String(),
-//		}
-//		pdus = append(pdus, pdu)
-//	}
-//	fmt.Printf("took %s\n\n", res.Variables)
-//
-//	//var result []*gosnmp.SnmpPDU
-//	//for _, pdu := range res {
-//	//	result = append(result, &pdu)
-//	//}
-//
-//	return pdus, nil
-//}
-
 // Left for testing in go
 //func main() {
 //	start := time.Now()
