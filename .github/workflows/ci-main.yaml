@@ -78,7 +78,7 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - 3.9
+          - "3.10"
     steps:
       - uses: actions/checkout@v4
       - name: Setup python
@@ -144,7 +144,7 @@ jobs:
           sudo apt-get install snmp -y
           sudo apt-get install python3-dev -y
       - name: run automatic_setup.sh
-        run: integration_tests/automatic_setup.sh
+        run: integration_tests/automatic_setup.sh integration
       - name: run tests
         working-directory: integration_tests
         run: |
