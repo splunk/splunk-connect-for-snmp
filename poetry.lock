@@ -864,13 +864,13 @@ importlib-metadata = ">=6.0,<7.0"
 
 [[package]]
 name = "opentelemetry-exporter-jaeger-thrift"
-version = "1.20.0"
+version = "1.21.0"
 description = "Jaeger Thrift Exporter for OpenTelemetry"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "opentelemetry_exporter_jaeger_thrift-1.20.0-py3-none-any.whl", hash = "sha256:781045dbbce3094772426259fac4602269ddd7934f7767145997ea13f82d67e2"},
-    {file = "opentelemetry_exporter_jaeger_thrift-1.20.0.tar.gz", hash = "sha256:ab8416584535f93e3a087eecd6edec534361748763a9f8b609bbd0b44f3d73f9"},
+    {file = "opentelemetry_exporter_jaeger_thrift-1.21.0-py3-none-any.whl", hash = "sha256:4364b8dfa6965707c72c43d85942b1491982b7d44f0123d593513e8bedafa9e2"},
+    {file = "opentelemetry_exporter_jaeger_thrift-1.21.0.tar.gz", hash = "sha256:41119bc7e5602cec83dd7d7060f061ecbc91de231272e8f515b07ef9a4b6e41c"},
 ]
 
 [package.dependencies]
