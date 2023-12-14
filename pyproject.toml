@@ -50,7 +50,7 @@ urllib3 = "^1.26.17"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
 pytest-cov = "^4.0.0"
-mike = "^1.0.1"
+mike = "^2.0.0"
 mkdocs = "^1.2.2"
 mkdocs-material = "^9.0.0"
 python-dotenv = "^1.0.0"
