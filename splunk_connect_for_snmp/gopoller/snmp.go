@@ -14,7 +14,9 @@ type Pdu struct {
 	Type  string
 }
 
-func PerformBulkWalk(authData string, target string, community string, oid string, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
+type OidSlice []string
+
+func PerformBulkWalk(authData string, target string, community string, oids OidSlice, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
 	var appOpts = map[string]interface{}{"c": !ignoreNonIncreasingOid}
 
 	params := &gosnmp.GoSNMP{
@@ -40,20 +42,22 @@ func PerformBulkWalk(authData string, target string, community string, oid strin
 	defer params.Conn.Close()
 
 	//call for specific oid
-	res, err := params.BulkWalkAll(oid)
-	if err != nil {
-		return nil, fmt.Errorf("walk Error: %v", err)
+	var pdus []Pdu
+	for _, oid := range oids {
+		res, err := params.BulkWalkAll(oid)
+		if err != nil {
+			return nil, fmt.Errorf("walk Error: %v", err)
+		}
+		for _, snmppdu := range res {
+			pdu := Pdu{ToString(snmppdu.Value, snmppdu.Type),
+				snmppdu.Name,
+				snmppdu.Type.String(),
+			}
+			pdus = append(pdus, pdu)
+		}
 	}
 
 	//parse response to Pdu struct, so it could be translated by gopy and return to python
-	var pdus []Pdu
-	for _, snmppdu := range res {
-		pdu := Pdu{ToString(snmppdu.Value, snmppdu.Type),
-			snmppdu.Name,
-			snmppdu.Type.String(),
-		}
-		pdus = append(pdus, pdu)
-	}
 
 	return pdus, nil
 }
@@ -80,10 +84,51 @@ func getVersion(version string) gosnmp.SnmpVersion {
 	}
 }
 
+func PerformGet(authData string, target string, community string, oids OidSlice, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
+	var appOpts = map[string]interface{}{"c": !ignoreNonIncreasingOid}
+	params := &gosnmp.GoSNMP{
+		Target:             target,
+		Port:               uint16(port),
+		Transport:          "udp",
+		ContextEngineID:    "", //defined in contextData, in Go only for v3
+		ContextName:        "", //defined in contextData, in Go only for v3
+		MaxRepetitions:     1,
+		NonRepeaters:       10,
+		AppOpts:            appOpts, //set AppOpts to c if ignoreNonIncreasingOid=false, no c if ignoreNonIncreasingOid=true
+		Community:          community,
+		Version:            getVersion(version),               // have to set to correct version and add necessary params for v3
+		Timeout:            time.Duration(1800) * time.Second, // timeout of one request/response, possibly not the updconnectiontimeout??
+		ExponentialTimeout: true,
+		//Logger:             gosnmp.NewLogger(log.New(os.Stdout, "", 0)), //for now logging to stdout for debuging
+	}
+
+	err := params.Connect()
+	if err != nil {
+		return nil, fmt.Errorf("error connecting to %s: %v", target, err)
+	}
+	defer params.Conn.Close()
+
+	res, err := params.Get(oids)
+	if err != nil {
+		return nil, fmt.Errorf("walk Error: %v", err)
+	}
+
+	var pdus []Pdu
+	for _, snmppdu := range res.Variables {
+		pdu := Pdu{ToString(snmppdu.Value, snmppdu.Type),
+			snmppdu.Name,
+			snmppdu.Type.String(),
+		}
+		pdus = append(pdus, pdu)
+	}
+
+	return pdus, nil
+}
+
 // Left for testing in go
 //func main() {
 //	start := time.Now()
-//	res, err := PerformBulkWalk("xd", "54.91.99.113", "public", "1.3.6.1.2.1.31", 161, false, "2c")
+//	res, err := PerformBulkWalk("xd", "ip", "public", "1.3.6.1.2.1.31", 161, false, "2c")
 //	elapsed := time.Since(start)
 //
 //	if err != nil {
