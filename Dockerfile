@@ -18,6 +18,7 @@ RUN poetry config virtualenvs.in-project true ;\
     . /app/.venv/bin/activate ;\
     pip install dist/*.whl
 
+COPY pysnmp /app/.venv/lib/python3.10/site-packages/pysnmp
 FROM base AS final
 
 COPY --from=builder /app/.venv /app/.venv

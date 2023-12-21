@@ -86,6 +86,7 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
 
     for name, val in varBinds:
         data.append((name.prettyPrint(), val.prettyPrint()))
+    logging.info(data)
 
     work = {"data": data, "host": device_ip}
     my_chain = chain(
@@ -120,6 +121,7 @@ def main():
         udp.domainName,
         udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
     )
+
     with open(CONFIG_PATH, encoding="utf-8") as file:
         config_base = yaml.safe_load(file)
     idx = 0
@@ -132,19 +134,20 @@ def main():
     if "usernameSecrets" in config_base:
         for secret in config_base["usernameSecrets"]:
             location = os.path.join("secrets/snmpv3", secret)
+            logging.info("location " + location)
             userName = get_secret_value(
-                location, "userName", required=True, default=None
+                location, "userName", required=True, default=None, logger=logging
             )
 
-            authKey = get_secret_value(location, "authKey", required=False)
-            privKey = get_secret_value(location, "privKey", required=False)
+            authKey = get_secret_value(location, "authKey", required=False, logger=logging)
+            privKey = get_secret_value(location, "privKey", required=False, logger=logging)
 
-            authProtocol = get_secret_value(location, "authProtocol", required=False)
+            authProtocol = get_secret_value(location, "authProtocol", required=False, logger=logging)
             logging.debug(f"authProtocol: {authProtocol}")
             authProtocol = AuthProtocolMap.get(authProtocol.upper(), "NONE")
 
             privProtocol = get_secret_value(
-                location, "privProtocol", required=False, default="NONE"
+                location, "privProtocol", required=False, default="NONE", logger=logging
             )
             logging.debug(f"privProtocol: {privProtocol}")
             privProtocol = PrivProtocolMap.get(privProtocol.upper(), "NONE")
@@ -152,16 +155,18 @@ def main():
             for security_engine_id in SECURITY_ENGINE_ID_LIST:
                 config.addV3User(
                     snmpEngine,
-                    userName=userName,
+                    #userName=userName,
+                    userName=secret,
                     authProtocol=authProtocol,
                     authKey=authKey,
                     privProtocol=privProtocol,
                     privKey=privKey,
                     securityEngineId=v2c.OctetString(hexValue=security_engine_id),
+                    securityName=userName,
                 )
                 logging.debug(
                     f"V3 users: {userName} auth {authProtocol} authkey {len(authKey)*'*'} privprotocol {privProtocol} "
-                    f"privkey {len(privKey)*'*'} securityEngineId {len(security_engine_id)*'*'}"
+                    f"privkey {privKey} securityEngineId {len(security_engine_id)*'*'} securityName {secret}"
                 )
 
     # Register SNMP Application at the SNMP engine

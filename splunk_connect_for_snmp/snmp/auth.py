@@ -35,10 +35,14 @@ UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
 
 
 def get_secret_value(
-    location: str, key: str, default: str = "", required: bool = False
+    location: str, key: str, default: str = "", required: bool = False, logger = False
 ) -> str:
+    if logger:
+        logger.info("get_secret_value")
     source = os.path.join(location, key)
     result = default
+    if logger:
+        logger.info(source)
     if os.path.exists(source):
         with open(os.path.join(location, key), encoding="utf-8") as file:
             result = file.read().replace("\n", "")
