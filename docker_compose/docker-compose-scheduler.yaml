@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  scheduler:
+    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    container_name: sc4snmp-scheduler
+    command: ["celery", "beat"]
+    environment:
+      - CONFIG_PATH=/app/config/config.yaml
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - MONGO_URI=mongodb://mongo:27017/
+      - MIB_SOURCES=http://snmp-mibserver:8000/asn1/@mib@
+      - MIB_INDEX=http://snmp-mibserver:8000/index.csv
+      - MIB_STANDARD=http://snmp-mibserver:8000/standard.txt
+      - INVENTORY_REFRESH_RATE=${INVENTORY_REFRESH_RATE:-600}
+
+      # Scheduler configuration
+      - LOG_LEVEL=${SCHEDULER_LOG_LEVEL:-INFO}
+    depends_on:
+      - redis
+      - mongo
+      - coredns
+    volumes:
+      - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml
+      - scheduler-pysnmp-cache-volume:/.pysnmp/
+      - scheduler-tmp:/tmp/
+    restart: on-failure
+    networks:
+      my_network:
+    dns:
+      - ${COREDNS_ADDRESS}
+volumes:
+  scheduler-tmp:
+  scheduler-pysnmp-cache-volume:
