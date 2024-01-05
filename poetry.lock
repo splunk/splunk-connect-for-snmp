@@ -198,7 +198,7 @@ tenacity = "*"
 [package.source]
 type = "git"
 url = "https://github.com/splunk/redbeat"
-reference = "main"
+reference = "be62fd921d8c0ff548a482c2b112687de4167938"
 resolved_reference = "be62fd921d8c0ff548a482c2b112687de4167938"
 
 [[package]]
@@ -2138,4 +2138,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "ca9c32c3882805f2eba82c48b92f24df3a23f19fdfa9ee847e4d2785268eddd9"
+content-hash = "f74bf4f93fd163d5673f606c4f662aa3e8da419e9ecea29739761df3615d3f9f"
