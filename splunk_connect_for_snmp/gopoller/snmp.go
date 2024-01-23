@@ -5,37 +5,17 @@ package gopoller
 import (
 	"fmt"
 	"github.com/gosnmp/gosnmp"
-	"time"
 )
 
-type Pdu struct {
-	Value string
-	Name  string
-	Type  string
-}
+func PerformBulkWalk(authData SnmpV3StringAuthData, target string, community string, oids OidSlice, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
+	//var params *gosnmp.GoSNMP
+	params, err := getGoSnmp(target, port, ignoreNonIncreasingOid, version, community, authData, 1800)
 
-type OidSlice []string
-
-func PerformBulkWalk(authData string, target string, community string, oids OidSlice, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
-	var appOpts = map[string]interface{}{"c": !ignoreNonIncreasingOid}
-
-	params := &gosnmp.GoSNMP{
-		Target:             target,
-		Port:               uint16(port),
-		Transport:          "udp",
-		ContextEngineID:    "", //defined in contextData, in Go only for v3
-		ContextName:        "", //defined in contextData, in Go only for v3
-		MaxRepetitions:     1,
-		NonRepeaters:       10,
-		AppOpts:            appOpts, //set AppOpts to c if ignoreNonIncreasingOid=false, no c if ignoreNonIncreasingOid=true
-		Community:          community,
-		Version:            getVersion(version),               // have to set to correct version and add necessary params for v3
-		Timeout:            time.Duration(1800) * time.Second, // timeout of one request/response, possibly not the updconnectiontimeout??
-		ExponentialTimeout: true,
-		//Logger:             gosnmp.NewLogger(log.New(os.Stdout, "", 0)), //for now logging to stdout for debuging
+	if err != nil {
+		return nil, fmt.Errorf("an error occured while creating gosnmp.GoSNMP:  %v", err)
 	}
 
-	err := params.Connect()
+	err = params.Connect()
 	if err != nil {
 		return nil, fmt.Errorf("error connecting to %s: %v", target, err)
 	}
@@ -46,7 +26,7 @@ func PerformBulkWalk(authData string, target string, community string, oids OidS
 	for _, oid := range oids {
 		res, err := params.BulkWalkAll(oid)
 		if err != nil {
-			return nil, fmt.Errorf("walk Error: %v", err)
+			return nil, fmt.Errorf("an error occured during snmp walk: %v", err)
 		}
 		for _, snmppdu := range res {
 			pdu := Pdu{ToString(snmppdu.Value, snmppdu.Type),
@@ -58,7 +38,6 @@ func PerformBulkWalk(authData string, target string, community string, oids OidS
 	}
 
 	//parse response to Pdu struct, so it could be translated by gopy and return to python
-
 	return pdus, nil
 }
 
@@ -73,36 +52,13 @@ func ToString(value interface{}, vtype gosnmp.Asn1BER) string {
 	}
 }
 
-func getVersion(version string) gosnmp.SnmpVersion {
-	switch version {
-	case "1":
-		return gosnmp.Version1
-	case "2c":
-		return gosnmp.Version2c
-	default:
-		return gosnmp.Version3
-	}
-}
-
-func PerformGet(authData string, target string, community string, oids OidSlice, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
-	var appOpts = map[string]interface{}{"c": !ignoreNonIncreasingOid}
-	params := &gosnmp.GoSNMP{
-		Target:             target,
-		Port:               uint16(port),
-		Transport:          "udp",
-		ContextEngineID:    "", //defined in contextData, in Go only for v3
-		ContextName:        "", //defined in contextData, in Go only for v3
-		MaxRepetitions:     1,
-		NonRepeaters:       10,
-		AppOpts:            appOpts, //set AppOpts to c if ignoreNonIncreasingOid=false, no c if ignoreNonIncreasingOid=true
-		Community:          community,
-		Version:            getVersion(version),               // have to set to correct version and add necessary params for v3
-		Timeout:            time.Duration(1800) * time.Second, // timeout of one request/response, possibly not the updconnectiontimeout??
-		ExponentialTimeout: true,
-		//Logger:             gosnmp.NewLogger(log.New(os.Stdout, "", 0)), //for now logging to stdout for debuging
+func PerformGet(authData SnmpV3StringAuthData, target string, community string, oids OidSlice, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
+	params, err := getGoSnmp(target, port, ignoreNonIncreasingOid, version, community, authData, 20)
+	if err != nil {
+		return nil, fmt.Errorf("an error occured while creating gosnmp.GoSNMP:  %v", err)
 	}
 
-	err := params.Connect()
+	err = params.Connect()
 	if err != nil {
 		return nil, fmt.Errorf("error connecting to %s: %v", target, err)
 	}
@@ -110,7 +66,7 @@ func PerformGet(authData string, target string, community string, oids OidSlice,
 
 	res, err := params.Get(oids)
 	if err != nil {
-		return nil, fmt.Errorf("walk Error: %v", err)
+		return nil, fmt.Errorf("an error occured during snmp get: %v", err)
 	}
 
 	var pdus []Pdu
@@ -128,7 +84,22 @@ func PerformGet(authData string, target string, community string, oids OidSlice,
 // Left for testing in go
 //func main() {
 //	start := time.Now()
-//	res, err := PerformBulkWalk("xd", "ip", "public", "1.3.6.1.2.1.31", 161, false, "2c")
+//	//oids := OidSlice{"1.3.6.1.2.1.31"}
+//	//res, err := PerformBulkWalk(SnmpV3StringAuthData{}, "54.91.99.113", "public", oids, 161, false, "2c")
+//	//res, err := PerformGet(SnmpV3StringAuthData{}, "54.91.99.113", "public", OidSlice{"1.3.6.1.2.1.1.6.0"}, 161, false, "2c")
+//
+//	// TEST VERSION 3
+//	var authData = SnmpV3StringAuthData{
+//		UserName:                 "r-wuser",
+//		PrivacyProtocol:          "AES",
+//		PrivacyPassphrase:        "admin1234",
+//		AuthenticationProtocol:   "SHA",
+//		AuthenticationPassphrase: "admin1234",
+//		AuthoritativeEngineID:    "",
+//	}
+//	oids := OidSlice{"1.3.6.1.2.1.1"}
+//	res, err := PerformBulkWalk(authData, "3.138.204.11", "public", oids, 161, false, "3")
+//	//res, err := PerformGet(authData, "3.138.204.11", "public", OidSlice{"1.3.6.1.2.1.1.6.0"}, 161, false, "3")
 //	elapsed := time.Since(start)
 //
 //	if err != nil {
