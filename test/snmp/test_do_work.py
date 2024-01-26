@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
-from splunk_connect_for_snmp.snmp.manager import Poller
+from splunk_connect_for_snmp.snmp.manager import PysnmpPoller
 from splunk_connect_for_snmp.snmp.varbinds_resolver import ProfileCollection
 
 inventory_record = InventoryRecord(
@@ -31,7 +31,7 @@ class TestDoWork(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
     def test_do_work_no_work_to_do(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
         poller.profiles_manager = MagicMock()
@@ -62,7 +62,7 @@ class TestDoWork(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
     @patch("splunk_connect_for_snmp.common.collection_manager.ProfilesManager")
     def test_do_work_bulk(self, load_profiles, getCmd, bulkCmd):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
         poller.builder = MagicMock()
@@ -100,7 +100,7 @@ class TestDoWork(TestCase):
         "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
     )
     def test_do_work_get(self, load_profiles, getCmd, bulkCmd):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
         poller.builder = MagicMock()
@@ -143,7 +143,7 @@ class TestDoWork(TestCase):
         "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
     )
     def test_do_work_errors(self, load_profiles, getCmd, bulkCmd):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
         poller.builder = MagicMock()

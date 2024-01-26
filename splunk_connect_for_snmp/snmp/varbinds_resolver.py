@@ -15,6 +15,7 @@ class Varbind:
             varbind_list = [varbind_list]
         self.list = varbind_list
         self.object_identity = ObjectType(ObjectIdentity(*varbind_list))
+        self.object_id = ObjectIdentity(*varbind_list)
 
     def mapping_key(self):
         if len(self.list) == 1:
@@ -190,14 +191,23 @@ class Profile:
             self.varbinds_bulk.get_mib_families() + self.varbinds_get.get_mib_families()
         )
 
-    def return_mapping_and_varbinds(self):
-        varbinds_get = [
-            value.object_identity for value in self.varbinds_get.return_varbind_values()
-        ]
-        varbinds_bulk = [
-            value.object_identity
-            for value in self.varbinds_bulk.return_varbind_values()
-        ]
+    def return_mapping_and_varbinds(self, run_with_go: bool = False):
+        if run_with_go:
+            varbinds_get = [
+                value.object_id for value in self.varbinds_get.return_varbind_values()
+            ]
+            varbinds_bulk = [
+                value.object_id for value in self.varbinds_bulk.return_varbind_values()
+            ]
+        else:
+            varbinds_get = [
+                value.object_identity
+                for value in self.varbinds_get.return_varbind_values()
+            ]
+            varbinds_bulk = [
+                value.object_identity
+                for value in self.varbinds_bulk.return_varbind_values()
+            ]
         return (
             varbinds_get,
             self.varbinds_get_mapping,
