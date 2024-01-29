@@ -11,8 +11,8 @@ localhost,,2c,public,,,1804,test_1,True,False
 
 class TestWalk(TestCase):
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
+    @patch("splunk_connect_for_snmp.snmp.manager.PysnmpPoller.__init__")
+    @patch("splunk_connect_for_snmp.snmp.manager.PysnmpPoller.do_work")
     @patch(
         "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
     )
@@ -33,8 +33,8 @@ class TestWalk(TestCase):
         self.assertEqual("192.178.0.1", calls[1].args[0].address)
 
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
+    @patch("splunk_connect_for_snmp.snmp.manager.PysnmpPoller.__init__")
+    @patch("splunk_connect_for_snmp.snmp.manager.PysnmpPoller.do_work")
     @patch(
         "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
     )

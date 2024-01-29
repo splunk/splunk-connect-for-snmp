@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
-from splunk_connect_for_snmp.snmp.manager import Poller
+from splunk_connect_for_snmp.snmp.manager import PysnmpPoller
 
 
 class TestProcessSnmpData(TestCase):
@@ -20,7 +20,7 @@ class TestProcessSnmpData(TestCase):
         m_get_group_key,
         m_resolved,
     ):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         m_resolved.return_value = True
         m_get_group_key.return_value = "QWERTYUIOP"
@@ -95,7 +95,7 @@ class TestProcessSnmpData(TestCase):
         m_get_group_key,
         m_resolved,
     ):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         m_resolved.return_value = True
         m_get_group_key.side_effect = ["GROUP1", "GROUP2"]
@@ -176,7 +176,7 @@ class TestProcessSnmpData(TestCase):
         m_get_group_key,
         m_resolved,
     ):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         m_resolved.return_value = True
         m_get_group_key.return_value = "GROUP1"
@@ -252,7 +252,7 @@ class TestProcessSnmpData(TestCase):
         m_get_group_key,
         m_resolved,
     ):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         m_resolved.return_value = True
         m_get_group_key.return_value = "QWERTYUIOP"

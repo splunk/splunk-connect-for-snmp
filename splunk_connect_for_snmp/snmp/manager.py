@@ -20,6 +20,7 @@ from pysnmp.smi import error
 from requests import Session
 
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
+from splunk_connect_for_snmp.gopoller.out import gopoller
 from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
 from splunk_connect_for_snmp.snmp.varbinds_resolver import ProfileCollection
 
@@ -32,6 +33,7 @@ except:
 import csv
 import os
 import time
+from abc import abstractmethod
 from io import StringIO
 from typing import Any, Dict, List, Tuple, Union
 
@@ -46,7 +48,7 @@ from requests_cache import MongoCache
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
-from splunk_connect_for_snmp.snmp.auth import GetAuth
+from splunk_connect_for_snmp.snmp.auth import GetAuth, getAuthV3
 from splunk_connect_for_snmp.snmp.context import get_context_data
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
@@ -288,6 +290,166 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
 
+    @abstractmethod
+    def do_work(
+        self,
+        ir: InventoryRecord,
+        walk: bool = False,
+        profiles: List[str] = None,
+    ):
+        pass
+
+    @abstractmethod
+    def get_var_binds(self, address, walk=False, profiles=[]):
+        pass
+
+    def get_varbind_chunk(self, lst, n):
+        for i in range(0, len(lst), n):
+            yield lst[i : i + n]
+
+    def load_mibs(self, mibs: List[str]) -> None:
+        logger.info(f"loading mib modules {mibs}")
+        for mib in mibs:
+            if mib:
+                try:
+                    self.builder.loadModules(mib)
+                except Exception as e:
+                    logger.warning(f"Error loading mib for {mib}, {e}")
+
+    def is_mib_known(self, id: str, oid: str, target: str) -> Tuple[bool, str]:
+        oid_list = tuple(oid.split("."))
+        # if oid match enterprise, then search should stop if there is no match to vendor
+        start = 6 if oid.startswith("1.3.6.1.4.1") else 5
+        for i in range(len(oid_list), start, -1):
+            oid_to_check = ".".join(oid_list[:i])
+            if oid_to_check in self.mib_map:
+                mib = self.mib_map[oid_to_check]
+                logger.debug(f"found {mib} for {id} based on {oid_to_check}")
+                return True, mib
+        logger.warning(f"no mib found {id} based on {oid} from {target}")
+        return False, ""
+
+    def process_snmp_data(self, varBindTable, metrics, target, mapping={}):
+        retry = False
+        remotemibs = []
+        for varBind in varBindTable:
+            mib, metric, index = varBind[0].getMibSymbol()
+
+            id = varBind[0].prettyPrint()
+            oid = str(varBind[0].getOid())
+
+            if isMIBResolved(id):
+                group_key = get_group_key(mib, oid, index)
+                if group_key not in metrics:
+                    indexes = extract_indexes(index)
+                    metrics[group_key] = {
+                        "metrics": {},
+                        "fields": {},
+                        "indexes": indexes,
+                    }
+                    if mapping:
+                        metrics[group_key]["profiles"] = []
+                try:
+
+                    snmp_val = varBind[1]
+                    snmp_type = type(snmp_val).__name__
+
+                    metric_type = map_metric_type(snmp_type, snmp_val)
+                    metric_value = valueAsBest(snmp_val.prettyPrint())
+
+                    index_number = extract_index_number(index)
+                    metric_value = fill_empty_value(index_number, metric_value, target)
+
+                    profile = None
+                    if mapping:
+                        profile = mapping.get(
+                            id.replace('"', ""),
+                            mapping.get(f"{mib}::{metric}", mapping.get(mib)),
+                        )
+                        # when varbind name differs from mib-family,
+                        # we are checking if there's any key that includes this mib to get profile
+                        if not profile:
+                            key = [
+                                prof
+                                for mib_map, prof in mapping.items()
+                                if mib in mib_map
+                            ]
+                            if key:
+                                profile = key[0]
+                        if profile and "__" in profile:
+                            profile = profile.split("__")[0]
+                    if metric_value == "No more variables left in this MIB View":
+                        continue
+
+                    if metric_type in MTYPES and (isinstance(metric_value, float)):
+                        metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
+                            "time": time.time(),
+                            "type": metric_type,
+                            "value": metric_value,
+                            "oid": oid,
+                        }
+                        if profile and profile not in metrics[group_key]["profiles"]:
+                            metrics[group_key]["profiles"].append(profile)
+                    else:
+                        metrics[group_key]["fields"][f"{mib}.{metric}"] = {
+                            "time": time.time(),
+                            "type": metric_type,
+                            "value": metric_value,
+                            "oid": oid,
+                        }
+                except:
+                    logger.exception(
+                        f"Exception processing data from {target} {varBind}"
+                    )
+            else:
+                found, mib = self.is_mib_known(id, oid, target)
+                if mib and mib not in remotemibs:
+                    remotemibs.append(mib)
+                if found:
+                    retry = True
+                    break
+
+        return retry, remotemibs, metrics
+
+
+class PysnmpPoller(Poller):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def get_var_binds(self, address, walk=False, profiles=[]):
+        varbinds_bulk = set()
+        varbinds_get = set()
+        get_mapping = {}
+        bulk_mapping = {}
+        if walk and not profiles:
+            varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
+            return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
+
+        joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
+            profiles, walk
+        )
+        if joined_profile_object:
+            mib_families = joined_profile_object.get_mib_families()
+            mib_files_to_load = [
+                mib_family
+                for mib_family in mib_families
+                if mib_family not in self.already_loaded_mibs
+            ]
+            if mib_files_to_load:
+                self.load_mibs(mib_files_to_load)
+            (
+                varbinds_get,
+                get_mapping,
+                varbinds_bulk,
+                bulk_mapping,
+            ) = joined_profile_object.return_mapping_and_varbinds()
+
+        logger.debug(f"host={address} varbinds_get={varbinds_get}")
+        logger.debug(f"host={address} get_mapping={get_mapping}")
+        logger.debug(f"host={address} varbinds_bulk={varbinds_bulk}")
+        logger.debug(f"host={address} bulk_mapping={bulk_mapping}")
+        return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
+
     def do_work(
         self,
         ir: InventoryRecord,
@@ -376,31 +538,19 @@ class Poller(Task):
 
         return retry, metrics
 
-    def get_varbind_chunk(self, lst, n):
-        for i in range(0, len(lst), n):
-            yield lst[i : i + n]
 
-    def load_mibs(self, mibs: List[str]) -> None:
-        logger.info(f"loading mib modules {mibs}")
-        for mib in mibs:
-            if mib:
-                try:
-                    self.builder.loadModules(mib)
-                except Exception as e:
-                    logger.warning(f"Error loading mib for {mib}, {e}")
+class GosnmpPoller(Poller):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def is_mib_known(self, id: str, oid: str, target: str) -> Tuple[bool, str]:
-        oid_list = tuple(oid.split("."))
-        # if oid match enterprise, then search should stop if there is no match to vendor
-        start = 6 if oid.startswith("1.3.6.1.4.1") else 5
-        for i in range(len(oid_list), start, -1):
-            oid_to_check = ".".join(oid_list[:i])
-            if oid_to_check in self.mib_map:
-                mib = self.mib_map[oid_to_check]
-                logger.debug(f"found {mib} for {id} based on {oid_to_check}")
-                return True, mib
-        logger.warning(f"no mib found {id} based on {oid} from {target}")
-        return False, ""
+    def get_oid_set(self, varbinds):
+        varbinds_oid = set()
+        for var in varbinds:
+            var.resolveWithMib(self.mib_view_controller)
+            varbinds_oid.add(str(var.getOid()))
+
+        logger.debug(f"varbinds_oid={varbinds_oid}")
+        return varbinds_oid
 
     def get_var_binds(self, address, walk=False, profiles=[]):
         varbinds_bulk = set()
@@ -408,7 +558,7 @@ class Poller(Task):
         get_mapping = {}
         bulk_mapping = {}
         if walk and not profiles:
-            varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
+            varbinds_bulk.add(ObjectIdentity("1.3.6"))
             return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
         joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
@@ -428,91 +578,47 @@ class Poller(Task):
                 get_mapping,
                 varbinds_bulk,
                 bulk_mapping,
-            ) = joined_profile_object.return_mapping_and_varbinds()
+            ) = joined_profile_object.return_mapping_and_varbinds(run_with_go=True)
+
+            varbinds_get = self.get_oid_set(varbinds_get)
+            varbinds_bulk = self.get_oid_set(varbinds_bulk)
+
         logger.debug(f"host={address} varbinds_get={varbinds_get}")
         logger.debug(f"host={address} get_mapping={get_mapping}")
         logger.debug(f"host={address} varbinds_bulk={varbinds_bulk}")
         logger.debug(f"host={address} bulk_mapping={bulk_mapping}")
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
-    def process_snmp_data(self, varBindTable, metrics, target, mapping={}):
+    def do_work(
+        self,
+        ir: InventoryRecord,
+        walk: bool = False,
+        profiles: List[str] = None,
+    ):
         retry = False
-        remotemibs = []
-        for varBind in varBindTable:
-            mib, metric, index = varBind[0].getMibSymbol()
+        address = transform_address_to_key(ir.address, ir.port)
 
-            id = varBind[0].prettyPrint()
-            oid = str(varBind[0].getOid())
+        if time.time() - self.last_modified > PROFILES_RELOAD_DELAY or walk:
+            self.profiles = self.profiles_manager.return_collection()
+            self.profiles_collection.update(self.profiles)
+            self.last_modified = time.time()
+            logger.debug("Profiles reloaded")
 
-            if isMIBResolved(id):
-                group_key = get_group_key(mib, oid, index)
-                if group_key not in metrics:
-                    indexes = extract_indexes(index)
-                    metrics[group_key] = {
-                        "metrics": {},
-                        "fields": {},
-                        "indexes": indexes,
-                    }
-                    if mapping:
-                        metrics[group_key]["profiles"] = []
-                try:
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
+            address, walk=walk, profiles=profiles
+        )
 
-                    snmp_val = varBind[1]
-                    snmp_type = type(snmp_val).__name__
+        # for v1 and v2 you only need community and version, which are sent in perform method
+        if ir.version == "3":
+            authv3 = getAuthV3(logger, ir, self.snmpEngine)
 
-                    metric_type = map_metric_type(snmp_type, snmp_val)
-                    metric_value = valueAsBest(snmp_val.prettyPrint())
+            auth_data = gopoller.SnmpV3StringAuthData(
+                UserName=authv3.userName,
+                AuthenticationProtocol=authv3.authProtocol,
+                AuthenticationPassphrase=authv3.authKey,
+                PrivacyProtocol=authv3.privProtocol,
+                PrivacyPassphrase=authv3.privKey,
+                AuthoritativeEngineID=authv3.securityEngineId,
+            )
 
-                    index_number = extract_index_number(index)
-                    metric_value = fill_empty_value(index_number, metric_value, target)
-
-                    profile = None
-                    if mapping:
-                        profile = mapping.get(
-                            id.replace('"', ""),
-                            mapping.get(f"{mib}::{metric}", mapping.get(mib)),
-                        )
-                        # when varbind name differs from mib-family,
-                        # we are checking if there's any key that includes this mib to get profile
-                        if not profile:
-                            key = [
-                                prof
-                                for mib_map, prof in mapping.items()
-                                if mib in mib_map
-                            ]
-                            if key:
-                                profile = key[0]
-                        if profile and "__" in profile:
-                            profile = profile.split("__")[0]
-                    if metric_value == "No more variables left in this MIB View":
-                        continue
-
-                    if metric_type in MTYPES and (isinstance(metric_value, float)):
-                        metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
-                            "time": time.time(),
-                            "type": metric_type,
-                            "value": metric_value,
-                            "oid": oid,
-                        }
-                        if profile and profile not in metrics[group_key]["profiles"]:
-                            metrics[group_key]["profiles"].append(profile)
-                    else:
-                        metrics[group_key]["fields"][f"{mib}.{metric}"] = {
-                            "time": time.time(),
-                            "type": metric_type,
-                            "value": metric_value,
-                            "oid": oid,
-                        }
-                except:
-                    logger.exception(
-                        f"Exception processing data from {target} {varBind}"
-                    )
-            else:
-                found, mib = self.is_mib_known(id, oid, target)
-                if mib and mib not in remotemibs:
-                    remotemibs.append(mib)
-                if found:
-                    retry = True
-                    break
-
-        return retry, remotemibs, metrics
+        # TODO: Implementation of bulkCMD and getCMD with parsing to return similar structure

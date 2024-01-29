@@ -1,13 +1,13 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from splunk_connect_for_snmp.snmp.manager import Poller
+from splunk_connect_for_snmp.snmp.manager import PysnmpPoller
 from splunk_connect_for_snmp.snmp.varbinds_resolver import ProfileCollection
 
 
 class TestGetVarbinds(TestCase):
     def test_get_varbinds_for_walk(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
         poller.profiles_collection = ProfileCollection({})
         poller.profiles_collection.process_profiles()
         poller.already_loaded_mibs = set()
@@ -27,7 +27,7 @@ class TestGetVarbinds(TestCase):
         )
 
     def test_get_varbinds_for_walk_redundant(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         profiles = {
             "test1": {
@@ -66,7 +66,7 @@ class TestGetVarbinds(TestCase):
         )
 
     def test_get_varbinds_for_walk_none(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         profiles = {
             "test1": {
@@ -98,7 +98,7 @@ class TestGetVarbinds(TestCase):
         )
 
     def test_get_varbinds_for_walk_with_three_profiles(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         profiles = {
             "test1": {
@@ -133,7 +133,7 @@ class TestGetVarbinds(TestCase):
         )
 
     def test_get_varbinds_for_walk_next_time_no_profiles(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
         poller.profiles_collection = ProfileCollection({})
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_var_binds(
             "192.168.0.1", walk=True, profiles=[]
@@ -164,7 +164,7 @@ class TestGetVarbinds(TestCase):
             },
         }
 
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
         poller.profiles = profiles
         poller.profiles_collection = ProfileCollection(profiles)
         poller.profiles_collection.process_profiles()
@@ -206,7 +206,7 @@ class TestGetVarbinds(TestCase):
             },
         }
 
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
         poller.profiles = profiles
         poller.profiles_collection = ProfileCollection(profiles)
         poller.profiles_collection.process_profiles()
@@ -235,7 +235,7 @@ class TestGetVarbinds(TestCase):
         self.assertEqual("UDP-MIB", names[1])
 
     def test_get_varbinds_for_poll_family_only(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         poller.profiles = {
             "profile1": {"frequency": 20, "varBinds": [["IF-MIB"]]},
@@ -272,7 +272,7 @@ class TestGetVarbinds(TestCase):
         self.assertCountEqual(poller.load_mibs.call_args.args[0], ["IF-MIB", "UDP-MIB"])
 
     def test_get_varbinds_for_poll_only_bulk_properties(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         poller.profiles = {
             "profile1": {
@@ -324,7 +324,7 @@ class TestGetVarbinds(TestCase):
         self.assertCountEqual(poller.load_mibs.call_args.args[0], ["IF-MIB", "UDP-MIB"])
 
     def test_get_varbinds_for_poll_only_get_properties(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         poller.profiles = {
             "profile1": {
@@ -380,7 +380,7 @@ class TestGetVarbinds(TestCase):
         self.assertCountEqual(poller.load_mibs.call_args.args[0], ["IF-MIB", "UDP-MIB"])
 
     def test_get_varbinds_for_poll_only_get_properties_compound(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         poller.profiles = {
             "profile1": {
@@ -439,7 +439,7 @@ class TestGetVarbinds(TestCase):
         self.assertCountEqual(poller.load_mibs.call_args.args[0], ["IF-MIB", "TCP-MIB"])
 
     def test_get_varbinds_for_poll_shadowed_by_family(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         poller.profiles = {
             "profile1": {
@@ -491,7 +491,7 @@ class TestGetVarbinds(TestCase):
         self.assertCountEqual(poller.load_mibs.call_args.args[0], ["IF-MIB", "UDP-MIB"])
 
     def test_get_varbinds_for_poll_shadowed_by_bulk_name(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         poller.profiles = {
             "profile1": {
@@ -536,7 +536,7 @@ class TestGetVarbinds(TestCase):
         poller.load_mibs.assert_called_with(["UDP-MIB"])
 
     def test_get_varbind_chunk(self):
-        poller = Poller.__new__(Poller)
+        poller = PysnmpPoller.__new__(PysnmpPoller)
 
         initial_list = list(range(1, 13))
         expected_result = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]]
