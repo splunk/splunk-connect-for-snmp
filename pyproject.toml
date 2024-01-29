@@ -43,7 +43,6 @@ mongolock = "^1.3.4"
 pika = "^1.2.0"
 JSON-log-formatter ="^0.5.1"
 "ruamel.yaml" = "^0.18.0"
-mkdocs-video = "^1.5.0"
 pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", branch = "main"}
 urllib3 = "^1.26.17"
 
@@ -54,6 +53,7 @@ mike = "^2.0.0"
 mkdocs = "^1.2.2"
 mkdocs-material = "^9.0.0"
 python-dotenv = "^1.0.0"
+mkdocs-video = "^1.5.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
