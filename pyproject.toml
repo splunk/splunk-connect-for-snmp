@@ -35,7 +35,7 @@ pyrate-limiter = "^2.10.0"
 requests-cache = "^1.0.0"
 requests-ratelimiter = "^0.4.0"
 mongoengine = "^0.27.0"
-celery-redbeat = {git = "https://github.com/splunk/redbeat", rev = "main"}
+celery-redbeat = {git = "https://github.com/splunk/redbeat", branch = "main"}
 PyYAML = "^6.0"
 #Note this is temporary PR to upstream project is issued
 wait-for-dep = {extras = ["redis"], git="https://github.com/omrozowicz-splunk/wait-for-dep.git"}
@@ -44,7 +44,7 @@ pika = "^1.2.0"
 JSON-log-formatter ="^0.5.1"
 "ruamel.yaml" = "^0.18.0"
 mkdocs-video = "^1.5.0"
-pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", rev = "main"}
+pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", branch = "main"}
 urllib3 = "^1.26.17"
 
 [tool.poetry.group.dev.dependencies]
