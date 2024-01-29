@@ -44,7 +44,7 @@ pika = "^1.2.0"
 JSON-log-formatter ="^0.5.1"
 "ruamel.yaml" = "^0.18.0"
 mkdocs-video = "^1.5.0"
-pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", rev = "main"}
+pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", rev = "4891556e7db831a5a9b27d4bad8ff102609b2a2c"}
 urllib3 = "^1.26.17"
 
 [tool.poetry.group.dev.dependencies]
