@@ -16,8 +16,8 @@ Three node minimum per node:
 
 # MicroK8s installation on Ubuntu
 
-The following quick start guidance is based on Ubuntu 20.04LTS with MicroK8s with internet access. Other deployment options
-may be found in the MicroK8s [documentation](https://microk8s.io/docs) including offline and with proxy. 
+The following quick start guidance is based on Ubuntu 20.04LTS with MicroK8s and internet access. See other deployment options
+in the MicroK8s [documentation](https://microk8s.io/docs), including offline and with proxy. 
 
 ## Install MicroK8s using Snap
 
@@ -37,18 +37,18 @@ Wait for Installation of Mk8S to complete:
 microk8s status --wait-ready
 ```
 
-## Add additional nodes (optional)
+## Add nodes (optional)
 
-* Repeat the steps above for each additional node (minimum total 3)
-* On the first node issue the following to return the instructions to join: 
+* Repeat the steps above for each additional node (with a minimum of 3 nodes).
+* On the first node, use the following command to see the instructions to join: 
 
 ```bash
 microk8s add-node
 ```
 
-* On each additional node, use the output from the command above
+* On each additional node, use the output from the command above.
 
-## Install basic services required for sc4snmp
+## Install required services for SC4SNMP
 
 The following commands can be issued from any one node in a cluster:
 
@@ -62,7 +62,7 @@ microk8s status --wait-ready
 ```
 
 Install the DNS server for mk8s and configure the forwarding DNS servers. Replace the IP addressed below (opendns) with
-allowed values for your network: 
+the allowed values for your network: 
 
 ```bash
 microk8s enable dns:208.67.222.222,208.67.220.220
@@ -71,8 +71,8 @@ microk8s status --wait-ready
 
 ## Install Metallb
 
-Note: when installing Metallb you will be prompted for one or more IPs to use as entry points
-into the cluster. If your plan to enable clustering, this IP should not be assigned to the host (floats).
+When installing Metallb, you will be prompted for one or more IPs to use as entry points
+into the cluster. If you plan to enable clustering, this IP should not be assigned to the host (floats).
 If you do not plan to cluster, then this IP should be the IP of your host.
 
 Note2: a single IP in cidr format is x.x.x.x/32. Use CIDR or range syntax for single server installations. This can be
