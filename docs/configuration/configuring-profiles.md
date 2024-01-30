@@ -215,7 +215,7 @@ NOTE: Be aware that profile changes may not be reflected immediately. It can tak
 There is also a 5 minute time to leave (TTL) for an inventory pod. SC4SNMP allows one inventory upgrade and then it block updates for the next 5 minutes.
 
 ## Conditional profiles
-There is a way to not explicitly give what SNMP objects we want to poll, but, instead, only give the conditions that must be fulfilled to
+There is a way to not explicitly list what SNMP objects yoy want to poll, but, instead, only give the conditions that must be fulfilled to
 qualify an object for polling.
 
 See the following example of a conditional profile:
