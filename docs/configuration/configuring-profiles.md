@@ -17,7 +17,7 @@ Smart profiles are useful when you have many devices of the same kind, and you d
     2. Set the filter to match all the devices of this kind.
     3. Set up polling of the profile by enabling the smart profiles for the devices that you want to be polled.
 
-The template of the profile looks like the following:
+The profile template looks like the following:
 
 ```yaml
 scheduler:
