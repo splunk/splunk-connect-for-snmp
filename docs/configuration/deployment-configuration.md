@@ -1,6 +1,6 @@
 #Deployment Configuration
 
-`values.yaml` is the main point of SC4SNMP management. You can check all the default values of Helm dependencies using:
+`values.yaml` is the main point of SC4SNMP management. You can check all the default values of Helm dependencies using the following command:
 
 ```
 microk8s helm3 inspect values splunk-connect-for-snmp/splunk-connect-for-snmp > values.yaml
@@ -8,7 +8,7 @@ microk8s helm3 inspect values splunk-connect-for-snmp/splunk-connect-for-snmp > 
 
 The whole file is divided into the following parts:
 
-For configuring endpoint for sending SNMP data:
+To configure the endpoint for sending SNMP data:
 
 - `splunk` - in case you use Splunk Enterprise/Cloud
 - `sim` - in case you use Splunk Observability Cloud. More details: [sim configuration](sim-configuration.md)
@@ -29,7 +29,7 @@ Shared components:
 - `redis` - more details: [redis configuration](redis-configuration.md)
 
 ### Shared values
-All the components have the `resources` field for adjusting memory resources:
+All the components have the following `resources` field for adjusting memory resources:
 ```yaml
   resources:
     limits:
@@ -39,9 +39,9 @@ All the components have the `resources` field for adjusting memory resources:
       cpu: 1000m
       memory: 2Gi
 ```
-More information about the concept of `resources` can be found in the [kuberentes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+For more information about the concept of `resources`, see the [kuberentes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
 
-There is an option to create common annotations across all the services. It can be set by:
+There is an option to create common annotations across all services. It can be set by:
 
 ```yaml
 commonAnnotations:
