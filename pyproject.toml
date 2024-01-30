@@ -47,7 +47,7 @@ pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", branch = "main"}
 urllib3 = "^1.26.17"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.2.1"
+pytest = "^8.0.0"
 pytest-cov = "^4.0.0"
 mike = "^2.0.0"
 mkdocs = "^1.2.2"
