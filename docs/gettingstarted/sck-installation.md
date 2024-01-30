@@ -1,16 +1,15 @@
 # Splunk OpenTelemetry Collector for Kubernetes installation
 
-Splunk OpenTelemetry Collector for Kubernetes is not required for SC4SNMP installation. This is the tool that sends logs
-and metrics from a k8s cluster to a Splunk instance, which makes SC4SNMP easier to debug. 
+Splunk OpenTelemetry Collector for Kubernetes is not required for SC4SNMP installation. However, Splunk OpenTelemetry Collector for Kubernetes sends logs and metrics from a k8s cluster to a Splunk instance, which makes SC4SNMP easier to debug. 
 You can do the same using the `microk8s kubectl logs` command on instances you're interested in, but if you're not proficient in Kubernetes,
-Splunk OpenTelemetry Collector for Kubernetes is strongly advised.
+Splunk OpenTelemetry Collector for Kubernetes is recommended. 
 
-The below steps are sufficient for a Splunk OpenTelemetry Collector installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud.
+The following steps are sufficient for a Splunk OpenTelemetry Collector installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud.
 In order to learn more about Splunk OpenTelemetry Collector, visit [Splunk OpenTelemetry Collector](https://github.com/signalfx/splunk-otel-collector-chart).
 
 ### Offline installation
 
-For offline installation instructions see [this page](../offlineinstallation/offline-sck.md).
+For offline installation instructions see [Splunk OpenTelemetry Collector for Kubernetes offline installation](../offlineinstallation/offline-sck.md).
 
 ### Add Splunk OpenTelemetry Collector repository to HELM
 
@@ -20,7 +19,7 @@ microk8s helm3 repo add splunk-otel-collector-chart https://signalfx.github.io/s
 
 ## Install Splunk OpenTelemetry Collector with HELM for a Splunk Platform
 
-In order to run Splunk OpenTelemetry Collector on your environment, replace `<>` variables according to the description presented below
+In order to run Splunk OpenTelemetry Collector on your environment, replace `<>` variables based on the following description: 
 ```bash
 microk8s helm3 upgrade --install sck \
   --set="clusterName=<cluster_name>" \
@@ -44,7 +43,7 @@ microk8s helm3 upgrade --install sck \
 | splunk_token | Splunk HTTP Event Collector token  | 450a69af-16a9-4f87-9628-c26f04ad3785  |
 | cluster_name | name of the cluster | my-cluster |
 
-An example of filled up command is:
+See the following example of a correctly filled up command: 
 ```bash
 microk8s helm3 upgrade --install sck \
   --set="clusterName=my-cluster" \
@@ -59,7 +58,7 @@ microk8s helm3 upgrade --install sck \
 
 ## Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes
 
-To run Splunk OpenTelemetry Collector on your environment, replace the `<>` variables according to the description presented below:
+To run Splunk OpenTelemetry Collector on your environment, replace the `<>` variables based on the following description: 
 
 
 ```bash
@@ -86,7 +85,7 @@ splunk-otel-collector-chart/splunk-otel-collector
 | ingest_url | Ingest URL from the Splunk Observability Cloud environment | https://ingest..signalfx.com |
 | api_url | API URL from the Splunk Observability Cloud environment  | https://api..signalfx.com |
 
-An example of a filled up command is:
+See the following example of a correctly filled up command: 
 ```bash
 microk8s helm3 upgrade --install sck
 --set="clusterName=my_cluster"
