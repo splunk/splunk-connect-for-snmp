@@ -1,4 +1,5 @@
-#Poller Configuration
+# Poller Configuration
+
 Poller is a service which is responsible for querying 
 SNMP devices using the SNMP GET and WALK functionalities. Poller executes two main types of tasks:
 
