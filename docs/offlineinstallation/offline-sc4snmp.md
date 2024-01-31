@@ -1,7 +1,9 @@
 # Offline SC4SNMP installation
 
+See the following options for an offline SC4SNMP installation. 
+
 ## Local machine with internet access
-To install the SC4SNMP offline, first, some packages must be downloaded from the [Github release](https://github.com/splunk/splunk-connect-for-snmp/releases) and then moved
+To install the SC4SNMP offline, first, download some packages from the [Github release](https://github.com/splunk/splunk-connect-for-snmp/releases) and then move them
 to the SC4SNMP installation server. Those packages are:
 
 - `dependencies-images.tar`
@@ -12,28 +14,28 @@ Additionally, you'll need
 - `pull_mibserver.sh` script
 - `pull_gui_images.sh` script
 
-to easily pull and export mibserver image and gui images.
+to easily pull and export mibserver image and GUI images.
 
-Moreover, SC4SNMP Docker image must be pulled, saved as a `.tar` package, and then moved to the server as well. 
+Moreover, the SC4SNMP Docker image must be pulled, saved as a `.tar` package, and then moved to the server as well. 
 This process requires Docker to be installed locally.
 
 Images can be pulled from the following repository: `ghcr.io/splunk/splunk-connect-for-snmp/container:<tag>`. 
-The latest tag can be found [here](https://github.com/splunk/splunk-connect-for-snmp) under the Releases section with the label `latest`.
+The latest tag can be found in (https://github.com/splunk/splunk-connect-for-snmp, under the Releases section with the label `latest`.
 
-Example of docker pull command:
+See the following example of docker pull command:
 
 ```bash
 docker pull ghcr.io/splunk/splunk-connect-for-snmp/container:<tag>
 ```
 
-Then save the image. Directory where this image will be saved can be specified after the `>` sign:
+Afterwards, save the image. The directory where this image will be saved can be specified after the `>` sign:
 
 ```bash
 docker save ghcr.io/splunk/splunk-connect-for-snmp/container:<tag> > snmp_image.tar
 ```
 
-Another packages you have to pull is the mibserver and gui images. You can do it by executing `pull_mibserver.sh` and 
-`pull_gui_images.sh` scripts from the Release section, or copy-pasting its content.
+Other packages you have to pull are mibserver and GUI images. Do this by executing `pull_mibserver.sh` and 
+`pull_gui_images.sh` scripts from the Release section, or copy-pasting its content. See the following:
 
 ```bash
 chmod a+x pull_mibserver.sh # you'll probably need to make file executable
@@ -42,7 +44,7 @@ chmod a+x pull_gui_images.sh
 ./pull_gui_images.sh
 ```
 
-Those scripts should produce `mibserver.tar` with the image of the mibserver and `sc4snmp-gui-images.tar` with gui images inside.
+Those scripts should produce `mibserver.tar` with the image of the mibserver and `sc4snmp-gui-images.tar` with GUI images inside.
 
 All five packages, `mibserver.tar`, `snmp_image.tar`, `dependencies-images.tar`, `sc4snmp-gui-images.tar` and `splunk-connect-for-snmp-chart.tar`, must be moved to the SC4SNMP installation server.
 
@@ -54,7 +56,7 @@ On the server, all the images must be imported to the microk8s cluster. This can
 microk8s ctr image import <name_of_tar_image>
 ```
 
-In case of this installation the following commands must be run:
+Run the following commands:
 
 ```bash
 microk8s ctr image import dependencies-images.tar
@@ -62,7 +64,7 @@ microk8s ctr image import snmp_image.tar
 microk8s ctr image import mibserver.tar
 ```
 
-Then create `values.yaml`. It's a little different from `values.yaml` used in an online installation. 
+Afterwards, create `values.yaml`. It's a little different from `values.yaml` used in an online installation. 
 The difference between the two files is the following, which is used for automatic image pulling:
 
 ```yaml
@@ -70,9 +72,9 @@ image:
   pullPolicy: "Never"
 ```
 
-Example `values.yaml` file can be found [here][offline_doc_link].
+An example `values.yaml` file can be found in https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/offline_installation_values.md.
 
-The next step is to unpack the chart package `splunk-connect-for-snmp-chart.tar`. It will result in creating the `splunk-connect-for-snmp` directory:
+Next, unpack the chart package `splunk-connect-for-snmp-chart.tar`. It will result in creating the following `splunk-connect-for-snmp` directory:
 
 ```bash
 tar -xvf splunk-connect-for-snmp-chart.tar --exclude='._*'
