@@ -1,4 +1,4 @@
-### Create SNMP v3 users
+# SNMPv3 configuration
 
 Configuration of SNMP v3, when supported by the monitored devices, is the most secure choice available
 for authentication and data privacy. Each set of credentials will be stored as "Secret" objects in k8s,
