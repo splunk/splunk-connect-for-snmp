@@ -103,7 +103,7 @@ profile_with_one_metric:
     - ['IF-MIB', 'ifInUcastPkts']
 ```
 
-The record that we'll see in Splunk `| mpreview index=net*` for the same case as above would be:
+The record that we'll see in Splunk `| mpreview index=net*` for the same case as the previous one would be:
 
 ```
    ifAdminStatus: up
