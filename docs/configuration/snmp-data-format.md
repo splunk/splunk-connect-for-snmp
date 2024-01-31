@@ -61,7 +61,7 @@ in Splunk's metrics index is:
 }
 ```
 
-Clearly we can see the textual part:
+You can see a textual part:
 
 ```
    ifAdminStatus: up
@@ -93,7 +93,7 @@ And a metric one:
 ### Metric index
 
 The rule is, if we poll a profile with AT LEAST one metric value, it will go to the metric index and will be
-enriched with all the textual fields we have for this object. For example, when polling:
+enriched with all the textual fields you have for the object. For example, when polling:
 
 ```yaml
 profile_with_one_metric:
@@ -103,7 +103,7 @@ profile_with_one_metric:
     - ['IF-MIB', 'ifInUcastPkts']
 ```
 
-The record that we'll see in Splunk `| mpreview index=net*` for the same case as the previous one would be:
+The record that you'll see in Splunk `| mpreview index=net*` for the same case as the previous one would be:
 
 ```
    ifAdminStatus: up
@@ -149,7 +149,7 @@ profile_with_only_textual_fields:
     - ['IF-MIB', 'ifOperStatus']
 ```
 
-In the following example, no additional configuring will be done. The events in event index `index=netops` of Splunk would look like:
+In the following example, no additional enrichment will be done. The events in event index `index=netops` of Splunk would look like:
 
 ```
 { [-]
