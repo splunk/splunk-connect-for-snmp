@@ -1,9 +1,9 @@
 # SNMP Data Format
 
-SC4SNMP classifies SNMP data elements as metrics or textual fields. We assume that the metric types are the indicators worth monitoring, 
-that changes dynamically, and textual fields are the context helpful to understand what an SNMP object really means.
+SC4SNMP classifies SNMP data elements as metrics or textual fields. Metric types are usually the indicators worth monitoring, 
+which change dynamically, while textual fields are helpful context to understand what an SNMP object means.
 
-SC4SNMP classify the data element as a metric when its type is one of:
+SC4SNMP classifies the data element as a metric when its type is one of the following:
 
 - `Unsigned`
 - `Counter`
@@ -13,8 +13,7 @@ SC4SNMP classify the data element as a metric when its type is one of:
 
 Every other type is interpreted as a field value.
 
-Sometimes, the MIB file indicates a field as an `INTEGER`, but there is also some mapping defined, like for
-example in case of `IF-MIB.ifOperStatus`:
+Sometimes, the MIB file indicates a field as an `INTEGER`, but there is also some mapping defined. See the following`IF-MIB.ifOperStatus` example:
 
 ```
 ifOperStatus OBJECT-TYPE
@@ -32,11 +31,11 @@ ifOperStatus OBJECT-TYPE
 ```
 [source](https://www.circitor.fr/Mibs/Mib/I/IF-MIB.mib)
 
-Here we expect some numeric value, but actually what SNMP Agents gets from the device is a `string` value,
-like `up`. To avoid setting textual value as a metrics, SC4SNMP does an additional check and tries to cast the
-numeric value to float. If the check fails, the values is classified as a textual field.
+Here a numeric value is expected, but actually what SNMP Agents ends up receiving from the device is a `string` value,
+like `up`. To avoid setting textual value as a metric, SC4SNMP does an additional check and tries to cast the
+numeric value to float. If the check fails, the value is classified as a textual field.
 
-Let's go through a simple example. We've just added a device and didn't configure anything special. The data from a walk
+See the following simple example. You just added a device and didn't configure anything special. The data from a walk
 in Splunk's metrics index is:
 
 ```
@@ -117,12 +116,12 @@ The record that we'll see in Splunk `| mpreview index=net*` for the same case as
    metric_name:sc4snmp.IF-MIB.ifInUcastPkts: 47512921
 ```
 
-Note, that only fields specified in `varBinds` are actively polled form the device. In case of `profile_with_one_metric`
-shown above, the textual fields `ifAdminStatus`, `ifDescr`, `ifIndex`, `ifOperStatus` and `ifPhysAddress` are taken from 
-the database cache, which is updated on every `walk` process. This is fine for the most of the cases, as things like
-MAC address, interface type or interface status shouldn't change frequently if ever.
+Only fields specified in `varBinds` are actively polled from the device. In the case of the `profile_with_one_metric`
+shown previously, the textual fields `ifAdminStatus`, `ifDescr`, `ifIndex`, `ifOperStatus` and `ifPhysAddress` are taken from 
+the database cache, which is updated on every `walk` process. This is fine in most cases, as values such as
+MAC address, interface type, or interface status shouldn't change frequently if at all. 
 
-If you want to keep `ifOperStatus` and `ifAdminStatus` up to date all the time, define profile like:
+If you want to keep `ifOperStatus` and `ifAdminStatus` up to date all the time, define profile using the following example:
 
 ```yaml
 profile_with_one_metric:
@@ -138,8 +137,8 @@ The result in Splunk will look the same, but `ifOperStatus` and `ifAdminStatus` 
 
 ### Event index
 
-It is possible to create an event without a single metric value, in such scenario it will go to an event index.
-An example of such profile would be:
+It is possible to create an event without a single metric value. In such scenario, it will go to an event index.
+See the following example of profile under that scenario:
 
 ```yaml
 profile_with_only_textual_fields:
@@ -150,7 +149,7 @@ profile_with_only_textual_fields:
     - ['IF-MIB', 'ifOperStatus']
 ```
 
-In this case no additional enrichment will be done. The events in event index `index=netops` of Splunk will look like:
+In the following example, no additional configuring will be done. The events in event index `index=netops` of Splunk would look like:
 
 ```
 { [-]
