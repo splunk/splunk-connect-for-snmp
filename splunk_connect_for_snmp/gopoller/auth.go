@@ -3,6 +3,8 @@ package gopoller
 import (
 	"fmt"
 	"github.com/gosnmp/gosnmp"
+	"log"
+	"os"
 	"time"
 )
 
@@ -75,6 +77,10 @@ func getSecurityParameters(authData SnmpV3StringAuthData) (*gosnmp.UsmSecurityPa
 		PrivacyPassphrase:        authData.PrivacyPassphrase,
 		AuthoritativeEngineID:    authData.AuthoritativeEngineID,
 	}
+	useLogger := os.Getenv("ENABLE_GO_LOGGER")
+	if humanBool(useLogger, false) {
+		result.Logger = gosnmp.NewLogger(log.New(os.Stdout, "", 0))
+	}
 	return &result, nil
 }
 
@@ -103,7 +109,6 @@ func getGoSnmp(target string, port int, ignoreNonIncreasingOid bool, version str
 			Version:            snmpVersion,                                 // have to set to correct version and add necessary params for v3
 			Timeout:            time.Duration(timeoutSeconds) * time.Second, // timeout of one request/response, possibly not the updconnectiontimeout??
 			ExponentialTimeout: true,
-			//Logger:             gosnmp.NewLogger(log.New(os.Stdout, "", 0)), //for now logging to stdout for debuging
 		}
 	} else {
 		securityParameters, err := getSecurityParameters(authData)
@@ -126,6 +131,11 @@ func getGoSnmp(target string, port int, ignoreNonIncreasingOid bool, version str
 			ExponentialTimeout: true,
 			SecurityParameters: securityParameters,
 		}
+	}
+
+	useLogger := os.Getenv("ENABLE_GO_LOGGER")
+	if humanBool(useLogger, false) {
+		result.Logger = gosnmp.NewLogger(log.New(os.Stdout, "", 0))
 	}
 
 	return &result, nil

@@ -239,6 +239,9 @@ worker:
 
   # The poller worker consumes all the tasks related to polling
   poller:
+    go:
+      # Enable logs from gosnmp library
+      gosnmpLogger: false
     # number of the poller replicas when autoscaling is set to false
     replicaCount: 2
     # minimum number of threads in a pod
