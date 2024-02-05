@@ -28,6 +28,7 @@ except:
 
 import asyncio
 import os
+from typing import Any, Dict
 
 import yaml
 from celery import Celery, chain
@@ -96,6 +97,14 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
     _ = my_chain.apply_async()
 
 
+# Callback function for logging traps authentication errors
+def authentication_observer_cb_fun(snmpEngine, execpoint, variables, contexts):
+    logging.error(
+        f"Security Model failure for device {variables.get('transportAddress', None)}: "
+        f"{variables.get('statusInformation', {}).get('errorIndication', None)}"
+    )
+
+
 app.autodiscover_tasks(
     packages=[
         "splunk_connect_for_snmp",
@@ -111,9 +120,20 @@ def main():
     # Get the event loop for this thread
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
+
     # Create SNMP engine with autogenernated engineID and pre-bound
     # to socket transport dispatcher
     snmpEngine = engine.SnmpEngine()
+
+    # Register a callback function to log errors with traps authentication
+    observer_context: Dict[Any, Any] = {}
+    snmpEngine.observer.registerObserver(
+        authentication_observer_cb_fun,
+        "rfc2576.prepareDataElements:sm-failure",
+        "rfc3412.prepareDataElements:sm-failure",
+        cbCtx=observer_context,
+    )
+
     # UDP over IPv4, first listening interface/port
     config.addTransport(
         snmpEngine,
