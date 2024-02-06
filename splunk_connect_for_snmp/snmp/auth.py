@@ -27,6 +27,7 @@ from pysnmp.hlapi import (
 from pysnmp.proto.api.v2c import OctetString
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
+from splunk_connect_for_snmp.gopoller.out import gopoller
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
@@ -166,3 +167,49 @@ def GetAuth(
         return getAuthV2c(ir)
     else:
         return getAuthV3(logger, ir, snmpEngine)
+
+
+def getAuthDataForGo(logger, ir: InventoryRecord) -> gopoller.SnmpV3StringAuthData:
+    if ir.version == "3":
+        location = os.path.join("secrets/snmpv3", ir.secret)  # type: ignore
+        if os.path.exists(location):
+            userName = get_secret_value(location, "userName", required=True)
+
+            authKey = get_secret_value(location, "authKey", required=False)
+            privKey = get_secret_value(location, "privKey", required=False)
+
+            authProtocol = get_secret_value(location, "authProtocol", required=False)
+            authProtocol = authProtocol.upper() or "NONE"
+
+            privProtocol = get_secret_value(
+                location, "privProtocol", required=False, default="NONE"
+            )
+            privProtocol = privProtocol.upper() or "NONE"
+
+            if (
+                isinstance(ir.security_engine, str)
+                and ir.security_engine != ""
+                and not ir.security_engine.isdigit()
+            ):
+                securityEngineId = OctetString(hexValue=ir.security_engine)
+                logger.debug(f"Security eng from profile {securityEngineId}")
+            else:
+                securityEngineId = ""
+
+            logger.debug(
+                f"{userName},authKey={authKey},privKey={privKey},authProtocol={authProtocol},privProtocol={privProtocol},securityEngineId={securityEngineId}"
+            )
+
+            return gopoller.SnmpV3StringAuthData(
+                UserName=userName,
+                AuthenticationProtocol=authProtocol,
+                AuthenticationPassphrase=authKey,
+                PrivacyProtocol=privProtocol,
+                PrivacyPassphrase=privKey,
+                AuthoritativeEngineID=securityEngineId,
+            )
+        else:
+            raise Exception(f"invalid username from secret {ir.secret}")
+
+    else:
+        return gopoller.SnmpV3StringAuthData()

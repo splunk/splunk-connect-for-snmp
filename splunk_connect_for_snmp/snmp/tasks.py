@@ -36,7 +36,7 @@ from celery.utils.log import get_task_logger
 from mongolock import MongoLock, MongoLockLocked
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
-from splunk_connect_for_snmp.snmp.manager import PysnmpPoller, get_inventory
+from splunk_connect_for_snmp.snmp.manager import PysnmpPoller, get_inventory, GosnmpPoller
 
 logger = get_task_logger(__name__)
 
@@ -51,7 +51,8 @@ OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
 
 @shared_task(
     bind=True,
-    base=PysnmpPoller,
+    #base=PysnmpPoller,
+    base=GosnmpPoller,
     retry_backoff=30,
     retry_backoff_max=WALK_RETRY_MAX_INTERVAL,
     max_retries=WALK_MAX_RETRIES,

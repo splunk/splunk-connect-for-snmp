@@ -48,7 +48,7 @@ from requests_cache import MongoCache
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
-from splunk_connect_for_snmp.snmp.auth import GetAuth, getAuthV3
+from splunk_connect_for_snmp.snmp.auth import GetAuth, getAuthDataForGo
 from splunk_connect_for_snmp.snmp.context import get_context_data
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
@@ -87,8 +87,8 @@ def return_address_and_port(target):
 
 def is_increasing_oids_ignored(host, port):
     if (
-        host in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
-        or f"{host}:{port}" in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
+            host in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
+            or f"{host}:{port}" in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
     ):
         return True
     return False
@@ -105,7 +105,7 @@ def get_inventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-    error_indication, error_status, error_index, var_binds: list, address, walk
+        error_indication, error_status, error_index, var_binds: list, address, walk
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
@@ -134,9 +134,9 @@ def _any_failure_happened(
 
 def isMIBResolved(id):
     if (
-        id.startswith("RFC1213-MIB::")
-        or id.startswith("SNMPv2-SMI::enterprises.")
-        or id.startswith("SNMPv2-SMI::mib-2")
+            id.startswith("RFC1213-MIB::")
+            or id.startswith("SNMPv2-SMI::enterprises.")
+            or id.startswith("SNMPv2-SMI::mib-2")
     ):
         return False
     else:
@@ -292,10 +292,10 @@ class Poller(Task):
 
     @abstractmethod
     def do_work(
-        self,
-        ir: InventoryRecord,
-        walk: bool = False,
-        profiles: List[str] = None,
+            self,
+            ir: InventoryRecord,
+            walk: bool = False,
+            profiles: List[str] = None,
     ):
         pass
 
@@ -303,9 +303,13 @@ class Poller(Task):
     def get_var_binds(self, address, walk=False, profiles=[]):
         pass
 
+    @abstractmethod
+    def process_snmp_data(self, varBindTable, metrics, target, mapping={}):
+        pass
+
     def get_varbind_chunk(self, lst, n):
         for i in range(0, len(lst), n):
-            yield lst[i : i + n]
+            yield lst[i: i + n]
 
     def load_mibs(self, mibs: List[str]) -> None:
         logger.info(f"loading mib modules {mibs}")
@@ -328,6 +332,133 @@ class Poller(Task):
                 return True, mib
         logger.warning(f"no mib found {id} based on {oid} from {target}")
         return False, ""
+
+
+class PysnmpPoller(Poller):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def get_var_binds(self, address, walk=False, profiles=[]):
+        varbinds_bulk = set()
+        varbinds_get = set()
+        get_mapping = {}
+        bulk_mapping = {}
+        if walk and not profiles:
+            varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
+            return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
+
+        joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
+            profiles, walk
+        )
+        if joined_profile_object:
+            mib_families = joined_profile_object.get_mib_families()
+            mib_files_to_load = [
+                mib_family
+                for mib_family in mib_families
+                if mib_family not in self.already_loaded_mibs
+            ]
+            if mib_files_to_load:
+                self.load_mibs(mib_files_to_load)
+            (
+                varbinds_get,
+                get_mapping,
+                varbinds_bulk,
+                bulk_mapping,
+            ) = joined_profile_object.return_mapping_and_varbinds()
+
+        logger.debug(f"host={address} varbinds_get={varbinds_get}")
+        logger.debug(f"host={address} get_mapping={get_mapping}")
+        logger.debug(f"host={address} varbinds_bulk={varbinds_bulk}")
+        logger.debug(f"host={address} bulk_mapping={bulk_mapping}")
+        return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
+
+    def do_work(
+            self,
+            ir: InventoryRecord,
+            walk: bool = False,
+            profiles: List[str] = None,
+    ):
+        retry = False
+        address = transform_address_to_key(ir.address, ir.port)
+
+        if time.time() - self.last_modified > PROFILES_RELOAD_DELAY or walk:
+            self.profiles = self.profiles_manager.return_collection()
+            self.profiles_collection.update(self.profiles)
+            self.last_modified = time.time()
+            logger.debug("Profiles reloaded")
+
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
+            address, walk=walk, profiles=profiles
+        )
+
+        authData = GetAuth(logger, ir, self.snmpEngine)
+        contextData = get_context_data()
+
+        transport = UdpTransportTarget(
+            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
+        )
+
+        metrics: Dict[str, Any] = {}
+        if not varbinds_get and not varbinds_bulk:
+            logger.info(f"No work to do for {address}")
+            return False, {}
+
+        if varbinds_bulk:
+            for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
+                    self.snmpEngine,
+                    authData,
+                    transport,
+                    contextData,
+                    1,
+                    10,
+                    *varbinds_bulk,
+                    lexicographicMode=False,
+                    ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+            ):
+                if not _any_failure_happened(
+                        errorIndication,
+                        errorStatus,
+                        errorIndex,
+                        varBindTable,
+                        ir.address,
+                        walk,
+                ):
+                    tmp_retry, tmp_mibs, _ = self.process_snmp_data(
+                        varBindTable, metrics, address, bulk_mapping
+                    )
+                    if tmp_mibs:
+                        self.load_mibs(tmp_mibs)
+                        self.process_snmp_data(
+                            varBindTable, metrics, address, bulk_mapping
+                        )
+
+        if varbinds_get:
+            # some devices cannot process more OID than X, so it is necessary to divide it on chunks
+            for varbind_chunk in self.get_varbind_chunk(
+                    varbinds_get, MAX_OID_TO_PROCESS
+            ):
+                for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
+                        self.snmpEngine, authData, transport, contextData, *varbind_chunk
+                ):
+                    if not _any_failure_happened(
+                            errorIndication,
+                            errorStatus,
+                            errorIndex,
+                            varBindTable,
+                            ir.address,
+                            walk,
+                    ):
+                        self.process_snmp_data(
+                            varBindTable, metrics, address, get_mapping
+                        )
+
+        for group_key, metric in metrics.items():
+            if "profiles" in metrics[group_key]:
+                metrics[group_key]["profiles"] = ",".join(
+                    metrics[group_key]["profiles"]
+                )
+
+        return retry, metrics
 
     def process_snmp_data(self, varBindTable, metrics, target, mapping={}):
         retry = False
@@ -411,134 +542,6 @@ class Poller(Task):
 
         return retry, remotemibs, metrics
 
-
-class PysnmpPoller(Poller):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def get_var_binds(self, address, walk=False, profiles=[]):
-        varbinds_bulk = set()
-        varbinds_get = set()
-        get_mapping = {}
-        bulk_mapping = {}
-        if walk and not profiles:
-            varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
-            return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
-
-        joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
-            profiles, walk
-        )
-        if joined_profile_object:
-            mib_families = joined_profile_object.get_mib_families()
-            mib_files_to_load = [
-                mib_family
-                for mib_family in mib_families
-                if mib_family not in self.already_loaded_mibs
-            ]
-            if mib_files_to_load:
-                self.load_mibs(mib_files_to_load)
-            (
-                varbinds_get,
-                get_mapping,
-                varbinds_bulk,
-                bulk_mapping,
-            ) = joined_profile_object.return_mapping_and_varbinds()
-
-        logger.debug(f"host={address} varbinds_get={varbinds_get}")
-        logger.debug(f"host={address} get_mapping={get_mapping}")
-        logger.debug(f"host={address} varbinds_bulk={varbinds_bulk}")
-        logger.debug(f"host={address} bulk_mapping={bulk_mapping}")
-        return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
-
-    def do_work(
-        self,
-        ir: InventoryRecord,
-        walk: bool = False,
-        profiles: List[str] = None,
-    ):
-        retry = False
-        address = transform_address_to_key(ir.address, ir.port)
-
-        if time.time() - self.last_modified > PROFILES_RELOAD_DELAY or walk:
-            self.profiles = self.profiles_manager.return_collection()
-            self.profiles_collection.update(self.profiles)
-            self.last_modified = time.time()
-            logger.debug("Profiles reloaded")
-
-        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
-            address, walk=walk, profiles=profiles
-        )
-
-        authData = GetAuth(logger, ir, self.snmpEngine)
-        contextData = get_context_data()
-
-        transport = UdpTransportTarget(
-            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
-        )
-
-        metrics: Dict[str, Any] = {}
-        if not varbinds_get and not varbinds_bulk:
-            logger.info(f"No work to do for {address}")
-            return False, {}
-
-        if varbinds_bulk:
-            for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
-                self.snmpEngine,
-                authData,
-                transport,
-                contextData,
-                1,
-                10,
-                *varbinds_bulk,
-                lexicographicMode=False,
-                ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
-            ):
-                if not _any_failure_happened(
-                    errorIndication,
-                    errorStatus,
-                    errorIndex,
-                    varBindTable,
-                    ir.address,
-                    walk,
-                ):
-                    tmp_retry, tmp_mibs, _ = self.process_snmp_data(
-                        varBindTable, metrics, address, bulk_mapping
-                    )
-                    if tmp_mibs:
-                        self.load_mibs(tmp_mibs)
-                        self.process_snmp_data(
-                            varBindTable, metrics, address, bulk_mapping
-                        )
-
-        if varbinds_get:
-            # some devices cannot process more OID than X, so it is necessary to divide it on chunks
-            for varbind_chunk in self.get_varbind_chunk(
-                varbinds_get, MAX_OID_TO_PROCESS
-            ):
-                for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
-                    self.snmpEngine, authData, transport, contextData, *varbind_chunk
-                ):
-                    if not _any_failure_happened(
-                        errorIndication,
-                        errorStatus,
-                        errorIndex,
-                        varBindTable,
-                        ir.address,
-                        walk,
-                    ):
-                        self.process_snmp_data(
-                            varBindTable, metrics, address, get_mapping
-                        )
-
-        for group_key, metric in metrics.items():
-            if "profiles" in metrics[group_key]:
-                metrics[group_key]["profiles"] = ",".join(
-                    metrics[group_key]["profiles"]
-                )
-
-        return retry, metrics
-
-
 class GosnmpPoller(Poller):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -558,7 +561,7 @@ class GosnmpPoller(Poller):
         get_mapping = {}
         bulk_mapping = {}
         if walk and not profiles:
-            varbinds_bulk.add(ObjectIdentity("1.3.6"))
+            varbinds_bulk.add('1.3.6')
             return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
         joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
@@ -590,10 +593,10 @@ class GosnmpPoller(Poller):
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
     def do_work(
-        self,
-        ir: InventoryRecord,
-        walk: bool = False,
-        profiles: List[str] = None,
+            self,
+            ir: InventoryRecord,
+            walk: bool = False,
+            profiles: List[str] = None,
     ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
@@ -609,16 +612,140 @@ class GosnmpPoller(Poller):
         )
 
         # for v1 and v2 you only need community and version, which are sent in perform method
-        if ir.version == "3":
-            authv3 = getAuthV3(logger, ir, self.snmpEngine)
+        auth_data = getAuthDataForGo(logger, ir)
 
-            auth_data = gopoller.SnmpV3StringAuthData(
-                UserName=authv3.userName,
-                AuthenticationProtocol=authv3.authProtocol,
-                AuthenticationPassphrase=authv3.authKey,
-                PrivacyProtocol=authv3.privProtocol,
-                PrivacyPassphrase=authv3.privKey,
-                AuthoritativeEngineID=authv3.securityEngineId,
-            )
+        metrics: Dict[str, Any] = {}
+        if not varbinds_get and not varbinds_bulk:
+            logger.info(f"No work to do for {address}")
+            return False, {}
 
-        # TODO: Implementation of bulkCMD and getCMD with parsing to return similar structure
+        if varbinds_bulk:
+            try:
+                oidslice = gopoller.OidSlice(list(varbinds_bulk))
+                response = gopoller.PerformBulkWalk(authData=auth_data, target=ir.address, community=ir.community,
+                                                    oids=oidslice, port=ir.port, ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+                                                    version=ir.version)
+                logger.debug(response)
+            except Exception as err:
+                logger.error(f"Got exception from gopoller: f{err}")
+                raise Exception("Exception from bulk")
+                # TODO: add better logging and raise error as in _any_failure_happened()
+
+            tmp_retry, tmp_mibs, _ = self.process_snmp_data(
+                    response, metrics, address, bulk_mapping
+                )
+            if tmp_mibs:
+                self.load_mibs(tmp_mibs)
+                self.process_snmp_data(
+                    response, metrics, address, bulk_mapping
+                )
+
+        if varbinds_get:
+            # some devices cannot process more OID than X, so it is necessary to divide it on chunks
+            for varbind_chunk in self.get_varbind_chunk(
+                    list(varbinds_get), MAX_OID_TO_PROCESS
+            ):
+                try:
+                    oidslice = gopoller.OidSlice(list(varbind_chunk))
+                    response = gopoller.PerformGet(authData=auth_data, target=ir.address, community=ir.community,
+                                                   oids=oidslice, port=ir.port,
+                                                   ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+                                                   version=ir.version)
+                except Exception as err:
+                    logger.error(f"Got exception from gopoller: f{err}")
+                    raise Exception("Exception from bulk")
+
+                self.process_snmp_data(
+                    response, metrics, address, get_mapping
+                )
+        for group_key, metric in metrics.items():
+            if "profiles" in metrics[group_key]:
+                metrics[group_key]["profiles"] = ",".join(
+                    metrics[group_key]["profiles"]
+                )
+
+        return retry, metrics
+
+    def process_snmp_data(self, varBindTable, metrics, target, mapping={}):
+        retry = False
+        remotemibs = []
+        for varbind in varBindTable:
+            varBind = ObjectType(ObjectIdentity(varbind.Name), varbind.Value)
+            # varBind.resolveWithMib(self.mib_view_controller)
+            mib, metric, index = varBind[0].getMibSymbol()
+
+            id = varBind[0].prettyPrint()
+            oid = str(varBind[0].getOid())
+
+            if isMIBResolved(id):
+                group_key = get_group_key(mib, oid, index)
+                if group_key not in metrics:
+                    indexes = extract_indexes(index)
+                    metrics[group_key] = {
+                        "metrics": {},
+                        "fields": {},
+                        "indexes": indexes,
+                    }
+                    if mapping:
+                        metrics[group_key]["profiles"] = []
+                try:
+
+                    snmp_val = varBind[1]
+                    snmp_type = type(snmp_val).__name__
+
+                    metric_type = map_metric_type(snmp_type, snmp_val)
+                    metric_value = valueAsBest(snmp_val.prettyPrint())
+
+                    index_number = extract_index_number(index)
+                    metric_value = fill_empty_value(index_number, metric_value, target)
+
+                    profile = None
+                    if mapping:
+                        profile = mapping.get(
+                            id.replace('"', ""),
+                            mapping.get(f"{mib}::{metric}", mapping.get(mib)),
+                        )
+                        # when varbind name differs from mib-family,
+                        # we are checking if there's any key that includes this mib to get profile
+                        if not profile:
+                            key = [
+                                prof
+                                for mib_map, prof in mapping.items()
+                                if mib in mib_map
+                            ]
+                            if key:
+                                profile = key[0]
+                        if profile and "__" in profile:
+                            profile = profile.split("__")[0]
+                    if metric_value == "No more variables left in this MIB View":
+                        continue
+
+                    if metric_type in MTYPES and (isinstance(metric_value, float)):
+                        metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
+                            "time": time.time(),
+                            "type": metric_type,
+                            "value": metric_value,
+                            "oid": oid,
+                        }
+                        if profile and profile not in metrics[group_key]["profiles"]:
+                            metrics[group_key]["profiles"].append(profile)
+                    else:
+                        metrics[group_key]["fields"][f"{mib}.{metric}"] = {
+                            "time": time.time(),
+                            "type": metric_type,
+                            "value": metric_value,
+                            "oid": oid,
+                        }
+                except:
+                    logger.exception(
+                        f"Exception processing data from {target} {varBind}"
+                    )
+            else:
+                found, mib = self.is_mib_known(id, oid, target)
+                if mib and mib not in remotemibs:
+                    remotemibs.append(mib)
+                if found:
+                    retry = True
+                    break
+
+        return retry, remotemibs, metrics
