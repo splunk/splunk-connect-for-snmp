@@ -11,8 +11,7 @@ import (
 )
 
 func PerformBulkWalk(authData SnmpV3StringAuthData, target string, community string, oids OidSlice, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
-	//var params *gosnmp.GoSNMP
-	params, err := getGoSnmp(target, port, ignoreNonIncreasingOid, version, community, authData, 3000)
+	params, err := getGoSnmp(target, port, ignoreNonIncreasingOid, version, community, authData, 1800)
 
 	if err != nil {
 		return nil, fmt.Errorf("an error occured while creating gosnmp.GoSNMP:  %v", err)

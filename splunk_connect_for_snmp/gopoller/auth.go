@@ -97,11 +97,11 @@ func getGoSnmp(target string, port int, ignoreNonIncreasingOid bool, version str
 
 	if snmpVersion != gosnmp.Version3 {
 		result = gosnmp.GoSNMP{
-			Target:             target,
-			Port:               uint16(port),
-			Transport:          "udp",
-			ContextEngineID:    "", //defined in contextData, in Go only for v3
-			ContextName:        "", //defined in contextData, in Go only for v3
+			Target:    target,
+			Port:      uint16(port),
+			Transport: "udp",
+			//ContextEngineID:    "", //defined in contextData, in Go only for v3
+			//ContextName:        "", //defined in contextData, in Go only for v3
 			MaxRepetitions:     1,
 			NonRepeaters:       10,
 			AppOpts:            appOpts, //set AppOpts to c if ignoreNonIncreasingOid=false, no c if ignoreNonIncreasingOid=true
@@ -116,11 +116,11 @@ func getGoSnmp(target string, port int, ignoreNonIncreasingOid bool, version str
 			return nil, err
 		}
 		result = gosnmp.GoSNMP{
-			Target:             target,
-			Port:               uint16(port),
-			Transport:          "udp",
-			ContextEngineID:    "", //defined in contextData, in Go only for v3
-			ContextName:        "", //defined in contextData, in Go only for v3
+			Target:    target,
+			Port:      uint16(port),
+			Transport: "udp",
+			//ContextEngineID:    "", //defined in contextData, in Go only for v3
+			//ContextName:        "", //defined in contextData, in Go only for v3
 			MaxRepetitions:     1,
 			NonRepeaters:       10,
 			AppOpts:            appOpts, //set AppOpts to c if ignoreNonIncreasingOid=false, no c if ignoreNonIncreasingOid=true
