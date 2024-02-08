@@ -48,7 +48,7 @@ from requests_cache import MongoCache
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
-from splunk_connect_for_snmp.snmp.auth import GetAuth, getAuthV3
+from splunk_connect_for_snmp.snmp.auth import GetAuth, getAuthDataForGo
 from splunk_connect_for_snmp.snmp.context import get_context_data
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
@@ -87,8 +87,8 @@ def return_address_and_port(target):
 
 def is_increasing_oids_ignored(host, port):
     if (
-        host in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
-        or f"{host}:{port}" in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
+            host in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
+            or f"{host}:{port}" in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
     ):
         return True
     return False
@@ -105,7 +105,7 @@ def get_inventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-    error_indication, error_status, error_index, var_binds: list, address, walk
+        error_indication, error_status, error_index, var_binds: list, address, walk
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
@@ -134,9 +134,9 @@ def _any_failure_happened(
 
 def isMIBResolved(id):
     if (
-        id.startswith("RFC1213-MIB::")
-        or id.startswith("SNMPv2-SMI::enterprises.")
-        or id.startswith("SNMPv2-SMI::mib-2")
+            id.startswith("RFC1213-MIB::")
+            or id.startswith("SNMPv2-SMI::enterprises.")
+            or id.startswith("SNMPv2-SMI::mib-2")
     ):
         return False
     else:
@@ -292,10 +292,10 @@ class Poller(Task):
 
     @abstractmethod
     def do_work(
-        self,
-        ir: InventoryRecord,
-        walk: bool = False,
-        profiles: List[str] = None,
+            self,
+            ir: InventoryRecord,
+            walk: bool = False,
+            profiles: List[str] = None,
     ):
         pass
 
@@ -309,7 +309,7 @@ class Poller(Task):
 
     def get_varbind_chunk(self, lst, n):
         for i in range(0, len(lst), n):
-            yield lst[i : i + n]
+            yield lst[i: i + n]
 
     def load_mibs(self, mibs: List[str]) -> None:
         logger.info(f"loading mib modules {mibs}")
@@ -332,6 +332,7 @@ class Poller(Task):
                 return True, mib
         logger.warning(f"no mib found {id} based on {oid} from {target}")
         return False, ""
+
 
 class PysnmpPoller(Poller):
     def __init__(self, **kwargs):
@@ -372,10 +373,10 @@ class PysnmpPoller(Poller):
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
     def do_work(
-        self,
-        ir: InventoryRecord,
-        walk: bool = False,
-        profiles: List[str] = None,
+            self,
+            ir: InventoryRecord,
+            walk: bool = False,
+            profiles: List[str] = None,
     ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
@@ -404,23 +405,23 @@ class PysnmpPoller(Poller):
 
         if varbinds_bulk:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
-                self.snmpEngine,
-                authData,
-                transport,
-                contextData,
-                1,
-                10,
-                *varbinds_bulk,
-                lexicographicMode=False,
-                ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+                    self.snmpEngine,
+                    authData,
+                    transport,
+                    contextData,
+                    1,
+                    10,
+                    *varbinds_bulk,
+                    lexicographicMode=False,
+                    ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
             ):
                 if not _any_failure_happened(
-                    errorIndication,
-                    errorStatus,
-                    errorIndex,
-                    varBindTable,
-                    ir.address,
-                    walk,
+                        errorIndication,
+                        errorStatus,
+                        errorIndex,
+                        varBindTable,
+                        ir.address,
+                        walk,
                 ):
                     tmp_retry, tmp_mibs, _ = self.process_snmp_data(
                         varBindTable, metrics, address, bulk_mapping
@@ -434,18 +435,18 @@ class PysnmpPoller(Poller):
         if varbinds_get:
             # some devices cannot process more OID than X, so it is necessary to divide it on chunks
             for varbind_chunk in self.get_varbind_chunk(
-                varbinds_get, MAX_OID_TO_PROCESS
+                    varbinds_get, MAX_OID_TO_PROCESS
             ):
                 for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
-                    self.snmpEngine, authData, transport, contextData, *varbind_chunk
+                        self.snmpEngine, authData, transport, contextData, *varbind_chunk
                 ):
                     if not _any_failure_happened(
-                        errorIndication,
-                        errorStatus,
-                        errorIndex,
-                        varBindTable,
-                        ir.address,
-                        walk,
+                            errorIndication,
+                            errorStatus,
+                            errorIndex,
+                            varBindTable,
+                            ir.address,
+                            walk,
                     ):
                         self.process_snmp_data(
                             varBindTable, metrics, address, get_mapping
@@ -592,10 +593,10 @@ class GosnmpPoller(Poller):
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
     def do_work(
-        self,
-        ir: InventoryRecord,
-        walk: bool = False,
-        profiles: List[str] = None,
+            self,
+            ir: InventoryRecord,
+            walk: bool = False,
+            profiles: List[str] = None,
     ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
@@ -611,19 +612,7 @@ class GosnmpPoller(Poller):
         )
 
         # for v1 and v2 you only need community and version, which are sent in perform method
-        if ir.version == "3":
-            authv3 = getAuthV3(logger, ir, self.snmpEngine)
-
-            auth_data = gopoller.SnmpV3StringAuthData(
-                UserName=authv3.userName,
-                AuthenticationProtocol=authv3.authProtocol,
-                AuthenticationPassphrase=authv3.authKey,
-                PrivacyProtocol=authv3.privProtocol,
-                PrivacyPassphrase=authv3.privKey,
-                AuthoritativeEngineID=authv3.securityEngineId,
-            )
-        else:
-            auth_data = gopoller.SnmpV3StringAuthData()
+        auth_data = getAuthDataForGo(logger, ir)
 
         metrics: Dict[str, Any] = {}
         if not varbinds_get and not varbinds_bulk:
@@ -632,13 +621,20 @@ class GosnmpPoller(Poller):
 
         if varbinds_bulk:
             try:
-                oidslice= gopoller.OidSlice(list(varbinds_bulk))
-                response = gopoller.PerformBulkWalk(auth_data, address, ir.community, oidslice, ir.port, is_increasing_oids_ignored(ir.address, ir.port), ir.version)
+                logger.debug(ir)
+                oidslice = gopoller.OidSlice(list(varbinds_bulk))
+                logger.debug(oidslice)
+                response = gopoller.PerformBulkWalk(authData=auth_data, target=ir.address, community=ir.community,
+                                                    oids=oidslice, port=ir.port, ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+                                                    version=ir.version)
+                logger.debug(response)
             except Exception as err:
                 logger.error(f"Got exception from gopoller: f{err}")
-                #TODO: add better logging and raise error as in _any_failure_happened()
+                raise Exception("Exception from bulk")
+                # TODO: add better logging and raise error as in _any_failure_happened()
 
             for varBindTable in response:
+                logger.debug(varBindTable)
                 tmp_retry, tmp_mibs, _ = self.process_snmp_data(
                     varBindTable, metrics, address, bulk_mapping
                 )
@@ -651,11 +647,13 @@ class GosnmpPoller(Poller):
         if varbinds_get:
             # some devices cannot process more OID than X, so it is necessary to divide it on chunks
             for varbind_chunk in self.get_varbind_chunk(
-                varbinds_get, MAX_OID_TO_PROCESS
+                    varbinds_get, MAX_OID_TO_PROCESS
             ):
                 oidslice = gopoller.OidSlice(varbind_chunk)
-                response = gopoller.PerformGet(auth_data, address, ir.community, oidslice, ir.port,
-                                                    is_increasing_oids_ignored(ir.address, ir.port), ir.version)
+                response = gopoller.PerformGet(authData=auth_data, target=ir.address, community=ir.community,
+                                               oids=oidslice, port=ir.port,
+                                               ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+                                               version=ir.version)
 
         for group_key, metric in metrics.items():
             if "profiles" in metrics[group_key]:
@@ -666,11 +664,11 @@ class GosnmpPoller(Poller):
         return retry, metrics
 
     def process_snmp_data(self, varBindTable, metrics, target, mapping={}):
-        retry= False
+        retry = False
         remotemibs = []
         for varbind in varBindTable:
             varBind = ObjectType(ObjectIdentity(varbind.Name), varbind.Value)
-            #varBind.resolveWithMib(self.mib_view_controller)
+            # varBind.resolveWithMib(self.mib_view_controller)
             mib, metric, index = varBind[0].getMibSymbol()
 
             id = varBind[0].prettyPrint()

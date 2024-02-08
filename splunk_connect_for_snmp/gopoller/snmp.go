@@ -17,6 +17,8 @@ func PerformBulkWalk(authData SnmpV3StringAuthData, target string, community str
 		return nil, fmt.Errorf("an error occured while creating gosnmp.GoSNMP:  %v", err)
 	}
 
+	params.Logger.Print("Hello from GO")
+	params.Logger.Printf("%v", params)
 	err = params.Connect()
 	if err != nil {
 		return nil, fmt.Errorf("error connecting to %s: %v", target, err)

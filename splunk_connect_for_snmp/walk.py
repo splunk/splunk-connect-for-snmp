@@ -18,7 +18,7 @@ import sys
 from csv import DictReader
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
-from splunk_connect_for_snmp.snmp.manager import PysnmpPoller
+from splunk_connect_for_snmp.snmp.manager import PysnmpPoller, GosnmpPoller
 
 log_level = "DEBUG"
 logger = logging.getLogger(__name__)
@@ -31,7 +31,8 @@ logger.addHandler(handler)
 
 
 def run_walk():
-    poller = PysnmpPoller(no_mongo=True)
+    #poller = PysnmpPoller(no_mongo=True)
+    poller = GosnmpPoller(no_mongo=True)
 
     with open("inventory.csv", encoding="utf-8") as csv_file:
         # Dict reader will trust the header of the csv

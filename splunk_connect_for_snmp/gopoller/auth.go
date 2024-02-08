@@ -102,13 +102,14 @@ func getGoSnmp(target string, port int, ignoreNonIncreasingOid bool, version str
 			Transport: "udp",
 			//ContextEngineID:    "", //defined in contextData, in Go only for v3
 			//ContextName:        "", //defined in contextData, in Go only for v3
-			MaxRepetitions:     1,
-			NonRepeaters:       10,
-			AppOpts:            appOpts, //set AppOpts to c if ignoreNonIncreasingOid=false, no c if ignoreNonIncreasingOid=true
-			Community:          community,
-			Version:            snmpVersion,                                 // have to set to correct version and add necessary params for v3
-			Timeout:            time.Duration(timeoutSeconds) * time.Second, // timeout of one request/response, possibly not the updconnectiontimeout??
-			ExponentialTimeout: true,
+			MaxRepetitions:          1,
+			NonRepeaters:            10,
+			AppOpts:                 appOpts, //set AppOpts to c if ignoreNonIncreasingOid=false, no c if ignoreNonIncreasingOid=true
+			Community:               community,
+			Version:                 snmpVersion,                                 // have to set to correct version and add necessary params for v3
+			Timeout:                 time.Duration(timeoutSeconds) * time.Second, // timeout of one request/response, possibly not the updconnectiontimeout??
+			ExponentialTimeout:      true,
+			UseUnconnectedUDPSocket: true,
 		}
 	} else {
 		securityParameters, err := getSecurityParameters(authData)
@@ -121,15 +122,16 @@ func getGoSnmp(target string, port int, ignoreNonIncreasingOid bool, version str
 			Transport: "udp",
 			//ContextEngineID:    "", //defined in contextData, in Go only for v3
 			//ContextName:        "", //defined in contextData, in Go only for v3
-			MaxRepetitions:     1,
-			NonRepeaters:       10,
-			AppOpts:            appOpts, //set AppOpts to c if ignoreNonIncreasingOid=false, no c if ignoreNonIncreasingOid=true
-			Version:            snmpVersion,
-			SecurityModel:      gosnmp.UserSecurityModel,
-			MsgFlags:           gosnmp.AuthPriv,
-			Timeout:            time.Duration(timeoutSeconds) * time.Second,
-			ExponentialTimeout: true,
-			SecurityParameters: securityParameters,
+			MaxRepetitions:          1,
+			NonRepeaters:            10,
+			AppOpts:                 appOpts, //set AppOpts to c if ignoreNonIncreasingOid=false, no c if ignoreNonIncreasingOid=true
+			Version:                 snmpVersion,
+			SecurityModel:           gosnmp.UserSecurityModel,
+			MsgFlags:                gosnmp.AuthPriv,
+			Timeout:                 time.Duration(timeoutSeconds) * time.Second,
+			ExponentialTimeout:      true,
+			SecurityParameters:      securityParameters,
+			UseUnconnectedUDPSocket: true,
 		}
 	}
 
