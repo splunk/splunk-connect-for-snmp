@@ -21,6 +21,7 @@ import sys
 import time
 
 import requests
+from exceptions_tests import UiTestsException
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
@@ -146,7 +147,7 @@ def _wait_for_job_and_get_events(job_id, url="", user="", password=""):
             events = _get_events(job_id, url, user, password)
             break
         if dispatch_state == "FAILED":
-            raise Exception("Search job: {} failed".format(job_url))
+            raise UiTestsException("Search job: {} failed".format(job_url))
         time.sleep(1)
 
     return events
@@ -182,7 +183,7 @@ def _check_request_status(req_obj):
     returns True/False
     """
     if not req_obj.ok:
-        raise Exception(
+        raise UiTestsException(
             "status code: {} \n details: {}".format(
                 str(req_obj.status_code), req_obj.text
             )

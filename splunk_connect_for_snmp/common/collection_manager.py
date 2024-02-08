@@ -10,7 +10,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except:
+except OSError:
     pass
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
