@@ -108,6 +108,21 @@ If 64-bit counter are not supported on your device, you can write your own Splun
 maximum integer value + current state. The same works for values big enough that they're not fitting a 64-bit value.
 An example for a SPLUNK query like that (interface counter), would be:
 
+
+### Unknown USM user
+In case of polling SNMPv3 devices, `Unknown USM user` error suggests wrong username. Verify 
+that the kubernetes secret with the correct username has been created ([SNMPv3 configuration](configuration/snmpv3-configuration.md)).
+
+### Wrong SNMP PDU digest
+In case of polling SNMPv3 devices, `Wrong SNMP PDU digest` error suggests wrong authentication key. Verify 
+that the kubernetes secret with the correct authentication key has been created ([SNMPv3 configuration](configuration/snmpv3-configuration.md)).
+
+### No SNMP response received before timeout
+`No SNMP response received before timeout` error might have several root causes. Some of them are:
+- wrong device IP or port
+- SNMPv2c wrong community string
+- SNMPv3 wrong privacy key
+
 ```
 | streamstats current=f last(ifInOctets) as p_ifInOctets last(ifOutOctets) as p_ifOutOctets by ifAlias             
 | eval in_delta=(ifInOctets - p_ifInOctets)
