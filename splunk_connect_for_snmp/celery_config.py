@@ -57,4 +57,5 @@ task_queues = (
     Queue("traps", exchange="traps"),
     Queue("poll", exchange="poll"),
     Queue("send", exchange="send"),
+    Queue("go_poller", exchange="go_poller")
 )

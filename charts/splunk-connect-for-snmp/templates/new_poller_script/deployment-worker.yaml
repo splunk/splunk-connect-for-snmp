@@ -1,0 +1,129 @@
+{{- if eq (include "splunk-connect-for-snmp.polling.enable" .) "true" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-new-gopoller-worker
+  labels:
+    {{- include "splunk-connect-for-snmp.worker.poller.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.worker.poller.autoscaling.enabled }}
+  replicas: {{ .Values.worker.poller.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "splunk-connect-for-snmp.worker.poller.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.worker.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "splunk-connect-for-snmp.worker.poller.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "splunk-connect-for-snmp.serviceAccountName" . }}
+      securityContext:
+        fsGroup: 10001
+      containers:
+        - name: {{ .Chart.Name }}-new-gopoller-worker
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            [
+              "new-poller-celery"
+            ]
+          env:
+            {{- include "environmental-variables" . | nindent 12 }}
+            {{- include "environmental-variables-poller" . | nindent 12 }}
+          {{- if .Values.worker.livenessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command:
+                {{- toYaml .Values.worker.livenessProbe.exec.command | nindent 16 }}
+            initialDelaySeconds: {{ .Values.worker.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.worker.livenessProbe.periodSeconds }}
+          {{- end }}
+          {{- if .Values.worker.readinessProbe.enabled }}
+          readinessProbe:
+            exec:
+              command:
+                {{- toYaml .Values.worker.readinessProbe.exec.command | nindent 16 }}
+            initialDelaySeconds: {{ .Values.worker.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.worker.readinessProbe.periodSeconds }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: "/app/config"
+              readOnly: true
+            - name: pysnmp-cache-volume
+              mountPath: "/.pysnmp/"
+              readOnly: false
+            - name: tmp
+              mountPath: "/tmp/"
+              readOnly: false
+            {{- range (.Values.poller).usernameSecrets }}
+            - name: {{ . }}-snmpv3-secrets
+              mountPath: /app/secrets/snmpv3/{{ . }}
+              readOnly: true
+            {{- end }}
+          resources:
+            {{- toYaml .Values.worker.poller.resources | nindent 12 }}
+      {{- with .Values.worker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if eq .Values.worker.podAntiAffinity "hard" }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchLabels:
+                  {{- include "splunk-connect-for-snmp.worker.poller.selectorLabels" . | nindent 22 }}
+      {{- else if eq .Values.worker.podAntiAffinity "soft" }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    {{- include "splunk-connect-for-snmp.worker.poller.selectorLabels" . | nindent 22 }}
+      {{- end }}
+      {{- with .Values.worker.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        # You set volumes at the Pod level, then mount them into containers inside that Pod
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: {{ include "splunk-connect-for-snmp.name" . }}-config
+            # An array of keys from the ConfigMap to create as files
+            items:
+              - key: "config.yaml"
+                path: "config.yaml"
+        {{- range (.Values.poller).usernameSecrets }}
+        - name: {{ . }}-snmpv3-secrets
+          secret:
+            secretName: {{ . }}
+        {{- end }}
+        - name: pysnmp-cache-volume
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+  {{- end -}}

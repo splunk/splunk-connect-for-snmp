@@ -15,6 +15,10 @@ new-poller)
     new-poller
     ;;
 
+new-poller-celery)
+    celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL"  -O fair -Q go_poller --autoscale=8,"$WORKER_CONCURRENCY"
+    ;;
+
 celery)
     case $2 in
     beat)

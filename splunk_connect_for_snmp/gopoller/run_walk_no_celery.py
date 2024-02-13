@@ -1,13 +1,13 @@
 import typing
 
 from pysnmp.proto.errind import EmptyResponse
-from pysnmp.smi import error
 from requests import Session
 
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
 from splunk_connect_for_snmp.gopoller.out import gopoller
 from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
 from splunk_connect_for_snmp.snmp.varbinds_resolver import ProfileCollection
+from splunk_connect_for_snmp.gopoller.tasks import go_poller_celery
 
 try:
     from dotenv import load_dotenv
@@ -404,6 +404,7 @@ class GosnmpPoller(Poller):
                 response = gopoller.PerformBulkWalk(authData=auth_data, target=ir.address, community=ir.community,
                                                     oids=oidslice, port=ir.port, ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
                                                     version=ir.version)
+                print("Bulk finished")
                 logger.debug(response)
             except Exception as err:
                 logger.error(f"Got exception from gopoller: f{err}")
@@ -411,6 +412,7 @@ class GosnmpPoller(Poller):
                 # TODO: add better logging and raise error as in _any_failure_happened()
 
             for varBindTable in response:
+                print(f"varBindTable is : {varBindTable}")
                 logger.debug(varBindTable)
                 tmp_retry, tmp_mibs, _ = self.process_snmp_data(
                     varBindTable, metrics, address, bulk_mapping
@@ -526,15 +528,16 @@ class GosnmpPoller(Poller):
 
 
 def main():
-    ir = InventoryRecord(address="3.22.240.75", port=1162, version="2c", community="public", secret="",
-                         security_engine="", walk_interval=1800, profiles=[], smart_profiles=False,
-                         delete=False, group=None)
-
-    poller = GosnmpPoller()
-    print("Star walk")
-    retry, remotemibs, metrics = poller.do_work(ir, True, [])
-    print(f"Result metrics:\n{metrics}")
-    import time
+    # ir = InventoryRecord(address="3.22.240.75", port=1162, version="2c", community="public", secret="",
+    #                      security_engine="", walk_interval=1800, profiles=[], smart_profiles=False,
+    #                      delete=False, group=None)
+    #
+    # poller = GosnmpPoller()
+    # print("Star walk")
+    # retry, remotemibs, metrics = poller.do_work(ir, True, [])
+    # print(f"Result metrics:\n{metrics}")
+    # import time
+    go_poller_celery.apply_async(countdown=30, queue="go_poller")
     time.sleep(1800)
 
 
