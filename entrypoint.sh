@@ -11,6 +11,10 @@ inventory)
     inventory-loader
     ;;
 
+new-poller)
+    new-poller
+    ;;
+
 celery)
     case $2 in
     beat)
