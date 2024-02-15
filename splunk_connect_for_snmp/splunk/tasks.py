@@ -19,7 +19,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except:
+except OSError:
     pass
 
 import json
@@ -166,7 +166,9 @@ def do_send(data, destination_url, self):
 def valueAsBest(value) -> Union[str, float]:
     try:
         return float(value)
-    except:
+    except ValueError:
+        return value
+    except TypeError:
         return value
 
 

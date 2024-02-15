@@ -44,7 +44,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except:
+except OSError:
     pass
 
 formatter = CustomisedJSONFormatter()
