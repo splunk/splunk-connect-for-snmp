@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-func PerformBulkWalk(authData SnmpV3StringAuthData, target string, community string, oids OidSlice, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
-	params, err := getGoSnmp(target, port, ignoreNonIncreasingOid, version, community, authData, 1800)
+func PerformBulkWalk(authData SnmpV3StringAuthData, target string, community string, oids []string, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
+	params, err := getGoSnmp(target, port, ignoreNonIncreasingOid, version, community, authData, 3)
 
 	if err != nil {
 		return nil, fmt.Errorf("an error occured while creating gosnmp.GoSNMP:  %v", err)
@@ -60,7 +60,7 @@ func ToString(value interface{}, vtype gosnmp.Asn1BER) string {
 }
 
 func PerformGet(authData SnmpV3StringAuthData, target string, community string, oids OidSlice, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
-	params, err := getGoSnmp(target, port, ignoreNonIncreasingOid, version, community, authData, 20)
+	params, err := getGoSnmp(target, port, ignoreNonIncreasingOid, version, community, authData, 3)
 	if err != nil {
 		return nil, fmt.Errorf("an error occured while creating gosnmp.GoSNMP:  %v", err)
 	}

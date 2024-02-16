@@ -77,10 +77,11 @@ func getSecurityParameters(authData SnmpV3StringAuthData) (*gosnmp.UsmSecurityPa
 		PrivacyPassphrase:        authData.PrivacyPassphrase,
 		AuthoritativeEngineID:    authData.AuthoritativeEngineID,
 	}
-	useLogger := os.Getenv("ENABLE_GO_LOGGER")
-	if humanBool(useLogger, false) {
-		result.Logger = gosnmp.NewLogger(log.New(os.Stdout, "", 0))
-	}
+	//useLogger := os.Getenv("ENABLE_GO_LOGGER")
+	//if humanBool(useLogger, false) {
+	//	result.Logger = gosnmp.NewLogger(log.New(os.Stdout, "", 0))
+	//}
+	result.Logger = gosnmp.NewLogger(log.New(os.Stdout, "", 0))
 	return &result, nil
 }
 
@@ -93,7 +94,7 @@ func getGoSnmp(target string, port int, ignoreNonIncreasingOid bool, version str
 	}
 
 	var result gosnmp.GoSNMP
-	var appOpts = map[string]interface{}{"c": !ignoreNonIncreasingOid}
+	var appOpts = map[string]interface{}{"c": ignoreNonIncreasingOid}
 
 	if snmpVersion != gosnmp.Version3 {
 		result = gosnmp.GoSNMP{
@@ -108,7 +109,8 @@ func getGoSnmp(target string, port int, ignoreNonIncreasingOid bool, version str
 			Community:               community,
 			Version:                 snmpVersion,                                 // have to set to correct version and add necessary params for v3
 			Timeout:                 time.Duration(timeoutSeconds) * time.Second, // timeout of one request/response, possibly not the updconnectiontimeout??
-			ExponentialTimeout:      true,
+			ExponentialTimeout:      false,
+			Retries:                 5,
 			UseUnconnectedUDPSocket: true,
 		}
 	} else {
@@ -129,16 +131,18 @@ func getGoSnmp(target string, port int, ignoreNonIncreasingOid bool, version str
 			SecurityModel:           gosnmp.UserSecurityModel,
 			MsgFlags:                gosnmp.AuthPriv,
 			Timeout:                 time.Duration(timeoutSeconds) * time.Second,
-			ExponentialTimeout:      true,
+			ExponentialTimeout:      false,
+			Retries:                 5,
 			SecurityParameters:      securityParameters,
 			UseUnconnectedUDPSocket: true,
 		}
 	}
 
-	useLogger := os.Getenv("ENABLE_GO_LOGGER")
-	if humanBool(useLogger, false) {
-		result.Logger = gosnmp.NewLogger(log.New(os.Stdout, "", 0))
-	}
+	//useLogger := os.Getenv("ENABLE_GO_LOGGER")
+	//if humanBool(useLogger, false) {
+	//	result.Logger = gosnmp.NewLogger(log.New(os.Stdout, "", 0))
+	//}
+	result.Logger = gosnmp.NewLogger(log.New(os.Stdout, "", 0))
 
 	return &result, nil
 }
