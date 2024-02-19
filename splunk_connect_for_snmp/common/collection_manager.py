@@ -1,17 +1,16 @@
 import os
 from abc import abstractmethod
+from contextlib import suppress
 
 import yaml
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 
-try:
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()
-except OSError:
-    pass
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 CONFIG_FROM_MONGO = human_bool(os.getenv("CONFIG_FROM_MONGO", "false").lower())

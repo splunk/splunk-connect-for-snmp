@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 import typing
+from contextlib import suppress
 
 from pysnmp.proto.errind import EmptyResponse
 from pysnmp.smi import error
@@ -23,12 +24,11 @@ from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
 from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
 from splunk_connect_for_snmp.snmp.varbinds_resolver import ProfileCollection
 
-try:
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()
-except OSError:
-    pass
+
 import csv
 import os
 import time

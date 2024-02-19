@@ -14,17 +14,16 @@
 # limitations under the License.
 #
 import logging
+from contextlib import suppress
 
 from pysnmp.proto.api import v2c
 
 from splunk_connect_for_snmp.snmp.auth import get_secret_value
 
-try:
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()
-except OSError:
-    pass
 
 import asyncio
 import os

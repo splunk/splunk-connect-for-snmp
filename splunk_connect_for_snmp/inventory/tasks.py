@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 import typing
+from contextlib import suppress
 
 from splunk_connect_for_snmp.snmp.manager import get_inventory
 
@@ -21,12 +22,11 @@ from ..common.collection_manager import ProfilesManager
 from ..common.task_generator import PollTaskGenerator
 from .loader import transform_address_to_key
 
-try:
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()
-except OSError:
-    pass
+
 import os
 import re
 
