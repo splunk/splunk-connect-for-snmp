@@ -55,6 +55,14 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: remove not used docker images
+        run: |  
+          echo "docker rmi"
+          docker rmi $(docker images -q) || true
+          docker images
+          echo "check disk free space"
+          df -h    
+
       - name: prepare values.yaml for configuration storing
         working-directory: integration_tests
         run: |
@@ -74,9 +82,14 @@ jobs:
         working-directory: ui_tests
         run: |
           pip install -r requirements.txt
-          export PATH="/home/ubuntu/.local/bin:$PATH"
+          export PATH="/home/ubuntu/.local/bin:$PATH" 
 
       - name: run tests
         working-directory: ui_tests
         run: |
+          sudo microk8s kubectl get pod -n sc4snmp
+          echo "check if UI is available - curl"
+          curl http://localhost:30001
+          echo "run tests"
           pytest -vvv --splunk-user=admin --splunk-password="changeme2" --splunk-host="localhost" --device-simulator="$(hostname -I | cut -d " " -f1)" -k ${{ matrix.execution-type }}
+
