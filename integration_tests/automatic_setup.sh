@@ -130,7 +130,7 @@ wait_for_pod_initialization
 wait_for_sc4snmp_pods_to_be_up
 check_metallb_status
 
-if [ $1 == 'integration' ]; then
+if [[ $1 == 'integration' ]]; then
   define_python
   deploy_poetry
 fi

@@ -17,6 +17,7 @@
 import logging
 import os
 import sys
+from contextlib import suppress
 from csv import DictReader
 
 import pymongo
@@ -40,12 +41,10 @@ from splunk_connect_for_snmp.common.inventory_processor import (
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
 
-try:
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()
-except OSError:
-    pass
 
 formatter = CustomisedJSONFormatter()
 

@@ -13,14 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from contextlib import suppress
+
 from splunk_connect_for_snmp.common.custom_translations import load_custom_translations
 
-try:
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()
-except OSError:
-    pass
 
 import json
 import os

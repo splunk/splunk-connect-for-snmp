@@ -14,15 +14,14 @@
 # limitations under the License.
 #
 import os
+from contextlib import suppress
 
 import yaml
 
-try:
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()
-except OSError:
-    pass
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 

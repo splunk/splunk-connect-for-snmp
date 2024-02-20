@@ -1,5 +1,6 @@
 import copy
 import os
+from contextlib import suppress
 from csv import DictReader
 from typing import List
 
@@ -11,13 +12,10 @@ from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
 from splunk_connect_for_snmp.poller import app
 
-try:
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()
-except OSError:
-    pass
-
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
