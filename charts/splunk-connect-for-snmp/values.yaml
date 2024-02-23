@@ -240,6 +240,8 @@ worker:
   # The poller worker consumes all the tasks related to polling
   poller:
     go:
+      # Enable Go poller for walks
+      enabled: false
       # Enable logs from gosnmp library
       gosnmpLogger: false
     # number of the poller replicas when autoscaling is set to false

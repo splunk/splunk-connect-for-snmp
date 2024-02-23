@@ -167,8 +167,12 @@ Common labels
   value: {{ .Values.worker.poller.concurrency | default "2" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.poller.prefetch | default "1" | quote }}
+- name: ENABLE_GO_POLLER
+  value: {{ .Values.worker.poller.go.enabled | default "false" | quote }}
+{{- if .Values.worker.poller.go.enabled }}
 - name: ENABLE_GO_LOGGER
   value: {{ .Values.worker.poller.go.gosnmpLogger | default "false" | quote }}
+{{- end }}
 {{- end }}
 
 {{- define "environmental-variables-sender" -}}
