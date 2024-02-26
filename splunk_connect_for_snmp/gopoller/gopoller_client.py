@@ -14,7 +14,7 @@ def main():
         "community": "",
         "oids": ["1.3.6.1.2.1.2"],
         "ignoreNonIncreasingOid": True,
-        "version": "3"
+        "version": "3",
     }
 
     response = requests.post("http://localhost:9000/walk", json=post_json)
@@ -25,5 +25,5 @@ def main():
         print(response.status_code)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

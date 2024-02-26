@@ -87,8 +87,8 @@ def return_address_and_port(target):
 
 def is_increasing_oids_ignored(host, port):
     if (
-            host in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
-            or f"{host}:{port}" in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
+        host in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
+        or f"{host}:{port}" in HOSTS_TO_IGNORE_NOT_INCREASING_OIDS
     ):
         return True
     return False
@@ -105,7 +105,7 @@ def get_inventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-        error_indication, error_status, error_index, var_binds: list, address, walk
+    error_indication, error_status, error_index, var_binds: list, address, walk
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
@@ -134,9 +134,9 @@ def _any_failure_happened(
 
 def isMIBResolved(id):
     if (
-            id.startswith("RFC1213-MIB::")
-            or id.startswith("SNMPv2-SMI::enterprises.")
-            or id.startswith("SNMPv2-SMI::mib-2")
+        id.startswith("RFC1213-MIB::")
+        or id.startswith("SNMPv2-SMI::enterprises.")
+        or id.startswith("SNMPv2-SMI::mib-2")
     ):
         return False
     else:
@@ -292,10 +292,10 @@ class Poller(Task):
 
     @abstractmethod
     def do_work(
-            self,
-            ir: InventoryRecord,
-            walk: bool = False,
-            profiles: List[str] = None,
+        self,
+        ir: InventoryRecord,
+        walk: bool = False,
+        profiles: List[str] = None,
     ):
         pass
 
@@ -309,7 +309,7 @@ class Poller(Task):
 
     def get_varbind_chunk(self, lst, n):
         for i in range(0, len(lst), n):
-            yield lst[i: i + n]
+            yield lst[i : i + n]
 
     def load_mibs(self, mibs: List[str]) -> None:
         logger.info(f"loading mib modules {mibs}")
@@ -373,10 +373,10 @@ class PysnmpPoller(Poller):
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
     def do_work(
-            self,
-            ir: InventoryRecord,
-            walk: bool = False,
-            profiles: List[str] = None,
+        self,
+        ir: InventoryRecord,
+        walk: bool = False,
+        profiles: List[str] = None,
     ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
@@ -405,23 +405,23 @@ class PysnmpPoller(Poller):
 
         if varbinds_bulk:
             for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
-                    self.snmpEngine,
-                    authData,
-                    transport,
-                    contextData,
-                    1,
-                    10,
-                    *varbinds_bulk,
-                    lexicographicMode=False,
-                    ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+                self.snmpEngine,
+                authData,
+                transport,
+                contextData,
+                1,
+                10,
+                *varbinds_bulk,
+                lexicographicMode=False,
+                ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
             ):
                 if not _any_failure_happened(
-                        errorIndication,
-                        errorStatus,
-                        errorIndex,
-                        varBindTable,
-                        ir.address,
-                        walk,
+                    errorIndication,
+                    errorStatus,
+                    errorIndex,
+                    varBindTable,
+                    ir.address,
+                    walk,
                 ):
                     tmp_retry, tmp_mibs, _ = self.process_snmp_data(
                         varBindTable, metrics, address, bulk_mapping
@@ -435,18 +435,18 @@ class PysnmpPoller(Poller):
         if varbinds_get:
             # some devices cannot process more OID than X, so it is necessary to divide it on chunks
             for varbind_chunk in self.get_varbind_chunk(
-                    varbinds_get, MAX_OID_TO_PROCESS
+                varbinds_get, MAX_OID_TO_PROCESS
             ):
                 for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
-                        self.snmpEngine, authData, transport, contextData, *varbind_chunk
+                    self.snmpEngine, authData, transport, contextData, *varbind_chunk
                 ):
                     if not _any_failure_happened(
-                            errorIndication,
-                            errorStatus,
-                            errorIndex,
-                            varBindTable,
-                            ir.address,
-                            walk,
+                        errorIndication,
+                        errorStatus,
+                        errorIndex,
+                        varBindTable,
+                        ir.address,
+                        walk,
                     ):
                         self.process_snmp_data(
                             varBindTable, metrics, address, get_mapping
@@ -542,6 +542,7 @@ class PysnmpPoller(Poller):
 
         return retry, remotemibs, metrics
 
+
 class GosnmpPoller(Poller):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -561,7 +562,7 @@ class GosnmpPoller(Poller):
         get_mapping = {}
         bulk_mapping = {}
         if walk and not profiles:
-            varbinds_bulk.add('1.3.6')
+            varbinds_bulk.add("1.3.6")
             return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
         joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
@@ -593,10 +594,10 @@ class GosnmpPoller(Poller):
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
     def do_work(
-            self,
-            ir: InventoryRecord,
-            walk: bool = False,
-            profiles: List[str] = None,
+        self,
+        ir: InventoryRecord,
+        walk: bool = False,
+        profiles: List[str] = None,
     ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
@@ -624,9 +625,17 @@ class GosnmpPoller(Poller):
                 logger.debug(ir)
                 oidslice = gopoller.OidSlice(list(varbinds_bulk))
                 logger.debug(oidslice)
-                response = gopoller.PerformBulkWalk(authData=auth_data, target=ir.address, community=ir.community,
-                                                    oids=oidslice, port=ir.port, ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
-                                                    version=ir.version)
+                response = gopoller.PerformBulkWalk(
+                    authData=auth_data,
+                    target=ir.address,
+                    community=ir.community,
+                    oids=oidslice,
+                    port=ir.port,
+                    ignoreNonIncreasingOid=is_increasing_oids_ignored(
+                        ir.address, ir.port
+                    ),
+                    version=ir.version,
+                )
                 logger.debug(response)
             except Exception as err:
                 logger.error(f"Got exception from gopoller: f{err}")
@@ -640,20 +649,25 @@ class GosnmpPoller(Poller):
                 )
                 if tmp_mibs:
                     self.load_mibs(tmp_mibs)
-                    self.process_snmp_data(
-                        varBindTable, metrics, address, bulk_mapping
-                    )
+                    self.process_snmp_data(varBindTable, metrics, address, bulk_mapping)
 
         if varbinds_get:
             # some devices cannot process more OID than X, so it is necessary to divide it on chunks
             for varbind_chunk in self.get_varbind_chunk(
-                    varbinds_get, MAX_OID_TO_PROCESS
+                varbinds_get, MAX_OID_TO_PROCESS
             ):
                 oidslice = gopoller.OidSlice(varbind_chunk)
-                response = gopoller.PerformGet(authData=auth_data, target=ir.address, community=ir.community,
-                                               oids=oidslice, port=ir.port,
-                                               ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
-                                               version=ir.version)
+                response = gopoller.PerformGet(
+                    authData=auth_data,
+                    target=ir.address,
+                    community=ir.community,
+                    oids=oidslice,
+                    port=ir.port,
+                    ignoreNonIncreasingOid=is_increasing_oids_ignored(
+                        ir.address, ir.port
+                    ),
+                    version=ir.version,
+                )
 
         for group_key, metric in metrics.items():
             if "profiles" in metrics[group_key]:
