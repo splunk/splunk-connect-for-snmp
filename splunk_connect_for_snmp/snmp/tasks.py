@@ -18,6 +18,7 @@ from contextlib import suppress
 
 from pysnmp.smi.error import SmiError
 
+from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 try:
@@ -36,7 +37,11 @@ from celery.utils.log import get_task_logger
 from mongolock import MongoLock, MongoLockLocked
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
-from splunk_connect_for_snmp.snmp.manager import PysnmpPoller, get_inventory
+from splunk_connect_for_snmp.snmp.manager import (
+    GosnmpPoller,
+    PysnmpPoller,
+    get_inventory,
+)
 
 logger = get_task_logger(__name__)
 
@@ -47,11 +52,12 @@ WALK_RETRY_MAX_INTERVAL = int(os.getenv("WALK_RETRY_MAX_INTERVAL", "180"))
 WALK_MAX_RETRIES = int(os.getenv("WALK_MAX_RETRIES", "5"))
 SPLUNK_SOURCETYPE_TRAPS = os.getenv("SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")
 OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9][0-9]*))*$")
+ENABLE_GO_POLLER = human_bool(os.getenv("ENABLE_GO_POLLER", False))
 
 
 @shared_task(
     bind=True,
-    base=PysnmpPoller,
+    base=GosnmpPoller if ENABLE_GO_POLLER else PysnmpPoller,
     retry_backoff=30,
     retry_backoff_max=WALK_RETRY_MAX_INTERVAL,
     max_retries=WALK_MAX_RETRIES,
