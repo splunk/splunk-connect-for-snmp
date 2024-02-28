@@ -35,7 +35,7 @@ class CollectionManager:
         return collection_elements
 
     def return_collection(self):
-        for retry in range(3):
+        for _ in range(3):
             collection_elements = self.return_collection_once()
             if collection_elements:
                 return collection_elements
@@ -60,8 +60,8 @@ class CollectionManager:
     def update_all(self):
         all_elements = self.gather_elements()
         # check in case only header is present
-        if all_elements is None:
-            all_elements = {}
+        # if all_elements is None:
+        #     all_elements = {}
         self.update_collection(all_elements)
 
 

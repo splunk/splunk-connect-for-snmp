@@ -15,7 +15,6 @@ class Logger:
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(formatter)
         logger.addHandler(handler)
-        # return logger
         cls.logger = logger
 
     @classmethod

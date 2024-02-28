@@ -69,9 +69,9 @@ send_task_signature = send.s
 # Callback function for receiving notifications
 # noinspection PyUnusedLocal
 def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cbCtx):
-    transportDomain, transportAddress = snmpEngine.msgAndPduDsp.getTransportInfo(
-        stateReference
-    )
+    # transportDomain, transportAddress = snmpEngine.msgAndPduDsp.getTransportInfo(
+    #     stateReference
+    # )
     logging.debug(
         'Notification from ContextEngineId "%s", ContextName "%s"'
         % (contextEngineId.prettyPrint(), contextName.prettyPrint())
