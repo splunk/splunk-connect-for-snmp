@@ -34,7 +34,6 @@ from celery import Celery, chain
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 
-# from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from pysnmp.carrier.asyncio.dgram import udp
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
