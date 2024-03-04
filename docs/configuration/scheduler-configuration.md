@@ -72,7 +72,7 @@ However, if they remain unspecified in the host configuration, they will be deri
 
 ### Define the expiration time for tasks
 
-Define the time, in seconds, when polling or walk tasks will be revoked if they haven't been picked up by the worker.  after which polling or walk tasks, that haven't been picked up by the worker, will be revoked. See the [celery documentation](https://docs.celeryq.dev/en/stable/userguide/calling.html#expiration) for more details.
+Define the time, in seconds, when polling or walk tasks will be revoked if they haven't been picked up by the worker. See the [celery documentation](https://docs.celeryq.dev/en/stable/userguide/calling.html#expiration) for more details.
 ```yaml
 scheduler:
   tasksExpiryTime: 300
