@@ -126,7 +126,7 @@ For more information on `metallb`, see [Install metallb](../gettingstarted/mk8s/
 
 ## Installing helm3
 
-Additionally, you need to installat the helm3 add-on.  See the following steps:
+Additionally, you need to install the helm3 add-on.  See the following steps:
 
 1. Check your server's platform with:
 
