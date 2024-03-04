@@ -283,8 +283,8 @@ This will negate the operator specified in `operation`. See the following:
 4. `negate_operation + in` - value gathered from `field` is NOT equal to any of the elements provided in `value`
 5. `negate_operation + regex` - value gathered from `field` is NOT matching the pattern provided in `value`. 
 
-The `field` parameter in `conditions` must fulfill the pattern `MIB-family.field`. Fields must represent textual value (metric value).
-See [snmp data format](snmp-data-format.md) for more information.
+The `field` parameter in `conditions` must fulfill the pattern `MIB-family.field`. The field must represent a textual value (rather than a metric one).
+See [snmp data format](snmp-data-format.md) for more information. 
 
 You have to explicitly define `varBinds` (not only the MIB family but also the field to poll). See the following **incorrect** example: 
 
