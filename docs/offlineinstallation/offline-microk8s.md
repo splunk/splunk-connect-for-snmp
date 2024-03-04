@@ -115,7 +115,7 @@ kube-system    metrics-server-5f8f64cb86-x7k29            1/1     Running       
 
 ## Enabling DNS and Metallb
 
-dns and metallb don’t require importing any images, so you can enable them simply through the following commands:
+`dns` and `metallb` don’t require importing any images, so you can enable them simply through the following commands:
 
 ```yaml
 microk8s enable dns
