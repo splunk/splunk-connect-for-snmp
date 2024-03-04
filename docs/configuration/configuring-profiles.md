@@ -277,11 +277,11 @@ conditions:
 ```
 This will negate the operator specified in `operation`. See the following: 
 
-1. `negate_operation + equals` - value gathered from `field` is NOT equal to `value`
-2. `negate_operation + gt` - value gathered from `field` is SMALLER or EQUAL to `value` (works only for numeric values)
-3. `negate_operation + lt` - value gathered from `field` is BIGGER or EQUAL to `value` (works only for numeric values)
-4. `negate_operation + in` - value gathered from `field` is NOT equal to any of the elements provided in `value`
-5. `negate_operation + regex` - value gathered from `field` is NOT matching the pattern provided in `value`. 
+1. `negate_operation + equals`: value gathered from `field` is NOT equal to `value`.
+2. `negate_operation + gt`: value gathered from `field` is SMALLER or EQUAL to `value` (works only for numeric values).
+3. `negate_operation + lt`: value gathered from `field` is BIGGER or EQUAL to `value` (works only for numeric values).
+4. `negate_operation + in`: value gathered from `field` is NOT equal to any of the elements provided in `value`.
+5. `negate_operation + regex`: value gathered from `field` is NOT matching the pattern provided in `value`. 
 
 The `field` parameter in `conditions` must fulfill the pattern `MIB-family.field`. The field must represent a textual value (rather than a metric one).
 See [snmp data format](snmp-data-format.md) for more information. 
