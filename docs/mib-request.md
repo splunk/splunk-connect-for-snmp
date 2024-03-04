@@ -16,7 +16,7 @@ In case you want to add a new MIB file to the MIB server, see the following step
 
 1. Create a fork of the [https://github.com/pysnmp/mibs](https://github.com/pysnmp/mibs) repository.
    
-2. Put one or more MIB files under `src/vendor/@vendor_name@` where `@vendor_name@` is the name of the MIB file's vendor. If there is currently no directory of vendors that you need, create it yourself..
+2. Put one or more MIB files under `src/vendor/@vendor_name@` where `@vendor_name@` is the name of the MIB file's vendor. If there is currently no directory of vendors that you need, create it yourself.
    
 3. Create a pull request to a `main` branch.
    
