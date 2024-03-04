@@ -7,7 +7,7 @@ SNMP devices using the SNMP GET and WALK functionalities. Poller executes two ma
 collect SNMP data from the network and infrastructure of SNMP-enabled devices, such as switches and routers. It is a time-consuming task,
 which may overload the SNMP device when executed too often. It is used by the SC4SNMP to collect and push all OID values, which the provided ACL has access to. 
   
-- The get task is a lightweight task that queries a subset of OIDs defined by the customer. This task monitors OIDs, such as memory or CPU utilization.  
+- The Get task is a lightweight task that queries a subset of OIDs defined by the customer. This task monitors OIDs, such as memory or CPU utilization.  
 
 Poller has an `inventory`, which defines what and how often SC4SNMP has to poll.
 
