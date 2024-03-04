@@ -72,7 +72,7 @@ image:
   pullPolicy: "Never"
 ```
 
-An example `values.yaml` file can be found in https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/offline_installation_values.md.
+An example `values.yaml` file can be found in the [Offline SC4SNMP values.yaml template](https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/offline_installation_values.md).
 
 Next, unpack the chart package `splunk-connect-for-snmp-chart.tar`. It will result in creating the following `splunk-connect-for-snmp` directory:
 
