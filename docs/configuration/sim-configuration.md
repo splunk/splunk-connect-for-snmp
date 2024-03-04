@@ -13,7 +13,7 @@ sim:
 
 You need to specify Splunk Observability Cloud token and realm. There are two ways of configuring them:
 
-1. Pass those in a plain text via `values.yaml` so at the end sim element looks like this:
+1. Pass those in a plain text using `values.yaml`, so at the end, the sim element looks like the following:
 
 ```yaml
 sim:
@@ -22,7 +22,7 @@ sim:
   signalfxRealm: us0
 ```
 
-2. Alternatively, create microk8s secret by yourself and pass its name in `values.yaml` file. Create secret:
+2. Alternatively, create the microk8s secret by yourself and pass its name to the `values.yaml` file. Use the following command to create it:
 
 ```
 microk8s kubectl create -n <namespace> secret generic <secretname> \
@@ -30,9 +30,9 @@ microk8s kubectl create -n <namespace> secret generic <secretname> \
   --from-literal=signalfxRealm=<signalfxRealm>
 ```
 
-Modify `sim.secret` section of `values.yaml`. Disable creation of the secret with `sim.secret.create` and provide the
-`<secretname>` matching the one from the previous step. Pass it via `sim.secret.name`. For example, for `<secretname>`=`signalfx`
-the `sim` section would look like:
+Modify `sim.secret` section of `values.yaml`. Disable the creation of the secret with `sim.secret.create` and provide the
+`<secretname>`, matching the one from the previous step. Pass it using `sim.secret.name`. For example, for `<secretname>`=`signalfx`,
+the `sim` section would look like the following:
 
 ```yaml
 sim:
@@ -47,7 +47,7 @@ of `values.yaml` (given by `sim.secret.name`), you need to roll out the deployme
 
 
 ### Define annotations
-In case you need to append some annotations to the `sim` service, you can do it by setting `sim.service.annotations`, for ex.:
+In case you need to append some annotations to the `sim` service, you can do it by setting `sim.service.annotations`, for example:
 
 ```yaml
 sim:

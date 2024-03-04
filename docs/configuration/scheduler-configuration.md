@@ -1,13 +1,13 @@
 # Scheduler configuration
-The scheduler is a service with is responsible for managing schedules for SNMP walks and GETs. Schedules definition 
-are stored in Mongo DB. 
+The scheduler is a service that manages schedules for SNMP walks and GETs. The definitions of the schedules
+are stored in MongoDB. 
  
 ### Scheduler configuration file
 
-Scheduler configuration is kept in `values.yaml` file in section `scheduler`.
-`values.yaml` is being used during the installation process for configuring Kubernetes values.
+Scheduler configuration is kept in `values.yaml` file, in the section `scheduler`.
+`values.yaml` is used during the installation process to configure Kubernetes values.
 
-Example:
+See the following example: 
 ```yaml
 scheduler:
   logLevel: "WARN"
@@ -25,8 +25,8 @@ scheduler:
 ```
 
 ### Define log level
-Log level for scheduler can be set by changing the value for key `logLevel`. Allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
-The default value is `WARNING`
+The log level for the scheduler can be set by changing the value for the `logLevel` key. The allowed values are `DEBUG`, `INFO`, `WARNING`, or `ERROR`. 
+The default value is `WARNING`.
 
 ### Define resource requests and limits
 ```yaml
@@ -43,9 +43,9 @@ scheduler:
 ```
 
 ### Define groups of hosts
-To get the general idea when groups are useful see [Configuring Groups](configuring-groups.md).
+For more information on when to use groups, see [Configuring Groups](configuring-groups.md).
 
-Example group configuration:
+See the following example group configuration:
 ```yaml
 scheduler:
   groups: |
@@ -67,12 +67,12 @@ scheduler:
 ```
 
 The one obligatory field for the host configuration is `address`. If `port` isn't configured its default value is `161`. 
-Other fields that can be modified here are: `community`, `secret`, `version`, `security_engine`.
-However, if they remain unspecified in the host configuration, they will be derived from the inventory record regarding this specific group.
+Other fields that can be modified here are: `community`, `secret`, `version`, and `security_engine`.
+However, if they remain unspecified in the host configuration, they will be derived from the inventory record. 
 
-### Define tasks expiry time
+### Define the expiration time for tasks
 
-Define time in second after which polling or walk tasks, that haven't been picked up by the worker, will be revoked. Check the [celery documentation](https://docs.celeryq.dev/en/stable/userguide/calling.html#expiration) for more details.
+Define the time, in seconds, when polling or walk tasks will be revoked if they haven't been picked up by the worker. See the [celery documentation](https://docs.celeryq.dev/en/stable/userguide/calling.html#expiration) for more details.
 ```yaml
 scheduler:
   tasksExpiryTime: 300

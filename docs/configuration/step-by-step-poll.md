@@ -1,6 +1,6 @@
 # An example of a polling scenario
 
-We have 4 hosts we want to poll from:
+In the following example, there are 4 hosts you want to poll from: 
 
 1. `10.202.4.201:161`
 2. `10.202.4.202:161`
@@ -10,7 +10,7 @@ We have 4 hosts we want to poll from:
 To retrieve data from the device efficiently, first determine the specific data needed. Instead of walking through 
 the entire `1.3.6.1`, limit the walk to poll only the necessary data. Configure the `IF-MIB` family for interfaces and 
 the `UCD-SNMP-MIB` for CPU-related statistics. In the `scheduler` section of `values.yaml`, define the target group and 
-establish the polling parameters, known as the profile, to gather the desired data precisely:
+establish the polling parameters, known as the profile, to gather the desired data precisely. See the following example: 
 
 ```yaml
 scheduler:
@@ -48,7 +48,7 @@ scheduler:
         port: 163
 ```
 
-Then it is required to pass the proper instruction of what to do for SC4SNMP instance. This can be done by appending a new row
+It is required to pass the proper instruction of what to do for the SC4SNMP instance. To do this, append a new row
 to `poller.inventory`:
 
 ```yaml
@@ -59,14 +59,14 @@ poller:
     switch_group,,2c,public,,,2000,small_walk;switch_profile,,
 ```
 
-The provided configuration will make:
+The provided example configuration will make:
 
 1. Walk devices from `switch_group` with `IF-MIB` and `UCD-SNMP-MIB` every 2000 seconds
 2. Poll specific `IF-MIB` fields and the whole `UCD-SNMP-MIB` every 60 seconds
 
-Note: you could as well limit walk profile even more if you want to enhance the performance.
+Note: You can also limit the walk profile even more if you want to enhance the performance.
 
-It makes sense to put in the walk the textual values that don't required to be constantly monitored, and monitor only the metrics
+It makes sense to put the textual values in the walk that aren't required to be constantly monitored, and monitor only the metrics
 you're interested in:
 
 ```
@@ -92,23 +92,22 @@ switch_profile:
     - ["IF-MIB", "ifOutQLen"]
 ```
 
-Then every metric object will be enriched with the textual values gathered from a walk process. Learn more about
-SNMP format [here](snmp-data-format.md).
+Afterwards, every metric object will be enriched with the textual values gathered from a walk process. See [here](snmp-data-format.md) for more information about SNMP format.
 
 
-Now we're ready to reload SC4SNMP. We run the `helm3 upgrade` command:
+Now you're ready to reload SC4SNMP. Run the following `helm3 upgrade` command:
 
 ```yaml
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
 
-We should see the new pod with `Running` -> `Completed` state:
+See the new pod with the following `Running` -> `Completed` state command:
 
 ```yaml
 microk8s kubectl get pods -n sc4snmp -w
 ```
 
-Example output:
+See the following example output:
 ```yaml
 NAME                                                          READY   STATUS    RESTARTS   AGE
 snmp-splunk-connect-for-snmp-worker-sender-5bc5cf864b-cwmfw   1/1     Running   0          5h52m
@@ -127,13 +126,13 @@ snmp-splunk-connect-for-snmp-inventory-g4bs7                  0/1     Completed 
 snmp-splunk-connect-for-snmp-inventory-g4bs7                  0/1     Completed   0          7s
 ```
 
-We can check the pod's logs to make sure everything was reloaded right, with:
+Check the pod's logs to make sure everything was reloaded correctly, using the following command:
 
 ```yaml
 microk8s kubectl logs -f snmp-splunk-connect-for-snmp-inventory-g4bs7  -n sc4snmp
 ```
 
-Example output:
+See the following example output:
 
 ```yaml
 Successfully connected to redis://snmp-redis-headless:6379/0
@@ -147,22 +146,22 @@ Successfully connected to http://snmp-mibserver/index.csv
 {"message": "New Record address='10.202.4.204' port=163 version='2c' community='public' secret=None security_engine=None walk_interval=2000 profiles=['switch_profile'] smart_profiles=True delete=False", "time": "2022-09-05T14:30:30.607641", "level": "INFO"}
 ```
 
-In some time (depending on how long the walk takes), we'll see events under:
+In some time (depending on how long the walk takes), we'll see events using the following query:
 
 ```yaml
 | mpreview index=netmetrics | search profiles=switch_profile
 ```
 
-query in Splunk. When groups are used, we can also use querying by the group name:
+When groups are used, we can also use querying by the group name, for example:
 
 ```yaml
 | mpreview index=netmetrics | search group=switch_group
 ```
 
-Keep in mind, that querying by profiles/group in Splunk is only possible in the metrics index. Every piece of data being sent
+Querying by profiles/group in Splunk is only possible in the metrics index. Every piece of data being sent
 by SC4SNMP is formed based on the MIB file's definition of the SNMP object's index. The object is forwarded to an event index only if it doesn't have any metric value inside.
 
-The `raw` metrics in Splunk example is:
+The following is a Splunk `raw` metrics example:
 
 ```json
 {

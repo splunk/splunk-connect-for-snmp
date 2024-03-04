@@ -1,18 +1,17 @@
 # Offline Microk8s installation issues
 
-Offline installation of Microk8s is described [here](https://microk8s.io/docs/install-alternatives#heading--offline), but
-there are additional steps to install microk8s offline. 
+See [install alternatives](https://microk8s.io/docs/install-alternatives#heading--offline) for offline installation of Microk8s,  but there are additional steps to install microk8s offline. See the following steps to install offline:
 
 ## Importing images
 
-After running:
+After running the following:
 
 ```
 snap ack microk8s_{microk8s_version}.assert
 snap install microk8s_{microk8s_version}.snap --classic
 ```
 
-You should check if the microk8s instance is healthy. Do it with:
+You should check if the microk8s instance is healthy. Do it using the following command:
 
 ```commandline
 microk8s kubectl get pods -A
@@ -25,11 +24,9 @@ kube-system    calico-kube-controllers-7c9c8dd885-fg8f2   0/1     Pending    0  
 kube-system    calico-node-zg4c4                          0/1     Init:0/3   0          23s
 ```
 
-The pods are in the `Pending`/`Init` state because they're trying to download images, which is impossible to do offline.
-In order to make them work you need to download all the images on a different server with an internet connection, pack it up, and
-import it to a microk8s image registry on your offline server. 
+The pods are in the `Pending`/`Init` state because they’re trying to download images, which is impossible to do offline. In order to make them download, you need to download all the images on a different server with an internet connection, pack it up, and import it to a microk8s image registry on your offline server.
 
-### Packing up images for offline environment
+### Packing up images for an offline environment
 
 You need to monitor
 
@@ -44,9 +41,9 @@ kube-system    0s          Warning   Failed              pod/calico-node-sc784  
 kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Error: ErrImagePull
 ```
 
-This shows you that you lack a `docker.io/calico/cni:v3.21.4` image, and need to import it in order to fix the issue.
+The previous information shows you that you lack a `docker.io/calico/cni:v3.21.4` image, and need to import it in order to fix the issue.
 
-The process of such action is always:
+The process to do this action is always the following:
 
 ```commandline
 docker pull <needed_image>
@@ -61,7 +58,7 @@ microk8s ctr image import image.tar
 
 ### Example of the offline installation
 
-For example, `microk8s` version `3597` requires these images to work correctly:
+For example, `microk8s` version `3597` requires the following images to work correctly:
 
 ```commandline
 docker pull docker.io/calico/kube-controllers:v3.21.4 
@@ -98,7 +95,7 @@ microk8s ctr image import metrics.tar
 
 NOTE: for other versions of `microk8s`, tags of images may differ. 
 
-The healthy instance of microk8s, after running:
+After running the following:
 
 ```commandline
 microk8s enable hostpath-storage
@@ -106,7 +103,7 @@ microk8s enable rbac
 microk8s enable metrics-server
 ```
 
-should look like this:
+The microk8s instance should be the following:
 
 ```
 NAMESPACE      NAME                                       READY   STATUS                  RESTARTS   AGE
@@ -118,18 +115,18 @@ kube-system    metrics-server-5f8f64cb86-x7k29            1/1     Running       
 
 ## Enabling DNS and Metallb
 
-The `dns` and `metallb` don't require importing any images, so you can enable them simply by:
+`dns` and `metallb` don’t require importing any images, so you can enable them simply through the following commands:
 
 ```yaml
 microk8s enable dns
 microk8s enable metallb
 ```
 
-More on `metallb` [here](../gettingstarted/mk8s/k8s-microk8s.md#install-metallb).
+For more information on `metallb`, see [Install metallb](../gettingstarted/mk8s/k8s-microk8s.md#install-metallb).
 
 ## Installing helm3
 
-The additional problem is the installation of `helm3` add-on. You need to do a few things to make it work.
+Additionally, you need to install the helm3 add-on.  See the following steps:
 
 1. Check your server's platform with:
 
@@ -137,14 +134,14 @@ The additional problem is the installation of `helm3` add-on. You need to do a f
 dpkg --print-architecture
 ```
 
-The output would be for ex.: `amd64`.
+The output would be, for example: `amd64`.
 You need the platform to download the correct version of helm.
 
 2. Download the helm package from `https://get.helm.sh/helm-v3.8.0-linux-{{arch}}.tar.gz`, where `{{arch}}` should be 
-replaced with the result from the previous command. Example: `https://get.helm.sh/helm-v3.8.0-linux-amd64.tar.gz`
+replaced with the result from the previous command, for example: `https://get.helm.sh/helm-v3.8.0-linux-amd64.tar.gz`.
 
-3. Rename package to `helm.tar.gz` and send it to an offline lab.
-4. Create `tmp` directory in `/var/snap/microk8s/current` and copy the package there:
+3. Rename the package to `helm.tar.gz` and send it to an offline lab.
+4. Create `tmp` directory in `/var/snap/microk8s/current` and copy the package in the following locations: 
 
 ```
 sudo mkdir -p /var/snap/microk8s/current/tmp/helm3
@@ -169,7 +166,7 @@ Save file.
 
 ## Verify your instance
 
-Check if all the add-ons were installed successfully with command: `microk8s status --wait-ready`. An example of
+Check if all the add-ons were installed successfully using the following command: `microk8s status --wait-ready`. An example of
 a correct output is:
 
 ```commandline

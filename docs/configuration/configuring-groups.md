@@ -1,16 +1,16 @@
 # Configuring Groups
 
 It is common to configure whole groups of devices instead of just single ones. 
-SC4SNMP allows both types of configuration. Group consists of many hosts. Each of them is configured in the `values.yaml` 
+SC4SNMP allows both types of configuration. A group consists of many hosts. Each of them is configured in the `values.yaml` 
 file, in the `scheduler` section. After configuring a group, its name can be used in the `address`
 field in the inventory record. All settings specified in the inventory record will be assigned to hosts from the given group, 
 unless specific host configuration overrides it.
 
-- Group configuration example and documentation can be found in the [Scheduler Configuration](scheduler-configuration.md#define-groups-of-hosts) page.
-- Use of groups in the inventory can be found in  the [Poller Configuration](poller-configuration.md#configure-inventory) page.
+- See the [Scheduler Configuration](scheduler-configuration.md#define-groups-of-hosts) page for group examples and documentation. 
+- See the [Poller Configuration](poller-configuration.md#configure-inventory) page for information about groups in the inventory. 
 
-If the host is configured in the group and both the group and the single host are included in the inventory (like in the example below), the
-configuration for the single host will be ignored in favour of group configuration:
+If the host is configured in the group and both the group and the single host are included in the inventory, the
+configuration for the single host will be ignored in favor of the group configuration. See the following example: 
 
 ```yaml
 scheduler:
@@ -31,7 +31,7 @@ poller:
 ```
 
 If the specific host from the group has to be configured separately, first it must be deleted from the group configuration,
-and then it can be inserted as a new record in the inventory (like in the example below):
+and then it can be inserted as a new record in the inventory. See the following example:
 
 ```yaml
 scheduler:

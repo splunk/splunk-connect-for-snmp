@@ -1,7 +1,7 @@
 # Planning
 
 Splunk Connect for SNMP (SC4SNMP) is a solution that allows the customer
-to \"get\" data from network devices and appliances when a more feature-complete solution, such as the Splunk Universal Forwarder, is not
+to get data from network devices and appliances when a more feature-complete solution, such as the Splunk Universal Forwarder, is not
 available.
 
 ## Architecture
@@ -18,7 +18,7 @@ existing firewall.
 
 -   A supported deployment of MicroK8s
 
--   16 Core/32 threads x64 architecture server or vm (single instance)
+-   16 Core/32 threads x64 architecture server or virtual machine (single instance)
     12 GB ram
 
 -   HA Requires 3 or more instances (odd numbers) 8 core/16 thread 16 GB
@@ -35,13 +35,12 @@ existing firewall.
 
 ## Planning Infrastructure
 
+When planning infrastructure for Splunk Connect for SNMP, (SC4SNMP), remember the following limitations: 
+
 A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
 16 Core/32 threads x64 and 64 GB RAM will be able to handle up to 1500
 SNMP TRAPs per second.
 
-A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
-16 Core/32 threads x64 and 64 GB RAM is able to handle up to 2750 SNMP varbinds per second. 
-As for events per second visible in Splunk, please remember that a single SC4SNMP event can contain more than one varbind inside - auto aggregation/grouping feature (varbinds which are describing same thing ie. network interface will be grouped in one event). 
-That is why, depending on configuration, the number of events per second may vary. 
+A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with 16 Core/32 threads x64 and 64 GB RAM is able to handle up to 2750 SNMP varbinds per second. As for events per second that are visible in Splunk, a single SC4SNMP event can contain more than one varbind inside, which is an automatic grouping feature. For example, the network interface would be grouped into one event, with varbinds grouped together to describe the same thing. That is why, depending on the configuration, the number of events per second may vary.
 
-When planning infrastructure for Splunk Connect for SNMP, (SC4SNMP) note the limitations highlighted above.
+
