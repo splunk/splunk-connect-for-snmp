@@ -212,7 +212,7 @@ scheduler:
 ``` 
 
 NOTE: Be aware that profile changes may not be reflected immediately. It can take up to 1 minute for changes to propagate. In case you changed the frequency, or a profile type, the change will be reflected only after the next walk.
-There is also a 5 minute time to leave (TTL) for an inventory pod. SC4SNMP allows one inventory upgrade and then it block updates for the next 5 minutes.
+There is also a 5 minute time to live (TTL) for an inventory pod. SC4SNMP allows one inventory upgrade and then it block updates for the next 5 minutes.
 
 ## Conditional profiles
 There is a way to not explicitly list what SNMP objects yoy want to poll, but, instead, only give the conditions that must be fulfilled to
