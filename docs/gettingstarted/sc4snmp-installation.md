@@ -106,7 +106,7 @@ snmp-splunk-connect-for-snmp-trap   LoadBalancer   10.152.183.33    10.202.9.21 
 If you see `<pending>` communicate instead of the IP address, that means you either provided the wrong IP address
 in `traps.loadBalancerIP` or there's something wrong with the `metallb` microk8s addon.
 
-In the following example, the default indexes are used, the metric data goes to netmetrics, and the events goes to netops.
+In the following example, the default indexes are used, the metric data goes to `netmetrics`, and the events goes to `netops`.
 
 #### Test SNMP Traps
 
