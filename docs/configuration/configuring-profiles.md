@@ -257,7 +257,7 @@ conditions:
       - 0
 ```
 
-5. `regex` - value gathered from `field` match the pattern provided in `value`. 
+5. `regex`: value gathered from `field` match the pattern provided in `value`. 
 You can add options for regular expression after `/`. Possible options match ones used in [mongodb regex operator](https://www.mongodb.com/docs/manual/reference/operator/query/regex/), for example: 
 
 ```yaml
