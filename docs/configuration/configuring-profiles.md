@@ -64,7 +64,7 @@ scheduler:
           - ['IP-MIB']
 ```
 
-If you want to enable only one `static_profile` polling for the host `10.202.4.202`, you would configure similar inventory:
+If you only want to enable the option `static_profile` polling for the host `10.202.4.202`, you would configure a similar inventory:
 
 ```yaml
 poller:
