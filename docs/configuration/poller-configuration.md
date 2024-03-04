@@ -93,7 +93,7 @@ information about groups can be found on the [Configuring Groups](configuring-gr
  - `profiles` (OPTIONAL) is a list of SNMP profiles used for the device. More than one profile can be added by a semicolon 
 separation, for example, `profile1;profile2`. For more information about profiles, see [Profile Configuration](../configuring-profiles).
  - `smart_profiles` (OPTIONAL) enables smart profiles, and by default it's set to `true`. Its allowed values are `true` or `false`.
- - `delete` (OPTIONAL) is a flag that defines what inventory should be deleted from the scheduled tasks for WALKs and GETs. Its allowed value are `true`or `false`. The default value is `false`.
+ - `delete` (OPTIONAL) is a flag that defines if the inventory should be deleted from the scheduled tasks for WALKs and GETs. Its allowed value are `true`or `false`. The default value is `false`.
 
 See the following example:
 ```yaml
