@@ -71,7 +71,7 @@ or enable `autoscaling`, which scales pods automatically.
 If you don't use polling at all, set `worker.poller.replicaCount` to `0`.
 If you want to use polling in the future, you need to increase `replicaCount`. To monitor traps, adjust `worker.trap.replicaCount` depending on your needs and `worker.sender.replicaCount` to send traps to Splunk. Usually, you need significantly fewer sender pods than trap pods.
 
-This following is an example of `values.yaml` without using autoscaling:
+The following is an example of `values.yaml` without using autoscaling:
 
 ```yaml
 worker:
