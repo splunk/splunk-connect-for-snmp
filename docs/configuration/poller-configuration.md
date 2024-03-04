@@ -66,14 +66,6 @@ out of this object:
 }
 ```
 
-Not every SNMP metric object is structured with its index as one of the field values. We can append the index part of OID with:
-
-```yaml
-poller:
-  metricsIndexingEnabled: true
-```
-
-
 ### Disable automatic polling of base profiles
 
 There are [two profiles](https://github:com/splunk/splunk-connect-for-snmp/blob/main/splunk_connect_for_snmp/profiles/base.yaml) that are being polled by default, so that even without any configuration set up, you can see
