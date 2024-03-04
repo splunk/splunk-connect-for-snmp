@@ -18,7 +18,7 @@ from contextlib import suppress
 
 from kombu import Queue
 
-with suppress(ImportError):
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()

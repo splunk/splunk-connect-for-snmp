@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "splunk-connect-for-snmp"
-version = "1.10.0-beta.3"
+version = "1.10.0-beta.6"
 description = ""
 authors = ["omrozowicz-splunk <omrozowicz@splunk.com>"]
 license = "Apache-2.0"
@@ -35,7 +35,7 @@ pyrate-limiter = "^2.10.0"
 requests-cache = "^1.0.0"
 requests-ratelimiter = "^0.4.0"
 mongoengine = "^0.27.0"
-celery-redbeat = {git = "https://github.com/splunk/redbeat", rev = "main"}
+celery-redbeat = {git = "https://github.com/splunk/redbeat", branch = "main"}
 PyYAML = "^6.0"
 #Note this is temporary PR to upstream project is issued
 wait-for-dep = {extras = ["redis"], git="https://github.com/omrozowicz-splunk/wait-for-dep.git"}
@@ -43,17 +43,17 @@ mongolock = "^1.3.4"
 pika = "^1.2.0"
 JSON-log-formatter ="^0.5.1"
 "ruamel.yaml" = "^0.18.0"
-mkdocs-video = "^1.5.0"
-pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", rev = "main"}
+pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", branch = "main"}
 urllib3 = "^1.26.17"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.2.1"
+pytest = "^8.0.0"
 pytest-cov = "^4.0.0"
 mike = "^2.0.0"
 mkdocs = "^1.2.2"
 mkdocs-material = "^9.0.0"
 python-dotenv = "^1.0.0"
+mkdocs-video = "^1.5.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

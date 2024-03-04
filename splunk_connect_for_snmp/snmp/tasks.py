@@ -20,12 +20,10 @@ from pysnmp.smi.error import SmiError
 
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
-try:
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()
-except:
-    pass
 
 import os
 import socket

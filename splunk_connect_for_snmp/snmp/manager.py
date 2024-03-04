@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 import typing
+from contextlib import suppress
 
 from pysnmp.proto.errind import EmptyResponse
 from pysnmp.smi import error
@@ -23,12 +24,11 @@ from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
 from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
 from splunk_connect_for_snmp.snmp.varbinds_resolver import ProfileCollection
 
-try:
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()
-except:
-    pass
+
 import csv
 import os
 import time
@@ -172,7 +172,9 @@ MTYPES = tuple(["cc", "c", "g"])
 def valueAsBest(value) -> Union[str, float]:
     try:
         return float(value)
-    except:
+    except ValueError:
+        return value
+    except TypeError:
         return value
 
 
@@ -189,7 +191,7 @@ def map_metric_type(t, snmp_value):
     if metric_type in MTYPES:
         try:
             float(snmp_value)
-        except:
+        except ValueError:
             metric_type = "te"
     return metric_type
 

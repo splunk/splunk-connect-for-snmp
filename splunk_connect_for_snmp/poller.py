@@ -17,7 +17,7 @@
 # Support use of .env file for developers
 from contextlib import suppress
 
-with suppress(ImportError):
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()
