@@ -116,9 +116,7 @@ The record that you'll see in Splunk `| mpreview index=net*` for the same case a
    metric_name:sc4snmp.IF-MIB.ifInUcastPkts: 47512921
 ```
 
-Only fields specified in `varBinds` are actively polled from the device. In the case of the `profile_with_one_metric`
-shown previously, the textual fields `ifAdminStatus`, `ifDescr`, `ifIndex`, `ifOperStatus` and `ifPhysAddress` are taken from 
-the database cache, which is updated on every `walk` process. This is fine in most cases, as values such as
+Only fields specified in `varBinds` are actively polled from the device. In the case of the previous `profile_with_one_metric`, the textual fields `ifAdminStatus`, `ifDescr`, `ifIndex`, `ifOperStatus` and `ifPhysAddress` are taken from the database cache. This is updated on every walk process. This is fine in most cases, as values such as
 MAC address, interface type, or interface status shouldn't change frequently if at all. 
 
 If you want to keep `ifOperStatus` and `ifAdminStatus` up to date all the time, define profile using the following example:
