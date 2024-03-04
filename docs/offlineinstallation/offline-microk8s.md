@@ -24,7 +24,7 @@ kube-system    calico-kube-controllers-7c9c8dd885-fg8f2   0/1     Pending    0  
 kube-system    calico-node-zg4c4                          0/1     Init:0/3   0          23s
 ```
 
-The pods are in the Pending/Init state because they’re trying to download images, which is impossible to do offline. In order to make them download, you need to download all the images on a different server with an internet connection, pack it up, and import it to a microk8s image registry on your offline server.
+The pods are in the `Pending`/`Init` state because they’re trying to download images, which is impossible to do offline. In order to make them download, you need to download all the images on a different server with an internet connection, pack it up, and import it to a microk8s image registry on your offline server.
 
 ### Packing up images for an offline environment
 
