@@ -117,7 +117,7 @@ To apply inventory changes in `values.yaml`, the following steps need to be exec
 microk8s kubectl -n sc4snmp get pods | grep inventory
 ```
    
-If the command does not return any pods, follow the next step. If it does not return pods, wait and continue to execute the command again, until the inventory job finishes. 
+If the command does not return any pods, wait and continue to execute the command again, until the inventory job finishes. 
 
 If you really need to apply changes immediately, you can get around the limitation by deleting the inventory job using the following command:
 
