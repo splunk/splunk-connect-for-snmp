@@ -113,8 +113,7 @@ A good practice is to create an IP floating address/Anycast pointing to the heal
 failover. To do this, create an external LoadBalancer that balances the traffic between nodes.
 
 ### Define number of traps server replica
-`replicaCount` defines that the number of replicas for each trap container should be 2 times the number of nodes. The default value is `2`. 
-See the following example:
+`replicaCount` defines that the number of replicas per trap container should be 2 times the number of nodes.
 ```yaml
 traps:
   #For production deployments the value should be at least 2x the number of nodes
