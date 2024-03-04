@@ -122,7 +122,7 @@ microk8s enable dns
 microk8s enable metallb
 ```
 
-For more information on on `metallb`, see [Install metallb](../gettingstarted/mk8s/k8s-microk8s.md#install-metallb).
+For more information on `metallb`, see [Install metallb](../gettingstarted/mk8s/k8s-microk8s.md#install-metallb).
 
 ## Installing helm3
 
