@@ -20,7 +20,7 @@ Moreover, the SC4SNMP Docker image must be pulled, saved as a `.tar` package, an
 This process requires Docker to be installed locally.
 
 Images can be pulled from the following repository: `ghcr.io/splunk/splunk-connect-for-snmp/container:<tag>`. 
-The latest tag can be found in (https://github.com/splunk/splunk-connect-for-snmp, under the Releases section with the label `latest`.
+The latest tag can be found in [The Splunk Connect for SNMP Repository](https://github.com/splunk/splunk-connect-for-snmp), under the Releases section with the label `latest`.
 
 See the following example of docker pull command:
 
