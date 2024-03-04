@@ -1,6 +1,6 @@
 # Offline Microk8s installation issues
 
-See https://microk8s.io/docs/install-alternatives#heading--offline for offline installation of Microk8s,  but there are additional steps to install microk8s offline. See the following steps to install offline:
+See [install alternatives](https://microk8s.io/docs/install-alternatives#heading--offline) for offline installation of Microk8s,  but there are additional steps to install microk8s offline. See the following steps to install offline:
 
 ## Importing images
 
