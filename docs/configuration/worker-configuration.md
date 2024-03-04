@@ -155,7 +155,7 @@ worker:
   logLevel: "WARNING"
 ```
 
-Remember that the system won’t scale itself infinitely.There is a finite amount of resources that you can allocate. By default, every worker has configured the following resources:
+Remember that the system won’t scale itself infinitely. There is a finite amount of resources that you can allocate. By default, every worker has configured the following resources:
 
 ```yaml
     resources:
