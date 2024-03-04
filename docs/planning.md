@@ -41,6 +41,6 @@ A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
 16 Core/32 threads x64 and 64 GB RAM will be able to handle up to 1500
 SNMP TRAPs per second.
 
-A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with 16 Core/32 threads x64 and 64 GB RAM is able to handle up to 2750 SNMP varbinds per second. As for events per second that are visible in Splunk, a single SC4SNMP event can contain more than one varbind inside, which is an automatic grouping feature. That is why, depending on configuration, the number of events per second may vary.
+A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with 16 Core/32 threads x64 and 64 GB RAM is able to handle up to 2750 SNMP varbinds per second. As for events per second that are visible in Splunk, a single SC4SNMP event can contain more than one varbind inside, which is an automatic grouping feature. For example, the network interface would be grouped into one event, with varbinds grouped together to describe the same thing. That is why, depending on the configuration, the number of events per second may vary.
 
 
