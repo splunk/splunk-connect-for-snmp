@@ -1300,50 +1300,49 @@
 
 <div><h1 id="mib-submission-process">MIB submission process<a class="headerlink" href="#mib-submission-process" title="Permanent link">¶</a></h1>
 <p>To achieve human-readable OIDs, the corresponding MIB files are necessary.
-They are being stored in one of the components of SC4SNMP - the MIB server. </p>
-<p>The list of currently available MIBs is here:
+They are stored in the MIB server, which is one of the components of SC4SNMP.</p>
+<p>See the following link for a list of currently available MIBs:
 <a href="https://pysnmp.github.io/mibs/index.csv">https://pysnmp.github.io/mibs/index.csv</a></p>
-<p>An alternative way to check if the MIB you’re interested in is being served is to check the link:
-<code>https://pysnmp.github.io/mibs/asn1/@mib@</code> where <code>@mib@</code> is the name of MIB (for example <code>IF-MIB</code>). If the file 
-is downloading, that means the MIB file exists in the mib server.</p>
+<p>An alternative way to check if the MIB you’re interested in is being served is to check the following link:
+<code>https://pysnmp.github.io/mibs/asn1/@mib@</code> where <code>@mib@</code> is the name of MIB, for example, <code>IF-MIB</code>. If the file 
+is downloading, that means the MIB file exists in the MIB server.</p>
 <h2 id="submit-a-new-mib-file">Submit a new MIB file<a class="headerlink" href="#submit-a-new-mib-file" title="Permanent link">¶</a></h2>
-<p>In case you want to add a new MIB file to the MIB server, follow the steps:</p>
+<p>In case you want to add a new MIB file to the MIB server, see the following steps:</p>
 <ol>
 <li>
-<p>Create a fork of the <a href="https://github.com/pysnmp/mibs">https://github.com/pysnmp/mibs</a> repository </p>
+<p>Create a fork of the <a href="https://github.com/pysnmp/mibs">https://github.com/pysnmp/mibs</a> repository.</p>
 </li>
 <li>
-<p>Put MIB file/s under <code>src/vendor/@vendor_name@</code> where <code>@vendor_name@</code> is the name of the MIB file’s vendor (in case
-there is no directory of vendors you need, create it by yourself)</p>
+<p>Put one or more MIB files under <code>src/vendor/@vendor_name@</code> where <code>@vendor_name@</code> is the name of the MIB file’s vendor. If there is currently no directory of vendors that you need, create it yourself.</p>
 </li>
 <li>
-<p>Create a pull request to a <code>main</code> branch</p>
+<p>Create a pull request to a <code>main</code> branch.</p>
 </li>
 <li>
-<p>Name the pull request the following way: <code>feat: add @vendor_name@ MIB files</code></p>
+<p>Name the pull request the following way: <code>feat: add @vendor_name@ MIB files</code>.</p>
 </li>
 </ol>
-<p>An alternative way of adding MIBs to the MIB server is to create an issue on 
+<p>An alternative way of adding MIBs to the MIB server is to create an issue in the
 <a href="https://github.com/pysnmp/mibs">https://github.com/pysnmp/mibs</a> repository, attaching the files and information about 
 the vendor.</p>
 <h2 id="update-your-instance-of-sc4snmp-with-the-newest-mib-server">Update your instance of SC4SNMP with the newest MIB server<a class="headerlink" href="#update-your-instance-of-sc4snmp-with-the-newest-mib-server" title="Permanent link">¶</a></h2>
-<p>Usually SC4SNMP is released with the newest version of MIB server every time the new MIB files were added.
-But, if you want to use the newest MIB server right after its released, you can do it manually via the <code>values.yaml</code> file.</p>
+<p>Usually SC4SNMP is released with the newest version of MIB server every time the new MIB files are added.
+But, if you want to use the newest MIB server right after its released, you can do it manually using the <code>values.yaml</code> file:</p>
 <ol>
-<li>Append <code>mibserver</code> config to the values.yaml, with the <code>mibserver.image.tag</code> of a value of the newest <code>mibserver</code>, for ex.:</li>
+<li>Append <code>mibserver</code> configuration to the values.yaml, with the <code>mibserver.image.tag</code> of a value of the newest <code>mibserver</code>, for example:</li>
 </ol>
 <div class="codehilite"><pre><span></span><code><span class="n">mibserver</span><span class="o">:</span>
 <span class="w">  </span><span class="n">image</span><span class="o">:</span>
 <span class="w">    </span><span class="n">tag</span><span class="o">:</span><span class="w"> </span><span class="s2">"1.14.5"</span>
 </code></pre></div>
 
-<p>Check all the MIB server releases <a href="https://github.com/pysnmp/mibs/releases">here</a>.</p>
+<p>Check all the MIB server releases in https://github.com/pysnmp/mibs/releases. </p>
 <ol start="2">
 <li>
-<p>Run <code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</code></p>
+<p>Run <code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</code>.</p>
 </li>
 <li>
-<p>Restart worker-trap and worker-poller deployments:</p>
+<p>Restart the following worker-trap and worker-poller deployments:</p>
 </li>
 </ol>
 <div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">rollout</span><span class="w"> </span><span class="nv">restart</span><span class="w"> </span><span class="nv">deployment</span><span class="w"> </span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">trap</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
@@ -1352,39 +1351,39 @@ But, if you want to use the newest MIB server right after its released, you can 
 
 <h2 id="beta-use-mib-server-with-local-mibs">Beta: use MIB server with local MIBs<a class="headerlink" href="#beta-use-mib-server-with-local-mibs" title="Permanent link">¶</a></h2>
 <p>From the <code>1.15.0</code> version of the MIB server, there is a way to use local MIB files. This may be useful when your MIB 
-files are proprietary, or you use SC4SNMP offline - this way you can update necessary MIBs by yourself, without a need
-of going through the MIB request procedure.</p>
+files are proprietary, or you use SC4SNMP offline. This way, you can update necessary MIBs by yourself, without having to
+go through the MIB request procedure.</p>
 <p>In order to add your MIB files to the MIB server in standalone SC4SNMP installation:</p>
 <ol>
-<li>Create/Choose a directory on the machine where SC4SNMP is installed. For example: <code>/home/user/local_mibs</code>.</li>
+<li>Create or choose a directory on the machine where SC4SNMP is installed, for example, <code>/home/user/local_mibs</code>.</li>
 <li>Create vendor directories inside. For example, if you have MIB files from <code>VENDOR1</code> and <code>VENDOR2</code>, create
 <code>/home/user/local_mibs/VENDOR1</code> and <code>/home/user/local_mibs/VENDOR2</code> and put files inside accordingly. Putting wrong 
 vendor names won’t make compilation fail, this is more for the logging purposes. Segregating your files will make 
 troubleshooting easier.</li>
 <li>MIB files should be named the same as the contained MIB module. The MIB module name is specified at the beginning of
 the MIB file before <code>::= BEGIN</code> keyword.</li>
-<li>Add following config to the <code>values.yaml</code>:</li>
+<li>Add the following to the <code>values.yaml</code>:</li>
 </ol>
 <div class="codehilite"><pre><span></span><code><span class="nt">mibserver</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">localMibs</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">pathToMibs</span><span class="p">:</span><span class="w"> </span><span class="s">"/home/user/local_mibs"</span>
 </code></pre></div>
 
-<p>To verify if the process of compilation was completed successfully, check the mibserver logs with:</p>
+<p>To verify that the process of compilation was completed successfully, check the the mibserver logs using the following command:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>deployments/snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
 
-<p>It creates a Kubernetes pvc with MIB files inside and maps it to MIB server pod.
-Also, you can change the storageClass and size of persistence according to the <code>mibserver</code> schema: <a href="https://github.com/pysnmp/mibs/blob/main/charts/mibserver/values.yaml">check here</a>.
+<p>This creates a Kubernetes pvc with MIB files inside and maps it to the MIB server pod.
+Also, you can change the storageClass and size of persistence according to the <code>mibserver</code> schema, see https://github.com/pysnmp/mibs/blob/main/charts/mibserver/values.yaml.
 The default persistence size is 1 Gibibyte, so consider reducing or expanding it to the amount you actually need.
-Whenever you add new MIB files, rollout restart MIB server pods to compile them again:</p>
+Whenever you add new MIB files, rollout restart MIB server pods to compile them again, using the following command:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
 
-<p>NOTE: In case of multi-node Kubernetes installation, create pvc beforehand, copy files onto it and add to the MIB server
-using <code>persistence.existingClaim</code>. If you go with <code>localMibs.pathToMibs</code> solution in case of multi-node installation
+<p>For a multi-node Kubernetes installation, create pvc beforehand, copy files onto it, and add it to the MIB server
+using <code>persistence.existingClaim</code>. If you go with the <code>localMibs.pathToMibs</code> solution for a multi-node installation
 (with <code>nodeSelector</code> set up to schedule MIB server pods on the same node where the MIB files are),
-it will work - but when the Node with hostPath mapped fails, you’ll use access to the MIB files on another node.</p></div>
+when the Node with the mapped hostPath fails, you’ll have to access the MIB files on another node.</p></div>
 
 
 

@@ -1136,16 +1136,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pieces-of-advice" class="md-nav__link">
-    <span class="md-ellipsis">
-      Pieces of Advice
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Pieces of Advice">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#check-when-snmp-walk-was-executed-last-time-for-the-device" class="md-nav__link">
     <span class="md-ellipsis">
       Check when SNMP WALK was executed last time for the device
@@ -1153,15 +1143,16 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#installing-splunk-connect-for-snmp-on-linux-redhat" class="md-nav__link">
     <span class="md-ellipsis">
       Installing Splunk Connect for SNMP on Linux RedHat
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Installing Splunk Connect for SNMP on Linux RedHat">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#accessing-sc4snmp-logs" class="md-nav__link">
@@ -1239,9 +1230,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-sc4snmp-instance" class="md-nav__link">
+  <a href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance" class="md-nav__link">
     <span class="md-ellipsis">
-      An error of SNMP isWalk=True blocks traffic on SC4SNMP instance
+      An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance
     </span>
   </a>
   
@@ -1452,16 +1443,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pieces-of-advice" class="md-nav__link">
-    <span class="md-ellipsis">
-      Pieces of Advice
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Pieces of Advice">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#check-when-snmp-walk-was-executed-last-time-for-the-device" class="md-nav__link">
     <span class="md-ellipsis">
       Check when SNMP WALK was executed last time for the device
@@ -1469,15 +1450,16 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#installing-splunk-connect-for-snmp-on-linux-redhat" class="md-nav__link">
     <span class="md-ellipsis">
       Installing Splunk Connect for SNMP on Linux RedHat
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Installing Splunk Connect for SNMP on Linux RedHat">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#accessing-sc4snmp-logs" class="md-nav__link">
@@ -1555,9 +1537,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-sc4snmp-instance" class="md-nav__link">
+  <a href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance" class="md-nav__link">
     <span class="md-ellipsis">
-      An error of SNMP isWalk=True blocks traffic on SC4SNMP instance
+      An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance
     </span>
   </a>
   
@@ -1689,16 +1671,15 @@
 
 
 <div><h1 id="debug-splunk-connect-for-snmp">Debug Splunk Connect for SNMP<a class="headerlink" href="#debug-splunk-connect-for-snmp" title="Permanent link">¶</a></h1>
-<h2 id="pieces-of-advice">Pieces of Advice<a class="headerlink" href="#pieces-of-advice" title="Permanent link">¶</a></h2>
-<h3 id="check-when-snmp-walk-was-executed-last-time-for-the-device">Check when SNMP WALK was executed last time for the device<a class="headerlink" href="#check-when-snmp-walk-was-executed-last-time-for-the-device" title="Permanent link">¶</a></h3>
+<h2 id="check-when-snmp-walk-was-executed-last-time-for-the-device">Check when SNMP WALK was executed last time for the device<a class="headerlink" href="#check-when-snmp-walk-was-executed-last-time-for-the-device" title="Permanent link">¶</a></h2>
 <ol>
 <li><a href="../gettingstarted/sck-installation/">Configure Splunk OpenTelemetry Collector for Kubernetes</a></li>
 <li>Go to your Splunk and execute search: <code>index="em_logs"   "Sending due task" "sc4snmp;&lt;IP_ADDRESS&gt;;walk"</code> 
 and replace <ip_address> with the pertinent IP Address. </ip_address></li>
 </ol>
-<h3 id="installing-splunk-connect-for-snmp-on-linux-redhat">Installing Splunk Connect for SNMP on Linux RedHat<a class="headerlink" href="#installing-splunk-connect-for-snmp-on-linux-redhat" title="Permanent link">¶</a></h3>
+<h2 id="installing-splunk-connect-for-snmp-on-linux-redhat">Installing Splunk Connect for SNMP on Linux RedHat<a class="headerlink" href="#installing-splunk-connect-for-snmp-on-linux-redhat" title="Permanent link">¶</a></h2>
 <p>Installation of RedHat may be blocking ports required by microk8s. Installing microk8s on RedHat 
-requires checking to see if the firewall is not blocking any of <a href="https://microk8s.io/docs/ports">required microk8s ports</a>. </p>
+requires checking to see if the firewall is not blocking any of the <a href="https://microk8s.io/docs/ports">required microk8s ports</a>. </p>
 <h3 id="accessing-sc4snmp-logs">Accessing SC4SNMP logs<a class="headerlink" href="#accessing-sc4snmp-logs" title="Permanent link">¶</a></h3>
 <p>SC4SNMP logs can be browsed in Splunk in <code>em_logs</code> index, provided that <a href="../gettingstarted/sck-installation/">sck-otel</a>
 is installed. Logs can be also accessed directly in kubernetes using terminal.</p>
@@ -1728,11 +1709,11 @@ logs from <code>splunk-connect-for-snmp-worker-poller</code>:</p>
 
 <h2 id="issues">Issues<a class="headerlink" href="#issues" title="Permanent link">¶</a></h2>
 <h3 id="empty-snmp-response-message-problem">“Empty SNMP response message” problem<a class="headerlink" href="#empty-snmp-response-message-problem" title="Permanent link">¶</a></h3>
-<p>In case you see the following line in the worker’s logs:</p>
+<p>If you see the following line in the worker’s logs:</p>
 <div class="codehilite"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message')
 </code></pre></div>
 
-<p>that causes infinite retry of walk operation, add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true.</p>
+<p>that causes an infinite retry of the walk operation. Add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true.</p>
 <p>An example configuration for a worker in <code>values.yaml</code> is:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">ignoreEmptyVarbinds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -1751,28 +1732,28 @@ logs from <code>splunk-connect-for-snmp-worker-poller</code>:</p>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.6"</span>
 </code></pre></div>
 
-<p>If you put only IP address (ex. <code>127.0.0.1</code>), then errors will be ignored for all of its devices (like <code>127.0.0.1:161</code>, 
-<code>127.0.0.1:163</code>…). If you put IP address and host structured as <code>{host}:{port}</code>, that means the error will be ignored only for this device.</p>
+<p>If you put in only the IP address (for example, <code>127.0.0.1</code>), then errors will be ignored for all of its devices (like <code>127.0.0.1:161</code>, 
+<code>127.0.0.1:163</code>…). If you put the IP address and host as <code>{host}:{port}</code>, that means the error will be ignored only for this device.</p>
 <h3 id="walking-a-device-takes-too-much-time">Walking a device takes too much time<a class="headerlink" href="#walking-a-device-takes-too-much-time" title="Permanent link">¶</a></h3>
-<p>Enable small walk functionality with the following instruction: <a href="../configuration/configuring-profiles/#walk-profile">Configure small walk profile</a>. </p>
-<h3 id="an-error-of-snmp-iswalktrue-blocks-traffic-on-sc4snmp-instance">An error of SNMP isWalk=True blocks traffic on SC4SNMP instance<a class="headerlink" href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-sc4snmp-instance" title="Permanent link">¶</a></h3>
-<p>If you see many <code>An error of SNMP isWalk=True</code> errors in logs, that means that there is a connection problem with the hosts you’re polling from.
-Walk will try to retry multiple times, which will eventually cause a worker to be blocked for the retries time. In this case, you might want to limit
-the maximum retries time. You can do this by setting the variable <code>worker.walkRetryMaxInterval</code>, for example:</p>
+<p>See <a href="../configuration/configuring-profiles/#walk-profile">Configure small walk profile</a> to enable the small walk functionality.</p>
+<h3 id="an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance">An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance<a class="headerlink" href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance" title="Permanent link">¶</a></h3>
+<p>If you see many <code>An error of SNMP isWalk=True</code> errors in your logs, that means that there is a connection problem with the hosts you’re polling from.
+Walk will retry multiple times, which will eventually cause a worker to be blocked while it retries. In that case, you might want to limit
+the maximum retry time. You can do this by setting the variable <code>worker.walkRetryMaxInterval</code>, for example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">walkRetryMaxInterval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
 </code></pre></div>
 
-<p>With the configuration from the above, ‘walk’ will retry exponentially from 30 seconds until it reaches 60 seconds. Default value for <code>worker.walkRetryMaxInterval</code> is 180.</p>
+<p>With the previous configuration, ‘walk’ will retry exponentially from 30 seconds until it reaches 60 seconds. The default value for <code>worker.walkRetryMaxInterval</code> is 180.</p>
 <h3 id="snmp-rollover">SNMP Rollover<a class="headerlink" href="#snmp-rollover" title="Permanent link">¶</a></h3>
-<p>The Rollover problem is due to the integer value stored (especially when the value is 32-bit) being finite. 
+<p>The Rollover problem is due to a finite stored integer value (especially when the value is 32-bit). 
 When it reaches its maximum, it gets rolled down to 0 again. This causes a strange drop in Analytics data.
-The most common case of this issue is interface speed on high speed ports. As a solution to this problem, SNMPv2 SMI defined a new object type, counter64, for 64-bit counters (<a href="https://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/26007-faq-snmpcounter.html">read more about it</a>).
+The most common case of this issue is interface speed on high speed ports. As a solution to this problem, SNMPv2 SMI defined a new object type, counter64, for 64-bit counters, see https://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/26007-faq-snmpcounter.html.
 Not all the devices support it, but if they do, poll the counter64 type OID instead of the counter32 one. 
 For example, use <code>ifHCInOctets</code> instead of <code>ifInOctets</code>.</p>
-<p>If 64-bit counter are not supported on your device, you can write your own Splunk queries that calculate the shift based on
-maximum integer value + current state. The same works for values big enough that they’re not fitting a 64-bit value.
-An example for a SPLUNK query like that (interface counter), would be:</p>
+<p>If 64-bit counter is not supported on your device, you can write your own Splunk queries that calculate the shift based on
+the maximum integer value and the current state. The same works for values large enough that they don’t fit into a 64-bit value.
+An example for an appropriate Splunk query would be the following:</p>
 <h3 id="unknown-usm-user">Unknown USM user<a class="headerlink" href="#unknown-usm-user" title="Permanent link">¶</a></h3>
 <p>In case of polling SNMPv3 devices, <code>Unknown USM user</code> error suggests wrong username. Verify 
 that the kubernetes secret with the correct username has been created (<a href="../configuration/snmpv3-configuration/">SNMPv3 configuration</a>).</p>
@@ -1798,12 +1779,12 @@ that the kubernetes secret with the correct authentication key has been created 
 </code></pre></div>
 
 <p>The immutable error is due to the limitation placed on an inventory job. As the SC4SNMP requires several checks before applying updates, it is designed to allow changes in the inventory task after 5 minutes. </p>
-<p>The status of the inventory can be checked with a command:</p>
+<p>The status of the inventory can be checked with the following command:</p>
 <div class="codehilite"><pre><span></span><code>microk8s kubectl -n sc4snmp get pods | grep inventory
 </code></pre></div>
 
-<p>If the command is not empty, wait and execute it again after the inventory job finishes (no longer visible in the output).</p>
-<p>If the changes are required to be applied immedietly, the previous inventory job can be deleted with the command:</p>
+<p>If the command is not empty, wait and execute it again after the inventory job finishes. This is when it is no longer visible in the output.</p>
+<p>If the changes are required to be applied immediately, the previous inventory job can be deleted with the following command:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">delete</span><span class="w"> </span><span class="nv">job</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">inventory</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
 </code></pre></div>
 

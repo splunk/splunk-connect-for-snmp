@@ -1223,8 +1223,8 @@
 <li>50 GB mounted /</li>
 </ul>
 <h1 id="microk8s-installation-on-ubuntu">MicroK8s installation on Ubuntu<a class="headerlink" href="#microk8s-installation-on-ubuntu" title="Permanent link">¶</a></h1>
-<p>The following quick start guidance is based on Ubuntu 20.04LTS with MicroK8s with internet access. Other deployment options
-may be found in the MicroK8s <a href="https://microk8s.io/docs">documentation</a> including offline and with proxy. </p>
+<p>The following quick start guidance is based on Ubuntu 20.04LTS with MicroK8s and internet access. See other deployment options
+in the MicroK8s <a href="https://microk8s.io/docs">documentation</a>, including offline and with proxy. </p>
 <h2 id="install-microk8s-using-snap">Install MicroK8s using Snap<a class="headerlink" href="#install-microk8s-using-snap" title="Permanent link">¶</a></h2>
 <div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>microk8s<span class="w"> </span>--classic<span class="w"> </span>--channel<span class="o">=</span><span class="m">1</span>.25/stable
 </code></pre></div>
@@ -1239,18 +1239,18 @@ su<span class="w"> </span>-<span class="w"> </span><span class="nv">$USER</span>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
 
-<h2 id="add-additional-nodes-optional">Add additional nodes (optional)<a class="headerlink" href="#add-additional-nodes-optional" title="Permanent link">¶</a></h2>
+<h2 id="add-nodes-optional">Add nodes (optional)<a class="headerlink" href="#add-nodes-optional" title="Permanent link">¶</a></h2>
 <ul>
-<li>Repeat the steps above for each additional node (minimum total 3)</li>
-<li>On the first node issue the following to return the instructions to join: </li>
+<li>Repeat the steps above for each additional node (with a minimum of 3 nodes).</li>
+<li>On the first node, use the following command to see the instructions to join: </li>
 </ul>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>add-node
 </code></pre></div>
 
 <ul>
-<li>On each additional node, use the output from the command above</li>
+<li>On each additional node, use the output from the command above.</li>
 </ul>
-<h2 id="install-basic-services-required-for-sc4snmp">Install basic services required for sc4snmp<a class="headerlink" href="#install-basic-services-required-for-sc4snmp" title="Permanent link">¶</a></h2>
+<h2 id="install-required-services-for-sc4snmp">Install required services for SC4SNMP<a class="headerlink" href="#install-required-services-for-sc4snmp" title="Permanent link">¶</a></h2>
 <p>The following commands can be issued from any one node in a cluster:</p>
 <div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>iscsid
 microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>helm3
@@ -1261,14 +1261,14 @@ microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
 
 <p>Install the DNS server for mk8s and configure the forwarding DNS servers. Replace the IP addressed below (opendns) with
-allowed values for your network: </p>
+the allowed values for your network: </p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>dns:208.67.222.222,208.67.220.220
 microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
 
 <h2 id="install-metallb">Install Metallb<a class="headerlink" href="#install-metallb" title="Permanent link">¶</a></h2>
-<p>Note: when installing Metallb you will be prompted for one or more IPs to use as entry points
-into the cluster. If your plan to enable clustering, this IP should not be assigned to the host (floats).
+<p>When installing Metallb, you will be prompted for one or more IPs to use as entry points
+into the cluster. If you plan to enable clustering, this IP should not be assigned to the host (floats).
 If you do not plan to cluster, then this IP should be the IP of your host.</p>
 <p>Note2: a single IP in cidr format is x.x.x.x/32. Use CIDR or range syntax for single server installations. This can be
 the same as the primary IP.</p>

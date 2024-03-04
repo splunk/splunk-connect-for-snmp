@@ -1504,9 +1504,9 @@ on production configuration.</p>
 </code></pre></div>
 
 <h4 id="download-and-modify-valuesyaml">Download and modify values.yaml<a class="headerlink" href="#download-and-modify-valuesyaml" title="Permanent link">¶</a></h4>
-<p>The installation of SC4SNMP requires the creation of a <code>values.yaml</code> file, which serves as the configuration file. To configure this file, follow these steps:</p>
+<p>The installation of SC4SNMP requires the creation of a <code>values.yaml</code> file, which serves as the configuration file. To configure this file, see the following steps: </p>
 <ol>
-<li>Start with checking out the <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.md">basic configuration template</a></li>
+<li>Review the <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.md">basic configuration template</a>.</li>
 <li>Review the <a href="https://github.com/splunk/splunk-connect-for-snmp/tree/main/examples">examples</a> to determine which areas require configuration.</li>
 <li>For more advanced configuration options, refer to the complete default <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/charts/splunk-connect-for-snmp/values.yaml">values.yaml</a>
 or download it directly from Helm using the command <code>microk8s helm3 show values splunk-connect-for-snmp/splunk-connect-for-snmp</code> </li>
@@ -1519,7 +1519,7 @@ or download it directly from Helm using the command <code>microk8s helm3 show va
 </code></pre></div>
 
 <p>From now on, when editing SC4SNMP configuration, the configuration change must be
-inserted in the corresponding section of <code>values.yaml</code>. For more details check <a href="../../configuration/deployment-configuration/">configuration</a> section.</p>
+inserted in the corresponding section of <code>values.yaml</code>. For more details see <a href="../../configuration/deployment-configuration/">configuration</a> section.</p>
 <p>Use the following command to propagate configuration changes:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
 </code></pre></div>
@@ -1542,10 +1542,10 @@ inserted in the corresponding section of <code>values.yaml</code>. For more deta
 <span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">inventory</span><span class="o">-</span><span class="nv">mjccw</span><span class="w">                  </span><span class="mi">0</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Completed</span><span class="w"> </span><span class="mi">0</span><span class="w">          </span><span class="mi">6</span><span class="nv">s</span>
 </code></pre></div>
 
-<p>The output may vary depending on the configuration. In the above example, both polling and traps are configured, 
+<p>The output might vary depending on the configuration. In the above example, both polling and traps are configured, 
 and the data is being sent to Splunk.</p>
-<p>If you have <code>traps</code> configured, you should see <code>EXTERNAL-IP</code> in <code>snmp-splunk-connect-for-snmp-trap</code> service.
-Check it using the command:</p>
+<p>If you have <code>traps</code> configured, you should see <code>EXTERNAL-IP</code> in the <code>snmp-splunk-connect-for-snmp-trap</code> service.
+Check it using the following command:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>svc<span class="w"> </span>-n<span class="w"> </span>sc4snmp<span class="w"> </span>
 </code></pre></div>
 
@@ -1559,10 +1559,9 @@ Check it using the command:</p>
 <span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">trap</span><span class="w">   </span><span class="nv">LoadBalancer</span><span class="w">   </span><span class="mi">10</span>.<span class="mi">152</span>.<span class="mi">183</span>.<span class="mi">33</span><span class="w">    </span><span class="mi">10</span>.<span class="mi">202</span>.<span class="mi">9</span>.<span class="mi">21</span><span class="w">   </span><span class="mi">162</span>:<span class="mi">30161</span><span class="o">/</span><span class="nv">UDP</span><span class="w">   </span><span class="mi">33</span><span class="nv">h</span>
 </code></pre></div>
 
-<p>If there’s <code>&lt;pending&gt;</code> communicate instead of the IP address, that means you either provided the wrong IP address
+<p>If you see <code>&lt;pending&gt;</code> communicate instead of the IP address, that means you either provided the wrong IP address
 in <code>traps.loadBalancerIP</code> or there’s something wrong with the <code>metallb</code> microk8s addon.</p>
-<p>For the sake of the example, let’s assume we haven’t changed the default indexes names and the metric data goes to <code>netmetrics</code>
-and the events goes to <code>netops</code>.</p>
+<p>In the following example, the default indexes are used, the metric data goes to <code>netmetrics</code>, and the events goes to <code>netops</code>.</p>
 <h4 id="test-snmp-traps">Test SNMP Traps<a class="headerlink" href="#test-snmp-traps" title="Permanent link">¶</a></h4>
 <ol>
 <li>Simulate the event. On a Linux system, you can download <code>snmpd</code> package for its purpose and run:</li>
@@ -1572,9 +1571,9 @@ apt-get<span class="w"> </span>install<span class="w"> </span>snmpd
 snmptrap<span class="w"> </span>-v2c<span class="w"> </span>-c<span class="w"> </span>public<span class="w"> </span>EXTERNAL-IP<span class="w"> </span><span class="m">123</span><span class="w"> </span><span class="m">1</span>.3.6.1.2.1.1.4<span class="w"> </span><span class="m">1</span>.3.6.1.2.1.1.4<span class="w"> </span>s<span class="w"> </span><span class="nb">test</span>
 </code></pre></div>
 
-<p>Remember to replace <code>EXTERNAL-IP</code> with the ip address of the <code>snmp-splunk-connect-for-snmp-trap</code> service from the above.</p>
+<p>Remember to replace the <code>EXTERNAL-IP</code> with the IP address of the <code>snmp-splunk-connect-for-snmp-trap</code> service from the previous list.</p>
 <ol start="2">
-<li>Search Splunk: You should see one event per trap command with the host value of the test machine <code>EXTERNAL-IP</code> IP address.</li>
+<li>After using the following command in the Splunk search box, you should see one event per trap command, with the host value of the test machine <code>EXTERNAL-IP</code> IP address: </li>
 </ol>
 <div class="codehilite"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">"netops"</span><span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">"sc4snmp:traps"</span>
 </code></pre></div>
@@ -1582,8 +1581,8 @@ snmptrap<span class="w"> </span>-v2c<span class="w"> </span>-c<span class="w"> <
 <h4 id="test-snmp-poller">Test SNMP Poller<a class="headerlink" href="#test-snmp-poller" title="Permanent link">¶</a></h4>
 <ol>
 <li>To test SNMP poller, you can either use the device you already have, or configure snmpd on your Linux system. 
-Snmpd needs to be configured to listen on the external IP. To enable listening snmpd to external IP, go to the <code>/etc/snmp/snmpd.conf</code> configuration file, and replace the IP address <code>10.0.101.22</code> with the server IP address where snmpd is configured:
-<code>agentaddress  10.0.101.22,127.0.0.1,[::1]</code>. Restart snmpd through the execute command:</li>
+Snmpd needs to be configured to listen on the external IP. To enable snmpd to listen to external IP, go to the <code>/etc/snmp/snmpd.conf</code> configuration file, and replace the IP address <code>10.0.101.22</code> with the server IP address where snmpd is configured:
+<code>agentaddress  10.0.101.22,127.0.0.1,[::1]</code>. Restart snmpd through the following execute command:</li>
 </ol>
 <div class="codehilite"><pre><span></span><code>service<span class="w"> </span>snmpd<span class="w"> </span>stop
 service<span class="w"> </span>snmpd<span class="w"> </span>start
@@ -1591,7 +1590,7 @@ service<span class="w"> </span>snmpd<span class="w"> </span>start
 
 <ol start="2">
 <li>Configure SC4SNMP Poller to test and add the IP address which you want to poll. Add the configuration entry into the <code>values.yaml</code> file by 
-replacing the IP address <code>10.0.101.22</code> with the server IP address where the snmpd was configured.</li>
+replacing the IP address <code>10.0.101.22</code> with the server IP address where the snmpd was configured. See the following:</li>
 </ol>
 <div class="codehilite"><pre><span></span><code>poller:
 <span class="w">  </span>inventory:<span class="w"> </span><span class="p">|</span>
@@ -1600,13 +1599,13 @@ replacing the IP address <code>10.0.101.22</code> with the server IP address whe
 </code></pre></div>
 
 <ol start="3">
-<li>Load <code>values.yaml</code> file into SC4SNMP</li>
+<li>Load <code>values.yaml</code> file into SC4SNMP using the following command: </li>
 </ol>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
 </code></pre></div>
 
 <ol start="4">
-<li>Verify if the records appeared in Splunk:</li>
+<li>Verify if the records appeared in Splunk using the following command: </li>
 </ol>
 <div class="codehilite"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">"netops"</span><span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">"sc4snmp:event"</span>
 </code></pre></div>
@@ -1614,15 +1613,15 @@ replacing the IP address <code>10.0.101.22</code> with the server IP address whe
 <div class="codehilite"><pre><span></span><code><span class="p">|</span><span class="w"> </span>mpreview<span class="w"> </span><span class="nv">index</span><span class="o">=</span><span class="s2">"netmetrics"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>search<span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">"sc4snmp:metric"</span>
 </code></pre></div>
 
-<p>NOTE: Before polling starts, SC4SNMP must perform SNMP WALK process on the device. It is run first time after configuring the new device, and then the run time in every <code>walk_interval</code>. 
+<p>NOTE: Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every <code>walk_interval</code>. 
 Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
-In such cases, enable the small walk. See: <a href="../../bestpractices/#walking-a-device-takes-too-much-time">walk takes too much time</a>.
+In such cases, enable the small walk. See <a href="../../bestpractices/#walking-a-device-takes-too-much-time">walk takes too much time</a>.
 When the walk finishes, events appear in Splunk.</p>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">¶</a></h2>
 <p>A good way to start with SC4SNMP polling is to follow the <a href="../../configuration/step-by-step-poll/">Step by Step guide for polling</a>.
-Advanced configuration of polling is available in <a href="../../configuration/poller-configuration/">Poller configuration</a> section.
-SNMP data format is explained in <a href="../../configuration/snmp-data-format/">SNMP data format</a> section.</p>
-<p>For advanced trap configuration, check the <a href="../../configuration/trap-configuration/">Traps configuration</a> section.</p>
+Advanced configuration of polling is available in the <a href="../../configuration/poller-configuration/">Poller configuration</a> section.
+The SNMP data format is explained in the <a href="../../configuration/snmp-data-format/">SNMP data format</a> section.</p>
+<p>For advanced trap configuration, see the <a href="../../configuration/trap-configuration/">Traps configuration</a> section.</p>
 <h2 id="uninstall-splunk-connect-for-snmp">Uninstall Splunk Connect for SNMP<a class="headerlink" href="#uninstall-splunk-connect-for-snmp" title="Permanent link">¶</a></h2>
 <p>To uninstall SC4SNMP run the following commands:</p>
 <div class="codehilite"><pre><span></span><code> microk8s helm3 uninstall snmp -n sc4snmp

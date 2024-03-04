@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#create-snmp-v3-users" class="md-skip">
+        <a href="#snmpv3-user-configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -672,17 +672,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    SNMPv3 configuration
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -693,32 +684,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#create-snmp-v3-users" class="md-nav__link">
-    <span class="md-ellipsis">
-      Create SNMP v3 users
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -1227,23 +1192,8 @@
   
   
   
+    
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#create-snmp-v3-users" class="md-nav__link">
-    <span class="md-ellipsis">
-      Create SNMP v3 users
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -1258,9 +1208,7 @@
                   
 
 
-  <h1>SNMPv3 configuration</h1>
-
-<div><h3 id="create-snmp-v3-users">Create SNMP v3 users<a class="headerlink" href="#create-snmp-v3-users" title="Permanent link">¶</a></h3>
+<div><h1 id="snmpv3-user-configuration">SNMPv3 user configuration<a class="headerlink" href="#snmpv3-user-configuration" title="Permanent link">¶</a></h1>
 <p>Configuration of SNMP v3, when supported by the monitored devices, is the most secure choice available
 for authentication and data privacy. Each set of credentials will be stored as “Secret” objects in k8s,
 and will be referenced in values.yaml. This allows the secret to be created once, including automation

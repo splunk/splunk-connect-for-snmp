@@ -677,9 +677,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-i-want-to-use-my-resources-effectively" class="md-nav__link">
+  <a href="#real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-and-i-want-to-use-my-resources-effectively" class="md-nav__link">
     <span class="md-ellipsis">
-      Real life scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively.
+      Real life scenario: I use SC4SNMP for only trap monitoring, and I want to use my resources effectively.
     </span>
   </a>
   
@@ -1347,9 +1347,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-i-want-to-use-my-resources-effectively" class="md-nav__link">
+  <a href="#real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-and-i-want-to-use-my-resources-effectively" class="md-nav__link">
     <span class="md-ellipsis">
-      Real life scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively.
+      Real life scenario: I use SC4SNMP for only trap monitoring, and I want to use my resources effectively.
     </span>
   </a>
   
@@ -1439,7 +1439,7 @@ data to Splunk.</p>
 <h3 id="worker-configuration-file">Worker configuration file<a class="headerlink" href="#worker-configuration-file" title="Permanent link">¶</a></h3>
 <p>Worker configuration is kept in the <code>values.yaml</code> file in the <code>worker</code> section. <code>worker</code> has 3 subsections: <code>poller</code>, <code>sender</code>, or <code>trap</code>, that refer to the workers’ types.
 <code>values.yaml</code> is used during the installation process for configuring Kubernetes values.
-The <code>worker</code> default configuration is:</p>
+The <code>worker</code> default configuration is the following: </p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># There are 3 types of workers </span>
 <span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
@@ -1483,10 +1483,10 @@ The <code>worker</code> default configuration is:</p>
 <h3 id="worker-scaling">Worker scaling<a class="headerlink" href="#worker-scaling" title="Permanent link">¶</a></h3>
 <p>You can adjust worker pods in two ways: set fixed value in <code>replicaCount</code>,
 or enable <code>autoscaling</code>, which scales pods automatically. </p>
-<h4 id="real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-i-want-to-use-my-resources-effectively">Real life scenario: I use SC4SNMP for only trap monitoring, I want to use my resources effectively.<a class="headerlink" href="#real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-i-want-to-use-my-resources-effectively" title="Permanent link">¶</a></h4>
+<h4 id="real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-and-i-want-to-use-my-resources-effectively">Real life scenario: I use SC4SNMP for only trap monitoring, and I want to use my resources effectively.<a class="headerlink" href="#real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring-and-i-want-to-use-my-resources-effectively" title="Permanent link">¶</a></h4>
 <p>If you don’t use polling at all, set <code>worker.poller.replicaCount</code> to <code>0</code>.
-If you’ll want to use polling in the future, you need to increase <code>replicaCount</code>. To monitor traps, adjust <code>worker.trap.replicaCount</code> depending on your needs and <code>worker.sender.replicaCount</code> to send traps to Splunk. Usually you need much less sender pods than trap ones.</p>
-<p>This is the example of <code>values.yaml</code> without using autoscaling:</p>
+If you want to use polling in the future, you need to increase <code>replicaCount</code>. To monitor traps, adjust <code>worker.trap.replicaCount</code> depending on your needs and <code>worker.sender.replicaCount</code> to send traps to Splunk. Usually, you need significantly fewer sender pods than trap pods.</p>
+<p>The following is an example of <code>values.yaml</code> without using autoscaling:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
@@ -1497,7 +1497,7 @@ If you’ll want to use polling in the future, you need to increase <code>replic
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"WARNING"</span>
 </code></pre></div>
 
-<p>This is the example of <code>values.yaml</code> with autoscaling:</p>
+<p>The following is an example of <code>values.yaml</code> with autoscaling:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
@@ -1516,25 +1516,25 @@ If you’ll want to use polling in the future, you need to increase <code>replic
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"WARNING"</span>
 </code></pre></div>
 
-<p>In the example above both trap and sender pods are autoscaled. During an upgrade process, the number of pods is created through
+<p>In the previous example, both trap and sender pods are autoscaled. During an upgrade process, the number of pods is created through
 <code>minReplicas</code>, and then new ones are created only if the CPU threshold
 exceeds the <code>targetCPUUtilizationPercentage</code>, which by default is 80%. This solution helps you to keep 
 resources usage adjusted to what you actually need. </p>
-<p>After helm upgrade process, you will see <code>horizontalpodautoscaler</code> in <code>microk8s kubectl get all -n sc4snmp</code>:</p>
+<p>After the helm upgrade process, you will see <code>horizontalpodautoscaler</code> in <code>microk8s kubectl get all -n sc4snmp</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">NAME                                                                             REFERENCE                                               TARGETS   MINPODS   MAXPODS   REPLICAS   AGE</span>
 <span class="l l-Scalar l-Scalar-Plain">horizontalpodautoscaler.autoscaling/snmp-mibserver                               Deployment/snmp-mibserver                               1%/80%    1         3         1          97m</span>
 <span class="l l-Scalar l-Scalar-Plain">horizontalpodautoscaler.autoscaling/snmp-splunk-connect-for-snmp-worker-sender   Deployment/snmp-splunk-connect-for-snmp-worker-sender   1%/80%    2         5         2          28m</span>
 <span class="l l-Scalar l-Scalar-Plain">horizontalpodautoscaler.autoscaling/snmp-splunk-connect-for-snmp-worker-trap     Deployment/snmp-splunk-connect-for-snmp-worker-trap     1%/80%    4         10        4          28m</span>
 </code></pre></div>
 
-<p>If you see <code>&lt;unknown&gt;/80%</code> in <code>TARGETS</code> section instead of the CPU percentage, you probably don’t have the <code>metrics-server</code> add-on enabled.
+<p>If you see <code>&lt;unknown&gt;/80%</code> in the <code>TARGETS</code> section instead of the CPU percentage, you probably don’t have the <code>metrics-server</code> add-on enabled.
 Enable it using <code>microk8s enable metrics-server</code>.</p>
 <h4 id="real-life-scenario-i-have-a-significant-delay-in-polling">Real life scenario: I have a significant delay in polling<a class="headerlink" href="#real-life-scenario-i-have-a-significant-delay-in-polling" title="Permanent link">¶</a></h4>
 <p>Sometimes when polling is configured to be run frequently and on many devices, workers get overloaded 
-and there is a delay in delivering data to Splunk. To avoid such situations, we can scale poller and sender pods.
-Because of the walk cycles (walk is a costly operation ran once in a while), poller workers require more resources 
+and there is a delay in delivering data to Splunk. To avoid these situations, scale poller and sender pods.
+Because of the walk cycles, (walk is a costly operation that is only run once in a while), poller workers require more resources 
 for a short time. For this reason, enabling autoscaling is recommended. </p>
-<p>This is the example of <code>values.yaml</code> with autoscaling:</p>
+<p>See the following example of <code>values.yaml</code> with autoscaling:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
@@ -1557,8 +1557,7 @@ for a short time. For this reason, enabling autoscaling is recommended. </p>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"WARNING"</span>
 </code></pre></div>
 
-<p>Remember, that the system won’t scale itself infinitely, there is a finite amount of resources that you can allocate.
-By default, every worker has configured the following resources:</p>
+<p>Remember that the system won’t scale itself infinitely. There is a finite amount of resources that you can allocate. By default, every worker has configured the following resources:</p>
 <div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">limits</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500m</span>
@@ -1567,11 +1566,11 @@ By default, every worker has configured the following resources:</p>
 </code></pre></div>
 
 <h4 id="i-have-autoscaling-enabled-and-experience-problems-with-mongo-and-redis-pod">I have autoscaling enabled and experience problems with Mongo and Redis pod<a class="headerlink" href="#i-have-autoscaling-enabled-and-experience-problems-with-mongo-and-redis-pod" title="Permanent link">¶</a></h4>
-<p>If MongoDB and Redis pods are crushing, and some of the pods are in infinite <code>Pending</code> state, that means 
-you’re over your resources and SC4SNMP cannot scale more. You should decrease the number of <code>maxReplicas</code> in 
+<p>If MongoDB and Redis pods are crushing, and some of the pods are in an infinite <code>Pending</code> state, that means 
+you’ve exhausted your resources and SC4SNMP cannot scale more. You should decrease the number of <code>maxReplicas</code> in 
 workers, so that it’s not going beyond the available CPU.</p>
 <h4 id="i-dont-know-how-to-set-autoscaling-parameters-and-how-many-replicas-i-need">I don’t know how to set autoscaling parameters and how many replicas I need<a class="headerlink" href="#i-dont-know-how-to-set-autoscaling-parameters-and-how-many-replicas-i-need" title="Permanent link">¶</a></h4>
-<p>The best way to see if pods are overloaded is to run:</p>
+<p>The best way to see if pods are overloaded is to run the following command:</p>
 <div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s kubectl top pods -n sc4snmp</span>
 </code></pre></div>
 
@@ -1589,11 +1588,11 @@ workers, so that it’s not going beyond the available CPU.</p>
 <span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-trap-5474db6fc6-mjtpv     4m           259Mi</span><span class="w">   </span>
 </code></pre></div>
 
-<p>Here you can see how much CPU and Memory is being used by the pods. If the CPU is close to 500m (which is the limit for one pod by default),
-you should enable autoscaling/increase maxReplicas or increase replicaCount with autoscaling off.</p>
-<p>Here you can read about Horizontal Autoscaling and how to adjust maximum replica value to the resources you have: <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/">Horizontal Autoscaling.</a></p>
+<p>Here you can see how much CPU and Memory is being used by the pods. If the CPU is close to 500m, which is the limit for one pod by default,
+enable autoscaling/increase maxReplicas or increase replicaCount with autoscaling off.</p>
+<p>See <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/">Horizontal Autoscaling.</a> to adjust the maximum replica value to the resources you have.</p>
 <h3 id="reverse-dns-lookup-in-trap-worker">Reverse DNS lookup in trap worker<a class="headerlink" href="#reverse-dns-lookup-in-trap-worker" title="Permanent link">¶</a></h3>
-<p>If you want to see the hostname instead of IP address of the incoming traps in Splunk, you can enable reverse dns lookup
+<p>If you want to see the hostname instead of the IP address of the incoming traps in Splunk, you can enable reverse dns lookup
 for the incoming traps using the following configuration:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
@@ -1603,45 +1602,45 @@ for the incoming traps using the following configuration:</p>
 <span class="w">      </span><span class="nt">cacheTTL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1800</span><span class="w"> </span><span class="c1"># time to live of the cached record in seconds</span>
 </code></pre></div>
 
-<p>Trap worker uses in memory cache to store the results of the reverse dns lookup. If you restart the worker, cache will be cleared.</p>
+<p>Trap worker uses in memory cache to store the results of the reverse dns lookup. If you restart the worker, the cache will be cleared.</p>
 <h3 id="worker-parameters">Worker parameters<a class="headerlink" href="#worker-parameters" title="Permanent link">¶</a></h3>
 <table>
 <thead>
 <tr>
-<th>variable</th>
-<th>description</th>
-<th>default</th>
+<th>Variable</th>
+<th>Description</th>
+<th>Default</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>worker.taskTimeout</td>
-<td>task timeout in seconds (usually necessary when walk process takes a long time)</td>
+<td>Task timeout in seconds (usually necessary when the walk process takes a long time)</td>
 <td>2400</td>
 </tr>
 <tr>
 <td>worker.walkRetryMaxInterval</td>
-<td>maximum time interval between walk attempts</td>
+<td>Maximum time interval between walk attempts</td>
 <td>180</td>
 </tr>
 <tr>
 <td>worker.poller.replicaCount</td>
-<td>number of poller worker replicas</td>
+<td>Number of poller worker replicas</td>
 <td>2</td>
 </tr>
 <tr>
 <td>worker.poller.autoscaling.enabled</td>
-<td>enabling autoscaling for poller worker pods</td>
+<td>Enabling autoscaling for poller worker pods</td>
 <td>false</td>
 </tr>
 <tr>
 <td>worker.poller.autoscaling.minReplicas</td>
-<td>minimum number of running poller worker pods when autoscaling is enabled</td>
+<td>Minimum number of running poller worker pods when autoscaling is enabled</td>
 <td>2</td>
 </tr>
 <tr>
 <td>worker.poller.autoscaling.maxReplicas</td>
-<td>maximum number of running poller worker pods when autoscaling is enabled</td>
+<td>Maximum number of running poller worker pods when autoscaling is enabled</td>
 <td>40</td>
 </tr>
 <tr>
@@ -1651,47 +1650,47 @@ for the incoming traps using the following configuration:</p>
 </tr>
 <tr>
 <td>worker.poller.resources.limits</td>
-<td>the resources limits for poller worker container</td>
+<td>The resources limits for poller worker container</td>
 <td>{}</td>
 </tr>
 <tr>
 <td>worker.poller.resources.requests</td>
-<td>the requested resources for poller worker container</td>
+<td>The requested resources for poller worker container</td>
 <td>{}</td>
 </tr>
 <tr>
 <td>worker.trap.replicaCount</td>
-<td>number of trap worker replicas</td>
+<td>Number of trap worker replicas</td>
 <td>2</td>
 </tr>
 <tr>
 <td>worker.trap.resolveAddress.enabled</td>
-<td>enable reverse dns lookup of the ip address of the processed trap</td>
+<td>Enable reverse dns lookup of the IP address of the processed trap</td>
 <td>false</td>
 </tr>
 <tr>
 <td>worker.trap.resolveAddress.cacheSize</td>
-<td>maximum number of reverse dns lookup result records stored in cache</td>
+<td>Maximum number of reverse dns lookup result records stored in cache</td>
 <td>500</td>
 </tr>
 <tr>
 <td>worker.trap.resolveAddress.cacheTTL</td>
-<td>time to live of the cached reverse dns lookup record in seconds</td>
+<td>Time to live of the cached reverse dns lookup record in seconds</td>
 <td>1800</td>
 </tr>
 <tr>
 <td>worker.trap.autoscaling.enabled</td>
-<td>enabling autoscaling for trap worker pods</td>
+<td>Enabling autoscaling for trap worker pods</td>
 <td>false</td>
 </tr>
 <tr>
 <td>worker.trap.autoscaling.minReplicas</td>
-<td>minimum number of running trap worker pods when autoscaling is enabled</td>
+<td>Minimum number of running trap worker pods when autoscaling is enabled</td>
 <td>2</td>
 </tr>
 <tr>
 <td>worker.trap.autoscaling.maxReplicas</td>
-<td>maximum number of running trap worker pods when autoscaling is enabled</td>
+<td>Maximum number of running trap worker pods when autoscaling is enabled</td>
 <td>40</td>
 </tr>
 <tr>
@@ -1701,32 +1700,32 @@ for the incoming traps using the following configuration:</p>
 </tr>
 <tr>
 <td>worker.trap.resources.limits</td>
-<td>the resources limits for poller worker container</td>
+<td>The resource limit for the poller worker container</td>
 <td>{}</td>
 </tr>
 <tr>
 <td>worker.trap.resources.requests</td>
-<td>the requested resources for poller worker container</td>
+<td>The requested resources for the poller worker container</td>
 <td>{}</td>
 </tr>
 <tr>
 <td>worker.sender.replicaCount</td>
-<td>number of sender worker replicas</td>
+<td>The number of sender worker replicas</td>
 <td>2</td>
 </tr>
 <tr>
 <td>worker.sender.autoscaling.enabled</td>
-<td>enabling autoscaling for sender worker pods</td>
+<td>Enabling autoscaling for sender worker pods</td>
 <td>false</td>
 </tr>
 <tr>
 <td>worker.sender.autoscaling.minReplicas</td>
-<td>minimum number of running sender worker pods when autoscaling is enabled</td>
+<td>Minimum number of running sender worker pods when autoscaling is enabled</td>
 <td>2</td>
 </tr>
 <tr>
 <td>worker.sender.autoscaling.maxReplicas</td>
-<td>maximum number of running sender worker pods when autoscaling is enabled</td>
+<td>Maximum number of running sender worker pods when autoscaling is enabled</td>
 <td>40</td>
 </tr>
 <tr>
@@ -1736,12 +1735,12 @@ for the incoming traps using the following configuration:</p>
 </tr>
 <tr>
 <td>worker.sender.resources.limits</td>
-<td>the resources limits for poller worker container</td>
+<td>The resource limit for the poller worker container</td>
 <td>{}</td>
 </tr>
 <tr>
 <td>worker.sender.resources.requests</td>
-<td>the requested resources for poller worker container</td>
+<td>The requested resources for the poller worker container</td>
 <td>{}</td>
 </tr>
 </tbody>

@@ -1300,7 +1300,7 @@
 
 <div><h1 id="planning">Planning<a class="headerlink" href="#planning" title="Permanent link">¶</a></h1>
 <p>Splunk Connect for SNMP (SC4SNMP) is a solution that allows the customer
-to "get" data from network devices and appliances when a more feature-complete solution, such as the Splunk Universal Forwarder, is not
+to get data from network devices and appliances when a more feature-complete solution, such as the Splunk Universal Forwarder, is not
 available.</p>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">¶</a></h2>
 <p>SC4SNMP is deployed using a Kubernetes distribution, typically MicroK8s,
@@ -1315,7 +1315,7 @@ existing firewall.</p>
 <p>A supported deployment of MicroK8s</p>
 </li>
 <li>
-<p>16 Core/32 threads x64 architecture server or vm (single instance)
+<p>16 Core/32 threads x64 architecture server or virtual machine (single instance)
     12 GB ram</p>
 </li>
 <li>
@@ -1335,14 +1335,11 @@ existing firewall.</p>
 </li>
 </ul>
 <h2 id="planning-infrastructure">Planning Infrastructure<a class="headerlink" href="#planning-infrastructure" title="Permanent link">¶</a></h2>
+<p>When planning infrastructure for Splunk Connect for SNMP, (SC4SNMP), remember the following limitations: </p>
 <p>A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
 16 Core/32 threads x64 and 64 GB RAM will be able to handle up to 1500
 SNMP TRAPs per second.</p>
-<p>A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with
-16 Core/32 threads x64 and 64 GB RAM is able to handle up to 2750 SNMP varbinds per second. 
-As for events per second visible in Splunk, please remember that a single SC4SNMP event can contain more than one varbind inside - auto aggregation/grouping feature (varbinds which are describing same thing ie. network interface will be grouped in one event). 
-That is why, depending on configuration, the number of events per second may vary. </p>
-<p>When planning infrastructure for Splunk Connect for SNMP, (SC4SNMP) note the limitations highlighted above.</p></div>
+<p>A single installation of Splunk Connect for SNMP (SC4SNMP) on a machine with 16 Core/32 threads x64 and 64 GB RAM is able to handle up to 2750 SNMP varbinds per second. As for events per second that are visible in Splunk, a single SC4SNMP event can contain more than one varbind inside, which is an automatic grouping feature. For example, the network interface would be grouped into one event, with varbinds grouped together to describe the same thing. That is why, depending on the configuration, the number of events per second may vary.</p></div>
 
 
 

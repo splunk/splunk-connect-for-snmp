@@ -1361,19 +1361,20 @@
 
 
 <div><h1 id="splunk-opentelemetry-collector-for-kubernetes-offline-installation">Splunk OpenTelemetry Collector for Kubernetes offline installation<a class="headerlink" href="#splunk-opentelemetry-collector-for-kubernetes-offline-installation" title="Permanent link">¶</a></h1>
+<p>See the following options to install the Splunk OpenTelemetry Collector for Kubernetes. </p>
 <h2 id="local-machine-with-internet-access">Local machine with internet access<a class="headerlink" href="#local-machine-with-internet-access" title="Permanent link">¶</a></h2>
-<p>To install Splunk OpenTelemetry Collector offline first one must download packed chart <code>splunk-otel-collector-&lt;tag&gt;.tgz</code> and the otel image <code>otel_image.tar</code>
-from github release where <code>&lt;tag&gt;</code> is the current OpenTelemetry release tag. Both packages must be later moved to the installation server.</p>
+<p>To install Splunk OpenTelemetry Collector offline, first, download the packed chart <code>splunk-otel-collector-&lt;tag&gt;.tgz</code> and the otel image <code>otel_image.tar</code>
+from the Github release, where <code>&lt;tag&gt;</code> is the current OpenTelemetry release tag. Both packages must be later moved to the installation server.</p>
 <h2 id="installation-on-the-server">Installation on the server<a class="headerlink" href="#installation-on-the-server" title="Permanent link">¶</a></h2>
-<p>Otel image has to be imported to the <code>microk8s</code> registry with:</p>
+<p>The Otel image has to be imported to the <code>microk8s</code> registry with:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>ctr<span class="w"> </span>image<span class="w"> </span>import<span class="w"> </span>otel_image.tar<span class="w"> </span>
 </code></pre></div>
 
-<p>Imported package must be unpacked with the following command :</p>
+<p>The imported package must be unpacked with the following command :</p>
 <div class="codehilite"><pre><span></span><code>tar<span class="w"> </span>-xvf<span class="w"> </span>splunk-otel-collector-&lt;tag&gt;.tgz<span class="w"> </span>--exclude<span class="o">=</span><span class="s1">'._*'</span>
 </code></pre></div>
 
-<p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the description presented below</p>
+<p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the following description:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"clusterName=&lt;cluster_name&gt;"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.endpoint=&lt;splunk_endpoint&gt;"</span><span class="w"> </span><span class="se">\</span>
@@ -1418,7 +1419,7 @@ from github release where <code>&lt;tag&gt;</code> is the current OpenTelemetry 
 </tr>
 </tbody>
 </table>
-<p>An example of filled up command is:</p>
+<p>An example of a correctly filled command is:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"clusterName=my-cluster"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.endpoint=https://endpoint.example.com/services/collector"</span><span class="w"> </span><span class="se">\</span>
@@ -1431,7 +1432,7 @@ from github release where <code>&lt;tag&gt;</code> is the current OpenTelemetry 
 </code></pre></div>
 
 <h2 id="install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes">Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" title="Permanent link">¶</a></h2>
-<p>To run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the description presented below</p>
+<p>To run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the following description:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>sck
 --set<span class="o">=</span><span class="s2">"clusterName=&lt;cluster_name&gt;"</span>
 --set<span class="o">=</span><span class="s2">"splunkObservability.realm=&lt;realm&gt;"</span>
@@ -1481,7 +1482,7 @@ splunk-otel-collector
 </tr>
 </tbody>
 </table>
-<p>An example of filled up command is:</p>
+<p>An example of a correctly filled command is:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>sck<span class="w"> </span>
 --set<span class="o">=</span><span class="s2">"clusterName=my_cluster"</span>
 --set<span class="o">=</span><span class="s2">"splunkObservability.realm=us0"</span>

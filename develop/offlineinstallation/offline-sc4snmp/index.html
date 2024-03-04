@@ -1283,8 +1283,9 @@
 
 
 <div><h1 id="offline-sc4snmp-installation">Offline SC4SNMP installation<a class="headerlink" href="#offline-sc4snmp-installation" title="Permanent link">¶</a></h1>
+<p>See the following options for an offline SC4SNMP installation. </p>
 <h2 id="local-machine-with-internet-access">Local machine with internet access<a class="headerlink" href="#local-machine-with-internet-access" title="Permanent link">¶</a></h2>
-<p>To install the SC4SNMP offline, first, some packages must be downloaded from the <a href="https://github.com/splunk/splunk-connect-for-snmp/releases">Github release</a> and then moved
+<p>To install the SC4SNMP offline, first, download some packages from the <a href="https://github.com/splunk/splunk-connect-for-snmp/releases">Github release</a> and then move them
 to the SC4SNMP installation server. Those packages are:</p>
 <ul>
 <li><code>dependencies-images.tar</code></li>
@@ -1295,48 +1296,48 @@ to the SC4SNMP installation server. Those packages are:</p>
 <li><code>pull_mibserver.sh</code> script</li>
 <li><code>pull_gui_images.sh</code> script</li>
 </ul>
-<p>to easily pull and export mibserver image and gui images.</p>
-<p>Moreover, SC4SNMP Docker image must be pulled, saved as a <code>.tar</code> package, and then moved to the server as well. 
+<p>to easily pull and export mibserver image and GUI images.</p>
+<p>Moreover, the SC4SNMP Docker image must be pulled, saved as a <code>.tar</code> package, and then moved to the server as well. 
 This process requires Docker to be installed locally.</p>
 <p>Images can be pulled from the following repository: <code>ghcr.io/splunk/splunk-connect-for-snmp/container:&lt;tag&gt;</code>. 
-The latest tag can be found <a href="https://github.com/splunk/splunk-connect-for-snmp">here</a> under the Releases section with the label <code>latest</code>.</p>
-<p>Example of docker pull command:</p>
+The latest tag can be found in <a href="https://github.com/splunk/splunk-connect-for-snmp">The Splunk Connect for SNMP Repository</a>, under the Releases section with the label <code>latest</code>.</p>
+<p>See the following example of docker pull command:</p>
 <div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/splunk/splunk-connect-for-snmp/container:&lt;tag&gt;
 </code></pre></div>
 
-<p>Then save the image. Directory where this image will be saved can be specified after the <code>&gt;</code> sign:</p>
+<p>Afterwards, save the image. The directory where this image will be saved can be specified after the <code>&gt;</code> sign:</p>
 <div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>save<span class="w"> </span>ghcr.io/splunk/splunk-connect-for-snmp/container:&lt;tag&gt;<span class="w"> </span>&gt;<span class="w"> </span>snmp_image.tar
 </code></pre></div>
 
-<p>Another packages you have to pull is the mibserver and gui images. You can do it by executing <code>pull_mibserver.sh</code> and 
-<code>pull_gui_images.sh</code> scripts from the Release section, or copy-pasting its content.</p>
+<p>Other packages you have to pull are mibserver and GUI images. Do this by executing <code>pull_mibserver.sh</code> and 
+<code>pull_gui_images.sh</code> scripts from the Release section, or copy-pasting its content. See the following:</p>
 <div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>a+x<span class="w"> </span>pull_mibserver.sh<span class="w"> </span><span class="c1"># you'll probably need to make file executable</span>
 ./pull_mibserver.sh
 chmod<span class="w"> </span>a+x<span class="w"> </span>pull_gui_images.sh
 ./pull_gui_images.sh
 </code></pre></div>
 
-<p>Those scripts should produce <code>mibserver.tar</code> with the image of the mibserver and <code>sc4snmp-gui-images.tar</code> with gui images inside.</p>
+<p>Those scripts should produce <code>mibserver.tar</code> with the image of the mibserver and <code>sc4snmp-gui-images.tar</code> with GUI images inside.</p>
 <p>All five packages, <code>mibserver.tar</code>, <code>snmp_image.tar</code>, <code>dependencies-images.tar</code>, <code>sc4snmp-gui-images.tar</code> and <code>splunk-connect-for-snmp-chart.tar</code>, must be moved to the SC4SNMP installation server.</p>
 <h2 id="installation-on-the-server">Installation on the server<a class="headerlink" href="#installation-on-the-server" title="Permanent link">¶</a></h2>
 <p>On the server, all the images must be imported to the microk8s cluster. This can be done with the following command:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>ctr<span class="w"> </span>image<span class="w"> </span>import<span class="w"> </span>&lt;name_of_tar_image&gt;
 </code></pre></div>
 
-<p>In case of this installation the following commands must be run:</p>
+<p>Run the following commands:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>ctr<span class="w"> </span>image<span class="w"> </span>import<span class="w"> </span>dependencies-images.tar
 microk8s<span class="w"> </span>ctr<span class="w"> </span>image<span class="w"> </span>import<span class="w"> </span>snmp_image.tar
 microk8s<span class="w"> </span>ctr<span class="w"> </span>image<span class="w"> </span>import<span class="w"> </span>mibserver.tar
 </code></pre></div>
 
-<p>Then create <code>values.yaml</code>. It’s a little different from <code>values.yaml</code> used in an online installation. 
+<p>Afterwards, create <code>values.yaml</code>. It’s a little different from <code>values.yaml</code> used in an online installation. 
 The difference between the two files is the following, which is used for automatic image pulling:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">image</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">"Never"</span>
 </code></pre></div>
 
-<p>Example <code>values.yaml</code> file can be found <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/offline_installation_values.md">here</a>.</p>
-<p>The next step is to unpack the chart package <code>splunk-connect-for-snmp-chart.tar</code>. It will result in creating the <code>splunk-connect-for-snmp</code> directory:</p>
+<p>An example <code>values.yaml</code> file can be found in the <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/offline_installation_values.md">Offline SC4SNMP values.yaml template</a>.</p>
+<p>Next, unpack the chart package <code>splunk-connect-for-snmp-chart.tar</code>. It will result in creating the following <code>splunk-connect-for-snmp</code> directory:</p>
 <div class="codehilite"><pre><span></span><code>tar<span class="w"> </span>-xvf<span class="w"> </span>splunk-connect-for-snmp-chart.tar<span class="w"> </span>--exclude<span class="o">=</span><span class="s1">'._*'</span>
 </code></pre></div>
 

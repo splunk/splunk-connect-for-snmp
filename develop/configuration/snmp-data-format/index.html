@@ -1315,9 +1315,9 @@
 
 
 <div><h1 id="snmp-data-format">SNMP Data Format<a class="headerlink" href="#snmp-data-format" title="Permanent link">¶</a></h1>
-<p>SC4SNMP classifies SNMP data elements as metrics or textual fields. We assume that the metric types are the indicators worth monitoring, 
-that changes dynamically, and textual fields are the context helpful to understand what an SNMP object really means.</p>
-<p>SC4SNMP classify the data element as a metric when its type is one of:</p>
+<p>SC4SNMP classifies SNMP data elements as metrics or textual fields. Metric types are usually the indicators worth monitoring, 
+which change dynamically, while textual fields are helpful context to understand what an SNMP object means.</p>
+<p>SC4SNMP classifies the data element as a metric when its type is one of the following:</p>
 <ul>
 <li><code>Unsigned</code></li>
 <li><code>Counter</code></li>
@@ -1326,8 +1326,7 @@ that changes dynamically, and textual fields are the context helpful to understa
 <li><code>Integer</code></li>
 </ul>
 <p>Every other type is interpreted as a field value.</p>
-<p>Sometimes, the MIB file indicates a field as an <code>INTEGER</code>, but there is also some mapping defined, like for
-example in case of <code>IF-MIB.ifOperStatus</code>:</p>
+<p>Sometimes, the MIB file indicates a field as an <code>INTEGER</code>, but there is also some mapping defined. See the following<code>IF-MIB.ifOperStatus</code> example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">ifOperStatus</span><span class="w"> </span><span class="nv">OBJECT</span><span class="o">-</span><span class="nv">TYPE</span>
 <span class="w">    </span><span class="nv">SYNTAX</span><span class="w">  </span><span class="nv">INTEGER</span><span class="w"> </span>{
 <span class="w">                </span><span class="nv">up</span><span class="ss">(</span><span class="mi">1</span><span class="ss">)</span>,<span class="w">        </span><span class="o">--</span><span class="w"> </span><span class="nv">ready</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">pass</span><span class="w"> </span><span class="nv">packets</span>
@@ -1343,10 +1342,10 @@ example in case of <code>IF-MIB.ifOperStatus</code>:</p>
 </code></pre></div>
 
 <p><a href="https://www.circitor.fr/Mibs/Mib/I/IF-MIB.mib">source</a></p>
-<p>Here we expect some numeric value, but actually what SNMP Agents gets from the device is a <code>string</code> value,
-like <code>up</code>. To avoid setting textual value as a metrics, SC4SNMP does an additional check and tries to cast the
-numeric value to float. If the check fails, the values is classified as a textual field.</p>
-<p>Let’s go through a simple example. We’ve just added a device and didn’t configure anything special. The data from a walk
+<p>Here a numeric value is expected, but actually what SNMP Agents ends up receiving from the device is a <code>string</code> value,
+like <code>up</code>. To avoid setting textual value as a metric, SC4SNMP does an additional check and tries to cast the
+numeric value to float. If the check fails, the value is classified as a textual field.</p>
+<p>See the following simple example. You just added a device and didn’t configure anything special. The data from a walk
 in Splunk’s metrics index is:</p>
 <div class="codehilite"><pre><span></span><code>{
    ifAdminStatus: up
@@ -1370,7 +1369,7 @@ in Splunk’s metrics index is:</p>
 }
 </code></pre></div>
 
-<p>Clearly we can see the textual part:</p>
+<p>You can see a textual part:</p>
 <div class="codehilite"><pre><span></span><code>   ifAdminStatus: up
    ifDescr: GigabitEthernet1
    ifIndex: 1
@@ -1397,7 +1396,7 @@ in Splunk’s metrics index is:</p>
 <h2 id="to-which-splunk-index-will-my-data-go">To which Splunk index will my data go?<a class="headerlink" href="#to-which-splunk-index-will-my-data-go" title="Permanent link">¶</a></h2>
 <h3 id="metric-index">Metric index<a class="headerlink" href="#metric-index" title="Permanent link">¶</a></h3>
 <p>The rule is, if we poll a profile with AT LEAST one metric value, it will go to the metric index and will be
-enriched with all the textual fields we have for this object. For example, when polling:</p>
+enriched with all the textual fields you have for the object. For example, when polling:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">profile_with_one_metric</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
@@ -1405,7 +1404,7 @@ enriched with all the textual fields we have for this object. For example, when 
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifInUcastPkts'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 
-<p>The record that we’ll see in Splunk <code>| mpreview index=net*</code> for the same case as above would be:</p>
+<p>The record that you’ll see in Splunk <code>| mpreview index=net*</code> for the same case as the previous one would be:</p>
 <div class="codehilite"><pre><span></span><code>   ifAdminStatus: up
    ifDescr: GigabitEthernet1
    ifIndex: 1
@@ -1416,11 +1415,9 @@ enriched with all the textual fields we have for this object. For example, when 
    metric_name:sc4snmp.IF-MIB.ifInUcastPkts: 47512921
 </code></pre></div>
 
-<p>Note, that only fields specified in <code>varBinds</code> are actively polled form the device. In case of <code>profile_with_one_metric</code>
-shown above, the textual fields <code>ifAdminStatus</code>, <code>ifDescr</code>, <code>ifIndex</code>, <code>ifOperStatus</code> and <code>ifPhysAddress</code> are taken from 
-the database cache, which is updated on every <code>walk</code> process. This is fine for the most of the cases, as things like
-MAC address, interface type or interface status shouldn’t change frequently if ever.</p>
-<p>If you want to keep <code>ifOperStatus</code> and <code>ifAdminStatus</code> up to date all the time, define profile like:</p>
+<p>Only fields specified in <code>varBinds</code> are actively polled from the device. In the case of the previous <code>profile_with_one_metric</code>, the textual fields <code>ifAdminStatus</code>, <code>ifDescr</code>, <code>ifIndex</code>, <code>ifOperStatus</code> and <code>ifPhysAddress</code> are taken from the database cache. This is updated on every walk process. This is fine in most cases, as values such as
+MAC address, interface type, or interface status shouldn’t change frequently if at all. </p>
+<p>If you want to keep <code>ifOperStatus</code> and <code>ifAdminStatus</code> up to date all the time, define profile using the following example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">profile_with_one_metric</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
@@ -1432,8 +1429,8 @@ MAC address, interface type or interface status shouldn’t change frequently if
 
 <p>The result in Splunk will look the same, but <code>ifOperStatus</code> and <code>ifAdminStatus</code> will be actively polled.</p>
 <h3 id="event-index">Event index<a class="headerlink" href="#event-index" title="Permanent link">¶</a></h3>
-<p>It is possible to create an event without a single metric value, in such scenario it will go to an event index.
-An example of such profile would be:</p>
+<p>It is possible to create an event without a single metric value. In such scenario, it will go to an event index.
+See the following example of profile under that scenario:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">profile_with_only_textual_fields</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
@@ -1442,7 +1439,7 @@ An example of such profile would be:</p>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOperStatus'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 
-<p>In this case no additional enrichment will be done. The events in event index <code>index=netops</code> of Splunk will look like:</p>
+<p>In the following example, no additional enrichment will be done. The events in event index <code>index=netops</code> of Splunk would look like:</p>
 <div class="codehilite"><pre><span></span><code><span class="c">{ </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span>
 <span class="c">   IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifDescr: { </span><span class="k">[</span><span class="nb">-</span><span class="k">]</span>
 <span class="c">     name: IF</span><span class="nb">-</span><span class="c">MIB</span><span class="nt">.</span><span class="c">ifDescr</span>

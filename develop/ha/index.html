@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#high-availability-considerations" class="md-skip">
+        <a href="#high-availability" class="md-skip">
           Skip to content
         </a>
       
@@ -1136,17 +1136,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    High Availability
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -1157,32 +1148,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#high-availability-considerations" class="md-nav__link">
-    <span class="md-ellipsis">
-      High Availability Considerations
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -1225,23 +1190,8 @@
   
   
   
+    
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#high-availability-considerations" class="md-nav__link">
-    <span class="md-ellipsis">
-      High Availability Considerations
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -1256,18 +1206,15 @@
                   
 
 
-  <h1>High Availability</h1>
-
-<div><h2 id="high-availability-considerations">High Availability Considerations<a class="headerlink" href="#high-availability-considerations" title="Permanent link">¶</a></h2>
+<div><h1 id="high-availability">High Availability<a class="headerlink" href="#high-availability" title="Permanent link">¶</a></h1>
 <p>The SNMP protocol uses UDP as the transport protocol. Network reliability is a constraint.
 Consider network architecture when designing for high availability:</p>
 <ul>
-<li>When using a single node collector, ensure automatic recovery from virtual infrastructure (i.e. VMware, Openstack, etc).</li>
-<li>When using a multi-node cluster, ensure nodes are not located such that a simple majority of nodes can
-be lost. For example, consider row, rack, network, power, and storage.</li>
-<li>When determining the placement of clusters, the closest location by the number of network hops should be utilized.</li>
+<li>When using a single node collector, ensure automatic recovery from virtual infrastructure, such as VMware or Openstack.</li>
+<li>When using a multi-node cluster, ensure nodes are not located in a way where the majority of nodes can be lost. For example, consider row, rack, network, power, and storage.</li>
+<li>When determining the placement of clusters, the closest location by the number of network hops should be used.</li>
 <li>For “data center” applications, collection should be local to the data center.</li>
-<li>Consider IP Anycast.</li>
+<li>Consider using IP Anycast.</li>
 </ul></div>
 
 

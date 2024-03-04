@@ -1379,20 +1379,19 @@
 
 
 <div><h1 id="splunk-opentelemetry-collector-for-kubernetes-installation">Splunk OpenTelemetry Collector for Kubernetes installation<a class="headerlink" href="#splunk-opentelemetry-collector-for-kubernetes-installation" title="Permanent link">¶</a></h1>
-<p>Splunk OpenTelemetry Collector for Kubernetes is not required for SC4SNMP installation. This is the tool that sends logs
-and metrics from a k8s cluster to a Splunk instance, which makes SC4SNMP easier to debug. 
+<p>Splunk OpenTelemetry Collector for Kubernetes is not required for SC4SNMP installation. However, Splunk OpenTelemetry Collector for Kubernetes sends logs and metrics from a k8s cluster to a Splunk instance, which makes SC4SNMP easier to debug. 
 You can do the same using the <code>microk8s kubectl logs</code> command on instances you’re interested in, but if you’re not proficient in Kubernetes,
-Splunk OpenTelemetry Collector for Kubernetes is strongly advised.</p>
-<p>The below steps are sufficient for a Splunk OpenTelemetry Collector installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud.
+Splunk OpenTelemetry Collector for Kubernetes is recommended. </p>
+<p>The following steps are sufficient for a Splunk OpenTelemetry Collector installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud.
 In order to learn more about Splunk OpenTelemetry Collector, visit <a href="https://github.com/signalfx/splunk-otel-collector-chart">Splunk OpenTelemetry Collector</a>.</p>
 <h3 id="offline-installation">Offline installation<a class="headerlink" href="#offline-installation" title="Permanent link">¶</a></h3>
-<p>For offline installation instructions see <a href="../../offlineinstallation/offline-sck/">this page</a>.</p>
+<p>For offline installation instructions see <a href="../../offlineinstallation/offline-sck/">Splunk OpenTelemetry Collector for Kubernetes offline installation</a>.</p>
 <h3 id="add-splunk-opentelemetry-collector-repository-to-helm">Add Splunk OpenTelemetry Collector repository to HELM<a class="headerlink" href="#add-splunk-opentelemetry-collector-repository-to-helm" title="Permanent link">¶</a></h3>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>splunk-otel-collector-chart<span class="w"> </span>https://signalfx.github.io/splunk-otel-collector-chart
 </code></pre></div>
 
 <h2 id="install-splunk-opentelemetry-collector-with-helm-for-a-splunk-platform">Install Splunk OpenTelemetry Collector with HELM for a Splunk Platform<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-a-splunk-platform" title="Permanent link">¶</a></h2>
-<p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the description presented below</p>
+<p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables based on the following description: </p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"clusterName=&lt;cluster_name&gt;"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.endpoint=&lt;splunk_endpoint&gt;"</span><span class="w"> </span><span class="se">\</span>
@@ -1437,7 +1436,7 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
 </tr>
 </tbody>
 </table>
-<p>An example of filled up command is:</p>
+<p>See the following example of a correctly filled up command: </p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"clusterName=my-cluster"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.endpoint=https://endpoint.example.com/services/collector"</span><span class="w"> </span><span class="se">\</span>
@@ -1450,7 +1449,7 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
 </code></pre></div>
 
 <h2 id="install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes">Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" title="Permanent link">¶</a></h2>
-<p>To run Splunk OpenTelemetry Collector on your environment, replace the <code>&lt;&gt;</code> variables according to the description presented below:</p>
+<p>To run Splunk OpenTelemetry Collector on your environment, replace the <code>&lt;&gt;</code> variables based on the following description: </p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck
 --set<span class="o">=</span><span class="s2">"clusterName=&lt;cluster_name&gt;"</span>
 --set<span class="o">=</span><span class="s2">"splunkObservability.realm=&lt;realm&gt;"</span>
@@ -1500,7 +1499,7 @@ splunk-otel-collector-chart/splunk-otel-collector
 </tr>
 </tbody>
 </table>
-<p>An example of a filled up command is:</p>
+<p>See the following example of a correctly filled up command: </p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck
 --set<span class="o">=</span><span class="s2">"clusterName=my_cluster"</span>
 --set<span class="o">=</span><span class="s2">"splunkObservability.realm=us0"</span>
