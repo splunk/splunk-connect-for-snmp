@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## [1.10.0]
+
+### Changed
+- add sc4snmp ui
+- add reverse dns lookup in traps
+- upgrade chart dependencies: redis to ~18.5.0, mibserver to 1.15.7
+- add beta support for docker-compose deployment
+- add log messages for invalid traps configuration
+- review and update of documentation
+
+### Fixed
+- error handling to be more precise
+
 ## [1.9.3]
 
 ### Changed
