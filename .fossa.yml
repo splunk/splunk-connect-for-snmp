@@ -3,3 +3,9 @@ server: https://app.fossa.com
 project:
   id: "splunk-connect-for-snmp"
   team: "TA-Automation"
+
+paths:
+  exclude:
+    - ui_tests
+    - test
+    - integration_tests

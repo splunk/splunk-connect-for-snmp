@@ -248,3 +248,44 @@ class TestTasks(TestCase):
             },
             result,
         )
+
+    @patch("splunk_connect_for_snmp.snmp.tasks.RESOLVE_TRAP_ADDRESS", "true")
+    @patch("splunk_connect_for_snmp.snmp.tasks.resolve_address")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
+    @patch("time.time")
+    def test_trap_reverse_dns_lookup(
+        self,
+        m_time,
+        m_poller,
+        m_process_data,
+        m_resolved,
+        m_resolve_address,
+        m_mongo_client,
+    ):
+        m_poller.return_value = None
+        from splunk_connect_for_snmp.snmp.tasks import trap
+
+        m_time.return_value = 1640692955.365186
+
+        m_resolved.return_value = None
+        m_resolve_address.return_value = "my.host"
+
+        work = {"data": [("asd", "tre")], "host": "192.168.0.1"}
+        m_process_data.return_value = (False, [], {"test": "value1"})
+        m_poller.builder = MagicMock()
+        m_poller.trap = trap
+        m_poller.trap.mib_view_controller = MagicMock()
+        result = trap(work)
+
+        self.assertEqual(
+            {
+                "address": "my.host",
+                "detectchange": False,
+                "result": {"test": "value1"},
+                "sourcetype": "sc4snmp:traps",
+                "time": 1640692955.365186,
+            },
+            result,
+        )

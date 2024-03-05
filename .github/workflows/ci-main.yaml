@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: run fossa anlyze and create report
+      - name: run fossa analyze and create report
         run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install-latest.sh | bash
           fossa analyze --debug
@@ -48,7 +48,7 @@ jobs:
         env:
           FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
       - name: upload THIRDPARTY file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: THIRDPARTY
           path: /tmp/THIRDPARTY
@@ -63,14 +63,14 @@ jobs:
     if: (github.actor != 'dependabot[bot]')
     steps:
       - uses: actions/checkout@v4
-      - uses: returntocorp/semgrep-action@v1
+      - uses: semgrep/semgrep-action@v1
         with:
           publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
   pre-commit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
       - uses: pre-commit/action@v3.0.0
   test-unit:
     name: Test Unit Python ${{ matrix.python-version }}
@@ -78,11 +78,11 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - 3.9
+          - "3.10"
     steps:
       - uses: actions/checkout@v4
       - name: Setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Poetry
@@ -102,7 +102,7 @@ jobs:
           fail_ci_if_error: true
           path_to_write_report: ./coverage/codecov_report.txt
           verbose: true
-      - uses: actions/upload-artifact@v3 # upload test results
+      - uses: actions/upload-artifact@v4 # upload test results
         if: success() || failure() # run this step even if previous step failed
         with:
           name: test-results-unit-python_${{ matrix.python-version }}
@@ -144,7 +144,7 @@ jobs:
           sudo apt-get install snmp -y
           sudo apt-get install python3-dev -y
       - name: run automatic_setup.sh
-        run: integration_tests/automatic_setup.sh
+        run: integration_tests/automatic_setup.sh integration
       - name: run tests
         working-directory: integration_tests
         run: |

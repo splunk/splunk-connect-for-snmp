@@ -62,6 +62,8 @@ scheduler:
 #        - ['SNMPv2-MIB', 'sysName', 0]
 #        - ['IF-MIB']
 #        - ['TCP-MIB']
+  groups: |
+    {}
 poller:
   usernameSecrets:
     - sv3poller

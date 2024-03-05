@@ -11,6 +11,8 @@ markdown_extensions:
   - fenced_code
   - sane_lists
   - codehilite
+  - attr_list
+  - md_in_html
 
 plugins:
     - search:
@@ -53,10 +55,17 @@ nav:
       - Redis: "configuration/redis-configuration.md"
       - SNMPv3 configuration: "configuration/snmpv3-configuration.md"
       - Splunk Infrastructure Monitoring: "configuration/sim-configuration.md"
+      - CoreDNS: "configuration/coredns-configuration.md"
   - Offline Installation:
       - Install Microk8s: "offlineinstallation/offline-microk8s.md"
       - Install Splunk OpenTelemetry Collector for Kubernetes: "offlineinstallation/offline-sck.md"
       - Install SC4SNMP: "offlineinstallation/offline-sc4snmp.md"
+  - GUI:
+      - Enable GUI: "gui/enable-gui.md"
+      - Configuring Profiles: "gui/profiles-gui.md"
+      - Configuring Groups: "gui/groups-gui.md"
+      - Configuring Inventory: "gui/inventory-gui.md"
+      - Apply changes: "gui/apply-changes.md"
   - Lightweight installation: "small-environment.md"
   - Planning: "planning.md"
   - Security: "security.md"
@@ -65,4 +74,5 @@ nav:
   - Troubleshooting : "bestpractices.md"
   - Releases: "releases.md"
   - High Availability: ha.md
+  - Docker compose deployment: "docker-compose.md"
 

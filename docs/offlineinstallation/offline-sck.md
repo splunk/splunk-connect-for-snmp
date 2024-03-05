@@ -1,25 +1,27 @@
 # Splunk OpenTelemetry Collector for Kubernetes offline installation
 
+See the following options to install the Splunk OpenTelemetry Collector for Kubernetes. 
+
 ## Local machine with internet access
 
-To install Splunk OpenTelemetry Collector offline first one must download packed chart `splunk-otel-collector-<tag>.tgz` and the otel image `otel_image.tar`
-from github release where `<tag>` is the current OpenTelemetry release tag. Both packages must be later moved to the installation server.
+To install Splunk OpenTelemetry Collector offline, first, download the packed chart `splunk-otel-collector-<tag>.tgz` and the otel image `otel_image.tar`
+from the Github release, where `<tag>` is the current OpenTelemetry release tag. Both packages must be later moved to the installation server.
 
 ## Installation on the server
  
-Otel image has to be imported to the `microk8s` registry with:
+The Otel image has to be imported to the `microk8s` registry with:
 
 ```bash
 microk8s ctr image import otel_image.tar 
 ```
 
-Imported package must be unpacked with the following command :
+The imported package must be unpacked with the following command :
 
 ```bash
 tar -xvf splunk-otel-collector-<tag>.tgz --exclude='._*'
 ```
 
-In order to run Splunk OpenTelemetry Collector on your environment, replace `<>` variables according to the description presented below
+In order to run Splunk OpenTelemetry Collector on your environment, replace `<>` variables according to the following description:
 ```bash
 microk8s helm3 install sck \
   --set="clusterName=<cluster_name>" \
@@ -43,7 +45,7 @@ microk8s helm3 install sck \
 | splunk_token | Splunk HTTP Event Collector token  | 450a69af-16a9-4f87-9628-c26f04ad3785  |
 | cluster_name | name of the cluster | my-cluster |
 
-An example of filled up command is:
+An example of a correctly filled command is:
 ```bash
 microk8s helm3 install sck \
   --set="clusterName=my-cluster" \
@@ -58,7 +60,7 @@ microk8s helm3 install sck \
 
 ## Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes
 
-To run Splunk OpenTelemetry Collector on your environment, replace `<>` variables according to the description presented below
+To run Splunk OpenTelemetry Collector on your environment, replace `<>` variables according to the following description:
 
 ```bash
 microk8s helm3 install sck
@@ -84,7 +86,7 @@ splunk-otel-collector
 | ingest_url | Ingest URL from the Splunk Observability Cloud environment | https://ingest..signalfx.com |
 | api_url | API URL from the Splunk Observability Cloud environment  | https://api..signalfx.com |
 
-An example of filled up command is:
+An example of a correctly filled command is:
 ```bash
 microk8s helm3 install sck 
 --set="clusterName=my_cluster"

@@ -14,17 +14,16 @@
 # limitations under the License.
 #
 import time
+from contextlib import suppress
 
 from pymongo import UpdateOne
 
 from splunk_connect_for_snmp import customtaskmanager
 
-try:
+with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
     load_dotenv()
-except:
-    pass
 
 import os
 

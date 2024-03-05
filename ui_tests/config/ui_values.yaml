@@ -1,0 +1,120 @@
+UI:
+  enable: true
+  frontEnd:
+    NodePort: 30001
+    repository: ghcr.io/splunk/sc4snmp-ui/frontend/container
+    tag: "develop"
+    pullPolicy: "Always"
+  backEnd:
+    NodePort: 30002
+    repository: ghcr.io/splunk/sc4snmp-ui/backend/container
+    tag: "develop"
+    pullPolicy: "Always"
+  init:
+    image: registry.access.redhat.com/ubi9/ubi
+    pullPolicy: IfNotPresent
+
+  # valuesFileDirectory is obligatory if UI is used. It is an absolute directory path on the host machine
+  # where values.yaml is located and where configuration files from the UI will be generated.
+  valuesFileDirectory: "/home/splunker"
+
+  # valuesFileName is an exact name of yaml file with user's configuration, located inside directory specified in
+  # valuesFileDirectory. It is optional. If it is provided then this file fill be updated with configuration from the UI.
+  # If the valuesFileName is empty, or provided file name can't be found inside valuesFileDirectory directory,
+  # then configuration from the UI will be saved in few files, each file for different section, inside
+  # valuesFileDirectory directory.
+  valuesFileName: "values.yaml"
+
+  # If keepSectionFiles is set to true, separate configration files for different sections will be saved in
+  # valuesFileDirectory directory regardless of valuesFileName proper configuration.
+  keepSectionFiles: false
+splunk:
+  enabled: true
+  protocol: https
+  host: ###LOAD_BALANCER_ID###
+  token: ###SPLUNK_TOKEN###
+  insecureSSL: "true"
+  port: "8088"
+image:
+  repository: "snmp-local"
+  tag: "latest"
+  pullPolicy: "Never"
+traps:
+  replicaCount: 1
+  communities:
+    2c:
+      - public
+      - homelab
+  #usernameSecrets:
+  #  - sc4snmp-hlab-sha-aes
+  #  - sc4snmp-hlab-sha-des
+
+  #loadBalancerIP: The IP address in the metallb pool
+  loadBalancerIP: ###LOAD_BALANCER_ID###
+worker:
+  poller:
+    replicaCount: 1
+    #changed replicaCount from 4 to 1
+    concurrency: 4
+    prefetch: 1
+  trap:
+    autoscaling:
+      enabled: false
+    replicaCount: 1
+    concurrency: 8
+    prefetch: 60
+  sender:
+    replicaCount: 1
+    concurrency: 4
+    prefetch: 60
+  profilesReloadDelay: 1
+  # replicas: Number of replicas for worker container should two or more
+  # udpConnectionTimeout: timeout in seconds for SNMP operations
+  #udpConnectionTimeout: 5
+  logLevel: "DEBUG"
+scheduler:
+  logLevel: "INFO"
+  customTranslations:
+    IP-MIB:
+      icmpOutEchoReps: myCustomName1
+  profiles: |
+    v3profile:
+      frequency: 5
+      varBinds:
+        - ['IF-MIB']
+        - ['TCP-MIB']
+        - ['UDP-MIB']
+#  profiles: |
+#    generic_switch:
+#      frequency: 60
+#      varBinds:
+#        - ['SNMPv2-MIB', 'sysDescr']
+#        - ['SNMPv2-MIB', 'sysName', 0]
+#        - ['IF-MIB']
+#        - ['TCP-MIB']
+  groups: |
+    {}
+poller:
+  usernameSecrets:
+    - sv3poller
+ #   - sc4snmp-hlab-sha-aes
+ #   - sc4snmp-hlab-sha-des
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+    ###LOAD_BALANCER_ID###,,2c,public,,,600,,,
+sim:
+  # sim must be enabled if you want to use signalFx
+  enabled: false
+#  signalfxToken: BCwaJ_Ands4Xh7Nrg
+#  signalfxRealm: us0
+mongodb:
+  pdb:
+    create: true
+  persistence:
+    storageClass: "microk8s-hostpath"
+  volumePermissions:
+    enabled: true
+redis:
+  architecture: standalone
+  auth:
+    enabled: false

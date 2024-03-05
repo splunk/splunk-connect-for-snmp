@@ -19,7 +19,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
       - name: Setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install ruamel.yaml
@@ -36,7 +36,7 @@ jobs:
           GET_YAML_FIELD_SCRIPT: get_yaml_fields.py
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: /tmp/package/packages

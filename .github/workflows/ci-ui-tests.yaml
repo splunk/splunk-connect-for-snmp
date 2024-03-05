@@ -1,0 +1,95 @@
+name: ui-tests
+on:
+  push:
+    branches:
+      - "main"
+      - "develop"
+      - "next"
+      - "sc4snmp-ui-tests"
+  pull_request:
+    branches:
+      - "main"
+      - "develop"
+      - "next"
+jobs:
+  ui-tests-check:
+    name: Check if run ui tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Get commit message
+        id: get_commit_message
+        run: |
+          if [[ '${{ github.event_name }}' == 'push' ]]; then
+            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD)
+          elif [[ '${{ github.event_name }}' == 'pull_request' ]]; then
+            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD^2)
+          fi
+    outputs:
+      commit_message:
+        echo "${{ steps.get_commit_message.outputs.commit_message }}"
+
+  run-ui-e2e-tests:
+    name: run UI e2e tests
+    needs:
+      - ui-tests-check
+    runs-on: ubuntu-latest
+    if: "contains(needs.ui-tests-check.outputs.commit_message, '[run-ui-tests]')"
+    timeout-minutes: 120
+    env:
+      CI_EXECUTION_TYPE: ci
+
+    strategy:
+      matrix:
+        execution-type: ["basic", "extended"]
+
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: remove not used docker images
+        run: |  
+          echo "docker rmi"
+          docker rmi $(docker images -q) || true
+          docker images
+          echo "check disk free space"
+          df -h    
+
+      - name: prepare values.yaml for configuration storing
+        working-directory: integration_tests
+        run: |
+          cp ./../ui_tests/config/ui_values.yaml ./values.yaml
+          sed -i "s|/home/splunker|$(pwd)|g" values.yaml
+
+      - name: install microk8s
+        run: |
+          sudo snap install microk8s --classic --channel=1.25/stable
+          sudo apt-get install snmp -y
+          sudo apt-get install python3-dev -y
+
+      - name: run automatic_setup.sh
+        run: integration_tests/automatic_setup.sh
+
+      - name: install dependencies
+        working-directory: ui_tests
+        run: |
+          pip install -r requirements.txt
+          export PATH="/home/ubuntu/.local/bin:$PATH" 
+
+      - name: run tests
+        working-directory: ui_tests
+        run: |
+          sudo microk8s kubectl get pod -n sc4snmp
+          echo "check if UI is available - curl"
+          curl http://localhost:30001
+          echo "run tests"
+          pytest -vvv --splunk-user=admin --splunk-password="changeme2" --splunk-host="localhost" --device-simulator="$(hostname -I | cut -d " " -f1)" -k ${{ matrix.execution-type }}
+

@@ -1,0 +1,78 @@
+---
+# Source: splunk-connect-for-snmp/templates/ui/deployment-backend.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-backend-deployment
+  labels:
+    app: ui-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui-backend
+  template:
+    metadata:
+      labels:
+        app: ui-backend
+    spec:
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        fsGroup: 10000
+      initContainers:
+        - name: patch-log-dirs
+          image: registry.access.redhat.com/ubi9/ubi
+          imagePullPolicy: IfNotPresent
+          command: [ 'sh', '-c', '
+                mkdir -p /var/values_dir;
+                chmod -v g+rwxs /var/values_dir;
+                if [ -d "/var/values_dir" ];
+                then
+                    setfacl -n -Rm d:m::rwx,m::rwx,d:g:10000:rwx,g:10000:rwx /var/values_dir;
+                fi;' ]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+          - name: values-directory
+            mountPath: /var/values_dir
+      containers:
+      - name: ui-backend
+        image: "ghcr.io/splunk/sc4snmp-ui/backend/container:main"
+        imagePullPolicy: Always
+        command: ["sh","-c","/flask_start.sh"]
+        env:
+        - name: MONGO_URI
+          value: mongodb://release-name-mongodb:27017
+        - name: REDIS_URL
+          value: redis://release-name-redis-headless:6379/3
+        - name: JOB_CONFIG_PATH
+          value: /config/job_config.yaml
+        - name: JOB_NAMESPACE
+          value: sc4snmp
+        - name: CELERY_BROKER_URL
+          value: redis://release-name-redis-headless:6379/2
+        - name: VALUES_DIRECTORY
+          value: /var/values_dir
+        - name: VALUES_FILE
+          value: values.yaml
+        - name: KEEP_TEMP_FILES
+          value: "false"
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: backend-configmap
+          mountPath: /config
+        - name: values-directory
+          mountPath: /var/values_dir
+      serviceAccountName: job-robot
+      volumes:
+        - name: backend-configmap
+          configMap:
+            name: splunk-connect-for-snmp-job-configmap
+            items:
+              - key: job_config
+                path: job_config.yaml
+        - name: values-directory
+          hostPath:
+            path: /home/ubuntu

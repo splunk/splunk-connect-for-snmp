@@ -43,7 +43,7 @@ def get_secret_value(
         with open(os.path.join(location, key), encoding="utf-8") as file:
             result = file.read().replace("\n", "")
     elif required:
-        raise Exception(f"Required secret key {key} not found in {location}")
+        raise FileNotFoundError(f"Required secret key {key} not found in {location}")
     return result
 
 
@@ -145,7 +145,7 @@ def getAuthV3(logger, ir: InventoryRecord, snmpEngine: SnmpEngine) -> UsmUserDat
         )
 
     else:
-        raise Exception(f"invalid username from secret {ir.secret}")
+        raise FileNotFoundError(f"invalid username from secret {ir.secret}")
 
 
 def getAuthV2c(ir: InventoryRecord) -> CommunityData:

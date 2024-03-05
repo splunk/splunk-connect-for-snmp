@@ -1,0 +1,29 @@
+---
+# Source: splunk-connect-for-snmp/templates/ui/deployment-frontend.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-frontend-deployment
+  labels:
+    app: ui-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui-frontend
+  template:
+    metadata:
+      labels:
+        app: ui-frontend
+    spec:
+      containers:
+      - name: ui-frontend
+        image: "ghcr.io/splunk/sc4snmp-ui/frontend/container:main"
+        imagePullPolicy: Always
+        env:
+          - name: REACT_APP_FLASK_PORT
+            value: "30002"
+          - name: DEMO_PORT
+            value: "30001"
+        ports:
+        - containerPort: 30001

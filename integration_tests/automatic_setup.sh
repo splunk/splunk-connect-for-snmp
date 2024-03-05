@@ -26,6 +26,7 @@ wait_for_splunk() {
 }
 
 function define_python() {
+  echo $(yellow "define python")
   if command -v python &> /dev/null; then
       PYTHON=python
   elif command -v python3 &> /dev/null; then
@@ -97,6 +98,7 @@ cd integration_tests
 chmod u+x prepare_splunk.sh
 echo $(green "Preparing Splunk instance")
 ./prepare_splunk.sh
+./install_sck.sh
 sed -i "s/###SPLUNK_TOKEN###/$(cat hec_token)/" values.yaml
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" values.yaml
 sudo docker run -d -p 161:161/udp tandrup/snmpsim
@@ -128,6 +130,7 @@ wait_for_pod_initialization
 wait_for_sc4snmp_pods_to_be_up
 check_metallb_status
 
-define_python
-
-deploy_poetry
+if [[ $1 == 'integration' ]]; then
+  define_python
+  deploy_poetry
+fi

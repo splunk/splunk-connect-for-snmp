@@ -48,6 +48,8 @@ spec:
             value: {{ .Values.scheduler.logLevel | default "INFO" }}
           - name: CHAIN_OF_TASKS_EXPIRY_TIME
             value: {{ .Values.scheduler.tasksExpiryTime | quote }}
+          - name: CONFIG_FROM_MONGO
+            value: {{ quote .Values.UI.enable | default "false" }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"
