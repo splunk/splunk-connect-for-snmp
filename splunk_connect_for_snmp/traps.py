@@ -33,8 +33,6 @@ import yaml
 from celery import Celery, chain
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
-
-# from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from pysnmp.carrier.asyncio.dgram import udp
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
@@ -69,9 +67,6 @@ send_task_signature = send.s
 # Callback function for receiving notifications
 # noinspection PyUnusedLocal
 def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cbCtx):
-    transportDomain, transportAddress = snmpEngine.msgAndPduDsp.getTransportInfo(
-        stateReference
-    )
     logging.debug(
         'Notification from ContextEngineId "%s", ContextName "%s"'
         % (contextEngineId.prettyPrint(), contextName.prettyPrint())

@@ -69,7 +69,7 @@ def get_security_engine_id(logger, ir: InventoryRecord, snmpEngine: SnmpEngine):
     # Send probe SNMP request with invalid credentials
     authData = UsmUserData("non-existing-user")
 
-    errorIndication, errorStatus, errorIndex, varBinds = next(
+    errorIndication, _, _, _ = next(
         getCmd(
             snmpEngine,
             authData,

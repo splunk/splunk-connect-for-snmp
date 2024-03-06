@@ -191,7 +191,7 @@ class ProfilesPage:
         try:
             freq_field = driver.find_element(By.XPATH, xpath)
             return freq_field.is_displayed()
-        except Exception as e:
+        except Exception:
             return False
 
     def add_condition(self, field_value, operation, value):

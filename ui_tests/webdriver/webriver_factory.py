@@ -25,7 +25,6 @@ class WebDriverFactory:
                 chrome_options.add_argument("--headless")
                 chrome_options.add_argument("--disable-gpu")
                 chrome_options.add_argument("--window-size=1920x1080")
-            # web_driver = webdriver.Chrome(options=chrome_options)
 
             cls._driver = webdriver.Chrome(
                 service=ChromeService(ChromeDriverManager().install()),

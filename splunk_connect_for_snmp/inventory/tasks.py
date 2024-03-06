@@ -189,7 +189,6 @@ def assign_profiles(ir, profiles, target):
                                         profile["frequency"],
                                         profile_name,
                                     )
-                                    continue
 
     logger.debug(f"ir.profiles {ir.profiles}")
     logger.debug(f"profiles {profiles}")
