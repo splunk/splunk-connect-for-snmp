@@ -3,7 +3,7 @@
 Poller is a service which is responsible for querying 
 SNMP devices using the SNMP GET and WALK functionalities. Poller executes two main types of tasks:
 
-- The Walk task executes SNMP walk. SNMP walk is an SNMP application that uses SNMP GETNEXT requests to 
+- The Walk task executes SNMP walk. SNMP walk is an SNMP application that uses SNMP GETBULK requests to 
 collect SNMP data from the network and infrastructure of SNMP-enabled devices, such as switches and routers. It is a time-consuming task,
 which may overload the SNMP device when executed too often. It is used by the SC4SNMP to collect and push all OID values, which the provided ACL has access to. 
   
@@ -36,6 +36,39 @@ The default value is `WARNING`.
 
 ### Define usernameSecrets
 Secrets are required to run SNMPv3 polling. To add v3 authentication details, create the k8s Secret object: [SNMPv3 Configuration](snmpv3-configuration.md), and put its name in `poller.usernameSecrets`.
+
+### Define nonRepeaters and maxRepetitions
+The nonRepeaters and maxRepetitions are parameters used in SNMP GetBulk call. They are responsible for controlling the
+amount of variables in one request. 
+```yaml
+poller:
+  nonRepeaters: 0
+  maxRepetitions: 50
+```
+`nonRepeaters` variable is responsible for setting how many of the requested varbinds in getBulk call will be called only once per request. In current versions SC4SNMP does not send multiple varbinds in same getBulk request, so `nonRepeaters` value can be set to 0 or 1.
+`maxRepetitions` variable is the amount of requested next variables in response for each of varbinds in one request sent.
+
+For example:
+
+The configured variables:
+```yaml
+poller:
+  nonRepeaters: 1
+  maxRepetitions: 3
+```
+The requested varbinds in one getBulk call:
+```
+SNMPv2-MIB.sysUpTime
+IP-MIB.ipNetToMediaPhysAddress
+IP-MIB.ipNetToMediaType
+```
+
+[![PDU Request Example](../images/request_pdu_flow.png)](../images/request_pdu_flow.png)
+
+After second ResponsePDU the returned oids are out of scope for requested tables, so the call is stopped. 
+It can be spotted on diagram that oid for `sysUpTime`(red) is called only once per request as `nonRepeaters` was set 
+to 1. For `ipNetToMediaPhysAddress`(green) and `ipNetToMediaType`(blue) the response includes 3 oids for each as 
+`maxRepetition` was set to 3.
 
 ### Append OID index part to the metrics
 
