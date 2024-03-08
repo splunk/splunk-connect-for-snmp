@@ -288,7 +288,6 @@ def test_setting_host_in_inventory(setup):
 
     host = setup["device_simulator"]
     community = "public"
-    new_community = "test1234"
     profile_1_name = "standard_profile_10s"
     profile_1_freq = 10
     profile_2_name = "standard_profile_7s"

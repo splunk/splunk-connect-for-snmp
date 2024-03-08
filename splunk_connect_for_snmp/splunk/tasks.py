@@ -150,7 +150,6 @@ def do_send(data, destination_url, self):
         # 200 is good
         if response.status_code in (200, 202):
             logger.debug(f"Response code is {response.status_code} {response.text}")
-            pass
         # These errors can't be retried
         elif response.status_code in (403, 401, 400):
             logger.error(f"Response code is {response.status_code} {response.text}")
