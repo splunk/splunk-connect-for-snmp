@@ -8,6 +8,7 @@
 - change group and user ID in Docker image to 10001:10001
 - create and/or change ownership of /tmp and /.pysnmp to 10001:10001 in Dockerfile
 - while mounting volumes in docker compose explicitly mount them as read only or read write
+- change nonReapeater to 0 and add maxRepetitions as configurable
 
 ### Fixed
 - fixed a bug with configuration from values.yaml not being transferred to the UI while migrating to SC4SNMP-UI
