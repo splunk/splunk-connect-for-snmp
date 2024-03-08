@@ -111,6 +111,8 @@ Common labels
   value: {{ .Values.worker.udpConnectionTimeout | default "3" | quote }}
 - name: MAX_OID_TO_PROCESS
   value: {{ .Values.poller.maxOidToProcess | default "70" | quote }}
+- name: MAX_REPETITIONS
+  value: {{ .Values.poller.maxRepetitions | default "10" | quote }}
 - name: PROFILES_RELOAD_DELAY
   value: {{ .Values.worker.profilesReloadDelay | default "60" | quote }}
 - name: MIB_SOURCES
