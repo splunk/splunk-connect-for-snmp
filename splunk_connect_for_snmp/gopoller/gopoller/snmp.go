@@ -3,18 +3,22 @@ package gopoller
 //package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"github.com/gosnmp/gosnmp"
+	"strconv"
+	"strings"
 )
 
-func PerformBulkWalk(authData SnmpV3StringAuthData, target string, community string, oids OidSlice, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
-	//var params *gosnmp.GoSNMP
-	params, err := getGoSnmp(target, port, ignoreNonIncreasingOid, version, community, authData, 1800)
+func PerformBulkWalk(authData SnmpV3StringAuthData, target string, community string, oids []string, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
+	params, err := getGoSnmp(target, port, ignoreNonIncreasingOid, version, community, authData, 3)
 
 	if err != nil {
 		return nil, fmt.Errorf("an error occured while creating gosnmp.GoSNMP:  %v", err)
 	}
 
+	params.Logger.Print("Hello from GO")
+	params.Logger.Printf("%v", params)
 	err = params.Connect()
 	if err != nil {
 		return nil, fmt.Errorf("error connecting to %s: %v", target, err)
@@ -46,6 +50,9 @@ func ToString(value interface{}, vtype gosnmp.Asn1BER) string {
 	switch vtype {
 	case gosnmp.OctetString:
 		bytes := value.([]byte)
+		if strings.Contains(strconv.Quote(string(bytes)), "\\x") {
+			return hex.EncodeToString(bytes)
+		}
 		return fmt.Sprintf("%s", string(bytes))
 	default:
 		return fmt.Sprintf("%v", value)
@@ -53,7 +60,7 @@ func ToString(value interface{}, vtype gosnmp.Asn1BER) string {
 }
 
 func PerformGet(authData SnmpV3StringAuthData, target string, community string, oids OidSlice, port int, ignoreNonIncreasingOid bool, version string) ([]Pdu, error) {
-	params, err := getGoSnmp(target, port, ignoreNonIncreasingOid, version, community, authData, 20)
+	params, err := getGoSnmp(target, port, ignoreNonIncreasingOid, version, community, authData, 3)
 	if err != nil {
 		return nil, fmt.Errorf("an error occured while creating gosnmp.GoSNMP:  %v", err)
 	}
