@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  inventory:
+    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    container_name: sc4snmp-inventory
+    command: ["inventory"]
+    environment:
+      - CONFIG_PATH=/app/config/config.yaml
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - MONGO_URI=mongodb://mongo:27017/
+      - MIB_SOURCES=http://snmp-mibserver:8000/asn1/@mib@
+      - MIB_INDEX=http://snmp-mibserver:8000/index.csv
+      - MIB_STANDARD=http://snmp-mibserver:8000/standard.txt
+
+      # Inventory configuration
+      - LOG_LEVEL=${INVENTORY_LOG_LEVEL:-INFO}
+      - CHAIN_OF_TASKS_EXPIRY_TIME=${CHAIN_OF_TASKS_EXPIRY_TIME:-500}
+      - CONFIG_FROM_MONGO=${CONFIG_FROM_MONGO:-false}
+    depends_on:
+      - redis
+      - mongo
+      - coredns
+    volumes:
+      - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml
+      - ${INVENTORY_FILE_ABSOLUTE_PATH}:/app/inventory/inventory.csv
+      - inventory-pysnmp-cache-volume:/.pysnmp/
+      - inventory-tmp:/tmp/
+    restart: on-failure
+    networks:
+      - my_network
+    dns:
+      - ${COREDNS_ADDRESS}
+volumes:
+  inventory-tmp: null
+  inventory-pysnmp-cache-volume: null

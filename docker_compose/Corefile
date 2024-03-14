@@ -1,0 +1,7 @@
+.:53 {
+    log
+    errors
+    auto
+    reload
+    forward . 8.8.8.8
+}
