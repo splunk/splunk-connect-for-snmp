@@ -62,7 +62,7 @@
             "to": "SC4SNMP_TAG=\"${nextRelease.version}\"",
             "results": [
               {
-                "file": "pyproject.toml",
+                "file": "docker_compose/.env",
                 "hasChanged": true,
                 "numMatches": 1,
                 "numReplacements": 1
@@ -76,7 +76,7 @@
             "to": "SC4SNMP_VERSION=\"${nextRelease.version}\"",
             "results": [
               {
-                "file": "pyproject.toml",
+                "file": "docker_compose/.env",
                 "hasChanged": true,
                 "numMatches": 1,
                 "numReplacements": 1
