@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  coredns:
+    image: ${COREDNS_IMAGE}:${COREDNS_TAG:-latest}
+    command: ["-conf", "/Corefile"]
+    container_name: coredns
+    restart: on-failure
+    expose:
+        - '53'
+        - '53/udp'
+    volumes:
+        - '${COREFILE_ABS_PATH}:/Corefile'
+    networks:
+        my_network:
+            ipv4_address: ${COREDNS_ADDRESS}

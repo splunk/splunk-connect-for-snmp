@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Changed
+- add docker compose deployment
+
 ## [1.10.0]
 
 ### Changed
