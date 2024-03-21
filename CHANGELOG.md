@@ -4,6 +4,7 @@
 
 ### Changed
 - add docker compose deployment
+- change nonReapeater to 0 and add maxRepetitions as configurable
 
 ## [1.10.0]
 
