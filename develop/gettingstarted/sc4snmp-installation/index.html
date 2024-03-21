@@ -487,6 +487,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#restart-splunk-connect-for-snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Restart Splunk Connect for SNMP
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1677,6 +1686,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#restart-splunk-connect-for-snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Restart Splunk Connect for SNMP
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1838,6 +1856,23 @@ The SNMP data format is explained in the <a href="../../configuration/snmp-data-
 <p>To uninstall SC4SNMP run the following commands:</p>
 <div class="codehilite"><pre><span></span><code> microk8s helm3 uninstall snmp -n sc4snmp
  microk8s kubectl delete pvc --all -n sc4snmp
+</code></pre></div>
+
+<p>Example of pods terminating:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span><span class="w">                                                          </span><span class="nv">READY</span><span class="w">   </span><span class="nv">STATUS</span><span class="w">        </span><span class="nv">RESTARTS</span><span class="w">        </span><span class="nv">AGE</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">mibserver</span><span class="o">-</span><span class="nv">bb8994c64</span><span class="o">-</span><span class="nv">twk42</span><span class="w">                                </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Terminating</span><span class="w">   </span><span class="mi">2</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h21m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">46</span><span class="nv">h</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">sender</span><span class="o">-</span><span class="mi">7</span><span class="nv">f5557678b</span><span class="o">-</span><span class="nv">psj97</span><span class="w">   </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Terminating</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h21m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">22</span><span class="nv">h</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="nv">dfcc487c</span><span class="o">-</span><span class="nv">lh2dl</span><span class="w">       </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Terminating</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h21m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">22</span><span class="nv">h</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="nv">dfcc487c</span><span class="o">-</span><span class="mi">5</span><span class="nv">z5sq</span><span class="w">       </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Terminating</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h21m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">22</span><span class="nv">h</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="mi">684</span><span class="nv">d57dc8d</span><span class="o">-</span><span class="mi">722</span><span class="nv">tv</span><span class="w">            </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Terminating</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h21m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">22</span><span class="nv">h</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="mi">684</span><span class="nv">d57dc8d</span><span class="o">-</span><span class="nv">z68lb</span><span class="w">            </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Terminating</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h21m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">22</span><span class="nv">h</span>
+</code></pre></div>
+
+<h2 id="restart-splunk-connect-for-snmp">Restart Splunk Connect for SNMP<a class="headerlink" href="#restart-splunk-connect-for-snmp" title="Permanent link">¶</a></h2>
+<p>First run the command to uninstall SC4SNMP, wait until all pods are removed, then use the command to install sc4snmp again.</p>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="nv">microk8s</span><span class="w"> </span><span class="nv">helm3</span><span class="w"> </span><span class="nv">uninstall</span><span class="w"> </span><span class="nv">snmp</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
+<span class="w"> </span><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">delete</span><span class="w"> </span><span class="nv">pvc</span><span class="w"> </span><span class="o">--</span><span class="nv">all</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
+<span class="w"> </span><span class="nv">microk8s</span><span class="w"> </span><span class="nv">helm3</span><span class="w"> </span><span class="nv">install</span><span class="w"> </span><span class="nv">snmp</span><span class="w"> </span><span class="o">-</span><span class="nv">f</span><span class="w"> </span><span class="nv">values</span>.<span class="nv">yaml</span><span class="w"> </span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="w"> </span><span class="o">--</span><span class="nv">namespace</span><span class="o">=</span><span class="nv">sc4snmp</span><span class="w"> </span><span class="o">--</span><span class="nv">create</span><span class="o">-</span><span class="nv">namespace</span>
 </code></pre></div></div>
 
 
