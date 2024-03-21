@@ -183,6 +183,27 @@ To uninstall SC4SNMP run the following commands:
  microk8s kubectl delete pvc --all -n sc4snmp
 ```
 
+Example of pods terminating:
+
+```
+NAME                                                          READY   STATUS        RESTARTS        AGE
+snmp-mibserver-bb8994c64-twk42                                1/1     Terminating   2 (5h21m ago)   46h
+snmp-splunk-connect-for-snmp-worker-sender-7f5557678b-psj97   1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-worker-trap-dfcc487c-lh2dl       1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-worker-trap-dfcc487c-5z5sq       1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-trap-684d57dc8d-722tv            1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-trap-684d57dc8d-z68lb            1/1     Terminating   1 (5h21m ago)   22h
+```
+
+## Restart Splunk Connect for SNMP
+First run the command to uninstall SC4SNMP, wait until all pods are removed, then use the command to install sc4snmp again.
+
+```
+ microk8s helm3 uninstall snmp -n sc4snmp
+ microk8s kubectl delete pvc --all -n sc4snmp
+ microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
+```
+
 
 [examples_link]: https://github.com/splunk/splunk-connect-for-snmp/tree/main/examples
 [basic_template_link]: https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.md
