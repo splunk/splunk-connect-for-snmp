@@ -1460,6 +1460,16 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#polling-authentication-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Polling authentication errors
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Polling authentication errors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#unknown-usm-user" class="md-nav__link">
     <span class="md-ellipsis">
       Unknown USM user
@@ -1483,6 +1493,11 @@
       No SNMP response received before timeout
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1767,6 +1782,16 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#polling-authentication-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Polling authentication errors
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Polling authentication errors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#unknown-usm-user" class="md-nav__link">
     <span class="md-ellipsis">
       Unknown USM user
@@ -1790,6 +1815,11 @@
       No SNMP response received before timeout
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1966,17 +1996,6 @@ For example, use <code>ifHCInOctets</code> instead of <code>ifInOctets</code>.</
 <p>If 64-bit counter is not supported on your device, you can write your own Splunk queries that calculate the shift based on
 the maximum integer value and the current state. The same works for values large enough that they don’t fit into a 64-bit value.
 An example for an appropriate Splunk query would be the following:</p>
-<h3 id="unknown-usm-user">Unknown USM user<a class="headerlink" href="#unknown-usm-user" title="Permanent link">¶</a></h3>
-<p>In case of polling SNMPv3 devices, <code>Unknown USM user</code> error suggests wrong username. Verify 
-that the kubernetes secret with the correct username has been created (<a href="../configuration/snmpv3-configuration/">SNMPv3 configuration</a>).</p>
-<h3 id="wrong-snmp-pdu-digest">Wrong SNMP PDU digest<a class="headerlink" href="#wrong-snmp-pdu-digest" title="Permanent link">¶</a></h3>
-<p>In case of polling SNMPv3 devices, <code>Wrong SNMP PDU digest</code> error suggests wrong authentication key. Verify 
-that the kubernetes secret with the correct authentication key has been created (<a href="../configuration/snmpv3-configuration/">SNMPv3 configuration</a>).</p>
-<h3 id="no-snmp-response-received-before-timeout">No SNMP response received before timeout<a class="headerlink" href="#no-snmp-response-received-before-timeout" title="Permanent link">¶</a></h3>
-<p><code>No SNMP response received before timeout</code> error might have several root causes. Some of them are:
-- wrong device IP or port
-- SNMPv2c wrong community string
-- SNMPv3 wrong privacy key</p>
 <div class="codehilite"><pre><span></span><code>| streamstats current=f last(ifInOctets) as p_ifInOctets last(ifOutOctets) as p_ifOutOctets by ifAlias             
 | eval in_delta=(ifInOctets - p_ifInOctets)
 | eval out_delta=(ifOutOctets - p_ifOutOctets)
@@ -1985,6 +2004,20 @@ that the kubernetes secret with the correct authentication key has been created 
 | timechart span=5m avg(in) AS in, avg(out) AS out by ifAlias
 </code></pre></div>
 
+<h3 id="polling-authentication-errors">Polling authentication errors<a class="headerlink" href="#polling-authentication-errors" title="Permanent link">¶</a></h3>
+<h4 id="unknown-usm-user">Unknown USM user<a class="headerlink" href="#unknown-usm-user" title="Permanent link">¶</a></h4>
+<p>In case of polling SNMPv3 devices, <code>Unknown USM user</code> error suggests wrong username. Verify 
+that the kubernetes secret with the correct username has been created (<a href="../configuration/snmpv3-configuration/">SNMPv3 configuration</a>).</p>
+<h4 id="wrong-snmp-pdu-digest">Wrong SNMP PDU digest<a class="headerlink" href="#wrong-snmp-pdu-digest" title="Permanent link">¶</a></h4>
+<p>In case of polling SNMPv3 devices, <code>Wrong SNMP PDU digest</code> error suggests wrong authentication key. Verify 
+that the kubernetes secret with the correct authentication key has been created (<a href="../configuration/snmpv3-configuration/">SNMPv3 configuration</a>).</p>
+<h4 id="no-snmp-response-received-before-timeout">No SNMP response received before timeout<a class="headerlink" href="#no-snmp-response-received-before-timeout" title="Permanent link">¶</a></h4>
+<p><code>No SNMP response received before timeout</code> error might have several root causes. Some of them are:</p>
+<ul>
+<li>wrong device IP or port</li>
+<li>SNMPv2c wrong community string</li>
+<li>SNMPv3 wrong privacy key</li>
+</ul>
 <h3 id="field-is-immutable-error-during-helm-upgrade">“Field is immutable” error during helm upgrade<a class="headerlink" href="#field-is-immutable-error-during-helm-upgrade" title="Permanent link">¶</a></h3>
 <div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">helm3</span><span class="w"> </span><span class="nv">upgrade</span><span class="w"> </span><span class="o">--</span><span class="nv">install</span><span class="w"> </span><span class="nv">snmp</span><span class="w"> </span><span class="o">-</span><span class="nv">f</span><span class="w"> </span><span class="nv">values</span>.<span class="nv">yaml</span><span class="w"> </span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">charts</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="w"> </span><span class="o">--</span><span class="nv">namespace</span><span class="o">=</span><span class="nv">sc4snmp</span><span class="w"> </span><span class="o">--</span><span class="nv">create</span><span class="o">-</span><span class="nv">namespace</span>
 <span class="nv">Error</span>:<span class="w"> </span><span class="nv">UPGRADE</span><span class="w"> </span><span class="nv">FAILED</span>:<span class="w"> </span><span class="nv">cannot</span><span class="w"> </span><span class="nv">patch</span><span class="w"> </span><span class="s2">"snmp-splunk-connect-for-snmp-inventory"</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">kind</span><span class="w"> </span><span class="nv">Job</span>:<span class="w"> </span><span class="nv">Job</span>.<span class="nv">batch</span><span class="w"> </span><span class="s2">"snmp-splunk-connect-for-snmp-inventory"</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">invalid</span>:<span class="w"> </span><span class="ss">(</span>...<span class="ss">)</span><span class="w"> </span>:<span class="w"> </span><span class="nv">field</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">immutable</span>
