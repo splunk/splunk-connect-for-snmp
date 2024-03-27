@@ -106,21 +106,6 @@ If 64-bit counter is not supported on your device, you can write your own Splunk
 the maximum integer value and the current state. The same works for values large enough that they don't fit into a 64-bit value.
 An example for an appropriate Splunk query would be the following:
 
-
-### Unknown USM user
-In case of polling SNMPv3 devices, `Unknown USM user` error suggests wrong username. Verify 
-that the kubernetes secret with the correct username has been created ([SNMPv3 configuration](configuration/snmpv3-configuration.md)).
-
-### Wrong SNMP PDU digest
-In case of polling SNMPv3 devices, `Wrong SNMP PDU digest` error suggests wrong authentication key. Verify 
-that the kubernetes secret with the correct authentication key has been created ([SNMPv3 configuration](configuration/snmpv3-configuration.md)).
-
-### No SNMP response received before timeout
-`No SNMP response received before timeout` error might have several root causes. Some of them are:
-- wrong device IP or port
-- SNMPv2c wrong community string
-- SNMPv3 wrong privacy key
-
 ```
 | streamstats current=f last(ifInOctets) as p_ifInOctets last(ifOutOctets) as p_ifOutOctets by ifAlias             
 | eval in_delta=(ifInOctets - p_ifInOctets)
@@ -129,6 +114,24 @@ that the kubernetes secret with the correct authentication key has been created 
 | eval out = if(out_delta<0,((max+out_delta)*8/(5*60*1000*1000*1000)),(out_delta)*8/(5*60*1000*1000*1000))
 | timechart span=5m avg(in) AS in, avg(out) AS out by ifAlias
 ```
+
+### Polling authentication errors
+
+#### Unknown USM user
+In case of polling SNMPv3 devices, `Unknown USM user` error suggests wrong username. Verify 
+that the kubernetes secret with the correct username has been created ([SNMPv3 configuration](configuration/snmpv3-configuration.md)).
+
+#### Wrong SNMP PDU digest
+In case of polling SNMPv3 devices, `Wrong SNMP PDU digest` error suggests wrong authentication key. Verify 
+that the kubernetes secret with the correct authentication key has been created ([SNMPv3 configuration](configuration/snmpv3-configuration.md)).
+
+#### No SNMP response received before timeout
+`No SNMP response received before timeout` error might have several root causes. Some of them are:
+
+- wrong device IP or port
+- SNMPv2c wrong community string
+- SNMPv3 wrong privacy key
+
 ### "Field is immutable" error during helm upgrade
 
 ```
