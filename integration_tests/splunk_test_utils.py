@@ -51,6 +51,13 @@ def splunk_single_search(service, search):
 
 
 inventory_template = """poller:
+  enableFullWalk: true
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+"""
+
+inventory_template_no_walk = """poller:
+  enableFullWalk: false
   inventory: |
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
 """
@@ -77,6 +84,7 @@ polling_secrets_template = """poller:
 
 TEMPLATE_MAPPING = {
     "inventory.yaml": inventory_template,
+    "inventory2.yaml": inventory_template_no_walk,
     "profiles.yaml": profiles_template,
     "scheduler_secrets.yaml": poller_secrets_template,
     "traps_secrets.yaml": traps_secrets_template,

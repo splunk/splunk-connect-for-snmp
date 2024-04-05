@@ -48,6 +48,8 @@ spec:
             value: "60"
           - name: CONFIG_FROM_MONGO
             value: "false"
+          - name: ENABLE_FULL_WALK
+            value: "false"
           volumeMounts:
             - name: config
               mountPath: "/app/config"
