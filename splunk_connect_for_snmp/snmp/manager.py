@@ -298,6 +298,7 @@ class Poller(Task):
     ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
+        logger.info(f"Preparing task for {ir.address}")
 
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY or walk:
             self.profiles = self.profiles_manager.return_collection()
