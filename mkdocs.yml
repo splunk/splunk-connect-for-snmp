@@ -1,3 +1,4 @@
+---
 site_name: Splunk Connect for SNMP (SC4SNMP)
 
 extra:
@@ -6,7 +7,7 @@ extra:
 
 markdown_extensions:
   - toc:
-      permalink: True
+      permalink: true
   - smarty
   - fenced_code
   - sane_lists
@@ -15,13 +16,13 @@ markdown_extensions:
   - md_in_html
 
 plugins:
-    - search:
-        lang: en
-    - mkdocs-video:
-        is_video: True
+  - search:
+      lang: en
+  - mkdocs-video:
+      is_video: true
 
 extra_javascript:
-   - javascripts/footer.js
+  - javascripts/footer.js
 
 copyright: <p>Webpages built on GitHub Pages | <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">Github Terms</a> | <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement">GitHub Privacy</a></p>
 
@@ -30,7 +31,7 @@ theme:
   palette:
     primary: "black"
     accent: "orange"
-  #favicon: "logo.png"
+#  favicon: "logo.png"
 #  logo: "logo.png"
 
 nav:
@@ -43,12 +44,12 @@ nav:
   - Configuration:
       - Deployment: "configuration/deployment-configuration.md"
       - Polling:
-        - Poller: "configuration/poller-configuration.md"
-        - Scheduler: "configuration/scheduler-configuration.md"
-        - Configuring Profiles: "configuration/configuring-profiles.md"
-        - Configuring Groups: "configuration/configuring-groups.md"
-        - Step by Step polling example: "configuration/step-by-step-poll.md"
-        - SNMP data format: "configuration/snmp-data-format.md"
+          - Poller: "configuration/poller-configuration.md"
+          - Scheduler: "configuration/scheduler-configuration.md"
+          - Configuring Profiles: "configuration/configuring-profiles.md"
+          - Configuring Groups: "configuration/configuring-groups.md"
+          - Step by Step polling example: "configuration/step-by-step-poll.md"
+          - SNMP data format: "configuration/snmp-data-format.md"
       - Traps: "configuration/trap-configuration.md"
       - Worker: "configuration/worker-configuration.md"
       - Mongo DB: "configuration/mongo-configuration.md"
@@ -80,8 +81,7 @@ nav:
   - Security: "security.md"
   - Request MIB: "mib-request.md"
   - Upgrade SC4SNMP: "upgrade.md"
-  - Troubleshooting : "bestpractices.md"
+  - Troubleshooting: "bestpractices.md"
   - Releases: "releases.md"
   - High Availability: ha.md
   - Docker compose deployment: "docker-compose.md"
-
