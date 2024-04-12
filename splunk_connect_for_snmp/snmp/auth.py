@@ -80,17 +80,19 @@ def get_security_engine_id(logger, ir: InventoryRecord, snmpEngine: SnmpEngine):
     )
 
     # See if our SNMP engine received REPORT PDU containing securityEngineId
-    securityEngineId = fetch_security_engine_id(observerContext, errorIndication)
-    logger.debug(f"securityEngineId={securityEngineId}")
+    securityEngineId = fetch_security_engine_id(
+        observerContext, errorIndication, ir.address
+    )
+    logger.debug(f"securityEngineId={securityEngineId} for device {ir.address}")
     return securityEngineId
 
 
-def fetch_security_engine_id(observer_context, errorIndication):
+def fetch_security_engine_id(observer_context, errorIndication, ipaddress):
     if "securityEngineId" in observer_context:
         return observer_context["securityEngineId"]
     else:
         raise SnmpActionError(
-            f"Can't discover peer EngineID, errorIndication: {errorIndication}"
+            f"Can't discover peer EngineID for device {ipaddress}, errorIndication: {errorIndication}"
         )
 
 

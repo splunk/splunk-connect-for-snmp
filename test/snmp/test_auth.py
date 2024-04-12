@@ -135,14 +135,16 @@ class TestAuth(TestCase):
         self.assertEqual(result, "My test value")
 
     def test_fetch_security_engine_id(self):
-        result = fetch_security_engine_id({"securityEngineId": "some_value"}, None)
+        result = fetch_security_engine_id(
+            {"securityEngineId": "some_value"}, None, "127.0.0.1"
+        )
         self.assertEqual(result, "some_value")
 
     def test_fetch_security_engine_id_missing(self):
         with self.assertRaises(SnmpActionError) as e:
-            fetch_security_engine_id({}, "Some error")
+            fetch_security_engine_id({}, "Some error", "127.0.0.1")
         self.assertEqual(
-            "Can't discover peer EngineID, errorIndication: Some error",
+            "Can't discover peer EngineID for device 127.0.0.1, errorIndication: Some error",
             e.exception.args[0],
         )
 

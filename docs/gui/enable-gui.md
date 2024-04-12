@@ -34,7 +34,6 @@ UI:
     poller:
       inventory: |-
     ```
-  > [!NOTE]
   > This part of configuration can be also pasted to the `values.yaml` used for SC4SNMP installation.
 
 - `keepSectionFiles`:  if valid `valuesFileName` was provided then by setting this variable to `true` or `false` user can decide whether to keep additional files with configuration of groups, profiles and inventory. If valid `valuesFileName` was NOT provided, then those files are created regardless of this variable.
