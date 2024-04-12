@@ -92,16 +92,16 @@ jobs:
       - name: Run Pytest with coverage
         run: |
           poetry run pytest --cov=./splunk_connect_for_snmp --cov-report=xml --junitxml=test-results/junit.xml
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
-          directory: ./coverage/reports/
-          env_vars: OS,PYTHON
-          fail_ci_if_error: true
-          path_to_write_report: ./coverage/codecov_report.txt
-          verbose: true
+#      - name: Upload coverage to Codecov
+#        uses: codecov/codecov-action@v3
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }}
+#          files: ./coverage.xml
+#          directory: ./coverage/reports/
+#          env_vars: OS,PYTHON
+#          fail_ci_if_error: true
+#          path_to_write_report: ./coverage/codecov_report.txt
+#          verbose: true
       - uses: actions/upload-artifact@v4 # upload test results
         if: success() || failure() # run this step even if previous step failed
         with:
