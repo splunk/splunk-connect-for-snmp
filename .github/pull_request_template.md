@@ -8,6 +8,7 @@ Fixes # (issue)
 
 Please delete options that are not relevant.
 
+- [ ] Dependency update
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Refactor/improvement
