@@ -47,12 +47,11 @@ class VarBindContainer:
         if mapping_key in self.map:
             logger.debug(f"Element {mapping_key} already in the varbind container")
             return
-        if len(varbind.list) > 1:
-            if varbind.list[0] in self.map:
-                logger.debug(
-                    f"Element {mapping_key} not added as {varbind.list[0]} is already in the varbind container"
-                )
-                return
+        if len(varbind.list) > 1 and varbind.list[0] in self.map:
+            logger.debug(
+                f"Element {mapping_key} not added as {varbind.list[0]} is already in the varbind container"
+            )
+            return
         if len(varbind.list) > 2:
             varbind_tmp = Varbind(varbind.list[:2])
             mapping_key_for_two = varbind_tmp.mapping_key()

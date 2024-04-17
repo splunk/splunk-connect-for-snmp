@@ -171,24 +171,22 @@ def assign_profiles(ir, profiles, target):
 
             elif profile["condition"]["type"] == "field":
                 logger.debug(f"profile is a field condition {profile_name}")
-                if "state" in target:
-                    if (
+                if "state" in target and (
+                    profile["condition"]["field"].replace(".", "|") in target["state"]
+                ):
+                    cs = target["state"][
                         profile["condition"]["field"].replace(".", "|")
-                        in target["state"]
-                    ):
-                        cs = target["state"][
-                            profile["condition"]["field"].replace(".", "|")
-                        ]
-                        if "value" in cs:
-                            for pattern in profile["condition"]["patterns"]:
-                                result = re.search(pattern, cs["value"])
-                                if result:
-                                    logger.debug(f"Adding smart profile {profile_name}")
-                                    add_profile_to_assigned_list(
-                                        assigned_profiles,
-                                        profile["frequency"],
-                                        profile_name,
-                                    )
+                    ]
+                    if "value" in cs:
+                        for pattern in profile["condition"]["patterns"]:
+                            result = re.search(pattern, cs["value"])
+                            if result:
+                                logger.debug(f"Adding smart profile {profile_name}")
+                                add_profile_to_assigned_list(
+                                    assigned_profiles,
+                                    profile["frequency"],
+                                    profile_name,
+                                )
 
     logger.debug(f"ir.profiles {ir.profiles}")
     logger.debug(f"profiles {profiles}")

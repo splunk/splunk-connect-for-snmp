@@ -37,7 +37,6 @@ from pysnmp.carrier.asyncio.dgram import udp
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
 
-from splunk_connect_for_snmp import *
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.tasks import trap
 from splunk_connect_for_snmp.splunk.tasks import prepare, send
@@ -137,11 +136,10 @@ def main():
     with open(CONFIG_PATH, encoding="utf-8") as file:
         config_base = yaml.safe_load(file)
     idx = 0
-    if "communities" in config_base:
-        if "2c" in config_base["communities"]:
-            for community in config_base["communities"]["2c"]:
-                idx += 1
-                config.addV1System(snmpEngine, idx, community)
+    if "communities" in config_base and "2c" in config_base["communities"]:
+        for community in config_base["communities"]["2c"]:
+            idx += 1
+            config.addV1System(snmpEngine, idx, community)
 
     if "usernameSecrets" in config_base:
         for secret in config_base["usernameSecrets"]:
