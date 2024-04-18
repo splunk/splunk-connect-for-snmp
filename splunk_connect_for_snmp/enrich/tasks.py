@@ -145,7 +145,7 @@ def enrich(self, result):
                 cv = current_attributes["fields"][field_key_hash]
 
             # if new field_value is different than the previous one, update
-            if cv and not cv == field_value:
+            if cv and cv != field_value:
                 # modifed
                 attribute_updates.append(
                     {"$set": {f"fields.{field_key_hash}": field_value}}

@@ -444,10 +444,10 @@ class Poller(Task):
         for varBind in varBindTable:
             mib, metric, index = varBind[0].getMibSymbol()
 
-            id = varBind[0].prettyPrint()
+            varBind_id = varBind[0].prettyPrint()
             oid = str(varBind[0].getOid())
 
-            if isMIBResolved(id):
+            if isMIBResolved(varBind_id):
                 group_key = get_group_key(mib, oid, index)
                 if group_key not in metrics:
                     indexes = extract_indexes(index)
@@ -472,7 +472,7 @@ class Poller(Task):
                     profile = None
                     if mapping:
                         profile = mapping.get(
-                            id.replace('"', ""),
+                            varBind_id.replace('"', ""),
                             mapping.get(f"{mib}::{metric}", mapping.get(mib)),
                         )
                         # when varbind name differs from mib-family,
@@ -511,7 +511,7 @@ class Poller(Task):
                         f"Exception processing data from {target} {varBind}"
                     )
             else:
-                found, mib = self.is_mib_known(id, oid, target)
+                found, mib = self.is_mib_known(varBind_id, oid, target)
                 if mib and mib not in remotemibs:
                     remotemibs.append(mib)
                 if found:
