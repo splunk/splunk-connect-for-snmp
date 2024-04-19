@@ -92,6 +92,7 @@ def configure_ui_database(mongo_client):
 
         with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
             ir_reader = DictReader(csv_file)
+            all_inventory_lines = []
             for inventory_line in ir_reader:
                 for key in INVENTORY_KEYS_TRANSFORM.keys():
                     if key in inventory_line:
@@ -117,7 +118,8 @@ def configure_ui_database(mongo_client):
                 inventory_line["port"] = port
                 inventory_line["walk_interval"] = walk_interval
                 if not inventory_line["address"].startswith("#"):
-                    inventory_ui_collection.insert(inventory_line)
+                    all_inventory_lines.append(inventory_line)
+            inventory_ui_collection.insert_many(all_inventory_lines)
 
         groups = {}
         all_profiles = {}

@@ -5,6 +5,9 @@
 ### Changed
 - add docker compose deployment
 
+### Fixed
+- fixed a bug with configuration from values.yaml not being transferred to the UI while migrating to SC4SNMP-UI
+
 ## [1.10.0]
 
 ### Changed
