@@ -389,7 +389,7 @@ def generate_conditional_profile(
     profile_varbinds = conditional_profile_body.get("varBinds")
     profile_frequency = conditional_profile_body.get("frequency")
     if not profile_varbinds:
-        raise BadlyFormattedFieldError(f"No varBinds provided in the profile")
+        raise BadlyFormattedFieldError("No varBinds provided in the profile")
     filtered_snmp_objects = filter_condition_on_database(
         mongo_client, address, profile_conditions
     )
