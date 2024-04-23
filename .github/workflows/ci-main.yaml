@@ -140,7 +140,7 @@ jobs:
         uses: actions/checkout@v4
       - name: run install_microk8s.sh
         run: |
-          sudo snap install microk8s --classic --channel=1.25/stable
+          sudo snap install microk8s --classic --channel=1.30/stable
           sudo apt-get install snmp -y
           sudo apt-get install python3-dev -y
       - name: run automatic_setup.sh
