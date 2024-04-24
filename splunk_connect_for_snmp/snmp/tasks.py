@@ -147,7 +147,7 @@ def resolve_address(address: str):
 @shared_task(bind=True, base=Poller)
 def trap(self, work):
 
-    var_bind_table = []
+    varbind_table = []
     not_translated_oids = []
     remaining_oids = []
     remotemibs = set()
@@ -162,7 +162,7 @@ def trap(self, work):
                     self.already_loaded_mibs.add(mib)
 
         try:
-            var_bind_table.append(
+            varbind_table.append(
                 ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
                     self.mib_view_controller
                 )
@@ -181,7 +181,7 @@ def trap(self, work):
         self.already_loaded_mibs.update(remotemibs)
         for w in remaining_oids:
             try:
-                var_bind_table.append(
+                varbind_table.append(
                     ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
                         self.mib_view_controller
                     )
@@ -189,7 +189,7 @@ def trap(self, work):
             except SmiError:
                 logger.warning(f"No translation found for {w[0]}")
 
-    _, _, result = self.process_snmp_data(var_bind_table, metrics, work["host"])
+    _, _, result = self.process_snmp_data(varbind_table, metrics, work["host"])
 
     if human_bool(RESOLVE_TRAP_ADDRESS):
         work["host"] = resolve_address(work["host"])

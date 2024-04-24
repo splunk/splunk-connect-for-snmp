@@ -9,13 +9,13 @@ from pysnmp.proto.rfc1902 import OctetString
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.auth import (
-    GetAuth,
     fetch_security_engine_id,
+    get_auth,
+    get_auth_v1,
+    get_auth_v2c,
+    get_auth_v3,
     get_secret_value,
     get_security_engine_id,
-    getAuthV1,
-    getAuthV2c,
-    getAuthV3,
 )
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
@@ -150,7 +150,7 @@ class TestAuth(TestCase):
 
     @patch("os.path.exists")
     @patch("splunk_connect_for_snmp.snmp.auth.get_secret_value")
-    def test_getAuthV3(self, m_get_secret_value, m_exists):
+    def test_get_auth_v3(self, m_get_secret_value, m_exists):
         m_exists.return_value = True
         m_get_secret_value.side_effect = [
             "secret1",
@@ -164,7 +164,7 @@ class TestAuth(TestCase):
         logger = Mock()
         snmpEngine = Mock()
 
-        result = getAuthV3(logger, ir, snmpEngine)
+        result = get_auth_v3(logger, ir, snmpEngine)
         security_engine_result = OctetString(hexValue="80003a8c04")
         self.assertEqual("secret1", result.userName)
         self.assertEqual("secret2", result.authKey)
@@ -179,7 +179,7 @@ class TestAuth(TestCase):
     @patch("os.path.exists")
     @patch("splunk_connect_for_snmp.snmp.auth.get_secret_value")
     @patch("splunk_connect_for_snmp.snmp.auth.get_security_engine_id")
-    def test_getAuthV3_security_engine_not_str(
+    def test_get_auth_v3_security_engine_not_str(
         self, m_get_security_engine_id, m_get_secret_value, m_exists
     ):
         m_exists.return_value = True
@@ -211,7 +211,7 @@ class TestAuth(TestCase):
             }
         )
 
-        result = getAuthV3(logger, ir2, snmpEngine)
+        result = get_auth_v3(logger, ir2, snmpEngine)
 
         m_get_security_engine_id.assert_called()
 
@@ -227,7 +227,7 @@ class TestAuth(TestCase):
 
     @patch("os.path.exists")
     @patch("splunk_connect_for_snmp.snmp.auth.get_secret_value")
-    def test_getAuthV3_exception(self, m_get_secret_value, m_exists):
+    def test_get_auth_v3_exception(self, m_get_secret_value, m_exists):
         m_exists.return_value = False
         m_get_secret_value.side_effect = [
             "secret1",
@@ -243,33 +243,33 @@ class TestAuth(TestCase):
         snmpEngine = Mock()
 
         with self.assertRaises(Exception) as e:
-            getAuthV3(logger, ir, snmpEngine)
+            get_auth_v3(logger, ir, snmpEngine)
         self.assertEqual("invalid username from secret secret_ir", e.exception.args[0])
 
-    def test_getAuthV2c(self):
-        result = getAuthV2c(ir)
+    def test_get_auth_v2c(self):
+        result = get_auth_v2c(ir)
         self.assertEqual("public", result.communityName)
         self.assertEqual(1, result.mpModel)
 
-    def test_getAuthV1(self):
-        result = getAuthV1(ir)
+    def test_get_auth_v1(self):
+        result = get_auth_v1(ir)
         self.assertEqual("public", result.communityName)
         self.assertEqual(0, result.mpModel)
 
-    @patch("splunk_connect_for_snmp.snmp.auth.getAuthV1")
-    def test_getAuth1(self, m_get_auth):
+    @patch("splunk_connect_for_snmp.snmp.auth.get_auth_v1")
+    def test_get_auth_1(self, m_get_auth):
         ir.version = "1"
-        GetAuth(Mock(), ir, Mock())
+        get_auth(Mock(), ir, Mock())
         m_get_auth.assert_called()
 
-    @patch("splunk_connect_for_snmp.snmp.auth.getAuthV2c")
-    def test_getAuth2(self, m_get_auth):
+    @patch("splunk_connect_for_snmp.snmp.auth.get_auth_v2c")
+    def test_get_auth_2c(self, m_get_auth):
         ir.version = "2c"
-        GetAuth(Mock(), ir, Mock())
+        get_auth(Mock(), ir, Mock())
         m_get_auth.assert_called()
 
-    @patch("splunk_connect_for_snmp.snmp.auth.getAuthV3")
-    def test_getAuth3(self, m_get_auth):
+    @patch("splunk_connect_for_snmp.snmp.auth.get_auth_v3")
+    def test_get_auth_3(self, m_get_auth):
         ir.version = "3"
-        GetAuth(Mock(), ir, Mock())
+        get_auth(Mock(), ir, Mock())
         m_get_auth.assert_called()

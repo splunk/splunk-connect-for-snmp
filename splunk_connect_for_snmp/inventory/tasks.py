@@ -279,13 +279,13 @@ def filter_condition_on_database(mongo_client, address: str, conditions: list):
     return list(result)
 
 
-def create_profile(profile_name, frequency, varBinds, records):
+def create_profile(profile_name, frequency, varbinds, records):
     # Connecting general fields from varBinds with filtered object indexes
     # like ["IF-MIB", "ifDescr"] + [1] = ["IF-MIB", "ifDescr", 1]
     varbind_list = [
         varbind + record["indexes"]
         for record in records
-        for varbind in varBinds
+        for varbind in varbinds
         if len(varbind) == 2
     ]
     profile = {profile_name: {"frequency": frequency, "varBinds": varbind_list}}

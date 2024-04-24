@@ -162,7 +162,7 @@ def do_send(data, destination_url, self):
             logger.error(f"Response code is {response.status_code} {response.text}")
 
 
-def valueAsBest(value) -> Union[str, float]:
+def value_as_best(value) -> Union[str, float]:
     try:
         return float(value)
     except ValueError:
@@ -204,9 +204,9 @@ def prepare(self, work):
                 metric["fields"]["group"] = work.get("group")
             for field, values in data["fields"].items():
                 short_field = field.split(".")[-1]
-                metric["fields"][short_field] = valueAsBest(values["value"])
+                metric["fields"][short_field] = value_as_best(values["value"])
             for field, values in data["metrics"].items():
-                metric["fields"][f"metric_name:sc4snmp.{field}"] = valueAsBest(
+                metric["fields"][f"metric_name:sc4snmp.{field}"] = value_as_best(
                     values["value"]
                 )
             if METRICS_INDEXING_ENABLED and "indexes" in data:
@@ -234,7 +234,7 @@ def prepare_trap_data(work):
         if data["metrics"]:
             for k, v in data["metrics"].items():
                 processed[k] = v
-                processed[k]["value"] = valueAsBest(v["value"])
+                processed[k]["value"] = value_as_best(v["value"])
         event = {
             "time": work["time"],
             "event": json.dumps({**data["fields"], **processed}),

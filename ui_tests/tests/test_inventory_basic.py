@@ -265,13 +265,13 @@ def test_try_to_add_device_with_all_available_fields_into_inventory():
     p_header.switch_to_profiles()
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_1)
-    p_profiles.add_varBind("IP-MIB", "ifDescr")
+    p_profiles.add_varbind("IP-MIB", "ifDescr")
     p_profiles.click_submit_button()
     time.sleep(1)  # wait for profile to be shown on the list
 
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_2)
-    p_profiles.add_varBind("IP-MIB", "ifError")
+    p_profiles.add_varbind("IP-MIB", "ifError")
     p_profiles.click_submit_button()
     time.sleep(1)  # wait for profile to be shown on the list
 
@@ -323,13 +323,13 @@ def test_edit_inventory_entry_with_all_available_fields():
     p_header.switch_to_profiles()
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_1)
-    p_profiles.add_varBind("IP-MIB", "ifDescr")
+    p_profiles.add_varbind("IP-MIB", "ifDescr")
     p_profiles.click_submit_button()
     time.sleep(1)  # wait for profile to be shown on the list
 
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_2)
-    p_profiles.add_varBind("IP-MIB", "ifError")
+    p_profiles.add_varbind("IP-MIB", "ifError")
     p_profiles.click_submit_button()
     time.sleep(1)  # wait for profile to be shown on the list
 
