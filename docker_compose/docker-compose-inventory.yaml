@@ -22,10 +22,10 @@ services:
       - mongo
       - coredns
     volumes:
-      - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml
-      - ${INVENTORY_FILE_ABSOLUTE_PATH}:/app/inventory/inventory.csv
-      - inventory-pysnmp-cache-volume:/.pysnmp/
-      - inventory-tmp:/tmp/
+      - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
+      - ${INVENTORY_FILE_ABSOLUTE_PATH}:/app/inventory/inventory.csv:ro
+      - inventory-pysnmp-cache-volume:/.pysnmp/:rw
+      - inventory-tmp:/tmp/:rw
     restart: on-failure
     networks:
       - my_network
