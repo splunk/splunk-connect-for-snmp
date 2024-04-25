@@ -4,6 +4,7 @@
 
 ### Changed
 - add docker compose deployment
+- update default microk8s to 1.30
 
 ### Fixed
 - fixed a bug with configuration from values.yaml not being transferred to the UI while migrating to SC4SNMP-UI
