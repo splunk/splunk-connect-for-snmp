@@ -33,7 +33,7 @@ def test_trying_to_configure_profle_with_the_same_name():
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
     p_profiles.set_frequency(profile_freq)
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
     exist = p_profiles.check_if_profile_is_configured(profile_name)
     assert exist is True
@@ -41,7 +41,7 @@ def test_trying_to_configure_profle_with_the_same_name():
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
     p_profiles.set_frequency(profile_freq)
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
 
     message = p_header.get_popup_error_message()
@@ -335,7 +335,7 @@ def test_removing_profile_which_is_configured_in_inventory():
     p_header.switch_to_profiles()
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
     exist = p_profiles.check_if_profile_is_configured(profile_name)
     assert exist is True
@@ -416,12 +416,12 @@ def test_trying_to_edit_profile_name_into_profile_name_that_exists():
     p_header.switch_to_profiles()
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name_1)
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
 
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name_2)
-    p_profiles.add_varBind("IP-MIB")
+    p_profiles.add_varbind("IP-MIB")
     p_profiles.click_submit_button()
 
     # edit profile name

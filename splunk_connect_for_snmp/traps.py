@@ -65,20 +65,22 @@ send_task_signature = send.s
 
 # Callback function for receiving notifications
 # noinspection PyUnusedLocal
-def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cbCtx):
+def cb_fun(
+    snmp_engine, state_reference, context_engine_id, context_name, varbinds, cb_ctx
+):
     logging.debug(
         'Notification from ContextEngineId "%s", ContextName "%s"'
-        % (contextEngineId.prettyPrint(), contextName.prettyPrint())
+        % (context_engine_id.prettyPrint(), context_name.prettyPrint())
     )
 
-    execContext = snmpEngine.observer.getExecutionContext(
+    exec_context = snmp_engine.observer.getExecutionContext(
         "rfc3412.receiveMessage:request"
     )
 
     data = []
-    device_ip = execContext["transportAddress"][0]
+    device_ip = exec_context["transportAddress"][0]
 
-    for name, val in varBinds:
+    for name, val in varbinds:
         data.append((name.prettyPrint(), val.prettyPrint()))
 
     work = {"data": data, "host": device_ip}
@@ -91,7 +93,7 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
 
 
 # Callback function for logging traps authentication errors
-def authentication_observer_cb_fun(snmpEngine, execpoint, variables, contexts):
+def authentication_observer_cb_fun(snmp_engine, execpoint, variables, contexts):
     logging.error(
         f"Security Model failure for device {variables.get('transportAddress', None)}: "
         f"{variables.get('statusInformation', {}).get('errorIndication', None)}"
@@ -116,11 +118,11 @@ def main():
 
     # Create SNMP engine with autogenernated engineID and pre-bound
     # to socket transport dispatcher
-    snmpEngine = engine.SnmpEngine()
+    snmp_engine = engine.SnmpEngine()
 
     # Register a callback function to log errors with traps authentication
     observer_context: Dict[Any, Any] = {}
-    snmpEngine.observer.registerObserver(
+    snmp_engine.observer.registerObserver(
         authentication_observer_cb_fun,
         "rfc2576.prepareDataElements:sm-failure",
         "rfc3412.prepareDataElements:sm-failure",
@@ -129,7 +131,7 @@ def main():
 
     # UDP over IPv4, first listening interface/port
     config.addTransport(
-        snmpEngine,
+        snmp_engine,
         udp.domainName,
         udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
     )
@@ -139,45 +141,45 @@ def main():
     if "communities" in config_base and "2c" in config_base["communities"]:
         for community in config_base["communities"]["2c"]:
             idx += 1
-            config.addV1System(snmpEngine, idx, community)
+            config.addV1System(snmp_engine, idx, community)
 
     if "usernameSecrets" in config_base:
         for secret in config_base["usernameSecrets"]:
             location = os.path.join("secrets/snmpv3", secret)
-            userName = get_secret_value(
+            username = get_secret_value(
                 location, "userName", required=True, default=None
             )
 
-            authKey = get_secret_value(location, "authKey", required=False)
-            privKey = get_secret_value(location, "privKey", required=False)
+            auth_key = get_secret_value(location, "authKey", required=False)
+            priv_key = get_secret_value(location, "privKey", required=False)
 
-            authProtocol = get_secret_value(location, "authProtocol", required=False)
-            logging.debug(f"authProtocol: {authProtocol}")
-            authProtocol = AuthProtocolMap.get(authProtocol.upper(), "NONE")
+            auth_protocol = get_secret_value(location, "authProtocol", required=False)
+            logging.debug(f"authProtocol: {auth_protocol}")
+            auth_protocol = AuthProtocolMap.get(auth_protocol.upper(), "NONE")
 
-            privProtocol = get_secret_value(
+            priv_protocol = get_secret_value(
                 location, "privProtocol", required=False, default="NONE"
             )
-            logging.debug(f"privProtocol: {privProtocol}")
-            privProtocol = PrivProtocolMap.get(privProtocol.upper(), "NONE")
+            logging.debug(f"privProtocol: {priv_protocol}")
+            priv_protocol = PrivProtocolMap.get(priv_protocol.upper(), "NONE")
 
             for security_engine_id in SECURITY_ENGINE_ID_LIST:
                 config.addV3User(
-                    snmpEngine,
-                    userName=userName,
-                    authProtocol=authProtocol,
-                    authKey=authKey,
-                    privProtocol=privProtocol,
-                    privKey=privKey,
+                    snmp_engine,
+                    userName=username,
+                    authProtocol=auth_protocol,
+                    authKey=auth_key,
+                    privProtocol=priv_protocol,
+                    privKey=priv_key,
                     securityEngineId=v2c.OctetString(hexValue=security_engine_id),
                 )
                 logging.debug(
-                    f"V3 users: {userName} auth {authProtocol} authkey {len(authKey)*'*'} privprotocol {privProtocol} "
-                    f"privkey {len(privKey)*'*'} securityEngineId {len(security_engine_id)*'*'}"
+                    f"V3 users: {username} auth {auth_protocol} authkey {len(auth_key)*'*'} privprotocol {priv_protocol} "
+                    f"privkey {len(priv_key)*'*'} securityEngineId {len(security_engine_id)*'*'}"
                 )
 
     # Register SNMP Application at the SNMP engine
-    ntfrcv.NotificationReceiver(snmpEngine, cbFun)
+    ntfrcv.NotificationReceiver(snmp_engine, cb_fun)
 
     # Run asyncio main loop
     loop.run_forever()

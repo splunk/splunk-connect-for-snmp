@@ -62,55 +62,55 @@ class ProfilesPage:
         helper.clear_input(name_input)  # this is useful when editing profile name
         name_input.send_keys(name)
 
-    def add_varBind(self, mcomponent, mobject=None, mindex=None):
+    def add_varbind(self, mcomponent, mobject=None, mindex=None):
         logger.info(f"Adding varBind: {mcomponent, mobject, mindex}")
-        add_varBind_button_xpath = "//div[@data-test='sc4snmp:form:add-varbinds']//span[contains(text(),'Add varBind')]"
-        add_varBind_btn = driver.find_element(By.XPATH, add_varBind_button_xpath)
-        add_varBind_btn.click()
+        add_varbind_button_xpath = "//div[@data-test='sc4snmp:form:add-varbinds']//span[contains(text(),'Add varBind')]"
+        add_varbind_btn = driver.find_element(By.XPATH, add_varbind_button_xpath)
+        add_varbind_btn.click()
         varbind_row_xpath = "//div[@data-test='sc4snmp:form:varbind-row']"
-        varBinds_rows = driver.find_elements(By.XPATH, varbind_row_xpath)
+        varbinds_rows = driver.find_elements(By.XPATH, varbind_row_xpath)
         component_xpath = (
             "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/span/input"
         )
-        component_input = varBinds_rows[-1].find_element(By.XPATH, component_xpath)
+        component_input = varbinds_rows[-1].find_element(By.XPATH, component_xpath)
         component_input.send_keys(mcomponent)
         if mobject is not None:
             object_xpath = (
                 "//div[@data-test='sc4snmp:form:varbind-mib-object-input']/span/input"
             )
-            object_input = varBinds_rows[-1].find_element(By.XPATH, object_xpath)
+            object_input = varbinds_rows[-1].find_element(By.XPATH, object_xpath)
             object_input.send_keys(mobject)
         if mindex is not None:
             index_xpath = (
                 "//div[@data-test='sc4snmp:form:varbind-mib-index-input']/span/input"
             )
-            index_input = varBinds_rows[-1].find_element(By.XPATH, index_xpath)
+            index_input = varbinds_rows[-1].find_element(By.XPATH, index_xpath)
             index_input.send_keys(mindex)
 
-    def edit_varBind(self, new_mcomponent, new_mobject, new_mindex):
+    def edit_varbind(self, new_mcomponent, new_mobject, new_mindex):
         logger.info(
             f"Editing varBind new values: {new_mcomponent}, {new_mobject}, {new_mindex}"
         )
         varbind_row_xpath = "//div[@data-test='sc4snmp:form:varbind-row']"
-        varBinds_row = driver.find_element(By.XPATH, varbind_row_xpath)
+        varbinds_row = driver.find_element(By.XPATH, varbind_row_xpath)
         component_xpath = (
             "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/span/input"
         )
-        component_input = varBinds_row.find_element(By.XPATH, component_xpath)
+        component_input = varbinds_row.find_element(By.XPATH, component_xpath)
         helper.clear_input(component_input)
         component_input.send_keys(new_mcomponent)
 
         object_xpath = (
             "//div[@data-test='sc4snmp:form:varbind-mib-object-input']/span/input"
         )
-        object_input = varBinds_row.find_element(By.XPATH, object_xpath)
+        object_input = varbinds_row.find_element(By.XPATH, object_xpath)
         helper.clear_input(object_input)
         object_input.send_keys(new_mobject)
 
         index_xpath = (
             "//div[@data-test='sc4snmp:form:varbind-mib-index-input']/span/input"
         )
-        index_input = varBinds_row.find_element(By.XPATH, index_xpath)
+        index_input = varbinds_row.find_element(By.XPATH, index_xpath)
         helper.clear_input(index_input)
         index_input.send_keys(new_mindex)
 
@@ -277,12 +277,12 @@ class ProfilesPage:
             f"//td[@data-test='sc4snmp:profile-mib-index-expanded']//p"
         )
         mindex = driver.find_element(By.XPATH, profile_mindex_xpath)
-        varBind = {
+        varbind = {
             "mcomponent": mcomponent.text,
             "mobject": mobject.text,
             "mindex": int(mindex.text),
         }
-        return varBind
+        return varbind
 
     def clear_profiles(self):
         logger.info(f"remove all profiles")

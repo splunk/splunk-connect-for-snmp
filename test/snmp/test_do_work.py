@@ -27,7 +27,7 @@ class TestDoWork(TestCase):
     @patch("mongolock.MongoLock.__init__", MagicMock())
     @patch("mongolock.MongoLock.lock", MagicMock())
     @patch("mongolock.MongoLock.release", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.auth.GetAuth", None)
+    @patch("splunk_connect_for_snmp.snmp.auth.get_auth", None)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
     def test_do_work_no_work_to_do(self):
@@ -41,8 +41,8 @@ class TestDoWork(TestCase):
         varbinds_bulk, varbinds_get = set(), set()
         get_mapping, bulk_mapping = {}, {}
 
-        poller.get_var_binds = MagicMock()
-        poller.get_var_binds.return_value = (
+        poller.get_varbinds = MagicMock()
+        poller.get_varbinds.return_value = (
             varbinds_get,
             get_mapping,
             varbinds_bulk,
@@ -55,7 +55,7 @@ class TestDoWork(TestCase):
     @patch("mongolock.MongoLock.__init__", MagicMock())
     @patch("mongolock.MongoLock.lock", MagicMock())
     @patch("mongolock.MongoLock.release", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.auth.GetAuth", None)
+    @patch("splunk_connect_for_snmp.snmp.auth.get_auth", None)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
@@ -91,7 +91,7 @@ class TestDoWork(TestCase):
     @patch("mongolock.MongoLock.__init__", MagicMock())
     @patch("mongolock.MongoLock.lock", MagicMock())
     @patch("mongolock.MongoLock.release", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.auth.GetAuth", None)
+    @patch("splunk_connect_for_snmp.snmp.auth.get_auth", None)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
@@ -134,7 +134,7 @@ class TestDoWork(TestCase):
     @patch("mongolock.MongoLock.__init__", MagicMock())
     @patch("mongolock.MongoLock.lock", MagicMock())
     @patch("mongolock.MongoLock.release", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.auth.GetAuth", None)
+    @patch("splunk_connect_for_snmp.snmp.auth.get_auth", None)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")

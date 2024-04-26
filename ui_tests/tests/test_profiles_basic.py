@@ -32,7 +32,7 @@ def test_add_profile(profile_type):
     p_profiles.set_profile_name(profile_name)
     p_profiles.set_frequency(100)
     p_profiles.select_profile_type(profile_type)
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
     time.sleep(5)  # wait for profile to be shown on the list
     exist = p_profiles.check_if_profile_is_configured(profile_name)
@@ -65,7 +65,7 @@ def test_add_smart_profile():
     p_profiles.select_profile_type(profile_type)
     p_profiles.set_smart_profile_field("SNMPv2-MIB.sysDescr")
     p_profiles.add_smart_profile_pattern(".*linux.*")
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
     time.sleep(5)  # wait for profile to be shown on the list
     exist = p_profiles.check_if_profile_is_configured(profile_name)
@@ -97,7 +97,7 @@ def test_add_walk_profile():
     p_profiles.select_profile_type(profile_type)
     visible = p_profiles.check_if_frequency_setting_field_is_visible()
     assert visible is False
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
     time.sleep(5)  # wait for profile to be shown on the list
     exist = p_profiles.check_if_profile_is_configured(profile_name)
@@ -128,7 +128,7 @@ def test_add_conditional_profile():
     p_profiles.set_profile_name(profile_name)
     p_profiles.select_profile_type(profile_type)
     p_profiles.add_condition("IF-MIB.ifAdminStatus", "equals", "up")
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
     exist = p_profiles.check_if_profile_is_configured(profile_name)
     assert exist is True
@@ -159,20 +159,20 @@ def test_edit_profile():
     p_profiles.set_profile_name(profile_name)
     p_profiles.set_frequency(100)
     p_profiles.select_profile_type(profile_type)
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
     exist = p_profiles.check_if_profile_is_configured(profile_name)
     assert exist is True
     # edit profile
     new_freq = 45
     new_profile_name = "new_name"
-    new_varBind = {"mcomponent": "IP-MIBv2", "mobject": "ifDescr_v2", "mindex": 2}
+    new_varbind = {"mcomponent": "IP-MIBv2", "mobject": "ifDescr_v2", "mindex": 2}
 
     p_profiles.click_edit_profile(profile_name)
     p_profiles.set_profile_name(new_profile_name)
     p_profiles.set_frequency(new_freq)
-    p_profiles.edit_varBind(
-        new_varBind["mcomponent"], new_varBind["mobject"], new_varBind["mindex"]
+    p_profiles.edit_varbind(
+        new_varbind["mcomponent"], new_varbind["mobject"], new_varbind["mindex"]
     )
     p_profiles.click_submit_button()
 
@@ -192,8 +192,8 @@ def test_edit_profile():
     assert new_freq == int(received_freq)
     # varBinds - this verification is very case specific as profile row and expanded row does not have same Web element container
     p_profiles.expand_profile(new_profile_name)
-    varBind = p_profiles.get_profile_varbind(new_profile_name)
-    assert new_varBind == varBind
+    varbind = p_profiles.get_profile_varbind(new_profile_name)
+    assert new_varbind == varbind
     p_profiles.delete_profile_from_list(new_profile_name)
     exist = p_profiles.check_if_profile_is_configured(new_profile_name)
     assert exist is False

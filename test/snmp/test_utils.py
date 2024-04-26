@@ -55,12 +55,12 @@ class TestUtils(TestCase):
         error_indication = "Error indication"
         error_status = None
         error_index = 1
-        var_binds = []
+        varbinds = []
         address = "192.168.0.1"
         walk = False
         with self.assertRaises(SnmpActionError) as sae:
             _any_failure_happened(
-                error_indication, error_status, error_index, var_binds, address, walk
+                error_indication, error_status, error_index, varbinds, address, walk
             )
         self.assertEqual(
             "An error of SNMP isWalk=False for a host 192.168.0.1 occurred: Error indication",
@@ -72,12 +72,12 @@ class TestUtils(TestCase):
         error_status = Mock()
         error_status.prettyPrint.return_value = "Some error status"
         error_index = 1
-        var_binds = [("Some varbind", "asd")]
+        varbinds = [("Some varbind", "asd")]
         address = "192.168.0.1"
         walk = False
         with self.assertRaises(SnmpActionError) as sae:
             _any_failure_happened(
-                error_indication, error_status, error_index, var_binds, address, walk
+                error_indication, error_status, error_index, varbinds, address, walk
             )
         self.assertEqual(
             "An error of SNMP isWalk=False for a host 192.168.0.1 occurred: Some error status at Some "
@@ -89,11 +89,11 @@ class TestUtils(TestCase):
         error_indication = None
         error_status = None
         error_index = None
-        var_binds = []
+        varbinds = []
         address = "192.168.0.1"
         walk = False
         result = _any_failure_happened(
-            error_indication, error_status, error_index, var_binds, address, walk
+            error_indication, error_status, error_index, varbinds, address, walk
         )
         self.assertFalse(result)
 

@@ -56,7 +56,7 @@ def test_applying_changes_for_device_that_does_not_exists(setup):
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
     p_profiles.set_frequency(profile_freq)
-    p_profiles.add_varBind("IF-MIB", "ifInErrors")
+    p_profiles.add_varbind("IF-MIB", "ifInErrors")
     p_profiles.click_submit_button()
     time.sleep(1)  # wait for profile to be shown on the list
 
@@ -149,7 +149,7 @@ def test_setting_group_in_inventory(setup):
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
     p_profiles.set_frequency(profile_freq)
-    p_profiles.add_varBind("IF-MIB", "ifDescr")
+    p_profiles.add_varbind("IF-MIB", "ifDescr")
     p_profiles.click_submit_button()
     time.sleep(1)  # wait for profile to be shown on the list
 
@@ -299,13 +299,13 @@ def test_setting_host_in_inventory(setup):
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_1_name)
     p_profiles.set_frequency(profile_1_freq)
-    p_profiles.add_varBind("IF-MIB", "ifDescr")
+    p_profiles.add_varbind("IF-MIB", "ifDescr")
     p_profiles.click_submit_button()
 
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_2_name)
     p_profiles.set_frequency(profile_2_freq)
-    p_profiles.add_varBind("SNMPv2-MIB", "sysName")
+    p_profiles.add_varbind("SNMPv2-MIB", "sysName")
     p_profiles.click_submit_button()
 
     p_header.switch_to_profiles()
@@ -313,7 +313,7 @@ def test_setting_host_in_inventory(setup):
     p_profiles.set_profile_name(base_profile_name)
     p_profiles.select_profile_type("base")
     p_profiles.set_frequency(base_profile_freq)
-    p_profiles.add_varBind("IF-MIB", "ifDescr")
+    p_profiles.add_varbind("IF-MIB", "ifDescr")
     p_profiles.click_submit_button()
 
     p_header.switch_to_inventory()
