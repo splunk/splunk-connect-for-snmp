@@ -420,11 +420,11 @@ def setup_small_walk_with_full_walk_enabled(request):
         },
     }
     update_profiles(profile)
-    update_file([f"{trap_external_ip},,2c,public,,,1810,walk1,f,"], "inventory.yaml")
+    update_file([f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml")
     upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(30)
+    time.sleep(20)
     yield
-    update_file([f"{trap_external_ip},,2c,public,,,1810,walk1,f,t"], "inventory.yaml")
+    update_file([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml")
     upgrade_helm(["inventory.yaml"])
     time.sleep(20)
 
@@ -432,9 +432,9 @@ def setup_small_walk_with_full_walk_enabled(request):
 @pytest.mark.usefixtures("setup_small_walk_with_full_walk_enabled")
 class TestSmallWalkWithFullWalkEnabled:
     def test_check_if_full_walk_is_done_with_profile_set(self, setup_splunk):
-        time.sleep(30)
+        time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-30s | search "TCP-MIB" """
+            """| mpreview index=netmetrics earliest=-40s | search "TCP-MIB" """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 1
@@ -442,7 +442,7 @@ class TestSmallWalkWithFullWalkEnabled:
         assert result_count > 0
         assert metric_count > 0
         search_string = (
-            """| mpreview index=netmetrics earliest=-30s | search "IP-MIB" """
+            """| mpreview index=netmetrics earliest=-40s | search "IP-MIB" """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
