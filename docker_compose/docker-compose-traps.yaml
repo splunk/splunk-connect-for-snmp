@@ -37,9 +37,9 @@ services:
     restart: on-failure
     secrets: []
     volumes:
-    - ${TRAPS_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml
-    - traps-pysnmp-cache-volume:/.pysnmp/
-    - traps-tmp:/tmp/
+    - ${TRAPS_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
+    - traps-pysnmp-cache-volume:/.pysnmp/:rw
+    - traps-tmp:/tmp/:rw
 version: '3.8'
 volumes:
   traps-pysnmp-cache-volume: null

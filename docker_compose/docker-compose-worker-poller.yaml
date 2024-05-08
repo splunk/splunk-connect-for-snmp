@@ -49,9 +49,9 @@ services:
     restart: on-failure
     secrets: []
     volumes:
-    - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml
-    - worker-poller-pysnmp-cache-volume:/.pysnmp/
-    - worker-poller-tmp:/tmp/
+    - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
+    - worker-poller-pysnmp-cache-volume:/.pysnmp/:rw
+    - worker-poller-tmp:/tmp/:rw
 version: '3.8'
 volumes:
   worker-poller-pysnmp-cache-volume: null

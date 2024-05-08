@@ -47,9 +47,9 @@ services:
       - mongo
       - coredns
     volumes:
-      - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml
-      - worker-sender-pysnmp-cache-volume:/.pysnmp/
-      - worker-sender-tmp:/tmp/
+      - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
+      - worker-sender-pysnmp-cache-volume:/.pysnmp/:rw
+      - worker-sender-tmp:/tmp/:rw
     restart: on-failure
     networks:
       - my_network
