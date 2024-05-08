@@ -310,6 +310,14 @@ class Poller(Task):
             address, walk=walk, profiles=profiles
         )
 
+
+        logger.debug(f"NEW DEBUG LOG: host: {address}, walk={walk}, profiles={profiles}, \n"
+                     f"varbinds_get={varbinds_get}, \n"
+                     f"get_mapping={get_mapping}, \n"
+                     f"varbinds_bulk={varbinds_bulk}, \n"
+                     f"bulk_mapping={bulk_mapping}")
+
+
         auth_data = get_auth(logger, ir, self.snmpEngine)
         context_data = get_context_data()
 
