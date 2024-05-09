@@ -23,12 +23,16 @@ poller:
    - sc4snmp-hlab-sha-aes
    - sc4snmp-hlab-sha-des
   logLevel: "WARN"
+  enableFullWalk: false
   inventory: |
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
     10.202.4.202,,2c,public,,,2000,,,
 ```
 
 NOTE: The header's line (`address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete`) is necessary for the correct execution of SC4SNMP. Do not remove it.
+
+### BETA: Enable full oid tree walk
+The default walk profile is polling only `SNMPv2-MIB`. If the full oid tree walk is required it can be enabled by changing `enableFullWalk` flag to true. 
 
 ### Define log level
 The log level for poller can be set by changing the value for the key `logLevel`. The allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`. 
