@@ -125,7 +125,7 @@ def test_check_that_group_config_is_stored_upon_applying_configuration():
     changes stored even when the timer has not yet expired
     """
 
-    group_name = f"test-group-store"
+    group_name = "test-group-store"
     device_ip = "11.22.33.44"
     port = 1234
     snmp_version = "2c"

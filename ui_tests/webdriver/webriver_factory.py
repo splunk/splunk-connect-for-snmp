@@ -21,7 +21,7 @@ class WebDriverFactory:
             logger.info(f"UI URL: {config.UI_URL}")
             chrome_options = Options()
             if config.EXECUTION_TYPE != "local":
-                logger.info(f"Enable headless execution")
+                logger.info("Enable headless execution")
                 chrome_options.add_argument("--headless")
                 chrome_options.add_argument("--disable-gpu")
                 chrome_options.add_argument("--window-size=1920x1080")

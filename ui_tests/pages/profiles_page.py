@@ -149,7 +149,7 @@ class ProfilesPage:
         time.sleep(1)
 
     def close_profile_delete_popup(self):
-        logger.info(f"Closing profile delete popup")
+        logger.info("Closing profile delete popup")
         close_profile_delete_popup_btn_xpath = (
             "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
@@ -186,7 +186,7 @@ class ProfilesPage:
         pattern_rows[-1].send_keys(pattern)
 
     def check_if_frequency_setting_field_is_visible(self):
-        logger.info(f"Checking if frequency setting field is visible")
+        logger.info("Checking if frequency setting field is visible")
         xpath = "//div[@data-test='sc4snmp:form:frequency-input']//span//input"
         try:
             freq_field = driver.find_element(By.XPATH, xpath)
@@ -234,17 +234,17 @@ class ProfilesPage:
         time.sleep(1)
 
     def close_edited_profile_popup(self):
-        logger.info(f"Closing edited profile popup")
+        logger.info("Closing edited profile popup")
         close_popup_btn_xpath = (
-            f"//button[@data-test='sc4snmp:errors-modal:cancel-button']"
+            "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
         close_popup_btn = driver.find_element(By.XPATH, close_popup_btn_xpath)
         close_popup_btn.click()
         time.sleep(2)
 
     def get_submit_edited_profile_text(self):
-        logger.info(f"Get submit edited profile popup text")
-        edited_profile_popup_text_xpath = f"//div[@data-test='modal']//div//p"
+        logger.info("Get submit edited profile popup text")
+        edited_profile_popup_text_xpath = "//div[@data-test='modal']//div//p"
         edited_profile_popup_text = driver.find_element(
             By.XPATH, edited_profile_popup_text_xpath
         )
@@ -266,15 +266,15 @@ class ProfilesPage:
     def get_profile_varbind(self, profile_name):
         logger.info(f"Get profile varBind {profile_name}")
         profile_mcomponent_xpath = (
-            f"//td[@data-test='sc4snmp:profile-mib-component-expanded']//p"
+            "//td[@data-test='sc4snmp:profile-mib-component-expanded']//p"
         )
         mcomponent = driver.find_element(By.XPATH, profile_mcomponent_xpath)
         profile_mobject_xpath = (
-            f"//td[@data-test='sc4snmp:profile-mib-object_expanded']//p"
+            "//td[@data-test='sc4snmp:profile-mib-object_expanded']//p"
         )
         mobject = driver.find_element(By.XPATH, profile_mobject_xpath)
         profile_mindex_xpath = (
-            f"//td[@data-test='sc4snmp:profile-mib-index-expanded']//p"
+            "//td[@data-test='sc4snmp:profile-mib-index-expanded']//p"
         )
         mindex = driver.find_element(By.XPATH, profile_mindex_xpath)
         varbind = {
@@ -285,8 +285,8 @@ class ProfilesPage:
         return varbind
 
     def clear_profiles(self):
-        logger.info(f"remove all profiles")
-        profile_delete_btn_xpath = f"//button[@data-test='sc4snmp:profile-row-delete']"
+        logger.info("remove all profiles")
+        profile_delete_btn_xpath = "//button[@data-test='sc4snmp:profile-row-delete']"
         delete_btns = driver.find_elements(By.XPATH, profile_delete_btn_xpath)
         logger.info(f"Need to remove {len(delete_btns)} items")
         while len(delete_btns) > 0:

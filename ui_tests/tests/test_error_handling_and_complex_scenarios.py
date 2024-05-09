@@ -183,7 +183,7 @@ def test_trying_to_add_inventory_with_group_which_is_already_added():
     check error message
     """
     # add group
-    group_name = f"test-group-inventory"
+    group_name = "test-group-inventory"
     p_header.switch_to_groups()
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
@@ -230,7 +230,7 @@ def test_trying_to_add_inventory_group_with_host_which_is_configured_as_host():
     check error message
     """
     # add group
-    group_name = f"test-group-inventory"
+    group_name = "test-group-inventory"
     device_ip = "40.50.60.70"
     community_string = "public"
 
@@ -284,7 +284,7 @@ def test_removing_group_which_is_configured_in_inventory():
     check that upon removing group inventory entry is also removed
     """
     # add group
-    group_name = f"test-group-inventory"
+    group_name = "test-group-inventory"
     community_string = "public"
 
     p_header.switch_to_groups()
