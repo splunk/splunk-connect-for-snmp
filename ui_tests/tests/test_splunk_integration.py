@@ -422,7 +422,7 @@ def test_setting_host_in_inventory(setup):
         "index=" + config.LOGS_INDEX + ' "Sending due task sc4snmp;' + host + ';walk"'
     )
     events = check_events_from_splunk(
-        start_time="-2m@m",
+        start_time="-1m@m",
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],

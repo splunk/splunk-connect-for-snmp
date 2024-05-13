@@ -23,7 +23,7 @@ def test_add_and_remove_group():
     check newly added group is displayed on groups list
     remove group and check it is not on the list
     """
-    group_name = f"test-group"
+    group_name = "test-group"
     p_header.switch_to_groups()
     is_on_list = p_groups.check_if_groups_is_on_list(group_name)
     assert is_on_list is False
@@ -43,7 +43,7 @@ def test_change_group_name():
     Test that user is able to add group,
     check that user is able to change group name
     """
-    group_name = f"change-name"
+    group_name = "change-name"
     new_group_name = "new-group-name"
     p_header.switch_to_groups()
     is_on_list = p_groups.check_if_groups_is_on_list(group_name)
@@ -81,7 +81,7 @@ def test_try_adding_device_to_group_with_no_data():
     then click cancel
     check no device on list
     """
-    group_name = f"device-with-no-data"
+    group_name = "device-with-no-data"
     p_header.switch_to_groups()
     is_on_list = p_groups.check_if_groups_is_on_list(group_name)
     assert is_on_list is False
@@ -108,7 +108,7 @@ def test_add_and_remove_device_into_group():
     check added device displayed on devices list
     remove device and check it is not on the list anymore
     """
-    group_name = f"test-add-one-device"
+    group_name = "test-add-one-device"
     device_ip = "1.2.3.4"
     p_header.switch_to_groups()
     is_on_list = p_groups.check_if_groups_is_on_list(group_name)
@@ -145,7 +145,7 @@ def test_add_device_with_all_fields():
     check added device displayed on devices list
     remove device and check it is not on the list anymore
     """
-    group_name = f"test-add-one-device"
+    group_name = "test-add-one-device"
     device_ip = "1.2.3.4"
     port = 1234
     snmp_version = "2c"
@@ -186,7 +186,7 @@ def test_edit_device_with_all_fields():
     User is able to edit device
     remove device and check it is not on the list anymore
     """
-    group_name = f"test-edit-device"
+    group_name = "test-edit-device"
     device_ip = "1.2.3.4"
     port = 1234
     snmp_version = "2c"

@@ -90,7 +90,7 @@ def test_add_group_into_inventory_entry():
     remove inventory entry and check it is not on the list
     """
     # add group
-    group_name = f"test-group-inventory"
+    group_name = "test-group-inventory"
     p_header.switch_to_groups()
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)

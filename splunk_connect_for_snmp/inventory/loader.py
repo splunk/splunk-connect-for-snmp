@@ -192,7 +192,7 @@ def load():
         mongo_client, periodic_obj, logger
     )
     if CONFIG_FROM_MONGO:
-        logger.info(f"Loading inventory from inventory_ui collection")
+        logger.info("Loading inventory from inventory_ui collection")
     else:
         logger.info(f"Loading inventory from {INVENTORY_PATH}")
     inventory_lines, inventory_group_port_mapping = inventory_processor.get_all_hosts()
