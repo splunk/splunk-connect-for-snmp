@@ -148,7 +148,6 @@ click-plugins = ">=1.1.1"
 click-repl = ">=0.2.0"
 kombu = ">=5.3.4,<6.0"
 python-dateutil = ">=2.8.2"
-tblib = {version = ">=1.5.0", optional = true, markers = "python_version >= \"3.8.0\" and extra == \"tblib\""}
 tzdata = ">=2022.7"
 vine = ">=5.1.0,<6.0"
 
@@ -1977,17 +1976,6 @@ files = [
 ]
 
 [[package]]
-name = "tblib"
-version = "3.0.0"
-description = "Traceback serialization library."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "tblib-3.0.0-py3-none-any.whl", hash = "sha256:80a6c77e59b55e83911e1e607c649836a69c103963c5f28a46cbeef44acf8129"},
-    {file = "tblib-3.0.0.tar.gz", hash = "sha256:93622790a0a29e04f0346458face1e144dc4d32f493714c6c3dff82a4adb77e6"},
-]
-
-[[package]]
 name = "tenacity"
 version = "8.3.0"
 description = "Retry code until it succeeds"
@@ -2257,4 +2245,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "653f0dbccfce92dfb79847827120be69cc5b414973f55d3a7e808e301261b8e3"
+content-hash = "c9f47fa1bd796ffd49857d3d564bd3224ca4dc8d9eec1b8140a52bcf9bb6d6c7"
