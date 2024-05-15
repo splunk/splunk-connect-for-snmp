@@ -77,9 +77,7 @@ def test_applying_changes_for_device_that_does_not_exists(setup):
 
     # check data in Splunk
     # check walk scheduled
-    search_query = (
-        "index=" + config.LOGS_INDEX + ' "Sending due task sc4snmp;' + host + ';walk"'
-    )
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};walk"'
     events = check_events_from_splunk(
         start_time="-3m@m",
         url=setup["splunkd_url"],
@@ -91,9 +89,7 @@ def test_applying_changes_for_device_that_does_not_exists(setup):
     assert len(events) == 1
 
     # check no profiles polling
-    search_query = (
-        "index=" + config.LOGS_INDEX + ' "Sending due task sc4snmp;' + host + ';*;poll"'
-    )
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};*;poll"'
     events = check_events_from_splunk(
         start_time="-3m@m",
         url=setup["splunkd_url"],
@@ -105,7 +101,7 @@ def test_applying_changes_for_device_that_does_not_exists(setup):
     assert len(events) == 0
 
     # check no events
-    search_query = "index=" + config.EVENT_INDEX + " *"
+    search_query = f"index={config.EVENT_INDEX} *"
     events = check_events_from_splunk(
         start_time="-1m@m",
         url=setup["splunkd_url"],
@@ -179,9 +175,7 @@ def test_setting_group_in_inventory(setup):
 
     # check data in Splunk
     # check walk scheduled
-    search_query = (
-        "index=" + config.LOGS_INDEX + ' "Sending due task sc4snmp;' + host + ';walk"'
-    )
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};walk"'
     events = check_events_from_splunk(
         start_time="-2m@m",
         url=setup["splunkd_url"],
@@ -194,11 +188,7 @@ def test_setting_group_in_inventory(setup):
 
     # check profiles polling
     search_query = (
-        "index="
-        + config.LOGS_INDEX
-        + ' "Sending due task sc4snmp;'
-        + host
-        + ';12;poll"'
+        f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};12;poll"'
     )
     events = check_events_from_splunk(
         start_time="-1m@m",
@@ -212,11 +202,7 @@ def test_setting_group_in_inventory(setup):
 
     # checking smart profiles not working
     search_query = (
-        "index="
-        + config.LOGS_INDEX
-        + ' "Sending due task sc4snmp;'
-        + host
-        + ';600;poll"'
+        f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};600;poll"'
     )
     events = check_events_from_splunk(
         start_time="-2m@m",
@@ -230,11 +216,7 @@ def test_setting_group_in_inventory(setup):
 
     # checking polling for mandatory profile - 1200 - this should be visible even when smart profiles are disabled
     search_query = (
-        "index="
-        + config.LOGS_INDEX
-        + ' "Sending due task sc4snmp;'
-        + host
-        + ';1200;poll"'
+        f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};1200;poll"'
     )
     events = check_events_from_splunk(
         start_time="-2m@m",
@@ -247,7 +229,7 @@ def test_setting_group_in_inventory(setup):
     assert len(events) == 1
 
     # check events received
-    search_query = "index=" + config.EVENT_INDEX + " *"
+    search_query = f"index={config.EVENT_INDEX} *"
     events = check_events_from_splunk(
         start_time="-2m@m",
         url=setup["splunkd_url"],
@@ -334,9 +316,7 @@ def test_setting_host_in_inventory(setup):
 
     # check data in Splunk
     # check walk scheduled
-    search_query = (
-        "index=" + config.LOGS_INDEX + ' "Sending due task sc4snmp;' + host + ';walk"'
-    )
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};walk"'
     events = check_events_from_splunk(
         start_time="-1m@m",
         url=setup["splunkd_url"],
@@ -350,11 +330,7 @@ def test_setting_host_in_inventory(setup):
     # check profiles polling
     time.sleep(60)  # wait to be sure that profile are being polled
     search_query = (
-        "index="
-        + config.LOGS_INDEX
-        + ' "Sending due task sc4snmp;'
-        + host
-        + ';10;poll"'
+        f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};10;poll"'
     )
     events = check_events_from_splunk(
         start_time="-1m@m",
@@ -366,9 +342,7 @@ def test_setting_host_in_inventory(setup):
     logger.info("Splunk received %s events in the last minute", len(events))
     assert len(events) > 1
 
-    search_query = (
-        "index=" + config.LOGS_INDEX + ' "Sending due task sc4snmp;' + host + ';7;poll"'
-    )
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};7;poll"'
     events = check_events_from_splunk(
         start_time="-1m@m",
         url=setup["splunkd_url"],
@@ -380,9 +354,7 @@ def test_setting_host_in_inventory(setup):
     assert len(events) > 1
 
     # checking smart/base profiles
-    search_query = (
-        "index=" + config.LOGS_INDEX + ' "Sending due task sc4snmp;' + host + ';5;poll"'
-    )
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};5;poll"'
     events = check_events_from_splunk(
         start_time="-1m@m",
         url=setup["splunkd_url"],
@@ -394,7 +366,7 @@ def test_setting_host_in_inventory(setup):
     assert len(events) > 1
 
     # check events received
-    search_query = "index=" + config.EVENT_INDEX + " *"
+    search_query = f"index={config.EVENT_INDEX} *"
     events = check_events_from_splunk(
         start_time="-1m@m",
         url=setup["splunkd_url"],
@@ -418,9 +390,7 @@ def test_setting_host_in_inventory(setup):
     time.sleep(time_to_upgrade + 90)  # wait for upgrade + walk time + polling
 
     # check walk scheduled
-    search_query = (
-        "index=" + config.LOGS_INDEX + ' "Sending due task sc4snmp;' + host + ';walk"'
-    )
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};walk"'
     events = check_events_from_splunk(
         start_time="-1m@m",
         url=setup["splunkd_url"],
@@ -434,11 +404,7 @@ def test_setting_host_in_inventory(setup):
     # check profiles polling
     time.sleep(60)  # wait to be sure that disabled profile is no more polled
     search_query = (
-        "index="
-        + config.LOGS_INDEX
-        + ' "Sending due task sc4snmp;'
-        + host
-        + ';10;poll"'
+        f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};10;poll"'
     )
     events = check_events_from_splunk(
         start_time="-1m@m",
@@ -450,9 +416,7 @@ def test_setting_host_in_inventory(setup):
     logger.info("Splunk received %s events in the last minute", len(events))
     assert len(events) == 0
 
-    search_query = (
-        "index=" + config.LOGS_INDEX + ' "Sending due task sc4snmp;' + host + ';7;poll"'
-    )
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};7;poll"'
     events = check_events_from_splunk(
         start_time="-1m@m",
         url=setup["splunkd_url"],
@@ -464,9 +428,7 @@ def test_setting_host_in_inventory(setup):
     assert len(events) > 1
 
     # checking smart/base profiles - no polling
-    search_query = (
-        "index=" + config.LOGS_INDEX + ' "Sending due task sc4snmp;' + host + ';5;poll"'
-    )
+    search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};5;poll"'
     events = check_events_from_splunk(
         start_time="-1m@m",
         url=setup["splunkd_url"],
@@ -478,7 +440,7 @@ def test_setting_host_in_inventory(setup):
     assert len(events) == 0
 
     # check events received
-    search_query = "index=" + config.EVENT_INDEX + " *"
+    search_query = f"index={config.EVENT_INDEX} *"
     events = check_events_from_splunk(
         start_time="-1m@m",
         url=setup["splunkd_url"],
