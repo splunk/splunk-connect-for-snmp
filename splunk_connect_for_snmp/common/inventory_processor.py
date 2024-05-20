@@ -46,14 +46,16 @@ def transform_address_to_key(address, port):
         return f"{address}:{port}"
 
 
-def gen_walk_task(ir: InventoryRecord, profile=None, group=None):
+def gen_walk_task(ir: InventoryRecord, profile=None, group=None, logger=None):
     target = transform_address_to_key(ir.address, ir.port)
+    logger.debug(f"gen_walk_task: target={target}, profile={profile}")
     walk_definition = WalkTaskGenerator(
         target=target,
         schedule_period=ir.walk_interval,
         app=app,
         host_group=group,
         profile=profile,
+        logger=logger,
     )
     task_config = walk_definition.generate_task_definition()
     return task_config
@@ -168,6 +170,7 @@ class InventoryRecordManager:
         self.inventory_collection = mongo_client.sc4snmp.inventory
         self.attributes_collection = mongo_client.sc4snmp.attributes
         self.periodic_object_collection = periodic_objects_collection
+        self.profiles_collection = mongo_client.sc4snmp.profiles
         self.logger = logger
 
     def delete(self, target):
@@ -183,6 +186,7 @@ class InventoryRecordManager:
     ):
         profiles = new_source_record["profiles"].split(";")
         walk_profile = self.return_walk_profile(runtime_profiles, profiles)
+        self.logger.debug(f"InventoryRecordManager: inventory_record: {inventory_record}, runtime_profiles: {runtime_profiles}, profiles: {profiles}, walk_profile: {walk_profile}, profiles_collection:{list(self.profiles_collection.find({}))}")
         if walk_profile:
             inventory_record.walk_interval = int(new_source_record["walk_interval"])
         status = self.inventory_collection.update_one(
@@ -206,6 +210,7 @@ class InventoryRecordManager:
             inventory_record,
             walk_profile,
             new_source_record.get("group"),
+            self.logger
         )
         self.periodic_object_collection.manage_task(**task_config)
 

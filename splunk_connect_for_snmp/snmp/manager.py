@@ -42,6 +42,7 @@ from pysnmp.hlapi import SnmpEngine, UdpTransportTarget, bulkCmd, getCmd
 from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
+from pysnmp.smi.error import SmiError
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
@@ -330,52 +331,23 @@ class Poller(Task):
             logger.info(f"No work to do for {address}")
             return False, {}
 
-        if varbinds_bulk:
-            for (
-                error_indication,
-                error_status,
-                error_index,
-                varbind_table,
-            ) in bulkCmd(
-                self.snmpEngine,
-                auth_data,
-                transport,
-                context_data,
-                1,
-                10,
-                *varbinds_bulk,
-                lexicographicMode=False,
-                ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
-            ):
-                if not _any_failure_happened(
-                    error_indication,
-                    error_status,
-                    error_index,
-                    varbind_table,
-                    ir.address,
-                    walk,
-                ):
-                    _, tmp_mibs, _ = self.process_snmp_data(
-                        varbind_table, metrics, address, bulk_mapping
-                    )
-                    if tmp_mibs:
-                        self.load_mibs(tmp_mibs)
-                        self.process_snmp_data(
-                            varbind_table, metrics, address, bulk_mapping
-                        )
-
-        if varbinds_get:
-            # some devices cannot process more OID than X, so it is necessary to divide it on chunks
-            for varbind_chunk in self.get_varbind_chunk(
-                varbinds_get, MAX_OID_TO_PROCESS
-            ):
+        try:
+            if varbinds_bulk:
                 for (
                     error_indication,
                     error_status,
                     error_index,
                     varbind_table,
-                ) in getCmd(
-                    self.snmpEngine, auth_data, transport, context_data, *varbind_chunk
+                ) in bulkCmd(
+                    self.snmpEngine,
+                    auth_data,
+                    transport,
+                    context_data,
+                    1,
+                    10,
+                    *varbinds_bulk,
+                    lexicographicMode=False,
+                    ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
                 ):
                     if not _any_failure_happened(
                         error_indication,
@@ -385,9 +357,53 @@ class Poller(Task):
                         ir.address,
                         walk,
                     ):
-                        self.process_snmp_data(
-                            varbind_table, metrics, address, get_mapping
+                        _, tmp_mibs, _ = self.process_snmp_data(
+                            varbind_table, metrics, address, bulk_mapping
                         )
+                        if tmp_mibs:
+                            self.load_mibs(tmp_mibs)
+                            self.process_snmp_data(
+                                varbind_table, metrics, address, bulk_mapping
+                            )
+        except SmiError as e:
+            raise SnmpActionError(f"ERROR IN varbinds_bulk {repr(e)}: host: {address}, walk={walk}, profiles={profiles}, \n"
+                         f"varbinds_get={varbinds_get}, \n"
+                         f"get_mapping={get_mapping}, \n"
+                         f"varbinds_bulk={varbinds_bulk}, \n"
+                         f"bulk_mapping={bulk_mapping}")
+
+        try:
+            if varbinds_get:
+                # some devices cannot process more OID than X, so it is necessary to divide it on chunks
+                for varbind_chunk in self.get_varbind_chunk(
+                    varbinds_get, MAX_OID_TO_PROCESS
+                ):
+                    for (
+                        error_indication,
+                        error_status,
+                        error_index,
+                        varbind_table,
+                    ) in getCmd(
+                        self.snmpEngine, auth_data, transport, context_data, *varbind_chunk
+                    ):
+                        if not _any_failure_happened(
+                            error_indication,
+                            error_status,
+                            error_index,
+                            varbind_table,
+                            ir.address,
+                            walk,
+                        ):
+                            self.process_snmp_data(
+                                varbind_table, metrics, address, get_mapping
+                            )
+        except SmiError as e:
+            raise SnmpActionError(
+                f"ERROR IN varbinds_get {repr(e)}: host: {address}, walk={walk}, profiles={profiles}, \n"
+                f"varbinds_get={varbinds_get}, \n"
+                f"get_mapping={get_mapping}, \n"
+                f"varbinds_bulk={varbinds_bulk}, \n"
+                f"bulk_mapping={bulk_mapping}")
 
         for group_key, metric in metrics.items():
             if "profiles" in metrics[group_key]:

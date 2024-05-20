@@ -1,3 +1,4 @@
+import logging
 import os
 
 from celery import Celery, chain, group, signature
@@ -65,9 +66,11 @@ class WalkTaskGenerator(TaskGenerator):
         app,
         host_group,
         profile,
+        logger=None,
     ):
         super().__init__(target, schedule_period, app, host_group)
         self.profile = profile
+        self.logger = logger
 
     def generate_task_definition(self):
         task_data = super().generate_task_definition()
@@ -81,6 +84,7 @@ class WalkTaskGenerator(TaskGenerator):
             "chain_of_tasks_expiry_time": CHAIN_OF_TASKS_EXPIRY_TIME,
         }
         task_data["kwargs"].update(walk_kwargs)
+        self.logger.debug(f"WalkTaskGenerator.generate_task_definition: task_data={task_data}")
         return task_data
 
 

@@ -79,6 +79,8 @@ def walk(self, **kwargs):
     mongo_db = mongo_client[MONGO_DB]
     mongo_inventory = mongo_db.inventory
 
+
+
     ir = get_inventory(mongo_inventory, address)
     retry = True
     while retry:
