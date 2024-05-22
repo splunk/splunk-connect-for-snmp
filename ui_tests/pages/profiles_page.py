@@ -56,7 +56,7 @@ class ProfilesPage:
         freq_field.send_keys(freq_value)
 
     def set_profile_name(self, name):
-        logger.info(f"Setting profile frequency: {name}")
+        logger.info(f"Setting profile name: {name}")
         xpath = "//div[@data-test='sc4snmp:form:profile-name-input']//span//input"
         name_input = driver.find_element(By.XPATH, xpath)
         helper.clear_input(name_input)  # this is useful when editing profile name
