@@ -3,7 +3,6 @@ services:
     command:
     - celery
     - worker-poller
-    container_name: sc4snmp-worker-poller
     depends_on:
     - redis
     - mongo
@@ -52,6 +51,16 @@ services:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
     - worker-poller-pysnmp-cache-volume:/.pysnmp/:rw
     - worker-poller-tmp:/tmp/:rw
+    deploy:
+      mode: replicated
+      replicas: ${WORKER_POLLER_REPLICAS:-2}
+      resources:
+        limits:
+          cpus: ${WORKER_POLLER_CPU_LIMIT:-0.50}
+          memory: ${WORKER_POLLER_MEMORY_LIMIT:-500M}
+        reservations:
+          cpus: ${WORKER_POLLER_CPU_RESERVATIONS:-0.25}
+          memory: ${WORKER_POLLER_MEMORY_RESERVATIONS:-250M}
 version: '3.8'
 volumes:
   worker-poller-pysnmp-cache-volume: null

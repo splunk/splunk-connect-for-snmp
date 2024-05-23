@@ -48,6 +48,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 
 ## Workers
 
+### General
 | Variable                     | Description                                                                                                                                          |
 |------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------| 
 | `WALK_RETRY_MAX_INTERVAL`    | Maximum time interval between walk attempts                                                                                                          |
@@ -58,15 +59,42 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `WORKER_LOG_LEVEL`           | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                      |
 | `UDP_CONNECTION_TIMEOUT`     | Timeout in seconds for SNMP operations                                                                                                               |
 | `MAX_OID_TO_PROCESS`         | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS |
-| `WORKER_POLLER_CONCURRENCY`  | Minimum number of threads in the poller container                                                                                                    |
-| `WORKER_SENDER_CONCURRENCY`  | Minimum number of threads in the sender container                                                                                                    |
-| `WORKER_TRAP_CONCURRENCY`    | Minimum number of threads in the trap container                                                                                                      |
-| `PREFETCH_POLLER_COUNT`      | How many tasks are consumed from the queue at once in the poller container                                                                           |
-| `PREFETCH_SENDER_COUNT`      | How many tasks are consumed from the queue at once in the sender container                                                                           |
-| `PREFETCH_TRAP_COUNT`        | How many tasks are consumed from the queue at once in the trap container                                                                             |
-| `RESOLVE_TRAP_ADDRESS`       | Use reverse dns lookup for trap IP address and send the hostname to Splunk                                                                           |
-| `MAX_DNS_CACHE_SIZE_TRAPS`   | If RESOLVE_TRAP_ADDRESS is set to true, this is the maximum number of records in cache                                                               |
-| `TTL_DNS_CACHE_TRAPS`        | If RESOLVE_TRAP_ADDRESS is set to true, this is the time to live of the cached record in seconds                                                     |
+
+### Worker Poller
+| Variable                            | Description                                                                |
+|-------------------------------------|----------------------------------------------------------------------------| 
+| `WORKER_POLLER_CONCURRENCY`         | Minimum number of threads in the poller container                          |
+| `PREFETCH_POLLER_COUNT`             | How many tasks are consumed from the queue at once in the poller container |
+| `WORKER_POLLER_REPLICAS`            | Number of docker replicas of worker poller container                       |
+| `WORKER_POLLER_CPU_LIMIT`           | Limit of cpu that worker poller container can use                          |
+| `WORKER_POLLER_MEMORY_LIMIT`        | Limit of memory that worker poller container can use                       |
+| `WORKER_POLLER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker poller container                        |
+| `WORKER_POLLER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker poller container                     |
+
+### Worker Sender
+| Variable                            | Description                                                                |
+|-------------------------------------|----------------------------------------------------------------------------| 
+| `WORKER_SENDER_CONCURRENCY`         | Minimum number of threads in the sender container                          |
+| `PREFETCH_SENDER_COUNT`             | How many tasks are consumed from the queue at once in the sender container |
+| `WORKER_SENDER_REPLICAS`            | Number of docker replicas of worker sender container                       |
+| `WORKER_SENDER_CPU_LIMIT`           | Limit of cpu that worker sender container can use                          |
+| `WORKER_SENDER_MEMORY_LIMIT`        | Limit of memory that worker sender container can use                       |
+| `WORKER_SENDER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker sender container                        |
+| `WORKER_SENDER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker sender container                     |
+
+### Worker Trap
+| Variable                          | Description                                                                                      |
+|-----------------------------------|--------------------------------------------------------------------------------------------------| 
+| `WORKER_TRAP_CONCURRENCY`         | Minimum number of threads in the trap container                                                  |
+| `PREFETCH_TRAP_COUNT`             | How many tasks are consumed from the queue at once in the trap container                         |
+| `RESOLVE_TRAP_ADDRESS`            | Use reverse dns lookup for trap IP address and send the hostname to Splunk                       |
+| `MAX_DNS_CACHE_SIZE_TRAPS`        | If RESOLVE_TRAP_ADDRESS is set to true, this is the maximum number of records in cache           |
+| `TTL_DNS_CACHE_TRAPS`             | If RESOLVE_TRAP_ADDRESS is set to true, this is the time to live of the cached record in seconds |
+| `WORKER_TRAP_REPLICAS`            | Number of docker replicas of worker trap container                                               |
+| `WORKER_TRAP_CPU_LIMIT`           | Limit of cpu that worker trap container can use                                                  |
+| `WORKER_TRAP_MEMORY_LIMIT`        | Limit of memory that worker trap container can use                                               |
+| `WORKER_TRAP_CPU_RESERVATIONS`    | Dedicated cpu resources for worker trap container                                                |
+| `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
 
 ## Inventory
 

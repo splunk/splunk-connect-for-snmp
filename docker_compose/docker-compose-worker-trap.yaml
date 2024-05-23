@@ -2,7 +2,6 @@ version: '3.8'
 services:
   worker-trap:
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
-    container_name: sc4snmp-worker-trap
     command: ["celery", "worker-trap"]
     environment:
       - CONFIG_PATH=/app/config/config.yaml
@@ -58,6 +57,16 @@ services:
       - my_network
     dns:
       - ${COREDNS_ADDRESS}
+    deploy:
+      mode: replicated
+      replicas: ${WORKER_TRAP_REPLICAS:-2}
+      resources:
+        limits:
+          cpus: ${WORKER_TRAP_CPU_LIMIT:-0.50}
+          memory: ${WORKER_TRAP_MEMORY_LIMIT:-500M}
+        reservations:
+          cpus: ${WORKER_TRAP_CPU_RESERVATIONS:-0.25}
+          memory: ${WORKER_TRAP_MEMORY_RESERVATIONS:-250M}
 volumes:
   worker-trap-tmp: null
   worker-trap-pysnmp-cache-volume: null
