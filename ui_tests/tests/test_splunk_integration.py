@@ -387,7 +387,7 @@ def test_setting_host_in_inventory(setup):
     p_header.apply_changes()
     time_to_upgrade = p_header.get_time_to_upgrade()
     p_header.close_configuration_applied_notification_popup()
-    time.sleep(time_to_upgrade + 60)  # wait for upgrade + walk time + polling
+    time.sleep(time_to_upgrade + 75)  # wait for upgrade + walk time + polling
 
     # check walk scheduled
     search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host};walk"'
