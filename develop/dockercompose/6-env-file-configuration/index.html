@@ -1201,6 +1201,48 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Workers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general" class="md-nav__link">
+    <span class="md-ellipsis">
+      General
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#worker-poller" class="md-nav__link">
+    <span class="md-ellipsis">
+      Worker Poller
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#worker-sender" class="md-nav__link">
+    <span class="md-ellipsis">
+      Worker Sender
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#worker-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Worker Trap
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1528,6 +1570,48 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Workers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general" class="md-nav__link">
+    <span class="md-ellipsis">
+      General
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#worker-poller" class="md-nav__link">
+    <span class="md-ellipsis">
+      Worker Poller
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#worker-sender" class="md-nav__link">
+    <span class="md-ellipsis">
+      Worker Sender
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#worker-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Worker Trap
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1724,6 +1808,7 @@
 </tbody>
 </table>
 <h2 id="workers">Workers<a class="headerlink" href="#workers" title="Permanent link">¶</a></h2>
+<h3 id="general">General<a class="headerlink" href="#general" title="Permanent link">¶</a></h3>
 <table>
 <thead>
 <tr>
@@ -1764,25 +1849,98 @@
 <td><code>MAX_OID_TO_PROCESS</code></td>
 <td>Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error “TooBig” is visible in logs, decrease the number of MAX_OID_TO_PROCESS</td>
 </tr>
+</tbody>
+</table>
+<h3 id="worker-poller">Worker Poller<a class="headerlink" href="#worker-poller" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td><code>WORKER_POLLER_CONCURRENCY</code></td>
 <td>Minimum number of threads in the poller container</td>
-</tr>
-<tr>
-<td><code>WORKER_SENDER_CONCURRENCY</code></td>
-<td>Minimum number of threads in the sender container</td>
-</tr>
-<tr>
-<td><code>WORKER_TRAP_CONCURRENCY</code></td>
-<td>Minimum number of threads in the trap container</td>
 </tr>
 <tr>
 <td><code>PREFETCH_POLLER_COUNT</code></td>
 <td>How many tasks are consumed from the queue at once in the poller container</td>
 </tr>
 <tr>
+<td><code>WORKER_POLLER_REPLICAS</code></td>
+<td>Number of docker replicas of worker poller container</td>
+</tr>
+<tr>
+<td><code>WORKER_POLLER_CPU_LIMIT</code></td>
+<td>Limit of cpu that worker poller container can use</td>
+</tr>
+<tr>
+<td><code>WORKER_POLLER_MEMORY_LIMIT</code></td>
+<td>Limit of memory that worker poller container can use</td>
+</tr>
+<tr>
+<td><code>WORKER_POLLER_CPU_RESERVATIONS</code></td>
+<td>Dedicated cpu resources for worker poller container</td>
+</tr>
+<tr>
+<td><code>WORKER_POLLER_MEMORY_RESERVATIONS</code></td>
+<td>Dedicated memory resources for worker poller container</td>
+</tr>
+</tbody>
+</table>
+<h3 id="worker-sender">Worker Sender<a class="headerlink" href="#worker-sender" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WORKER_SENDER_CONCURRENCY</code></td>
+<td>Minimum number of threads in the sender container</td>
+</tr>
+<tr>
 <td><code>PREFETCH_SENDER_COUNT</code></td>
 <td>How many tasks are consumed from the queue at once in the sender container</td>
+</tr>
+<tr>
+<td><code>WORKER_SENDER_REPLICAS</code></td>
+<td>Number of docker replicas of worker sender container</td>
+</tr>
+<tr>
+<td><code>WORKER_SENDER_CPU_LIMIT</code></td>
+<td>Limit of cpu that worker sender container can use</td>
+</tr>
+<tr>
+<td><code>WORKER_SENDER_MEMORY_LIMIT</code></td>
+<td>Limit of memory that worker sender container can use</td>
+</tr>
+<tr>
+<td><code>WORKER_SENDER_CPU_RESERVATIONS</code></td>
+<td>Dedicated cpu resources for worker sender container</td>
+</tr>
+<tr>
+<td><code>WORKER_SENDER_MEMORY_RESERVATIONS</code></td>
+<td>Dedicated memory resources for worker sender container</td>
+</tr>
+</tbody>
+</table>
+<h3 id="worker-trap">Worker Trap<a class="headerlink" href="#worker-trap" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WORKER_TRAP_CONCURRENCY</code></td>
+<td>Minimum number of threads in the trap container</td>
 </tr>
 <tr>
 <td><code>PREFETCH_TRAP_COUNT</code></td>
@@ -1799,6 +1957,26 @@
 <tr>
 <td><code>TTL_DNS_CACHE_TRAPS</code></td>
 <td>If RESOLVE_TRAP_ADDRESS is set to true, this is the time to live of the cached record in seconds</td>
+</tr>
+<tr>
+<td><code>WORKER_TRAP_REPLICAS</code></td>
+<td>Number of docker replicas of worker trap container</td>
+</tr>
+<tr>
+<td><code>WORKER_TRAP_CPU_LIMIT</code></td>
+<td>Limit of cpu that worker trap container can use</td>
+</tr>
+<tr>
+<td><code>WORKER_TRAP_MEMORY_LIMIT</code></td>
+<td>Limit of memory that worker trap container can use</td>
+</tr>
+<tr>
+<td><code>WORKER_TRAP_CPU_RESERVATIONS</code></td>
+<td>Dedicated cpu resources for worker trap container</td>
+</tr>
+<tr>
+<td><code>WORKER_TRAP_MEMORY_RESERVATIONS</code></td>
+<td>Dedicated memory resources for worker trap container</td>
 </tr>
 </tbody>
 </table>
