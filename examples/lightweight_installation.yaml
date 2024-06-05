@@ -1,8 +1,8 @@
 splunk:
   enabled: true
   protocol: https
-  host: ###SPLUNK_HOST###
-  token: ###SPLUNK_TOKEN###
+  host: "###SPLUNK_HOST###"
+  token: "###SPLUNK_TOKEN###"
   insecureSSL: "false"
   port: "###SPLUNK_PORT###"
 image:
