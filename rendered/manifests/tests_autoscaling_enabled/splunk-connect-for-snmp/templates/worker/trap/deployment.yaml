@@ -65,6 +65,8 @@ spec:
               value: "3"
             - name: MAX_OID_TO_PROCESS
               value: "70"
+            - name: MAX_REPETITIONS
+              value: "10"
             - name: PROFILES_RELOAD_DELAY
               value: "60"
             - name: MIB_SOURCES
@@ -104,6 +106,12 @@ spec:
               value: "4"
             - name: PREFETCH_COUNT
               value: "30"
+            - name: RESOLVE_TRAP_ADDRESS
+              value: "false"
+            - name: MAX_DNS_CACHE_SIZE_TRAPS
+              value: "500"
+            - name: TTL_DNS_CACHE_TRAPS
+              value: "1800"
           volumeMounts:
             - name: config
               mountPath: "/app/config"

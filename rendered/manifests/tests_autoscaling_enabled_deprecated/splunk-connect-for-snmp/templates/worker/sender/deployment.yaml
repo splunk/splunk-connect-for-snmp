@@ -65,6 +65,8 @@ spec:
               value: "3"
             - name: MAX_OID_TO_PROCESS
               value: "70"
+            - name: MAX_REPETITIONS
+              value: "10"
             - name: PROFILES_RELOAD_DELAY
               value: "60"
             - name: MIB_SOURCES
