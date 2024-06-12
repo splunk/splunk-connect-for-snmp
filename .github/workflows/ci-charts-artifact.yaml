@@ -24,7 +24,6 @@ jobs:
         run: |
           zip -r charts.zip charts 
           VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
-          gh release upload $VERSION charts.zip
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create artifact
