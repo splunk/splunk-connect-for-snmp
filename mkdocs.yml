@@ -84,4 +84,4 @@ nav:
   - Troubleshooting: "bestpractices.md"
   - Releases: "releases.md"
   - High Availability: ha.md
-  - Docker compose deployment: "docker-compose.md"
+  - Improved polling performance: "improved-polling.md"
