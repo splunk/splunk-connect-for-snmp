@@ -1268,6 +1268,148 @@ class TestWrongConditions:
         assert metric_count == 0
 
 
+@pytest.fixture(scope="class")
+def setup_misconfigured_profiles(request):
+    """
+    None of the profiles below should poll anything.
+    """
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    profiles = {
+        "no_varbinds_profile": {
+            "frequency": 7,
+            "varBinds": [],
+            "conditions": [
+                {"field": "IF-MIB.ifIndex", "operation": dq("gt"), "value": 20},
+                {
+                    "field": "IF-MIB.ifDescr",
+                    "operation": dq("equals"),
+                    "value": dq("eth0"),
+                },
+            ],
+        },
+        "no_operation_key_in_condition_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
+            "conditions": [
+                {"field": "IF-MIB.ifIndex", "operation": dq("lt"), "value": 20},
+                {
+                    "field": "IF-MIB.ifDescr",
+                    "value": [dq("test value 1"), dq("test value 2")],
+                },
+            ],
+        },
+        "no_frequency_profile": {
+            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
+            "conditions": [
+                {"field": "IF-MIB.ifIndex", "operation": dq("equals"), "value": 200}
+            ],
+        },
+        "no_patterns_profile": {
+            "frequency": 3,
+            "condition": {
+                "type": "field",
+                "field": "SNMPv2-MIB.sysDescr",
+            },
+            "varBinds": [
+                yaml_escape_list(sq("IP-MIB"), sq("icmpOutDestUnreachs"), 0),
+                yaml_escape_list(sq("IP-MIB"), sq("icmpOutEchoReps"), 0),
+            ],
+        },
+    }
+
+    update_profiles(profiles)
+    update_file(
+        [
+            f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    time.sleep(120)
+    yield
+    update_file(
+        [
+            f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,t",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml"])
+    time.sleep(120)
+
+
+@pytest.mark.usefixtures("setup_misconfigured_profiles")
+class TestMisconfiguredProfiles:
+    def test_wrong_profiles(self, request, setup_splunk):
+        time.sleep(20)
+        search_string = """| mpreview index=netmetrics | search profiles=no_varbinds_profile OR profiles=no_operation_key_in_condition_profile OR profiles=no_frequency_profile OR profiles=no_patterns_profile """
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count == 0
+        assert metric_count == 0
+
+
+@pytest.fixture(scope="class")
+def setup_misconfigured_groups(request):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    profiles = {
+        "routers_wrong_group_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IP-MIB"))],
+        },
+        "switches_wrong_group_profile": {
+            "frequency": 7,
+            "varBinds": [yaml_escape_list(sq("IP-MIB"))],
+        },
+    }
+    groups = {
+        "routers": [
+            {"address": trap_external_ip, "port": 1163},
+            {"address": trap_external_ip, "port": 1164, "wrong_key": 1},
+        ],
+        "switches": [
+            {"addre": trap_external_ip},
+            {"address": trap_external_ip, "port": 1162},
+        ],
+    }
+
+    update_profiles(profiles)
+    update_groups(groups)
+    update_file(
+        [
+            f"{trap_external_ip},1165,2c,public,,,600,single_profile,,",
+            f"routers,,2c,public,,,600,routers_wrong_group_profile,,",
+            f"switches,,2c,public,,,600,switches_wrong_group_profile,,",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+    time.sleep(120)
+    yield
+    update_file(
+        [
+            f"{trap_external_ip},1165,2c,public,,,600,single_profile,,t",
+            f"routers,,2c,public,,,600,routers_wrong_group_profile,,t",
+            f"switches,,2c,public,,,600,switches_wrong_group_profile,,t",
+        ],
+        "inventory.yaml",
+    )
+    upgrade_helm(["inventory.yaml"])
+    time.sleep(100)
+
+
+@pytest.mark.usefixtures("setup_misconfigured_groups")
+class TestMisconfiguredGroups:
+    def test_wrong_groups(self, request, setup_splunk):
+        time.sleep(20)
+        search_string = """| mpreview index=netmetrics | search profiles=routers_wrong_group_profile OR profiles=routers_wrong_group_profile """
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count == 0
+        assert metric_count == 0
+
+
 def run_retried_single_search(setup_splunk, search_string, retries):
     for _ in range(retries):
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)

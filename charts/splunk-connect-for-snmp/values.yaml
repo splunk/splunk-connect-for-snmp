@@ -86,7 +86,7 @@ splunk:
 
   # name of the metrics index
   metricsIndex: "netmetrics"
-  
+
 ################################################################################
 # Splunk Observability configuration
 ################################################################################
@@ -97,7 +97,7 @@ sim:
 
   # Splunk Observability realm to send telemetry data to.
   signalfxToken: ""
-  # Required for Splunk Observability (if `realm` is specified). 
+  # Required for Splunk Observability (if `realm` is specified).
   # Splunk Observability org access token.
   signalfxRealm: ""
 
@@ -383,7 +383,7 @@ inventory:
     name: ""
 
   service:
-    annotations: { }
+    annotations: {}
 
   # set CPU and Memory limits for an inventory pod
   resources: {}
