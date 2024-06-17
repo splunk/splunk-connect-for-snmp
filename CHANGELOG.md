@@ -9,6 +9,7 @@
 - create and/or change ownership of /tmp and /.pysnmp to 10001:10001 in Dockerfile
 - while mounting volumes in docker compose explicitly mount them as read only or read write
 - added `values.yaml` schema validation using `values.schema.json`
+- released beta version of improved polling performance
 
 ### Fixed
 - fixed a bug with configuration from values.yaml not being transferred to the UI while migrating to SC4SNMP-UI
