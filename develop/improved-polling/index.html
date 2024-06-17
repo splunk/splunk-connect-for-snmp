@@ -18,7 +18,7 @@
     
     
       
-        <title>Docker compose deployment - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Improved polling performance - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -68,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#deployment-using-docker-compose" class="md-skip">
+        <a href="#improved-polling-performance" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Docker compose deployment
+              Improved polling performance
             
           </span>
         </div>
@@ -1361,7 +1361,7 @@
         
   
   <span class="md-ellipsis">
-    Docker compose deployment
+    Improved polling performance
   </span>
   
 
@@ -1404,13 +1404,37 @@
                   
 
 
-<div><h1 id="deployment-using-docker-compose">Deployment using docker compose<a class="headerlink" href="#deployment-using-docker-compose" title="Permanent link">¶</a></h1>
-<p>SC4SNMP now offers beta support for docker-compose providing an alternative method for project deployment. 
-While this is in beta, we encourage users to explore it. Although we’ve conducted extensive testing, occasional issues may arise.
+<div><h1 id="improved-polling-performance">Improved polling performance<a class="headerlink" href="#improved-polling-performance" title="Permanent link">¶</a></h1>
+<p>SC4SNMP now offers beta support for improved polling performance.</p>
+<p>While this is in beta, we encourage users to explore it. Although we’ve conducted extensive testing, occasional issues may arise.
 Your feedback during this phase is crucial in refining and optimizing and can be shared using <a href="https://github.com/splunk/splunk-connect-for-snmp/issues">issues</a>.
-To get started, refer to the <a href="https://github.com/splunk/splunk-connect-for-snmp/tree/fix/docker-compose/docs/dockercompose">documentation</a> 
-and <code>fix/docker-compose</code> branch for  instructions on setting up and running SC4SNMP using docker-compose.
-Your involvement in testing docker-compose support is pivotal, and we look forward to hearing about your experiences.</p></div>
+To get started, the zip file with helm chart must be downloaded. It can be found on <a href="https://github.com/splunk/splunk-connect-for-snmp/pull/976/checks">feat/improve-polling-time</a> branch.</p>
+<p>On the left-hand side click <code>create-charts-zip</code>:
+<img alt="Workflows" src="../images/improved-polling-tmp/actions-view.png"></p>
+<hr style="border:2px solid">
+
+<p>At the bottom of the page in the <code>Artifacts</code> section there will be 
+<code>charts</code> package. Download it and unzip it in your environment.</p>
+<p><img alt="Workflows" src="../images/improved-polling-tmp/charts-zip-view.png"></p>
+<p>In <code>values.yaml</code> set the following image settings:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">image</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/splunk/splunk-connect-for-snmp/improved-polling-time</span>
+<span class="w">  </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="s">"latest"</span>
+</code></pre></div>
+
+<p>Change the directory to <code>charts/splunk-connect-for-snmp</code> and run <code>microk8s helm3 dep update</code>. You can exit <code>charts/splunk-connect-for-snmp</code> directory.
+While running <code>microk8s helm3 install</code> or <code>microk8s helm3 upgrade</code> commands, path to the helm chart must be modified. 
+In the <a href="../gettingstarted/sc4snmp-installation/#install-sc4snmp">sc4snmp installation</a> documentation, the following commands are presented:</p>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+</code></pre></div>
+
+<p>In order to use this beta release, <code>splunk-connect-for-snmp/splunk-connect-for-snmp</code> needs to be changed to the path of the <code>charts/splunk-connect-for-snmp</code> directory. </p>
+<p>To learn how the new improved polling works, refer to the documentation <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/feat/improve-polling-time/docs/configuration/poller-configuration.md#define-maxrepetitions">Poller Configuration - Define maxRepetitions</a> 
+for instructions.</p>
+<p>Your involvement in testing new polling support is pivotal, and we look forward to hearing about your experiences.</p></div>
 
 
 
