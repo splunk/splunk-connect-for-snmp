@@ -141,6 +141,7 @@ scheduler:
   #      port: 161
   #    - address: 63.2.40.0
   #      port: 161
+  groups: ""
 
 
   ### Profiles definitions ###
@@ -187,6 +188,7 @@ scheduler:
   #      - ['IF-MIB', 'ifAlias']
   #      - ['IF-MIB', 'ifInErrors']
   #      - ['IF-MIB', 'ifOutDiscards']
+  profiles: ""
 
   # mapping MIB fields to custom names
   # more: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-profiles/#custom-translations
@@ -232,6 +234,7 @@ poller:
   #inventory: |
   #  address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
   #  example_group_1,,2c,public,,,3000,static_profile,t,
+  logLevel: "INFO"
 
 worker:
   # workers are responsible for the actual execution of polling, processing trap messages, and sending data to Splunk.
@@ -367,6 +370,9 @@ worker:
   # udpConnectionTimeout timeout in seconds for SNMP operations
   udpConnectionTimeout: 3
 
+  # in case of seeing "Empty SNMP response message" this variable can be set to true
+  ignoreEmptyVarbinds: false
+
 inventory:
   secret:
     # Option for creating a new secret or using an existing one.
@@ -425,6 +431,7 @@ traps:
   #loadBalancerIP must be set to the IP address in the metallb pool.
   #It is required when service type is set to LoadBalancer.
   #loadBalancerIP: 18.117.100.37
+  loadBalancerIP: ""
 
   resources: {}
     # limits:
