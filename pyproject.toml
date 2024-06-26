@@ -12,14 +12,6 @@ traps = 'splunk_connect_for_snmp.traps:main'
 inventory-loader = 'splunk_connect_for_snmp.inventory.loader:load'
 run-walk = 'splunk_connect_for_snmp.walk:run_walk'
 
-[tool.pytest.ini_options]
-log_cli = true
-log_cli_level = "DEBUG"
-log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
-log_cli_date_format = "%Y-%m-%d %H:%M:%S"
-testpaths = ["test"]
-python_files = ["test_*.py"]
-
 [tool.poetry.dependencies]
 python = "^3.8"
 pymongo = {extras = ["srv"], version = "^4.0.0"}
@@ -65,3 +57,11 @@ build-backend = "poetry.masonry.api"
 #
 #docker run --rm -d -p 27017:27017 --name example-mongo mongo:latest
 #docker run --rm -d -p 5672:5672 --hostname my-rabbit --name some-rabbit rabbitmq:3
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+testpaths = ["test"]
+python_files = ["test_*.py"]
