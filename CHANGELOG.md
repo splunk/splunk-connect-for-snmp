@@ -10,6 +10,8 @@
 - while mounting volumes in docker compose explicitly mount them as read only or read write
 - added `values.yaml` schema validation using `values.schema.json`
 - released beta version of improved polling performance
+- added `yamllint` validation for the `values.yaml` formatting
+- added "in code" validation of groups and profiles
 
 ### Fixed
 - fixed a bug with configuration from values.yaml not being transferred to the UI while migrating to SC4SNMP-UI

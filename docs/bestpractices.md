@@ -153,6 +153,17 @@ microk8s kubectl delete job/snmp-splunk-connect-for-snmp-inventory -n sc4snmp
 ```
 The upgrade command can be executed again. 
 
+### "The following profiles have invalid configuration" or "The following groups have invalid configuration" errors
+Following errors are examples of wrong configuration:
+```
+The following groups have invalid configuration and won't be used: ['group1']. Please check indentation and keywords spelling inside mentioned groups configuration.
+```
+```
+The following profiles have invalid configuration and won't be used: ['standard_profile', 'walk_profile']. Please check indentation and keywords spelling inside mentioned profiles configuration.
+```
+Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to [Configuring profiles](./configuration/configuring-profiles.md)
+or [Configuring Groups](./configuration/configuring-groups.md) sections to check how the correct configuration should look like.
+
 ### Identifying Traps issues
 
 #### Wrong IP or port

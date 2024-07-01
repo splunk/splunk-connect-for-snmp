@@ -14,12 +14,12 @@ traps:
       - homelab
   replicaCount: 1
   resources:
-     limits:
-       cpu: 100m
-       memory: 300Mi
-     requests:
-       cpu: 40m
-       memory: 256Mi
+    limits:
+      cpu: 100m
+      memory: 300Mi
+    requests:
+      cpu: 40m
+      memory: 256Mi
   #loadBalancerIP: The IP address in the metallb pool
   loadBalancerIP: ###TRAP_RECEIVER_IP###
 worker:
@@ -54,12 +54,12 @@ worker:
 scheduler:
   logLevel: "INFO"
   resources:
-     limits:
-       cpu: 40m
-       memory: 260Mi
-     requests:
-       cpu: 20m
-       memory: 180Mi
+    limits:
+      cpu: 40m
+      memory: 260Mi
+    requests:
+      cpu: 20m
+      memory: 180Mi
   profiles: |
     generic_switch:
       frequency: 300
@@ -80,8 +80,8 @@ poller:
     10.0.0.100,,3,,sc4snmp-hlab-sha-des,,1800,generic_switch,,
 inventory:
   resources:
-     limits:
-       cpu: 60m
-       memory: 300Mi
-     requests:
-       cpu: 20m
+    limits:
+      cpu: 60m
+      memory: 300Mi
+    requests:
+      cpu: 20m
