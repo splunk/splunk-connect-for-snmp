@@ -228,6 +228,9 @@ poller:
   # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#define-usernamesecrets
   usernameSecrets: []
 
+  # flag to enable polling full walk tree for devices
+  enableFullWalk: false
+
   # Here is where polling happens. Learn more on how to configure it here:
   # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/
 

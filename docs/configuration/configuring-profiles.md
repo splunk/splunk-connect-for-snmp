@@ -136,6 +136,8 @@ scheduler:
 Sometimes static profiles have additional functionalities to be used in specific scenarios. 
 
 #### WALK profile
+BETA NOTE: By default the walk without any profile set is polling only `SNMPv2-MIB`. For changing the scope of the walk you can configure new walk profile or use `enableFullWalk` flag. 
+More about it in [poller configuration](../poller-configuration/#poller-configuration-file).
 
 If you would like to limit the scope of the walk, you should set one of the profiles in the inventory to point to the profile definition of the `walk` type:
 ```yaml

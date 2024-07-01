@@ -53,6 +53,8 @@ data:
                 value: INFO
               - name: CONFIG_FROM_MONGO
                 value: "true"
+              - name: ENABLE_FULL_WALK
+                value: "false"
               volumeMounts:
                 - name: config
                   mountPath: "/app/config"

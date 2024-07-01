@@ -177,9 +177,14 @@ index="netops" sourcetype="sc4snmp:event"
 ``` bash
 | mpreview index="netmetrics" | search sourcetype="sc4snmp:metric"
 ```
+BETA: Default walk profile is polling only `SNMPv2-MIB`. 
+To enable full oid tree polling see [poller configuration](../../configuration/poller-configuration/#poller-configuration-file).
 
-NOTE: Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every `walk_interval`. 
-Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
+NOTE: Before polling starts, SC4SNMP must perform the SNMP WALK process on the device.
+It is run the first time after configuring the new device, and then during the run time in every 
+`walk_interval`. Its purpose is to gather all the data and provide meaningful context for the polling records. 
+For example, it might report that your device is so large that the walk takes too long, 
+so the scope of walking needs to be limited.
 In such cases, enable the small walk. See [walk takes too much time](../../bestpractices/#walking-a-device-takes-too-much-time).
 When the walk finishes, events appear in Splunk.
 

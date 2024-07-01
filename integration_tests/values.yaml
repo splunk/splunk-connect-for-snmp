@@ -65,6 +65,7 @@ scheduler:
   groups: |
     {}
 poller:
+  enableFullWalk: true
   usernameSecrets:
     - sv3poller
  #   - sc4snmp-hlab-sha-aes
