@@ -1731,6 +1731,20 @@ or download it directly from Helm using the command <code>microk8s helm3 show va
 <li>In order to learn more about each of the config parts, check <a href="../../configuration/deployment-configuration/">configuration</a> section.</li>
 </ol>
 <p>It is recommended to start by completing the base template and gradually add additional configurations as needed.</p>
+<p>The <code>values.yaml</code> file is validated using <code>JSON schema</code> built into <code>helm chart</code> and inside the code.
+To ensure that your <code>values.yaml</code> follows formatting standards, you can use <code>yamllint</code>. In order to download
+<code>yamllint</code> refer to the <a href="https://yamllint.readthedocs.io/en/stable/quickstart.html#installing-yamllint">installation instructions</a>. 
+Then create <code>custom-config.yamllint</code> file and add the following configuration:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">extends</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+
+<span class="nt">rules</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">line-length</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">warning</span>
+</code></pre></div>
+
+<p>Configuration above can be found in the <code>examples</code> directory in SC4SNMP <a href="https://github.com/splunk/splunk-connect-for-snmp">GitHub repository</a>.
+Next run <code>yamllint -c &lt;path to custom-config.yamllint&gt; &lt;path to values.yaml&gt;</code> command. Warnings can be ignored.</p>
 <h4 id="install-sc4snmp">Install SC4SNMP<a class="headerlink" href="#install-sc4snmp" title="Permanent link">¶</a></h4>
 <p>After the <code>values.yaml</code> creation, you can proceed with the SC4SNMP installation:</p>
 <div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace

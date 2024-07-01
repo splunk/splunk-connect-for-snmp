@@ -1499,6 +1499,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      "The following profiles have invalid configuration" or "The following groups have invalid configuration" errors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#identifying-traps-issues" class="md-nav__link">
     <span class="md-ellipsis">
       Identifying Traps issues
@@ -1821,6 +1830,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      "The following profiles have invalid configuration" or "The following groups have invalid configuration" errors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#identifying-traps-issues" class="md-nav__link">
     <span class="md-ellipsis">
       Identifying Traps issues
@@ -2022,6 +2040,16 @@ that the kubernetes secret with the correct authentication key has been created 
 </code></pre></div>
 
 <p>The upgrade command can be executed again. </p>
+<h3 id="the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors">“The following profiles have invalid configuration” or “The following groups have invalid configuration” errors<a class="headerlink" href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" title="Permanent link">¶</a></h3>
+<p>Following errors are examples of wrong configuration:</p>
+<div class="codehilite"><pre><span></span><code>The following groups have invalid configuration and won't be used: ['group1']. Please check indentation and keywords spelling inside mentioned groups configuration.
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code>The following profiles have invalid configuration and won't be used: ['standard_profile', 'walk_profile']. Please check indentation and keywords spelling inside mentioned profiles configuration.
+</code></pre></div>
+
+<p>Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to <a href="../configuration/configuring-profiles/">Configuring profiles</a>
+or <a href="../configuration/configuring-groups/">Configuring Groups</a> sections to check how the correct configuration should look like.</p>
 <h3 id="identifying-traps-issues">Identifying Traps issues<a class="headerlink" href="#identifying-traps-issues" title="Permanent link">¶</a></h3>
 <h4 id="wrong-ip-or-port">Wrong IP or port<a class="headerlink" href="#wrong-ip-or-port" title="Permanent link">¶</a></h4>
 <p>The first possible answer to why traps are not sent to Splunk is that SNMP agents send trap messages to the wrong IP 
