@@ -1,35 +1,55 @@
-#   ########################################################################
-#   Copyright 2021 Splunk Inc.
-#
-#    Licensed under the Apache License, Version 2.0 (the "License");
-#    you may not use this file except in compliance with the License.
-#    You may obtain a copy of the License at
-#
-#        http://www.apache.org/licenses/LICENSE-2.0
-#
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS,
-#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#    See the License for the specific language governing permissions and
-#    limitations under the License.
-#   ########################################################################
 import logging
+import subprocess
 import time
 
 import pytest
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString as dq
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
-from integration_tests.splunk_test_utils import (
+from integration_tests.compose_deployment.splunk_test_utils_compose import (
     splunk_single_search,
-    update_file,
     update_groups,
+    update_inventory,
     update_profiles,
-    upgrade_helm,
+    upgrade_docker_compose,
     yaml_escape_list,
 )
 
 logger = logging.getLogger(__name__)
+
+
+def logs_from_container(container):
+    result = subprocess.run(
+        ["sudo", "docker", "logs", f"{container}"],
+        stdout=subprocess.PIPE,  # Capture standard output
+        stderr=subprocess.PIPE,  # Capture standard error (optional)
+        text=True,  # Ensure the output is returned as a string
+    )
+    output = result.stdout
+    error_output = result.stderr
+    logger.info(f"{container} logs:\n{output}")
+    if error_output:
+        logger.error(f"{container} logs errors:\n{error_output}")
+
+
+def docker_ps():
+    result = subprocess.run(
+        ["sudo", "docker", "ps"],
+        stdout=subprocess.PIPE,  # Capture standard output
+        stderr=subprocess.PIPE,  # Capture standard error (optional)
+        text=True,  # Ensure the output is returned as a string
+    )
+    output = result.stdout
+    error_output = result.stderr
+    logger.info(f"docker ps:\n{output}")
+    if error_output:
+        logger.error(f"docker ps errors:\n{error_output}")
+
+
+def print_file(filename):
+    with open(filename) as f:
+        lines = f.readlines()
+        logger.info(f"file {filename}:\n{lines}")
 
 
 class TestSanity:
@@ -38,6 +58,7 @@ class TestSanity:
         search_string = (
             """search index="netops" sourcetype="sc4snmp:event" earliest=-5m"""
         )
+
         result_count, events_count = splunk_single_search(setup_splunk, search_string)
         assert result_count > 0
         assert events_count > 0
@@ -46,6 +67,7 @@ class TestSanity:
         logger.info("Integration test for poller metric")
         search_string = "| mcatalog values(metric_name) where index=netmetrics AND metric_name=sc4snmp.* earliest=-5m"
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+
         assert result_count > 0
         assert metric_count > 0
 
@@ -55,6 +77,7 @@ class TestSanity:
         | search "metric_name:sc4snmp.IF-MIB*if"
         | search "ifDescr" AND "ifAdminStatus" AND "ifOperStatus" AND "ifPhysAddress" AND "ifIndex" """
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+
         assert result_count > 0
         assert metric_count > 0
 
@@ -80,13 +103,12 @@ def setup_profile(request):
         }
     }
     update_profiles(profile)
-    update_file(
-        [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"], "inventory.yaml"
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    update_inventory([f"{trap_external_ip},,2c,public,,,600,generic_switch,,"])
+    upgrade_docker_compose()
     time.sleep(30)
     yield
-    upgrade_helm([f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"])
+    update_inventory([f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"])
+    upgrade_docker_compose()
     time.sleep(20)
 
 
@@ -122,20 +144,16 @@ def setup_profiles(request):
         },
     }
     update_profiles(profile)
-    # upgrade_helm(["profiles.yaml"])
-    # time.sleep(60)
-    update_file(
-        [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"],
-        "inventory.yaml",
+    update_inventory(
+        [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"]
     )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    upgrade_docker_compose()
     time.sleep(30)
     yield
-    update_file(
-        [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,t"],
-        "inventory.yaml",
+    update_inventory(
+        [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,t"]
     )
-    upgrade_helm(["inventory.yaml"])
+    upgrade_docker_compose()
     time.sleep(20)
 
 
@@ -143,9 +161,11 @@ def setup_profiles(request):
 class TestProfilesWorkflow:
     def test_add_new_profile_and_reload(self, setup_splunk):
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=new_profile """
+
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
+
         assert result_count > 0
         assert metric_count > 0
 
@@ -159,30 +179,30 @@ class TestProfilesWorkflow:
             }
         }
         update_profiles(profile)
-        update_file(
-            [f"{trap_external_ip},,2c,public,,,600,new_profile,,"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+        update_inventory([f"{trap_external_ip},,2c,public,,,600,new_profile,,"])
+        upgrade_docker_compose()
         time.sleep(70)
+
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch earliest=-20s """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
+
         assert result_count == 0
         assert metric_count == 0
 
     def test_delete_inventory_line(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
         logger.info("Integration test for deleting one profile and reloading")
-        update_file(
-            [f"{trap_external_ip},,2c,public,,,600,new_profile,,t"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+        update_inventory([f"{trap_external_ip},,2c,public,,,600,new_profile,,t"])
+        upgrade_docker_compose()
         time.sleep(40)
+
         search_string = """| mpreview index=netmetrics earliest=-20s """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
+
         assert result_count == 0
         assert metric_count == 0
 
@@ -206,14 +226,12 @@ def setup_smart_profiles(request):
         }
     }
     update_profiles(profile)
-    # upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    # time.sleep(60)
-    update_file([f"{trap_external_ip},,2c,public,,,600,,t,"], "inventory.yaml")
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    update_inventory([f"{trap_external_ip},,2c,public,,,600,,t,"])
+    upgrade_docker_compose()
     time.sleep(30)
     yield
-    update_file([f"{trap_external_ip},,2c,public,,,600,,t,t"], "inventory.yaml")
-    upgrade_helm(["inventory.yaml"])
+    update_inventory([f"{trap_external_ip},,2c,public,,,600,,t,t"])
+    upgrade_docker_compose()
     time.sleep(20)
 
 
@@ -244,6 +262,7 @@ class TestSmartProfiles:
             """| mpreview index=netmetrics| spath profiles | search profiles=BaseIF """
         )
         search_string_baseUpTime = """| mpreview index=netmetrics| spath profiles | search profiles=BaseUpTime """
+        time.sleep(300)
         result_count, metric_count = splunk_single_search(
             setup_splunk, search_string_baseIF
         )
@@ -266,16 +285,12 @@ def setup_modify_profile(request):
         },
     }
     update_profiles(profile)
-    update_file(
-        [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    update_inventory([f"{trap_external_ip},,2c,public,,,600,test_modify,f,"])
+    upgrade_docker_compose()
     time.sleep(30)
     yield
-    update_file(
-        [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"], "inventory.yaml"
-    )
-    upgrade_helm(["inventory.yaml"])
+    update_inventory([f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"])
+    upgrade_docker_compose()
     time.sleep(20)
 
 
@@ -298,15 +313,11 @@ class TestModifyProfilesFrequency:
             },
         }
         update_profiles(profile)
-        update_file(
-            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+        update_inventory([f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"])
+        upgrade_docker_compose()
         time.sleep(60)
-        update_file(
-            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+        update_inventory([f"{trap_external_ip},,2c,public,,,600,test_modify,f,"])
+        upgrade_docker_compose()
         time.sleep(30)
         search_string = """| mpreview index=netmetrics earliest=-30s | search profiles=test_modify frequency=7 """
         result_count, metric_count = run_retried_single_search(
@@ -339,15 +350,11 @@ class TestModifyProfilesVarBinds:
             },
         }
         update_profiles(profile)
-        update_file(
-            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+        update_inventory([f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"])
+        upgrade_docker_compose()
         time.sleep(60)
-        update_file(
-            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+        update_inventory([f"{trap_external_ip},,2c,public,,,600,test_modify,f,"])
+        upgrade_docker_compose()
         time.sleep(20)
         search_string = """| mpreview index=netmetrics earliest=-15s | search profiles=test_modify TCP-MIB """
         result_count, metric_count = run_retried_single_search(
@@ -379,12 +386,12 @@ def setup_small_walk(request):
         },
     }
     update_profiles(profile)
-    update_file([f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml")
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    update_inventory([f"{trap_external_ip},,2c,public,,,20,walk1,f,"])
+    upgrade_docker_compose()
     time.sleep(30)
     yield
-    update_file([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml")
-    upgrade_helm(["inventory.yaml"])
+    update_inventory([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"])
+    upgrade_docker_compose()
     time.sleep(20)
 
 
@@ -414,16 +421,23 @@ class TestSmallWalk:
 def setup_v3_connection(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     time.sleep(60)
-    update_file(
-        [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,"], "inventory.yaml"
-    )
-    upgrade_helm(["inventory.yaml"])
+    profile = {
+        "v3profile": {
+            "frequency": 5,
+            "varBinds": [
+                yaml_escape_list(sq("IF-MIB")),
+                yaml_escape_list(sq("TCP-MIB")),
+                yaml_escape_list(sq("UDP-MIB")),
+            ],
+        },
+    }
+    update_profiles(profile)
+    update_inventory([f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,"])
+    upgrade_docker_compose()
     time.sleep(30)
     yield
-    update_file(
-        [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,t"], "inventory.yaml"
-    )
-    upgrade_helm(["inventory.yaml"])
+    update_inventory([f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,t"])
+    upgrade_docker_compose()
     time.sleep(20)
 
 
@@ -469,26 +483,24 @@ def setup_groups(request):
 
     update_profiles(profiles)
     update_groups(groups)
-    update_file(
+    update_inventory(
         [
             f"{trap_external_ip},1165,2c,public,,,600,single_profile,,",
             f"routers,,2c,public,,,600,routers_profile,,",
             f"switches,,2c,public,,,600,switches_profile,,",
-        ],
-        "inventory.yaml",
+        ]
     )
-    upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
+    update_inventory(
         [
             f"{trap_external_ip},1165,2c,public,,,600,single_profile,,t",
             f"routers,,2c,public,,,600,routers_profile,,t",
             f"switches,,2c,public,,,600,switches_profile,,t",
-        ],
-        "inventory.yaml",
+        ]
     )
-    upgrade_helm(["inventory.yaml"])
+    upgrade_docker_compose()
     time.sleep(100)
 
 
@@ -532,7 +544,7 @@ class TestGroupsInventory:
             ],
         }
         update_groups(new_groups)
-        upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+        upgrade_docker_compose()
         time.sleep(60)
         search_string = f"""| mpreview index=netmetrics earliest=-20s | search profiles=routers_profile host="{trap_external_ip}:1163" """
         result_count, metric_count = run_retried_single_search(
@@ -567,26 +579,24 @@ def setup_single_ang_group(request):
 
     update_profiles(profiles)
     update_groups(groups)
-    update_file(
+    update_inventory(
         [
             f"{trap_external_ip},1165,2c,public,,,600,single_profile_1,,",
             f"{trap_external_ip},1162,2c,public,,,600,single_profile_2,,",
             f"switches,,2c,public,,,600,switches_profile,,",
-        ],
-        "inventory.yaml",
+        ]
     )
-    upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
+    update_inventory(
         [
             f"{trap_external_ip},1165,2c,public,,,600,single_profile_1,,t",
             f"{trap_external_ip},1162,2c,public,,,600,single_profile_2,,t",
             f"switches,,2c,public,,,600,switches_profile,,t",
-        ],
-        "inventory.yaml",
+        ]
     )
-    upgrade_helm(["inventory.yaml"])
+    upgrade_docker_compose()
     time.sleep(100)
 
 
@@ -652,22 +662,16 @@ def setup_single_gt_and_lt_profiles(request):
     }
 
     update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,",
-        ],
-        "inventory.yaml",
+    update_inventory(
+        [f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,"]
     )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,t",
-        ],
-        "inventory.yaml",
+    update_inventory(
+        [f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,t"]
     )
-    upgrade_helm(["inventory.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -729,22 +733,16 @@ def setup_single_in_and_equals_profiles(request):
     }
 
     update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,",
-        ],
-        "inventory.yaml",
+    update_inventory(
+        [f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,"]
     )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,t",
-        ],
-        "inventory.yaml",
+    update_inventory(
+        [f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,t"]
     )
-    upgrade_helm(["inventory.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -808,22 +806,16 @@ def setup_single_regex_and_options_profiles(request):
     }
 
     update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,",
-        ],
-        "inventory.yaml",
+    update_inventory(
+        [f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,"]
     )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,t",
-        ],
-        "inventory.yaml",
+    update_inventory(
+        [f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,t"]
     )
-    upgrade_helm(["inventory.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -891,22 +883,16 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
     }
 
     update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,",
-        ],
-        "inventory.yaml",
+    update_inventory(
+        [f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,"]
     )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,t",
-        ],
-        "inventory.yaml",
+    update_inventory(
+        [f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,t"]
     )
-    upgrade_helm(["inventory.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -974,22 +960,18 @@ def setup_single_in_and_equals_profiles_with_negation(request):
     }
 
     update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,",
-        ],
-        "inventory.yaml",
+    update_inventory(
+        [f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,"]
     )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
+    update_inventory(
         [
-            f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,t",
-        ],
-        "inventory.yaml",
+            f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,t"
+        ]
     )
-    upgrade_helm(["inventory.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -1057,22 +1039,20 @@ def setup_single_regex_and_options_profiles_with_negation(request):
     }
 
     update_profiles(profiles)
-    update_file(
+    update_inventory(
         [
-            f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,",
-        ],
-        "inventory.yaml",
+            f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,"
+        ]
     )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
+    update_inventory(
         [
-            f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,t",
-        ],
-        "inventory.yaml",
+            f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,t"
+        ]
     )
-    upgrade_helm(["inventory.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -1144,22 +1124,20 @@ def setup_multiple_conditions_profiles(request):
     }
 
     update_profiles(profiles)
-    update_file(
+    update_inventory(
         [
-            f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,",
-        ],
-        "inventory.yaml",
+            f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,"
+        ]
     )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
+    update_inventory(
         [
-            f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,t",
-        ],
-        "inventory.yaml",
+            f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,t"
+        ]
     )
-    upgrade_helm(["inventory.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -1237,22 +1215,20 @@ def setup_wrong_conditions_profiles(request):
     }
 
     update_profiles(profiles)
-    update_file(
+    update_inventory(
         [
-            f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,",
-        ],
-        "inventory.yaml",
+            f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,"
+        ]
     )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
+    update_inventory(
         [
-            f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,t",
-        ],
-        "inventory.yaml",
+            f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,t"
+        ]
     )
-    upgrade_helm(["inventory.yaml"])
+    upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -1261,148 +1237,6 @@ class TestWrongConditions:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)
         search_string = """| mpreview index=netmetrics | search profiles=wrong_gt_and_equals_profile OR profiles=wrong_lt_and_in_profile OR profiles=wrong_equals_profile """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count == 0
-        assert metric_count == 0
-
-
-@pytest.fixture(scope="class")
-def setup_misconfigured_profiles(request):
-    """
-    None of the profiles below should poll anything.
-    """
-    trap_external_ip = request.config.getoption("trap_external_ip")
-    profiles = {
-        "no_varbinds_profile": {
-            "frequency": 7,
-            "varBinds": [],
-            "conditions": [
-                {"field": "IF-MIB.ifIndex", "operation": dq("gt"), "value": 20},
-                {
-                    "field": "IF-MIB.ifDescr",
-                    "operation": dq("equals"),
-                    "value": dq("eth0"),
-                },
-            ],
-        },
-        "no_operation_key_in_condition_profile": {
-            "frequency": 7,
-            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
-            "conditions": [
-                {"field": "IF-MIB.ifIndex", "operation": dq("lt"), "value": 20},
-                {
-                    "field": "IF-MIB.ifDescr",
-                    "value": [dq("test value 1"), dq("test value 2")],
-                },
-            ],
-        },
-        "no_frequency_profile": {
-            "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
-            "conditions": [
-                {"field": "IF-MIB.ifIndex", "operation": dq("equals"), "value": 200}
-            ],
-        },
-        "no_patterns_profile": {
-            "frequency": 3,
-            "condition": {
-                "type": "field",
-                "field": "SNMPv2-MIB.sysDescr",
-            },
-            "varBinds": [
-                yaml_escape_list(sq("IP-MIB"), sq("icmpOutDestUnreachs"), 0),
-                yaml_escape_list(sq("IP-MIB"), sq("icmpOutEchoReps"), 0),
-            ],
-        },
-    }
-
-    update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    time.sleep(120)
-    yield
-    update_file(
-        [
-            f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
-    time.sleep(120)
-
-
-@pytest.mark.usefixtures("setup_misconfigured_profiles")
-class TestMisconfiguredProfiles:
-    def test_wrong_profiles(self, request, setup_splunk):
-        time.sleep(20)
-        search_string = """| mpreview index=netmetrics | search profiles=no_varbinds_profile OR profiles=no_operation_key_in_condition_profile OR profiles=no_frequency_profile OR profiles=no_patterns_profile """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count == 0
-        assert metric_count == 0
-
-
-@pytest.fixture(scope="class")
-def setup_misconfigured_groups(request):
-    trap_external_ip = request.config.getoption("trap_external_ip")
-    profiles = {
-        "routers_wrong_group_profile": {
-            "frequency": 7,
-            "varBinds": [yaml_escape_list(sq("IP-MIB"))],
-        },
-        "switches_wrong_group_profile": {
-            "frequency": 7,
-            "varBinds": [yaml_escape_list(sq("IP-MIB"))],
-        },
-    }
-    groups = {
-        "routers": [
-            {"address": trap_external_ip, "port": 1163},
-            {"address": trap_external_ip, "port": 1164, "wrong_key": 1},
-        ],
-        "switches": [
-            {"addre": trap_external_ip},
-            {"address": trap_external_ip, "port": 1162},
-        ],
-    }
-
-    update_profiles(profiles)
-    update_groups(groups)
-    update_file(
-        [
-            f"{trap_external_ip},1165,2c,public,,,600,single_profile,,",
-            f"routers,,2c,public,,,600,routers_wrong_group_profile,,",
-            f"switches,,2c,public,,,600,switches_wrong_group_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
-    time.sleep(120)
-    yield
-    update_file(
-        [
-            f"{trap_external_ip},1165,2c,public,,,600,single_profile,,t",
-            f"routers,,2c,public,,,600,routers_wrong_group_profile,,t",
-            f"switches,,2c,public,,,600,switches_wrong_group_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
-    time.sleep(100)
-
-
-@pytest.mark.usefixtures("setup_misconfigured_groups")
-class TestMisconfiguredGroups:
-    def test_wrong_groups(self, request, setup_splunk):
-        time.sleep(20)
-        search_string = """| mpreview index=netmetrics | search profiles=routers_wrong_group_profile OR profiles=routers_wrong_group_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )

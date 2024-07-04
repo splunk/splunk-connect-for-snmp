@@ -35,7 +35,7 @@
   - name: Run install_microk8s.sh
     command: ./install_microk8s.sh
     args:
-      chdir: "{{ dir }}/splunk-connect-for-snmp/integration_tests/"
+      chdir: "{{ dir }}/splunk-connect-for-snmp/integration_tests/microk8s_deployment"
     environment:
       - ANSIBLE_RUN: yes
   - name: Ensure group "docker" exists
@@ -51,9 +51,9 @@
       append: yes
   - name: reset ssh connection
     meta: reset_connection
-  - name: Run automatic_setup.sh
-    command: ./automatic_setup.sh
+  - name: Run automatic_setup_microk8s.sh
+    command: ./automatic_setup_microk8s.sh
     args:
-      chdir: "{{ dir }}/splunk-connect-for-snmp/integration_tests/"
+      chdir: "{{ dir }}/splunk-connect-for-snmp/integration_tests/microk8s_deployment"
     environment:
       S3_PATH: "{{ s3_path }}"

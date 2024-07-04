@@ -104,6 +104,7 @@ celerybeat.pid
 # Environments
 .env
 !docker_compose/.env
+!integration_tests/.env
 .venv
 env/
 venv/
@@ -154,6 +155,7 @@ integration_tests/scripts/main.tf
 integration_tests/scripts/.terraform
 .DS_Store
 snmp-ssh-key.pem
+new_integration_testing
 
 # Sonarqube
 .scannerwork

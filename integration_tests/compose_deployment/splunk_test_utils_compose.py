@@ -50,39 +50,8 @@ def splunk_single_search(service, search):
     return result_count, event_count
 
 
-inventory_template = """poller:
-  inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+inventory_template = """address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
 """
-
-profiles_template = """scheduler:
-  profiles: |
-"""
-
-groups_template = """scheduler:
-  groups: |
-"""
-
-poller_secrets_template = """scheduler:
-  usernameSecrets:
-"""
-
-traps_secrets_template = """traps:
-  usernameSecrets:
-"""
-
-polling_secrets_template = """poller:
-  usernameSecrets:
-"""
-
-TEMPLATE_MAPPING = {
-    "inventory.yaml": inventory_template,
-    "profiles.yaml": profiles_template,
-    "scheduler_secrets.yaml": poller_secrets_template,
-    "traps_secrets.yaml": traps_secrets_template,
-    "polling_secrets.yaml": polling_secrets_template,
-    "groups.yaml": groups_template,
-}
 
 
 def l_pad_string(s):
@@ -97,57 +66,44 @@ def yaml_escape_list(*l):
     return ret
 
 
-def update_file(entries, fieldname):
+def update_inventory(records):
     result = ""
-    for e in entries:
-        result += str.rjust(" ", 4) + e + "\n"
-
-    template = TEMPLATE_MAPPING.get(fieldname, "")
-    result = template + result
-    with open(fieldname, "w") as fp:
+    for r in records:
+        result += r + "\n"
+    result = inventory_template + result
+    with open("../inventory-tests.csv", "w") as fp:
         fp.write(result)
 
 
 def update_profiles(profiles):
     yaml = ruamel.yaml.YAML()
-    with open("profiles_tmp.yaml", "w") as fp:
-        yaml.dump(profiles, fp)
-
-    with open("profiles.yaml", "w") as fp:
-        fp.write(profiles_template)
-        with open("profiles_tmp.yaml") as fp2:
-            line = fp2.readline()
-            while line != "":
-                new_line = str.rjust(" ", 4) + line
-                fp.write(new_line)
-                line = fp2.readline()
+    with open("../scheduler-config.yaml") as f_tmp:
+        scheduler_config = yaml.load(f_tmp)
+    scheduler_config["profiles"] = profiles
+    with open("../scheduler-config.yaml", "w") as file:
+        yaml.dump(scheduler_config, file)
 
 
 def update_groups(groups):
     yaml = ruamel.yaml.YAML()
-    with open("groups_tmp.yaml", "w") as fp:
-        yaml.dump(groups, fp)
-
-    with open("groups.yaml", "w") as fp:
-        fp.write(groups_template)
-        with open("groups_tmp.yaml") as fp2:
-            line = fp2.readline()
-            while line != "":
-                new_line = str.rjust(" ", 4) + line
-                fp.write(new_line)
-                line = fp2.readline()
+    with open("../scheduler-config.yaml") as f_tmp:
+        scheduler_config = yaml.load(f_tmp)
+    scheduler_config["groups"] = groups
+    with open("../scheduler-config.yaml", "w") as file:
+        yaml.dump(scheduler_config, file)
 
 
-def upgrade_helm(yaml_files):
-    files_string = "-f values.yaml "
-    for file in yaml_files:
-        files_string += f"-f {file} "
-    os.system(
-        "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
-    )
-    os.system(
-        f"sudo microk8s helm3 upgrade --install snmp {files_string} ./../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
-    )
+def update_traps_secrets(secrets):
+    yaml = ruamel.yaml.YAML()
+    with open("../traps-config.yaml") as f_tmp:
+        traps_config = yaml.load(f_tmp)
+    traps_config["usernameSecrets"] = secrets
+    with open("../traps-config.yaml", "w") as file:
+        yaml.dump(traps_config, file)
+
+
+def upgrade_docker_compose():
+    os.system("cd .. && sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d")
 
 
 def create_v3_secrets(
@@ -159,25 +115,42 @@ def create_v3_secrets(
     priv_protocol="AES",
 ):
     os.system(
-        f"sudo microk8s kubectl create -n sc4snmp secret generic {secret_name} \
-      --from-literal=userName={user_name} \
-      --from-literal=authKey={auth_key} \
-      --from-literal=privKey={priv_key} \
-      --from-literal=authProtocol={auth_protocol} \
-      --from-literal=privProtocol={priv_protocol} \
-      --from-literal=securityEngineId=8000000903000A397056B8AC"
+        f'python3 $(realpath "../manage_secrets.py") --path_to_compose $(pwd)/.. \
+    --secret_name {secret_name} \
+    --userName {user_name} \
+    --privProtocol {priv_protocol} \
+    --privKey {priv_key} \
+    --authProtocol {auth_protocol} \
+    --authKey {auth_key} \
+    --contextEngineId 8000000903000A397056B8AC'
     )
 
 
-def wait_for_pod_initialization():
-    script_body = f""" 
-    while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep "worker-trap" | grep Running | wc -l)" != "1" ] ; do
-        echo "Waiting for POD initialization..."
+def wait_for_containers_initialization():
+    script_body = """ 
+    while true; do
+        CONTAINERS_SC4SNMP=$(sudo docker ps | grep "sc4snmp\\|worker-poller\\|worker-sender\\|worker-trap" | grep -v "Name" | wc -l)
+        if [ "$CONTAINERS_SC4SNMP" -gt 0 ]; then
+          CONTAINERS_UP=$(sudo docker ps | grep "sc4snmp\\|worker-poller\\|worker-sender\\|worker-trap" | grep "Up" | wc -l)
+          CONTAINERS_EXITED=$(sudo docker ps | grep "sc4snmp\\|worker-poller\\|worker-sender\\|worker-trap" | grep "Exited" | wc -l)
+          CONTAINERS_TOTAL=$CONTAINERS_SC4SNMP
+    
+          if [ "$CONTAINERS_UP" -eq "$CONTAINERS_TOTAL" ] || \
+             { [ "$CONTAINERS_EXITED" -eq 1 ] && [ "$((CONTAINERS_UP + CONTAINERS_EXITED))" -eq "$CONTAINERS_TOTAL" ]; }; then
+            echo $(green "All 'sc4snmp' containers are ready.")
+            break
+          fi
+    
+          echo $(yellow "Waiting for all 'sc4snmp' containers to be ready...")
+        else
+          echo $(yellow "No 'sc4snmp' containers found. Waiting for them to appear...")
+        fi
         sleep 1
-    done """
-    with open("check_for_pods.sh", "w") as fp:
+    done 
+    """
+    with open("check_for_containers.sh", "w") as fp:
         fp.write(script_body)
-    os.system("chmod a+x check_for_pods.sh && ./check_for_pods.sh")
+    os.system("chmod a+x check_for_containers.sh && ./check_for_containers.sh")
 
 
 # if __name__ == "__main__":
