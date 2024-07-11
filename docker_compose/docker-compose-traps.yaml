@@ -18,7 +18,6 @@ services:
     - MIB_INDEX=http://snmp-mibserver:8000/index.csv
     - MIB_STANDARD=http://snmp-mibserver:8000/standard.txt
     - LOG_LEVEL=${TRAP_LOG_LEVEL:-INFO}
-    - INVENTORY_REFRESH_RATE=${INVENTORY_REFRESH_RATE:-600}
     - SPLUNK_HEC_HOST=${SPLUNK_HEC_HOST}
     - SPLUNK_HEC_SCHEME=${SPLUNK_HEC_PROTOCOL:-https}
     - SPLUNK_HEC_PORT=${SPLUNK_HEC_PORT}

@@ -6,10 +6,6 @@ metadata:
     {{- include "splunk-connect-for-snmp.scheduler.labels" . | nindent 4 }}
 data:
   config.yaml: |-
-{{- if (.Values.scheduler).usernames }}
-      usernames:
-{{ .Values.scheduler.usernames | indent 8 -}}
-{{ end }}
 {{- if (.Values.scheduler).profiles }}
       profiles:
 {{ .Values.scheduler.profiles | indent 8 -}}

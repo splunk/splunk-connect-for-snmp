@@ -30,6 +30,7 @@ UI:
     repository: ghcr.io/splunk/sc4snmp-ui/backend/container
     tag: "main"
     pullPolicy: "Always"
+  # Base container that sets permissions for folders mounted to UI containers
   init:
     repository: registry.access.redhat.com/ubi9/ubi
     pullPolicy: IfNotPresent
@@ -70,7 +71,7 @@ splunk:
   token: 00000000-0000-0000-0000-000000000000
   # Whether to skip checking the certificate of the HEC endpoint when sending
   # data over HTTPS.
-  insecureSSL: "true"
+  insecureSSL: "false"
 
   # sourcetype for trap events
   sourcetypeTraps: "sc4snmp:traps"
@@ -94,11 +95,10 @@ splunk:
 sim:
   # Enables sending data to Splunk Observability/SignalFx.
   enabled: false
-
-  # Splunk Observability realm to send telemetry data to.
-  signalfxToken: ""
-  # Required for Splunk Observability (if `realm` is specified).
   # Splunk Observability org access token.
+  # Required for Splunk Observability (if `realm` is specified).
+  signalfxToken: ""
+  # Splunk Observability realm to send telemetry data to.
   signalfxRealm: ""
 
   resources: {}
