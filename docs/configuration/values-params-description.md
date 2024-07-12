@@ -150,31 +150,31 @@ Detailed documentation about configuring inventory can be found in [Poller](../c
 
 Detailed documentation about configuring traps can be found in [Traps](../configuration/trap-configuration.md)
 
-| Variable                                        | Description                                                                                                                     | Default        |
-|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|----------------|
-| `replicaCount`                                  | Number of created replicas when autoscaling disabled                                                                            | 2              |
-| `usernameSecrets`                               | Defines SNMPv3 secrets for trap messages sent by SNMP device                                                                    |                |
-| `securityEngineId`                              | SNMP Engine ID of the TRAP sending application                                                                                  | 80003a8c04     |
-| `aggregateTrapsEvents`                          | Enables collecting traps events as one event inside Splunk                                                                      | false          |
-| `communities`                                   | Defines a version of SNMP protocol and SNMP community string                                                                    |                |
-| `service.annotations`                           | Annotations to append under traps service                                                                                       |                |
-| `service.usemetallb`                            | Enables using metallb                                                                                                           | true           |
-| `service.metallbsharingkey`                     | Sets metallb.universe.tf/allow-shared-ip annotation in trap service                                                             | splunk-connect |
-| `service.type`                                  | [Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)  | LoadBalancer   |
-| `service.port`                                  | Port of the service to use                                                                                                      | 162            |
-| `service.nodePort`                              | Port when the `service.type` is `nodePort`                                                                                      | 30000          |
-| `service.externalTrafficPolicy`                 | Controls how Kubernetes routes traffic                                                                                          | Local          |
-| `loadBalancerIP`                                | Sets loadBalancer IP address in the metallb pool                                                                                |                |
-| `resources`                                     | CPU and memory limits and requests for pod                                                                                      |                |
-| `autoscaling.enabled`                           | Enables autoscaling for pods                                                                                                    | false          |
-| `autoscaling.minReplicas`                       | Minimum number of running pods when autoscaling is enabled                                                                      | 1              |
-| `autoscaling.maxReplicas`                       | Maximum number of running pods when autoscaling is enabled                                                                      | 100            |
-| `autoscaling.targetCPUUtilizationPercentage`    | CPU % threshold that must be exceeded on pods to spawn another replica                                                          | 80             |
-| `autoscaling.targetMemoryUtilizationPercentage` | Memory % threshold that must be exceeded on pods to spawn another replica                                                       |                |
-| `logLevel`                                      | Log level for a traps pod                                                                                                       | INFO           |
-| `podAntiAffinity`                               | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | `soft`         |
-| `nodeSelector`                                  | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector)               |                |
-| `tolerations`                                   | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)                       |                |
+| Variable                                        | Description                                                                                                                     | Default          |
+|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|------------------|
+| `replicaCount`                                  | Number of created replicas when autoscaling disabled                                                                            | `2`              |
+| `usernameSecrets`                               | Defines SNMPv3 secrets for trap messages sent by SNMP device                                                                    |                  |
+| `securityEngineId`                              | SNMP Engine ID of the TRAP sending application                                                                                  | `80003a8c04`     |
+| `aggregateTrapsEvents`                          | Enables collecting traps events as one event inside Splunk                                                                      | `false`          |
+| `communities`                                   | Defines a version of SNMP protocol and SNMP community string                                                                    |                  |
+| `service.annotations`                           | Annotations to append under traps service                                                                                       |                  |
+| `service.usemetallb`                            | Enables using metallb                                                                                                           | `true`           |
+| `service.metallbsharingkey`                     | Sets metallb.universe.tf/allow-shared-ip annotation in trap service                                                             | `splunk-connect` |
+| `service.type`                                  | [Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)  | `LoadBalancer`   |
+| `service.port`                                  | Port of the service to use                                                                                                      | `162`            |
+| `service.nodePort`                              | Port when the `service.type` is `nodePort`                                                                                      | `30000`          |
+| `service.externalTrafficPolicy`                 | Controls how Kubernetes routes traffic                                                                                          | `Local`          |
+| `loadBalancerIP`                                | Sets loadBalancer IP address in the metallb pool                                                                                |                  |
+| `resources`                                     | CPU and memory limits and requests for pod                                                                                      |                  |
+| `autoscaling.enabled`                           | Enables autoscaling for pods                                                                                                    | `false`          |
+| `autoscaling.minReplicas`                       | Minimum number of running pods when autoscaling is enabled                                                                      | `1`              |
+| `autoscaling.maxReplicas`                       | Maximum number of running pods when autoscaling is enabled                                                                      | `100`            |
+| `autoscaling.targetCPUUtilizationPercentage`    | CPU % threshold that must be exceeded on pods to spawn another replica                                                          | `80`             |
+| `autoscaling.targetMemoryUtilizationPercentage` | Memory % threshold that must be exceeded on pods to spawn another replica                                                       |                  |
+| `logLevel`                                      | Log level for a traps pod                                                                                                       | `INFO`           |
+| `podAntiAffinity`                               | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | `soft`           |
+| `nodeSelector`                                  | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector)               |                  |
+| `tolerations`                                   | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)                       |                  |
 
 ## serviceAccount
 
