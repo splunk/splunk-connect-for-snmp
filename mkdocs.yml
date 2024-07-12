@@ -43,6 +43,7 @@ nav:
       - Install SC4SNMP: "gettingstarted/sc4snmp-installation.md"
   - Configuration:
       - Deployment: "configuration/deployment-configuration.md"
+      - Configurable values: "configuration/values-params-description.md"
       - Polling:
           - Poller: "configuration/poller-configuration.md"
           - Scheduler: "configuration/scheduler-configuration.md"
