@@ -12,7 +12,6 @@ services:
       - MIB_SOURCES=http://snmp-mibserver:8000/asn1/@mib@
       - MIB_INDEX=http://snmp-mibserver:8000/index.csv
       - MIB_STANDARD=http://snmp-mibserver:8000/standard.txt
-      - INVENTORY_REFRESH_RATE=${INVENTORY_REFRESH_RATE:-600}
 
       # Scheduler configuration
       - LOG_LEVEL=${SCHEDULER_LOG_LEVEL:-INFO}

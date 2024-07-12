@@ -25,6 +25,7 @@ UI:
 - `valuesFileName`: [OPTIONAL] full name of the file with configuration (e.g. `values.yaml`) that is stored inside the `valuesFileDirectory` directory. If this file name is provided, and it exists in this directory, then GUI will update appropriate sections in provided `values.yaml` file. If this file name is not provided, or provided file name can’t be found inside `valuesFileDirectory` then inside that directory there will be created three files with the latest GUI configuration of groups, profiles and inventory. Those configuration can be copied and pasted to the appropriate sections in the original `values.yaml` file.
 
   Template of initial `values.yaml`:
+
     ```yaml
     scheduler:
       profiles: |
