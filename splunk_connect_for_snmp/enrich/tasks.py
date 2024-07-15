@@ -81,9 +81,8 @@ def check_restart(current_target, result, targets_collection, address):
 
 
 class EnrichTask(Task):
-    """Default class used for shared task"""
-
     def __init__(self):
+        # Default class used for shared task
         pass
 
 
