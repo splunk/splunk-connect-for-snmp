@@ -66,7 +66,7 @@ def _collect_events(query, start_time, end_time, url="", user="", password=""):
     """
 
     search_url = "{}/services/search/jobs?output_mode=json".format(url)
-    logger.debug("requesting: %s", search_url)
+    logger.debug(f"requesting: {search_url}")
     data = {
         "search": query,
         "earliest_time": start_time,
@@ -108,7 +108,7 @@ def _collect_metrics(
         + end_time
         + "&output_mode=json"
     )
-    logger.debug("requesting: %s", api_url)
+    logger.debug(f"requesting: {api_url}")
 
     create_job = _requests_retry_session().get(
         api_url, auth=(user, password), verify=False
@@ -132,7 +132,7 @@ def _wait_for_job_and_get_events(job_id, url="", user="", password=""):
     """
     events = []
     job_url = "{}/services/search/jobs/{}?output_mode=json".format(url, str(job_id))
-    logger.debug("requesting: %s", job_url)
+    logger.debug(f"requesting: {job_url}")
 
     for _ in range(TIMEROUT):
         res = _requests_retry_session().get(
@@ -162,7 +162,7 @@ def _get_events(job_id, url="", user="", password=""):
     event_url = "{}/services/search/jobs/{}/events?output_mode=json".format(
         url, str(job_id)
     )
-    logger.debug("requesting: %s", event_url)
+    logger.debug(f"requesting: {event_url}")
 
     event_job = _requests_retry_session().get(
         event_url, auth=(user, password), verify=False

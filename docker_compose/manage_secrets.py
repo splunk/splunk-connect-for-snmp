@@ -110,7 +110,7 @@ def create_secrets(
                 "secret_config"
             ]
         secrets_file_ready = True
-    except:
+    except Exception:
         print("Problem with editing docker-compose-secrets.yaml. Secret not added.")
         secrets_file_ready = False
 
@@ -128,7 +128,7 @@ def create_secrets(
                 new_secrets_in_workers
             )
             worker_poller_file_ready = True
-        except:
+        except Exception:
             print(
                 "Problem with editing docker-compose-worker-poller.yaml. Secret not added."
             )
@@ -148,7 +148,7 @@ def create_secrets(
                 traps_file["services"]["traps"]["secrets"] = []
             traps_file["services"]["traps"]["secrets"].extend(new_secrets_in_workers)
             traps_file_ready = True
-        except:
+        except Exception:
             print("Problem with editing docker-compose-traps.yaml. Secret not added.")
             traps_file_ready = False
     else:

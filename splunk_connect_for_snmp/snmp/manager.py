@@ -153,7 +153,7 @@ def get_group_key(mib, oid, index) -> str:
             for iv_tuple in iv._value:
                 try:
                     ivtp.append(f"{type(iv_tuple).__name__}={str(iv_tuple._value)}")
-                except:
+                except Exception:
                     ivtp.append(f"{type(iv_tuple).__name__}={str(iv_tuple)}")
             parts.append(f"{ivt}={'|'.join(ivtp)}")
         else:
@@ -516,7 +516,7 @@ class Poller(Task):
                             "value": metric_value,
                             "oid": oid,
                         }
-                except:
+                except Exception:
                     logger.exception(
                         f"Exception processing data from {target} {varbind}"
                     )
