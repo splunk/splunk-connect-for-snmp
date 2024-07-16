@@ -146,9 +146,9 @@ jobs:
       - name: run automatic_setup_microk8s.sh
         run: integration_tests/automatic_setup_microk8s.sh integration
       - name: run tests
-        working-directory: integration_tests/microk8s_deployment
+        working-directory: integration_tests
         run: |
-          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)"
+          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="microk8s"
 
   test-integration-compose:
     name: Run integration tests in docker compose deployment
@@ -179,6 +179,6 @@ jobs:
       - name: run automatic_setup_compose.sh
         run: integration_tests/automatic_setup_compose.sh integration
       - name: run tests
-        working-directory: integration_tests/compose_deployment
+        working-directory: integration_tests
         run: |
-          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)"
+          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="docker-compose"

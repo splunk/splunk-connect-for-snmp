@@ -50,8 +50,42 @@ def splunk_single_search(service, search):
     return result_count, event_count
 
 
-inventory_template = """address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+inventory_template_compose = """address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
 """
+
+inventory_template_microk8s = """poller:
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+"""
+
+profiles_template_microk8s = """scheduler:
+  profiles: |
+"""
+
+groups_template_microk8s = """scheduler:
+  groups: |
+"""
+
+poller_secrets_template_microk8s = """scheduler:
+  usernameSecrets:
+"""
+
+traps_secrets_template_microk8s = """traps:
+  usernameSecrets:
+"""
+
+polling_secrets_template_microk8s = """poller:
+  usernameSecrets:
+"""
+
+TEMPLATE_MAPPING_MICROK8S = {
+    "inventory.yaml": inventory_template_microk8s,
+    "profiles.yaml": profiles_template_microk8s,
+    "scheduler_secrets.yaml": poller_secrets_template_microk8s,
+    "traps_secrets.yaml": traps_secrets_template_microk8s,
+    "polling_secrets.yaml": polling_secrets_template_microk8s,
+    "groups.yaml": groups_template_microk8s,
+}
 
 
 def l_pad_string(s):
@@ -66,47 +100,47 @@ def yaml_escape_list(*l):
     return ret
 
 
-def update_inventory(records):
+def update_inventory_compose(records):
     result = ""
     for r in records:
         result += r + "\n"
-    result = inventory_template + result
-    with open("../inventory-tests.csv", "w") as fp:
+    result = inventory_template_compose + result
+    with open("inventory-tests.csv", "w") as fp:
         fp.write(result)
 
 
-def update_profiles(profiles):
+def update_profiles_compose(profiles):
     yaml = ruamel.yaml.YAML()
-    with open("../scheduler-config.yaml") as f_tmp:
+    with open("scheduler-config.yaml") as f_tmp:
         scheduler_config = yaml.load(f_tmp)
     scheduler_config["profiles"] = profiles
-    with open("../scheduler-config.yaml", "w") as file:
+    with open("scheduler-config.yaml", "w") as file:
         yaml.dump(scheduler_config, file)
 
 
-def update_groups(groups):
+def update_groups_compose(groups):
     yaml = ruamel.yaml.YAML()
-    with open("../scheduler-config.yaml") as f_tmp:
+    with open("scheduler-config.yaml") as f_tmp:
         scheduler_config = yaml.load(f_tmp)
     scheduler_config["groups"] = groups
-    with open("../scheduler-config.yaml", "w") as file:
+    with open("scheduler-config.yaml", "w") as file:
         yaml.dump(scheduler_config, file)
 
 
-def update_traps_secrets(secrets):
+def update_traps_secrets_compose(secrets):
     yaml = ruamel.yaml.YAML()
-    with open("../traps-config.yaml") as f_tmp:
+    with open("traps-config.yaml") as f_tmp:
         traps_config = yaml.load(f_tmp)
     traps_config["usernameSecrets"] = secrets
-    with open("../traps-config.yaml", "w") as file:
+    with open("traps-config.yaml", "w") as file:
         yaml.dump(traps_config, file)
 
 
 def upgrade_docker_compose():
-    os.system("cd .. && sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d")
+    os.system("sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d")
 
 
-def create_v3_secrets(
+def create_v3_secrets_compose(
     secret_name="secretv4",
     user_name="snmp-poller",
     auth_key="PASSWORD1",
@@ -115,7 +149,7 @@ def create_v3_secrets(
     priv_protocol="AES",
 ):
     os.system(
-        f'python3 $(realpath "../manage_secrets.py") --path_to_compose $(pwd)/.. \
+        f'python3 $(realpath "manage_secrets.py") --path_to_compose $(pwd) \
     --secret_name {secret_name} \
     --userName {user_name} \
     --privProtocol {priv_protocol} \
@@ -134,13 +168,13 @@ def wait_for_containers_initialization():
           CONTAINERS_UP=$(sudo docker ps | grep "sc4snmp\\|worker-poller\\|worker-sender\\|worker-trap" | grep "Up" | wc -l)
           CONTAINERS_EXITED=$(sudo docker ps | grep "sc4snmp\\|worker-poller\\|worker-sender\\|worker-trap" | grep "Exited" | wc -l)
           CONTAINERS_TOTAL=$CONTAINERS_SC4SNMP
-    
+
           if [ "$CONTAINERS_UP" -eq "$CONTAINERS_TOTAL" ] || \
              { [ "$CONTAINERS_EXITED" -eq 1 ] && [ "$((CONTAINERS_UP + CONTAINERS_EXITED))" -eq "$CONTAINERS_TOTAL" ]; }; then
             echo $(green "All 'sc4snmp' containers are ready.")
             break
           fi
-    
+
           echo $(yellow "Waiting for all 'sc4snmp' containers to be ready...")
         else
           echo $(yellow "No 'sc4snmp' containers found. Waiting for them to appear...")
@@ -151,6 +185,89 @@ def wait_for_containers_initialization():
     with open("check_for_containers.sh", "w") as fp:
         fp.write(script_body)
     os.system("chmod a+x check_for_containers.sh && ./check_for_containers.sh")
+
+
+def update_file_microk8s(entries, fieldname):
+    result = ""
+    for e in entries:
+        result += str.rjust(" ", 4) + e + "\n"
+
+    template = TEMPLATE_MAPPING_MICROK8S.get(fieldname, "")
+    result = template + result
+    with open(fieldname, "w") as fp:
+        fp.write(result)
+
+
+def update_profiles_microk8s(profiles):
+    yaml = ruamel.yaml.YAML()
+    with open("profiles_tmp.yaml", "w") as fp:
+        yaml.dump(profiles, fp)
+
+    with open("profiles.yaml", "w") as fp:
+        fp.write(profiles_template_microk8s)
+        with open("profiles_tmp.yaml") as fp2:
+            line = fp2.readline()
+            while line != "":
+                new_line = str.rjust(" ", 4) + line
+                fp.write(new_line)
+                line = fp2.readline()
+
+
+def update_groups_microk8s(groups):
+    yaml = ruamel.yaml.YAML()
+    with open("groups_tmp.yaml", "w") as fp:
+        yaml.dump(groups, fp)
+
+    with open("groups.yaml", "w") as fp:
+        fp.write(groups_template_microk8s)
+        with open("groups_tmp.yaml") as fp2:
+            line = fp2.readline()
+            while line != "":
+                new_line = str.rjust(" ", 4) + line
+                fp.write(new_line)
+                line = fp2.readline()
+
+
+def upgrade_helm_microk8s(yaml_files):
+    files_string = "-f values.yaml "
+    for file in yaml_files:
+        files_string += f"-f {file} "
+    os.system(
+        "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
+    )
+    os.system(
+        f"sudo microk8s helm3 upgrade --install snmp {files_string} ./../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+    )
+
+
+def create_v3_secrets_microk8s(
+    secret_name="secretv4",
+    user_name="snmp-poller",
+    auth_key="PASSWORD1",
+    priv_key="PASSWORD1",
+    auth_protocol="SHA",
+    priv_protocol="AES",
+):
+    os.system(
+        f"sudo microk8s kubectl create -n sc4snmp secret generic {secret_name} \
+      --from-literal=userName={user_name} \
+      --from-literal=authKey={auth_key} \
+      --from-literal=privKey={priv_key} \
+      --from-literal=authProtocol={auth_protocol} \
+      --from-literal=privProtocol={priv_protocol} \
+      --from-literal=securityEngineId=8000000903000A397056B8AC"
+    )
+
+
+def wait_for_pod_initialization_microk8s():
+    script_body = f"""
+    while [ "$(sudo microk8s kubectl get pod -n sc4snmp | grep "worker-trap" | grep Running | wc -l)" != "1" ] ; do
+        echo "Waiting for POD initialization..."
+        sleep 1
+    done """
+    with open("check_for_pods.sh", "w") as fp:
+        fp.write(script_body)
+    os.system("chmod a+x check_for_pods.sh && ./check_for_pods.sh")
 
 
 # if __name__ == "__main__":
