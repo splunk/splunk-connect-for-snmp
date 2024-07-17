@@ -30,21 +30,22 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 
 ## Splunk instance
 
-| Variable                            | Description                                                                                                          |
-|-------------------------------------|----------------------------------------------------------------------------------------------------------------------| 
-| `SPLUNK_HEC_HOST`                   | IP address or a domain name of a Splunk instance to send data to                                                     |
-| `SPLUNK_HEC_PROTOCOL`               | The protocol of the HEC endpoint: `https` or `http`                                                                  |
-| `SPLUNK_HEC_PORT`                   | The port of the HEC endpoint                                                                                         |
-| `SPLUNK_HEC_TOKEN`                  | Splunk HTTP Event Collector token                                                                                    |
-| `SPLUNK_HEC_INSECURESSL`            | Whether to skip checking the certificate of the HEC endpoint when sending data over HTTPS                            |
-| `SPLUNK_SOURCETYPE_TRAPS`           | Splunk sourcetype for trap events                                                                                    |
-| `SPLUNK_SOURCETYPE_POLLING_EVENTS`  | Splunk sourcetype for non-metric polling events                                                                      |
-| `SPLUNK_SOURCETYPE_POLLING_METRICS` | Splunk sourcetype for metric polling events                                                                          |
-| `SPLUNK_HEC_INDEX_EVENTS`           | Name of the Splunk event index                                                                                       |
-| `SPLUNK_HEC_INDEX_METRICS`          | Name of the Splunk metrics index                                                                                     |
-| `SPLUNK_HEC_PATH`                   | Path for the HEC endpoint                                                                                            |
-| `SPLUNK_AGGREGATE_TRAPS_EVENTS`     | When set to true makes traps events collected as one event inside splunk                                             |
-| `IGNORE_EMPTY_VARBINDS`             | Details can be found in [empty snmp response message issue](../bestpractices.md#empty-snmp-response-message-problem) |
+| Variable                            | Description                                                                                                           |
+|-------------------------------------|-----------------------------------------------------------------------------------------------------------------------| 
+| `SPLUNK_HEC_HOST`                   | IP address or a domain name of a Splunk instance to send data to                                                      |
+| `SPLUNK_HEC_PROTOCOL`               | The protocol of the HEC endpoint: `https` or `http`                                                                   |
+| `SPLUNK_HEC_PORT`                   | The port of the HEC endpoint                                                                                          |
+| `SPLUNK_HEC_TOKEN`                  | Splunk HTTP Event Collector token                                                                                     |
+| `SPLUNK_HEC_INSECURESSL`            | Whether to skip checking the certificate of the HEC endpoint when sending data over HTTPS                             |
+| `SPLUNK_SOURCETYPE_TRAPS`           | Splunk sourcetype for trap events                                                                                     |
+| `SPLUNK_SOURCETYPE_POLLING_EVENTS`  | Splunk sourcetype for non-metric polling events                                                                       |
+| `SPLUNK_SOURCETYPE_POLLING_METRICS` | Splunk sourcetype for metric polling events                                                                           |
+| `SPLUNK_HEC_INDEX_EVENTS`           | Name of the Splunk event index                                                                                        |
+| `SPLUNK_HEC_INDEX_METRICS`          | Name of the Splunk metrics index                                                                                      |
+| `SPLUNK_HEC_PATH`                   | Path for the HEC endpoint                                                                                             |
+| `SPLUNK_AGGREGATE_TRAPS_EVENTS`     | When set to true makes traps events collected as one event inside splunk                                              |
+| `IGNORE_EMPTY_VARBINDS`             | Details can be found in [empty snmp response message issue](../bestpractices.md#empty-snmp-response-message-problem)  |
+| `SPLUNK_LOG_INDEX`                  | Event index in Splunk where logs from docker containers would be sent                                                 |
 
 ## Workers
 
