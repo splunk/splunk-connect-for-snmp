@@ -70,7 +70,7 @@ nav:
       - Apply changes: "gui/apply-changes.md"
   - Docker compose:
       - Install Docker: "dockercompose/1-install-docker.md"
-      - Download package with docker compose files: "dockercompose/2-download-package.md"
+      - Download package: "dockercompose/2-download-package.md"
       - Inventory configuration: "dockercompose/3-inventory-configuration.md"
       - Scheduler configuration: "dockercompose/4-scheduler-configuration.md"
       - Traps configuration: "dockercompose/5-traps-configuration.md"
