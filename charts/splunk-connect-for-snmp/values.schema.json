@@ -59,6 +59,9 @@
             "repository": {
               "type": "string"
             },
+            "image": {
+              "type": "string"
+            },
             "tag": {
               "type": "string"
             },
@@ -80,6 +83,9 @@
               "type": "integer"
             },
             "repository": {
+              "type": "string"
+            },
+            "image": {
               "type": "string"
             },
             "tag": {
