@@ -59,6 +59,9 @@
             "repository": {
               "type": "string"
             },
+            "image": {
+              "type": "string"
+            },
             "tag": {
               "type": "string"
             },
@@ -82,6 +85,9 @@
             "repository": {
               "type": "string"
             },
+            "image": {
+              "type": "string"
+            },
             "tag": {
               "type": "string"
             },
@@ -101,6 +107,9 @@
               "type": "string"
             },
             "pullPolicy": {
+              "type": "string"
+            },
+            "image": {
               "type": "string"
             }
           }
