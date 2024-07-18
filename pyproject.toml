@@ -16,7 +16,7 @@ run-walk = 'splunk_connect_for_snmp.walk:run_walk'
 python = "^3.8"
 pymongo = {extras = ["srv"], version = "^4.0.0"}
 requests = {extras = ["crypto"], version = "^2.31.0"}
-celery = {extras = ["tblib"], version = "5.3.6"}
+celery = {extras = ["tblib"], version = "5.4.0"}
 pydantic = "^1.9.0"
 opentelemetry-api = "^1.6.2"
 opentelemetry-sdk = "^1.6.2"
