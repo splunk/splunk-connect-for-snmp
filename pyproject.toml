@@ -37,7 +37,7 @@ JSON-log-formatter ="^0.5.1"
 "ruamel.yaml" = "^0.18.0"
 pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", branch = "main"}
 urllib3 = "^1.26.17"
-jsonschema = "4.22.0"
+jsonschema = "4.23.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
