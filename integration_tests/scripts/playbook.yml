@@ -51,8 +51,8 @@
       append: yes
   - name: reset ssh connection
     meta: reset_connection
-  - name: Run automatic_setup.sh
-    command: ./automatic_setup.sh
+  - name: Run automatic_setup_microk8s.sh
+    command: ./automatic_setup_microk8s.sh
     args:
       chdir: "{{ dir }}/splunk-connect-for-snmp/integration_tests/"
     environment:

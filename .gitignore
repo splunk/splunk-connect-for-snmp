@@ -104,6 +104,7 @@ celerybeat.pid
 # Environments
 .env
 !docker_compose/.env
+!integration_tests/.env
 .venv
 env/
 venv/

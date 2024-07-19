@@ -58,6 +58,13 @@ def pytest_addoption(parser):
         default="12345678",
         help="Splunk password",
     )
+    parser.addoption(
+        "--sc4snmp_deployment",
+        action="store",
+        dest="sc4snmp_deployment",
+        default="microk8s",
+        help="sc4snmp deployment",
+    )
 
 
 @pytest.fixture(scope="session")

@@ -22,10 +22,14 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
 from integration_tests.splunk_test_utils import (
     splunk_single_search,
-    update_file,
-    update_groups,
-    update_profiles,
-    upgrade_helm,
+    update_file_microk8s,
+    update_groups_compose,
+    update_groups_microk8s,
+    update_inventory_compose,
+    update_profiles_compose,
+    update_profiles_microk8s,
+    upgrade_docker_compose,
+    upgrade_helm_microk8s,
     yaml_escape_list,
 )
 
@@ -39,6 +43,7 @@ class TestSanity:
             """search index="netops" sourcetype="sc4snmp:event" earliest=-5m"""
         )
         result_count, events_count = splunk_single_search(setup_splunk, search_string)
+
         assert result_count > 0
         assert events_count > 0
 
@@ -46,6 +51,7 @@ class TestSanity:
         logger.info("Integration test for poller metric")
         search_string = "| mcatalog values(metric_name) where index=netmetrics AND metric_name=sc4snmp.* earliest=-5m"
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+
         assert result_count > 0
         assert metric_count > 0
 
@@ -55,6 +61,7 @@ class TestSanity:
         | search "metric_name:sc4snmp.IF-MIB*if"
         | search "ifDescr" AND "ifAdminStatus" AND "ifOperStatus" AND "ifPhysAddress" AND "ifIndex" """
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+
         assert result_count > 0
         assert metric_count > 0
 
@@ -70,6 +77,7 @@ class TestSanity:
 @pytest.fixture(scope="class")
 def setup_profile(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profile = {
         "generic_switch": {
             "frequency": 5,
@@ -79,14 +87,30 @@ def setup_profile(request):
             ],
         }
     }
-    update_profiles(profile)
-    update_file(
-        [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"], "inventory.yaml"
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+
+    if str(deployment) == "microk8s":
+        update_profiles_microk8s(profile)
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profile)
+        update_inventory_compose(
+            [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"]
+        )
+        upgrade_docker_compose()
     time.sleep(30)
     yield
-    upgrade_helm([f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"])
+    if str(deployment) == "microk8s":
+        upgrade_helm_microk8s(
+            [f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"]
+        )
+    else:
+        update_inventory_compose(
+            [f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"]
+        )
+        upgrade_docker_compose()
     time.sleep(20)
 
 
@@ -114,6 +138,7 @@ class TestProfiles:
 @pytest.fixture(scope="class")
 def setup_profiles(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profile = {
         "new_profile": {"frequency": 7, "varBinds": [yaml_escape_list(sq("IP-MIB"))]},
         "generic_switch": {
@@ -121,21 +146,32 @@ def setup_profiles(request):
             "varBinds": [yaml_escape_list(sq("UDP-MIB"))],
         },
     }
-    update_profiles(profile)
-    # upgrade_helm(["profiles.yaml"])
-    # time.sleep(60)
-    update_file(
-        [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profile)
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profile)
+        update_inventory_compose(
+            [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"]
+        )
+        upgrade_docker_compose()
     time.sleep(30)
     yield
-    update_file(
-        [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,t"],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,t"],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,t"]
+        )
+        upgrade_docker_compose()
     time.sleep(20)
 
 
@@ -151,6 +187,7 @@ class TestProfilesWorkflow:
 
     def test_disable_one_profile_and_reload(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
+        deployment = request.config.getoption("sc4snmp_deployment")
         logger.info("Integration test for deleting one profile and reloading")
         profile = {
             "new_profile": {
@@ -158,11 +195,18 @@ class TestProfilesWorkflow:
                 "varBinds": [yaml_escape_list(sq("IP-MIB"))],
             }
         }
-        update_profiles(profile)
-        update_file(
-            [f"{trap_external_ip},,2c,public,,,600,new_profile,,"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+        if deployment == "microk8s":
+            update_profiles_microk8s(profile)
+            update_file_microk8s(
+                [f"{trap_external_ip},,2c,public,,,600,new_profile,,"], "inventory.yaml"
+            )
+            upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        else:
+            update_profiles_compose(profile)
+            update_inventory_compose(
+                [f"{trap_external_ip},,2c,public,,,600,new_profile,,"]
+            )
+            upgrade_docker_compose()
         time.sleep(70)
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch earliest=-20s """
         result_count, metric_count = run_retried_single_search(
@@ -173,11 +217,19 @@ class TestProfilesWorkflow:
 
     def test_delete_inventory_line(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
+        deployment = request.config.getoption("sc4snmp_deployment")
         logger.info("Integration test for deleting one profile and reloading")
-        update_file(
-            [f"{trap_external_ip},,2c,public,,,600,new_profile,,t"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+        if deployment == "microk8s":
+            update_file_microk8s(
+                [f"{trap_external_ip},,2c,public,,,600,new_profile,,t"],
+                "inventory.yaml",
+            )
+            upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        else:
+            update_inventory_compose(
+                [f"{trap_external_ip},,2c,public,,,600,new_profile,,t"]
+            )
+            upgrade_docker_compose()
         time.sleep(40)
         search_string = """| mpreview index=netmetrics earliest=-20s """
         result_count, metric_count = run_retried_single_search(
@@ -190,6 +242,7 @@ class TestProfilesWorkflow:
 @pytest.fixture(scope="class")
 def setup_smart_profiles(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     logger.info("Integration test for fields smart profiles")
     profile = {
         "smart_profile_field": {
@@ -205,15 +258,26 @@ def setup_smart_profiles(request):
             ],
         }
     }
-    update_profiles(profile)
-    # upgrade_helm(["inventory.yaml", "profiles.yaml"])
-    # time.sleep(60)
-    update_file([f"{trap_external_ip},,2c,public,,,600,,t,"], "inventory.yaml")
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profile)
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,600,,t,"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profile)
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,600,,t,"])
+        upgrade_docker_compose()
     time.sleep(30)
     yield
-    update_file([f"{trap_external_ip},,2c,public,,,600,,t,t"], "inventory.yaml")
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,600,,t,t"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,600,,t,t"])
+        upgrade_docker_compose()
     time.sleep(20)
 
 
@@ -240,6 +304,7 @@ class TestSmartProfiles:
 
     def test_smart_profiles_base(self, setup_splunk):
         logger.info("Integration test for fields base smart profiles")
+        time.sleep(300)
         search_string_baseIF = (
             """| mpreview index=netmetrics| spath profiles | search profiles=BaseIF """
         )
@@ -259,23 +324,37 @@ class TestSmartProfiles:
 @pytest.fixture
 def setup_modify_profile(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profile = {
         "test_modify": {
             "frequency": 5,
             "varBinds": [yaml_escape_list(sq("UDP-MIB"))],
         },
     }
-    update_profiles(profile)
-    update_file(
-        [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profile)
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profile)
+        update_inventory_compose(
+            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"]
+        )
+        upgrade_docker_compose()
     time.sleep(30)
     yield
-    update_file(
-        [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"], "inventory.yaml"
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"]
+        )
+        upgrade_docker_compose()
     time.sleep(20)
 
 
@@ -291,22 +370,41 @@ class TestModifyProfilesFrequency:
 
     def test_modify_frequency_field(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
+        deployment = request.config.getoption("sc4snmp_deployment")
         profile = {
             "test_modify": {
                 "frequency": 7,
                 "varBinds": [yaml_escape_list(sq("UDP-MIB"))],
             },
         }
-        update_profiles(profile)
-        update_file(
-            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+        if deployment == "microk8s":
+            update_profiles_microk8s(profile)
+            update_file_microk8s(
+                [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"],
+                "inventory.yaml",
+            )
+            upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        else:
+            update_profiles_compose(profile)
+            update_inventory_compose(
+                [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"]
+            )
+            upgrade_docker_compose()
+
         time.sleep(60)
-        update_file(
-            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+
+        if deployment == "microk8s":
+            update_file_microk8s(
+                [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"],
+                "inventory.yaml",
+            )
+            upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        else:
+            update_inventory_compose(
+                [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"]
+            )
+            upgrade_docker_compose()
+
         time.sleep(30)
         search_string = """| mpreview index=netmetrics earliest=-30s | search profiles=test_modify frequency=7 """
         result_count, metric_count = run_retried_single_search(
@@ -328,6 +426,7 @@ class TestModifyProfilesVarBinds:
 
     def test_modify_varBinds_field(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
+        deployment = request.config.getoption("sc4snmp_deployment")
         profile = {
             "test_modify": {
                 "frequency": 7,
@@ -338,16 +437,34 @@ class TestModifyProfilesVarBinds:
                 ],
             },
         }
-        update_profiles(profile)
-        update_file(
-            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+        if deployment == "microk8s":
+            update_profiles_microk8s(profile)
+            update_file_microk8s(
+                [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"],
+                "inventory.yaml",
+            )
+            upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        else:
+            update_profiles_compose(profile)
+            update_inventory_compose(
+                [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"]
+            )
+            upgrade_docker_compose()
+
         time.sleep(60)
-        update_file(
-            [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
-        )
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
+
+        if deployment == "microk8s":
+            update_file_microk8s(
+                [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"],
+                "inventory.yaml",
+            )
+            upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        else:
+            update_inventory_compose(
+                [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"]
+            )
+            upgrade_docker_compose()
+
         time.sleep(20)
         search_string = """| mpreview index=netmetrics earliest=-15s | search profiles=test_modify TCP-MIB """
         result_count, metric_count = run_retried_single_search(
@@ -372,19 +489,37 @@ class TestModifyProfilesVarBinds:
 @pytest.fixture
 def setup_small_walk(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profile = {
         "walk1": {
             "condition": {"type": "walk"},
             "varBinds": [yaml_escape_list(sq("IP-MIB"))],
         },
     }
-    update_profiles(profile)
-    update_file([f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml")
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+
+    if deployment == "microk8s":
+        update_profiles_microk8s(profile)
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profile)
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,"])
+        upgrade_docker_compose()
+
     time.sleep(30)
+
     yield
-    update_file([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml")
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"])
+        upgrade_docker_compose()
+
     time.sleep(20)
 
 
@@ -413,17 +548,42 @@ class TestSmallWalk:
 @pytest.fixture()
 def setup_v3_connection(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     time.sleep(60)
-    update_file(
-        [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,"], "inventory.yaml"
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        profile = {
+            "v3profile": {
+                "frequency": 5,
+                "varBinds": [
+                    yaml_escape_list(sq("IF-MIB")),
+                    yaml_escape_list(sq("TCP-MIB")),
+                    yaml_escape_list(sq("UDP-MIB")),
+                ],
+            },
+        }
+        update_profiles_compose(profile)
+        update_inventory_compose(
+            [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,"]
+        )
+        upgrade_docker_compose()
     time.sleep(30)
     yield
-    update_file(
-        [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,t"], "inventory.yaml"
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,t"],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,t"]
+        )
+        upgrade_docker_compose()
     time.sleep(20)
 
 
@@ -442,6 +602,7 @@ class TestSNMPv3Connection:
 @pytest.fixture(scope="class")
 def setup_groups(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
         "single_profile": {
             "frequency": 7,
@@ -467,28 +628,51 @@ def setup_groups(request):
         ],
     }
 
-    update_profiles(profiles)
-    update_groups(groups)
-    update_file(
-        [
-            f"{trap_external_ip},1165,2c,public,,,600,single_profile,,",
-            f"routers,,2c,public,,,600,routers_profile,,",
-            f"switches,,2c,public,,,600,switches_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profiles)
+        update_groups_microk8s(groups)
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,single_profile,,",
+                f"routers,,2c,public,,,600,routers_profile,,",
+                f"switches,,2c,public,,,600,switches_profile,,",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+    else:
+        update_profiles_compose(profiles)
+        update_groups_compose(groups)
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,single_profile,,",
+                f"routers,,2c,public,,,600,routers_profile,,",
+                f"switches,,2c,public,,,600,switches_profile,,",
+            ]
+        )
+        upgrade_docker_compose()
+
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1165,2c,public,,,600,single_profile,,t",
-            f"routers,,2c,public,,,600,routers_profile,,t",
-            f"switches,,2c,public,,,600,switches_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,single_profile,,t",
+                f"routers,,2c,public,,,600,routers_profile,,t",
+                f"switches,,2c,public,,,600,switches_profile,,t",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,single_profile,,t",
+                f"routers,,2c,public,,,600,routers_profile,,t",
+                f"switches,,2c,public,,,600,switches_profile,,t",
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(100)
 
 
@@ -524,6 +708,7 @@ class TestGroupsInventory:
 
     def test_edit_routers_group(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
+        deployment = request.config.getoption("sc4snmp_deployment")
         new_groups = {
             "routers": [{"address": trap_external_ip, "port": 1164}],
             "switches": [
@@ -531,8 +716,13 @@ class TestGroupsInventory:
                 {"address": trap_external_ip, "port": 1162},
             ],
         }
-        update_groups(new_groups)
-        upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+        if deployment == "microk8s":
+            update_groups_microk8s(new_groups)
+            upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+        else:
+            update_groups_compose(new_groups)
+            upgrade_docker_compose()
+
         time.sleep(60)
         search_string = f"""| mpreview index=netmetrics earliest=-20s | search profiles=routers_profile host="{trap_external_ip}:1163" """
         result_count, metric_count = run_retried_single_search(
@@ -545,6 +735,7 @@ class TestGroupsInventory:
 @pytest.fixture(scope="class")
 def setup_single_ang_group(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
         "single_profile_1": {
             "frequency": 7,
@@ -565,28 +756,52 @@ def setup_single_ang_group(request):
         ],
     }
 
-    update_profiles(profiles)
-    update_groups(groups)
-    update_file(
-        [
-            f"{trap_external_ip},1165,2c,public,,,600,single_profile_1,,",
-            f"{trap_external_ip},1162,2c,public,,,600,single_profile_2,,",
-            f"switches,,2c,public,,,600,switches_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profiles)
+        update_groups_microk8s(groups)
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,single_profile_1,,",
+                f"{trap_external_ip},1162,2c,public,,,600,single_profile_2,,",
+                f"switches,,2c,public,,,600,switches_profile,,",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+    else:
+        update_profiles_compose(profiles)
+        update_groups_compose(groups)
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,single_profile_1,,",
+                f"{trap_external_ip},1162,2c,public,,,600,single_profile_2,,",
+                f"switches,,2c,public,,,600,switches_profile,,",
+            ]
+        )
+        upgrade_docker_compose()
+
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1165,2c,public,,,600,single_profile_1,,t",
-            f"{trap_external_ip},1162,2c,public,,,600,single_profile_2,,t",
-            f"switches,,2c,public,,,600,switches_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,single_profile_1,,t",
+                f"{trap_external_ip},1162,2c,public,,,600,single_profile_2,,t",
+                f"switches,,2c,public,,,600,switches_profile,,t",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,single_profile_1,,t",
+                f"{trap_external_ip},1162,2c,public,,,600,single_profile_2,,t",
+                f"switches,,2c,public,,,600,switches_profile,,t",
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(100)
 
 
@@ -634,6 +849,7 @@ def setup_single_gt_and_lt_profiles(request):
     lt_profile should result in polling IF-MIB.ifOutDiscards.2
     """
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
         "gt_profile": {
             "frequency": 7,
@@ -651,23 +867,36 @@ def setup_single_gt_and_lt_profiles(request):
         },
     }
 
-    update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profiles)
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profiles)
+        update_inventory_compose(
+            [f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,"]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,t",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,t"]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -703,6 +932,7 @@ def setup_single_in_and_equals_profiles(request):
     equals_profile should result in polling IF-MIB.ifOutDiscards.1
     """
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
         "in_profile": {
             "frequency": 7,
@@ -728,23 +958,36 @@ def setup_single_in_and_equals_profiles(request):
         },
     }
 
-    update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profiles)
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profiles)
+        update_inventory_compose(
+            [f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,"]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,t",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,t"]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -782,6 +1025,7 @@ def setup_single_regex_and_options_profiles(request):
     options_profile should result in polling IF-MIB.ifDescr
     """
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
         "regex_profile": {
             "frequency": 7,
@@ -806,24 +1050,38 @@ def setup_single_regex_and_options_profiles(request):
             ],
         },
     }
-
-    update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profiles)
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profiles)
+        update_inventory_compose(
+            [f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,"]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,t",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,t"
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -863,6 +1121,7 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
     not_lt_profile should result in polling IF-MIB.ifOutDiscards.2
     """
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
         "not_gt_profile": {
             "frequency": 7,
@@ -890,23 +1149,38 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
         },
     }
 
-    update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profiles)
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profiles)
+        update_inventory_compose(
+            [f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,"]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,t",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,t"
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -946,6 +1220,7 @@ def setup_single_in_and_equals_profiles_with_negation(request):
     not_equals_profile should result in polling IF-MIB.ifOutDiscards.1
     """
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
         "not_in_profile": {
             "frequency": 7,
@@ -973,23 +1248,40 @@ def setup_single_in_and_equals_profiles_with_negation(request):
         },
     }
 
-    update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profiles)
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profiles)
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,"
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,t",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,t"
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -1029,6 +1321,7 @@ def setup_single_regex_and_options_profiles_with_negation(request):
     not_options_profile should result in polling IF-MIB.ifDescr
     """
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
         "not_regex_profile": {
             "frequency": 7,
@@ -1056,23 +1349,40 @@ def setup_single_regex_and_options_profiles_with_negation(request):
         },
     }
 
-    update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profiles)
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profiles)
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,"
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,t",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,t"
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -1116,6 +1426,7 @@ def setup_multiple_conditions_profiles(request):
     lt_and_in_profile should result in polling IF-MIB.ifOutDiscards.2
     """
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
         "gt_and_equals_profile": {
             "frequency": 7,
@@ -1143,23 +1454,40 @@ def setup_multiple_conditions_profiles(request):
         },
     }
 
-    update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profiles)
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profiles)
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,"
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,t",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,t"
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -1202,6 +1530,7 @@ def setup_wrong_conditions_profiles(request):
     None of the profiles below should poll anything.
     """
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
         "wrong_gt_and_equals_profile": {
             "frequency": 7,
@@ -1236,23 +1565,40 @@ def setup_wrong_conditions_profiles(request):
         },
     }
 
-    update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profiles)
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profiles)
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,"
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,t",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,t"
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -1274,6 +1620,7 @@ def setup_misconfigured_profiles(request):
     None of the profiles below should poll anything.
     """
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
         "no_varbinds_profile": {
             "frequency": 7,
@@ -1317,23 +1664,40 @@ def setup_misconfigured_profiles(request):
         },
     }
 
-    update_profiles(profiles)
-    update_file(
-        [
-            f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profiles)
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profiles)
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,",
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,t",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,t",
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(120)
 
 
@@ -1352,6 +1716,7 @@ class TestMisconfiguredProfiles:
 @pytest.fixture(scope="class")
 def setup_misconfigured_groups(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
         "routers_wrong_group_profile": {
             "frequency": 7,
@@ -1372,29 +1737,50 @@ def setup_misconfigured_groups(request):
             {"address": trap_external_ip, "port": 1162},
         ],
     }
-
-    update_profiles(profiles)
-    update_groups(groups)
-    update_file(
-        [
-            f"{trap_external_ip},1165,2c,public,,,600,single_profile,,",
-            f"routers,,2c,public,,,600,routers_wrong_group_profile,,",
-            f"switches,,2c,public,,,600,switches_wrong_group_profile,,",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profiles)
+        update_groups_microk8s(groups)
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,single_profile,,",
+                f"routers,,2c,public,,,600,routers_wrong_group_profile,,",
+                f"switches,,2c,public,,,600,switches_wrong_group_profile,,",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+    else:
+        update_profiles_compose(profiles)
+        update_groups_compose(groups)
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,single_profile,,",
+                f"routers,,2c,public,,,600,routers_wrong_group_profile,,",
+                f"switches,,2c,public,,,600,switches_wrong_group_profile,,",
+            ]
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
     time.sleep(120)
     yield
-    update_file(
-        [
-            f"{trap_external_ip},1165,2c,public,,,600,single_profile,,t",
-            f"routers,,2c,public,,,600,routers_wrong_group_profile,,t",
-            f"switches,,2c,public,,,600,switches_wrong_group_profile,,t",
-        ],
-        "inventory.yaml",
-    )
-    upgrade_helm(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,single_profile,,t",
+                f"routers,,2c,public,,,600,routers_wrong_group_profile,,t",
+                f"switches,,2c,public,,,600,switches_wrong_group_profile,,t",
+            ],
+            "inventory.yaml",
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose(
+            [
+                f"{trap_external_ip},1165,2c,public,,,600,single_profile,,t",
+                f"routers,,2c,public,,,600,routers_wrong_group_profile,,t",
+                f"switches,,2c,public,,,600,switches_wrong_group_profile,,t",
+            ]
+        )
+        upgrade_docker_compose()
     time.sleep(100)
 
 
