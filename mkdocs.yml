@@ -77,6 +77,7 @@ nav:
       - .env file configuration: "dockercompose/6-env-file-configuration.md"
       - SNMPv3 secrets configuration: "dockercompose/7-snmpv3-secrets.md"
       - Offline installation: "dockercompose/8-offline-installation.md"
+      - Sending logs to Splunk: "dockercompose/9-splunk-logging.md"
   - Lightweight installation: "small-environment.md"
   - Planning: "planning.md"
   - Security: "security.md"
