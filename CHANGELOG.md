@@ -13,6 +13,7 @@
 - added `yamllint` validation for the `values.yaml` formatting
 - added "in code" validation of groups and profiles
 - added logs configuration to docker compose deployment
+- add support for different security level in snmp v3
 
 ### Fixed
 - fixed a bug with configuration from values.yaml not being transferred to the UI while migrating to SC4SNMP-UI
