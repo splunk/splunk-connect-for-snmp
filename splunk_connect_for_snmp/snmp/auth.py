@@ -51,70 +51,72 @@ def get_secret_value(
 # To discover remote SNMP EngineID we will tap on SNMP engine inner workings
 # by setting up execution point observer setup on INTERNAL class PDU processing
 #
-def get_security_engine_id(logger, ir: InventoryRecord, snmpEngine: SnmpEngine):
-    observerContext: Dict[Any, Any] = {}
+def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpEngine):
+    observer_context: Dict[Any, Any] = {}
 
-    transportTarget = UdpTransportTarget(
+    transport_target = UdpTransportTarget(
         (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
     )
 
     # Register a callback to be invoked at specified execution point of
     # SNMP Engine and passed local variables at execution point's local scope
-    snmpEngine.observer.registerObserver(
+    snmp_engine.observer.registerObserver(
         lambda e, p, v, c: c.update(securityEngineId=v["securityEngineId"]),
         "rfc3412.prepareDataElements:internal",
-        cbCtx=observerContext,
+        cbCtx=observer_context,
     )
 
     # Send probe SNMP request with invalid credentials
-    authData = UsmUserData("non-existing-user")
+    auth_data = UsmUserData("non-existing-user")
 
-    errorIndication, errorStatus, errorIndex, varBinds = next(
+    error_indication, _, _, _ = next(
         getCmd(
-            snmpEngine,
-            authData,
-            transportTarget,
+            snmp_engine,
+            auth_data,
+            transport_target,
             ContextData(),
             ObjectType(ObjectIdentity("SNMPv2-MIB", "sysDescr", 0)),
         )
     )
 
     # See if our SNMP engine received REPORT PDU containing securityEngineId
-    securityEngineId = fetch_security_engine_id(observerContext, errorIndication)
-    logger.debug(f"securityEngineId={securityEngineId}")
-    return securityEngineId
+    security_engine_id = fetch_security_engine_id(
+        observer_context, error_indication, ir.address
+    )
+    logger.debug(f"securityEngineId={security_engine_id} for device {ir.address}")
+    return security_engine_id
 
 
-def fetch_security_engine_id(observer_context, errorIndication):
+def fetch_security_engine_id(observer_context, error_indication, ipaddress):
     if "securityEngineId" in observer_context:
         return observer_context["securityEngineId"]
     else:
         raise SnmpActionError(
-            f"Can't discover peer EngineID, errorIndication: {errorIndication}"
+            f"Can't discover peer EngineID for device {ipaddress}, errorIndication: {error_indication}"
         )
 
 
-def getAuthV3(logger, ir: InventoryRecord, snmpEngine: SnmpEngine) -> UsmUserData:
+def get_auth_v3(logger, ir: InventoryRecord, snmp_engine: SnmpEngine) -> UsmUserData:
     location = os.path.join("secrets/snmpv3", ir.secret)  # type: ignore
     if os.path.exists(location):
-        userName = get_secret_value(location, "userName", required=True)
+        username = get_secret_value(location, "userName", required=True)
 
-        authKey = get_secret_value(location, "authKey", required=False)
-        privKey = get_secret_value(location, "privKey", required=False)
+        auth_key = get_secret_value(location, "authKey", required=False)
+        priv_key = get_secret_value(location, "privKey", required=False)
 
-        authProtocol = get_secret_value(location, "authProtocol", required=False)
-        authProtocol = AuthProtocolMap.get(authProtocol.upper(), "NONE")
+        auth_protocol = get_secret_value(location, "authProtocol", required=False)
+        auth_protocol = AuthProtocolMap.get(auth_protocol.upper(), "NONE")
 
-        privProtocol = get_secret_value(
+        priv_protocol = get_secret_value(
             location, "privProtocol", required=False, default="NONE"
         )
-        privProtocol = PrivProtocolMap.get(privProtocol.upper(), "NONE")
+        priv_protocol = PrivProtocolMap.get(priv_protocol.upper(), "NONE")
 
-        authKeyType = int(
+        auth_key_type = int(
             get_secret_value(location, "authKeyType", required=False, default="0")
         )
 
-        privKeyType = int(
+        priv_key_type = int(
             get_secret_value(location, "privKeyType", required=False, default="0")
         )
         if (
@@ -122,47 +124,46 @@ def getAuthV3(logger, ir: InventoryRecord, snmpEngine: SnmpEngine) -> UsmUserDat
             and ir.security_engine != ""
             and not ir.security_engine.isdigit()
         ):
-            securityEngineId = OctetString(hexValue=ir.security_engine)
-            logger.debug(f"Security eng from profile {securityEngineId}")
+            security_engine_id = OctetString(hexValue=ir.security_engine)
+            logger.debug(f"Security eng from profile {security_engine_id}")
         else:
-            securityEngineId = get_security_engine_id(logger, ir, snmpEngine)
-            logger.debug(f"Security eng dynamic {securityEngineId}")
+            security_engine_id = get_security_engine_id(logger, ir, snmp_engine)
+            logger.debug(f"Security eng dynamic {security_engine_id}")
 
-        securityName = None
+        security_name = None
         logger.debug(
-            f"{userName},authKey={authKey},privKey={privKey},authProtocol={authProtocol},privProtocol={privProtocol},securityEngineId={securityEngineId},securityName={securityName},authKeyType={authKeyType},privKeyType={privKeyType}"
+            f"{username},authKey={auth_key},privKey={priv_key},authProtocol={auth_protocol},privProtocol={priv_protocol},securityEngineId={security_engine_id},securityName={security_name},authKeyType={auth_key_type},privKeyType={priv_key_type}"
         )
         return UsmUserData(
-            userName,
-            authKey=authKey,
-            privKey=privKey,
-            authProtocol=authProtocol,
-            privProtocol=privProtocol,
-            securityEngineId=securityEngineId,
-            securityName=securityName,
-            authKeyType=authKeyType,
-            privKeyType=privKeyType,
+            username,
+            authKey=auth_key if auth_key else None,
+            privKey=priv_key if priv_key else None,
+            authProtocol=auth_protocol,
+            privProtocol=priv_protocol,
+            securityEngineId=security_engine_id,
+            securityName=security_name,
+            authKeyType=auth_key_type,
+            privKeyType=priv_key_type,
         )
 
     else:
         raise FileNotFoundError(f"invalid username from secret {ir.secret}")
 
 
-def getAuthV2c(ir: InventoryRecord) -> CommunityData:
+def get_auth_v2c(ir: InventoryRecord) -> CommunityData:
     return CommunityData(ir.community, mpModel=1)
 
 
-def getAuthV1(ir: InventoryRecord) -> CommunityData:
+def get_auth_v1(ir: InventoryRecord) -> CommunityData:
     return CommunityData(ir.community, mpModel=0)
 
 
-def GetAuth(
-    logger, ir: InventoryRecord, snmpEngine: SnmpEngine
+def get_auth(
+    logger, ir: InventoryRecord, snmp_engine: SnmpEngine
 ) -> Union[UsmUserData, CommunityData]:
-
     if ir.version == "1":
-        return getAuthV1(ir)
+        return get_auth_v1(ir)
     elif ir.version == "2c":
-        return getAuthV2c(ir)
+        return get_auth_v2c(ir)
     else:
-        return getAuthV3(logger, ir, snmpEngine)
+        return get_auth_v3(logger, ir, snmp_engine)

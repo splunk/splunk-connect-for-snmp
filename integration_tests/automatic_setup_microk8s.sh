@@ -99,6 +99,7 @@ chmod u+x prepare_splunk.sh
 echo $(green "Preparing Splunk instance")
 ./prepare_splunk.sh
 ./install_sck.sh
+
 sed -i "s/###SPLUNK_TOKEN###/$(cat hec_token)/" values.yaml
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" values.yaml
 sudo docker run -d -p 161:161/udp tandrup/snmpsim

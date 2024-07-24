@@ -56,61 +56,61 @@ class ProfilesPage:
         freq_field.send_keys(freq_value)
 
     def set_profile_name(self, name):
-        logger.info(f"Setting profile frequency: {name}")
+        logger.info(f"Setting profile name: {name}")
         xpath = "//div[@data-test='sc4snmp:form:profile-name-input']//span//input"
         name_input = driver.find_element(By.XPATH, xpath)
         helper.clear_input(name_input)  # this is useful when editing profile name
         name_input.send_keys(name)
 
-    def add_varBind(self, mcomponent, mobject=None, mindex=None):
+    def add_varbind(self, mcomponent, mobject=None, mindex=None):
         logger.info(f"Adding varBind: {mcomponent, mobject, mindex}")
-        add_varBind_button_xpath = "//div[@data-test='sc4snmp:form:add-varbinds']//span[contains(text(),'Add varBind')]"
-        add_varBind_btn = driver.find_element(By.XPATH, add_varBind_button_xpath)
-        add_varBind_btn.click()
+        add_varbind_button_xpath = "//div[@data-test='sc4snmp:form:add-varbinds']//span[contains(text(),'Add varBind')]"
+        add_varbind_btn = driver.find_element(By.XPATH, add_varbind_button_xpath)
+        add_varbind_btn.click()
         varbind_row_xpath = "//div[@data-test='sc4snmp:form:varbind-row']"
-        varBinds_rows = driver.find_elements(By.XPATH, varbind_row_xpath)
+        varbinds_rows = driver.find_elements(By.XPATH, varbind_row_xpath)
         component_xpath = (
             "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/span/input"
         )
-        component_input = varBinds_rows[-1].find_element(By.XPATH, component_xpath)
+        component_input = varbinds_rows[-1].find_element(By.XPATH, component_xpath)
         component_input.send_keys(mcomponent)
         if mobject is not None:
             object_xpath = (
                 "//div[@data-test='sc4snmp:form:varbind-mib-object-input']/span/input"
             )
-            object_input = varBinds_rows[-1].find_element(By.XPATH, object_xpath)
+            object_input = varbinds_rows[-1].find_element(By.XPATH, object_xpath)
             object_input.send_keys(mobject)
         if mindex is not None:
             index_xpath = (
                 "//div[@data-test='sc4snmp:form:varbind-mib-index-input']/span/input"
             )
-            index_input = varBinds_rows[-1].find_element(By.XPATH, index_xpath)
+            index_input = varbinds_rows[-1].find_element(By.XPATH, index_xpath)
             index_input.send_keys(mindex)
 
-    def edit_varBind(self, new_mcomponent, new_mobject, new_mindex):
+    def edit_varbind(self, new_mcomponent, new_mobject, new_mindex):
         logger.info(
             f"Editing varBind new values: {new_mcomponent}, {new_mobject}, {new_mindex}"
         )
         varbind_row_xpath = "//div[@data-test='sc4snmp:form:varbind-row']"
-        varBinds_row = driver.find_element(By.XPATH, varbind_row_xpath)
+        varbinds_row = driver.find_element(By.XPATH, varbind_row_xpath)
         component_xpath = (
             "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/span/input"
         )
-        component_input = varBinds_row.find_element(By.XPATH, component_xpath)
+        component_input = varbinds_row.find_element(By.XPATH, component_xpath)
         helper.clear_input(component_input)
         component_input.send_keys(new_mcomponent)
 
         object_xpath = (
             "//div[@data-test='sc4snmp:form:varbind-mib-object-input']/span/input"
         )
-        object_input = varBinds_row.find_element(By.XPATH, object_xpath)
+        object_input = varbinds_row.find_element(By.XPATH, object_xpath)
         helper.clear_input(object_input)
         object_input.send_keys(new_mobject)
 
         index_xpath = (
             "//div[@data-test='sc4snmp:form:varbind-mib-index-input']/span/input"
         )
-        index_input = varBinds_row.find_element(By.XPATH, index_xpath)
+        index_input = varbinds_row.find_element(By.XPATH, index_xpath)
         helper.clear_input(index_input)
         index_input.send_keys(new_mindex)
 
@@ -149,7 +149,7 @@ class ProfilesPage:
         time.sleep(1)
 
     def close_profile_delete_popup(self):
-        logger.info(f"Closing profile delete popup")
+        logger.info("Closing profile delete popup")
         close_profile_delete_popup_btn_xpath = (
             "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
@@ -186,12 +186,12 @@ class ProfilesPage:
         pattern_rows[-1].send_keys(pattern)
 
     def check_if_frequency_setting_field_is_visible(self):
-        logger.info(f"Checking if frequency setting field is visible")
+        logger.info("Checking if frequency setting field is visible")
         xpath = "//div[@data-test='sc4snmp:form:frequency-input']//span//input"
         try:
             freq_field = driver.find_element(By.XPATH, xpath)
             return freq_field.is_displayed()
-        except Exception as e:
+        except Exception:
             return False
 
     def add_condition(self, field_value, operation, value):
@@ -234,17 +234,17 @@ class ProfilesPage:
         time.sleep(1)
 
     def close_edited_profile_popup(self):
-        logger.info(f"Closing edited profile popup")
+        logger.info("Closing edited profile popup")
         close_popup_btn_xpath = (
-            f"//button[@data-test='sc4snmp:errors-modal:cancel-button']"
+            "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
         close_popup_btn = driver.find_element(By.XPATH, close_popup_btn_xpath)
         close_popup_btn.click()
         time.sleep(2)
 
     def get_submit_edited_profile_text(self):
-        logger.info(f"Get submit edited profile popup text")
-        edited_profile_popup_text_xpath = f"//div[@data-test='modal']//div//p"
+        logger.info("Get submit edited profile popup text")
+        edited_profile_popup_text_xpath = "//div[@data-test='modal']//div//p"
         edited_profile_popup_text = driver.find_element(
             By.XPATH, edited_profile_popup_text_xpath
         )
@@ -266,27 +266,27 @@ class ProfilesPage:
     def get_profile_varbind(self, profile_name):
         logger.info(f"Get profile varBind {profile_name}")
         profile_mcomponent_xpath = (
-            f"//td[@data-test='sc4snmp:profile-mib-component-expanded']//p"
+            "//td[@data-test='sc4snmp:profile-mib-component-expanded']//p"
         )
         mcomponent = driver.find_element(By.XPATH, profile_mcomponent_xpath)
         profile_mobject_xpath = (
-            f"//td[@data-test='sc4snmp:profile-mib-object_expanded']//p"
+            "//td[@data-test='sc4snmp:profile-mib-object_expanded']//p"
         )
         mobject = driver.find_element(By.XPATH, profile_mobject_xpath)
         profile_mindex_xpath = (
-            f"//td[@data-test='sc4snmp:profile-mib-index-expanded']//p"
+            "//td[@data-test='sc4snmp:profile-mib-index-expanded']//p"
         )
         mindex = driver.find_element(By.XPATH, profile_mindex_xpath)
-        varBind = {
+        varbind = {
             "mcomponent": mcomponent.text,
             "mobject": mobject.text,
             "mindex": int(mindex.text),
         }
-        return varBind
+        return varbind
 
     def clear_profiles(self):
-        logger.info(f"remove all profiles")
-        profile_delete_btn_xpath = f"//button[@data-test='sc4snmp:profile-row-delete']"
+        logger.info("remove all profiles")
+        profile_delete_btn_xpath = "//button[@data-test='sc4snmp:profile-row-delete']"
         delete_btns = driver.find_elements(By.XPATH, profile_delete_btn_xpath)
         logger.info(f"Need to remove {len(delete_btns)} items")
         while len(delete_btns) > 0:

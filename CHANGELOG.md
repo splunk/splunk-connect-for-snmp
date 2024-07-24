@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+### Changed
+
+### Fixed
+
+## [1.11.0]
+
+### Changed
+- add docker compose deployment
+- update default microk8s to 1.30
+- change group and user ID in Docker image to 10001:10001
+- create and/or change ownership of /tmp and /.pysnmp to 10001:10001 in Dockerfile
+- while mounting volumes in docker compose explicitly mount them as read only or read write
+- added `values.yaml` schema validation using `values.schema.json`
+- released beta version of improved polling performance
+- added `yamllint` validation for the `values.yaml` formatting
+- added "in code" validation of groups and profiles
+- added logs configuration to docker compose deployment
+- add support for different security level in snmp v3
+
+### Fixed
+- fixed a bug with configuration from values.yaml not being transferred to the UI while migrating to SC4SNMP-UI
+
 ## [1.10.0]
 
 ### Changed

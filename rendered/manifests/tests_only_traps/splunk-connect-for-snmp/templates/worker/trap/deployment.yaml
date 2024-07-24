@@ -105,6 +105,12 @@ spec:
               value: "4"
             - name: PREFETCH_COUNT
               value: "30"
+            - name: RESOLVE_TRAP_ADDRESS
+              value: "false"
+            - name: MAX_DNS_CACHE_SIZE_TRAPS
+              value: "500"
+            - name: TTL_DNS_CACHE_TRAPS
+              value: "1800"
           volumeMounts:
             - name: config
               mountPath: "/app/config"

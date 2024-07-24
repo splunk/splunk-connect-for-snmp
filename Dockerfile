@@ -20,6 +20,9 @@ RUN poetry config virtualenvs.in-project true ;\
 
 FROM base AS final
 
+RUN mkdir /.pysnmp && chown 10001:10001 /.pysnmp
+RUN chown 10001:10001 /tmp
+USER 10001:10001
 COPY --from=builder /app/.venv /app/.venv
 COPY entrypoint.sh ./
 ENTRYPOINT ["./entrypoint.sh"]

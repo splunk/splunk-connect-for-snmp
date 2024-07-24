@@ -171,25 +171,22 @@ def assign_profiles(ir, profiles, target):
 
             elif profile["condition"]["type"] == "field":
                 logger.debug(f"profile is a field condition {profile_name}")
-                if "state" in target:
-                    if (
+                if "state" in target and (
+                    profile["condition"]["field"].replace(".", "|") in target["state"]
+                ):
+                    cs = target["state"][
                         profile["condition"]["field"].replace(".", "|")
-                        in target["state"]
-                    ):
-                        cs = target["state"][
-                            profile["condition"]["field"].replace(".", "|")
-                        ]
-                        if "value" in cs:
-                            for pattern in profile["condition"]["patterns"]:
-                                result = re.search(pattern, cs["value"])
-                                if result:
-                                    logger.debug(f"Adding smart profile {profile_name}")
-                                    add_profile_to_assigned_list(
-                                        assigned_profiles,
-                                        profile["frequency"],
-                                        profile_name,
-                                    )
-                                    continue
+                    ]
+                    if "value" in cs:
+                        for pattern in profile["condition"]["patterns"]:
+                            result = re.search(pattern, cs["value"])
+                            if result:
+                                logger.debug(f"Adding smart profile {profile_name}")
+                                add_profile_to_assigned_list(
+                                    assigned_profiles,
+                                    profile["frequency"],
+                                    profile_name,
+                                )
 
     logger.debug(f"ir.profiles {ir.profiles}")
     logger.debug(f"profiles {profiles}")
@@ -282,13 +279,13 @@ def filter_condition_on_database(mongo_client, address: str, conditions: list):
     return list(result)
 
 
-def create_profile(profile_name, frequency, varBinds, records):
+def create_profile(profile_name, frequency, varbinds, records):
     # Connecting general fields from varBinds with filtered object indexes
     # like ["IF-MIB", "ifDescr"] + [1] = ["IF-MIB", "ifDescr", 1]
     varbind_list = [
         varbind + record["indexes"]
         for record in records
-        for varbind in varBinds
+        for varbind in varbinds
         if len(varbind) == 2
     ]
     profile = {profile_name: {"frequency": frequency, "varBinds": varbind_list}}
@@ -346,7 +343,7 @@ def create_query(conditions: typing.List[dict], address: str) -> dict:
     def _prepare_query_input(
         operation: str, value: typing.Any, field: str, negate_operation: bool
     ) -> dict:
-        if operation == "regex" and type(value) == list:
+        if operation == "regex" and isinstance(value, list):
             query = {mongo_operation: value[0], "$options": value[1]}
         else:
             query = {mongo_operation: value}
@@ -392,7 +389,7 @@ def generate_conditional_profile(
     profile_varbinds = conditional_profile_body.get("varBinds")
     profile_frequency = conditional_profile_body.get("frequency")
     if not profile_varbinds:
-        raise BadlyFormattedFieldError(f"No varBinds provided in the profile")
+        raise BadlyFormattedFieldError("No varBinds provided in the profile")
     filtered_snmp_objects = filter_condition_on_database(
         mongo_client, address, profile_conditions
     )

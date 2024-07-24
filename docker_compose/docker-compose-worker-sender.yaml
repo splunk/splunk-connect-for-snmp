@@ -1,0 +1,69 @@
+version: '3.8'
+services:
+  worker-sender:
+    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    command: ["celery", "worker-sender"]
+    environment:
+      - CONFIG_PATH=/app/config/config.yaml
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - MONGO_URI=mongodb://mongo:27017/
+      - SC4SNMP_VERSION=${SC4SNMP_VERSION:-0.0.0}
+      - MIB_SOURCES=http://snmp-mibserver:8000/asn1/@mib@
+      - MIB_INDEX=http://snmp-mibserver:8000/index.csv
+      - MIB_STANDARD=http://snmp-mibserver:8000/standard.txt
+      #- OTEL_METRICS_URL= #If sim enabled
+      
+      # Splunk instance configuration
+      - SPLUNK_HEC_HOST=${SPLUNK_HEC_HOST}
+      - SPLUNK_HEC_SCHEME=${SPLUNK_HEC_PROTOCOL:-https}
+      - SPLUNK_HEC_PORT=${SPLUNK_HEC_PORT}
+      - SPLUNK_HEC_TOKEN=${SPLUNK_HEC_TOKEN}
+      - SPLUNK_HEC_INSECURESSL=${SPLUNK_HEC_INSECURESSL:-false}
+      - SPLUNK_SOURCETYPE_TRAPS=${SPLUNK_SOURCETYPE_TRAPS:-sc4snmp:traps}
+      - SPLUNK_SOURCETYPE_POLLING_EVENTS=${SPLUNK_SOURCETYPE_POLLING_EVENTS:-sc4snmp:event}
+      - SPLUNK_SOURCETYPE_POLLING_METRICS=${SPLUNK_SOURCETYPE_POLLING_METRICS:-sc4snmp:metric}
+      - SPLUNK_HEC_INDEX_EVENTS=${SPLUNK_HEC_INDEX_EVENTS:-netops}
+      - SPLUNK_HEC_INDEX_METRICS=${SPLUNK_HEC_INDEX_METRICS:-netmetrics}
+      - SPLUNK_HEC_PATH=${SPLUNK_HEC_PATH:-/services/collector}
+      - SPLUNK_AGGREGATE_TRAPS_EVENTS=${SPLUNK_AGGREGATE_TRAPS_EVENTS:-false}
+      - IGNORE_EMPTY_VARBINDS=${IGNORE_EMPTY_VARBINDS:-false}
+
+      # Workers configuration
+      - WALK_RETRY_MAX_INTERVAL=${WALK_RETRY_MAX_INTERVAL:-180}
+      - WALK_MAX_RETRIES=${WALK_MAX_RETRIES:-5}
+      - METRICS_INDEXING_ENABLED=${METRICS_INDEXING_ENABLED:-false}
+      - POLL_BASE_PROFILES=${POLL_BASE_PROFILES:-true}
+      - IGNORE_NOT_INCREASING_OIDS=${IGNORE_NOT_INCREASING_OIDS:-}
+      - LOG_LEVEL=${WORKER_LOG_LEVEL:-INFO}
+      - UDP_CONNECTION_TIMEOUT=${UDP_CONNECTION_TIMEOUT:-3}
+      - MAX_OID_TO_PROCESS=${MAX_OID_TO_PROCESS:-70}
+      - PROFILES_RELOAD_DELAY=${PROFILES_RELOAD_DELAY:-60}
+      - WORKER_CONCURRENCY=${WORKER_SENDER_CONCURRENCY:-2}
+      - PREFETCH_COUNT=${PREFETCH_SENDER_COUNT:-1}
+    depends_on:
+      - redis
+      - mongo
+      - coredns
+    volumes:
+      - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
+      - worker-sender-pysnmp-cache-volume:/.pysnmp/:rw
+      - worker-sender-tmp:/tmp/:rw
+    restart: on-failure
+    networks:
+      - my_network
+    dns:
+      - ${COREDNS_ADDRESS}
+    deploy:
+      mode: replicated
+      replicas: ${WORKER_SENDER_REPLICAS:-1}
+      resources:
+        limits:
+          cpus: ${WORKER_SENDER_CPU_LIMIT:-0.50}
+          memory: ${WORKER_SENDER_MEMORY_LIMIT:-500M}
+        reservations:
+          cpus: ${WORKER_SENDER_CPU_RESERVATIONS:-0.25}
+          memory: ${WORKER_SENDER_MEMORY_RESERVATIONS:-250M}
+volumes:
+  worker-sender-tmp: null
+  worker-sender-pysnmp-cache-volume: null

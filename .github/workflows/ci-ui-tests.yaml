@@ -71,12 +71,12 @@ jobs:
 
       - name: install microk8s
         run: |
-          sudo snap install microk8s --classic --channel=1.25/stable
+          sudo snap install microk8s --classic --channel=1.30/stable
           sudo apt-get install snmp -y
           sudo apt-get install python3-dev -y
 
-      - name: run automatic_setup.sh
-        run: integration_tests/automatic_setup.sh
+      - name: run automatic_setup_microk8s.sh
+        run: integration_tests/automatic_setup_microk8s.sh
 
       - name: install dependencies
         working-directory: ui_tests

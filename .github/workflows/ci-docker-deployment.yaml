@@ -1,0 +1,34 @@
+name: create-compose-files
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    strategy:
+      matrix:
+        python-version:
+          - 3.9
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Zip docker_compose directory and upload it
+        run: |
+          zip -r docker_compose.zip docker_compose 
+          VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
+          gh release upload $VERSION docker_compose.zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: docker_compose.zip
+        env:
+          ARTIFACT_NAME: docker_compose

@@ -17,7 +17,7 @@ class GroupsPage:
         return groups_container.is_displayed()
 
     def click_add_new_group_button(self):
-        logger.info(f"Click add new group button")
+        logger.info("Click add new group button")
         add_group_button_xpath = "//button[@data-test='sc4snmp:new-item-button']//span"
         add_grp_btn = driver.find_element(By.XPATH, add_group_button_xpath)
         add_grp_btn.click()
@@ -36,7 +36,7 @@ class GroupsPage:
         return add_grp_input
 
     def click_submit_button_for_add_group(self):
-        logger.info(f"Click submit button")
+        logger.info("Click submit button")
         add_group_button_xpath = (
             "//button[@data-test='sc4snmp:form:submit-form-button']"
         )
@@ -49,13 +49,13 @@ class GroupsPage:
         self.click_submit_button_for_add_group()
 
     def click_cancel_button_for_add_device(self):
-        logger.info(f"Click cancel button")
+        logger.info("Click cancel button")
         cancel_button_xpath = "//button[@data-test='sc4snmp:form:cancel-button']"
         cancel_btn = driver.find_element(By.XPATH, cancel_button_xpath)
         cancel_btn.click()
 
     def check_if_groups_is_on_list(self, group_name):
-        logger.info(f"Checking if group is configured (is on list)")
+        logger.info("Checking if group is configured (is on list)")
         group_entry_on_list_xpath = "//div[@data-test='sc4snmp:group']//p"
         groups_entries = driver.find_elements(By.XPATH, group_entry_on_list_xpath)
         for el in groups_entries:
@@ -79,7 +79,7 @@ class GroupsPage:
         time.sleep(1)
 
     def close_delete_popup(self):
-        logger.info(f"Closing profile delete popup")
+        logger.info("Closing profile delete popup")
         close_profile_delete_popup_btn_xpath = (
             "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
@@ -97,8 +97,8 @@ class GroupsPage:
         time.sleep(1)
 
     def get_error_message_while_adding_device_with_no_data(self):
-        logger.info(f"getting error message while adding device with no data")
-        error_msg_xpath = f"//p[@data-test='sc4snmp:ip-error']"
+        logger.info("getting error message while adding device with no data")
+        error_msg_xpath = "//p[@data-test='sc4snmp:ip-error']"
         err_msg = driver.find_element(By.XPATH, error_msg_xpath)
         return err_msg.text
 
@@ -117,7 +117,7 @@ class GroupsPage:
         ip_field.send_keys(device_ip)
 
     def check_if_device_is_configured(self, device_ip):
-        logger.info(f"Checking if device is configured (is on group list)")
+        logger.info("Checking if device is configured (is on group list)")
         device_entry_on_list_xpath = "//td[@data-test='sc4snmp:host-address']"
         devices_entries = driver.find_elements(By.XPATH, device_entry_on_list_xpath)
         for el in devices_entries:
@@ -138,24 +138,24 @@ class GroupsPage:
         self.click_submit_button_for_add_group()
 
     def get_submit_edited_group_name_popup_message(self):
-        logger.info(f"Get submit edited group name popup text")
-        edited_group_popup_text_xpath = f"//div[@data-test='modal']//div//p"
+        logger.info("Get submit edited group name popup text")
+        edited_group_popup_text_xpath = "//div[@data-test='modal']//div//p"
         edited_group_popup_text = driver.find_element(
             By.XPATH, edited_group_popup_text_xpath
         )
         return edited_group_popup_text.text
 
     def close_edited_profile_popup(self):
-        logger.info(f"Closing edited group popup")
+        logger.info("Closing edited group popup")
         close_popup_btn_xpath = (
-            f"//button[@data-test='sc4snmp:errors-modal:cancel-button']"
+            "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
         close_popup_btn = driver.find_element(By.XPATH, close_popup_btn_xpath)
         close_popup_btn.click()
         time.sleep(2)
 
     def delete_device_from_group(self, device_ip):
-        logger.info(f"Delete device from group popup")
+        logger.info("Delete device from group popup")
         delete_device_btn_xpath = f"//button[@data-test='sc4snmp:group-row-delete' and ancestor::tr//td[text()='{device_ip}']]"
         delete_device_btn = driver.find_element(By.XPATH, delete_device_btn_xpath)
         delete_device_btn.click()
@@ -164,14 +164,14 @@ class GroupsPage:
         self.close_delete_popup()
 
     def click_edit_device(self, device_ip):
-        logger.info(f"Click edit device button")
+        logger.info("Click edit device button")
         edit_device_btn_xpath = f"//button[@data-test='sc4snmp:group-row-edit' and ancestor::tr//td[text()='{device_ip}']]"
         edit_device_btn = driver.find_element(By.XPATH, edit_device_btn_xpath)
         edit_device_btn.click()
         time.sleep(2)
 
     def confirm_delete(self):
-        logger.info(f"Confirm delete device from group popup")
+        logger.info("Confirm delete device from group popup")
         confirm_delete_xpath = (
             "//button[@data-test='sc4snmp:delete-modal:delete-button']"
         )
@@ -257,18 +257,18 @@ class GroupsPage:
 
     def get_warning_message_when_removing_group_which_is_configured_in_inventory(self):
         logger.info(
-            f"getting error message while removing group which is configured in inventory"
+            "getting error message while removing group which is configured in inventory"
         )
         warning_msg_xpath = (
-            f"//div[@data-test-type='warning' and @data-test='message']//div"
+            "//div[@data-test-type='warning' and @data-test='message']//div"
         )
         warning_msg = driver.find_element(By.XPATH, warning_msg_xpath)
         return warning_msg.text
 
     def clear_groups(self):
-        logger.info(f"remove all groups")
+        logger.info("remove all groups")
         group_delete_btn_xpath = (
-            f"//button[@data-test='sc4snmp:group:delete-group-button']"
+            "//button[@data-test='sc4snmp:group:delete-group-button']"
         )
         delete_btns = driver.find_elements(By.XPATH, group_delete_btn_xpath)
         logger.info(f"Need to remove {len(delete_btns)} items")

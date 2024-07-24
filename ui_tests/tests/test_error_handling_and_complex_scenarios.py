@@ -33,7 +33,7 @@ def test_trying_to_configure_profle_with_the_same_name():
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
     p_profiles.set_frequency(profile_freq)
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
     exist = p_profiles.check_if_profile_is_configured(profile_name)
     assert exist is True
@@ -41,7 +41,7 @@ def test_trying_to_configure_profle_with_the_same_name():
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
     p_profiles.set_frequency(profile_freq)
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
 
     message = p_header.get_popup_error_message()
@@ -183,7 +183,7 @@ def test_trying_to_add_inventory_with_group_which_is_already_added():
     check error message
     """
     # add group
-    group_name = f"test-group-inventory"
+    group_name = "test-group-inventory"
     p_header.switch_to_groups()
     p_groups.click_add_new_group_button()
     p_groups.set_group_name(group_name)
@@ -230,7 +230,7 @@ def test_trying_to_add_inventory_group_with_host_which_is_configured_as_host():
     check error message
     """
     # add group
-    group_name = f"test-group-inventory"
+    group_name = "test-group-inventory"
     device_ip = "40.50.60.70"
     community_string = "public"
 
@@ -284,7 +284,7 @@ def test_removing_group_which_is_configured_in_inventory():
     check that upon removing group inventory entry is also removed
     """
     # add group
-    group_name = f"test-group-inventory"
+    group_name = "test-group-inventory"
     community_string = "public"
 
     p_header.switch_to_groups()
@@ -335,7 +335,7 @@ def test_removing_profile_which_is_configured_in_inventory():
     p_header.switch_to_profiles()
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name)
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
     exist = p_profiles.check_if_profile_is_configured(profile_name)
     assert exist is True
@@ -416,12 +416,12 @@ def test_trying_to_edit_profile_name_into_profile_name_that_exists():
     p_header.switch_to_profiles()
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name_1)
-    p_profiles.add_varBind("IP-MIB", "ifDescr", 1)
+    p_profiles.add_varbind("IP-MIB", "ifDescr", 1)
     p_profiles.click_submit_button()
 
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name_2)
-    p_profiles.add_varBind("IP-MIB")
+    p_profiles.add_varbind("IP-MIB")
     p_profiles.click_submit_button()
 
     # edit profile name

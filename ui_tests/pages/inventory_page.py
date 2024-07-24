@@ -19,7 +19,7 @@ class InventoryPage:
         return inventory_container.is_displayed()
 
     def check_if_entry_is_on_list(self, host_ip):
-        logger.info(f"Checking if host/group entry is configured (is on list)")
+        logger.info("Checking if host/group entry is configured (is on list)")
         entries_on_list_xpath = "//td[@data-test='sc4snmp:inventory-address']"
         entries = driver.find_elements(By.XPATH, entries_on_list_xpath)
         logger.info(f"list length: {len(entries)}")
@@ -31,7 +31,7 @@ class InventoryPage:
         return False
 
     def click_add_new_device_group_button(self):
-        logger.info(f"Click add new device/group entry button")
+        logger.info("Click add new device/group entry button")
         add_group_device_button_xpath = (
             "//button[@data-test='sc4snmp:new-item-button']//span//span"
         )
@@ -45,7 +45,7 @@ class InventoryPage:
         self._click_submit_button()
 
     def _click_submit_button(self):
-        logger.info(f"Click submit button")
+        logger.info("Click submit button")
         add_group_device_item_button_xpath = (
             "//button[@data-test='sc4snmp:form:submit-form-button']"
         )
@@ -70,7 +70,7 @@ class InventoryPage:
         self.close_delete_popup()
 
     def close_delete_popup(self):
-        logger.info(f"Closing inventory delete popup")
+        logger.info("Closing inventory delete popup")
         self._close_notification_popup()
 
     def _close_notification_popup(self):
@@ -84,11 +84,11 @@ class InventoryPage:
         time.sleep(1)
 
     def close_edit_inventory_entry(self):
-        logger.info(f"Closing inventory edit popup")
+        logger.info("Closing inventory edit popup")
         self._close_notification_popup()
 
     def confirm_delete(self):
-        logger.info(f"Confirm delete entry")
+        logger.info("Confirm delete entry")
         confirm_delete_xpath = (
             "//button[@data-test='sc4snmp:delete-modal:delete-button']"
         )
@@ -117,17 +117,17 @@ class InventoryPage:
         edit_inventory_entry_btn.click()
 
     def get_edit_inventory_notice(self):
-        logger.info(f"Get edited inventory popup text")
-        edited_inventory_popup_text_xpath = f"//div[@data-test='modal']//div//p"
+        logger.info("Get edited inventory popup text")
+        edited_inventory_popup_text_xpath = "//div[@data-test='modal']//div//p"
         edited_inventory_popup_text = driver.find_element(
             By.XPATH, edited_inventory_popup_text_xpath
         )
         return edited_inventory_popup_text.text
 
     def select_group_inventory_type(self):
-        logger.info(f"Select group inventory type")
+        logger.info("Select group inventory type")
         group_inventory_type_btn_xpath = (
-            f"//button[@data-test='sc4snmp:form:inventory-type-group']"
+            "//button[@data-test='sc4snmp:form:inventory-type-group']"
         )
         group_inventory_type_btn = driver.find_element(
             By.XPATH, group_inventory_type_btn_xpath
@@ -135,26 +135,26 @@ class InventoryPage:
         group_inventory_type_btn.click()
 
     def get_host_missing_error(self):
-        logger.info(f"Get host missing error")
+        logger.info("Get host missing error")
         return self._get_error_for_missing_or_invalid_inventory_field("host_missing")
 
     def get_community_string_missing_error(self):
-        logger.info(f"Get community string missing error")
+        logger.info("Get community string missing error")
         return self._get_error_for_missing_or_invalid_inventory_field(
             "community_string_missing"
         )
 
     def get_walk_invalid_value_error(self):
-        logger.info(f"Get walk interval invalid value error")
+        logger.info("Get walk interval invalid value error")
         return self._get_error_for_missing_or_invalid_inventory_field(
             "walk_invalid_value"
         )
 
     def _get_error_for_missing_or_invalid_inventory_field(self, field):
         xpath = {
-            "host_missing": f"//p[@data-test='sc4snmp:ip-group-error']",
-            "community_string_missing": f"//p[@data-test='sc4snmp:community-error']",
-            "walk_invalid_value": f"//p[@data-test='sc4snmp:walk-interval-error']",
+            "host_missing": "//p[@data-test='sc4snmp:ip-group-error']",
+            "community_string_missing": "//p[@data-test='sc4snmp:community-error']",
+            "walk_invalid_value": "//p[@data-test='sc4snmp:walk-interval-error']",
         }
         try:
             error_msg = driver.find_element(By.XPATH, xpath[field])
@@ -301,9 +301,9 @@ class InventoryPage:
         return self._get_inventory_data(host, "smart_profiles")
 
     def clear_inventory(self):
-        logger.info(f"remove all inventory entries")
+        logger.info("remove all inventory entries")
         delete_btn_for_inventory_with_host_ip_xpath = (
-            f"//button[@data-test='sc4snmp:inventory-row-delete']"
+            "//button[@data-test='sc4snmp:inventory-row-delete']"
         )
         delete_btns = driver.find_elements(
             By.XPATH, delete_btn_for_inventory_with_host_ip_xpath

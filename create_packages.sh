@@ -209,6 +209,7 @@ do
 done
 
 pull_ui_images "/tmp/package/$SPLUNK_DIR"
+# images_to_pack is a list so it shouldn't be quoted as variable
 docker save $images_to_pack > /tmp/package/packages/dependencies-images.tar
 cd ../..
 tar -czvf packages/splunk-connect-for-snmp-chart.tar splunk-connect-for-snmp
@@ -258,15 +259,15 @@ else
 fi
 
 docker pull "$docker_image_pull"
-docker save $docker_image_pull > /tmp/package/packages/sim_image.tar
+docker save "$docker_image_pull" > /tmp/package/packages/sim_image.tar
 
 # Download and package otel charts
 cd /tmp/package/packages/ || exit
 LOCATION=$(curl -s https://api.github.com/repos/signalfx/splunk-otel-collector-chart/releases/latest | grep "zipball_url" | awk '{ print $2 }' | sed 's/,$//' | sed 's/"//g' )
-curl -L -o otel-repo.zip $LOCATION
+curl -L -o otel-repo.zip "$LOCATION"
 unzip otel-repo.zip
 rm otel-repo.zip
-OTEL_DIR=$(pwd)"/"$(ls | grep -E "signalfx-splunk.+")
+OTEL_DIR=$(find "$(pwd)" -type d -name "signalfx-splunk*")
 CHART_DIR="$OTEL_DIR/helm-charts/splunk-otel-collector"
 OTEL_IMAGE_TAG=$(python3 "$python_script" "$CHART_DIR/Chart.yaml" "appVersion")
 otel_image=quay.io/signalfx/splunk-otel-collector:"$OTEL_IMAGE_TAG"

@@ -27,17 +27,11 @@ import os
 from celery import Celery
 from celery.utils.log import get_task_logger
 from opentelemetry import trace
-
-# from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.trace import TracerProvider
 
 from splunk_connect_for_snmp.celery_signals_handlers import *
 
-# from opentelemetry.sdk.trace.export import BatchSpanProcessor
-
 provider = TracerProvider()
-# processor = BatchSpanProcessor(JaegerExporter())
-# provider.add_span_processor(processor)
 trace.set_tracer_provider(provider)
 
 logger = get_task_logger(__name__)
@@ -48,7 +42,6 @@ app.config_from_object("splunk_connect_for_snmp.celery_config")
 # app.conf.update(**config)
 
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
-INVENTORY_REFRESH_RATE = int(os.getenv("INVENTORY_REFRESH_RATE", "600"))
 
 app.autodiscover_tasks(
     packages=[

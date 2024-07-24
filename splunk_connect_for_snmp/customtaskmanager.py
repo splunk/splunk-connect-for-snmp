@@ -39,7 +39,7 @@ class CustomPeriodicTaskManager:
     def delete_unused_poll_tasks(self, target: str, activeschedules: List[str]):
         periodic_tasks = RedBeatSchedulerEntry.get_schedules_by_target(target, app=app)
         for periodic_document in periodic_tasks:
-            if not periodic_document.task == "splunk_connect_for_snmp.snmp.tasks.poll":
+            if periodic_document.task != "splunk_connect_for_snmp.snmp.tasks.poll":
                 continue
             logger.debug(f"Got Schedule: {periodic_document.name}")
             periodic_document = RedBeatSchedulerEntry.from_key(
@@ -73,7 +73,7 @@ class CustomPeriodicTaskManager:
     def rerun_all_walks(self):
         periodic_tasks = RedBeatSchedulerEntry.get_schedules()
         for periodic_document in periodic_tasks:
-            if not periodic_document.task == "splunk_connect_for_snmp.snmp.tasks.walk":
+            if periodic_document.task != "splunk_connect_for_snmp.snmp.tasks.walk":
                 continue
             periodic_document = RedBeatSchedulerEntry.from_key(
                 f"redbeat:{periodic_document.name}", app=app

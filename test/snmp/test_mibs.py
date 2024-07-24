@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from pysnmp.smi import error
 
-from splunk_connect_for_snmp.snmp.manager import Poller, isMIBResolved
+from splunk_connect_for_snmp.snmp.manager import Poller, is_mib_resolved
 
 
 class TestMibProcessing(TestCase):
@@ -42,10 +42,10 @@ class TestMibProcessing(TestCase):
         self.assertEqual(mib, "")
 
     def test_is_mib_resolved(self):
-        self.assertFalse(isMIBResolved("RFC1213-MIB::"))
-        self.assertFalse(isMIBResolved("SNMPv2-SMI::enterprises."))
-        self.assertFalse(isMIBResolved("SNMPv2-SMI::mib-2"))
-        self.assertTrue(isMIBResolved("OTHER"))
+        self.assertFalse(is_mib_resolved("RFC1213-MIB::"))
+        self.assertFalse(is_mib_resolved("SNMPv2-SMI::enterprises."))
+        self.assertFalse(is_mib_resolved("SNMPv2-SMI::mib-2"))
+        self.assertTrue(is_mib_resolved("OTHER"))
 
     def test_exception_during_loading(self):
         poller = Poller.__new__(Poller)

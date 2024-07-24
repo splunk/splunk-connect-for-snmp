@@ -60,7 +60,7 @@ def test_check_that_profile_config_is_stored_upon_applying_configuration():
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name_1)
     p_profiles.set_frequency(profile_freq_1)
-    p_profiles.add_varBind("IF-MIB", "ifInErrors", "1")
+    p_profiles.add_varbind("IF-MIB", "ifInErrors", "1")
     p_profiles.click_submit_button()
     time.sleep(1)  # wait for profile to be shown on the list
 
@@ -85,7 +85,7 @@ def test_check_that_profile_config_is_stored_upon_applying_configuration():
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile_name_2)
     p_profiles.set_frequency(profile_freq_2)
-    p_profiles.add_varBind("SNMPv2-MIB", "sysDescr")
+    p_profiles.add_varbind("SNMPv2-MIB", "sysDescr")
     p_profiles.click_submit_button()
     time.sleep(1)  # wait for profile to be shown on the list
 
@@ -125,7 +125,7 @@ def test_check_that_group_config_is_stored_upon_applying_configuration():
     changes stored even when the timer has not yet expired
     """
 
-    group_name = f"test-group-store"
+    group_name = "test-group-store"
     device_ip = "11.22.33.44"
     port = 1234
     snmp_version = "2c"
@@ -206,7 +206,7 @@ def test_check_that_inventory_config_is_stored_upon_applying_configuration():
     p_header.switch_to_profiles()
     p_profiles.click_add_profile_button()
     p_profiles.set_profile_name(profile)
-    p_profiles.add_varBind("IP-MIB", "ifDescr")
+    p_profiles.add_varbind("IP-MIB", "ifDescr")
     p_profiles.click_submit_button()
     time.sleep(1)  # wait for profile to be shown on the list
 

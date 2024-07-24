@@ -82,6 +82,7 @@ def check_restart(current_target, result, targets_collection, address):
 
 class EnrichTask(Task):
     def __init__(self):
+        # Default class used for shared task
         pass
 
 
@@ -145,7 +146,7 @@ def enrich(self, result):
                 cv = current_attributes["fields"][field_key_hash]
 
             # if new field_value is different than the previous one, update
-            if cv and not cv == field_value:
+            if cv and cv != field_value:
                 # modifed
                 attribute_updates.append(
                     {"$set": {f"fields.{field_key_hash}": field_value}}

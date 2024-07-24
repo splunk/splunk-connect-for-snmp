@@ -94,22 +94,8 @@ class InventoryRecord(BaseModel):
                 )
             return value
 
-    @validator("community", pre=True)
-    def community_validator(cls, value):
-        if value is None or (isinstance(value, str) and value.strip() == ""):
-            return None
-        else:
-            return value
-
-    @validator("secret", pre=True)
-    def secret_validator(cls, value):
-        if value is None or (isinstance(value, str) and value.strip() == ""):
-            return None
-        else:
-            return value
-
-    @validator("security_engine", pre=True)
-    def security_engine_validator(cls, value):
+    @validator("community", "secret", "security_engine", pre=True)
+    def community_secret_security_engine_validator(cls, value):
         if value is None or (isinstance(value, str) and value.strip() == ""):
             return None
         else:

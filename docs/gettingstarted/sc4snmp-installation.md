@@ -42,6 +42,22 @@ or download it directly from Helm using the command `microk8s helm3 show values 
 
 It is recommended to start by completing the base template and gradually add additional configurations as needed.
 
+
+The `values.yaml` file is validated using `JSON schema` built into `helm chart` and inside the code.
+To ensure that your `values.yaml` follows formatting standards, you can use `yamllint`. In order to download
+`yamllint` refer to the [installation instructions](https://yamllint.readthedocs.io/en/stable/quickstart.html#installing-yamllint). 
+Then create `custom-config.yamllint` file and add the following configuration:
+```yaml
+extends: default
+
+rules:
+  line-length:
+    max: 80
+    level: warning
+```
+Configuration above can be found in the `examples` directory in SC4SNMP [GitHub repository](https://github.com/splunk/splunk-connect-for-snmp).
+Next run `yamllint -c <path to custom-config.yamllint> <path to values.yaml>` command. Warnings can be ignored.
+
 #### Install SC4SNMP
 
 After the `values.yaml` creation, you can proceed with the SC4SNMP installation:
@@ -181,6 +197,27 @@ To uninstall SC4SNMP run the following commands:
 ```
  microk8s helm3 uninstall snmp -n sc4snmp
  microk8s kubectl delete pvc --all -n sc4snmp
+```
+
+Example of pods terminating:
+
+```
+NAME                                                          READY   STATUS        RESTARTS        AGE
+snmp-mibserver-bb8994c64-twk42                                1/1     Terminating   2 (5h21m ago)   46h
+snmp-splunk-connect-for-snmp-worker-sender-7f5557678b-psj97   1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-worker-trap-dfcc487c-lh2dl       1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-worker-trap-dfcc487c-5z5sq       1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-trap-684d57dc8d-722tv            1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-trap-684d57dc8d-z68lb            1/1     Terminating   1 (5h21m ago)   22h
+```
+
+## Restart Splunk Connect for SNMP
+First run the command to uninstall SC4SNMP, wait until all pods are removed, then use the command to install sc4snmp again.
+
+```
+ microk8s helm3 uninstall snmp -n sc4snmp
+ microk8s kubectl delete pvc --all -n sc4snmp
+ microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
 
 

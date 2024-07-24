@@ -55,6 +55,34 @@
               }
             ],
             "countMatches": true
+          },
+          {
+            "files": ["docker_compose/.env"],
+            "from": "^SC4SNMP_TAG=.*",
+            "to": "SC4SNMP_TAG=\"${nextRelease.version}\"",
+            "results": [
+              {
+                "file": "docker_compose/.env",
+                "hasChanged": true,
+                "numMatches": 1,
+                "numReplacements": 1
+              }
+            ],
+            "countMatches": true
+          },
+          {
+            "files": ["docker_compose/.env"],
+            "from": "^SC4SNMP_VERSION=.*",
+            "to": "SC4SNMP_VERSION=\"${nextRelease.version}\"",
+            "results": [
+              {
+                "file": "docker_compose/.env",
+                "hasChanged": true,
+                "numMatches": 1,
+                "numReplacements": 1
+              }
+            ],
+            "countMatches": true
           }
         ]
       }
@@ -66,7 +94,7 @@
     [
       "@semantic-release/git",
       {
-        "assets": ["NOTICE", "charts/splunk-connect-for-snmp/Chart.yaml", "pyproject.toml", "splunk_connect_for_snmp/__init__.py"],
+        "assets": ["NOTICE", "charts/splunk-connect-for-snmp/Chart.yaml", "pyproject.toml", "splunk_connect_for_snmp/__init__.py", "docker_compose/.env"],
         "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}",
       },
     ],

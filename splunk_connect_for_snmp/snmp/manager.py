@@ -46,7 +46,7 @@ from requests_cache import MongoCache
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
-from splunk_connect_for_snmp.snmp.auth import GetAuth
+from splunk_connect_for_snmp.snmp.auth import get_auth
 from splunk_connect_for_snmp.snmp.context import get_context_data
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
@@ -103,14 +103,14 @@ def get_inventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-    error_indication, error_status, error_index, var_binds: list, address, walk
+    error_indication, error_status, error_index, varbinds: list, address, walk
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
     @param error_indication:
     @param error_status:
     @param error_index: index of varbind where error appeared
-    @param var_binds: list of varbinds
+    @param varbinds: list of varbinds
     @return: if any failure happened
     """
     if error_indication:
@@ -122,7 +122,7 @@ def _any_failure_happened(
     elif error_status:
         result = "{} at {}".format(
             error_status.prettyPrint(),
-            error_index and var_binds[int(error_index) - 1][0] or "?",
+            error_index and varbinds[int(error_index) - 1][0] or "?",
         )
         raise SnmpActionError(
             f"An error of SNMP isWalk={walk} for a host {address} occurred: {result}"
@@ -130,7 +130,7 @@ def _any_failure_happened(
     return False
 
 
-def isMIBResolved(id):
+def is_mib_resolved(id):
     if (
         id.startswith("RFC1213-MIB::")
         or id.startswith("SNMPv2-SMI::enterprises.")
@@ -153,7 +153,7 @@ def get_group_key(mib, oid, index) -> str:
             for iv_tuple in iv._value:
                 try:
                     ivtp.append(f"{type(iv_tuple).__name__}={str(iv_tuple._value)}")
-                except:
+                except Exception:
                     ivtp.append(f"{type(iv_tuple).__name__}={str(iv_tuple)}")
             parts.append(f"{ivt}={'|'.join(ivtp)}")
         else:
@@ -169,7 +169,7 @@ MTYPES_R = tuple(["ObjectIdentifier", "ObjectIdentity"])
 MTYPES = tuple(["cc", "c", "g"])
 
 
-def valueAsBest(value) -> Union[str, float]:
+def value_as_best(value) -> Union[str, float]:
     try:
         return float(value)
     except ValueError:
@@ -298,6 +298,7 @@ class Poller(Task):
     ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
+        logger.info(f"Preparing task for {ir.address}")
 
         if time.time() - self.last_modified > PROFILES_RELOAD_DELAY or walk:
             self.profiles = self.profiles_manager.return_collection()
@@ -305,12 +306,12 @@ class Poller(Task):
             self.last_modified = time.time()
             logger.debug("Profiles reloaded")
 
-        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_var_binds(
+        varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_varbinds(
             address, walk=walk, profiles=profiles
         )
 
-        authData = GetAuth(logger, ir, self.snmpEngine)
-        contextData = get_context_data()
+        auth_data = get_auth(logger, ir, self.snmpEngine)
+        context_data = get_context_data()
 
         transport = UdpTransportTarget(
             (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
@@ -322,11 +323,16 @@ class Poller(Task):
             return False, {}
 
         if varbinds_bulk:
-            for (errorIndication, errorStatus, errorIndex, varBindTable,) in bulkCmd(
+            for (
+                error_indication,
+                error_status,
+                error_index,
+                varbind_table,
+            ) in bulkCmd(
                 self.snmpEngine,
-                authData,
+                auth_data,
                 transport,
-                contextData,
+                context_data,
                 1,
                 10,
                 *varbinds_bulk,
@@ -334,20 +340,20 @@ class Poller(Task):
                 ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
             ):
                 if not _any_failure_happened(
-                    errorIndication,
-                    errorStatus,
-                    errorIndex,
-                    varBindTable,
+                    error_indication,
+                    error_status,
+                    error_index,
+                    varbind_table,
                     ir.address,
                     walk,
                 ):
-                    tmp_retry, tmp_mibs, _ = self.process_snmp_data(
-                        varBindTable, metrics, address, bulk_mapping
+                    _, tmp_mibs, _ = self.process_snmp_data(
+                        varbind_table, metrics, address, bulk_mapping
                     )
                     if tmp_mibs:
                         self.load_mibs(tmp_mibs)
                         self.process_snmp_data(
-                            varBindTable, metrics, address, bulk_mapping
+                            varbind_table, metrics, address, bulk_mapping
                         )
 
         if varbinds_get:
@@ -355,19 +361,24 @@ class Poller(Task):
             for varbind_chunk in self.get_varbind_chunk(
                 varbinds_get, MAX_OID_TO_PROCESS
             ):
-                for (errorIndication, errorStatus, errorIndex, varBindTable,) in getCmd(
-                    self.snmpEngine, authData, transport, contextData, *varbind_chunk
+                for (
+                    error_indication,
+                    error_status,
+                    error_index,
+                    varbind_table,
+                ) in getCmd(
+                    self.snmpEngine, auth_data, transport, context_data, *varbind_chunk
                 ):
                     if not _any_failure_happened(
-                        errorIndication,
-                        errorStatus,
-                        errorIndex,
-                        varBindTable,
+                        error_indication,
+                        error_status,
+                        error_index,
+                        varbind_table,
                         ir.address,
                         walk,
                     ):
                         self.process_snmp_data(
-                            varBindTable, metrics, address, get_mapping
+                            varbind_table, metrics, address, get_mapping
                         )
 
         for group_key, metric in metrics.items():
@@ -404,7 +415,7 @@ class Poller(Task):
         logger.warning(f"no mib found {id} based on {oid} from {target}")
         return False, ""
 
-    def get_var_binds(self, address, walk=False, profiles=[]):
+    def get_varbinds(self, address, walk=False, profiles=[]):
         varbinds_bulk = set()
         varbinds_get = set()
         get_mapping = {}
@@ -437,16 +448,16 @@ class Poller(Task):
         logger.debug(f"host={address} bulk_mapping={bulk_mapping}")
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
-    def process_snmp_data(self, varBindTable, metrics, target, mapping={}):
+    def process_snmp_data(self, varbind_table, metrics, target, mapping={}):
         retry = False
         remotemibs = []
-        for varBind in varBindTable:
-            mib, metric, index = varBind[0].getMibSymbol()
+        for varbind in varbind_table:
+            mib, metric, index = varbind[0].getMibSymbol()
 
-            id = varBind[0].prettyPrint()
-            oid = str(varBind[0].getOid())
+            varbind_id = varbind[0].prettyPrint()
+            oid = str(varbind[0].getOid())
 
-            if isMIBResolved(id):
+            if is_mib_resolved(varbind_id):
                 group_key = get_group_key(mib, oid, index)
                 if group_key not in metrics:
                     indexes = extract_indexes(index)
@@ -459,11 +470,11 @@ class Poller(Task):
                         metrics[group_key]["profiles"] = []
                 try:
 
-                    snmp_val = varBind[1]
+                    snmp_val = varbind[1]
                     snmp_type = type(snmp_val).__name__
 
                     metric_type = map_metric_type(snmp_type, snmp_val)
-                    metric_value = valueAsBest(snmp_val.prettyPrint())
+                    metric_value = value_as_best(snmp_val.prettyPrint())
 
                     index_number = extract_index_number(index)
                     metric_value = fill_empty_value(index_number, metric_value, target)
@@ -471,7 +482,7 @@ class Poller(Task):
                     profile = None
                     if mapping:
                         profile = mapping.get(
-                            id.replace('"', ""),
+                            varbind_id.replace('"', ""),
                             mapping.get(f"{mib}::{metric}", mapping.get(mib)),
                         )
                         # when varbind name differs from mib-family,
@@ -505,12 +516,12 @@ class Poller(Task):
                             "value": metric_value,
                             "oid": oid,
                         }
-                except:
+                except Exception:
                     logger.exception(
-                        f"Exception processing data from {target} {varBind}"
+                        f"Exception processing data from {target} {varbind}"
                     )
             else:
-                found, mib = self.is_mib_known(id, oid, target)
+                found, mib = self.is_mib_known(varbind_id, oid, target)
                 if mib and mib not in remotemibs:
                     remotemibs.append(mib)
                 if found:

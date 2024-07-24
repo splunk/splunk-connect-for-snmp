@@ -90,7 +90,7 @@ def migrate_to_version_2(mongo_client, task_manager):
     task_manager.rerun_all_walks()
 
 
-def migrate_to_version_3(mongo_client, task_manager):
+def migrate_to_version_3(mongo_client, _):
     logger.info("Migrating database schema to version 3")
     attributes_collection = mongo_client.sc4snmp.attributes
 
@@ -106,7 +106,7 @@ def migrate_to_version_4(mongo_client, task_manager):
     schedules_collection.drop()
 
 
-def migrate_to_version_5(mongo_client, task_manager):
+def migrate_to_version_5(mongo_client, _):
     logger.info("Migrating database schema to version 5")
     inventory_collection = mongo_client.sc4snmp.inventory
     inventory_collection.update_many({}, {"$set": {"group": None}})
