@@ -4,6 +4,8 @@ from unittest.mock import Mock, mock_open, patch
 from pysnmp.entity.config import (
     usmAesBlumenthalCfb192Protocol,
     usmHMAC128SHA224AuthProtocol,
+    usmNoAuthProtocol,
+    usmNoPrivProtocol,
 )
 from pysnmp.proto.rfc1902 import OctetString
 
@@ -169,6 +171,7 @@ class TestAuth(TestCase):
         self.assertEqual("secret1", result.userName)
         self.assertEqual("secret2", result.authKey)
         self.assertEqual("secret3", result.privKey)
+        self.assertEqual("authPriv", result.securityLevel)
         self.assertEqual(usmHMAC128SHA224AuthProtocol, result.authProtocol)
         self.assertEqual(usmAesBlumenthalCfb192Protocol, result.privProtocol)
         self.assertEqual(security_engine_result._value, result.securityEngineId._value)
@@ -218,6 +221,7 @@ class TestAuth(TestCase):
         self.assertEqual("secret1", result.userName)
         self.assertEqual("secret2", result.authKey)
         self.assertEqual("secret3", result.privKey)
+        self.assertEqual("authPriv", result.securityLevel)
         self.assertEqual(usmHMAC128SHA224AuthProtocol, result.authProtocol)
         self.assertEqual(usmAesBlumenthalCfb192Protocol, result.privProtocol)
         self.assertEqual("ENGINE123", result.securityEngineId)
@@ -245,6 +249,64 @@ class TestAuth(TestCase):
         with self.assertRaises(Exception) as e:
             get_auth_v3(logger, ir, snmpEngine)
         self.assertEqual("invalid username from secret secret_ir", e.exception.args[0])
+
+    @patch("os.path.exists")
+    @patch("splunk_connect_for_snmp.snmp.auth.get_secret_value")
+    def test_get_auth_v3_noauthnopriv(self, m_get_secret_value, m_exists):
+        m_exists.return_value = True
+        m_get_secret_value.side_effect = [
+            "secret1",
+            "",
+            "",
+            "SHA224",
+            "AES192BLMT",
+            "1",
+            "2",
+        ]
+        logger = Mock()
+        snmpEngine = Mock()
+
+        result = get_auth_v3(logger, ir, snmpEngine)
+        security_engine_result = OctetString(hexValue="80003a8c04")
+        self.assertEqual("secret1", result.userName)
+        self.assertEqual(None, result.authKey)
+        self.assertEqual(None, result.privKey)
+        self.assertEqual("noAuthNoPriv", result.securityLevel)
+        self.assertEqual(usmNoAuthProtocol, result.authProtocol)
+        self.assertEqual(usmNoPrivProtocol, result.privProtocol)
+        self.assertEqual(security_engine_result._value, result.securityEngineId._value)
+        self.assertEqual("secret1", result.securityName)
+        self.assertEqual(1, result.authKeyType)
+        self.assertEqual(2, result.privKeyType)
+
+    @patch("os.path.exists")
+    @patch("splunk_connect_for_snmp.snmp.auth.get_secret_value")
+    def test_get_auth_v3_authnopriv(self, m_get_secret_value, m_exists):
+        m_exists.return_value = True
+        m_get_secret_value.side_effect = [
+            "secret1",
+            "secret2",
+            "",
+            "SHA224",
+            "AES192BLMT",
+            "1",
+            "2",
+        ]
+        logger = Mock()
+        snmpEngine = Mock()
+
+        result = get_auth_v3(logger, ir, snmpEngine)
+        security_engine_result = OctetString(hexValue="80003a8c04")
+        self.assertEqual("secret1", result.userName)
+        self.assertEqual("secret2", result.authKey)
+        self.assertEqual(None, result.privKey)
+        self.assertEqual("authNoPriv", result.securityLevel)
+        self.assertEqual(usmHMAC128SHA224AuthProtocol, result.authProtocol)
+        self.assertEqual(usmNoPrivProtocol, result.privProtocol)
+        self.assertEqual(security_engine_result._value, result.securityEngineId._value)
+        self.assertEqual("secret1", result.securityName)
+        self.assertEqual(1, result.authKeyType)
+        self.assertEqual(2, result.privKeyType)
 
     def test_get_auth_v2c(self):
         result = get_auth_v2c(ir)

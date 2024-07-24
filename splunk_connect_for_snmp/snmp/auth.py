@@ -136,8 +136,8 @@ def get_auth_v3(logger, ir: InventoryRecord, snmp_engine: SnmpEngine) -> UsmUser
         )
         return UsmUserData(
             username,
-            authKey=auth_key,
-            privKey=priv_key,
+            authKey=auth_key if auth_key else None,
+            privKey=priv_key if priv_key else None,
             authProtocol=auth_protocol,
             privProtocol=priv_protocol,
             securityEngineId=security_engine_id,
@@ -161,7 +161,6 @@ def get_auth_v1(ir: InventoryRecord) -> CommunityData:
 def get_auth(
     logger, ir: InventoryRecord, snmp_engine: SnmpEngine
 ) -> Union[UsmUserData, CommunityData]:
-
     if ir.version == "1":
         return get_auth_v1(ir)
     elif ir.version == "2c":
