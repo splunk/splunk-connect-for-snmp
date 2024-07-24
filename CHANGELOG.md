@@ -3,6 +3,12 @@
 ## Unreleased
 
 ### Changed
+
+### Fixed
+
+## [1.11.0]
+
+### Changed
 - add docker compose deployment
 - update default microk8s to 1.30
 - change group and user ID in Docker image to 10001:10001
