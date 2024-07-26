@@ -29,7 +29,7 @@ class TestDoWork(TestCase):
     @patch("mongolock.MongoLock.release", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.auth.get_auth", None)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.setup_transport_target", MagicMock())
     def test_do_work_no_work_to_do(self):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
@@ -57,7 +57,7 @@ class TestDoWork(TestCase):
     @patch("mongolock.MongoLock.release", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.auth.get_auth", None)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.setup_transport_target", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
     @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
     @patch("splunk_connect_for_snmp.common.collection_manager.ProfilesManager")
@@ -93,7 +93,7 @@ class TestDoWork(TestCase):
     @patch("mongolock.MongoLock.release", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.auth.get_auth", None)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.setup_transport_target", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
     @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
     @patch(
@@ -136,7 +136,7 @@ class TestDoWork(TestCase):
     @patch("mongolock.MongoLock.release", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.auth.get_auth", None)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.UdpTransportTarget", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.setup_transport_target", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
     @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
     @patch(

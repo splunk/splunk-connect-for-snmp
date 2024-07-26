@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import Mock, mock_open, patch
+from unittest.mock import MagicMock, Mock, mock_open, patch
 
 from pysnmp.entity.config import (
     usmAesBlumenthalCfb192Protocol,
@@ -18,6 +18,7 @@ from splunk_connect_for_snmp.snmp.auth import (
     get_auth_v3,
     get_secret_value,
     get_security_engine_id,
+    setup_transport_target,
 )
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
@@ -269,8 +270,8 @@ class TestAuth(TestCase):
         result = get_auth_v3(logger, ir, snmpEngine)
         security_engine_result = OctetString(hexValue="80003a8c04")
         self.assertEqual("secret1", result.userName)
-        self.assertEqual(None, result.authKey)
-        self.assertEqual(None, result.privKey)
+        self.assertIsNone(result.authKey)
+        self.assertIsNone(result.privKey)
         self.assertEqual("noAuthNoPriv", result.securityLevel)
         self.assertEqual(usmNoAuthProtocol, result.authProtocol)
         self.assertEqual(usmNoPrivProtocol, result.privProtocol)
@@ -299,7 +300,7 @@ class TestAuth(TestCase):
         security_engine_result = OctetString(hexValue="80003a8c04")
         self.assertEqual("secret1", result.userName)
         self.assertEqual("secret2", result.authKey)
-        self.assertEqual(None, result.privKey)
+        self.assertIsNone(result.privKey)
         self.assertEqual("authNoPriv", result.securityLevel)
         self.assertEqual(usmHMAC128SHA224AuthProtocol, result.authProtocol)
         self.assertEqual(usmNoPrivProtocol, result.privProtocol)
@@ -335,3 +336,27 @@ class TestAuth(TestCase):
         ir.version = "3"
         get_auth(Mock(), ir, Mock())
         m_get_auth.assert_called()
+
+    @patch("splunk_connect_for_snmp.snmp.auth.Udp6TransportTarget")
+    @patch("splunk_connect_for_snmp.snmp.auth.UdpTransportTarget")
+    def test_setup_transport_target_ipv4(
+        self, m_setup_udp_transport_target, m_setup_udp6_transport_target
+    ):
+        ir.address = "127.0.0.1"
+        ir.port = 161
+        m_setup_udp_transport_target.return_value = "UDP4"
+        m_setup_udp6_transport_target.return_value = "UDP6"
+        transport = setup_transport_target(ir)
+        self.assertEqual("UDP4", transport)
+
+    @patch("splunk_connect_for_snmp.snmp.auth.Udp6TransportTarget")
+    @patch("splunk_connect_for_snmp.snmp.auth.UdpTransportTarget")
+    def test_setup_transport_target_ipv6(
+        self, m_setup_udp_transport_target, m_setup_udp6_transport_target
+    ):
+        ir.address = "2001:0db8:ac10:fe01::0001"
+        ir.port = 161
+        m_setup_udp_transport_target.return_value = "UDP4"
+        m_setup_udp6_transport_target.return_value = "UDP6"
+        transport = setup_transport_target(ir)
+        self.assertEqual("UDP6", transport)

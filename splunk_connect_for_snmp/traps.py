@@ -18,6 +18,7 @@ from contextlib import suppress
 
 from pysnmp.proto.api import v2c
 
+from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.snmp.auth import get_secret_value
 
 with suppress(ImportError, OSError):
@@ -34,7 +35,7 @@ import yaml
 from celery import Celery, chain
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
-from pysnmp.carrier.asyncio.dgram import udp
+from pysnmp.carrier.asyncio.dgram import udp, udp6
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
 
@@ -49,7 +50,7 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 SECURITY_ENGINE_ID_LIST = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "80003a8c04").split(
     ","
 )
-
+IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 
@@ -82,6 +83,7 @@ if PYSNMP_DEBUG:
         debug.setLogger(
             debug.Debug(*enabled_debug_flags, options={"loggerName": logger})
         )
+
 
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
@@ -164,6 +166,14 @@ def main():
         udp.domainName,
         udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
     )
+
+    if IPv6_ENABLED:
+        config.addTransport(
+            snmp_engine,
+            udp6.domainName,
+            udp6.Udp6Transport().openServerMode(("::", 2163)),
+        )
+
     with open(CONFIG_PATH, encoding="utf-8") as file:
         config_base = yaml.safe_load(file)
     idx = 0

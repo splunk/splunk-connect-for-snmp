@@ -19,6 +19,11 @@ Three node minimum per node:
 The following quick start guidance is based on Ubuntu 20.04LTS with MicroK8s and internet access. See other deployment options
 in the MicroK8s [documentation](https://microk8s.io/docs), including offline and with proxy. 
 
+## Enabling IPv6
+
+If you plan to poll or receive trap notifications from IPv6 addresses, firstly check the instructions for [enabling 
+IPv6](../enable-ipv6.md).
+
 ## Install MicroK8s using Snap
 
 ```bash

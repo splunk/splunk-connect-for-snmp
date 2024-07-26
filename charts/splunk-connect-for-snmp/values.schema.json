@@ -719,11 +719,23 @@
             },
             "nodePort": {
               "type": "integer"
+            },
+            "ipv6Port": {
+              "type": "integer"
+            },
+            "ipv6NodePort": {
+              "type": "integer"
             }
           }
         },
         "loadBalancerIP": {
           "type": "string"
+        },
+        "ipFamilyPolicy": {
+          "type": "string"
+        },
+        "ipFamilies": {
+          "type": "array"
         },
         "resources": {
           "type": "object",
