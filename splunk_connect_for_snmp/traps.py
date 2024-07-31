@@ -33,7 +33,7 @@ import yaml
 from celery import Celery, chain
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
-from pysnmp.carrier.asyncio.dgram import udp
+from pysnmp.carrier.asyncio.dgram import udp, udp6
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
 
@@ -135,6 +135,12 @@ def main():
         udp.domainName,
         udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
     )
+    config.addTransport(
+        snmp_engine,
+        udp6.domainName,
+        udp6.Udp6Transport().openServerMode(("::", 2162)),
+    )
+
     with open(CONFIG_PATH, encoding="utf-8") as file:
         config_base = yaml.safe_load(file)
     idx = 0

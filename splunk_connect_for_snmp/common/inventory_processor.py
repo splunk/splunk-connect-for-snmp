@@ -33,7 +33,7 @@ ALLOWED_KEYS_VALUES = [
 
 def transform_key_to_address(target):
     if ":" in target:
-        address, port = target.split(":")
+        address, port = target.rsplit(":", 1)
     else:
         return target, 161
     return address, int(port)
@@ -41,7 +41,7 @@ def transform_key_to_address(target):
 
 def transform_address_to_key(address, port):
     if not port or int(port) == 161:
-        return address
+        return f"{address}:161"
     else:
         return f"{address}:{port}"
 
