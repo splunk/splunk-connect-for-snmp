@@ -452,80 +452,119 @@ class Poller(Task):
         retry = False
         remotemibs = []
         for varbind in varbind_table:
-            mib, metric, index = varbind[0].getMibSymbol()
-
-            varbind_id = varbind[0].prettyPrint()
-            oid = str(varbind[0].getOid())
+            index, metric, mib, oid, varbind_id = self.init_snmp_data(varbind)
 
             if is_mib_resolved(varbind_id):
                 group_key = get_group_key(mib, oid, index)
-                if group_key not in metrics:
-                    indexes = extract_indexes(index)
-                    metrics[group_key] = {
-                        "metrics": {},
-                        "fields": {},
-                        "indexes": indexes,
-                    }
-                    if mapping:
-                        metrics[group_key]["profiles"] = []
+                self.handle_groupkey_without_metrics(group_key, index, mapping, metrics)
                 try:
 
-                    snmp_val = varbind[1]
-                    snmp_type = type(snmp_val).__name__
+                    metric_type, metric_value = self.set_metrics_index(
+                        index, target, varbind
+                    )
 
-                    metric_type = map_metric_type(snmp_type, snmp_val)
-                    metric_value = value_as_best(snmp_val.prettyPrint())
-
-                    index_number = extract_index_number(index)
-                    metric_value = fill_empty_value(index_number, metric_value, target)
-
-                    profile = None
-                    if mapping:
-                        profile = mapping.get(
-                            varbind_id.replace('"', ""),
-                            mapping.get(f"{mib}::{metric}", mapping.get(mib)),
-                        )
-                        # when varbind name differs from mib-family,
-                        # we are checking if there's any key that includes this mib to get profile
-                        if not profile:
-                            key = [
-                                prof
-                                for mib_map, prof in mapping.items()
-                                if mib in mib_map
-                            ]
-                            if key:
-                                profile = key[0]
-                        if profile and "__" in profile:
-                            profile = profile.split("__")[0]
+                    profile = self.set_profile_name(mapping, metric, mib, varbind_id)
                     if metric_value == "No more variables left in this MIB View":
                         continue
 
-                    if metric_type in MTYPES and (isinstance(metric_value, float)):
-                        metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
-                            "time": time.time(),
-                            "type": metric_type,
-                            "value": metric_value,
-                            "oid": oid,
-                        }
-                        if profile and profile not in metrics[group_key]["profiles"]:
-                            metrics[group_key]["profiles"].append(profile)
-                    else:
-                        metrics[group_key]["fields"][f"{mib}.{metric}"] = {
-                            "time": time.time(),
-                            "type": metric_type,
-                            "value": metric_value,
-                            "oid": oid,
-                        }
+                    self.handle_metrics(
+                        group_key,
+                        metric,
+                        metric_type,
+                        metric_value,
+                        metrics,
+                        mib,
+                        oid,
+                        profile,
+                    )
                 except Exception:
                     logger.exception(
                         f"Exception processing data from {target} {varbind}"
                     )
             else:
-                found, mib = self.is_mib_known(varbind_id, oid, target)
-                if mib and mib not in remotemibs:
-                    remotemibs.append(mib)
+                found = self.find_new_mibs(oid, remotemibs, target, varbind_id)
                 if found:
                     retry = True
                     break
 
         return retry, remotemibs, metrics
+
+    def find_new_mibs(self, oid, remotemibs, target, varbind_id):
+        found, mib = self.is_mib_known(varbind_id, oid, target)
+        if mib and mib not in remotemibs:
+            remotemibs.append(mib)
+        return found
+
+    def handle_metrics(
+        self, group_key, metric, metric_type, metric_value, metrics, mib, oid, profile
+    ):
+        if metric_type in MTYPES and (isinstance(metric_value, float)):
+            metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
+                "time": time.time(),
+                "type": metric_type,
+                "value": metric_value,
+                "oid": oid,
+            }
+            if profile and profile not in metrics[group_key]["profiles"]:
+                metrics[group_key]["profiles"].append(profile)
+        else:
+            metrics[group_key]["fields"][f"{mib}.{metric}"] = {
+                "time": time.time(),
+                "type": metric_type,
+                "value": metric_value,
+                "oid": oid,
+            }
+
+    def set_profile_name(self, mapping, metric, mib, varbind_id):
+        """
+        Finds the profile named based on the passed data.
+        """
+        profile = None
+        if mapping:
+            profile = mapping.get(
+                varbind_id.replace('"', ""),
+                mapping.get(f"{mib}::{metric}", mapping.get(mib)),
+            )
+            # when varbind name differs from mib-family,
+            # we are checking if there's any key that includes this mib to get profile
+            profile = self.match_mapping_to_profile(mapping, mib, profile)
+            profile = self.clean_profile_name(profile)
+        return profile
+
+    def clean_profile_name(self, profile):
+        if profile and "__" in profile:
+            profile = profile.split("__")[0]
+        return profile
+
+    def match_mapping_to_profile(self, mapping, mib, profile):
+        if not profile:
+            key = [prof for mib_map, prof in mapping.items() if mib in mib_map]
+            if key:
+                profile = key[0]
+        return profile
+
+    def set_metrics_index(self, index, target, varbind):
+        snmp_val = varbind[1]
+        snmp_type = type(snmp_val).__name__
+        metric_type = map_metric_type(snmp_type, snmp_val)
+        metric_value = value_as_best(snmp_val.prettyPrint())
+        index_number = extract_index_number(index)
+        metric_value = fill_empty_value(index_number, metric_value, target)
+        return metric_type, metric_value
+
+    def handle_groupkey_without_metrics(self, group_key, index, mapping, metrics):
+        if group_key not in metrics:
+            indexes = extract_indexes(index)
+            metrics[group_key] = {
+                "metrics": {},
+                "fields": {},
+                "indexes": indexes,
+            }
+            if mapping:
+                metrics[group_key]["profiles"] = []
+
+    def init_snmp_data(self, varbind):
+        mib, metric, index = varbind[0].getMibSymbol()
+        varbind_id = varbind[0].prettyPrint()
+        oid = str(varbind[0].getOid())
+        return index, metric, mib, oid, varbind_id
