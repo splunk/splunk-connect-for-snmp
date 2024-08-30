@@ -41,6 +41,7 @@ services:
       - PROFILES_RELOAD_DELAY=${PROFILES_RELOAD_DELAY:-60}
       - WORKER_CONCURRENCY=${WORKER_SENDER_CONCURRENCY:-2}
       - PREFETCH_COUNT=${PREFETCH_SENDER_COUNT:-1}
+      - PYSNMP_DEBUG=${PYSNMP_DEBUG:-false}
     depends_on:
       - redis
       - mongo

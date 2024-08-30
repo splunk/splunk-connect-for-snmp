@@ -63,6 +63,7 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "60"))
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 3))
 MAX_OID_TO_PROCESS = int(os.getenv("MAX_OID_TO_PROCESS", 70))
+PYSNMP_DEBUG = human_bool(os.getenv("PYSNMP_DEBUG", False))
 
 DEFAULT_STANDARD_MIBS = [
     "HOST-RESOURCES-MIB",
@@ -72,7 +73,12 @@ DEFAULT_STANDARD_MIBS = [
     "TCP-MIB",
     "UDP-MIB",
 ]
+
 logger = get_task_logger(__name__)
+
+if PYSNMP_DEBUG:
+    from pysnmp import debug
+    debug.setLogger(debug.Debug('all', options={'loggerName': logger}))
 
 
 def return_address_and_port(target):

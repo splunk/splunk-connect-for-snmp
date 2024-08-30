@@ -119,6 +119,8 @@ Common labels
   value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/index.csv"
 - name: MIB_STANDARD
   value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/standard.txt"
+- name: PYSNMP_DEBUG:
+  value: {{ .Values.pysnmp_debug | default "false" | quote }}
 {{- if .Values.splunk.enabled }}
 {{- if .Values.splunk.protocol }}
 - name: SPLUNK_HEC_SCHEME
