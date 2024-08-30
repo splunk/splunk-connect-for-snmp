@@ -44,6 +44,7 @@ services:
       - RESOLVE_TRAP_ADDRESS=${RESOLVE_TRAP_ADDRESS:-false}
       - MAX_DNS_CACHE_SIZE_TRAPS=${MAX_DNS_CACHE_SIZE_TRAPS:-500}
       - TTL_DNS_CACHE_TRAPS=${TTL_DNS_CACHE_TRAPS:-1800}
+      - PYSNMP_DEBUG=${PYSNMP_DEBUG:-false}
     depends_on:
       - redis
       - mongo
