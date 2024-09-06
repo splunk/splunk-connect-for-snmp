@@ -294,7 +294,7 @@ class Poller(Task):
         self,
         ir: InventoryRecord,
         walk: bool = False,
-        profiles: List[str] = None,
+        profiles: Union[List[str], None] = None,
     ):
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
