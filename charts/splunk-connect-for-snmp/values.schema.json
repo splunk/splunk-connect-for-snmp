@@ -38,7 +38,7 @@
       "type": "array"
     },
     "pysnmpDebug": {
-      "type": "boolean"
+      "type": "string"
     },
     "UI": {
       "type": "object",

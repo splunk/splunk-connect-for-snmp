@@ -112,7 +112,7 @@ Common labels
 - name: MAX_OID_TO_PROCESS
   value: {{ .Values.poller.maxOidToProcess | default "70" | quote }}
 - name: PYSNMP_DEBUG
-  value: {{ .Values.pysnmpDebug | default "false" | quote }}
+  value: {{ .Values.pysnmpDebug | default "" | quote }}
 - name: PROFILES_RELOAD_DELAY
   value: {{ .Values.worker.profilesReloadDelay | default "60" | quote }}
 - name: MIB_SOURCES

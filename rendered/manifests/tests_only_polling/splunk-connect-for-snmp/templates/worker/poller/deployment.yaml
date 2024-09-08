@@ -67,7 +67,7 @@ spec:
             - name: MAX_OID_TO_PROCESS
               value: "70"
             - name: PYSNMP_DEBUG
-              value: "false"
+              value: ""
             - name: PROFILES_RELOAD_DELAY
               value: "60"
             - name: MIB_SOURCES
