@@ -77,6 +77,11 @@ DEFAULT_STANDARD_MIBS = [
 logger = get_task_logger(__name__)
 
 if PYSNMP_DEBUG:
+    # Usage: PYSNMP_DEBUG=dsp,msgproc,io
+
+    # List of available debug flags: 
+    # io, dsp, msgproc, secmod, mibbuild, mibview, mibinstrum, acl, proxy, app, all
+    
     from pysnmp import debug
 
     debug_flags = list(debug.flagMap.keys())
@@ -87,7 +92,7 @@ if PYSNMP_DEBUG:
     ]
 
     if enabled_debug_flags:
-        debug.setLogger(debug.Debug(*enabled_debug_flags, loggerName=logger))
+        debug.setLogger(debug.Debug(*enabled_debug_flags, options={'loggerName': logger}))
 
 
 def return_address_and_port(target):
