@@ -66,7 +66,7 @@ logger.addHandler(handler)
 if PYSNMP_DEBUG:
     # Usage: PYSNMP_DEBUG=dsp,msgproc,io
 
-    # List of available debug flags: 
+    # List of available debug flags:
     # io, dsp, msgproc, secmod, mibbuild, mibview, mibinstrum, acl, proxy, app, all
 
     from pysnmp import debug
@@ -79,7 +79,9 @@ if PYSNMP_DEBUG:
     ]
 
     if enabled_debug_flags:
-        debug.setLogger(debug.Debug(*enabled_debug_flags, options={'loggerName': logger}))
+        debug.setLogger(
+            debug.Debug(*enabled_debug_flags, options={"loggerName": logger})
+        )
 
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
