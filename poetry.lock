@@ -907,17 +907,20 @@ mkdocs = ">=1.1.0,<2"
 
 [[package]]
 name = "mongoengine"
-version = "0.28.2"
+version = "0.29.0"
 description = "MongoEngine is a Python Object-Document Mapper for working with MongoDB."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "mongoengine-0.28.2-py3-none-any.whl", hash = "sha256:8e0f84a5ad3d335e5da98261454d4ab546c866241ed064adc6433fe2077d43c9"},
-    {file = "mongoengine-0.28.2.tar.gz", hash = "sha256:67c35a2ebe0ee7fd8eda3766dc251b9e0aada4489bb935f7a55b4c570d148ca7"},
+    {file = "mongoengine-0.29.0-py3-none-any.whl", hash = "sha256:1bd91649f62b66d0aaa11eac889618ee8ea4d8408f04c23ddc49b0469c2e1c9f"},
+    {file = "mongoengine-0.29.0.tar.gz", hash = "sha256:fcf2065153e07ec2488556c51d801938720c6bfaa73a13b41789470a877af852"},
 ]
 
 [package.dependencies]
 pymongo = ">=3.4,<5.0"
+
+[package.extras]
+test = ["Pillow (>=7.0.0)", "blinker", "coverage", "pytest", "pytest-cov"]
 
 [[package]]
 name = "mongolock"
@@ -2314,4 +2317,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "fc3e4ca2984cf3f3652de0a6167bccae08a5efe76292845c01e9da8e64a6a977"
+content-hash = "0d96427eac02294dfb7ce6770111c88343202c9342ad3a9d807aeec52e7be425"
