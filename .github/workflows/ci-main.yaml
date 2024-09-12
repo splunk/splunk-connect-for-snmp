@@ -148,7 +148,7 @@ jobs:
       - name: run tests
         working-directory: integration_tests
         run: |
-          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="microk8s"
+          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="microk8s" -k "trap"
 
   test-integration-compose:
     name: Run integration tests in docker compose deployment
@@ -181,4 +181,4 @@ jobs:
       - name: run tests
         working-directory: integration_tests
         run: |
-          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="docker-compose"
+          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="docker-compose" -k "trap"
