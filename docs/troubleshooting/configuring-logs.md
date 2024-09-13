@@ -1,8 +1,8 @@
 ## Configuring SC4SNMP loglevel
 
-SC4SNMP loglevel can be configured in `values.yaml` file. The default `logLevel` for all components is `INFO`, other 
+SC4SNMP log level can be configured in `values.yaml` file. The default value for it is `INFO`, other 
 possible levels to set are `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` or `FATAL`. To change 
-the `logLevel` for a specific component, add the following configuration to `values.yaml`:
+the log level for a specific component, add the following configuration to `values.yaml`:
 
 ```yaml
 worker:
@@ -11,7 +11,7 @@ worker:
 
 And redeploy SC4SNMP. 
 
-`LogLevel` configuration can be set for `worker`, `poller`, `scheduler` and `traps`.
+Log level configuration can be set for `worker`, `poller`, `scheduler` and `traps`.
 
 ## Accessing SC4SNMP logs 
 
