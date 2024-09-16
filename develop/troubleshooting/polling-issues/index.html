@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../8-offline-installation/">
+        <link rel="prev" href="../configuring-logs/">
       
       
-        <link rel="next" href="../../small-environment/">
+        <link rel="next" href="../traps-issues/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Sending logs to Splunk - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Polling issues - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#logging" class="md-skip">
+        <a href="#identifying-polling-and-walk-issues" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Sending logs to Splunk
+              Polling issues
             
           </span>
         </div>
@@ -998,19 +998,17 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -1024,7 +1022,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Docker compose
@@ -1038,7 +1036,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../1-install-docker/" class="md-nav__link">
+      <a href="../../dockercompose/1-install-docker/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1059,7 +1057,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../2-download-package/" class="md-nav__link">
+      <a href="../../dockercompose/2-download-package/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1080,7 +1078,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../3-inventory-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/3-inventory-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1101,7 +1099,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../4-scheduler-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/4-scheduler-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1122,7 +1120,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../5-traps-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/5-traps-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1143,7 +1141,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../6-env-file-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/6-env-file-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1164,7 +1162,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../7-snmpv3-secrets/" class="md-nav__link">
+      <a href="../../dockercompose/7-snmpv3-secrets/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1185,7 +1183,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../8-offline-installation/" class="md-nav__link">
+      <a href="../../dockercompose/8-offline-installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1203,30 +1201,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Sending logs to Splunk
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../dockercompose/9-splunk-logging/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1235,53 +1213,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      Prerequisites
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#enabling-logging" class="md-nav__link">
-    <span class="md-ellipsis">
-      Enabling logging
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#disabling-the-logs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Disabling the logs
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1398,17 +1329,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
         
           
           <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
@@ -1422,7 +1355,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_12">
             <span class="md-nav__icon md-icon"></span>
             Troubleshooting
@@ -1436,7 +1369,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../troubleshooting/configuring-logs/" class="md-nav__link">
+      <a href="../configuring-logs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1454,10 +1387,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../troubleshooting/polling-issues/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Polling issues
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1466,6 +1419,140 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#check-when-snmp-walk-was-executed-last-time-for-the-device" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check when SNMP WALK was executed last time for the device
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#empty-snmp-response-message-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      "Empty SNMP response message" problem
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oid-not-increasing-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      "OID not increasing" problem
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#walking-a-device-takes-too-much-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      Walking a device takes too much time
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#snmp-rollover" class="md-nav__link">
+    <span class="md-ellipsis">
+      SNMP Rollover
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#polling-authentication-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Polling authentication errors
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Polling authentication errors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unknown-usm-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unknown USM user
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wrong-snmp-pdu-digest" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wrong SNMP PDU digest
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-snmp-response-received-before-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      No SNMP response received before timeout
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#field-is-immutable-error-during-helm-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      "Field is immutable" error during helm upgrade
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      "The following profiles have invalid configuration" or "The following groups have invalid configuration" errors
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1478,7 +1565,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../troubleshooting/traps-issues/" class="md-nav__link">
+      <a href="../traps-issues/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1499,7 +1586,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../troubleshooting/k8s-commands/" class="md-nav__link">
+      <a href="../k8s-commands/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1607,27 +1694,114 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
+  <a href="#check-when-snmp-walk-was-executed-last-time-for-the-device" class="md-nav__link">
     <span class="md-ellipsis">
-      Prerequisites
+      Check when SNMP WALK was executed last time for the device
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#enabling-logging" class="md-nav__link">
+  <a href="#empty-snmp-response-message-problem" class="md-nav__link">
     <span class="md-ellipsis">
-      Enabling logging
+      "Empty SNMP response message" problem
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#disabling-the-logs" class="md-nav__link">
+  <a href="#oid-not-increasing-problem" class="md-nav__link">
     <span class="md-ellipsis">
-      Disabling the logs
+      "OID not increasing" problem
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#walking-a-device-takes-too-much-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      Walking a device takes too much time
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#snmp-rollover" class="md-nav__link">
+    <span class="md-ellipsis">
+      SNMP Rollover
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#polling-authentication-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Polling authentication errors
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Polling authentication errors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unknown-usm-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unknown USM user
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wrong-snmp-pdu-digest" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wrong SNMP PDU digest
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-snmp-response-received-before-timeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      No SNMP response received before timeout
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#field-is-immutable-error-during-helm-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      "Field is immutable" error during helm upgrade
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      "The following profiles have invalid configuration" or "The following groups have invalid configuration" errors
     </span>
   </a>
   
@@ -1648,82 +1822,107 @@
                   
 
 
-<div><h1 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">¶</a></h1>
-<p>The default configuration of docker compose is not sending the logs to Splunk. Container logs can be accessed with command:</p>
-<div class="codehilite"><pre><span></span><code>docker logs &lt;container_name/id&gt;
+<div><h1 id="identifying-polling-and-walk-issues">Identifying Polling and Walk Issues<a class="headerlink" href="#identifying-polling-and-walk-issues" title="Permanent link">¶</a></h1>
+<h2 id="check-when-snmp-walk-was-executed-last-time-for-the-device">Check when SNMP WALK was executed last time for the device<a class="headerlink" href="#check-when-snmp-walk-was-executed-last-time-for-the-device" title="Permanent link">¶</a></h2>
+<ol>
+<li><a href="../../gettingstarted/sck-installation/">Configure Splunk OpenTelemetry Collector for Kubernetes</a></li>
+<li>Go to your Splunk and execute search: <code>index="em_logs"   "Sending due task" "sc4snmp;&lt;IP_ADDRESS&gt;;walk"</code> 
+and replace <ip_address> with the pertinent IP Address. </ip_address></li>
+</ol>
+<h2 id="empty-snmp-response-message-problem">“Empty SNMP response message” problem<a class="headerlink" href="#empty-snmp-response-message-problem" title="Permanent link">¶</a></h2>
+<p>If you see the following line in the worker’s logs:</p>
+<div class="codehilite"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message')
 </code></pre></div>
 
-<p>Creating logs requires updating configuration of several docker compose files. To simplify this process, inside the 
-<code>docker_compose</code> package there is a <code>manage_logs.py</code> file which will automatically manage logs.</p>
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">¶</a></h2>
-<p>Running script requires installation of <code>ruamel.yaml</code> package for python. It can be done with command:</p>
-<div class="codehilite"><pre><span></span><code>pip3 install ruamel.yaml
+<p>that causes an infinite retry of the walk operation. Add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true.</p>
+<p>An example configuration for a worker in <code>values.yaml</code> is:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ignoreEmptyVarbinds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
 
-<p>The following parameters have to be configured in <code>.env</code> file:
-<code>SPLUNK_HEC_TOKEN</code>, <code>SPLUNK_HEC_PROTOCOL</code>, <code>SPLUNK_HEC_HOST</code>, <code>SPLUNK_HEC_PORT</code>, <code>SPLUNK_LOG_INDEX</code>, <code>SPLUNK_HEC_INSECURESSL</code>.</p>
-<p>More about <code>.env</code> configuration can be found in <a href="../6-env-file-configuration/">.env file configuration</a>.</p>
-<h2 id="enabling-logging">Enabling logging<a class="headerlink" href="#enabling-logging" title="Permanent link">¶</a></h2>
-<p>To enable a logging <code>manage_logs.py</code> must be run with the following flags:</p>
-<table>
-<thead>
-<tr>
-<th>Flag</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-e</code>, <code>--enable_logs</code></td>
-<td>Flag enabling the logs</td>
-</tr>
-<tr>
-<td><code>-p</code>, <code>--path_to_compose</code></td>
-<td>Absolute path to directory with docker compose files</td>
-</tr>
-</tbody>
-</table>
-<p>Example of enabling logs:</p>
-<div class="codehilite"><pre><span></span><code>python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --enable_logs
+<h2 id="oid-not-increasing-problem">“OID not increasing” problem<a class="headerlink" href="#oid-not-increasing-problem" title="Permanent link">¶</a></h2>
+<p>In case you see the following line in worker’s logs:</p>
+<div class="codehilite"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing')
 </code></pre></div>
 
-<p>The script will add required configuration for logging under services in docker compose files.
-To apply the changes run the</p>
-<div class="codehilite"><pre><span></span><code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+<p>that causes infinite retry of walk operation, add <code>worker.ignoreNotIncreasingOid</code> array to <code>values.yaml</code> and fill with the addresses of hosts where the problem appears.</p>
+<p>An example configuration for a worker in <code>values.yaml</code> is:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ignoreNotIncreasingOid</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.1:164"</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.6"</span>
 </code></pre></div>
 
-<p>command inside the <code>docker_compose</code> directory.</p>
-<h2 id="disabling-the-logs">Disabling the logs<a class="headerlink" href="#disabling-the-logs" title="Permanent link">¶</a></h2>
-<p>To disable logs <code>manage_logs.py</code> must be run with the following flags:</p>
-<table>
-<thead>
-<tr>
-<th>Flag</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-d</code>, <code>--disable_logs</code></td>
-<td>Flag disabling the logs</td>
-</tr>
-<tr>
-<td><code>-p</code>, <code>--path_to_compose</code></td>
-<td>Absolute path to directory with docker compose files</td>
-</tr>
-</tbody>
-</table>
-<p>Running the disable command will replace the <code>logging.driver</code> section with default docker driver <code>json-file</code>. </p>
-<p>Example of disabling logs:</p>
-<div class="codehilite"><pre><span></span><code>python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --disable_logs
+<p>If you put in only the IP address (for example, <code>127.0.0.1</code>), then errors will be ignored for all of its devices (like <code>127.0.0.1:161</code>, 
+<code>127.0.0.1:163</code>…). If you put the IP address and host as <code>{host}:{port}</code>, that means the error will be ignored only for this device.</p>
+<h2 id="walking-a-device-takes-too-much-time">Walking a device takes too much time<a class="headerlink" href="#walking-a-device-takes-too-much-time" title="Permanent link">¶</a></h2>
+<p>See <a href="../configuration/configuring-profiles/#walk-profile">Configure small walk profile</a> to enable the small walk functionality.</p>
+<h2 id="an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance">An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance<a class="headerlink" href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance" title="Permanent link">¶</a></h2>
+<p>If you see many <code>An error of SNMP isWalk=True</code> errors in your logs, that means that there is a connection problem with the hosts you’re polling from.
+Walk will retry multiple times, which will eventually cause a worker to be blocked while it retries. In that case, you might want to limit
+the maximum retry time. You can do this by setting the variable <code>worker.walkRetryMaxInterval</code>, for example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">walkRetryMaxInterval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
 </code></pre></div>
 
-<p>To apply the changes run the </p>
-<div class="codehilite"><pre><span></span><code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+<p>With the previous configuration, ‘walk’ will retry exponentially from 30 seconds until it reaches 60 seconds. The default value for <code>worker.walkRetryMaxInterval</code> is 180.</p>
+<h2 id="snmp-rollover">SNMP Rollover<a class="headerlink" href="#snmp-rollover" title="Permanent link">¶</a></h2>
+<p>The Rollover problem is due to a finite stored integer value (especially when the value is 32-bit). 
+When it reaches its maximum, it gets rolled down to 0 again. This causes a strange drop in Analytics data.
+The most common case of this issue is interface speed on high speed ports. As a solution to this problem, SNMPv2 SMI defined a new object type, counter64, for 64-bit counters, see https://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/26007-faq-snmpcounter.html.
+Not all the devices support it, but if they do, poll the counter64 type OID instead of the counter32 one. 
+For example, use <code>ifHCInOctets</code> instead of <code>ifInOctets</code>.</p>
+<p>If 64-bit counter is not supported on your device, you can write your own Splunk queries that calculate the shift based on
+the maximum integer value and the current state. The same works for values large enough that they don’t fit into a 64-bit value.
+An example for an appropriate Splunk query would be the following:</p>
+<div class="codehilite"><pre><span></span><code>| streamstats current=f last(ifInOctets) as p_ifInOctets last(ifOutOctets) as p_ifOutOctets by ifAlias             
+| eval in_delta=(ifInOctets - p_ifInOctets)
+| eval out_delta=(ifOutOctets - p_ifOutOctets)
+| eval max=pow(2,64)
+| eval out = if(out_delta&lt;0,((max+out_delta)*8/(5*60*1000*1000*1000)),(out_delta)*8/(5*60*1000*1000*1000))
+| timechart span=5m avg(in) AS in, avg(out) AS out by ifAlias
 </code></pre></div>
 
-<p>command inside the <code>docker_compose</code> directory.</p>
-<p>After that the logs can be reached with <code>docker logs</code> command.</p></div>
+<h2 id="polling-authentication-errors">Polling authentication errors<a class="headerlink" href="#polling-authentication-errors" title="Permanent link">¶</a></h2>
+<h3 id="unknown-usm-user">Unknown USM user<a class="headerlink" href="#unknown-usm-user" title="Permanent link">¶</a></h3>
+<p>In case of polling SNMPv3 devices, <code>Unknown USM user</code> error suggests wrong username. Verify 
+that the kubernetes secret with the correct username has been created (<a href="../../configuration/snmpv3-configuration/">SNMPv3 configuration</a>).</p>
+<h3 id="wrong-snmp-pdu-digest">Wrong SNMP PDU digest<a class="headerlink" href="#wrong-snmp-pdu-digest" title="Permanent link">¶</a></h3>
+<p>In case of polling SNMPv3 devices, <code>Wrong SNMP PDU digest</code> error suggests wrong authentication key. Verify 
+that the kubernetes secret with the correct authentication key has been created (<a href="../../configuration/snmpv3-configuration/">SNMPv3 configuration</a>).</p>
+<h3 id="no-snmp-response-received-before-timeout">No SNMP response received before timeout<a class="headerlink" href="#no-snmp-response-received-before-timeout" title="Permanent link">¶</a></h3>
+<p><code>No SNMP response received before timeout</code> error might have several root causes. Some of them are:</p>
+<ul>
+<li>wrong device IP or port</li>
+<li>SNMPv2c wrong community string</li>
+<li>SNMPv3 wrong privacy key</li>
+</ul>
+<h2 id="field-is-immutable-error-during-helm-upgrade">“Field is immutable” error during helm upgrade<a class="headerlink" href="#field-is-immutable-error-during-helm-upgrade" title="Permanent link">¶</a></h2>
+<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">helm3</span><span class="w"> </span><span class="nv">upgrade</span><span class="w"> </span><span class="o">--</span><span class="nv">install</span><span class="w"> </span><span class="nv">snmp</span><span class="w"> </span><span class="o">-</span><span class="nv">f</span><span class="w"> </span><span class="nv">values</span>.<span class="nv">yaml</span><span class="w"> </span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">charts</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="w"> </span><span class="o">--</span><span class="nv">namespace</span><span class="o">=</span><span class="nv">sc4snmp</span><span class="w"> </span><span class="o">--</span><span class="nv">create</span><span class="o">-</span><span class="nv">namespace</span>
+<span class="nv">Error</span>:<span class="w"> </span><span class="nv">UPGRADE</span><span class="w"> </span><span class="nv">FAILED</span>:<span class="w"> </span><span class="nv">cannot</span><span class="w"> </span><span class="nv">patch</span><span class="w"> </span><span class="s2">"snmp-splunk-connect-for-snmp-inventory"</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">kind</span><span class="w"> </span><span class="nv">Job</span>:<span class="w"> </span><span class="nv">Job</span>.<span class="nv">batch</span><span class="w"> </span><span class="s2">"snmp-splunk-connect-for-snmp-inventory"</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">invalid</span>:<span class="w"> </span><span class="ss">(</span>...<span class="ss">)</span><span class="w"> </span>:<span class="w"> </span><span class="nv">field</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">immutable</span>
+</code></pre></div>
+
+<p>The immutable error is due to the limitation placed on an inventory job. As the SC4SNMP requires several checks before applying updates, it is designed to allow changes in the inventory task after 5 minutes. </p>
+<p>The status of the inventory can be checked with the following command:</p>
+<div class="codehilite"><pre><span></span><code>microk8s kubectl -n sc4snmp get pods | grep inventory
+</code></pre></div>
+
+<p>If the command is not empty, wait and execute it again after the inventory job finishes. This is when it is no longer visible in the output.</p>
+<p>If the changes are required to be applied immediately, the previous inventory job can be deleted with the following command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">delete</span><span class="w"> </span><span class="nv">job</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">inventory</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
+</code></pre></div>
+
+<p>The upgrade command can be executed again. </p>
+<h2 id="the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors">“The following profiles have invalid configuration” or “The following groups have invalid configuration” errors<a class="headerlink" href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" title="Permanent link">¶</a></h2>
+<p>Following errors are examples of wrong configuration:</p>
+<div class="codehilite"><pre><span></span><code>The following groups have invalid configuration and won't be used: ['group1']. Please check indentation and keywords spelling inside mentioned groups configuration.
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code>The following profiles have invalid configuration and won't be used: ['standard_profile', 'walk_profile']. Please check indentation and keywords spelling inside mentioned profiles configuration.
+</code></pre></div>
+
+<p>Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to <a href="../../configuration/configuring-profiles/">Configuring profiles</a>
+or <a href="../../configuration/configuring-groups/">Configuring Groups</a> sections to check how the correct configuration should look like.</p></div>
 
 
 

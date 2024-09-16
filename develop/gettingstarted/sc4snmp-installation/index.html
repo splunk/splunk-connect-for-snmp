@@ -369,6 +369,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#installing-splunk-connect-for-snmp-on-linux-redhat" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installing Splunk Connect for SNMP on Linux RedHat
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation-process" class="md-nav__link">
     <span class="md-ellipsis">
       Installation process
@@ -1499,16 +1508,122 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../bestpractices/" class="md-nav__link">
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
   
   <span class="md-ellipsis">
     Troubleshooting
   </span>
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Troubleshooting
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/configuring-logs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Accessing and configuring logs
+  </span>
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/polling-issues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Polling issues
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/traps-issues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Traps issues
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/k8s-commands/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes commands
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1598,6 +1713,15 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installing-splunk-connect-for-snmp-on-linux-redhat" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installing Splunk Connect for SNMP on Linux RedHat
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#installation-process" class="md-nav__link">
@@ -1745,6 +1869,9 @@
 for single node non-HA deployments. It does not have resource requests and limits.
 See the mongo, redis, scheduler, worker, and traps configuration sections for guidance
 on production configuration.</p>
+<h2 id="installing-splunk-connect-for-snmp-on-linux-redhat">Installing Splunk Connect for SNMP on Linux RedHat<a class="headerlink" href="#installing-splunk-connect-for-snmp-on-linux-redhat" title="Permanent link">¶</a></h2>
+<p>Installation of RedHat may be blocking ports required by microk8s. Installing microk8s on RedHat 
+requires checking to see if the firewall is not blocking any of the <a href="https://microk8s.io/docs/ports">required microk8s ports</a>. </p>
 <h2 id="installation-process">Installation process<a class="headerlink" href="#installation-process" title="Permanent link">¶</a></h2>
 <h3 id="offline-installation">Offline installation<a class="headerlink" href="#offline-installation" title="Permanent link">¶</a></h3>
 <p>For offline installation instructions see <a href="../../offlineinstallation/offline-sc4snmp/">this page</a>.</p>
@@ -1889,7 +2016,7 @@ replacing the IP address <code>10.0.101.22</code> with the server IP address whe
 
 <p>NOTE: Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every <code>walk_interval</code>. 
 Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
-In such cases, enable the small walk. See <a href="../../bestpractices/#walking-a-device-takes-too-much-time">walk takes too much time</a>.
+In such cases, enable the small walk. See <a href="../../troubleshooting/polling-issues/#walking-a-device-takes-too-much-time">walk takes too much time</a>.
 When the walk finishes, events appear in Splunk.</p>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">¶</a></h2>
 <p>A good way to start with SC4SNMP polling is to follow the <a href="../../configuration/step-by-step-poll/">Step by Step guide for polling</a>.

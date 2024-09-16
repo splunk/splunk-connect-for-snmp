@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../8-offline-installation/">
+        <link rel="prev" href="../../upgrade/">
       
       
-        <link rel="next" href="../../small-environment/">
+        <link rel="next" href="../polling-issues/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Sending logs to Splunk - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Accessing and configuring logs - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#logging" class="md-skip">
+        <a href="#configuring-sc4snmp-loglevel" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Sending logs to Splunk
+              Accessing and configuring logs
             
           </span>
         </div>
@@ -998,19 +998,17 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -1024,7 +1022,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Docker compose
@@ -1038,7 +1036,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../1-install-docker/" class="md-nav__link">
+      <a href="../../dockercompose/1-install-docker/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1059,7 +1057,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../2-download-package/" class="md-nav__link">
+      <a href="../../dockercompose/2-download-package/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1080,7 +1078,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../3-inventory-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/3-inventory-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1101,7 +1099,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../4-scheduler-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/4-scheduler-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1122,7 +1120,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../5-traps-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/5-traps-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1143,7 +1141,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../6-env-file-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/6-env-file-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1164,7 +1162,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../7-snmpv3-secrets/" class="md-nav__link">
+      <a href="../../dockercompose/7-snmpv3-secrets/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1185,7 +1183,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../8-offline-installation/" class="md-nav__link">
+      <a href="../../dockercompose/8-offline-installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1203,30 +1201,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Sending logs to Splunk
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../dockercompose/9-splunk-logging/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1235,53 +1213,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      Prerequisites
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#enabling-logging" class="md-nav__link">
-    <span class="md-ellipsis">
-      Enabling logging
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#disabling-the-logs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Disabling the logs
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1398,17 +1329,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
         
           
           <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
@@ -1422,7 +1355,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_12">
             <span class="md-nav__icon md-icon"></span>
             Troubleshooting
@@ -1433,10 +1366,28 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../troubleshooting/configuring-logs/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Accessing and configuring logs
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1445,6 +1396,66 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-sc4snmp-loglevel" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring SC4SNMP loglevel
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-sc4snmp-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accessing SC4SNMP logs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Accessing SC4SNMP logs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accessing-logs-via-splunk" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accessing logs via Splunk
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessing-logs-in-kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accessing logs in kubernetes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1457,7 +1468,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../troubleshooting/polling-issues/" class="md-nav__link">
+      <a href="../polling-issues/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1478,7 +1489,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../troubleshooting/traps-issues/" class="md-nav__link">
+      <a href="../traps-issues/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1499,7 +1510,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../troubleshooting/k8s-commands/" class="md-nav__link">
+      <a href="../k8s-commands/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1597,8 +1608,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1607,29 +1616,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
+  <a href="#configuring-sc4snmp-loglevel" class="md-nav__link">
     <span class="md-ellipsis">
-      Prerequisites
+      Configuring SC4SNMP loglevel
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#enabling-logging" class="md-nav__link">
+  <a href="#accessing-sc4snmp-logs" class="md-nav__link">
     <span class="md-ellipsis">
-      Enabling logging
+      Accessing SC4SNMP logs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Accessing SC4SNMP logs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accessing-logs-via-splunk" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accessing logs via Splunk
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#disabling-the-logs" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#accessing-logs-in-kubernetes" class="md-nav__link">
     <span class="md-ellipsis">
-      Disabling the logs
+      Accessing logs in kubernetes
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1648,82 +1672,44 @@
                   
 
 
-<div><h1 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">¶</a></h1>
-<p>The default configuration of docker compose is not sending the logs to Splunk. Container logs can be accessed with command:</p>
-<div class="codehilite"><pre><span></span><code>docker logs &lt;container_name/id&gt;
+  <h1>Accessing and configuring logs</h1>
+
+<div><h2 id="configuring-sc4snmp-loglevel">Configuring SC4SNMP loglevel<a class="headerlink" href="#configuring-sc4snmp-loglevel" title="Permanent link">¶</a></h2>
+<p>SC4SNMP log level can be configured in <code>values.yaml</code> file. The default value for it is <code>INFO</code>, other 
+possible levels to set are <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>, <code>CRITICAL</code> or <code>FATAL</code>. To change 
+the log level for a specific component, add the following configuration to <code>values.yaml</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"DEBUG"</span>
 </code></pre></div>
 
-<p>Creating logs requires updating configuration of several docker compose files. To simplify this process, inside the 
-<code>docker_compose</code> package there is a <code>manage_logs.py</code> file which will automatically manage logs.</p>
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">¶</a></h2>
-<p>Running script requires installation of <code>ruamel.yaml</code> package for python. It can be done with command:</p>
-<div class="codehilite"><pre><span></span><code>pip3 install ruamel.yaml
+<p>And redeploy SC4SNMP. </p>
+<p>Log level configuration can be set for <code>worker</code>, <code>poller</code>, <code>scheduler</code> and <code>traps</code>.</p>
+<h2 id="accessing-sc4snmp-logs">Accessing SC4SNMP logs<a class="headerlink" href="#accessing-sc4snmp-logs" title="Permanent link">¶</a></h2>
+<p>SC4SNMP logs can be browsed in Splunk in <code>em_logs</code> index, provided that <a href="../../gettingstarted/sck-installation/">sck-otel</a>
+is installed. Logs can be also accessed directly in kubernetes using terminal.</p>
+<h3 id="accessing-logs-via-splunk">Accessing logs via Splunk<a class="headerlink" href="#accessing-logs-via-splunk" title="Permanent link">¶</a></h3>
+<p>If <a href="../../gettingstarted/sck-installation/">sck-otel</a> is installed, browse <code>em_logs</code> index. Logs can be further filtered 
+for example by the sourcetype field. Example search command to get logs from poller:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">index</span><span class="p">=</span><span class="nx">em_logs</span><span class="w"> </span><span class="nx">sourcetype</span><span class="p">=</span><span class="s">"kube:container:splunk-connect-for-snmp-worker-poller"</span>
 </code></pre></div>
 
-<p>The following parameters have to be configured in <code>.env</code> file:
-<code>SPLUNK_HEC_TOKEN</code>, <code>SPLUNK_HEC_PROTOCOL</code>, <code>SPLUNK_HEC_HOST</code>, <code>SPLUNK_HEC_PORT</code>, <code>SPLUNK_LOG_INDEX</code>, <code>SPLUNK_HEC_INSECURESSL</code>.</p>
-<p>More about <code>.env</code> configuration can be found in <a href="../6-env-file-configuration/">.env file configuration</a>.</p>
-<h2 id="enabling-logging">Enabling logging<a class="headerlink" href="#enabling-logging" title="Permanent link">¶</a></h2>
-<p>To enable a logging <code>manage_logs.py</code> must be run with the following flags:</p>
-<table>
-<thead>
-<tr>
-<th>Flag</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-e</code>, <code>--enable_logs</code></td>
-<td>Flag enabling the logs</td>
-</tr>
-<tr>
-<td><code>-p</code>, <code>--path_to_compose</code></td>
-<td>Absolute path to directory with docker compose files</td>
-</tr>
-</tbody>
-</table>
-<p>Example of enabling logs:</p>
-<div class="codehilite"><pre><span></span><code>python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --enable_logs
+<h3 id="accessing-logs-in-kubernetes">Accessing logs in kubernetes<a class="headerlink" href="#accessing-logs-in-kubernetes" title="Permanent link">¶</a></h3>
+<p>To access logs directly in kubernetes, first run <code>microk8s kubectl -n sc4snmp get pods</code>. This will output all pods:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span><span class="w">                                                          </span><span class="nv">READY</span><span class="w">   </span><span class="nv">STATUS</span><span class="w">    </span><span class="nv">RESTARTS</span><span class="w">   </span><span class="nv">AGE</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="mi">99</span><span class="nv">f49c557</span><span class="o">-</span><span class="nv">j9jwx</span><span class="w">      </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">29</span><span class="nv">m</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="mi">56</span><span class="nv">f75f9754</span><span class="o">-</span><span class="nv">kmlgb</span><span class="w">            </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">29</span><span class="nv">m</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">scheduler</span><span class="o">-</span><span class="mi">7</span><span class="nv">bb8c79855</span><span class="o">-</span><span class="nv">rgjkj</span><span class="w">       </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">29</span><span class="nv">m</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">mibserver</span><span class="o">-</span><span class="mi">784</span><span class="nv">bd599fd</span><span class="o">-</span><span class="mi">6</span><span class="nv">xzfj</span><span class="w">                               </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">29</span><span class="nv">m</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">poller</span><span class="o">-</span><span class="mi">78</span><span class="nv">b46d668f</span><span class="o">-</span><span class="mi">59</span><span class="nv">mv4</span><span class="w">   </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">29</span><span class="nv">m</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">sender</span><span class="o">-</span><span class="mi">6</span><span class="nv">f8496bfbf</span><span class="o">-</span><span class="nv">cvt9l</span><span class="w">   </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">29</span><span class="nv">m</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">mongodb</span><span class="o">-</span><span class="mi">7579</span><span class="nv">dc7867</span><span class="o">-</span><span class="nv">mlnst</span><span class="w">                                 </span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">29</span><span class="nv">m</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">redis</span><span class="o">-</span><span class="nv">master</span><span class="o">-</span><span class="mi">0</span><span class="w">                                           </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">0</span><span class="w">          </span><span class="mi">29</span><span class="nv">m</span>
 </code></pre></div>
 
-<p>The script will add required configuration for logging under services in docker compose files.
-To apply the changes run the</p>
-<div class="codehilite"><pre><span></span><code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
-</code></pre></div>
-
-<p>command inside the <code>docker_compose</code> directory.</p>
-<h2 id="disabling-the-logs">Disabling the logs<a class="headerlink" href="#disabling-the-logs" title="Permanent link">¶</a></h2>
-<p>To disable logs <code>manage_logs.py</code> must be run with the following flags:</p>
-<table>
-<thead>
-<tr>
-<th>Flag</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-d</code>, <code>--disable_logs</code></td>
-<td>Flag disabling the logs</td>
-</tr>
-<tr>
-<td><code>-p</code>, <code>--path_to_compose</code></td>
-<td>Absolute path to directory with docker compose files</td>
-</tr>
-</tbody>
-</table>
-<p>Running the disable command will replace the <code>logging.driver</code> section with default docker driver <code>json-file</code>. </p>
-<p>Example of disabling logs:</p>
-<div class="codehilite"><pre><span></span><code>python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --disable_logs
-</code></pre></div>
-
-<p>To apply the changes run the </p>
-<div class="codehilite"><pre><span></span><code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
-</code></pre></div>
-
-<p>command inside the <code>docker_compose</code> directory.</p>
-<p>After that the logs can be reached with <code>docker logs</code> command.</p></div>
+<p>Now select the desired pod and run <code>microk8s kubectl -n sc4snmp logs pod/&lt;pod-name&gt;</code> command. Example command to retrieve
+logs from <code>splunk-connect-for-snmp-worker-poller</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span><span class="w"> </span><span class="nv">logs</span><span class="w"> </span><span class="nv">pod</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">poller</span><span class="o">-</span><span class="mi">78</span><span class="nv">b46d668f</span><span class="o">-</span><span class="mi">59</span><span class="nv">mv4</span>
+</code></pre></div></div>
 
 
 

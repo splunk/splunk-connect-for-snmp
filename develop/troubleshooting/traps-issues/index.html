@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../8-offline-installation/">
+        <link rel="prev" href="../polling-issues/">
       
       
-        <link rel="next" href="../../small-environment/">
+        <link rel="next" href="../k8s-commands/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Sending logs to Splunk - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Traps issues - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#logging" class="md-skip">
+        <a href="#identifying-traps-issues" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Sending logs to Splunk
+              Traps issues
             
           </span>
         </div>
@@ -998,19 +998,17 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -1024,7 +1022,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Docker compose
@@ -1038,7 +1036,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../1-install-docker/" class="md-nav__link">
+      <a href="../../dockercompose/1-install-docker/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1059,7 +1057,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../2-download-package/" class="md-nav__link">
+      <a href="../../dockercompose/2-download-package/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1080,7 +1078,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../3-inventory-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/3-inventory-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1101,7 +1099,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../4-scheduler-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/4-scheduler-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1122,7 +1120,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../5-traps-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/5-traps-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1143,7 +1141,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../6-env-file-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/6-env-file-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1164,7 +1162,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../7-snmpv3-secrets/" class="md-nav__link">
+      <a href="../../dockercompose/7-snmpv3-secrets/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1185,7 +1183,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../8-offline-installation/" class="md-nav__link">
+      <a href="../../dockercompose/8-offline-installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1203,30 +1201,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Sending logs to Splunk
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../dockercompose/9-splunk-logging/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1235,53 +1213,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      Prerequisites
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#enabling-logging" class="md-nav__link">
-    <span class="md-ellipsis">
-      Enabling logging
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#disabling-the-logs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Disabling the logs
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1398,17 +1329,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
         
           
           <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
@@ -1422,7 +1355,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_12">
             <span class="md-nav__icon md-icon"></span>
             Troubleshooting
@@ -1436,7 +1369,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../troubleshooting/configuring-logs/" class="md-nav__link">
+      <a href="../configuring-logs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1457,7 +1390,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../troubleshooting/polling-issues/" class="md-nav__link">
+      <a href="../polling-issues/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1475,10 +1408,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../troubleshooting/traps-issues/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Traps issues
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1487,6 +1440,71 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#wrong-ip-or-port" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wrong IP or port
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unknown-snmp-community-name-encountered" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unknown SNMP community name encountered
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unknown-snmp-security-name-encountered" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unknown SNMP security name encountered
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authenticator-mismatched" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authenticator mismatched
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ciphering-services-not-available-or-ciphertext-is-broken" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ciphering services not available or ciphertext is broken
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1499,7 +1517,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../troubleshooting/k8s-commands/" class="md-nav__link">
+      <a href="../k8s-commands/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1607,27 +1625,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
+  <a href="#wrong-ip-or-port" class="md-nav__link">
     <span class="md-ellipsis">
-      Prerequisites
+      Wrong IP or port
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#enabling-logging" class="md-nav__link">
+  <a href="#unknown-snmp-community-name-encountered" class="md-nav__link">
     <span class="md-ellipsis">
-      Enabling logging
+      Unknown SNMP community name encountered
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#disabling-the-logs" class="md-nav__link">
+  <a href="#unknown-snmp-security-name-encountered" class="md-nav__link">
     <span class="md-ellipsis">
-      Disabling the logs
+      Unknown SNMP security name encountered
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authenticator-mismatched" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authenticator mismatched
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ciphering-services-not-available-or-ciphertext-is-broken" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ciphering services not available or ciphertext is broken
     </span>
   </a>
   
@@ -1648,82 +1684,83 @@
                   
 
 
-<div><h1 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">¶</a></h1>
-<p>The default configuration of docker compose is not sending the logs to Splunk. Container logs can be accessed with command:</p>
-<div class="codehilite"><pre><span></span><code>docker logs &lt;container_name/id&gt;
+<div><h1 id="identifying-traps-issues">Identifying Traps issues<a class="headerlink" href="#identifying-traps-issues" title="Permanent link">¶</a></h1>
+<h2 id="wrong-ip-or-port">Wrong IP or port<a class="headerlink" href="#wrong-ip-or-port" title="Permanent link">¶</a></h2>
+<p>The first possible answer to why traps are not sent to Splunk is that SNMP agents send trap messages to the wrong IP 
+address or port. To check what is the correct address of traps server, run the following command:</p>
+<div class="codehilite"><pre><span></span><code>microk8s kubectl -n sc4snmp get services
 </code></pre></div>
 
-<p>Creating logs requires updating configuration of several docker compose files. To simplify this process, inside the 
-<code>docker_compose</code> package there is a <code>manage_logs.py</code> file which will automatically manage logs.</p>
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">¶</a></h2>
-<p>Running script requires installation of <code>ruamel.yaml</code> package for python. It can be done with command:</p>
-<div class="codehilite"><pre><span></span><code>pip3 install ruamel.yaml
+<p>This command should output similar data:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">NAME</span><span class="w">                                </span><span class="nv">TYPE</span><span class="w">           </span><span class="nv">CLUSTER</span><span class="o">-</span><span class="nv">IP</span><span class="w">       </span><span class="nv">EXTERNAL</span><span class="o">-</span><span class="nv">IP</span><span class="w">      </span><span class="nv">PORT</span><span class="ss">(</span><span class="nv">S</span><span class="ss">)</span><span class="w">         </span><span class="nv">AGE</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">redis</span><span class="o">-</span><span class="nv">headless</span><span class="w">                 </span><span class="nv">ClusterIP</span><span class="w">      </span><span class="nv">None</span><span class="w">             </span><span class="o">&lt;</span><span class="nv">none</span><span class="o">&gt;</span><span class="w">           </span><span class="mi">6379</span><span class="o">/</span><span class="nv">TCP</span><span class="w">        </span><span class="mi">113</span><span class="nv">s</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">mibserver</span><span class="w">                      </span><span class="nv">ClusterIP</span><span class="w">      </span><span class="mi">10</span>.<span class="mi">152</span>.<span class="mi">183</span>.<span class="mi">163</span><span class="w">   </span><span class="o">&lt;</span><span class="nv">none</span><span class="o">&gt;</span><span class="w">           </span><span class="mi">80</span><span class="o">/</span><span class="nv">TCP</span><span class="w">          </span><span class="mi">113</span><span class="nv">s</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">mongodb</span><span class="w">                        </span><span class="nv">ClusterIP</span><span class="w">      </span><span class="mi">10</span>.<span class="mi">152</span>.<span class="mi">183</span>.<span class="mi">118</span><span class="w">   </span><span class="o">&lt;</span><span class="nv">none</span><span class="o">&gt;</span><span class="w">           </span><span class="mi">27017</span><span class="o">/</span><span class="nv">TCP</span><span class="w">       </span><span class="mi">113</span><span class="nv">s</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">redis</span><span class="o">-</span><span class="nv">master</span><span class="w">                   </span><span class="nv">ClusterIP</span><span class="w">      </span><span class="mi">10</span>.<span class="mi">152</span>.<span class="mi">183</span>.<span class="mi">61</span><span class="w">    </span><span class="o">&lt;</span><span class="nv">none</span><span class="o">&gt;</span><span class="w">           </span><span class="mi">6379</span><span class="o">/</span><span class="nv">TCP</span><span class="w">        </span><span class="mi">113</span><span class="nv">s</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">mongodb</span><span class="o">-</span><span class="nv">metrics</span><span class="w">                </span><span class="nv">ClusterIP</span><span class="w">      </span><span class="mi">10</span>.<span class="mi">152</span>.<span class="mi">183</span>.<span class="mi">50</span><span class="w">    </span><span class="o">&lt;</span><span class="nv">none</span><span class="o">&gt;</span><span class="w">           </span><span class="mi">9216</span><span class="o">/</span><span class="nv">TCP</span><span class="w">        </span><span class="mi">113</span><span class="nv">s</span>
+<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">trap</span><span class="w">   </span><span class="nv">LoadBalancer</span><span class="w">   </span><span class="mi">10</span>.<span class="mi">152</span>.<span class="mi">183</span>.<span class="mi">190</span><span class="w">   </span><span class="mi">114</span>.<span class="mi">241</span>.<span class="mi">233</span>.<span class="mi">134</span><span class="w">   </span><span class="mi">162</span>:<span class="mi">32180</span><span class="o">/</span><span class="nv">UDP</span><span class="w">   </span><span class="mi">113</span><span class="nv">s</span>
 </code></pre></div>
 
-<p>The following parameters have to be configured in <code>.env</code> file:
-<code>SPLUNK_HEC_TOKEN</code>, <code>SPLUNK_HEC_PROTOCOL</code>, <code>SPLUNK_HEC_HOST</code>, <code>SPLUNK_HEC_PORT</code>, <code>SPLUNK_LOG_INDEX</code>, <code>SPLUNK_HEC_INSECURESSL</code>.</p>
-<p>More about <code>.env</code> configuration can be found in <a href="../6-env-file-configuration/">.env file configuration</a>.</p>
-<h2 id="enabling-logging">Enabling logging<a class="headerlink" href="#enabling-logging" title="Permanent link">¶</a></h2>
-<p>To enable a logging <code>manage_logs.py</code> must be run with the following flags:</p>
-<table>
-<thead>
-<tr>
-<th>Flag</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-e</code>, <code>--enable_logs</code></td>
-<td>Flag enabling the logs</td>
-</tr>
-<tr>
-<td><code>-p</code>, <code>--path_to_compose</code></td>
-<td>Absolute path to directory with docker compose files</td>
-</tr>
-</tbody>
-</table>
-<p>Example of enabling logs:</p>
-<div class="codehilite"><pre><span></span><code>python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --enable_logs
+<p>Check the <code>EXTERNAL-IP</code> of <code>snmp-splunk-connect-for-snmp-trap</code> and the second port number for this service. In this case 
+the full <code>snmp-splunk-connect-for-snmp-trap</code> address will be <code>114.241.233.134:32180</code>.</p>
+<p>In case agents send traps to the correct address, but there is still no data in the <code>netops</code> index, there might be some
+issues with credentials. These errors can be seen in logs of the <code>snmp-splunk-connect-for-snmp-trap</code> pod. </p>
+<h2 id="unknown-snmp-community-name-encountered">Unknown SNMP community name encountered<a class="headerlink" href="#unknown-snmp-community-name-encountered" title="Permanent link">¶</a></h2>
+<p>In case of using community string for authentication purposes, the following error should be expected if the arriving trap 
+has a community string not configured in SC4SNMP:</p>
+<div class="codehilite"><pre><span></span><code><span class="mf">2024</span><span class="o">-</span><span class="mf">02</span><span class="o">-</span><span class="mf">06</span><span class="w"> </span><span class="mf">15</span><span class="p">:</span><span class="mf">42</span><span class="p">:</span><span class="mf">14</span><span class="p">,</span><span class="mf">885</span><span class="w"> </span><span class="n">ERROR</span><span class="w"> </span><span class="n">Security</span><span class="w"> </span><span class="n">Model</span><span class="w"> </span><span class="n">failure</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="p">(</span><span class="err">'</span><span class="mf">18.226.181.199</span><span class="err">'</span><span class="p">,</span><span class="w"> </span><span class="mf">42514</span><span class="p">):</span><span class="w"> </span><span class="n">Unknown</span><span class="w"> </span><span class="n">SNMP</span><span class="w"> </span><span class="n">community</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="n">encountered</span>
 </code></pre></div>
 
-<p>The script will add required configuration for logging under services in docker compose files.
-To apply the changes run the</p>
-<div class="codehilite"><pre><span></span><code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+<p>If this error occurs, check if the appropriate community is defined under <code>traps.communities</code> in <code>values.yaml</code>. See the 
+following example of a <code>public</code> community configuration:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">communities</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">public</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">communityIndex</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">contextEngineId</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">contextName</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">tag</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">securityName</span><span class="p">:</span>
 </code></pre></div>
 
-<p>command inside the <code>docker_compose</code> directory.</p>
-<h2 id="disabling-the-logs">Disabling the logs<a class="headerlink" href="#disabling-the-logs" title="Permanent link">¶</a></h2>
-<p>To disable logs <code>manage_logs.py</code> must be run with the following flags:</p>
-<table>
-<thead>
-<tr>
-<th>Flag</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-d</code>, <code>--disable_logs</code></td>
-<td>Flag disabling the logs</td>
-</tr>
-<tr>
-<td><code>-p</code>, <code>--path_to_compose</code></td>
-<td>Absolute path to directory with docker compose files</td>
-</tr>
-</tbody>
-</table>
-<p>Running the disable command will replace the <code>logging.driver</code> section with default docker driver <code>json-file</code>. </p>
-<p>Example of disabling logs:</p>
-<div class="codehilite"><pre><span></span><code>python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --disable_logs
+<h2 id="unknown-snmp-security-name-encountered">Unknown SNMP security name encountered<a class="headerlink" href="#unknown-snmp-security-name-encountered" title="Permanent link">¶</a></h2>
+<p>While sending SNMP v3 traps in case of wrong username or engine id configuration, the following error should be expected: </p>
+<div class="codehilite"><pre><span></span><code><span class="mf">2024</span><span class="o">-</span><span class="mf">02</span><span class="o">-</span><span class="mf">06</span><span class="w"> </span><span class="mf">15</span><span class="p">:</span><span class="mf">42</span><span class="p">:</span><span class="mf">14</span><span class="p">,</span><span class="mf">091</span><span class="w"> </span><span class="n">ERROR</span><span class="w"> </span><span class="n">Security</span><span class="w"> </span><span class="n">Model</span><span class="w"> </span><span class="n">failure</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="p">(</span><span class="err">'</span><span class="mf">18.226.181.199</span><span class="err">'</span><span class="p">,</span><span class="w"> </span><span class="mf">46066</span><span class="p">):</span><span class="w"> </span><span class="n">Unknown</span><span class="w"> </span><span class="n">SNMP</span><span class="w"> </span><span class="n">security</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="n">encountered</span>
 </code></pre></div>
 
-<p>To apply the changes run the </p>
-<div class="codehilite"><pre><span></span><code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+<p>If this error occurs, verify that the kubernetes secret with the correct username has been created (<a href="../../configuration/snmpv3-configuration/">SNMPv3 configuration</a>).
+After creating the secret, add it under <code>traps.usernameSecrets</code> in <code>values.yaml</code>. Check that the correct snmp engine id
+is configured under <code>traps.securityEngineId</code>. See the following example of a <code>values.yaml</code> with configured secret and engine id:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
+<span class="w">  </span><span class="nt">securityEngineId</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"090807060504030201"</span>
 </code></pre></div>
 
-<p>command inside the <code>docker_compose</code> directory.</p>
-<p>After that the logs can be reached with <code>docker logs</code> command.</p></div>
+<h2 id="authenticator-mismatched">Authenticator mismatched<a class="headerlink" href="#authenticator-mismatched" title="Permanent link">¶</a></h2>
+<p>While sending SNMP v3 traps in case of wrong authentication protocol or password configuration, the following error should be expected: </p>
+<div class="codehilite"><pre><span></span><code><span class="mf">2024</span><span class="o">-</span><span class="mf">02</span><span class="o">-</span><span class="mf">06</span><span class="w"> </span><span class="mf">15</span><span class="p">:</span><span class="mf">42</span><span class="p">:</span><span class="mf">14</span><span class="p">,</span><span class="mf">642</span><span class="w"> </span><span class="n">ERROR</span><span class="w"> </span><span class="n">Security</span><span class="w"> </span><span class="n">Model</span><span class="w"> </span><span class="n">failure</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="p">(</span><span class="err">'</span><span class="mf">18.226.181.199</span><span class="err">'</span><span class="p">,</span><span class="w"> </span><span class="mf">54806</span><span class="p">):</span><span class="w"> </span><span class="n">Authenticator</span><span class="w"> </span><span class="n">mismatched</span>
+</code></pre></div>
+
+<p>If this error occurs, verify that the kubernetes secret with the correct authentication protocol and password has been created (<a href="../../configuration/snmpv3-configuration/">SNMPv3 configuration</a>).
+After creating the secret, add it under <code>traps.usernameSecrets</code> in <code>values.yaml</code>. See the following example of a <code>values.yaml</code> with configured secret:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
+</code></pre></div>
+
+<h2 id="ciphering-services-not-available-or-ciphertext-is-broken">Ciphering services not available or ciphertext is broken<a class="headerlink" href="#ciphering-services-not-available-or-ciphertext-is-broken" title="Permanent link">¶</a></h2>
+<p>While sending SNMP v3 traps in case of wrong privacy protocol or password configuration, the following error should be expected: </p>
+<div class="codehilite"><pre><span></span><code><span class="mf">2024</span><span class="o">-</span><span class="mf">02</span><span class="o">-</span><span class="mf">06</span><span class="w"> </span><span class="mf">15</span><span class="p">:</span><span class="mf">42</span><span class="p">:</span><span class="mf">14</span><span class="p">,</span><span class="mf">780</span><span class="w"> </span><span class="n">ERROR</span><span class="w"> </span><span class="n">Security</span><span class="w"> </span><span class="n">Model</span><span class="w"> </span><span class="n">failure</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="p">(</span><span class="err">'</span><span class="mf">18.226.181.199</span><span class="err">'</span><span class="p">,</span><span class="w"> </span><span class="mf">48249</span><span class="p">):</span><span class="w"> </span><span class="n">Ciphering</span><span class="w"> </span><span class="n">services</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">available</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">ciphertext</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">broken</span>
+</code></pre></div>
+
+<p>If this error occurs, verify that the kubernetes secret with the correct privacy protocol and password has been created (<a href="../../configuration/snmpv3-configuration/">SNMPv3 configuration</a>).
+After creating the secret, add it under <code>traps.usernameSecrets</code> in <code>values.yaml</code>. See the following example of a <code>values.yaml</code> with configured secret:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
+</code></pre></div></div>
 
 
 
