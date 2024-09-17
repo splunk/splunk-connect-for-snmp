@@ -37,6 +37,9 @@
     "imagePullSecrets": {
       "type": "array"
     },
+    "pysnmpDebug": {
+      "type": "string"
+    },
     "UI": {
       "type": "object",
       "additionalProperties": false,
