@@ -88,3 +88,8 @@ redis:
   architecture: standalone
   auth:
     enabled: false
+mibserver:
+  image:
+    repository: ajasnosz558/mibserver
+    pullPolicy: Always
+    tag: "index-fix"
