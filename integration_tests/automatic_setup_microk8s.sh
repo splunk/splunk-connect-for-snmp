@@ -44,7 +44,7 @@ deploy_poetry() {
   poetry install
   poetry add --group dev splunk-sdk
   poetry add --group dev splunklib
-  poetry add --group dev pysnmp
+  poetry add --group dev pysnmplib
 }
 
 wait_for_pod_initialization() {
