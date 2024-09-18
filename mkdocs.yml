@@ -91,3 +91,4 @@ nav:
   - Releases: "releases.md"
   - High Availability: ha.md
   - Improved polling performance: "improved-polling.md"
+  - Monitoring dashboard: "dashboard.md"

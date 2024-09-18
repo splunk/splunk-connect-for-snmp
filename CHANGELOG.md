@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- add metrics dashboard
 
 ### Changed
 
