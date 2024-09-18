@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../5-traps-configuration/">
+        <link rel="prev" href="../../small-environment/">
       
       
-        <link rel="next" href="../7-snmpv3-secrets/">
+        <link rel="next" href="../planning/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>.env file configuration - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>High-level design - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#env-file-configuration" class="md-skip">
+        <a href="#architecture" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              .env file configuration
+              High-level design
             
           </span>
         </div>
@@ -998,19 +998,17 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -1024,7 +1022,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Docker compose
@@ -1038,7 +1036,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../1-install-docker/" class="md-nav__link">
+      <a href="../../dockercompose/1-install-docker/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1059,7 +1057,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../2-download-package/" class="md-nav__link">
+      <a href="../../dockercompose/2-download-package/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1080,7 +1078,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../3-inventory-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/3-inventory-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1101,7 +1099,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../4-scheduler-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/4-scheduler-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1122,7 +1120,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../5-traps-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/5-traps-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1140,30 +1138,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    .env file configuration
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../dockercompose/6-env-file-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1172,131 +1150,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#deployment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Deployment
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#images-of-dependencies" class="md-nav__link">
-    <span class="md-ellipsis">
-      Images of dependencies
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#splunk-instance" class="md-nav__link">
-    <span class="md-ellipsis">
-      Splunk instance
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#workers" class="md-nav__link">
-    <span class="md-ellipsis">
-      Workers
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Workers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#general" class="md-nav__link">
-    <span class="md-ellipsis">
-      General
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#worker-poller" class="md-nav__link">
-    <span class="md-ellipsis">
-      Worker Poller
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#worker-sender" class="md-nav__link">
-    <span class="md-ellipsis">
-      Worker Sender
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#worker-trap" class="md-nav__link">
-    <span class="md-ellipsis">
-      Worker Trap
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#inventory" class="md-nav__link">
-    <span class="md-ellipsis">
-      Inventory
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#traps" class="md-nav__link">
-    <span class="md-ellipsis">
-      Traps
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#scheduler" class="md-nav__link">
-    <span class="md-ellipsis">
-      Scheduler
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1309,7 +1162,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../7-snmpv3-secrets/" class="md-nav__link">
+      <a href="../../dockercompose/7-snmpv3-secrets/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1330,7 +1183,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../8-offline-installation/" class="md-nav__link">
+      <a href="../../dockercompose/8-offline-installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1351,7 +1204,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../9-splunk-logging/" class="md-nav__link">
+      <a href="../../dockercompose/9-splunk-logging/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1396,17 +1249,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
         
           
           <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -1420,7 +1275,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             Architecture
@@ -1431,10 +1286,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../architecture/design/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    High-level design
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1443,6 +1318,35 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#high-level-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      High-level Design
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1455,7 +1359,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/planning/" class="md-nav__link">
+      <a href="../planning/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1769,105 +1673,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#deployment" class="md-nav__link">
+  <a href="#high-level-design" class="md-nav__link">
     <span class="md-ellipsis">
-      Deployment
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#images-of-dependencies" class="md-nav__link">
-    <span class="md-ellipsis">
-      Images of dependencies
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#splunk-instance" class="md-nav__link">
-    <span class="md-ellipsis">
-      Splunk instance
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#workers" class="md-nav__link">
-    <span class="md-ellipsis">
-      Workers
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Workers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#general" class="md-nav__link">
-    <span class="md-ellipsis">
-      General
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#worker-poller" class="md-nav__link">
-    <span class="md-ellipsis">
-      Worker Poller
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#worker-sender" class="md-nav__link">
-    <span class="md-ellipsis">
-      Worker Sender
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#worker-trap" class="md-nav__link">
-    <span class="md-ellipsis">
-      Worker Trap
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#inventory" class="md-nav__link">
-    <span class="md-ellipsis">
-      Inventory
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#traps" class="md-nav__link">
-    <span class="md-ellipsis">
-      Traps
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#scheduler" class="md-nav__link">
-    <span class="md-ellipsis">
-      Scheduler
+      High-level Design
     </span>
   </a>
   
@@ -1888,387 +1696,32 @@
                   
 
 
-<div><h1 id="env-file-configuration">.env file configuration<a class="headerlink" href="#env-file-configuration" title="Permanent link">¶</a></h1>
-<p>Inside the directory with the docker compose files, there is a <code>.env</code>. Variables in it can be divided into few sections.</p>
-<h2 id="deployment">Deployment<a class="headerlink" href="#deployment" title="Permanent link">¶</a></h2>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>SC4SNMP_IMAGE</code></td>
-<td>The registry and name of the SC4SNMP image to pull</td>
-</tr>
-<tr>
-<td><code>SC4SNMP_TAG</code></td>
-<td>SC4SNMP image tag to pull</td>
-</tr>
-<tr>
-<td><code>SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH</code></td>
-<td>Absolute path to <a href="../4-scheduler-configuration/">scheduler-config.yaml</a> file</td>
-</tr>
-<tr>
-<td><code>TRAPS_CONFIG_FILE_ABSOLUTE_PATH</code></td>
-<td>Absolute path to <a href="../5-traps-configuration/">traps-config.yaml</a> file</td>
-</tr>
-<tr>
-<td><code>INVENTORY_FILE_ABSOLUTE_PATH</code></td>
-<td>Absolute path to <a href="../3-inventory-configuration/">inventory.csv</a> file</td>
-</tr>
-<tr>
-<td><code>COREFILE_ABS_PATH</code></td>
-<td>Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the <code>docker_compose</code></td>
-</tr>
-<tr>
-<td><code>COREDNS_ADDRESS</code></td>
-<td>IP address of the coredns inside docker network. Shouldn’t be changed</td>
-</tr>
-<tr>
-<td><code>SC4SNMP_VERSION</code></td>
-<td>Version of SC4SNMP</td>
-</tr>
-</tbody>
-</table>
-<h2 id="images-of-dependencies">Images of dependencies<a class="headerlink" href="#images-of-dependencies" title="Permanent link">¶</a></h2>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>COREDNS_IMAGE</code></td>
-<td>Registry and name of Coredns image</td>
-</tr>
-<tr>
-<td><code>COREDNS_TAG</code></td>
-<td>Coredns image tag to pull</td>
-</tr>
-<tr>
-<td><code>MIBSERVER_IMAGE</code></td>
-<td>Registry and name of Mibserver image</td>
-</tr>
-<tr>
-<td><code>MIBSERVER_TAG</code></td>
-<td>Mibserver image tag to pull</td>
-</tr>
-<tr>
-<td><code>REDIS_IMAGE</code></td>
-<td>Registry and name of Redis image</td>
-</tr>
-<tr>
-<td><code>REDIS_TAG</code></td>
-<td>Redis image tag to pull</td>
-</tr>
-<tr>
-<td><code>MONGO_IMAGE</code></td>
-<td>Registry and name of MongoDB image</td>
-</tr>
-<tr>
-<td><code>MONGO_TAG</code></td>
-<td>MongoDB image tag to pull</td>
-</tr>
-</tbody>
-</table>
-<h2 id="splunk-instance">Splunk instance<a class="headerlink" href="#splunk-instance" title="Permanent link">¶</a></h2>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>SPLUNK_HEC_HOST</code></td>
-<td>IP address or a domain name of a Splunk instance to send data to</td>
-</tr>
-<tr>
-<td><code>SPLUNK_HEC_PROTOCOL</code></td>
-<td>The protocol of the HEC endpoint: <code>https</code> or <code>http</code></td>
-</tr>
-<tr>
-<td><code>SPLUNK_HEC_PORT</code></td>
-<td>The port of the HEC endpoint</td>
-</tr>
-<tr>
-<td><code>SPLUNK_HEC_TOKEN</code></td>
-<td>Splunk HTTP Event Collector token</td>
-</tr>
-<tr>
-<td><code>SPLUNK_HEC_INSECURESSL</code></td>
-<td>Whether to skip checking the certificate of the HEC endpoint when sending data over HTTPS</td>
-</tr>
-<tr>
-<td><code>SPLUNK_SOURCETYPE_TRAPS</code></td>
-<td>Splunk sourcetype for trap events</td>
-</tr>
-<tr>
-<td><code>SPLUNK_SOURCETYPE_POLLING_EVENTS</code></td>
-<td>Splunk sourcetype for non-metric polling events</td>
-</tr>
-<tr>
-<td><code>SPLUNK_SOURCETYPE_POLLING_METRICS</code></td>
-<td>Splunk sourcetype for metric polling events</td>
-</tr>
-<tr>
-<td><code>SPLUNK_HEC_INDEX_EVENTS</code></td>
-<td>Name of the Splunk event index</td>
-</tr>
-<tr>
-<td><code>SPLUNK_HEC_INDEX_METRICS</code></td>
-<td>Name of the Splunk metrics index</td>
-</tr>
-<tr>
-<td><code>SPLUNK_HEC_PATH</code></td>
-<td>Path for the HEC endpoint</td>
-</tr>
-<tr>
-<td><code>SPLUNK_AGGREGATE_TRAPS_EVENTS</code></td>
-<td>When set to true makes traps events collected as one event inside splunk</td>
-</tr>
-<tr>
-<td><code>IGNORE_EMPTY_VARBINDS</code></td>
-<td>Details can be found in <a href="../../troubleshooting/polling-issues/#empty-snmp-response-message-problem">empty snmp response message issue</a></td>
-</tr>
-<tr>
-<td><code>SPLUNK_LOG_INDEX</code></td>
-<td>Event index in Splunk where logs from docker containers would be sent</td>
-</tr>
-</tbody>
-</table>
-<h2 id="workers">Workers<a class="headerlink" href="#workers" title="Permanent link">¶</a></h2>
-<h3 id="general">General<a class="headerlink" href="#general" title="Permanent link">¶</a></h3>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>WALK_RETRY_MAX_INTERVAL</code></td>
-<td>Maximum time interval between walk attempts</td>
-</tr>
-<tr>
-<td><code>WALK_MAX_RETRIES</code></td>
-<td>Maximum number of walk retries</td>
-</tr>
-<tr>
-<td><code>METRICS_INDEXING_ENABLED</code></td>
-<td>Details can be found in <a href="../../configuration/poller-configuration/#append-oid-index-part-to-the-metrics">append oid index part to the metrics</a></td>
-</tr>
-<tr>
-<td><code>POLL_BASE_PROFILES</code></td>
-<td>Enable polling base profiles (with IF-MIB and SNMPv2-MIB)</td>
-</tr>
-<tr>
-<td><code>IGNORE_NOT_INCREASING_OIDS</code></td>
-<td>Ignoring <code>occurred: OID not increasing</code> issues for hosts specified in the array, ex: IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6</td>
-</tr>
-<tr>
-<td><code>WORKER_LOG_LEVEL</code></td>
-<td>Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL</td>
-</tr>
-<tr>
-<td><code>UDP_CONNECTION_TIMEOUT</code></td>
-<td>Timeout in seconds for SNMP operations</td>
-</tr>
-<tr>
-<td><code>MAX_OID_TO_PROCESS</code></td>
-<td>Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error “TooBig” is visible in logs, decrease the number of MAX_OID_TO_PROCESS</td>
-</tr>
-</tbody>
-</table>
-<h3 id="worker-poller">Worker Poller<a class="headerlink" href="#worker-poller" title="Permanent link">¶</a></h3>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>WORKER_POLLER_CONCURRENCY</code></td>
-<td>Minimum number of threads in the poller container</td>
-</tr>
-<tr>
-<td><code>PREFETCH_POLLER_COUNT</code></td>
-<td>How many tasks are consumed from the queue at once in the poller container</td>
-</tr>
-<tr>
-<td><code>WORKER_POLLER_REPLICAS</code></td>
-<td>Number of docker replicas of worker poller container</td>
-</tr>
-<tr>
-<td><code>WORKER_POLLER_CPU_LIMIT</code></td>
-<td>Limit of cpu that worker poller container can use</td>
-</tr>
-<tr>
-<td><code>WORKER_POLLER_MEMORY_LIMIT</code></td>
-<td>Limit of memory that worker poller container can use</td>
-</tr>
-<tr>
-<td><code>WORKER_POLLER_CPU_RESERVATIONS</code></td>
-<td>Dedicated cpu resources for worker poller container</td>
-</tr>
-<tr>
-<td><code>WORKER_POLLER_MEMORY_RESERVATIONS</code></td>
-<td>Dedicated memory resources for worker poller container</td>
-</tr>
-</tbody>
-</table>
-<h3 id="worker-sender">Worker Sender<a class="headerlink" href="#worker-sender" title="Permanent link">¶</a></h3>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>WORKER_SENDER_CONCURRENCY</code></td>
-<td>Minimum number of threads in the sender container</td>
-</tr>
-<tr>
-<td><code>PREFETCH_SENDER_COUNT</code></td>
-<td>How many tasks are consumed from the queue at once in the sender container</td>
-</tr>
-<tr>
-<td><code>WORKER_SENDER_REPLICAS</code></td>
-<td>Number of docker replicas of worker sender container</td>
-</tr>
-<tr>
-<td><code>WORKER_SENDER_CPU_LIMIT</code></td>
-<td>Limit of cpu that worker sender container can use</td>
-</tr>
-<tr>
-<td><code>WORKER_SENDER_MEMORY_LIMIT</code></td>
-<td>Limit of memory that worker sender container can use</td>
-</tr>
-<tr>
-<td><code>WORKER_SENDER_CPU_RESERVATIONS</code></td>
-<td>Dedicated cpu resources for worker sender container</td>
-</tr>
-<tr>
-<td><code>WORKER_SENDER_MEMORY_RESERVATIONS</code></td>
-<td>Dedicated memory resources for worker sender container</td>
-</tr>
-</tbody>
-</table>
-<h3 id="worker-trap">Worker Trap<a class="headerlink" href="#worker-trap" title="Permanent link">¶</a></h3>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>WORKER_TRAP_CONCURRENCY</code></td>
-<td>Minimum number of threads in the trap container</td>
-</tr>
-<tr>
-<td><code>PREFETCH_TRAP_COUNT</code></td>
-<td>How many tasks are consumed from the queue at once in the trap container</td>
-</tr>
-<tr>
-<td><code>RESOLVE_TRAP_ADDRESS</code></td>
-<td>Use reverse dns lookup for trap IP address and send the hostname to Splunk</td>
-</tr>
-<tr>
-<td><code>MAX_DNS_CACHE_SIZE_TRAPS</code></td>
-<td>If RESOLVE_TRAP_ADDRESS is set to true, this is the maximum number of records in cache</td>
-</tr>
-<tr>
-<td><code>TTL_DNS_CACHE_TRAPS</code></td>
-<td>If RESOLVE_TRAP_ADDRESS is set to true, this is the time to live of the cached record in seconds</td>
-</tr>
-<tr>
-<td><code>WORKER_TRAP_REPLICAS</code></td>
-<td>Number of docker replicas of worker trap container</td>
-</tr>
-<tr>
-<td><code>WORKER_TRAP_CPU_LIMIT</code></td>
-<td>Limit of cpu that worker trap container can use</td>
-</tr>
-<tr>
-<td><code>WORKER_TRAP_MEMORY_LIMIT</code></td>
-<td>Limit of memory that worker trap container can use</td>
-</tr>
-<tr>
-<td><code>WORKER_TRAP_CPU_RESERVATIONS</code></td>
-<td>Dedicated cpu resources for worker trap container</td>
-</tr>
-<tr>
-<td><code>WORKER_TRAP_MEMORY_RESERVATIONS</code></td>
-<td>Dedicated memory resources for worker trap container</td>
-</tr>
-</tbody>
-</table>
-<h2 id="inventory">Inventory<a class="headerlink" href="#inventory" title="Permanent link">¶</a></h2>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>INVENTORY_LOG_LEVEL</code></td>
-<td>Logging level of the inventory, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL</td>
-</tr>
-<tr>
-<td><code>CHAIN_OF_TASKS_EXPIRY_TIME</code></td>
-<td>Tasks expirations time in seconds</td>
-</tr>
-</tbody>
-</table>
-<h2 id="traps">Traps<a class="headerlink" href="#traps" title="Permanent link">¶</a></h2>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>SNMP_V3_SECURITY_ENGINE_ID</code></td>
-<td>SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table of the TRAP receiving application for each USM user, for example: SNMP_V3_SECURITY_ENGINE_ID=80003a8c04,aab123456</td>
-</tr>
-<tr>
-<td><code>TRAPS_PORT</code></td>
-<td>External port exposed for traps server</td>
-</tr>
-</tbody>
-</table>
-<h2 id="scheduler">Scheduler<a class="headerlink" href="#scheduler" title="Permanent link">¶</a></h2>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>SCHEDULER_LOG_LEVEL</code></td>
-<td>Logging level of the scheduler, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL</td>
-</tr>
-</tbody>
-</table></div>
+<div><h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">¶</a></h1>
+<p>SC4SNMP is deployed using a Kubernetes distribution, typically MicroK8s,
+that’s designed to be a low-touch experience for integration with sensitive
+edge network devices. It will typically be deployed in the same network
+management zone as the monitored devices and separated from Splunk by an
+existing firewall.</p>
+<p><img alt="image" src="../../images/sc4snmp_deployment.png"></p>
+<h2 id="high-level-design">High-level Design<a class="headerlink" href="#high-level-design" title="Permanent link">¶</a></h2>
+<p>SC4SNMP has two main purposes. The first one is used to collect SNMP data from network 
+devices according to planned schedules and the second one is responsible for listening to SNMP traps.</p>
+<p><img alt="image" src="../../images/sc4snmp_architecture.png"></p>
+<p>Diagram above present high level architecture of Splunk Connector for SNMP, it contains following components:</p>
+<ul>
+<li><strong>UI</strong> - user interface for configuring the SC4SNMP profiles, groups, and inventory. It is applying changes to 
+  SC4SNMP by creating the inventory job.</li>
+<li><strong>Poller</strong> - responsible for getting selected data from SNMP agents in set periods of time. Celery is used for 
+  planning the schedules and executing the incoming tasks, signaled from Redis as message broker.</li>
+<li><strong>Trap</strong> - responsible for listening and receiving trap notifications from SNMP agents. The listener is always 
+  waiting for the messages coming on the specified port and passing them to the trap worker for further 
+  processing.</li>
+<li><strong>MIB Server</strong> - responsible for serving MIBs to SNMP Workers and translating oids to varbinds.</li>
+<li><strong>MongoDB</strong> - used for storing configuration and state of the SC4SNMP.</li>
+<li><strong>Inventory</strong> - job used for updating the information about SC4SNMP configuration. It is run after every update to 
+  the <code>values.yaml</code> file if polling is enabled.</li>
+<li><strong>Sender</strong> - responsible for sending data received from poller or trap workers to the Splunk HEC or OTel (SignalFx).</li>
+</ul></div>
 
 
 
