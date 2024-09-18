@@ -79,7 +79,9 @@ nav:
       - Offline installation: "dockercompose/8-offline-installation.md"
       - Sending logs to Splunk: "dockercompose/9-splunk-logging.md"
   - Lightweight installation: "small-environment.md"
-  - Planning: "planning.md"
+  - Architecture:
+      - High-level design: "architecture/design.md"
+      - Infrastructure Planning: "architecture/planning.md"
   - Security: "security.md"
   - Request MIB: "mib-request.md"
   - Upgrade SC4SNMP: "upgrade.md"
