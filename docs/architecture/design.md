@@ -18,11 +18,16 @@ devices according to planned schedules and the second one is responsible for lis
 
 Diagram above present high level architecture of Splunk Connector for SNMP, it contains following components:
 
-- **UI** - user interface for configuring the SC4SNMP profiles, groups, and inventory.
-- **Poller** - responsible for getting selected data from SNMP agents in set periods of time.
-- **Trap** - responsible for listening and receiving trap notifications from SNMP agents.
-- **MIB Server** - responsible for serving MIBs to SNMP Workers and translating oid to varbinds.
+- **UI** - user interface for configuring the SC4SNMP profiles, groups, and inventory. It is applying changes to 
+  SC4SNMP by creating the inventory job.
+- **Poller** - responsible for getting selected data from SNMP agents in set periods of time. Celery is used for 
+  planning the schedules and executing the incoming tasks, signaled from Redis as message broker.
+- **Trap** - responsible for listening and receiving trap notifications from SNMP agents. The listener is always 
+  waiting for the messages coming on the specified port and passing them to the trap worker for further 
+  processing.
+- **MIB Server** - responsible for serving MIBs to SNMP Workers and translating oids to varbinds.
 - **MongoDB** - used for storing configuration and state of the SC4SNMP.
-- **Inventory** - job used for updating the information about SC4SNMP configuration.
-- **Sender** - responsible for sending data received from poller or trap workers to the Splunk HEC or OTel.
+- **Inventory** - job used for updating the information about SC4SNMP configuration. It is run after every update to 
+  the `values.yaml` file if polling is enabled.
+- **Sender** - responsible for sending data received from poller or trap workers to the Splunk HEC or OTel (SignalFx).
 
