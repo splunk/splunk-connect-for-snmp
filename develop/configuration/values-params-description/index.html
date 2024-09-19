@@ -335,6 +335,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/enable-ipv6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Enable IPv6
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2522,7 +2543,7 @@ Detailed documentation about configuring profiles can be found in <a href="../co
 </tr>
 <tr>
 <td><code>service.port</code></td>
-<td>Port of the service to use</td>
+<td>Port of the service to use for IPv4</td>
 <td><code>162</code></td>
 </tr>
 <tr>
@@ -2536,9 +2557,29 @@ Detailed documentation about configuring profiles can be found in <a href="../co
 <td><code>Local</code></td>
 </tr>
 <tr>
+<td><code>service.ipv6Port</code></td>
+<td>Port of the service to use for IPv6</td>
+<td><code>162</code></td>
+</tr>
+<tr>
+<td><code>service.ipv6NodePort</code></td>
+<td>Port when the <code>service.type</code> is <code>nodePort</code> and IPv6 is enabled</td>
+<td><code>2163</code></td>
+</tr>
+<tr>
 <td><code>loadBalancerIP</code></td>
 <td>Sets loadBalancer IP address in the metallb pool</td>
-<td></td>
+<td><code>30001</code></td>
+</tr>
+<tr>
+<td><code>ipFamilyPolicy</code></td>
+<td>Specifies if the service is dual stack or single stack</td>
+<td><code>SingleStack</code></td>
+</tr>
+<tr>
+<td><code>ipFamilies</code></td>
+<td>Defines the address families used for chosen <code>ipFamilyPolicy</code></td>
+<td><code>IPv4</code></td>
 </tr>
 <tr>
 <td><code>resources</code></td>

@@ -335,6 +335,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../gettingstarted/enable-ipv6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Enable IPv6
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1935,6 +1956,12 @@ The following is an example of an SNMPv3 trap:</p>
 See the following example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">loadBalancerIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.202</span>
+</code></pre></div>
+
+<p>If you have enabled the Ipv6 you need to pass IP addresses for both IPv4 and IPv6.
+See the following example:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">loadBalancerIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.202,2001:0DB8:AC10:FE01:0000:0000:0000:0001</span>
 </code></pre></div>
 
 <p>If you want to use the SC4SNMP trap receiver in K8S cluster, configure <code>NodePort</code> instead. Use the following configuration:</p>
