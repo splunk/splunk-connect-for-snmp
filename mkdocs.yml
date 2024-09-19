@@ -41,6 +41,7 @@ nav:
       - Platform Microk8s: "gettingstarted/mk8s/k8s-microk8s.md"
       - Install Splunk OpenTelemetry Collector for Kubernetes: "gettingstarted/sck-installation.md"
       - Install SC4SNMP: "gettingstarted/sc4snmp-installation.md"
+      - Enable IPv6: "gettingstarted/enable-ipv6.md"
   - Configuration:
       - Deployment: "configuration/deployment-configuration.md"
       - Configurable values: "configuration/values-params-description.md"

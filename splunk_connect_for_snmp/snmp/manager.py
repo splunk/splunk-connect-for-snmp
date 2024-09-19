@@ -38,7 +38,7 @@ from typing import Any, Dict, List, Tuple, Union
 import pymongo
 from celery import Task
 from celery.utils.log import get_task_logger
-from pysnmp.hlapi import SnmpEngine, UdpTransportTarget, bulkCmd, getCmd
+from pysnmp.hlapi import SnmpEngine, bulkCmd, getCmd
 from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
@@ -46,7 +46,7 @@ from requests_cache import MongoCache
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
-from splunk_connect_for_snmp.snmp.auth import get_auth
+from splunk_connect_for_snmp.snmp.auth import get_auth, setup_transport_target
 from splunk_connect_for_snmp.snmp.context import get_context_data
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
@@ -99,7 +99,7 @@ if PYSNMP_DEBUG:
 
 def return_address_and_port(target):
     if ":" in target:
-        address_tuple = target.split(":")
+        address_tuple = target.rsplit(":", 1)
         return address_tuple[0], int(address_tuple[1])
     else:
         return target, 161
@@ -335,9 +335,7 @@ class Poller(Task):
         auth_data = get_auth(logger, ir, self.snmpEngine)
         context_data = get_context_data()
 
-        transport = UdpTransportTarget(
-            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
-        )
+        transport = setup_transport_target(ir)
 
         metrics: Dict[str, Any] = {}
         if not varbinds_get and not varbinds_bulk:

@@ -161,10 +161,14 @@ Detailed documentation about configuring traps can be found in [Traps](../config
 | `service.usemetallb`                            | Enables using metallb                                                                                                           | `true`           |
 | `service.metallbsharingkey`                     | Sets metallb.universe.tf/allow-shared-ip annotation in trap service                                                             | `splunk-connect` |
 | `service.type`                                  | [Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)  | `LoadBalancer`   |
-| `service.port`                                  | Port of the service to use                                                                                                      | `162`            |
+| `service.port`                                  | Port of the service to use for IPv4                                                                                             | `162`            |
 | `service.nodePort`                              | Port when the `service.type` is `nodePort`                                                                                      | `30000`          |
 | `service.externalTrafficPolicy`                 | Controls how Kubernetes routes traffic                                                                                          | `Local`          |
-| `loadBalancerIP`                                | Sets loadBalancer IP address in the metallb pool                                                                                |                  |
+| `service.ipv6Port`                              | Port of the service to use for IPv6                                                                                             | `162`            |
+| `service.ipv6NodePort`                          | Port when the `service.type` is `nodePort` and IPv6 is enabled                                                                  | `2163`           |
+| `loadBalancerIP`                                | Sets loadBalancer IP address in the metallb pool                                                                                | `30001`          |
+| `ipFamilyPolicy`                                | Specifies if the service is dual stack or single stack                                                                          | `SingleStack`    |
+| `ipFamilies`                                    | Defines the address families used for chosen `ipFamilyPolicy`                                                                   | `IPv4`           |
 | `resources`                                     | CPU and memory limits and requests for pod                                                                                      |                  |
 | `autoscaling.enabled`                           | Enables autoscaling for pods                                                                                                    | `false`          |
 | `autoscaling.minReplicas`                       | Minimum number of running pods when autoscaling is enabled                                                                      | `1`              |

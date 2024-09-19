@@ -4,6 +4,7 @@
 - add metrics dashboard
 
 ### Changed
+- add support for IPv6 polling and traps for kubernetes deployment
 
 ### Fixed
 

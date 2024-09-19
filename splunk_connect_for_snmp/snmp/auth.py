@@ -20,6 +20,7 @@ from pysnmp.hlapi import (
     CommunityData,
     ContextData,
     SnmpEngine,
+    Udp6TransportTarget,
     UdpTransportTarget,
     UsmUserData,
     getCmd,
@@ -54,9 +55,7 @@ def get_secret_value(
 def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpEngine):
     observer_context: Dict[Any, Any] = {}
 
-    transport_target = UdpTransportTarget(
-        (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
-    )
+    transport_target = setup_transport_target(ir)
 
     # Register a callback to be invoked at specified execution point of
     # SNMP Engine and passed local variables at execution point's local scope
@@ -85,6 +84,18 @@ def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpEngine)
     )
     logger.debug(f"securityEngineId={security_engine_id} for device {ir.address}")
     return security_engine_id
+
+
+def setup_transport_target(ir):
+    if ":" in ir.address:
+        transport = Udp6TransportTarget(
+            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
+        )
+    else:
+        transport = UdpTransportTarget(
+            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
+        )
+    return transport
 
 
 def fetch_security_engine_id(observer_context, error_indication, ipaddress):

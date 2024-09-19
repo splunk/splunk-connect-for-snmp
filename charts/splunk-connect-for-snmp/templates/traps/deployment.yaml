@@ -84,10 +84,21 @@ spec:
                   secretKeyRef:
                     name: {{ include "splunk-connect-for-snmp.name" . }}-splunk
                     key: hec_token
+            - name: IPv6_ENABLED
+              {{- if has "IPv6" .Values.traps.ipFamilies}}
+              value: "true"
+              {{ else }}
+              value: "false"
+              {{- end }}
           ports:
             - name: snmp-udp
               containerPort: 2162
               protocol: UDP
+            {{- if has "IPv6" .Values.traps.ipFamilies}}
+            - name: snmp-udp6
+              containerPort: 2163
+              protocol: UDP
+            {{- end }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"
