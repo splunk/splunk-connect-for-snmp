@@ -11,5 +11,5 @@ services:
     volumes:
         - '${COREFILE_ABS_PATH}:/Corefile'
     networks:
-        my_network:
+        sc4snmp_network:
             ipv4_address: ${COREDNS_ADDRESS}
