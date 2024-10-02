@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../poller-configuration/">
+        <link rel="prev" href="../9-splunk-logging/">
       
       
-        <link rel="next" href="../configuring-profiles/">
+        <link rel="next" href="../../small-environment/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Scheduler - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Enable IPv6 - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#scheduler-configuration" class="md-skip">
+        <a href="#enabling-ipv6-for-sc4snmp" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Scheduler
+              Enable IPv6
             
           </span>
         </div>
@@ -367,19 +367,17 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -393,7 +391,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Configuration
@@ -407,7 +405,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../deployment-configuration/" class="md-nav__link">
+      <a href="../../configuration/deployment-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -428,7 +426,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../values-params-description/" class="md-nav__link">
+      <a href="../../configuration/values-params-description/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -446,19 +444,17 @@
                 
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
         
           
           <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
@@ -472,7 +468,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_3">
             <span class="md-nav__icon md-icon"></span>
             Polling
@@ -486,7 +482,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../poller-configuration/" class="md-nav__link">
+      <a href="../../configuration/poller-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -504,30 +500,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Scheduler
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../configuration/scheduler-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -536,71 +512,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#scheduler-configuration-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      Scheduler configuration file
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#define-log-level" class="md-nav__link">
-    <span class="md-ellipsis">
-      Define log level
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#define-resource-requests-and-limits" class="md-nav__link">
-    <span class="md-ellipsis">
-      Define resource requests and limits
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#define-groups-of-hosts" class="md-nav__link">
-    <span class="md-ellipsis">
-      Define groups of hosts
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#define-the-expiration-time-for-tasks" class="md-nav__link">
-    <span class="md-ellipsis">
-      Define the expiration time for tasks
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -613,7 +524,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../configuring-profiles/" class="md-nav__link">
+      <a href="../../configuration/configuring-profiles/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -634,7 +545,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../configuring-groups/" class="md-nav__link">
+      <a href="../../configuration/configuring-groups/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -655,7 +566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-by-step-poll/" class="md-nav__link">
+      <a href="../../configuration/step-by-step-poll/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -676,7 +587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../snmp-data-format/" class="md-nav__link">
+      <a href="../../configuration/snmp-data-format/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -705,7 +616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../trap-configuration/" class="md-nav__link">
+      <a href="../../configuration/trap-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -726,7 +637,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../worker-configuration/" class="md-nav__link">
+      <a href="../../configuration/worker-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -747,7 +658,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mongo-configuration/" class="md-nav__link">
+      <a href="../../configuration/mongo-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -768,7 +679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../redis-configuration/" class="md-nav__link">
+      <a href="../../configuration/redis-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -789,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../snmpv3-configuration/" class="md-nav__link">
+      <a href="../../configuration/snmpv3-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -810,7 +721,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sim-configuration/" class="md-nav__link">
+      <a href="../../configuration/sim-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -831,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../coredns-configuration/" class="md-nav__link">
+      <a href="../../configuration/coredns-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1108,17 +1019,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -1132,7 +1045,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Docker compose
@@ -1146,7 +1059,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/1-install-docker/" class="md-nav__link">
+      <a href="../1-install-docker/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1167,7 +1080,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/2-download-package/" class="md-nav__link">
+      <a href="../2-download-package/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1188,7 +1101,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/3-inventory-configuration/" class="md-nav__link">
+      <a href="../3-inventory-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1209,7 +1122,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/4-scheduler-configuration/" class="md-nav__link">
+      <a href="../4-scheduler-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1230,7 +1143,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/5-traps-configuration/" class="md-nav__link">
+      <a href="../5-traps-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1251,7 +1164,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/6-env-file-configuration/" class="md-nav__link">
+      <a href="../6-env-file-configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1272,7 +1185,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/7-snmpv3-secrets/" class="md-nav__link">
+      <a href="../7-snmpv3-secrets/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1293,7 +1206,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/8-offline-installation/" class="md-nav__link">
+      <a href="../8-offline-installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1314,7 +1227,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/9-splunk-logging/" class="md-nav__link">
+      <a href="../9-splunk-logging/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1332,10 +1245,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../dockercompose/10-enable-ipv6/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Enable IPv6
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1344,6 +1277,35 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1753,45 +1715,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scheduler-configuration-file" class="md-nav__link">
+  <a href="#docker" class="md-nav__link">
     <span class="md-ellipsis">
-      Scheduler configuration file
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#define-log-level" class="md-nav__link">
-    <span class="md-ellipsis">
-      Define log level
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#define-resource-requests-and-limits" class="md-nav__link">
-    <span class="md-ellipsis">
-      Define resource requests and limits
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#define-groups-of-hosts" class="md-nav__link">
-    <span class="md-ellipsis">
-      Define groups of hosts
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#define-the-expiration-time-for-tasks" class="md-nav__link">
-    <span class="md-ellipsis">
-      Define the expiration time for tasks
+      Docker
     </span>
   </a>
   
@@ -1812,74 +1738,17 @@
                   
 
 
-<div><h1 id="scheduler-configuration">Scheduler configuration<a class="headerlink" href="#scheduler-configuration" title="Permanent link">¶</a></h1>
-<p>The scheduler is a service that manages schedules for SNMP walks and GETs. The definitions of the schedules
-are stored in MongoDB. </p>
-<h3 id="scheduler-configuration-file">Scheduler configuration file<a class="headerlink" href="#scheduler-configuration-file" title="Permanent link">¶</a></h3>
-<p>Scheduler configuration is kept in <code>values.yaml</code> file, in the section <code>scheduler</code>.
-<code>values.yaml</code> is used during the installation process to configure Kubernetes values.</p>
-<p>See the following example: </p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"WARN"</span>
-<span class="w">  </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-<span class="w">    </span><span class="no">test_profile:</span>
-<span class="w">      </span><span class="no">frequency: 5 </span>
-<span class="w">      </span><span class="no">condition: </span>
-<span class="w">        </span><span class="no">type: "field" </span>
-<span class="w">        </span><span class="no">field: "SNMPv2-MIB.sysDescr" </span>
-<span class="w">        </span><span class="no">patterns: </span>
-<span class="w">          </span><span class="no">- "^.*"</span>
-<span class="w">      </span><span class="no">varBinds:</span>
-<span class="w">          </span><span class="no"># Syntax: [ "MIB-Component", "MIB object name"[Optional], "MIB index number"[Optional]]</span>
-<span class="w">        </span><span class="no">- ["SNMPv2-MIB", "sysDescr",0]</span>
-</code></pre></div>
-
-<h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">¶</a></h3>
-<p>The log level for the scheduler can be set by changing the value for the <code>logLevel</code> key. The allowed values are <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, or <code>ERROR</code>. 
-The default value is <code>WARNING</code>.</p>
-<h3 id="define-resource-requests-and-limits">Define resource requests and limits<a class="headerlink" href="#define-resource-requests-and-limits" title="Permanent link">¶</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-<span class="w">  </span><span class="c1">#The following resource specification is appropriate for most deployments to scale the</span>
-<span class="w">  </span><span class="c1">#Larger inventories may require more memory but should not require additional cpu</span>
-<span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">limits</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1Gi</span>
-<span class="w">    </span><span class="nt">requests</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200m</span>
-<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">128Mi</span>
-</code></pre></div>
-
-<h3 id="define-groups-of-hosts">Define groups of hosts<a class="headerlink" href="#define-groups-of-hosts" title="Permanent link">¶</a></h3>
-<p>For more information on when to use groups, see <a href="../configuring-groups/">Configuring Groups</a>.</p>
-<p>See the following example group configuration:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">groups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-<span class="w">    </span><span class="no">example_group_1:</span>
-<span class="w">      </span><span class="no">- address: 123.0.0.1</span>
-<span class="w">        </span><span class="no">port: 161</span>
-<span class="w">      </span><span class="no">- address: 178.8.8.1</span>
-<span class="w">        </span><span class="no">port: 999</span>
-<span class="w">      </span><span class="no">- address: 12.22.23</span>
-<span class="w">        </span><span class="no">port: 161</span>
-<span class="w">        </span><span class="no">community: 'private'</span>
-<span class="w">    </span><span class="no">example_group_2:</span>
-<span class="w">      </span><span class="no">- address: 103.0.0.1</span>
-<span class="w">        </span><span class="no">port: 1161</span>
-<span class="w">        </span><span class="no">version: '3'</span>
-<span class="w">        </span><span class="no">secret: 'my_secret'</span>
-<span class="w">      </span><span class="no">- address: 178.80.8.1</span>
-<span class="w">        </span><span class="no">port: 999</span>
-</code></pre></div>
-
-<p>The one obligatory field for the host configuration is <code>address</code>. If <code>port</code> isn’t configured its default value is <code>161</code>. 
-Other fields that can be modified here are: <code>community</code>, <code>secret</code>, <code>version</code>, and <code>security_engine</code>.
-However, if they remain unspecified in the host configuration, they will be derived from the inventory record. </p>
-<h3 id="define-the-expiration-time-for-tasks">Define the expiration time for tasks<a class="headerlink" href="#define-the-expiration-time-for-tasks" title="Permanent link">¶</a></h3>
-<p>Define the time, in seconds, when polling or walk tasks will be revoked if they haven’t been picked up by the worker. See the <a href="https://docs.celeryq.dev/en/stable/userguide/calling.html#expiration">celery documentation</a> for more details.</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">tasksExpiryTime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
-</code></pre></div></div>
+<div><h1 id="enabling-ipv6-for-sc4snmp">Enabling IPv6 for SC4SNMP<a class="headerlink" href="#enabling-ipv6-for-sc4snmp" title="Permanent link">¶</a></h1>
+<p>Default installation of SC4SNMP does not support polling or receiving trap notifications from IPv6 addresses. 
+To enable IPv6, follow instruction below.</p>
+<h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">¶</a></h2>
+<p>Older versions of Docker do not support IPv6 or have know issues with IPv6 configuration. 
+To avoid any problem with configuring the network, it is recommended to use the latest version of Docker. </p>
+<p>To enable IPv6 for SC4SNMP, set <code>IPv6_ENABLED</code> variable to <code>true</code> in <code>.env</code> file.
+The default subnet used for SC4SNMP network in docker is <code>fd02::/64</code>, this and other network configuration can be 
+changed in the <code>docker-compose-network.yml</code> file.</p>
+<p>Default trap port for notifications for IPv6 is <code>2163</code>. You can change it to any other port if needed with <code>IPv6_TRAPS_PORT</code> parameter in <code>.env</code> file.</p>
+<p>For more information about IPv6 networking in docker, you can check the <a href="https://docs.docker.com/engine/daemon/ipv6/">official Docker documentation</a>.</p></div>
 
 
 
