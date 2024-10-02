@@ -42,17 +42,6 @@ Wait for Installation of Mk8S to complete:
 microk8s status --wait-ready
 ```
 
-## Add nodes (optional)
-
-* Repeat the steps above for each additional node (with a minimum of 3 nodes).
-* On the first node, use the following command to see the instructions to join: 
-
-```bash
-microk8s add-node
-```
-
-* On each additional node, use the output from the command above.
-
 ## Install required services for SC4SNMP
 
 The following commands can be issued from any one node in a cluster:
@@ -87,3 +76,7 @@ the same as the primary IP.
 microk8s enable metallb
 microk8s status --wait-ready
 ```
+
+## Add nodes (optional)
+
+If you need cluster mode please use following [guide](k8s-microk8s-scaling.md#make-microk8s-cluster).
