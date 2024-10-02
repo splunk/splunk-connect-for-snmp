@@ -10,7 +10,7 @@ services:
     depends_on:
       - coredns
     networks:
-      - my_network
+      - sc4snmp_network
     dns:
       - ${COREDNS_ADDRESS}
 
@@ -23,7 +23,7 @@ services:
     depends_on:
       - coredns
     networks:
-      - my_network
+      - sc4snmp_network
     dns:
       - ${COREDNS_ADDRESS}
   mongo:
@@ -33,7 +33,7 @@ services:
     depends_on:
       - coredns
     networks:
-      - my_network
+      - sc4snmp_network
     dns:
       - ${COREDNS_ADDRESS}
 volumes:

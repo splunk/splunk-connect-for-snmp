@@ -25,7 +25,7 @@ services:
       - scheduler-tmp:/tmp/:rw
     restart: on-failure
     networks:
-      - my_network
+      - sc4snmp_network
     dns:
       - ${COREDNS_ADDRESS}
 volumes:

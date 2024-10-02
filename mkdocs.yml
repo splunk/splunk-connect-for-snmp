@@ -79,6 +79,7 @@ nav:
       - SNMPv3 secrets configuration: "dockercompose/7-snmpv3-secrets.md"
       - Offline installation: "dockercompose/8-offline-installation.md"
       - Sending logs to Splunk: "dockercompose/9-splunk-logging.md"
+      - Enable IPv6: "dockercompose/10-enable-ipv6.md"
   - Lightweight installation: "small-environment.md"
   - Architecture:
       - High-level design: "architecture/design.md"
@@ -92,6 +93,6 @@ nav:
       - Traps issues: "troubleshooting/traps-issues.md"
       - Kubernetes commands: "troubleshooting/k8s-commands.md"
   - Releases: "releases.md"
-  - High Availability: ha.md
+  - High Availability: "ha.md"
   - Improved polling performance: "improved-polling.md"
   - Monitoring dashboard: "dashboard.md"

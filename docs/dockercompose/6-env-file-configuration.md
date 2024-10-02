@@ -14,6 +14,8 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose` |
 | `COREDNS_ADDRESS`                     | IP address of the coredns inside docker network. Shouldn’t be changed                                |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                   |
+| `IPv6_ENABLED`                        | Enable receiving traps and polling from IPv6 devices                                                 |
+
 
 ## Images of dependencies 
 
@@ -110,6 +112,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 |------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
 | `SNMP_V3_SECURITY_ENGINE_ID` | SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table of the TRAP receiving application for each USM user, for example: SNMP_V3_SECURITY_ENGINE_ID=80003a8c04,aab123456 |
 | `TRAPS_PORT`                 | External port exposed for traps server                                                                                                                                                                                          |
+| `IPv6_TRAPS_PORT`                             | External port exposed for traps server for IPv6                                                                                                                                                                                 |
 
 ## Scheduler
 
