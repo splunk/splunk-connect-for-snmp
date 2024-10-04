@@ -1,10 +1,11 @@
 # Changelog
 
 ## Unreleased
-- add metrics dashboard
 
 ### Changed
+- add metrics dashboard
 - add support for IPv6 polling and traps for kubernetes deployment
+- add support for IPv6 polling and traps for docker deployment
 
 ### Fixed
 
