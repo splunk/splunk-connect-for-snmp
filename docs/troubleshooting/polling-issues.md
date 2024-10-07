@@ -42,11 +42,13 @@ If you put in only the IP address (for example, `127.0.0.1`), then errors will b
 
 ## Walking a device takes too much time
 
-See [Configure small walk profile](../configuration/configuring-profiles/#walk-profile) to enable the small walk functionality.
+See [Configure small walk profile](../../configuration/configuring-profiles/#walk-profile) to enable the small walk 
+functionality.
 
 ## An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance
 
-If you see many `An error of SNMP isWalk=True` errors in your logs, that means that there is a connection problem with the hosts you're polling from.
+If you see many `An error of SNMP isWalk=True` errors in your logs, that means that there is a connection problem 
+with the hosts you are polling from.
 Walk will retry multiple times, which will eventually cause a worker to be blocked while it retries. In that case, you might want to limit
 the maximum retry time. You can do this by setting the variable `worker.walkRetryMaxInterval`, for example:
 
@@ -124,4 +126,5 @@ The following groups have invalid configuration and won't be used: ['group1']. P
 The following profiles have invalid configuration and won't be used: ['standard_profile', 'walk_profile']. Please check indentation and keywords spelling inside mentioned profiles configuration.
 ```
 Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to [Configuring profiles](../configuration/configuring-profiles.md)
-or [Configuring Groups](../configuration/configuring-groups.md) sections to check how the correct configuration should look like.
+or [Configuring Groups](../configuration/configuring-groups.md) sections to check how the correct configuration 
+should look like.
