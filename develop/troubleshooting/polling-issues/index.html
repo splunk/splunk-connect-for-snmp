@@ -1982,9 +1982,11 @@ and replace <ip_address> with the pertinent IP Address. </ip_address></li>
 <p>If you put in only the IP address (for example, <code>127.0.0.1</code>), then errors will be ignored for all of its devices (like <code>127.0.0.1:161</code>, 
 <code>127.0.0.1:163</code>…). If you put the IP address and host as <code>{host}:{port}</code>, that means the error will be ignored only for this device.</p>
 <h2 id="walking-a-device-takes-too-much-time">Walking a device takes too much time<a class="headerlink" href="#walking-a-device-takes-too-much-time" title="Permanent link">¶</a></h2>
-<p>See <a href="../configuration/configuring-profiles/#walk-profile">Configure small walk profile</a> to enable the small walk functionality.</p>
+<p>See <a href="../../configuration/configuring-profiles/#walk-profile">Configure small walk profile</a> to enable the small walk 
+functionality.</p>
 <h2 id="an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance">An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance<a class="headerlink" href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance" title="Permanent link">¶</a></h2>
-<p>If you see many <code>An error of SNMP isWalk=True</code> errors in your logs, that means that there is a connection problem with the hosts you’re polling from.
+<p>If you see many <code>An error of SNMP isWalk=True</code> errors in your logs, that means that there is a connection problem 
+with the hosts you are polling from.
 Walk will retry multiple times, which will eventually cause a worker to be blocked while it retries. In that case, you might want to limit
 the maximum retry time. You can do this by setting the variable <code>worker.walkRetryMaxInterval</code>, for example:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
@@ -2048,7 +2050,8 @@ that the kubernetes secret with the correct authentication key has been created 
 </code></pre></div>
 
 <p>Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to <a href="../../configuration/configuring-profiles/">Configuring profiles</a>
-or <a href="../../configuration/configuring-groups/">Configuring Groups</a> sections to check how the correct configuration should look like.</p></div>
+or <a href="../../configuration/configuring-groups/">Configuring Groups</a> sections to check how the correct configuration 
+should look like.</p></div>
 
 
 
