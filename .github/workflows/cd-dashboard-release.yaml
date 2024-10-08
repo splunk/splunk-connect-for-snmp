@@ -1,0 +1,22 @@
+name: dashboard-release
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  dashboard-release:
+    name: Dashboard release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Upload dashboard to release assets
+        run: |
+          VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
+          gh release upload $VERSION dashboard/dashboard.xml
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
