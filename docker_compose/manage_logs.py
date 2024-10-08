@@ -6,6 +6,7 @@ from typing import Union
 import ruamel.yaml
 
 DEPENDENCIES = ["snmp-mibserver", "redis", "mongo"]
+DOCKER_COMPOSE_DEPENDENCIES = "docker-compose-dependencies.yaml"
 
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
@@ -99,7 +100,7 @@ def create_logs(environment, path_to_compose_files):
     try:
         yaml2 = ruamel.yaml.YAML()
         with open(
-            os.path.join(path_to_compose_files, "docker-compose-dependencies.yaml")
+            os.path.join(path_to_compose_files, DOCKER_COMPOSE_DEPENDENCIES)
         ) as file:
             yaml_file = yaml2.load(file)
 
@@ -108,7 +109,7 @@ def create_logs(environment, path_to_compose_files):
             yaml_file["services"][service_name].update(template_yaml)
 
         with open(
-            os.path.join(path_to_compose_files, "docker-compose-dependencies.yaml"), "w"
+            os.path.join(path_to_compose_files, DOCKER_COMPOSE_DEPENDENCIES), "w"
         ) as file:
             yaml2.dump(yaml_file, file)
     except Exception as e:
@@ -142,7 +143,7 @@ def delete_logs(path_to_compose_files):
 
     try:
         with open(
-            os.path.join(path_to_compose_files, "docker-compose-dependencies.yaml")
+            os.path.join(path_to_compose_files, DOCKER_COMPOSE_DEPENDENCIES)
         ) as file:
             yaml2 = ruamel.yaml.YAML()
             yaml_file = yaml2.load(file)
@@ -152,7 +153,7 @@ def delete_logs(path_to_compose_files):
             yaml_file["services"][service_name]["logging"].pop("options")
 
         with open(
-            os.path.join(path_to_compose_files, "docker-compose-dependencies.yaml"), "w"
+            os.path.join(path_to_compose_files, DOCKER_COMPOSE_DEPENDENCIES), "w"
         ) as file:
             yaml2.dump(yaml_file, file)
     except Exception as e:
