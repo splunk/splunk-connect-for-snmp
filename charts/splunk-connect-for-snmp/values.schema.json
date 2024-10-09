@@ -247,6 +247,15 @@
               "type": "boolean"
             }
           }
+        },
+        "podAnnotations": {
+          "type": "object"
+        },
+        "podAntiAffinity": {
+          "type": "string"
+        },
+        "nodeSelector": {
+          "type": "object"
         }
       }
     },

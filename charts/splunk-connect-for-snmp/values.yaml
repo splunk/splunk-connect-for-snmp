@@ -126,6 +126,10 @@ sim:
   autoscaling:
     enabled: false
 
+  podAnnotations: { }
+  podAntiAffinity: soft
+  nodeSelector: { }
+
 ################################################################################
 # SC4SNMP components settings
 ################################################################################
