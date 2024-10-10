@@ -343,21 +343,60 @@ class Poller(Task):
             return False, {}
 
         if varbinds_bulk:
+            self.run_bulk_request(
+                address,
+                auth_data,
+                bulk_mapping,
+                context_data,
+                ir,
+                metrics,
+                transport,
+                varbinds_bulk,
+                walk,
+            )
+
+        if varbinds_get:
+            self.run_get_request(
+                address,
+                auth_data,
+                context_data,
+                get_mapping,
+                ir,
+                metrics,
+                transport,
+                varbinds_get,
+                walk,
+            )
+
+        for group_key, metric in metrics.items():
+            if "profiles" in metrics[group_key]:
+                metrics[group_key]["profiles"] = ",".join(
+                    metrics[group_key]["profiles"]
+                )
+
+        return retry, metrics
+
+    def run_get_request(
+        self,
+        address,
+        auth_data,
+        context_data,
+        get_mapping,
+        ir,
+        metrics,
+        transport,
+        varbinds_get,
+        walk,
+    ):
+        # some devices cannot process more OID than X, so it is necessary to divide it on chunks
+        for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
             for (
                 error_indication,
                 error_status,
                 error_index,
                 varbind_table,
-            ) in bulkCmd(
-                self.snmpEngine,
-                auth_data,
-                transport,
-                context_data,
-                1,
-                10,
-                *varbinds_bulk,
-                lexicographicMode=False,
-                ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+            ) in getCmd(
+                self.snmpEngine, auth_data, transport, context_data, *varbind_chunk
             ):
                 if not _any_failure_happened(
                     error_indication,
@@ -367,47 +406,52 @@ class Poller(Task):
                     ir.address,
                     walk,
                 ):
-                    _, tmp_mibs, _ = self.process_snmp_data(
+                    self.process_snmp_data(varbind_table, metrics, address, get_mapping)
+
+    def run_bulk_request(
+        self,
+        address,
+        auth_data,
+        bulk_mapping,
+        context_data,
+        ir,
+        metrics,
+        transport,
+        varbinds_bulk,
+        walk,
+    ):
+        for (
+            error_indication,
+            error_status,
+            error_index,
+            varbind_table,
+        ) in bulkCmd(
+            self.snmpEngine,
+            auth_data,
+            transport,
+            context_data,
+            1,
+            10,
+            *varbinds_bulk,
+            lexicographicMode=False,
+            ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+        ):
+            if not _any_failure_happened(
+                error_indication,
+                error_status,
+                error_index,
+                varbind_table,
+                ir.address,
+                walk,
+            ):
+                _, tmp_mibs, _ = self.process_snmp_data(
+                    varbind_table, metrics, address, bulk_mapping
+                )
+                if tmp_mibs:
+                    self.load_mibs(tmp_mibs)
+                    self.process_snmp_data(
                         varbind_table, metrics, address, bulk_mapping
                     )
-                    if tmp_mibs:
-                        self.load_mibs(tmp_mibs)
-                        self.process_snmp_data(
-                            varbind_table, metrics, address, bulk_mapping
-                        )
-
-        if varbinds_get:
-            # some devices cannot process more OID than X, so it is necessary to divide it on chunks
-            for varbind_chunk in self.get_varbind_chunk(
-                varbinds_get, MAX_OID_TO_PROCESS
-            ):
-                for (
-                    error_indication,
-                    error_status,
-                    error_index,
-                    varbind_table,
-                ) in getCmd(
-                    self.snmpEngine, auth_data, transport, context_data, *varbind_chunk
-                ):
-                    if not _any_failure_happened(
-                        error_indication,
-                        error_status,
-                        error_index,
-                        varbind_table,
-                        ir.address,
-                        walk,
-                    ):
-                        self.process_snmp_data(
-                            varbind_table, metrics, address, get_mapping
-                        )
-
-        for group_key, metric in metrics.items():
-            if "profiles" in metrics[group_key]:
-                metrics[group_key]["profiles"] = ",".join(
-                    metrics[group_key]["profiles"]
-                )
-
-        return retry, metrics
 
     def get_varbind_chunk(self, lst, n):
         for i in range(0, len(lst), n):
