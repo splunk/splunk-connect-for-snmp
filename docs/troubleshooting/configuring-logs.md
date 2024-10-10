@@ -45,3 +45,32 @@ logs from `splunk-connect-for-snmp-worker-poller`:
 microk8s kubectl -n sc4snmp logs pod/snmp-splunk-connect-for-snmp-worker-poller-78b46d668f-59mv4
 ```
 
+### Accessing logs in docker
+
+Refer to [splunk logging](../dockercompose/9-splunk-logging.md) for instructions on how to enable logging in docker and 
+sent them to Splunk.
+
+To access logs directly in docker, first run `docker ps`. This will output all containers:
+
+```
+CONTAINER ID   IMAGE                                                            COMMAND                  CREATED          STATUS          PORTS                                                                                  NAMES
+afcd8f4850cd   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel…"   19 seconds ago   Up 17 seconds                                                                                          docker_compose-worker-poller-1
+5cea46cee0cb   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel…"   19 seconds ago   Up 17 seconds                                                                                          docker_compose-worker-sender-1
+1c5154c91191   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel…"   19 seconds ago   Up 17 seconds                                                                                          sc4snmp-scheduler
+8f6e60903780   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh trap"   19 seconds ago   Up 17 seconds   0.0.0.0:2163->2163/udp, :::2163->2163/udp, 0.0.0.0:162->2162/udp, [::]:162->2162/udp   sc4snmp-traps
+f146802a0a8d   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel…"   19 seconds ago   Up 16 seconds                                                                                          docker_compose-worker-poller-2
+70e0fe076cdf   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel…"   19 seconds ago   Up 17 seconds                                                                                          docker_compose-worker-trap-2
+090cc957b600   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel…"   19 seconds ago   Up 16 seconds                                                                                          docker_compose-worker-trap-1
+24aac5c89d80   ghcr.io/pysnmp/mibs/container:latest                             "/bin/sh -c '/app/lo…"   19 seconds ago   Up 18 seconds   8080/tcp                                                                               snmp-mibserver
+a5bef5a5a02c   bitnami/mongodb:6.0.9-debian-11-r5                               "/opt/bitnami/script…"   19 seconds ago   Up 18 seconds   27017/tcp                                                                              mongo
+76f966236c1b   bitnami/redis:7.2.1-debian-11-r0                                 "/opt/bitnami/script…"   19 seconds ago   Up 18 seconds   6379/tcp                                                                               redis
+163d880eaf8c   coredns/coredns:1.11.1                                           "/coredns -conf /Cor…"   19 seconds ago   Up 18 seconds   53/tcp, 53/udp                                                                         coredns
+```
+
+Now select the desired container and run `docker logs <container_name/id>` command. 
+Example command to retrieve logs from `splunk-connect-for-snmp-worker-poller`:
+
+```
+docker logs docker_compose-worker-poller-1
+```
+

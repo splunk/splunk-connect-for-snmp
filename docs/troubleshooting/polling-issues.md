@@ -1,7 +1,7 @@
 # Identifying Polling and Walk Issues
 
 ## Check when SNMP WALK was executed last time for the device
-1. [Configure Splunk OpenTelemetry Collector for Kubernetes](../gettingstarted/sck-installation.md)
+1. [Configure Splunk OpenTelemetry Collector for Kubernetes](../gettingstarted/sck-installation.md) or [Configure Docker Logs for Splunk](../dockercompose/9-splunk-logging.md)
 2. Go to your Splunk and execute search: `index="em_logs"   "Sending due task" "sc4snmp;<IP_ADDRESS>;walk"` 
 and replace <IP_ADDRESS> with the pertinent IP Address. 
 
@@ -125,6 +125,8 @@ The following groups have invalid configuration and won't be used: ['group1']. P
 ```
 The following profiles have invalid configuration and won't be used: ['standard_profile', 'walk_profile']. Please check indentation and keywords spelling inside mentioned profiles configuration.
 ```
-Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to [Configuring profiles](../configuration/configuring-profiles.md)
-or [Configuring Groups](../configuration/configuring-groups.md) sections to check how the correct configuration 
-should look like.
+Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to:
+- kubernetes: [Configuring profiles](../configuration/configuring-profiles.md) or [Configuring Groups](../configuration/configuring-groups.md)
+- docker: [Scheduler configuration](../dockercompose/4-scheduler-configuration.md)
+
+sections to check how the correct configuration should look like.

@@ -92,6 +92,7 @@ nav:
       - Polling issues: "troubleshooting/polling-issues.md"
       - Traps issues: "troubleshooting/traps-issues.md"
       - Kubernetes commands: "troubleshooting/k8s-commands.md"
+      - Docker commands: "troubleshooting/docker-commands.md"
   - Releases: "releases.md"
   - High Availability: "ha.md"
   - Improved polling performance: "improved-polling.md"
