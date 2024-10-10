@@ -60,6 +60,29 @@ spec:
             - name: config
               mountPath: "/config"
               readOnly: true
+      {{- with .Values.sim.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if eq .Values.sim.podAntiAffinity "hard" }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchLabels:
+                    {{- include "splunk-connect-for-snmp.sim.selectorLabels" . | nindent 22 }}
+      {{- else if eq .Values.sim.podAntiAffinity "soft" }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    {{- include "splunk-connect-for-snmp.sim.selectorLabels" . | nindent 22 }}
+      {{- end }}
       volumes:
          - name: config
            configMap:

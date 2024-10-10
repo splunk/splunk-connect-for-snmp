@@ -63,6 +63,9 @@ Detailed documentation about configuring sim can be found in [Splunk Infrastruct
 | `autoscaling.maxReplicas`                       | Maximum number of running pods when autoscaling is enabled                     |         |
 | `autoscaling.targetCPUUtilizationPercentage`    | CPU % threshold that must be exceeded on pods to spawn another replica         |         |
 | `autoscaling.targetMemoryUtilizationPercentage` | Memory % threshold that must be exceeded on pods to spawn another replica      |         |
+| `podAntiAffinity`                               | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | `soft`  |
+| `nodeSelector`                                  | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector)               |         |
+
 
 ## Scheduler
 
