@@ -1727,6 +1727,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-commands/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker commands
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1972,7 +1993,7 @@
 <div><h1 id="identifying-polling-and-walk-issues">Identifying Polling and Walk Issues<a class="headerlink" href="#identifying-polling-and-walk-issues" title="Permanent link">¶</a></h1>
 <h2 id="check-when-snmp-walk-was-executed-last-time-for-the-device">Check when SNMP WALK was executed last time for the device<a class="headerlink" href="#check-when-snmp-walk-was-executed-last-time-for-the-device" title="Permanent link">¶</a></h2>
 <ol>
-<li><a href="../../gettingstarted/sck-installation/">Configure Splunk OpenTelemetry Collector for Kubernetes</a></li>
+<li><a href="../../gettingstarted/sck-installation/">Configure Splunk OpenTelemetry Collector for Kubernetes</a> or <a href="../../dockercompose/9-splunk-logging/">Configure Docker Logs for Splunk</a></li>
 <li>Go to your Splunk and execute search: <code>index="em_logs"   "Sending due task" "sc4snmp;&lt;IP_ADDRESS&gt;;walk"</code> 
 and replace <ip_address> with the pertinent IP Address. </ip_address></li>
 </ol>
@@ -2059,9 +2080,10 @@ The upgrade command can be executed again.
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>The following profiles have invalid configuration and won't be used: ['standard_profile', 'walk_profile']. Please check indentation and keywords spelling inside mentioned profiles configuration.
 </code></pre></div>
-Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to <a href="../../configuration/configuring-profiles/">Configuring profiles</a>
-or <a href="../../configuration/configuring-groups/">Configuring Groups</a> sections to check how the correct configuration 
-should look like.</div>
+Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to:
+- kubernetes: <a href="../../configuration/configuring-profiles/">Configuring profiles</a> or <a href="../../configuration/configuring-groups/">Configuring Groups</a>
+- docker: <a href="../../dockercompose/4-scheduler-configuration/">Scheduler configuration</a>
+<p>sections to check how the correct configuration should look like.</p></div>
 
 
 
