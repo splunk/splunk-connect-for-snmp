@@ -1708,7 +1708,7 @@
 for authentication and data privacy. Each set of credentials will be stored as “Secret” objects in k8s,
 and will be referenced in values.yaml. This allows the secret to be created once, including automation
 by third-party password managers, then consumed without storing sensitive data in plain text.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with "sc4snmp-"</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with "sc4snmp-"</span>
 <span class="c1"># &lt;namespace&gt;=Namespace used to install sc4snmp</span>
 <span class="c1"># &lt;username&gt;=the SNMPv3 Username</span>
 <span class="c1"># &lt;key&gt;=key note must be at least 8 char long subject to target limitations</span>
@@ -1722,7 +1722,6 @@ microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class
 <span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">authProtocol</span><span class="o">=</span>&lt;authProtocol&gt;<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">privProtocol</span><span class="o">=</span>&lt;privProtocol&gt;<span class="w"> </span>
 </code></pre></div>
-
 <p>Configured credentials can be used in <a href="../poller-configuration/">poller</a> and <a href="../trap-configuration/">trap</a> services. 
 In service configuration, <code>secretname</code> needs to be provided. </p></div>
 

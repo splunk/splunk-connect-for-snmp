@@ -2010,8 +2010,8 @@ Below are the most common commands used to troubleshoot issues with SC4SNMP. </p
 <h3 id="accessing-logs-in-kubernetes">Accessing logs in kubernetes<a class="headerlink" href="#accessing-logs-in-kubernetes" title="Permanent link">¶</a></h3>
 <p>The instruction on how to set up and access the logs can be found in <a href="bestpractises">SC4SNMP logs</a> </p>
 <h3 id="the-get-command">The get command<a class="headerlink" href="#the-get-command" title="Permanent link">¶</a></h3>
-<p>The <code>get</code> command is used to list one or more resources of selected type. The following are some examples of how to use the <code>get</code> command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s kubectl get all
+<p>The <code>get</code> command is used to list one or more resources of selected type. The following are some examples of how to use the <code>get</code> command:
+</p><div class="highlight"><pre><span></span><code>microk8s kubectl get all
 microk8s kubectl get pods 
 microk8s kubectl get svc
 microk8s kubectl get deployments
@@ -2021,26 +2021,24 @@ microk8s kubectl get configmaps
 microk8s kubectl get secrets
 microk8s kubectl get ippools
 </code></pre></div>
-
-<p>For example to list all pods running in sc4snmp namespace you can use command:</p>
-<div class="codehilite"><pre><span></span><code><span class="o">~</span>$<span class="w"> </span><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">get</span><span class="w"> </span><span class="nv">pods</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
-<span class="nv">NAME</span><span class="w">                                                          </span><span class="nv">READY</span><span class="w">   </span><span class="nv">STATUS</span><span class="w">    </span><span class="nv">RESTARTS</span><span class="w">        </span><span class="nv">AGE</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">mibserver</span><span class="o">-</span><span class="mi">95</span><span class="nv">df967b9</span><span class="o">-</span><span class="nv">cjhvz</span><span class="w">                                </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h13m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">27</span><span class="nv">h</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">mongodb</span><span class="o">-</span><span class="mi">6</span><span class="nv">dc5c4f74d</span><span class="o">-</span><span class="nv">pxpxb</span><span class="w">                                 </span><span class="mi">2</span><span class="o">/</span><span class="mi">2</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">2</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h13m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">27</span><span class="nv">h</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">redis</span><span class="o">-</span><span class="nv">master</span><span class="o">-</span><span class="mi">0</span><span class="w">                                           </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h13m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">25</span><span class="nv">h</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">scheduler</span><span class="o">-</span><span class="mi">7</span><span class="nv">c675d7dd7</span><span class="o">-</span><span class="mi">6</span><span class="nv">ql2g</span><span class="w">       </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">2</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h13m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">27</span><span class="nv">h</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="mi">755</span><span class="nv">b58b8c5</span><span class="o">-</span><span class="nv">kg5f4</span><span class="w">            </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h13m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">27</span><span class="nv">h</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="mi">755</span><span class="nv">b58b8c5</span><span class="o">-</span><span class="nv">r8szq</span><span class="w">            </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h13m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">27</span><span class="nv">h</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">poller</span><span class="o">-</span><span class="mi">5956</span><span class="nv">f6dfb4</span><span class="o">-</span><span class="nv">rs7mv</span><span class="w">   </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h13m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">27</span><span class="nv">h</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">poller</span><span class="o">-</span><span class="mi">5956</span><span class="nv">f6dfb4</span><span class="o">-</span><span class="nv">wjxb6</span><span class="w">   </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h13m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">27</span><span class="nv">h</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">sender</span><span class="o">-</span><span class="mi">76</span><span class="nv">f5d49478</span><span class="o">-</span><span class="nv">spvp2</span><span class="w">   </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h13m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">27</span><span class="nv">h</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="mi">5</span><span class="nv">c4dbf8889</span><span class="o">-</span><span class="mi">4</span><span class="nv">njg2</span><span class="w">     </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h13m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">27</span><span class="nv">h</span>
-<span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">trap</span><span class="o">-</span><span class="mi">5</span><span class="nv">c4dbf8889</span><span class="o">-</span><span class="mi">5</span><span class="nv">hc6j</span><span class="w">     </span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="w">     </span><span class="nv">Running</span><span class="w">   </span><span class="mi">1</span><span class="w"> </span><span class="ss">(</span><span class="mi">5</span><span class="nv">h13m</span><span class="w"> </span><span class="nv">ago</span><span class="ss">)</span><span class="w">   </span><span class="mi">27</span><span class="nv">h</span>
+<p>For example to list all pods running in sc4snmp namespace you can use command:
+</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl get pods -n sc4snmp
+NAME                                                          READY   STATUS    RESTARTS        AGE
+snmp-mibserver-95df967b9-cjhvz                                1/1     Running   1 (5h13m ago)   27h
+snmp-mongodb-6dc5c4f74d-pxpxb                                 2/2     Running   2 (5h13m ago)   27h
+snmp-redis-master-0                                           1/1     Running   1 (5h13m ago)   25h
+snmp-splunk-connect-for-snmp-scheduler-7c675d7dd7-6ql2g       1/1     Running   2 (5h13m ago)   27h
+snmp-splunk-connect-for-snmp-trap-755b58b8c5-kg5f4            1/1     Running   1 (5h13m ago)   27h
+snmp-splunk-connect-for-snmp-trap-755b58b8c5-r8szq            1/1     Running   1 (5h13m ago)   27h
+snmp-splunk-connect-for-snmp-worker-poller-5956f6dfb4-rs7mv   1/1     Running   1 (5h13m ago)   27h
+snmp-splunk-connect-for-snmp-worker-poller-5956f6dfb4-wjxb6   1/1     Running   1 (5h13m ago)   27h
+snmp-splunk-connect-for-snmp-worker-sender-76f5d49478-spvp2   1/1     Running   1 (5h13m ago)   27h
+snmp-splunk-connect-for-snmp-worker-trap-5c4dbf8889-4njg2     1/1     Running   1 (5h13m ago)   27h
+snmp-splunk-connect-for-snmp-worker-trap-5c4dbf8889-5hc6j     1/1     Running   1 (5h13m ago)   27h
 </code></pre></div>
-
 <h3 id="the-describe-command">The describe command<a class="headerlink" href="#the-describe-command" title="Permanent link">¶</a></h3>
-<p>The <code>describe</code> command is used to get detailed information about a resource. The following are some examples of how to use the <code>describe</code> command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s kubectl describe all 
+<p>The <code>describe</code> command is used to get detailed information about a resource. The following are some examples of how to use the <code>describe</code> command:
+</p><div class="highlight"><pre><span></span><code>microk8s kubectl describe all 
 microk8s kubectl describe pod &lt;pod-name&gt;
 microk8s kubectl describe svc &lt;service-name&gt;
 microk8s kubectl describe deployment &lt;deployment-name&gt;
@@ -2050,124 +2048,116 @@ microk8s kubectl describe configmap &lt;configmap-name&gt;
 microk8s kubectl describe secret &lt;secret&gt;
 microk8s kubectl describe ippool &lt;ippool-name&gt;
 </code></pre></div>
-
-<p>For example to get detailed information about a service you can use command:</p>
-<div class="codehilite"><pre><span></span><code><span class="err">~$</span><span class="w"> </span><span class="n">microk8s</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="n">describe</span><span class="w"> </span><span class="n">svc</span><span class="o">/</span><span class="n">snmp</span><span class="o">-</span><span class="n">splunk</span><span class="o">-</span><span class="n">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">snmp</span><span class="o">-</span><span class="n">trap</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w"> </span><span class="n">sc4snmp</span>
-<span class="n">Name</span><span class="p">:</span><span class="w">                     </span><span class="n">snmp</span><span class="o">-</span><span class="n">splunk</span><span class="o">-</span><span class="n">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">snmp</span><span class="o">-</span><span class="n">trap</span>
-<span class="n">Namespace</span><span class="p">:</span><span class="w">                </span><span class="n">sc4snmp</span>
-<span class="n">Labels</span><span class="p">:</span><span class="w">                   </span><span class="n">app</span><span class="p">.</span><span class="n">kubernetes</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">instance</span><span class="o">=</span><span class="n">snmp</span>
-<span class="w">                          </span><span class="n">app</span><span class="p">.</span><span class="n">kubernetes</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">managed</span><span class="o">-</span><span class="n">by</span><span class="o">=</span><span class="n">Helm</span>
-<span class="w">                          </span><span class="n">app</span><span class="p">.</span><span class="n">kubernetes</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">name</span><span class="o">=</span><span class="n">splunk</span><span class="o">-</span><span class="n">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">snmp</span><span class="o">-</span><span class="n">trap</span>
-<span class="w">                          </span><span class="n">app</span><span class="p">.</span><span class="n">kubernetes</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">version</span><span class="o">=</span><span class="mf">1.11</span><span class="p">.</span><span class="mi">0</span>
-<span class="w">                          </span><span class="n">helm</span><span class="p">.</span><span class="n">sh</span><span class="o">/</span><span class="n">chart</span><span class="o">=</span><span class="n">splunk</span><span class="o">-</span><span class="n">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">snmp</span><span class="o">-</span><span class="mf">1.11</span><span class="p">.</span><span class="mi">0</span>
-<span class="n">Annotations</span><span class="p">:</span><span class="w">              </span><span class="n">meta</span><span class="p">.</span><span class="n">helm</span><span class="p">.</span><span class="n">sh</span><span class="o">/</span><span class="n">release</span><span class="o">-</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">snmp</span>
-<span class="w">                          </span><span class="n">meta</span><span class="p">.</span><span class="n">helm</span><span class="p">.</span><span class="n">sh</span><span class="o">/</span><span class="n">release</span><span class="o">-</span><span class="n">namespace</span><span class="p">:</span><span class="w"> </span><span class="n">sc4snmp</span>
-<span class="w">                          </span><span class="n">metallb</span><span class="p">.</span><span class="n">universe</span><span class="p">.</span><span class="n">tf</span><span class="o">/</span><span class="n">allow</span><span class="o">-</span><span class="k">shared</span><span class="o">-</span><span class="n">ip</span><span class="p">:</span><span class="w"> </span><span class="n">splunk</span><span class="o">-</span><span class="n">connect</span>
-<span class="n">Selector</span><span class="p">:</span><span class="w">                 </span><span class="n">app</span><span class="p">.</span><span class="n">kubernetes</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">instance</span><span class="o">=</span><span class="n">snmp</span><span class="p">,</span><span class="n">app</span><span class="p">.</span><span class="n">kubernetes</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">name</span><span class="o">=</span><span class="n">splunk</span><span class="o">-</span><span class="n">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">snmp</span><span class="o">-</span><span class="n">trap</span>
-<span class="n">Type</span><span class="p">:</span><span class="w">                     </span><span class="n">LoadBalancer</span>
-<span class="n">IP</span><span class="w"> </span><span class="n">Family</span><span class="w"> </span><span class="n">Policy</span><span class="p">:</span><span class="w">         </span><span class="n">SingleStack</span>
-<span class="n">IP</span><span class="w"> </span><span class="n">Families</span><span class="p">:</span><span class="w">              </span><span class="n">IPv4</span>
-<span class="n">IP</span><span class="p">:</span><span class="w">                       </span><span class="mf">10.153</span><span class="p">.</span><span class="mf">183.151</span>
-<span class="n">IPs</span><span class="p">:</span><span class="w">                      </span><span class="mf">10.153</span><span class="p">.</span><span class="mf">183.151</span>
-<span class="n">IP</span><span class="p">:</span><span class="w">                       </span><span class="mf">34.207</span><span class="p">.</span><span class="mf">186.189</span>
-<span class="n">LoadBalancer</span><span class="w"> </span><span class="n">Ingress</span><span class="p">:</span><span class="w">     </span><span class="mf">34.207</span><span class="p">.</span><span class="mf">186.189</span>
-<span class="n">Port</span><span class="p">:</span><span class="w">                     </span><span class="n">snmp</span><span class="o">-</span><span class="n">udp</span><span class="w">  </span><span class="mi">162</span><span class="o">/</span><span class="n">UDP</span>
-<span class="n">TargetPort</span><span class="p">:</span><span class="w">               </span><span class="mi">2162</span><span class="o">/</span><span class="n">UDP</span>
-<span class="n">NodePort</span><span class="p">:</span><span class="w">                 </span><span class="n">snmp</span><span class="o">-</span><span class="n">udp</span><span class="w">  </span><span class="mi">31810</span><span class="o">/</span><span class="n">UDP</span>
-<span class="n">Endpoints</span><span class="p">:</span><span class="w">                </span><span class="mf">10.3</span><span class="p">.</span><span class="mf">209.194</span><span class="p">:</span><span class="mi">2162</span><span class="p">,</span><span class="mf">10.3</span><span class="p">.</span><span class="mf">209.210</span><span class="p">:</span><span class="mi">2162</span>
-<span class="n">Session</span><span class="w"> </span><span class="n">Affinity</span><span class="p">:</span><span class="w">         </span><span class="n">None</span>
-<span class="n">External</span><span class="w"> </span><span class="n">Traffic</span><span class="w"> </span><span class="n">Policy</span><span class="p">:</span><span class="w">  </span><span class="n">Local</span>
-<span class="n">HealthCheck</span><span class="w"> </span><span class="n">NodePort</span><span class="p">:</span><span class="w">     </span><span class="mi">31789</span>
-<span class="n">Events</span><span class="p">:</span>
-<span class="w">  </span><span class="n">Type</span><span class="w">    </span><span class="n">Reason</span><span class="w">        </span><span class="n">Age</span><span class="w">                   </span><span class="n">From</span><span class="w">             </span><span class="n">Message</span>
-<span class="w">  </span><span class="o">----</span><span class="w">    </span><span class="o">------</span><span class="w">        </span><span class="o">----</span><span class="w">                  </span><span class="o">----</span><span class="w">             </span><span class="o">-------</span>
-<span class="w">  </span><span class="n">Normal</span><span class="w">  </span><span class="n">nodeAssigned</span><span class="w">  </span><span class="mi">95s</span><span class="w"> </span><span class="p">(</span><span class="n">x45</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="mi">3</span><span class="n">h30m</span><span class="p">)</span><span class="w">  </span><span class="n">metallb</span><span class="o">-</span><span class="n">speaker</span><span class="w">  </span><span class="n">announcing</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="s">"ip-172-31-18-142"</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">protocol</span><span class="w"> </span><span class="s">"layer2"</span>
+<p>For example to get detailed information about a service you can use command:
+</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl describe svc/snmp-splunk-connect-for-snmp-trap -n sc4snmp
+Name:                     snmp-splunk-connect-for-snmp-trap
+Namespace:                sc4snmp
+Labels:                   app.kubernetes.io/instance=snmp
+                          app.kubernetes.io/managed-by=Helm
+                          app.kubernetes.io/name=splunk-connect-for-snmp-trap
+                          app.kubernetes.io/version=1.11.0
+                          helm.sh/chart=splunk-connect-for-snmp-1.11.0
+Annotations:              meta.helm.sh/release-name: snmp
+                          meta.helm.sh/release-namespace: sc4snmp
+                          metallb.universe.tf/allow-shared-ip: splunk-connect
+Selector:                 app.kubernetes.io/instance=snmp,app.kubernetes.io/name=splunk-connect-for-snmp-trap
+Type:                     LoadBalancer
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.153.183.151
+IPs:                      10.153.183.151
+IP:                       34.207.186.189
+LoadBalancer Ingress:     34.207.186.189
+Port:                     snmp-udp  162/UDP
+TargetPort:               2162/UDP
+NodePort:                 snmp-udp  31810/UDP
+Endpoints:                10.3.209.194:2162,10.3.209.210:2162
+Session Affinity:         None
+External Traffic Policy:  Local
+HealthCheck NodePort:     31789
+Events:
+  Type    Reason        Age                   From             Message
+  ----    ------        ----                  ----             -------
+  Normal  nodeAssigned  95s (x45 over 3h30m)  metallb-speaker  announcing from node "ip-172-31-18-142" with protocol "layer2"
 </code></pre></div>
-
 <h3 id="the-exec-command">The exec command<a class="headerlink" href="#the-exec-command" title="Permanent link">¶</a></h3>
-<p>The <code>exec</code> command is used to execute a command in a container. The following are some examples of how to use the <code>exec</code> command:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="k">exec</span><span class="w"> </span><span class="o">-</span><span class="nv">it</span><span class="w"> </span><span class="o">&lt;</span><span class="nv">pod</span><span class="o">-</span><span class="nv">name</span><span class="o">&gt;</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="o">&lt;</span><span class="nv">command</span><span class="o">&gt;</span>
+<p>The <code>exec</code> command is used to execute a command in a container. The following are some examples of how to use the <code>exec</code> command:
+</p><div class="highlight"><pre><span></span><code>microk8s kubectl exec -it &lt;pod-name&gt; -- &lt;command&gt;
 </code></pre></div>
-
-<p>For example to connect to the container you can use:</p>
-<div class="codehilite"><pre><span></span><code><span class="o">~</span><span class="err">$</span><span class="w"> </span><span class="n">microk8s</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="k">exec</span><span class="w"> </span><span class="o">-</span><span class="n">it</span><span class="w"> </span><span class="n">snmp</span><span class="o">-</span><span class="n">mibserver</span><span class="o">-</span><span class="mi">95</span><span class="n">df967b9</span><span class="o">-</span><span class="n">cjhvz</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w"> </span><span class="n">sc4snmp</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">bash</span><span class="w"> </span>
-<span class="n">I</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">name</span><span class="err">!</span><span class="nv">@snmp</span><span class="o">-</span><span class="n">mibserver</span><span class="o">-</span><span class="mi">95</span><span class="n">df967b9</span><span class="o">-</span><span class="nl">cjhvz</span><span class="p">:</span><span class="o">/</span><span class="n">app</span><span class="err">$</span><span class="w"> </span>
+<p>For example to connect to the container you can use:
+</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl exec -it snmp-mibserver-95df967b9-cjhvz -n sc4snmp  -- /bin/bash 
+I have no name!@snmp-mibserver-95df967b9-cjhvz:/app$ 
 </code></pre></div>
-
 <h3 id="the-top-command">The top command<a class="headerlink" href="#the-top-command" title="Permanent link">¶</a></h3>
 <p>The <code>top</code> command is used to display resource (CPU/memory) usage. The following are options of how to 
-use the <code>top</code> command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s kubectl top nodes
+use the <code>top</code> command:
+</p><div class="highlight"><pre><span></span><code>microk8s kubectl top nodes
 microk8s kubectl top pods
 </code></pre></div>
-
-<p>For example to display resource usage of nodes you can use:</p>
-<div class="codehilite"><pre><span></span><code>~$ microk8s kubectl top pods
+<p>For example to display resource usage of nodes you can use:
+</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl top pods
 NAME                                                              CPU(cores)   MEMORY(bytes)   
 sck-splunk-otel-collector-agent-jrl62                             34m          209Mi           
 sck-splunk-otel-collector-k8s-cluster-receiver-5c56564cf5-ks2zb   3m           99Mi    
 </code></pre></div>
-
 <h2 id="examples-of-command-usage">Examples of command usage<a class="headerlink" href="#examples-of-command-usage" title="Permanent link">¶</a></h2>
 <h3 id="check-secret-for-snmp-v3">Check secret for snmp v3<a class="headerlink" href="#check-secret-for-snmp-v3" title="Permanent link">¶</a></h3>
 <p>One of the issues related to snmp v3 can be incorrectly configured secrets in kubernetes. 
 Below you can find the instruction to check the existing secrets and decode their value.</p>
-<p>To check the existing secrets:</p>
-<div class="codehilite"><pre><span></span><code><span class="o">~</span>$<span class="w"> </span><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">get</span><span class="w"> </span><span class="nv">secret</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
-<span class="nv">NAME</span><span class="w">                             </span><span class="nv">TYPE</span><span class="w">                 </span><span class="nv">DATA</span><span class="w">   </span><span class="nv">AGE</span>
-<span class="nv">sh</span>.<span class="nv">helm</span>.<span class="nv">release</span>.<span class="nv">v1</span>.<span class="nv">snmp</span>.<span class="nv">v1</span><span class="w">       </span><span class="nv">helm</span>.<span class="nv">sh</span><span class="o">/</span><span class="nv">release</span>.<span class="nv">v1</span><span class="w">   </span><span class="mi">1</span><span class="w">      </span><span class="mi">23</span><span class="nv">h</span>
-<span class="nv">sh</span>.<span class="nv">helm</span>.<span class="nv">release</span>.<span class="nv">v1</span>.<span class="nv">snmp</span>.<span class="nv">v2</span><span class="w">       </span><span class="nv">helm</span>.<span class="nv">sh</span><span class="o">/</span><span class="nv">release</span>.<span class="nv">v1</span><span class="w">   </span><span class="mi">1</span><span class="w">      </span><span class="mi">21</span><span class="nv">h</span>
-<span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="w">   </span><span class="nv">Opaque</span><span class="w">               </span><span class="mi">1</span><span class="w">      </span><span class="mi">23</span><span class="nv">h</span>
-<span class="nv">testing1</span><span class="w">                         </span><span class="nv">Opaque</span><span class="w">               </span><span class="mi">6</span><span class="w">      </span><span class="mi">68</span><span class="nv">m</span>
+<p>To check the existing secrets:
+</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl get secret -n sc4snmp
+NAME                             TYPE                 DATA   AGE
+sh.helm.release.v1.snmp.v1       helm.sh/release.v1   1      23h
+sh.helm.release.v1.snmp.v2       helm.sh/release.v1   1      21h
+splunk-connect-for-snmp-splunk   Opaque               1      23h
+testing1                         Opaque               6      68m
 </code></pre></div>
+To get more details about one secret you can use command:
+<div class="highlight"><pre><span></span><code>~$ microk8s kubectl describe secret/testing1 -n sc4snmp
+Name:         testing1
+Namespace:    sc4snmp
+Labels:       &lt;none&gt;
+Annotations:  &lt;none&gt;
 
-<p>To get more details about one secret you can use command:</p>
-<div class="codehilite"><pre><span></span><code><span class="err">~$</span><span class="w"> </span><span class="n">microk8s</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="n">describe</span><span class="w"> </span><span class="n">secret</span><span class="o">/</span><span class="n">testing1</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w"> </span><span class="n">sc4snmp</span>
-<span class="n">Name</span><span class="p">:</span><span class="w">         </span><span class="n">testing1</span>
-<span class="n">Namespace</span><span class="p">:</span><span class="w">    </span><span class="n">sc4snmp</span>
-<span class="n">Labels</span><span class="p">:</span><span class="w">       </span><span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
-<span class="n">Annotations</span><span class="p">:</span><span class="w">  </span><span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
+Type:  Opaque
 
-<span class="n">Type</span><span class="p">:</span><span class="w">  </span><span class="n">Opaque</span>
-
-<span class="n">Data</span>
-<span class="o">====</span>
-<span class="n">privProtocol</span><span class="p">:</span><span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="n">bytes</span>
-<span class="n">securityName</span><span class="p">:</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="n">bytes</span>
-<span class="n">userName</span><span class="p">:</span><span class="w">      </span><span class="mi">8</span><span class="w"> </span><span class="n">bytes</span>
-<span class="n">authKey</span><span class="p">:</span><span class="w">       </span><span class="mi">10</span><span class="w"> </span><span class="n">bytes</span>
-<span class="n">authProtocol</span><span class="p">:</span><span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="n">bytes</span>
-<span class="n">privKey</span><span class="p">:</span><span class="w">       </span><span class="mi">10</span><span class="w"> </span><span class="n">bytes</span>
+Data
+====
+privProtocol:  3 bytes
+securityName:  7 bytes
+userName:      8 bytes
+authKey:       10 bytes
+authProtocol:  3 bytes
+privKey:       10 bytes
 </code></pre></div>
-
-<p>The secrets in kubernetes are not visible in describe command. To fully see them you have to decode them.
-Below are some methods to do that:</p>
+The secrets in kubernetes are not visible in describe command. To fully see them you have to decode them.
+Below are some methods to do that:
 <ul>
-<li>With json query:</li>
-</ul>
-<div class="codehilite"><pre><span></span><code><span class="o">~</span><span class="err">$</span><span class="w"> </span><span class="n">microk8s</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="k">get</span><span class="w"> </span><span class="n">secrets</span><span class="o">/</span><span class="n">testing1</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w"> </span><span class="n">sc4snmp</span><span class="w"> </span><span class="o">-</span><span class="n">o</span><span class="w"> </span><span class="n">json</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">jq</span><span class="w"> </span><span class="s1">'.data | map_values(@base64d)'</span>
-<span class="err">{</span>
-<span class="w">  </span><span class="ss">"authKey"</span><span class="err">:</span><span class="w"> </span><span class="ss">"testing123"</span><span class="p">,</span>
-<span class="w">  </span><span class="ss">"authProtocol"</span><span class="err">:</span><span class="w"> </span><span class="ss">"MD5"</span><span class="p">,</span>
-<span class="w">  </span><span class="ss">"privKey"</span><span class="err">:</span><span class="w"> </span><span class="ss">"testing123"</span><span class="p">,</span>
-<span class="w">  </span><span class="ss">"privProtocol"</span><span class="err">:</span><span class="w"> </span><span class="ss">"AES"</span><span class="p">,</span>
-<span class="w">  </span><span class="ss">"securityName"</span><span class="err">:</span><span class="w"> </span><span class="ss">"testing"</span><span class="p">,</span>
-<span class="w">  </span><span class="ss">"userName"</span><span class="err">:</span><span class="w"> </span><span class="ss">"testing1"</span>
-<span class="err">}</span>
+<li>
+<p>With json query:
+</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl get secrets/testing1 -n sc4snmp -o json | jq '.data | map_values(@base64d)'
+{
+  "authKey": "testing123",
+  "authProtocol": "MD5",
+  "privKey": "testing123",
+  "privProtocol": "AES",
+  "securityName": "testing",
+  "userName": "testing1"
+}
 </code></pre></div>
-
-<ul>
-<li>With template: </li>
-</ul>
-<div class="codehilite"><pre><span></span><code><span class="x">~$ microk8s kubectl get secrets/testing1 -n sc4snmp --template='</span><span class="cp">{{</span> <span class="nv">range</span> <span class="err">$</span><span class="nv">key</span><span class="o">,</span> <span class="err">$</span><span class="nv">value</span> <span class="o">:=</span> <span class="nv">.data</span> <span class="cp">}}{{</span> <span class="nv">printf</span> <span class="s2">"%s: %s\n"</span> <span class="err">$</span><span class="nv">key</span> <span class="o">(</span><span class="err">$</span><span class="nv">value</span> <span class="o">|</span> <span class="nf">base64decode</span><span class="o">)</span> <span class="cp">}}{{</span> <span class="nv">end</span> <span class="cp">}}</span><span class="x">'</span>
-<span class="x">authKey: testing123</span>
-<span class="x">authProtocol: MD5</span>
-<span class="x">privKey: testing123</span>
-<span class="x">privProtocol: AES</span>
-<span class="x">securityName: testing</span>
-<span class="x">userName: testing1</span>
+</li>
+<li>
+<p>With template: 
+</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl get secrets/testing1 -n sc4snmp --template='{{ range $key, $value := .data }}{{ printf "%s: %s\n" $key ($value | base64decode) }}{{ end }}'
+authKey: testing123
+authProtocol: MD5
+privKey: testing123
+privProtocol: AES
+securityName: testing
+userName: testing1
 </code></pre></div>
-
+</li>
+</ul>
 <p>You can also check <a href="https://stackoverflow.com/questions/56909180/decoding-kubernetes-secret">this</a> thread for different decoding methods.</p>
 <h3 id="check-pods-health">Check pods health<a class="headerlink" href="#check-pods-health" title="Permanent link">¶</a></h3>
 <p>To check the health of the pods, you can use the <code>get</code> command to look at the <code>STATUS</code> and <code>RESTARTS</code> columns. 
@@ -2181,58 +2171,56 @@ If they are close to each other you might consider increasing the resources assi
 <h3 id="check-network">Check network<a class="headerlink" href="#check-network" title="Permanent link">¶</a></h3>
 <p>Checking the network configuration can be useful when enabling the dual-stack for SC4SNMP.
 The default network controller used by the microk8s is <code>calico</code>. </p>
-<p>One of useful commands to check the network configuration is:</p>
-<div class="codehilite"><pre><span></span><code><span class="o">~$</span><span class="w"> </span><span class="n">microk8s</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="n">describe</span><span class="w"> </span><span class="n">daemonset</span><span class="o">/</span><span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w"> </span><span class="n">kube</span><span class="o">-</span><span class="n">system</span>
-<span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="w">    </span><span class="n">Environment</span><span class="p">:</span>
-<span class="w">      </span><span class="n">DATASTORE_TYPE</span><span class="p">:</span><span class="w">                     </span><span class="n">kubernetes</span>
-<span class="w">      </span><span class="n">WAIT_FOR_DATASTORE</span><span class="p">:</span><span class="w">                 </span><span class="bp">true</span>
-<span class="w">      </span><span class="n">NODENAME</span><span class="p">:</span><span class="w">                            </span><span class="p">(</span><span class="n">v1</span><span class="p">:</span><span class="n">spec</span><span class="o">.</span><span class="n">nodeName</span><span class="p">)</span>
-<span class="w">      </span><span class="n">CALICO_NETWORKING_BACKEND</span><span class="p">:</span><span class="w">          </span><span class="o">&lt;</span><span class="n">set</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="s1">'calico_backend'</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="s1">'calico-config'</span><span class="o">&gt;</span><span class="w">  </span><span class="n">Optional</span><span class="p">:</span><span class="w"> </span><span class="bp">false</span>
-<span class="w">      </span><span class="n">CLUSTER_TYPE</span><span class="p">:</span><span class="w">                       </span><span class="n">k8s</span><span class="p">,</span><span class="n">bgp</span>
-<span class="w">      </span><span class="n">IP</span><span class="p">:</span><span class="w">                                 </span><span class="n">autodetect</span>
-<span class="w">      </span><span class="n">IP_AUTODETECTION_METHOD</span><span class="p">:</span><span class="w">            </span><span class="n">first</span><span class="o">-</span><span class="n">found</span>
-<span class="w">      </span><span class="n">CALICO_IPV4POOL_VXLAN</span><span class="p">:</span><span class="w">              </span><span class="n">Always</span>
-<span class="w">      </span><span class="n">IP6_AUTODETECTION_METHOD</span><span class="p">:</span><span class="w">           </span><span class="n">first</span><span class="o">-</span><span class="n">found</span>
-<span class="w">      </span><span class="n">CALICO_IPV6POOL_CIDR</span><span class="p">:</span><span class="w">               </span><span class="n">fd02</span><span class="p">::</span><span class="o">/</span><span class="mi">64</span>
-<span class="w">      </span><span class="n">IP6</span><span class="p">:</span><span class="w">                                </span><span class="n">autodetect</span>
-<span class="w">      </span><span class="n">CALICO_IPV6POOL_VXLAN</span><span class="p">:</span><span class="w">              </span><span class="n">Always</span>
-<span class="w">      </span><span class="n">FELIX_IPINIPMTU</span><span class="p">:</span><span class="w">                    </span><span class="o">&lt;</span><span class="n">set</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="s1">'veth_mtu'</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="s1">'calico-config'</span><span class="o">&gt;</span><span class="w">  </span><span class="n">Optional</span><span class="p">:</span><span class="w"> </span><span class="bp">false</span>
-<span class="w">      </span><span class="n">FELIX_VXLANMTU</span><span class="p">:</span><span class="w">                     </span><span class="o">&lt;</span><span class="n">set</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="s1">'veth_mtu'</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="s1">'calico-config'</span><span class="o">&gt;</span><span class="w">  </span><span class="n">Optional</span><span class="p">:</span><span class="w"> </span><span class="bp">false</span>
-<span class="w">      </span><span class="n">FELIX_WIREGUARDMTU</span><span class="p">:</span><span class="w">                 </span><span class="o">&lt;</span><span class="n">set</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="s1">'veth_mtu'</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="s1">'calico-config'</span><span class="o">&gt;</span><span class="w">  </span><span class="n">Optional</span><span class="p">:</span><span class="w"> </span><span class="bp">false</span>
-<span class="w">      </span><span class="n">CALICO_IPV4POOL_CIDR</span><span class="p">:</span><span class="w">               </span><span class="mf">10.3</span><span class="o">.</span><span class="mf">0.0</span><span class="o">/</span><span class="mi">16</span>
-<span class="w">      </span><span class="n">CALICO_DISABLE_FILE_LOGGING</span><span class="p">:</span><span class="w">        </span><span class="bp">true</span>
-<span class="w">      </span><span class="n">FELIX_DEFAULTENDPOINTTOHOSTACTION</span><span class="p">:</span><span class="w">  </span><span class="n">ACCEPT</span>
-<span class="w">      </span><span class="n">FELIX_IPV6SUPPORT</span><span class="p">:</span><span class="w">                  </span><span class="bp">true</span>
-<span class="w">      </span><span class="n">FELIX_HEALTHENABLED</span><span class="p">:</span><span class="w">                </span><span class="bp">true</span>
-<span class="w">      </span><span class="n">FELIX_FEATUREDETECTOVERRIDE</span><span class="p">:</span><span class="w">        </span><span class="n">ChecksumOffloadBroken</span><span class="o">=</span><span class="bp">true</span>
-<span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<p>One of useful commands to check the network configuration is:
+</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl describe daemonset/calico-node -n kube-system
+(...)
+    Environment:
+      DATASTORE_TYPE:                     kubernetes
+      WAIT_FOR_DATASTORE:                 true
+      NODENAME:                            (v1:spec.nodeName)
+      CALICO_NETWORKING_BACKEND:          &lt;set to the key 'calico_backend' of config map 'calico-config'&gt;  Optional: false
+      CLUSTER_TYPE:                       k8s,bgp
+      IP:                                 autodetect
+      IP_AUTODETECTION_METHOD:            first-found
+      CALICO_IPV4POOL_VXLAN:              Always
+      IP6_AUTODETECTION_METHOD:           first-found
+      CALICO_IPV6POOL_CIDR:               fd02::/64
+      IP6:                                autodetect
+      CALICO_IPV6POOL_VXLAN:              Always
+      FELIX_IPINIPMTU:                    &lt;set to the key 'veth_mtu' of config map 'calico-config'&gt;  Optional: false
+      FELIX_VXLANMTU:                     &lt;set to the key 'veth_mtu' of config map 'calico-config'&gt;  Optional: false
+      FELIX_WIREGUARDMTU:                 &lt;set to the key 'veth_mtu' of config map 'calico-config'&gt;  Optional: false
+      CALICO_IPV4POOL_CIDR:               10.3.0.0/16
+      CALICO_DISABLE_FILE_LOGGING:        true
+      FELIX_DEFAULTENDPOINTTOHOSTACTION:  ACCEPT
+      FELIX_IPV6SUPPORT:                  true
+      FELIX_HEALTHENABLED:                true
+      FELIX_FEATUREDETECTOVERRIDE:        ChecksumOffloadBroken=true
+(...)
 </code></pre></div>
-
-<p>One section of the command is showing the <code>environment</code> variables used by the <code>calico</code> network controller. 
+One section of the command is showing the <code>environment</code> variables used by the <code>calico</code> network controller. 
 With seeing them we can check if the different versions of IP are enabled and if the pools for them are 
-configured with subnet.</p>
-<p>Next useful command to check when having issues with connectivity is:</p>
-<div class="codehilite"><pre><span></span><code><span class="err">~$</span><span class="w"> </span><span class="n">microk8s</span><span class="w"> </span><span class="n">kubectl</span><span class="w"> </span><span class="n">describe</span><span class="w"> </span><span class="n">service</span><span class="o">/</span><span class="n">webhook</span><span class="o">-</span><span class="n">service</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="w"> </span><span class="n">metallb</span><span class="o">-</span><span class="n">system</span>
-<span class="n">Name</span><span class="p">:</span><span class="w">              </span><span class="n">webhook</span><span class="o">-</span><span class="n">service</span>
-<span class="n">Namespace</span><span class="p">:</span><span class="w">         </span><span class="n">metallb</span><span class="o">-</span><span class="n">system</span>
-<span class="n">Labels</span><span class="p">:</span><span class="w">            </span><span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
-<span class="n">Annotations</span><span class="p">:</span><span class="w">       </span><span class="o">&lt;</span><span class="n">none</span><span class="o">&gt;</span>
-<span class="n">Selector</span><span class="p">:</span><span class="w">          </span><span class="n">component</span><span class="o">=</span><span class="n">controller</span>
-<span class="n">Type</span><span class="p">:</span><span class="w">              </span><span class="n">ClusterIP</span>
-<span class="n">IP</span><span class="w"> </span><span class="n">Family</span><span class="w"> </span><span class="n">Policy</span><span class="p">:</span><span class="w">  </span><span class="n">SingleStack</span>
-<span class="n">IP</span><span class="w"> </span><span class="n">Families</span><span class="p">:</span><span class="w">       </span><span class="n">IPv4</span>
-<span class="n">IP</span><span class="p">:</span><span class="w">                </span><span class="mf">10.153</span><span class="p">.</span><span class="mf">183.249</span>
-<span class="n">IPs</span><span class="p">:</span><span class="w">               </span><span class="mf">10.153</span><span class="p">.</span><span class="mf">183.249</span>
-<span class="n">Port</span><span class="p">:</span><span class="w">              </span><span class="o">&lt;</span><span class="n">unset</span><span class="o">&gt;</span><span class="w">  </span><span class="mi">443</span><span class="o">/</span><span class="n">TCP</span>
-<span class="n">TargetPort</span><span class="p">:</span><span class="w">        </span><span class="mi">9443</span><span class="o">/</span><span class="n">TCP</span>
-<span class="n">Endpoints</span><span class="p">:</span><span class="w">         </span><span class="mf">10.3</span><span class="p">.</span><span class="mf">209.208</span><span class="p">:</span><span class="mi">9443</span>
-<span class="n">Session</span><span class="w"> </span><span class="n">Affinity</span><span class="p">:</span><span class="w">  </span><span class="n">None</span>
+configured with subnet.
+<p>Next useful command to check when having issues with connectivity is:
+</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl describe service/webhook-service -n metallb-system
+Name:              webhook-service
+Namespace:         metallb-system
+Labels:            &lt;none&gt;
+Annotations:       &lt;none&gt;
+Selector:          component=controller
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.153.183.249
+IPs:               10.153.183.249
+Port:              &lt;unset&gt;  443/TCP
+TargetPort:        9443/TCP
+Endpoints:         10.3.209.208:9443
+Session Affinity:  None
 </code></pre></div>
-
-<p><code>Metallb</code> is the network load-balancer used by the SC4SNMP. 
+<code>Metallb</code> is the network load-balancer used by the SC4SNMP. 
 With checking the service configuration we can see the IP assigned to the service and the port it is listening on.
-When having the issues with dual-stack configuration the <code>IP Family Policy</code> and the <code>IP Families</code> fields should be checked.</p>
+When having the issues with dual-stack configuration the <code>IP Family Policy</code> and the <code>IP Families</code> fields should be checked.
 <h3 id="check-service-configuration">Check service configuration<a class="headerlink" href="#check-service-configuration" title="Permanent link">¶</a></h3>
 <p>Checking the service configuration can be useful when having issues with the traps connectivity. 
 For better explanation refer to: <a href="../traps-issues#wrong-ip-or-port">Wrong IP or port</a></p></div>

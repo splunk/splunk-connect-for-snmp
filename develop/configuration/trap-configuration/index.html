@@ -1926,8 +1926,8 @@
 <h3 id="trap-configuration-file">Trap configuration file<a class="headerlink" href="#trap-configuration-file" title="Permanent link">¶</a></h3>
 <p>The trap configuration is kept in the <code>values.yaml</code> file in section traps.
 <code>values.yaml</code> is used during the installation process for configuring Kubernetes values.</p>
-<p>See the following trap example configuration:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<p>See the following trap example configuration:
+</p><div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">communities</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">1</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span><span class="w"> </span>
@@ -1952,12 +1952,11 @@
 <span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200m</span>
 <span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">256Mi</span><span class="w">  </span>
 </code></pre></div>
-
 <h3 id="define-communities">Define communities<a class="headerlink" href="#define-communities" title="Permanent link">¶</a></h3>
 <p><code>communities</code> defines a version of an SNMP protocol and an SNMP community string, which should be used. 
 The <code>communities</code> key is split by protocol version, with <code>1</code> and <code>2c</code> as supported values. Under the <code>version</code> section, you can define the SNMP community string.</p>
-<p>See the following example: </p>
-<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<p>See the following example: 
+</p><div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">communities</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">1</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span><span class="w"> </span>
@@ -1965,93 +1964,82 @@ The <code>communities</code> key is split by protocol version, with <code>1</cod
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">homelab</span>
 </code></pre></div>
-
 <h3 id="configure-user-secrets-for-snmpv3">Configure user secrets for SNMPv3<a class="headerlink" href="#configure-user-secrets-for-snmpv3" title="Permanent link">¶</a></h3>
 <p>The <code>usernameSecrets</code> key in the <code>traps</code> section defines the SNMPv3 secrets for the trap messages sent by the SNMP device. <code>usernameSecrets</code> defines which secrets 
 in “Secret” objects in k8s should be used, as a value it needs the name of “Secret” objects. 
 For more information on how to define the “Secret” object for SNMPv3, see <a href="../snmpv3-configuration/">SNMPv3 Configuration</a>.</p>
-<p>See the following example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<p>See the following example:
+</p><div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">usernameSecrets</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-aes</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-des</span>
 </code></pre></div>
-
 <h3 id="define-security-engines-id-for-snmpv3">Define security engines ID for SNMPv3<a class="headerlink" href="#define-security-engines-id-for-snmpv3" title="Permanent link">¶</a></h3>
 <p>SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table of the TRAP receiving 
 application for each USM user. The SNMP Engine ID is usually unique for the device, and the SC4SNMP as a trap receiver has to be aware of 
 which security engine IDs to accept. Define all of them under <code>traps.securityEngineId</code> in <code>values.yaml</code>.</p>
 <p>By default, it is set to a one-element list: <code>[80003a8c04]</code>, for example: </p>
-<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">securityEngineId</span><span class="p">:</span><span class="w"> </span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"80003a8c04"</span>
 </code></pre></div>
-
 <p>The security engine ID is a substitute of the <code>-e</code> variable in <code>snmptrap</code>.
 The following is an example of an SNMPv3 trap:</p>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 '' 1.3.6.1.2.1.2.2.1.1.1</span>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 '' 1.3.6.1.2.1.2.2.1.1.1</span>
 </code></pre></div>
-
 <h3 id="define-external-gateway-for-traps">Define external gateway for traps<a class="headerlink" href="#define-external-gateway-for-traps" title="Permanent link">¶</a></h3>
 <p>If you use SC4SNMP on a single machine, configure <code>loadBalancerIP</code>.
 <code>loadBalancerIP</code> is the IP address in the metallb pool. 
 See the following example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<p></p><div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">loadBalancerIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.202</span>
 </code></pre></div>
-
-<p>If you have enabled the Ipv6 you need to pass IP addresses for both IPv4 and IPv6.
-See the following example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+If you have enabled the Ipv6 you need to pass IP addresses for both IPv4 and IPv6.
+See the following example:
+<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">loadBalancerIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.202,2001:0DB8:AC10:FE01:0000:0000:0000:0001</span>
 </code></pre></div>
-
 <p>If you want to use the SC4SNMP trap receiver in K8S cluster, configure <code>NodePort</code> instead. Use the following configuration:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NodePort</span>
 <span class="w">    </span><span class="nt">externalTrafficPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Cluster</span>
 <span class="w">    </span><span class="nt">nodePort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30000</span>
 </code></pre></div>
-
 <p>Using this method, the SNMP trap will always be forwarded to one of the trap receiver pods listening on port 30000 (like in the
 example above, you can configure to any other port). So, it doesn’t matter that IP address of which node you use. Adding
 nodePort will make it end up in the correct place everytime. </p>
 <p>A good practice is to create an IP floating address/Anycast pointing to the healthy nodes, so the traffic is forwarded in case of the
 failover. To do this, create an external LoadBalancer that balances the traffic between nodes.</p>
 <h3 id="define-number-of-traps-server-replica">Define number of traps server replica<a class="headerlink" href="#define-number-of-traps-server-replica" title="Permanent link">¶</a></h3>
-<p><code>replicaCount</code> defines that the number of replicas per trap container should be 2 times the number of nodes.</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<p><code>replicaCount</code> defines that the number of replicas per trap container should be 2 times the number of nodes.
+</p><div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="c1">#For production deployments the value should be at least 2x the number of nodes</span>
 <span class="w">  </span><span class="c1"># Minimum 2 for a single node</span>
 <span class="w">  </span><span class="c1"># Minimum 6 for multi-node HA</span>
 <span class="w">  </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </code></pre></div>
-
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">¶</a></h3>
 <p>The log level for trap can be set by changing the value for the <code>logLevel</code> key. The allowed values are<code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, or <code>ERROR</code>. 
 The default value is <code>WARNING</code>.</p>
 <h3 id="define-annotations">Define annotations<a class="headerlink" href="#define-annotations" title="Permanent link">¶</a></h3>
 <p>In case you need to append some annotations to the <code>trap</code> service, you can do so by setting <code>traps.service.annotations</code>, for example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">service</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">annotations</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">annotation_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">annotation_value</span>
 </code></pre></div>
-
 <h3 id="aggregate-traps">Aggregate traps<a class="headerlink" href="#aggregate-traps" title="Permanent link">¶</a></h3>
-<p>In case you want to see traps events collected as one event inside Splunk, you can enable it by setting <code>traps.aggregateTrapsEvents</code>, for example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<p>In case you want to see traps events collected as one event inside Splunk, you can enable it by setting <code>traps.aggregateTrapsEvents</code>, for example:
+</p><div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">aggregateTrapsEvents</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
 </code></pre></div>
-
 <h3 id="updating-trap-configuration">Updating trap configuration<a class="headerlink" href="#updating-trap-configuration" title="Permanent link">¶</a></h3>
-<p>If you need to update part of the traps configuration, you can do it by editing the <code>values.yaml</code> and then running the following command to restart the pod deployment:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">rollout</span><span class="w"> </span><span class="nv">restart</span><span class="w"> </span><span class="nv">deployment</span><span class="w"> </span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">trap</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
+<p>If you need to update part of the traps configuration, you can do it by editing the <code>values.yaml</code> and then running the following command to restart the pod deployment:
+</p><div class="highlight"><pre><span></span><code>microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-trap -n sc4snmp
 </code></pre></div>
-
-<p>NOTE: The name of the deployment can differ based on the helm installation name. This can be checked with the following command: </p>
-<div class="codehilite"><pre><span></span><code>microk8s kubectl get deployments -n sc4snmp
+<p>NOTE: The name of the deployment can differ based on the helm installation name. This can be checked with the following command: 
+</p><div class="highlight"><pre><span></span><code>microk8s kubectl get deployments -n sc4snmp
 </code></pre></div></div>
 
 

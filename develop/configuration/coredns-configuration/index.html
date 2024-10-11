@@ -1713,7 +1713,7 @@ If the requirement is to use different DNS servers for various domains or differ
 An example path is: <code>/var/snap/microk8s/common/addons/core/addons/dns/coredns.yaml</code>.</p>
 <p>Inside <code>coredns.yaml</code>, there is a complete configuration for the CoreDNS deployment.
 The only section that requires editing is the ConfigMap:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
 <span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
 <span class="nt">metadata</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">coredns</span>
@@ -1744,11 +1744,10 @@ The only section that requires editing is the ConfigMap:</p>
 <span class="w">        </span><span class="no">loadbalance</span>
 <span class="w">    </span><span class="no">}</span>
 </code></pre></div>
-
 <p>Changes should be made in <code>data.Corefile</code> within this ConfigMap. Presented documentation explains basic configuration. 
 For more details, refer to the official CoreDNS <a href="https://coredns.io/manual/toc/">documentation</a>.</p>
-<p>Updated ConfigMap:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<p>Updated ConfigMap:
+</p><div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
 <span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
 <span class="nt">metadata</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">coredns</span>
@@ -1819,7 +1818,6 @@ For more details, refer to the official CoreDNS <a href="https://coredns.io/manu
 <span class="w">        </span><span class="no">loadbalance</span>
 <span class="w">      </span><span class="no">}</span>
 </code></pre></div>
-
 <p>Two server blocks, <code>dummyhost.com:53</code> and <code>2.1.in-addr.arpa:53</code>, have been added.</p>
 <p>The <code>dummyhost.com:53</code> server block is used to resolve all hosts within the <code>dummyhost.com</code> domain. 
 The DNS server used for these hosts is specified in the forward plugin as <code>4.3.2.1</code>. 

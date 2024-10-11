@@ -1978,28 +1978,24 @@ and replace <ip_address> with the pertinent IP Address. </ip_address></li>
 </ol>
 <h2 id="empty-snmp-response-message-problem">“Empty SNMP response message” problem<a class="headerlink" href="#empty-snmp-response-message-problem" title="Permanent link">¶</a></h2>
 <p>If you see the following line in the worker’s logs:</p>
-<div class="codehilite"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message')
+<p></p><div class="highlight"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message')
 </code></pre></div>
-
-<p>that causes an infinite retry of the walk operation. Add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true.</p>
+that causes an infinite retry of the walk operation. Add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true.
 <p>An example configuration for a worker in <code>values.yaml</code> is:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">ignoreEmptyVarbinds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
-
 <h2 id="oid-not-increasing-problem">“OID not increasing” problem<a class="headerlink" href="#oid-not-increasing-problem" title="Permanent link">¶</a></h2>
 <p>In case you see the following line in worker’s logs:</p>
-<div class="codehilite"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing')
+<p></p><div class="highlight"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing')
 </code></pre></div>
-
-<p>that causes infinite retry of walk operation, add <code>worker.ignoreNotIncreasingOid</code> array to <code>values.yaml</code> and fill with the addresses of hosts where the problem appears.</p>
+that causes infinite retry of walk operation, add <code>worker.ignoreNotIncreasingOid</code> array to <code>values.yaml</code> and fill with the addresses of hosts where the problem appears.
 <p>An example configuration for a worker in <code>values.yaml</code> is:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">ignoreNotIncreasingOid</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.1:164"</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.6"</span>
 </code></pre></div>
-
 <p>If you put in only the IP address (for example, <code>127.0.0.1</code>), then errors will be ignored for all of its devices (like <code>127.0.0.1:161</code>, 
 <code>127.0.0.1:163</code>…). If you put the IP address and host as <code>{host}:{port}</code>, that means the error will be ignored only for this device.</p>
 <h2 id="walking-a-device-takes-too-much-time">Walking a device takes too much time<a class="headerlink" href="#walking-a-device-takes-too-much-time" title="Permanent link">¶</a></h2>
@@ -2010,10 +2006,9 @@ functionality.</p>
 with the hosts you are polling from.
 Walk will retry multiple times, which will eventually cause a worker to be blocked while it retries. In that case, you might want to limit
 the maximum retry time. You can do this by setting the variable <code>worker.walkRetryMaxInterval</code>, for example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">walkRetryMaxInterval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
 </code></pre></div>
-
 <p>With the previous configuration, ‘walk’ will retry exponentially from 30 seconds until it reaches 60 seconds. The default value for <code>worker.walkRetryMaxInterval</code> is 180.</p>
 <h2 id="snmp-rollover">SNMP Rollover<a class="headerlink" href="#snmp-rollover" title="Permanent link">¶</a></h2>
 <p>The Rollover problem is due to a finite stored integer value (especially when the value is 32-bit). 
@@ -2024,14 +2019,13 @@ For example, use <code>ifHCInOctets</code> instead of <code>ifInOctets</code>.</
 <p>If 64-bit counter is not supported on your device, you can write your own Splunk queries that calculate the shift based on
 the maximum integer value and the current state. The same works for values large enough that they don’t fit into a 64-bit value.
 An example for an appropriate Splunk query would be the following:</p>
-<div class="codehilite"><pre><span></span><code>| streamstats current=f last(ifInOctets) as p_ifInOctets last(ifOutOctets) as p_ifOutOctets by ifAlias             
+<div class="highlight"><pre><span></span><code>| streamstats current=f last(ifInOctets) as p_ifInOctets last(ifOutOctets) as p_ifOutOctets by ifAlias             
 | eval in_delta=(ifInOctets - p_ifInOctets)
 | eval out_delta=(ifOutOctets - p_ifOutOctets)
 | eval max=pow(2,64)
 | eval out = if(out_delta&lt;0,((max+out_delta)*8/(5*60*1000*1000*1000)),(out_delta)*8/(5*60*1000*1000*1000))
 | timechart span=5m avg(in) AS in, avg(out) AS out by ifAlias
 </code></pre></div>
-
 <h2 id="polling-authentication-errors">Polling authentication errors<a class="headerlink" href="#polling-authentication-errors" title="Permanent link">¶</a></h2>
 <h3 id="unknown-usm-user">Unknown USM user<a class="headerlink" href="#unknown-usm-user" title="Permanent link">¶</a></h3>
 <p>In case of polling SNMPv3 devices, <code>Unknown USM user</code> error suggests wrong username. Verify 
@@ -2047,32 +2041,27 @@ that the kubernetes secret with the correct authentication key has been created 
 <li>SNMPv3 wrong privacy key</li>
 </ul>
 <h2 id="field-is-immutable-error-during-helm-upgrade">“Field is immutable” error during helm upgrade<a class="headerlink" href="#field-is-immutable-error-during-helm-upgrade" title="Permanent link">¶</a></h2>
-<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">helm3</span><span class="w"> </span><span class="nv">upgrade</span><span class="w"> </span><span class="o">--</span><span class="nv">install</span><span class="w"> </span><span class="nv">snmp</span><span class="w"> </span><span class="o">-</span><span class="nv">f</span><span class="w"> </span><span class="nv">values</span>.<span class="nv">yaml</span><span class="w"> </span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">charts</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="w"> </span><span class="o">--</span><span class="nv">namespace</span><span class="o">=</span><span class="nv">sc4snmp</span><span class="w"> </span><span class="o">--</span><span class="nv">create</span><span class="o">-</span><span class="nv">namespace</span>
-<span class="nv">Error</span>:<span class="w"> </span><span class="nv">UPGRADE</span><span class="w"> </span><span class="nv">FAILED</span>:<span class="w"> </span><span class="nv">cannot</span><span class="w"> </span><span class="nv">patch</span><span class="w"> </span><span class="s2">"snmp-splunk-connect-for-snmp-inventory"</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">kind</span><span class="w"> </span><span class="nv">Job</span>:<span class="w"> </span><span class="nv">Job</span>.<span class="nv">batch</span><span class="w"> </span><span class="s2">"snmp-splunk-connect-for-snmp-inventory"</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">invalid</span>:<span class="w"> </span><span class="ss">(</span>...<span class="ss">)</span><span class="w"> </span>:<span class="w"> </span><span class="nv">field</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">immutable</span>
+<div class="highlight"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/charts/splunk-connect-for-snmp/ --namespace=sc4snmp --create-namespace
+Error: UPGRADE FAILED: cannot patch "snmp-splunk-connect-for-snmp-inventory" with kind Job: Job.batch "snmp-splunk-connect-for-snmp-inventory" is invalid: (...) : field is immutable
 </code></pre></div>
-
 <p>The immutable error is due to the limitation placed on an inventory job. As the SC4SNMP requires several checks before applying updates, it is designed to allow changes in the inventory task after 5 minutes. </p>
-<p>The status of the inventory can be checked with the following command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s kubectl -n sc4snmp get pods | grep inventory
+<p>The status of the inventory can be checked with the following command:
+</p><div class="highlight"><pre><span></span><code>microk8s kubectl -n sc4snmp get pods | grep inventory
 </code></pre></div>
-
-<p>If the command is not empty, wait and execute it again after the inventory job finishes. This is when it is no longer visible in the output.</p>
-<p>If the changes are required to be applied immediately, the previous inventory job can be deleted with the following command:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">delete</span><span class="w"> </span><span class="nv">job</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">inventory</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
+If the command is not empty, wait and execute it again after the inventory job finishes. This is when it is no longer visible in the output.
+<p>If the changes are required to be applied immediately, the previous inventory job can be deleted with the following command:
+</p><div class="highlight"><pre><span></span><code>microk8s kubectl delete job/snmp-splunk-connect-for-snmp-inventory -n sc4snmp
 </code></pre></div>
-
-<p>The upgrade command can be executed again. </p>
+The upgrade command can be executed again. 
 <h2 id="the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors">“The following profiles have invalid configuration” or “The following groups have invalid configuration” errors<a class="headerlink" href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" title="Permanent link">¶</a></h2>
-<p>Following errors are examples of wrong configuration:</p>
-<div class="codehilite"><pre><span></span><code>The following groups have invalid configuration and won't be used: ['group1']. Please check indentation and keywords spelling inside mentioned groups configuration.
+<p>Following errors are examples of wrong configuration:
+</p><div class="highlight"><pre><span></span><code>The following groups have invalid configuration and won't be used: ['group1']. Please check indentation and keywords spelling inside mentioned groups configuration.
 </code></pre></div>
-
-<div class="codehilite"><pre><span></span><code>The following profiles have invalid configuration and won't be used: ['standard_profile', 'walk_profile']. Please check indentation and keywords spelling inside mentioned profiles configuration.
+<div class="highlight"><pre><span></span><code>The following profiles have invalid configuration and won't be used: ['standard_profile', 'walk_profile']. Please check indentation and keywords spelling inside mentioned profiles configuration.
 </code></pre></div>
-
-<p>Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to <a href="../../configuration/configuring-profiles/">Configuring profiles</a>
+Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to <a href="../../configuration/configuring-profiles/">Configuring profiles</a>
 or <a href="../../configuration/configuring-groups/">Configuring Groups</a> sections to check how the correct configuration 
-should look like.</p></div>
+should look like.</div>
 
 
 

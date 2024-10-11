@@ -1764,8 +1764,8 @@
 <h3 id="mongodb-configuration-file">MongoDB configuration file<a class="headerlink" href="#mongodb-configuration-file" title="Permanent link">¶</a></h3>
 <p>MongoDB configuration is kept in the <code>values.yaml</code> file in the <code>mongodb</code> section.
 <code>values.yaml</code> is used during the installation process for configuring kubernetes values.</p>
-<p>See the following example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<p>See the following example:
+</p><div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="c1">#Architecture, Architecture for Mongo deployments is immutable to move from standalone to replicaset will require a uninstall.</span>
 <span class="w">  </span><span class="c1"># "replicaset" for HA or multi node deployments</span>
 <span class="w">  </span><span class="c1"># "standalone" for single node non HA</span>
@@ -1786,7 +1786,6 @@
 <span class="w">  </span><span class="nt">volumePermissions</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
-
 <p>It is recommended not to change this setting. If it is necessary to change it, see <a href="https://github.com/bitnami/charts/tree/master/bitnami/mongodb/">MongoDB on Kubernetes</a>. </p></div>
 
 

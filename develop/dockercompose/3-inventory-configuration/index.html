@@ -1763,9 +1763,9 @@
 <p>Inventory configuration is stored in the <code>inventory.csv</code> file. Structure of this file is the same as the one of the 
 <code>poller.inventory</code> section in <code>values.yaml</code> file. Documentation of this section can be found in <a href="../../configuration/poller-configuration/#configure-inventory">configure inventory</a>.</p>
 <h2 id="example-of-the-configuration">Example of the configuration<a class="headerlink" href="#example-of-the-configuration" title="Permanent link">¶</a></h2>
-<div class="codehilite"><pre><span></span><code><span class="nx">address</span><span class="p">,</span><span class="nx">port</span><span class="p">,</span><span class="nx">version</span><span class="p">,</span><span class="nx">community</span><span class="p">,</span><span class="nx">secret</span><span class="p">,</span><span class="nx">securityEngine</span><span class="p">,</span><span class="nx">walk_interval</span><span class="p">,</span><span class="nx">profiles</span><span class="p">,</span><span class="nx">smart_profiles</span><span class="p">,</span><span class="nx">delete</span>
-<span class="m m-Double">0.0.0.0</span><span class="p">,</span><span class="mi">161</span><span class="p">,</span><span class="mi">2</span><span class="nx">c</span><span class="p">,</span><span class="nx">public</span><span class="p">,,,</span><span class="mi">1800</span><span class="p">,</span><span class="nx">small_walk</span><span class="p">;</span><span class="nx">test_profile</span><span class="p">,</span><span class="nx">t</span><span class="p">,</span>
-<span class="nx">my_group</span><span class="p">,</span><span class="mi">161</span><span class="p">,</span><span class="mi">3</span><span class="p">,,</span><span class="nx">my_secret</span><span class="p">,,</span><span class="mi">1800</span><span class="p">,</span><span class="nx">single_metric</span><span class="p">,</span><span class="nx">t</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code>address,port,version,community,secret,securityEngine,walk_interval,profiles,smart_profiles,delete
+0.0.0.0,161,2c,public,,,1800,small_walk;test_profile,t,
+my_group,161,3,,my_secret,,1800,single_metric,t,
 </code></pre></div></div>
 
 

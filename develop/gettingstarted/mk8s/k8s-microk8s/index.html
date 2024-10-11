@@ -1724,45 +1724,39 @@ in the MicroK8s <a href="https://microk8s.io/docs">documentation</a>, including 
 <p>If you plan to poll or receive trap notifications from IPv6 addresses, firstly check the instructions for <a href="../../enable-ipv6/">enabling 
 IPv6</a>.</p>
 <h2 id="install-microk8s-using-snap">Install MicroK8s using Snap<a class="headerlink" href="#install-microk8s-using-snap" title="Permanent link">¶</a></h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>microk8s<span class="w"> </span>--classic<span class="w"> </span>--channel<span class="o">=</span><span class="m">1</span>.30/stable
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>microk8s<span class="w"> </span>--classic<span class="w"> </span>--channel<span class="o">=</span><span class="m">1</span>.30/stable
 </code></pre></div>
-
-<p>Add a user to the microk8s group so the <code>sudo</code> command is no longer necessary:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>microk8s<span class="w"> </span><span class="nv">$USER</span>
+<p>Add a user to the microk8s group so the <code>sudo</code> command is no longer necessary:
+</p><div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>microk8s<span class="w"> </span><span class="nv">$USER</span>
 sudo<span class="w"> </span>chown<span class="w"> </span>-f<span class="w"> </span>-R<span class="w"> </span><span class="nv">$USER</span><span class="w"> </span>~/.kube
 su<span class="w"> </span>-<span class="w"> </span><span class="nv">$USER</span>
 </code></pre></div>
-
-<p>Wait for Installation of Mk8S to complete:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
+<p>Wait for Installation of Mk8S to complete:
+</p><div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
-
 <h2 id="install-required-services-for-sc4snmp">Install required services for SC4SNMP<a class="headerlink" href="#install-required-services-for-sc4snmp" title="Permanent link">¶</a></h2>
 <p>The following commands can be issued from any one node in a cluster:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>iscsid
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>iscsid
 microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>helm3
 microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>hostpath-storage
 microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>rbac
 microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>metrics-server
 microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
-
 <p>Install the DNS server for mk8s and configure the forwarding DNS servers. Replace the IP addressed below (opendns) with
 the allowed values for your network: </p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>dns:208.67.222.222,208.67.220.220
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>dns:208.67.222.222,208.67.220.220
 microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
-
 <h2 id="install-metallb">Install Metallb<a class="headerlink" href="#install-metallb" title="Permanent link">¶</a></h2>
 <p>When installing Metallb, you will be prompted for one or more IPs to use as entry points
 into the cluster. If you plan to enable clustering, this IP should not be assigned to the host (floats).
 If you do not plan to cluster, then this IP should be the IP of your host.</p>
 <p>Note2: a single IP in cidr format is x.x.x.x/32. Use CIDR or range syntax for single server installations. This can be
 the same as the primary IP.</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>metallb
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>metallb
 microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
-
 <h2 id="add-nodes-optional">Add nodes (optional)<a class="headerlink" href="#add-nodes-optional" title="Permanent link">¶</a></h2>
 <p>If you need cluster mode please use following <a href="../k8s-microk8s-scaling/#make-microk8s-cluster">guide</a>.</p></div>
 

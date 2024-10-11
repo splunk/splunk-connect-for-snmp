@@ -1796,17 +1796,15 @@
 
 
 <div><h1 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">¶</a></h1>
-<p>The default configuration of docker compose is not sending the logs to Splunk. Container logs can be accessed with command:</p>
-<div class="codehilite"><pre><span></span><code>docker logs &lt;container_name/id&gt;
+<p>The default configuration of docker compose is not sending the logs to Splunk. Container logs can be accessed with command:
+</p><div class="highlight"><pre><span></span><code>docker logs &lt;container_name/id&gt;
 </code></pre></div>
-
 <p>Creating logs requires updating configuration of several docker compose files. To simplify this process, inside the 
 <code>docker_compose</code> package there is a <code>manage_logs.py</code> file which will automatically manage logs.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">¶</a></h2>
-<p>Running script requires installation of <code>ruamel.yaml</code> package for python. It can be done with command:</p>
-<div class="codehilite"><pre><span></span><code>pip3 install ruamel.yaml
+<p>Running script requires installation of <code>ruamel.yaml</code> package for python. It can be done with command:
+</p><div class="highlight"><pre><span></span><code>pip3 install ruamel.yaml
 </code></pre></div>
-
 <p>The following parameters have to be configured in <code>.env</code> file:
 <code>SPLUNK_HEC_TOKEN</code>, <code>SPLUNK_HEC_PROTOCOL</code>, <code>SPLUNK_HEC_HOST</code>, <code>SPLUNK_HEC_PORT</code>, <code>SPLUNK_LOG_INDEX</code>, <code>SPLUNK_HEC_INSECURESSL</code>.</p>
 <p>More about <code>.env</code> configuration can be found in <a href="../6-env-file-configuration/">.env file configuration</a>.</p>
@@ -1830,16 +1828,14 @@
 </tr>
 </tbody>
 </table>
-<p>Example of enabling logs:</p>
-<div class="codehilite"><pre><span></span><code>python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --enable_logs
+<p>Example of enabling logs:
+</p><div class="highlight"><pre><span></span><code>python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --enable_logs
 </code></pre></div>
-
 <p>The script will add required configuration for logging under services in docker compose files.
-To apply the changes run the</p>
-<div class="codehilite"><pre><span></span><code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+To apply the changes run the
+</p><div class="highlight"><pre><span></span><code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
 </code></pre></div>
-
-<p>command inside the <code>docker_compose</code> directory.</p>
+command inside the <code>docker_compose</code> directory.
 <h2 id="disabling-the-logs">Disabling the logs<a class="headerlink" href="#disabling-the-logs" title="Permanent link">¶</a></h2>
 <p>To disable logs <code>manage_logs.py</code> must be run with the following flags:</p>
 <table>
@@ -1861,15 +1857,13 @@ To apply the changes run the</p>
 </tbody>
 </table>
 <p>Running the disable command will replace the <code>logging.driver</code> section with default docker driver <code>json-file</code>. </p>
-<p>Example of disabling logs:</p>
-<div class="codehilite"><pre><span></span><code>python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --disable_logs
+<p>Example of disabling logs:
+</p><div class="highlight"><pre><span></span><code>python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --disable_logs
 </code></pre></div>
-
-<p>To apply the changes run the </p>
-<div class="codehilite"><pre><span></span><code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+<p>To apply the changes run the 
+</p><div class="highlight"><pre><span></span><code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
 </code></pre></div>
-
-<p>command inside the <code>docker_compose</code> directory.</p>
+command inside the <code>docker_compose</code> directory.
 <p>After that the logs can be reached with <code>docker logs</code> command.</p></div>
 
 

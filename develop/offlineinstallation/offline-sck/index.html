@@ -1862,15 +1862,13 @@
 from the Github release, where <code>&lt;tag&gt;</code> is the current OpenTelemetry release tag. Both packages must be later moved to the installation server.</p>
 <h2 id="installation-on-the-server">Installation on the server<a class="headerlink" href="#installation-on-the-server" title="Permanent link">¶</a></h2>
 <p>The Otel image has to be imported to the <code>microk8s</code> registry with:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>ctr<span class="w"> </span>image<span class="w"> </span>import<span class="w"> </span>otel_image.tar<span class="w"> </span>
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>ctr<span class="w"> </span>image<span class="w"> </span>import<span class="w"> </span>otel_image.tar<span class="w"> </span>
 </code></pre></div>
-
 <p>The imported package must be unpacked with the following command :</p>
-<div class="codehilite"><pre><span></span><code>tar<span class="w"> </span>-xvf<span class="w"> </span>splunk-otel-collector-&lt;tag&gt;.tgz<span class="w"> </span>--exclude<span class="o">=</span><span class="s1">'._*'</span>
+<div class="highlight"><pre><span></span><code>tar<span class="w"> </span>-xvf<span class="w"> </span>splunk-otel-collector-&lt;tag&gt;.tgz<span class="w"> </span>--exclude<span class="o">=</span><span class="s1">'._*'</span>
 </code></pre></div>
-
-<p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the following description:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
+<p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the following description:
+</p><div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"clusterName=&lt;cluster_name&gt;"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.endpoint=&lt;splunk_endpoint&gt;"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.insecureSkipVerify=&lt;insecure_skip_verify&gt;"</span><span class="w"> </span><span class="se">\</span>
@@ -1881,7 +1879,6 @@ from the Github release, where <code>&lt;tag&gt;</code> is the current OpenTelem
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.index=em_logs"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>splunk-otel-collector
 </code></pre></div>
-
 <h3 id="variables-description">Variables description<a class="headerlink" href="#variables-description" title="Permanent link">¶</a></h3>
 <table>
 <thead>
@@ -1914,8 +1911,8 @@ from the Github release, where <code>&lt;tag&gt;</code> is the current OpenTelem
 </tr>
 </tbody>
 </table>
-<p>An example of a correctly filled command is:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
+<p>An example of a correctly filled command is:
+</p><div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"clusterName=my-cluster"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.endpoint=https://endpoint.example.com/services/collector"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.insecureSkipVerify=false"</span><span class="w"> </span><span class="se">\</span>
@@ -1925,10 +1922,9 @@ from the Github release, where <code>&lt;tag&gt;</code> is the current OpenTelem
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.index=em_logs"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>splunk-otel-collector
 </code></pre></div>
-
 <h2 id="install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes">Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" title="Permanent link">¶</a></h2>
 <p>To run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables according to the following description:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>sck
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>sck
 --set<span class="o">=</span><span class="s2">"clusterName=&lt;cluster_name&gt;"</span>
 --set<span class="o">=</span><span class="s2">"splunkObservability.realm=&lt;realm&gt;"</span>
 --set<span class="o">=</span><span class="s2">"splunkObservability.accessToken=&lt;token&gt;"</span>
@@ -1939,7 +1935,6 @@ from the Github release, where <code>&lt;tag&gt;</code> is the current OpenTelem
 --set<span class="o">=</span><span class="s2">"splunkObservability.logsEnabled=false"</span>
 splunk-otel-collector
 </code></pre></div>
-
 <h3 id="variables-description_1">Variables description<a class="headerlink" href="#variables-description_1" title="Permanent link">¶</a></h3>
 <table>
 <thead>
@@ -1977,8 +1972,8 @@ splunk-otel-collector
 </tr>
 </tbody>
 </table>
-<p>An example of a correctly filled command is:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>sck<span class="w"> </span>
+<p>An example of a correctly filled command is:
+</p><div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>sck<span class="w"> </span>
 --set<span class="o">=</span><span class="s2">"clusterName=my_cluster"</span>
 --set<span class="o">=</span><span class="s2">"splunkObservability.realm=us0"</span>
 --set<span class="o">=</span><span class="s2">"splunkObservability.accessToken=BCwaJ_Ands4Xh7Nrg"</span>

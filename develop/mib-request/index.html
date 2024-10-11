@@ -1824,15 +1824,14 @@ the vendor.</p>
 <p>Usually SC4SNMP is released with the newest version of MIB server every time the new MIB files are added.
 But, if you want to use the newest MIB server right after its released, you can do it manually using the <code>values.yaml</code> file:</p>
 <ol>
-<li>Append <code>mibserver</code> configuration to the values.yaml, with the <code>mibserver.image.tag</code> of a value of the newest <code>mibserver</code>, for example:</li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="n">mibserver</span><span class="o">:</span>
-<span class="w">  </span><span class="n">image</span><span class="o">:</span>
-<span class="w">    </span><span class="n">tag</span><span class="o">:</span><span class="w"> </span><span class="s2">"1.14.5"</span>
+<li>
+<p>Append <code>mibserver</code> configuration to the values.yaml, with the <code>mibserver.image.tag</code> of a value of the newest <code>mibserver</code>, for example:
+</p><div class="highlight"><pre><span></span><code>mibserver:
+  image:
+    tag: "1.14.5"
 </code></pre></div>
-
-<p>Check all the MIB server releases in https://github.com/pysnmp/mibs/releases. </p>
-<ol start="2">
+Check all the MIB server releases in https://github.com/pysnmp/mibs/releases. 
+</li>
 <li>
 <p>Run <code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</code>.</p>
 </li>
@@ -1840,10 +1839,9 @@ But, if you want to use the newest MIB server right after its released, you can 
 <p>Restart the following worker-trap and worker-poller deployments:</p>
 </li>
 </ol>
-<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">rollout</span><span class="w"> </span><span class="nv">restart</span><span class="w"> </span><span class="nv">deployment</span><span class="w"> </span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">trap</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
-<span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">rollout</span><span class="w"> </span><span class="nv">restart</span><span class="w"> </span><span class="nv">deployment</span><span class="w"> </span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">poller</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
+<div class="highlight"><pre><span></span><code>microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-trap -n sc4snmp
+microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-poller -n sc4snmp
 </code></pre></div>
-
 <h2 id="beta-use-mib-server-with-local-mibs">Beta: use MIB server with local MIBs<a class="headerlink" href="#beta-use-mib-server-with-local-mibs" title="Permanent link">¶</a></h2>
 <p>From the <code>1.15.0</code> version of the MIB server, there is a way to use local MIB files. This may be useful when your MIB 
 files are proprietary, or you use SC4SNMP offline. This way, you can update necessary MIBs by yourself, without having to
@@ -1859,22 +1857,19 @@ troubleshooting easier.</li>
 the MIB file before <code>::= BEGIN</code> keyword.</li>
 <li>Add the following to the <code>values.yaml</code>:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code><span class="nt">mibserver</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">mibserver</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">localMibs</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">pathToMibs</span><span class="p">:</span><span class="w"> </span><span class="s">"/home/user/local_mibs"</span>
 </code></pre></div>
-
 <p>To verify that the process of compilation was completed successfully, check the the mibserver logs using the following command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>deployments/snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>deployments/snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
-
 <p>This creates a Kubernetes pvc with MIB files inside and maps it to the MIB server pod.
 Also, you can change the storageClass and size of persistence according to the <code>mibserver</code> schema, see https://github.com/pysnmp/mibs/blob/main/charts/mibserver/values.yaml.
 The default persistence size is 1 Gibibyte, so consider reducing or expanding it to the amount you actually need.
 Whenever you add new MIB files, rollout restart MIB server pods to compile them again, using the following command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
-
 <p>For a multi-node Kubernetes installation, create pvc beforehand, copy files onto it, and add it to the MIB server
 using <code>persistence.existingClaim</code>. If you go with the <code>localMibs.pathToMibs</code> solution for a multi-node installation
 (with <code>nodeSelector</code> set up to schedule MIB server pods on the same node where the MIB files are),

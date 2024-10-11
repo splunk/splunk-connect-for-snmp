@@ -1822,8 +1822,8 @@ to install microk8s.</p>
 <h2 id="calico">Calico<a class="headerlink" href="#calico" title="Permanent link">¶</a></h2>
 <p>The default CNI used for microk8s is Calico. For pods to be able to reach internet over IPv6, you need to enable 
 the <code>natOutgoing</code> parameter in ipv6 ip pool configuration from calico.
-To set it create the yaml file with the following content:</p>
-<div class="codehilite"><pre><span></span><code># calico-ippool.yaml
+To set it create the yaml file with the following content:
+</p><div class="highlight"><pre><span></span><code># calico-ippool.yaml
 ---
 apiVersion: crd.projectcalico.org/v1
 kind: IPPool
@@ -1832,46 +1832,40 @@ metadata:
 spec:
   natOutgoing: true
 </code></pre></div>
-
-<p>You can check with command <code>microk8s kubectl get ippools -n kube-system</code> the default name of the ip pool for IPv6. If it differs from <code>default-ipv6-ippool</code> you need to change the name in the yaml file.
-Then apply the configuration with the following command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s kubectl apply -f calico-ippool.yaml
+You can check with command <code>microk8s kubectl get ippools -n kube-system</code> the default name of the ip pool for IPv6. If it differs from <code>default-ipv6-ippool</code> you need to change the name in the yaml file.
+Then apply the configuration with the following command:
+<div class="highlight"><pre><span></span><code>microk8s kubectl apply -f calico-ippool.yaml
 </code></pre></div>
-
-<p>After those changes you can restart the microk8s fot the changes to be applied with the following commands:</p>
-<div class="codehilite"><pre><span></span><code>microk8s stop
+<p>After those changes you can restart the microk8s fot the changes to be applied with the following commands:
+</p><div class="highlight"><pre><span></span><code>microk8s stop
 microk8s start
 </code></pre></div>
-
 <h2 id="metallb">Metallb<a class="headerlink" href="#metallb" title="Permanent link">¶</a></h2>
 <p>As of version <code>1.30</code> of microk8s, Metallb add-on does not support passing the IPv6 addresses in enable command. To 
-add the IPv6 addresses to your Metallb configuration, you can prepare the yaml file with configuration like below:</p>
-<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="nx">addresspool</span><span class="p">.</span><span class="nx">yaml</span>
-<span class="o">---</span>
-<span class="nx">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="nx">metallb</span><span class="p">.</span><span class="nx">io</span><span class="o">/</span><span class="nx">v1beta1</span>
-<span class="nx">kind</span><span class="p">:</span><span class="w"> </span><span class="nx">IPAddressPool</span>
-<span class="nx">metadata</span><span class="p">:</span>
-<span class="w">  </span><span class="nx">name</span><span class="p">:</span><span class="w"> </span><span class="k">default</span><span class="o">-</span><span class="nx">addresspool</span>
-<span class="w">  </span><span class="kn">namespace</span><span class="p">:</span><span class="w"> </span><span class="nx">metallb</span><span class="o">-</span><span class="nx">system</span>
-<span class="nx">spec</span><span class="p">:</span><span class="w"> </span>
-<span class="w">  </span><span class="nx">addresses</span><span class="p">:</span>
-<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="m m-Double">1.1.1.1</span><span class="o">/</span><span class="mi">32</span>
-<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="mi">2001</span><span class="p">:</span><span class="mi">0</span><span class="nx">db8</span><span class="p">:</span><span class="nx">ac10</span><span class="p">:</span><span class="nx">fe01</span><span class="p">:</span><span class="mi">0000</span><span class="p">:</span><span class="mi">0000</span><span class="p">:</span><span class="mi">0000</span><span class="p">:</span><span class="mi">0001</span><span class="o">/</span><span class="mi">128</span>
+add the IPv6 addresses to your Metallb configuration, you can prepare the yaml file with configuration like below:
+</p><div class="highlight"><pre><span></span><code># addresspool.yaml
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: default-addresspool
+  namespace: metallb-system
+spec: 
+  addresses:
+  - 1.1.1.1/32
+  - 2001:0db8:ac10:fe01:0000:0000:0000:0001/128
 </code></pre></div>
-
-<p>You can check with command <code>microk8s kubectl get ipaddresspool -n metallb-system</code> the default name of the ip address pool created in metallb. If it differs from <code>default-addresspool</code> you need to change the name in the yaml file.
-You can add the single ip or subnets for both IPv4 and IPv6 under <code>spec.addresses</code> section. After preparing the yaml file, apply the configuration with the following command:</p>
-<div class="codehilite"><pre><span></span><code><span class="nx">microk8s</span><span class="w"> </span><span class="nx">kubectl</span><span class="w"> </span><span class="nx">apply</span><span class="w"> </span><span class="o">-</span><span class="nx">f</span><span class="w"> </span><span class="nx">addresspool</span><span class="p">.</span><span class="nx">yaml</span>
+You can check with command <code>microk8s kubectl get ipaddresspool -n metallb-system</code> the default name of the ip address pool created in metallb. If it differs from <code>default-addresspool</code> you need to change the name in the yaml file.
+You can add the single ip or subnets for both IPv4 and IPv6 under <code>spec.addresses</code> section. After preparing the yaml file, apply the configuration with the following command:
+<div class="highlight"><pre><span></span><code>microk8s kubectl apply -f addresspool.yaml
 </code></pre></div>
-
 <h2 id="sc4snmp">SC4SNMP<a class="headerlink" href="#sc4snmp" title="Permanent link">¶</a></h2>
-<p>To configure traps to receive notification from IPv4 and IPv6 addresses, you need to add the following configuration to the <code>values.yaml</code> file:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">traps</span><span class="o">:</span>
-<span class="w">  </span><span class="n">ipFamilyPolicy</span><span class="o">:</span><span class="w"> </span><span class="n">RequireDualStack</span>
-<span class="w">  </span><span class="n">ipFamilies</span><span class="o">:</span><span class="w"> </span><span class="o">[</span><span class="s2">"IPv4"</span><span class="o">,</span><span class="w"> </span><span class="s2">"IPv6"</span><span class="o">]</span>
+<p>To configure traps to receive notification from IPv4 and IPv6 addresses, you need to add the following configuration to the <code>values.yaml</code> file:
+</p><div class="highlight"><pre><span></span><code>traps:
+  ipFamilyPolicy: RequireDualStack
+  ipFamilies: ["IPv4", "IPv6"]
 </code></pre></div>
-
-<p>Default trap port for notifications for IPv6 is <code>2163</code>. You can change it to any other port if needed with <code>traps.service.ipv6Port</code> parameter.</p></div>
+Default trap port for notifications for IPv6 is <code>2163</code>. You can change it to any other port if needed with <code>traps.service.ipv6Port</code> parameter.</div>
 
 
 

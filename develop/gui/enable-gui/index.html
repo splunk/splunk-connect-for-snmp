@@ -1763,7 +1763,7 @@
 <p>SC4SNMP GUI is deployed in kubernetes and can be accessed through the web browser.</p>
 <h2 id="enabling-gui">Enabling GUI<a class="headerlink" href="#enabling-gui" title="Permanent link">¶</a></h2>
 <p>To enable GUI, the following section must be added to <code>values.yaml</code> file and <code>UI.enable</code> variable must be set to <code>true</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">UI</span><span class="p">:</span>
+<p></p><div class="highlight"><pre><span></span><code><span class="nt">UI</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="nt">frontEnd</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">NodePort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30001</span>
@@ -1775,13 +1775,10 @@
 <span class="w">  </span><span class="nt">valuesFileName</span><span class="p">:</span><span class="w"> </span><span class="s">""</span>
 <span class="w">  </span><span class="nt">keepSectionFiles</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
-
-<ul>
-<li><code>NodePort</code>: port number on which GUI will be accessible. It has to be from a range <code>30000-32767</code>.</li>
-<li><code>pullPolicy</code>: <a href="https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy">kubernetes pull policy</a></li>
-<li><code>valuesFileDirectory</code>: this is an obligatory field if UI is used. It is an absolute directory path on the host machine where configuration files from the GUI will be generated. It is used to keep all the changes from the GUI so that users can easily switch back from using UI to the current sc4snmp version. It is advised to create new folder for those files, because this directory is mounted to the Kubernetes pod and GUI application has full write access to this directory.</li>
-<li><code>valuesFileName</code>: [OPTIONAL] full name of the file with configuration (e.g. <code>values.yaml</code>) that is stored inside the <code>valuesFileDirectory</code> directory. If this file name is provided, and it exists in this directory, then GUI will update appropriate sections in provided <code>values.yaml</code> file. If this file name is not provided, or provided file name can’t be found inside <code>valuesFileDirectory</code> then inside that directory there will be created three files with the latest GUI configuration of groups, profiles and inventory. Those configuration can be copied and pasted to the appropriate sections in the original <code>values.yaml</code> file.</li>
-</ul>
+- <code>NodePort</code>: port number on which GUI will be accessible. It has to be from a range <code>30000-32767</code>.
+- <code>pullPolicy</code>: <a href="https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy">kubernetes pull policy</a>
+- <code>valuesFileDirectory</code>: this is an obligatory field if UI is used. It is an absolute directory path on the host machine where configuration files from the GUI will be generated. It is used to keep all the changes from the GUI so that users can easily switch back from using UI to the current sc4snmp version. It is advised to create new folder for those files, because this directory is mounted to the Kubernetes pod and GUI application has full write access to this directory.
+- <code>valuesFileName</code>: [OPTIONAL] full name of the file with configuration (e.g. <code>values.yaml</code>) that is stored inside the <code>valuesFileDirectory</code> directory. If this file name is provided, and it exists in this directory, then GUI will update appropriate sections in provided <code>values.yaml</code> file. If this file name is not provided, or provided file name can’t be found inside <code>valuesFileDirectory</code> then inside that directory there will be created three files with the latest GUI configuration of groups, profiles and inventory. Those configuration can be copied and pasted to the appropriate sections in the original <code>values.yaml</code> file.
 <p>Template of initial <code>values.yaml</code>:</p>
 <div class="codehilite"><pre><span></span><code>```yaml
 scheduler:

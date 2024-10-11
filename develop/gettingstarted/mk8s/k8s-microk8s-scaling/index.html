@@ -1885,9 +1885,8 @@
 <p>Generate joining token for replicas:</p>
 </li>
 </ol>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>add-node
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>add-node
 </code></pre></div>
-
 <ol start="3">
 <li>After running <code>add-node</code> on stdout you will get a command (like <code>microk8s join &lt;master_node&gt;:25000/&lt;token&gt;</code>) that you need to remember.</li>
 </ol>
@@ -1895,31 +1894,27 @@
 <ol>
 <li>Installing microk8s on replica node: </li>
 </ol>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>microk8s<span class="w"> </span>--classic<span class="w"> </span>--channel<span class="o">=</span><span class="m">1</span>.30/stable
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>microk8s<span class="w"> </span>--classic<span class="w"> </span>--channel<span class="o">=</span><span class="m">1</span>.30/stable
 sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>microk8s<span class="w"> </span><span class="nv">$USER</span>
 sudo<span class="w"> </span>chown<span class="w"> </span>-f<span class="w"> </span>-R<span class="w"> </span><span class="nv">$USER</span><span class="w"> </span>~/.kube
 su<span class="w"> </span>-<span class="w"> </span><span class="nv">$USER</span>
 </code></pre></div>
-
 <ol start="2">
 <li>After running <code>add-node</code> on <strong>master node</strong> you will get on stdout command that you need to run on your <strong>replica node</strong>:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>join<span class="w"> </span>&lt;master_node&gt;:25000/&lt;token&gt;
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>join<span class="w"> </span>&lt;master_node&gt;:25000/&lt;token&gt;
 </code></pre></div>
-
 <ol start="3">
 <li>Check that replica joined cluster:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>nodes
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>nodes
 </code></pre></div>
-
 <p>New nodes should appear:</p>
-<div class="codehilite"><pre><span></span><code>NAME<span class="w">                  </span>STATUS<span class="w">   </span>ROLES<span class="w">    </span>AGE<span class="w">   </span>VERSION
+<div class="highlight"><pre><span></span><code>NAME<span class="w">                  </span>STATUS<span class="w">   </span>ROLES<span class="w">    </span>AGE<span class="w">   </span>VERSION
 i-05ecfbf799e480188<span class="w">   </span>Ready<span class="w">    </span>&lt;none&gt;<span class="w">   </span>25h<span class="w">   </span>v1.30.5
 i-0733cb329576e6c78<span class="w">   </span>Ready<span class="w">    </span>&lt;none&gt;<span class="w">   </span>25h<span class="w">   </span>v1.30.5
 i-0b27bcc06fc5c660e<span class="w">   </span>Ready<span class="w">    </span>&lt;none&gt;<span class="w">   </span>25h<span class="w">   </span>v1.30.5
 </code></pre></div>
-
 <h2 id="scaling-sc4snmp">Scaling SC4SNMP<a class="headerlink" href="#scaling-sc4snmp" title="Permanent link">¶</a></h2>
 <ol>
 <li>
@@ -1929,7 +1924,7 @@ i-0b27bcc06fc5c660e<span class="w">   </span>Ready<span class="w">    </span>&lt
 <p>Add <code>worker</code> section on <code>values.yaml</code>:</p>
 </li>
 </ol>
-<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">poller</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 <span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
@@ -1937,28 +1932,24 @@ i-0b27bcc06fc5c660e<span class="w">   </span>Ready<span class="w">    </span>&lt
 <span class="w">  </span><span class="nt">sender</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 </code></pre></div>
-
 <ol start="3">
 <li>Add <code>traps</code> replica count in <code>values.yaml</code>:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 </code></pre></div>
-
 <ol start="4">
 <li>Redeploy SC4SNMP:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
 </code></pre></div>
-
 <ol start="5">
 <li>Check that SC4SNMP has been scaled:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>sc4snmp
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
-
 <p>You should get 4 replicas for each worker and traps service:</p>
-<div class="codehilite"><pre><span></span><code>NAME<span class="w">                                                          </span>READY<span class="w">   </span>STATUS<span class="w">      </span>RESTARTS<span class="w">   </span>AGE
+<div class="highlight"><pre><span></span><code>NAME<span class="w">                                                          </span>READY<span class="w">   </span>STATUS<span class="w">      </span>RESTARTS<span class="w">   </span>AGE
 snmp-mibserver-5df74fb678-zkj9m<span class="w">                               </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
 snmp-mongodb-6dc5c4f74d-xg6p7<span class="w">                                 </span><span class="m">2</span>/2<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
 snmp-redis-master-0<span class="w">                                           </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
@@ -1981,7 +1972,6 @@ snmp-splunk-connect-for-snmp-worker-trap-859dc47d9b-kdcdb<span class="w">     </
 snmp-splunk-connect-for-snmp-worker-trap-859dc47d9b-sfxvb<span class="w">     </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>3m
 snmp-splunk-connect-for-snmp-worker-trap-859dc47d9b-xmmwv<span class="w">     </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>21h
 </code></pre></div>
-
 <h2 id="autoscaling-sc4snmp">Autoscaling SC4SNMP<a class="headerlink" href="#autoscaling-sc4snmp" title="Permanent link">¶</a></h2>
 <ol>
 <li>
@@ -1991,7 +1981,7 @@ snmp-splunk-connect-for-snmp-worker-trap-859dc47d9b-xmmwv<span class="w">     </
 <p>Add autoscaling options to <code>values.yaml</code>:</p>
 </li>
 </ol>
-<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">poller</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -2014,21 +2004,18 @@ snmp-splunk-connect-for-snmp-worker-trap-859dc47d9b-xmmwv<span class="w">     </
 <span class="w">    </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 <span class="w">    </span><span class="nt">maxReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
 </code></pre></div>
-
 <ol start="3">
 <li>Redeploy SC4SNMP:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
 </code></pre></div>
-
 <ol start="4">
 <li>Checked that SC4SNMP scaled:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>po<span class="w"> </span>-n<span class="w"> </span>sc4snmp
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>po<span class="w"> </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
-
 <p>After scaling of each worker and trap service 5-10 instances will appear:</p>
-<div class="codehilite"><pre><span></span><code>NAME<span class="w">                                                          </span>READY<span class="w">   </span>STATUS<span class="w">      </span>RESTARTS<span class="w">   </span>AGE
+<div class="highlight"><pre><span></span><code>NAME<span class="w">                                                          </span>READY<span class="w">   </span>STATUS<span class="w">      </span>RESTARTS<span class="w">   </span>AGE
 snmp-mibserver-6fdcdf9ddd-7bvmj<span class="w">                               </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
 snmp-mongodb-6dc5c4f74d-6b7mf<span class="w">                                 </span><span class="m">2</span>/2<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
 snmp-redis-master-0<span class="w">                                           </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h

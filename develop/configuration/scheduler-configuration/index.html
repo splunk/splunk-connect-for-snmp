@@ -1839,8 +1839,8 @@ are stored in MongoDB. </p>
 <h3 id="scheduler-configuration-file">Scheduler configuration file<a class="headerlink" href="#scheduler-configuration-file" title="Permanent link">¶</a></h3>
 <p>Scheduler configuration is kept in <code>values.yaml</code> file, in the section <code>scheduler</code>.
 <code>values.yaml</code> is used during the installation process to configure Kubernetes values.</p>
-<p>See the following example: </p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+<p>See the following example: 
+</p><div class="highlight"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"WARN"</span>
 <span class="w">  </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
 <span class="w">    </span><span class="no">test_profile:</span>
@@ -1854,12 +1854,11 @@ are stored in MongoDB. </p>
 <span class="w">          </span><span class="no"># Syntax: [ "MIB-Component", "MIB object name"[Optional], "MIB index number"[Optional]]</span>
 <span class="w">        </span><span class="no">- ["SNMPv2-MIB", "sysDescr",0]</span>
 </code></pre></div>
-
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">¶</a></h3>
 <p>The log level for the scheduler can be set by changing the value for the <code>logLevel</code> key. The allowed values are <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, or <code>ERROR</code>. 
 The default value is <code>WARNING</code>.</p>
 <h3 id="define-resource-requests-and-limits">Define resource requests and limits<a class="headerlink" href="#define-resource-requests-and-limits" title="Permanent link">¶</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
 <span class="w">  </span><span class="c1">#The following resource specification is appropriate for most deployments to scale the</span>
 <span class="w">  </span><span class="c1">#Larger inventories may require more memory but should not require additional cpu</span>
 <span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
@@ -1870,11 +1869,10 @@ The default value is <code>WARNING</code>.</p>
 <span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200m</span>
 <span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">128Mi</span>
 </code></pre></div>
-
 <h3 id="define-groups-of-hosts">Define groups of hosts<a class="headerlink" href="#define-groups-of-hosts" title="Permanent link">¶</a></h3>
 <p>For more information on when to use groups, see <a href="../configuring-groups/">Configuring Groups</a>.</p>
-<p>See the following example group configuration:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+<p>See the following example group configuration:
+</p><div class="highlight"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">groups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
 <span class="w">    </span><span class="no">example_group_1:</span>
 <span class="w">      </span><span class="no">- address: 123.0.0.1</span>
@@ -1892,13 +1890,12 @@ The default value is <code>WARNING</code>.</p>
 <span class="w">      </span><span class="no">- address: 178.80.8.1</span>
 <span class="w">        </span><span class="no">port: 999</span>
 </code></pre></div>
-
 <p>The one obligatory field for the host configuration is <code>address</code>. If <code>port</code> isn’t configured its default value is <code>161</code>. 
 Other fields that can be modified here are: <code>community</code>, <code>secret</code>, <code>version</code>, and <code>security_engine</code>.
 However, if they remain unspecified in the host configuration, they will be derived from the inventory record. </p>
 <h3 id="define-the-expiration-time-for-tasks">Define the expiration time for tasks<a class="headerlink" href="#define-the-expiration-time-for-tasks" title="Permanent link">¶</a></h3>
-<p>Define the time, in seconds, when polling or walk tasks will be revoked if they haven’t been picked up by the worker. See the <a href="https://docs.celeryq.dev/en/stable/userguide/calling.html#expiration">celery documentation</a> for more details.</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+<p>Define the time, in seconds, when polling or walk tasks will be revoked if they haven’t been picked up by the worker. See the <a href="https://docs.celeryq.dev/en/stable/userguide/calling.html#expiration">celery documentation</a> for more details.
+</p><div class="highlight"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">tasksExpiryTime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
 </code></pre></div></div>
 

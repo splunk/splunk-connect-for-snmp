@@ -1901,7 +1901,7 @@ from the <code>.env</code> file can be deleted. </p>
 previously existing secrets and creating them once again. Changes in <code>.env</code> include creating new secrets.</p>
 </blockquote>
 <h3 id="example-of-creating-a-secret">Example of creating a secret<a class="headerlink" href="#example-of-creating-a-secret" title="Permanent link">¶</a></h3>
-<div class="codehilite"><pre><span></span><code>python3<span class="w"> </span>&lt;path_to_manage_secrets.py&gt;<span class="w"> </span>--path_to_compose<span class="w"> </span>&lt;path_to_compose&gt;<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>&lt;path_to_manage_secrets.py&gt;<span class="w"> </span>--path_to_compose<span class="w"> </span>&lt;path_to_compose&gt;<span class="w"> </span><span class="se">\</span>
 --secret_name<span class="w"> </span>my_secret<span class="w"> </span><span class="se">\</span>
 --userName<span class="w"> </span>r-wuser<span class="w"> </span><span class="se">\</span>
 --privProtocol<span class="w"> </span>AES<span class="w"> </span><span class="se">\</span>
@@ -1910,20 +1910,17 @@ previously existing secrets and creating them once again. Changes in <code>.env<
 --authKey<span class="w"> </span>admin1234<span class="w"> </span><span class="se">\</span>
 --contextEngineId<span class="w"> </span><span class="m">090807060504037</span>
 </code></pre></div>
-
 <p>Inside <code>docker_compose</code> directory run:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span><span class="k">$(</span>find<span class="w"> </span>docker*<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-e<span class="w"> </span><span class="s1">'s/^/-f /'</span><span class="k">)</span><span class="w"> </span>up<span class="w"> </span>-d
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span><span class="k">$(</span>find<span class="w"> </span>docker*<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-e<span class="w"> </span><span class="s1">'s/^/-f /'</span><span class="k">)</span><span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
-
 <p>Now, the following lines from the <code>.env</code> can be deleted:</p>
-<div class="codehilite"><pre><span></span><code>my_secret_userName=r-wuser
+<div class="highlight"><pre><span></span><code>my_secret_userName=r-wuser
 my_secret_privProtocol=AES
 my_secret_privKey=admin1234
 my_secret_authProtocol=SHA
 my_secret_authKey=admin1234
 my_secret_contextEngineId=090807060504037
 </code></pre></div>
-
 <h2 id="deleting-a-secret">Deleting a secret<a class="headerlink" href="#deleting-a-secret" title="Permanent link">¶</a></h2>
 <p>To delete a secret, <code>manage_secrets.py</code> must be run with the following flags:</p>
 <table>
@@ -1951,7 +1948,7 @@ my_secret_contextEngineId=090807060504037
 <p>This will delete the secret with a given name from all docker compose files. If this secret hasn’t been deleted from <code>.env</code> 
 file, it will be removed from there. </p>
 <h3 id="example-of-deleting-a-secret">Example of deleting a secret<a class="headerlink" href="#example-of-deleting-a-secret" title="Permanent link">¶</a></h3>
-<div class="codehilite"><pre><span></span><code>python3<span class="w"> </span>&lt;path_to_manage_secrets.py&gt;<span class="w"> </span>--path_to_compose<span class="w"> </span>&lt;path_to_compose&gt;<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>&lt;path_to_manage_secrets.py&gt;<span class="w"> </span>--path_to_compose<span class="w"> </span>&lt;path_to_compose&gt;<span class="w"> </span><span class="se">\</span>
 --secret_name<span class="w"> </span>my_secret<span class="w"> </span><span class="se">\</span>
 --delete<span class="w"> </span><span class="nb">true</span><span class="w"> </span>
 </code></pre></div></div>

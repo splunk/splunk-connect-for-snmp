@@ -1878,6 +1878,10 @@
 <div><h1 id="dashboard">Dashboard<a class="headerlink" href="#dashboard" title="Permanent link">¶</a></h1>
 <p>Using dashboard you can monitor SC4SNMP and be sure that is healthy and working correctly.</p>
 <h2 id="presetting">Presetting<a class="headerlink" href="#presetting" title="Permanent link">¶</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Dashboard compatible with SC4SNMP 1.11+</p>
+</div>
 <ol>
 <li><a href="../gettingstarted/splunk-requirements/#requirements-for-splunk-enterprise-or-enterprise-cloud">Create metrics indexes</a> in Splunk.</li>
 <li>Enable metrics logging for your runtime:<ul>
@@ -1890,7 +1894,7 @@
 <ol>
 <li>In Splunk platform open <strong>Search -&gt; Dashboards</strong>.</li>
 <li>Click on <strong>Create New Dashboard</strong> and make an empty dashboard. Be sure to choose Classic Dashboards.</li>
-<li>In the <strong>Edit Dashboard</strong> view, go to Source and replace the initial xml with the contents of <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/dashboard/dashboard.xml">dashboard/dashboard.xml</a> published in the SC4SNMP repository.</li>
+<li>In the <strong>Edit Dashboard</strong> view, go to Source and replace the initial xml with the contents of <strong>dashboard.xml</strong>. This file you cand find on <a href="https://github.com/splunk/splunk-connect-for-snmp/releases">release page</a> for your version in attachments. </li>
 <li>Save your changes. Your dashboard is ready to use.</li>
 </ol>
 <h2 id="metrics-explanation">Metrics explanation<a class="headerlink" href="#metrics-explanation" title="Permanent link">¶</a></h2>

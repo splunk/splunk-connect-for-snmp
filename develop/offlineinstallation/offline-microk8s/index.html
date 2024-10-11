@@ -1865,101 +1865,87 @@
 <p>See <a href="https://microk8s.io/docs/install-alternatives#heading--offline">install alternatives</a> for offline installation of Microk8s,  but there are additional steps to install microk8s offline. See the following steps to install offline:</p>
 <h2 id="importing-images">Importing images<a class="headerlink" href="#importing-images" title="Permanent link">¶</a></h2>
 <p>After running the following:</p>
-<div class="codehilite"><pre><span></span><code>snap ack microk8s_{microk8s_version}.assert
+<div class="highlight"><pre><span></span><code>snap ack microk8s_{microk8s_version}.assert
 snap install microk8s_{microk8s_version}.snap --classic
 </code></pre></div>
-
 <p>You should check if the microk8s instance is healthy. Do it using the following command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s kubectl get pods -A
+<div class="highlight"><pre><span></span><code>microk8s kubectl get pods -A
 </code></pre></div>
-
-<p>The output will probably look like:</p>
-<div class="codehilite"><pre><span></span><code>NAMESPACE      NAME                                       READY   STATUS     RESTARTS   AGE
+<p>The output will probably look like:
+</p><div class="highlight"><pre><span></span><code>NAMESPACE      NAME                                       READY   STATUS     RESTARTS   AGE
 kube-system    calico-kube-controllers-7c9c8dd885-fg8f2   0/1     Pending    0          14m
 kube-system    calico-node-zg4c4                          0/1     Init:0/3   0          23s
 </code></pre></div>
-
 <p>The pods are in the <code>Pending</code>/<code>Init</code> state because they’re trying to download images, which is impossible to do offline. In order to make them download, you need to download all the images on a different server with an internet connection, pack it up, and import it to a microk8s image registry on your offline server.</p>
 <h3 id="packing-up-images-for-an-offline-environment">Packing up images for an offline environment<a class="headerlink" href="#packing-up-images-for-an-offline-environment" title="Permanent link">¶</a></h3>
 <p>You need to monitor</p>
-<div class="codehilite"><pre><span></span><code>microk8s kubectl get events -A
+<div class="highlight"><pre><span></span><code>microk8s kubectl get events -A
 </code></pre></div>
-
 <p>to see if <code>microk8s</code> fails to pull images, and then import anything it needs. An example of such information is:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="w">    </span><span class="mh">0</span><span class="n">s</span><span class="w">          </span><span class="n">Warning</span><span class="w">   </span><span class="n">Failed</span><span class="w">              </span><span class="n">pod</span><span class="o">/</span><span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="n">sc784</span><span class="w">                           </span><span class="n">Failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">pull</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="s">"docker.io/calico/cni:v3.21.4"</span><span class="o">:</span><span class="w"> </span><span class="n">rpc</span><span class="w"> </span><span class="nl">error:</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Unknown</span><span class="w"> </span><span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">pull</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">unpack</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="s">"docker.io/calico/cni:v3.21.4"</span><span class="o">:</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">resolve</span><span class="w"> </span><span class="n">reference</span><span class="w"> </span><span class="s">"docker.io/calico/cni:v3.21.4"</span><span class="o">:</span><span class="w"> </span><span class="n">failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nl">request:</span><span class="w"> </span><span class="n">Head</span><span class="w"> </span><span class="s">"https://registry-1.docker.io/v2/calico/cni/manifests/v3.21.4"</span><span class="o">:</span><span class="w"> </span><span class="n">dial</span><span class="w"> </span><span class="n">tcp</span><span class="w"> </span><span class="mf">54.83.42.45</span><span class="o">:</span><span class="mh">443</span><span class="o">:</span><span class="w"> </span><span class="n">i</span><span class="o">/</span><span class="n">o</span><span class="w"> </span><span class="n">timeout</span>
-<span class="n">kube</span><span class="o">-</span><span class="n">system</span><span class="w">    </span><span class="mh">0</span><span class="n">s</span><span class="w">          </span><span class="n">Warning</span><span class="w">   </span><span class="n">Failed</span><span class="w">              </span><span class="n">pod</span><span class="o">/</span><span class="n">calico</span><span class="o">-</span><span class="n">node</span><span class="o">-</span><span class="n">sc784</span><span class="w">                           </span><span class="nl">Error:</span><span class="w"> </span><span class="n">ErrImagePull</span>
+<div class="highlight"><pre><span></span><code>kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Failed to pull image "docker.io/calico/cni:v3.21.4": rpc error: code = Unknown desc = failed to pull and unpack image "docker.io/calico/cni:v3.21.4": failed to resolve reference "docker.io/calico/cni:v3.21.4": failed to do request: Head "https://registry-1.docker.io/v2/calico/cni/manifests/v3.21.4": dial tcp 54.83.42.45:443: i/o timeout
+kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Error: ErrImagePull
 </code></pre></div>
-
 <p>The previous information shows you that you lack a <code>docker.io/calico/cni:v3.21.4</code> image, and need to import it in order to fix the issue.</p>
 <p>The process to do this action is always the following:</p>
-<div class="codehilite"><pre><span></span><code>docker pull &lt;needed_image&gt;
+<p></p><div class="highlight"><pre><span></span><code>docker pull &lt;needed_image&gt;
 docker save &lt;needed_image&gt; &gt; image.tar
 </code></pre></div>
-
-<p>Transfer package to the offline lab and execute:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">microk8s</span> <span class="n">ctr</span> <span class="n">image</span> <span class="kn">import</span> <span class="nn">image.tar</span>
+Transfer package to the offline lab and execute:
+<div class="highlight"><pre><span></span><code>microk8s ctr image import image.tar
 </code></pre></div>
-
 <h3 id="example-of-the-offline-installation">Example of the offline installation<a class="headerlink" href="#example-of-the-offline-installation" title="Permanent link">¶</a></h3>
 <p>For example, <code>microk8s</code> version <code>3597</code> requires the following images to work correctly:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">docker</span><span class="w"> </span><span class="nv">pull</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">kube</span><span class="o">-</span><span class="nv">controllers</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span><span class="w"> </span>
-<span class="nv">docker</span><span class="w"> </span><span class="nv">pull</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">node</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span>
-<span class="nv">docker</span><span class="w"> </span><span class="nv">pull</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">pod2daemon</span><span class="o">-</span><span class="nv">flexvol</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span>
-<span class="nv">docker</span><span class="w"> </span><span class="nv">pull</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">cni</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span><span class="w">  </span>
-<span class="nv">docker</span><span class="w"> </span><span class="nv">pull</span><span class="w"> </span><span class="nv">k8s</span>.<span class="nv">gcr</span>.<span class="nv">io</span><span class="o">/</span><span class="k">pause</span>:<span class="mi">3</span>.<span class="mi">1</span><span class="w"> </span>
-<span class="nv">docker</span><span class="w"> </span><span class="nv">pull</span><span class="w"> </span><span class="nv">k8s</span>.<span class="nv">gcr</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">metrics</span><span class="o">-</span><span class="nv">server</span><span class="o">/</span><span class="nv">metrics</span><span class="o">-</span><span class="nv">server</span>:<span class="nv">v0</span>.<span class="mi">5</span>.<span class="mi">2</span><span class="w"> </span>
+<div class="highlight"><pre><span></span><code>docker pull docker.io/calico/kube-controllers:v3.21.4 
+docker pull docker.io/calico/node:v3.21.4
+docker pull docker.io/calico/pod2daemon-flexvol:v3.21.4
+docker pull docker.io/calico/cni:v3.21.4  
+docker pull k8s.gcr.io/pause:3.1 
+docker pull k8s.gcr.io/metrics-server/metrics-server:v0.5.2 
 </code></pre></div>
-
 <p>You should issue the above commands on your instance connected to the internet,
 then save it to <code>tar</code> packages:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">docker</span><span class="w"> </span><span class="nv">save</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">kube</span><span class="o">-</span><span class="nv">controllers</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">kube</span><span class="o">-</span><span class="nv">controllers</span>.<span class="nv">tar</span>
-<span class="nv">docker</span><span class="w"> </span><span class="nv">save</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">node</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">node</span>.<span class="nv">tar</span>
-<span class="nv">docker</span><span class="w"> </span><span class="nv">save</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">pod2daemon</span><span class="o">-</span><span class="nv">flexvol</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">pod2daemon</span><span class="o">-</span><span class="nv">flexvol</span>.<span class="nv">tar</span>
-<span class="nv">docker</span><span class="w"> </span><span class="nv">save</span><span class="w"> </span><span class="nv">docker</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">calico</span><span class="o">/</span><span class="nv">cni</span>:<span class="nv">v3</span>.<span class="mi">21</span>.<span class="mi">4</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">cni</span>.<span class="nv">tar</span>
-<span class="nv">docker</span><span class="w"> </span><span class="nv">save</span><span class="w"> </span><span class="nv">k8s</span>.<span class="nv">gcr</span>.<span class="nv">io</span><span class="o">/</span><span class="k">pause</span>:<span class="mi">3</span>.<span class="mi">1</span><span class="w">  </span><span class="o">&gt;</span><span class="w"> </span><span class="k">pause</span>.<span class="nv">tar</span>
-<span class="nv">docker</span><span class="w"> </span><span class="nv">save</span><span class="w"> </span><span class="nv">cdkbot</span><span class="o">/</span><span class="nv">hostpath</span><span class="o">-</span><span class="nv">provisioner</span>:<span class="mi">1</span>.<span class="mi">2</span>.<span class="mi">0</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">cdkbot</span>.<span class="nv">tar</span><span class="w"> </span>
-<span class="nv">docker</span><span class="w"> </span><span class="nv">save</span><span class="w"> </span><span class="nv">k8s</span>.<span class="nv">gcr</span>.<span class="nv">io</span><span class="o">/</span><span class="nv">metrics</span><span class="o">-</span><span class="nv">server</span><span class="o">/</span><span class="nv">metrics</span><span class="o">-</span><span class="nv">server</span>:<span class="nv">v0</span>.<span class="mi">5</span>.<span class="mi">2</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">metrics</span>.<span class="nv">tar</span>
+<div class="highlight"><pre><span></span><code>docker save docker.io/calico/kube-controllers:v3.21.4 &gt; kube-controllers.tar
+docker save docker.io/calico/node:v3.21.4 &gt; node.tar
+docker save docker.io/calico/pod2daemon-flexvol:v3.21.4 &gt; pod2daemon-flexvol.tar
+docker save docker.io/calico/cni:v3.21.4 &gt; cni.tar
+docker save k8s.gcr.io/pause:3.1  &gt; pause.tar
+docker save cdkbot/hostpath-provisioner:1.2.0 &gt; cdkbot.tar 
+docker save k8s.gcr.io/metrics-server/metrics-server:v0.5.2 &gt; metrics.tar
 </code></pre></div>
-
 <p>After that, <code>scp</code> those packages to your offline server and import it to its <code>microk8s</code> image registry:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">microk8s</span> <span class="n">ctr</span> <span class="n">image</span> <span class="kn">import</span> <span class="nn">kube</span><span class="o">-</span><span class="n">controllers</span><span class="o">.</span><span class="n">tar</span>
-<span class="n">microk8s</span> <span class="n">ctr</span> <span class="n">image</span> <span class="kn">import</span> <span class="nn">node.tar</span>
-<span class="n">microk8s</span> <span class="n">ctr</span> <span class="n">image</span> <span class="kn">import</span> <span class="nn">pod2daemon</span><span class="o">-</span><span class="n">flexvol</span><span class="o">.</span><span class="n">tar</span>
-<span class="n">microk8s</span> <span class="n">ctr</span> <span class="n">image</span> <span class="kn">import</span> <span class="nn">cni.tar</span>
-<span class="n">microk8s</span> <span class="n">ctr</span> <span class="n">image</span> <span class="kn">import</span> <span class="nn">pause.tar</span>
-<span class="n">microk8s</span> <span class="n">ctr</span> <span class="n">image</span> <span class="kn">import</span> <span class="nn">metrics.tar</span>
+<div class="highlight"><pre><span></span><code>microk8s ctr image import kube-controllers.tar
+microk8s ctr image import node.tar
+microk8s ctr image import pod2daemon-flexvol.tar
+microk8s ctr image import cni.tar
+microk8s ctr image import pause.tar
+microk8s ctr image import metrics.tar
 </code></pre></div>
-
 <p>NOTE: for other versions of <code>microk8s</code>, tags of images may differ. </p>
 <p>After running the following:</p>
-<div class="codehilite"><pre><span></span><code>microk8s enable hostpath-storage
+<div class="highlight"><pre><span></span><code>microk8s enable hostpath-storage
 microk8s enable rbac
 microk8s enable metrics-server
 </code></pre></div>
-
 <p>The microk8s instance should be the following:</p>
-<div class="codehilite"><pre><span></span><code>NAMESPACE      NAME                                       READY   STATUS                  RESTARTS   AGE
+<div class="highlight"><pre><span></span><code>NAMESPACE      NAME                                       READY   STATUS                  RESTARTS   AGE
 kube-system    calico-kube-controllers-7c9c8dd885-wxms9   1/1     Running                 0          3h21m
 kube-system    calico-node-8cxsq                          1/1     Running                 0          3h21m
 kube-system    hostpath-provisioner-f57964d5f-zs4sj       1/1     Running                 0          5m41s
 kube-system    metrics-server-5f8f64cb86-x7k29            1/1     Running                 0          2m15s
 </code></pre></div>
-
 <h2 id="enabling-dns-and-metallb">Enabling DNS and Metallb<a class="headerlink" href="#enabling-dns-and-metallb" title="Permanent link">¶</a></h2>
 <p><code>dns</code> and <code>metallb</code> don’t require importing any images, so you can enable them simply through the following commands:</p>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s enable dns</span>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s enable dns</span>
 <span class="l l-Scalar l-Scalar-Plain">microk8s enable metallb</span>
 </code></pre></div>
-
 <p>For more information on <code>metallb</code>, see <a href="../../gettingstarted/mk8s/k8s-microk8s/#install-metallb">Install metallb</a>.</p>
 <h2 id="installing-helm3">Installing helm3<a class="headerlink" href="#installing-helm3" title="Permanent link">¶</a></h2>
 <p>Additionally, you need to install the helm3 add-on.  See the following steps:</p>
 <ol>
 <li>Check your server’s platform with:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>dpkg --print-architecture
+<div class="highlight"><pre><span></span><code>dpkg --print-architecture
 </code></pre></div>
-
 <p>The output would be, for example: <code>amd64</code>.
 You need the platform to download the correct version of helm.</p>
 <ol start="2">
@@ -1972,20 +1958,17 @@ replaced with the result from the previous command, for example: <code>https://g
 </li>
 <li>Create <code>tmp</code> directory in <code>/var/snap/microk8s/current</code> and copy the package in the following locations: </li>
 </ol>
-<div class="codehilite"><pre><span></span><code><span class="n">sudo</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="o">-</span><span class="n">p</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">snap</span><span class="o">/</span><span class="n">microk8s</span><span class="o">/</span><span class="n">current</span><span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">helm3</span>
-<span class="n">sudo</span><span class="w"> </span><span class="n">cp</span><span class="w"> </span><span class="n">helm</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">snap</span><span class="o">/</span><span class="n">microk8s</span><span class="o">/</span><span class="n">current</span><span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">helm3</span>
+<div class="highlight"><pre><span></span><code>sudo mkdir -p /var/snap/microk8s/current/tmp/helm3
+sudo cp helm.tar.gz /var/snap/microk8s/current/tmp/helm3
 </code></pre></div>
-
 <ol start="5">
 <li>Go to the directory containing <code>enable</code> script for <code>helm3</code>:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code><span class="n">cd</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">snap</span><span class="o">/</span><span class="n">microk8s</span><span class="o">/</span><span class="n">common</span><span class="o">/</span><span class="n">addons</span><span class="o">/</span><span class="n">core</span><span class="o">/</span><span class="n">addons</span><span class="o">/</span><span class="n">helm3</span>
+<div class="highlight"><pre><span></span><code>cd /var/snap/microk8s/common/addons/core/addons/helm3
 </code></pre></div>
-
 <p>Open <code>enable</code> file with vi, nano, or some other editor. Comment this line:</p>
-<div class="codehilite"><pre><span></span><code>#fetch_as<span class="w"> </span><span class="nv">$SOURCE_URI</span>/helm-<span class="nv">$HELM_VERSION</span>-linux-<span class="cp">${</span><span class="n">SNAP_ARCH</span><span class="cp">}</span>.tar.gz<span class="w"> </span>"<span class="nv">$SNAP_DATA</span>/tmp/helm3/helm.tar.gz"
+<div class="highlight"><pre><span></span><code>#fetch_as $SOURCE_URI/helm-$HELM_VERSION-linux-${SNAP_ARCH}.tar.gz "$SNAP_DATA/tmp/helm3/helm.tar.gz"
 </code></pre></div>
-
 <p>Save file.</p>
 <ol start="6">
 <li>Run <code>microk8s enable helm3</code></li>
@@ -1993,30 +1976,30 @@ replaced with the result from the previous command, for example: <code>https://g
 <h2 id="verify-your-instance">Verify your instance<a class="headerlink" href="#verify-your-instance" title="Permanent link">¶</a></h2>
 <p>Check if all the add-ons were installed successfully using the following command: <code>microk8s status --wait-ready</code>. An example of
 a correct output is:</p>
-<div class="codehilite"><pre><span></span><code><span class="nx">microk8s</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="nx">running</span>
-<span class="nx">high</span><span class="o">-</span><span class="nx">availability</span><span class="p">:</span><span class="w"> </span><span class="nx">no</span>
-<span class="w">  </span><span class="nx">datastore</span><span class="w"> </span><span class="nx">master</span><span class="w"> </span><span class="nx">nodes</span><span class="p">:</span><span class="w"> </span><span class="m m-Double">127.0.0.1</span><span class="p">:</span><span class="mi">19001</span>
-<span class="w">  </span><span class="nx">datastore</span><span class="w"> </span><span class="nx">standby</span><span class="w"> </span><span class="nx">nodes</span><span class="p">:</span><span class="w"> </span><span class="nx">none</span>
-<span class="nx">addons</span><span class="p">:</span>
-<span class="w">  </span><span class="nx">enabled</span><span class="p">:</span>
-<span class="w">    </span><span class="nx">dns</span><span class="w">                  </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">CoreDNS</span>
-<span class="w">    </span><span class="nx">ha</span><span class="o">-</span><span class="nx">cluster</span><span class="w">           </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Configure</span><span class="w"> </span><span class="nx">high</span><span class="w"> </span><span class="nx">availability</span><span class="w"> </span><span class="nx">on</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">current</span><span class="w"> </span><span class="nx">node</span>
-<span class="w">    </span><span class="nx">helm3</span><span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Helm</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">Kubernetes</span><span class="w"> </span><span class="kn">package</span><span class="w"> </span><span class="nx">manager</span>
-<span class="w">    </span><span class="nx">hostpath</span><span class="o">-</span><span class="nx">storage</span><span class="w">     </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Storage</span><span class="w"> </span><span class="kd">class</span><span class="p">;</span><span class="w"> </span><span class="nx">allocates</span><span class="w"> </span><span class="nx">storage</span><span class="w"> </span><span class="nx">from</span><span class="w"> </span><span class="nx">host</span><span class="w"> </span><span class="nx">directory</span>
-<span class="w">    </span><span class="nx">metallb</span><span class="w">              </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Loadbalancer</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nx">your</span><span class="w"> </span><span class="nx">Kubernetes</span><span class="w"> </span><span class="nx">cluster</span>
-<span class="w">    </span><span class="nx">metrics</span><span class="o">-</span><span class="nx">server</span><span class="w">       </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">K8s</span><span class="w"> </span><span class="nx">Metrics</span><span class="w"> </span><span class="nx">Server</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nx">API</span><span class="w"> </span><span class="nx">access</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="nx">service</span><span class="w"> </span><span class="nx">metrics</span>
-<span class="w">    </span><span class="nx">rbac</span><span class="w">                 </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Role</span><span class="o">-</span><span class="nx">Based</span><span class="w"> </span><span class="nx">Access</span><span class="w"> </span><span class="nx">Control</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nx">authorisation</span>
-<span class="w">    </span><span class="nx">storage</span><span class="w">              </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Alias</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="nx">hostpath</span><span class="o">-</span><span class="nx">storage</span><span class="w"> </span><span class="nx">add</span><span class="o">-</span><span class="nx">on</span><span class="p">,</span><span class="w"> </span><span class="nx">deprecated</span>
-<span class="w">  </span><span class="nx">disabled</span><span class="p">:</span>
-<span class="w">    </span><span class="nx">community</span><span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">The</span><span class="w"> </span><span class="nx">community</span><span class="w"> </span><span class="nx">addons</span><span class="w"> </span><span class="nx">repository</span>
-<span class="w">    </span><span class="nx">dashboard</span><span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">The</span><span class="w"> </span><span class="nx">Kubernetes</span><span class="w"> </span><span class="nx">dashboard</span>
-<span class="w">    </span><span class="nx">gpu</span><span class="w">                  </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Automatic</span><span class="w"> </span><span class="nx">enablement</span><span class="w"> </span><span class="nx">of</span><span class="w"> </span><span class="nx">Nvidia</span><span class="w"> </span><span class="nx">CUDA</span>
-<span class="w">    </span><span class="nx">helm</span><span class="w">                 </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Helm</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="kn">package</span><span class="w"> </span><span class="nx">manager</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nx">Kubernetes</span>
-<span class="w">    </span><span class="nx">host</span><span class="o">-</span><span class="nx">access</span><span class="w">          </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Allow</span><span class="w"> </span><span class="nx">Pods</span><span class="w"> </span><span class="nx">connecting</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="nx">Host</span><span class="w"> </span><span class="nx">services</span><span class="w"> </span><span class="nx">smoothly</span>
-<span class="w">    </span><span class="nx">ingress</span><span class="w">              </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Ingress</span><span class="w"> </span><span class="nx">controller</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="kd">external</span><span class="w"> </span><span class="nx">access</span>
-<span class="w">    </span><span class="nx">mayastor</span><span class="w">             </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">OpenEBS</span><span class="w"> </span><span class="nx">MayaStor</span>
-<span class="w">    </span><span class="nx">prometheus</span><span class="w">           </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Prometheus</span><span class="w"> </span><span class="nx">operator</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nx">monitoring</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="nx">logging</span>
-<span class="w">    </span><span class="nx">registry</span><span class="w">             </span><span class="err">#</span><span class="w"> </span><span class="p">(</span><span class="nx">core</span><span class="p">)</span><span class="w"> </span><span class="nx">Private</span><span class="w"> </span><span class="nx">image</span><span class="w"> </span><span class="nx">registry</span><span class="w"> </span><span class="nx">exposed</span><span class="w"> </span><span class="nx">on</span><span class="w"> </span><span class="nx">localhost</span><span class="p">:</span><span class="mi">32000</span>
+<div class="highlight"><pre><span></span><code>microk8s is running
+high-availability: no
+  datastore master nodes: 127.0.0.1:19001
+  datastore standby nodes: none
+addons:
+  enabled:
+    dns                  # (core) CoreDNS
+    ha-cluster           # (core) Configure high availability on the current node
+    helm3                # (core) Helm 3 - Kubernetes package manager
+    hostpath-storage     # (core) Storage class; allocates storage from host directory
+    metallb              # (core) Loadbalancer for your Kubernetes cluster
+    metrics-server       # (core) K8s Metrics Server for API access to service metrics
+    rbac                 # (core) Role-Based Access Control for authorisation
+    storage              # (core) Alias to hostpath-storage add-on, deprecated
+  disabled:
+    community            # (core) The community addons repository
+    dashboard            # (core) The Kubernetes dashboard
+    gpu                  # (core) Automatic enablement of Nvidia CUDA
+    helm                 # (core) Helm 2 - the package manager for Kubernetes
+    host-access          # (core) Allow Pods connecting to Host services smoothly
+    ingress              # (core) Ingress controller for external access
+    mayastor             # (core) OpenEBS MayaStor
+    prometheus           # (core) Prometheus operator for monitoring and logging
+    registry             # (core) Private image registry exposed on localhost:32000
 </code></pre></div></div>
 
 
