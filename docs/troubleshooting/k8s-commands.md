@@ -15,7 +15,7 @@ For more flags and options, you can refer to the [kubectl documentation](https:/
 
 ### Accessing logs in kubernetes
 
-The instruction on how to set up and access the logs can be found in [SC4SNMP logs](bestpractises) 
+The instruction on how to set up and access the logs can be found in [SC4SNMP logs](configuring-logs.md#accessing-logs-via-splunk) 
 
 ### The get command 
 The `get` command is used to list one or more resources of selected type. The following are some examples of how to use the `get` command:
