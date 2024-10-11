@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../../splunk-requirements/">
+        <link rel="prev" href="../../enable-ipv6/">
       
       
-        <link rel="next" href="../../sck-installation/">
+        <link rel="next" href="../../../configuration/deployment-configuration/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Platform Microk8s - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Scaling with Microk8s - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#splunk-connect-for-snmp-using-microk8s" class="md-skip">
+        <a href="#scaling-snmp-with-microk8s" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Platform Microk8s
+              Scaling with Microk8s
             
           </span>
         </div>
@@ -278,19 +278,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../k8s-microk8s/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -299,7 +290,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -372,10 +362,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../k8s-microk8s-scaling/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Scaling with Microk8s
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -384,6 +394,86 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scaling-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scaling criteria
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#make-microk8s-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      Make microk8s cluster
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Make microk8s cluster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bootstrap-master-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bootstrap master node
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bootstrap-replica-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bootstrap replica nodes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scaling-sc4snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scaling SC4SNMP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#autoscaling-sc4snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Autoscaling SC4SNMP
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1690,6 +1780,74 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scaling-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scaling criteria
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#make-microk8s-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      Make microk8s cluster
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Make microk8s cluster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bootstrap-master-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bootstrap master node
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bootstrap-replica-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bootstrap replica nodes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scaling-sc4snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scaling SC4SNMP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#autoscaling-sc4snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Autoscaling SC4SNMP
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1703,68 +1861,200 @@
                   
 
 
-<div><h1 id="splunk-connect-for-snmp-using-microk8s">Splunk Connect for SNMP using MicroK8s<a class="headerlink" href="#splunk-connect-for-snmp-using-microk8s" title="Permanent link">¶</a></h1>
-<p>See the following requirements to use any Linux deployment of Microk8s to support SC4SMP. The minimum requirements below are suitable for proof of value and small installations, and actual requirements will differ.</p>
-<p>Single node minimum: </p>
+<div><h1 id="scaling-snmp-with-microk8s">Scaling SNMP with microk8s<a class="headerlink" href="#scaling-snmp-with-microk8s" title="Permanent link">¶</a></h1>
+<p>The following guide is to present how to bootstrap master and replica nodes for microk8s cluster and to explore the possibilities of scaling SC4SNMP.</p>
+<h2 id="scaling-criteria">Scaling criteria<a class="headerlink" href="#scaling-criteria" title="Permanent link">¶</a></h2>
+<p>Below is the formula that can help with deciding when to scale the system.</p>
+<p><code>2 * periodic_task_exec_time * inventory_size &gt;= workers_count * task_period</code></p>
+<p>where:</p>
 <ul>
-<li>4 cores</li>
-<li>8 GB of memory per node</li>
-<li>50 GB mounted as /</li>
+<li><code>inventory_size</code> - How many items we have on inventory (<code>values.yaml</code>).</li>
+<li><code>workers_count</code> - How many workers for <code>polling</code> / <code>walk</code> we have (pod workers).</li>
+<li><code>task_period</code> - <code>walk</code> / <code>polling</code> period time (<code>values.yaml</code>).</li>
+<li><code>periodic_task_exec_time</code> - Execution time of <code>polling</code> / <code>walk</code> task (metrics at screenshot).</li>
 </ul>
-<p>Three node minimum per node:</p>
-<ul>
-<li>4 cores</li>
-<li>8 GB of memory per node</li>
-<li>50 GB mounted /</li>
-</ul>
-<h1 id="microk8s-installation-on-ubuntu">MicroK8s installation on Ubuntu<a class="headerlink" href="#microk8s-installation-on-ubuntu" title="Permanent link">¶</a></h1>
-<p>The following quick start guidance is based on Ubuntu 20.04LTS with MicroK8s and internet access. See other deployment options
-in the MicroK8s <a href="https://microk8s.io/docs">documentation</a>, including offline and with proxy. </p>
-<h2 id="enabling-ipv6">Enabling IPv6<a class="headerlink" href="#enabling-ipv6" title="Permanent link">¶</a></h2>
-<p>If you plan to poll or receive trap notifications from IPv6 addresses, firstly check the instructions for <a href="../../enable-ipv6/">enabling 
-IPv6</a>.</p>
-<h2 id="install-microk8s-using-snap">Install MicroK8s using Snap<a class="headerlink" href="#install-microk8s-using-snap" title="Permanent link">¶</a></h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>microk8s<span class="w"> </span>--classic<span class="w"> </span>--channel<span class="o">=</span><span class="m">1</span>.30/stable
+<p><img alt="task exec time" src="../../../images/sc4snmp_task_execution.png"></p>
+<p>If the left side of equation is higher you need to scale <code>workers_count</code> or increase <code>task_period</code>.</p>
+<h2 id="make-microk8s-cluster">Make microk8s cluster<a class="headerlink" href="#make-microk8s-cluster" title="Permanent link">¶</a></h2>
+<h3 id="bootstrap-master-node">Bootstrap master node<a class="headerlink" href="#bootstrap-master-node" title="Permanent link">¶</a></h3>
+<ol>
+<li>
+<p>Setup master node using following <a href="../k8s-microk8s/">guide</a>. </p>
+</li>
+<li>
+<p>Generate joining token for replicas:</p>
+</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>add-node
 </code></pre></div>
 
-<p>Add a user to the microk8s group so the <code>sudo</code> command is no longer necessary:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>microk8s<span class="w"> </span><span class="nv">$USER</span>
+<ol start="3">
+<li>After running <code>add-node</code> on stdout you will get a command (like <code>microk8s join &lt;master_node&gt;:25000/&lt;token&gt;</code>) that you need to remember.</li>
+</ol>
+<h3 id="bootstrap-replica-nodes">Bootstrap replica nodes<a class="headerlink" href="#bootstrap-replica-nodes" title="Permanent link">¶</a></h3>
+<ol>
+<li>Installing microk8s on replica node: </li>
+</ol>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>microk8s<span class="w"> </span>--classic<span class="w"> </span>--channel<span class="o">=</span><span class="m">1</span>.30/stable
+sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>microk8s<span class="w"> </span><span class="nv">$USER</span>
 sudo<span class="w"> </span>chown<span class="w"> </span>-f<span class="w"> </span>-R<span class="w"> </span><span class="nv">$USER</span><span class="w"> </span>~/.kube
 su<span class="w"> </span>-<span class="w"> </span><span class="nv">$USER</span>
 </code></pre></div>
 
-<p>Wait for Installation of Mk8S to complete:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
+<ol start="2">
+<li>After running <code>add-node</code> on <strong>master node</strong> you will get on stdout command that you need to run on your <strong>replica node</strong>:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>join<span class="w"> </span>&lt;master_node&gt;:25000/&lt;token&gt;
 </code></pre></div>
 
-<h2 id="install-required-services-for-sc4snmp">Install required services for SC4SNMP<a class="headerlink" href="#install-required-services-for-sc4snmp" title="Permanent link">¶</a></h2>
-<p>The following commands can be issued from any one node in a cluster:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>iscsid
-microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>helm3
-microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>hostpath-storage
-microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>rbac
-microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>metrics-server
-microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
+<ol start="3">
+<li>Check that replica joined cluster:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>nodes
 </code></pre></div>
 
-<p>Install the DNS server for mk8s and configure the forwarding DNS servers. Replace the IP addressed below (opendns) with
-the allowed values for your network: </p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>dns:208.67.222.222,208.67.220.220
-microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
+<p>New nodes should appear:</p>
+<div class="codehilite"><pre><span></span><code>NAME<span class="w">                  </span>STATUS<span class="w">   </span>ROLES<span class="w">    </span>AGE<span class="w">   </span>VERSION
+i-05ecfbf799e480188<span class="w">   </span>Ready<span class="w">    </span>&lt;none&gt;<span class="w">   </span>25h<span class="w">   </span>v1.30.5
+i-0733cb329576e6c78<span class="w">   </span>Ready<span class="w">    </span>&lt;none&gt;<span class="w">   </span>25h<span class="w">   </span>v1.30.5
+i-0b27bcc06fc5c660e<span class="w">   </span>Ready<span class="w">    </span>&lt;none&gt;<span class="w">   </span>25h<span class="w">   </span>v1.30.5
 </code></pre></div>
 
-<h2 id="install-metallb">Install Metallb<a class="headerlink" href="#install-metallb" title="Permanent link">¶</a></h2>
-<p>When installing Metallb, you will be prompted for one or more IPs to use as entry points
-into the cluster. If you plan to enable clustering, this IP should not be assigned to the host (floats).
-If you do not plan to cluster, then this IP should be the IP of your host.</p>
-<p>Note2: a single IP in cidr format is x.x.x.x/32. Use CIDR or range syntax for single server installations. This can be
-the same as the primary IP.</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>metallb
-microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
+<h2 id="scaling-sc4snmp">Scaling SC4SNMP<a class="headerlink" href="#scaling-sc4snmp" title="Permanent link">¶</a></h2>
+<ol>
+<li>
+<p><a href="../../sc4snmp-installation/">Install SC4SNMP</a> if it is not installed yet.</p>
+</li>
+<li>
+<p>Add <code>worker</code> section on <code>values.yaml</code>:</p>
+</li>
+</ol>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">poller</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">  </span><span class="nt">sender</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 </code></pre></div>
 
-<h2 id="add-nodes-optional">Add nodes (optional)<a class="headerlink" href="#add-nodes-optional" title="Permanent link">¶</a></h2>
-<p>If you need cluster mode please use following <a href="../k8s-microk8s-scaling/#make-microk8s-cluster">guide</a>.</p></div>
+<ol start="3">
+<li>Add <code>traps</code> replica count in <code>values.yaml</code>:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+</code></pre></div>
+
+<ol start="4">
+<li>Redeploy SC4SNMP:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+</code></pre></div>
+
+<ol start="5">
+<li>Check that SC4SNMP has been scaled:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>sc4snmp
+</code></pre></div>
+
+<p>You should get 4 replicas for each worker and traps service:</p>
+<div class="codehilite"><pre><span></span><code>NAME<span class="w">                                                          </span>READY<span class="w">   </span>STATUS<span class="w">      </span>RESTARTS<span class="w">   </span>AGE
+snmp-mibserver-5df74fb678-zkj9m<span class="w">                               </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
+snmp-mongodb-6dc5c4f74d-xg6p7<span class="w">                                 </span><span class="m">2</span>/2<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
+snmp-redis-master-0<span class="w">                                           </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
+snmp-splunk-connect-for-snmp-inventory-k9t87<span class="w">                  </span><span class="m">0</span>/1<span class="w">     </span>Completed<span class="w">   </span><span class="m">0</span><span class="w">          </span>3m
+snmp-splunk-connect-for-snmp-scheduler-76848cf748-57qbx<span class="w">       </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
+snmp-splunk-connect-for-snmp-trap-9f55664c4-9dv7d<span class="w">             </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>3m1s
+snmp-splunk-connect-for-snmp-trap-9f55664c4-crgld<span class="w">             </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>3m1s
+snmp-splunk-connect-for-snmp-trap-9f55664c4-sb768<span class="w">             </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
+snmp-splunk-connect-for-snmp-trap-9f55664c4-tkhcp<span class="w">             </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>3m1s
+snmp-splunk-connect-for-snmp-worker-poller-7487956697-4hvpl<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>21h
+snmp-splunk-connect-for-snmp-worker-poller-7487956697-8bvnn<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>3m1s
+snmp-splunk-connect-for-snmp-worker-poller-7487956697-9dfgt<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>3m1s
+snmp-splunk-connect-for-snmp-worker-poller-7487956697-hlhvz<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>24h
+snmp-splunk-connect-for-snmp-worker-sender-657589666f-979d2<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>3m1s
+snmp-splunk-connect-for-snmp-worker-sender-657589666f-mrvg9<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>3m1s
+snmp-splunk-connect-for-snmp-worker-sender-657589666f-qtcr8<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>21h
+snmp-splunk-connect-for-snmp-worker-sender-657589666f-tc8sv<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>24h
+snmp-splunk-connect-for-snmp-worker-trap-859dc47d9b-6fbs2<span class="w">     </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>24h
+snmp-splunk-connect-for-snmp-worker-trap-859dc47d9b-kdcdb<span class="w">     </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>3m1s
+snmp-splunk-connect-for-snmp-worker-trap-859dc47d9b-sfxvb<span class="w">     </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>3m
+snmp-splunk-connect-for-snmp-worker-trap-859dc47d9b-xmmwv<span class="w">     </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>21h
+</code></pre></div>
+
+<h2 id="autoscaling-sc4snmp">Autoscaling SC4SNMP<a class="headerlink" href="#autoscaling-sc4snmp" title="Permanent link">¶</a></h2>
+<ol>
+<li>
+<p><a href="../../sc4snmp-installation/">Install SC4SNMP</a> if it is not installed yet.</p>
+</li>
+<li>
+<p>Add autoscaling options to <code>values.yaml</code>:</p>
+</li>
+</ol>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">poller</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">      </span><span class="nt">maxReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">      </span><span class="nt">maxReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">  </span><span class="nt">sender</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">      </span><span class="nt">maxReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+
+<span class="nt">traps</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">autoscaling</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">    </span><span class="nt">maxReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+</code></pre></div>
+
+<ol start="3">
+<li>Redeploy SC4SNMP:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+</code></pre></div>
+
+<ol start="4">
+<li>Checked that SC4SNMP scaled:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>po<span class="w"> </span>-n<span class="w"> </span>sc4snmp
+</code></pre></div>
+
+<p>After scaling of each worker and trap service 5-10 instances will appear:</p>
+<div class="codehilite"><pre><span></span><code>NAME<span class="w">                                                          </span>READY<span class="w">   </span>STATUS<span class="w">      </span>RESTARTS<span class="w">   </span>AGE
+snmp-mibserver-6fdcdf9ddd-7bvmj<span class="w">                               </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
+snmp-mongodb-6dc5c4f74d-6b7mf<span class="w">                                 </span><span class="m">2</span>/2<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
+snmp-redis-master-0<span class="w">                                           </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
+snmp-splunk-connect-for-snmp-inventory-sssgs<span class="w">                  </span><span class="m">0</span>/1<span class="w">     </span>Completed<span class="w">   </span><span class="m">0</span><span class="w">          </span>3m37s
+snmp-splunk-connect-for-snmp-scheduler-5fcb6dcb44-r79ff<span class="w">       </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>25h
+snmp-splunk-connect-for-snmp-trap-5788bc498c-62xsq<span class="w">            </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>2m10s
+snmp-splunk-connect-for-snmp-trap-5788bc498c-bmlhg<span class="w">            </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>2m10s
+snmp-splunk-connect-for-snmp-trap-5788bc498c-p7mkq<span class="w">            </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>2m10s
+snmp-splunk-connect-for-snmp-trap-5788bc498c-t8q9c<span class="w">            </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>2m10s
+snmp-splunk-connect-for-snmp-trap-5788bc498c-xjjp2<span class="w">            </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>24h
+snmp-splunk-connect-for-snmp-worker-poller-5d76b9b675-25tbf<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>16m
+snmp-splunk-connect-for-snmp-worker-poller-5d76b9b675-dc6zr<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>16m
+snmp-splunk-connect-for-snmp-worker-poller-5d76b9b675-g7vpr<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>16m
+snmp-splunk-connect-for-snmp-worker-poller-5d76b9b675-gdkgq<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>16m
+snmp-splunk-connect-for-snmp-worker-poller-5d76b9b675-pg6cj<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>24h
+snmp-splunk-connect-for-snmp-worker-sender-7757fb7f89-56h9w<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>24h
+snmp-splunk-connect-for-snmp-worker-sender-7757fb7f89-hr54w<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>16m
+snmp-splunk-connect-for-snmp-worker-sender-7757fb7f89-j7wcn<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>16m
+snmp-splunk-connect-for-snmp-worker-sender-7757fb7f89-sgsdg<span class="w">   </span><span class="m">0</span>/1<span class="w">     </span>Pending<span class="w">     </span><span class="m">0</span><span class="w">          </span>16m
+snmp-splunk-connect-for-snmp-worker-sender-7757fb7f89-xrpfx<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>16m
+snmp-splunk-connect-for-snmp-worker-trap-6b8fd89868-79x2l<span class="w">     </span><span class="m">0</span>/1<span class="w">     </span>Pending<span class="w">     </span><span class="m">0</span><span class="w">          </span>16m
+snmp-splunk-connect-for-snmp-worker-trap-6b8fd89868-br7pf<span class="w">     </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>24h
+snmp-splunk-connect-for-snmp-worker-trap-6b8fd89868-cnmh9<span class="w">     </span><span class="m">0</span>/1<span class="w">     </span>Pending<span class="w">     </span><span class="m">0</span><span class="w">          </span>16m
+snmp-splunk-connect-for-snmp-worker-trap-6b8fd89868-dhdgg<span class="w">     </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">     </span><span class="m">0</span><span class="w">          </span>16m
+snmp-splunk-connect-for-snmp-worker-trap-6b8fd89868-wcwq5<span class="w">     </span><span class="m">0</span>/1<span class="w">     </span>Pending<span class="w">     </span><span class="m">0</span><span class="w">          </span>16m
+</code></pre></div></div>
 
 
 
