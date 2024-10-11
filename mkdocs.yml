@@ -14,6 +14,9 @@ markdown_extensions:
   - codehilite
   - attr_list
   - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
 
 plugins:
   - search:

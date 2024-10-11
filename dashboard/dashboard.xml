@@ -12,7 +12,7 @@
         <fieldForLabel>ip</fieldForLabel>
         <fieldForValue>ip</fieldForValue>
         <search>
-          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;*;poll" | rex field=_raw "Sending due task sc4snmp;(?&lt;ip&gt;.+);(?&lt;num&gt;\d+);poll" | stats count by ip</query>
+          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;*;poll" | rex field=_raw "Sending due task sc4snmp;(?&lt;ip&gt;.+):(?&lt;port&gt;\d+);(?&lt;num&gt;\d+);poll" | stats count by ip</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
         </search>
@@ -20,7 +20,7 @@
       <chart>
         <title>In case of unsuccessful polling status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/bestpractices/</title>
         <search>
-          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.snmp.tasks.poll $poll_status_host$ | rex field=_raw "Task splunk_connect_for_snmp.*\[*\] (?&lt;status&gt;\w+)" | where status != "received" | timechart count by status</query>
+          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.snmp.tasks.poll "$poll_status_host$" | rex field=_raw "Task splunk_connect_for_snmp.*\[*\] (?&lt;status&gt;\w+)" | where status != "received" | timechart count by status</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
           <refresh>5m</refresh>
@@ -37,7 +37,7 @@
         <option name="refresh.display">progressbar</option>
         <option name="trellis.enabled">0</option>
         <drilldown>
-          <link target="_blank">search?q=index%3D*%20sourcetype%3D%22*%3Acontainer%3Asplunk-connect-for-snmp-*%22%20splunk_connect_for_snmp.snmp.tasks.poll%20$poll_status_host$%20%7C%20rex%20field%3D_raw%20%22Task%20splunk_connect_for_snmp.*%5C%5B*%5C%5D%20(%3F%3Cstatus%3E%5Cw%2B)%22%20%7C%20where%20status%20!%3D%20%22received%22&amp;earliest=-24h@h&amp;latest=now</link>
+          <link target="_blank">search?q=index%3D*%20sourcetype%3D%22*%3Acontainer%3Asplunk-connect-for-snmp-*%22%20splunk_connect_for_snmp.snmp.tasks.poll%20%22$poll_status_host$%22%20%7C%20rex%20field%3D_raw%20%22Task%20splunk_connect_for_snmp.*%5C%5B*%5C%5D%20(%3F%3Cstatus%3E%5Cw%2B)%22%20%7C%20where%20status%20!%3D%20%22received%22&amp;earliest=-24h@h&amp;latest=now</link>
         </drilldown>
       </chart>
     </panel>
@@ -51,7 +51,7 @@
         <fieldForLabel>ip</fieldForLabel>
         <fieldForValue>ip</fieldForValue>
         <search>
-          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;*;poll" | rex field=_raw "Sending due task sc4snmp;(?&lt;ip&gt;.+);(?&lt;num&gt;\d+);poll" | stats count by ip</query>
+          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;*;poll" | rex field=_raw "Sending due task sc4snmp;(?&lt;ip&gt;.+):(?&lt;port&gt;\d+);(?&lt;num&gt;\d+);poll" | stats count by ip</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
         </search>
@@ -59,7 +59,7 @@
       <chart>
         <title>Using this chart you can understand when SC4SNMP scheduled polling for your SNMP device last time. The process works if it runs regularly.</title>
         <search>
-          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" Scheduler: Sending due task sc4snmp;$poll_host$;*poll | timechart count</query>
+          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" Scheduler: Sending due task sc4snmp;*;*poll "$poll_host$" | timechart count</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
           <refresh>5m</refresh>
@@ -70,7 +70,7 @@
         <option name="height">331</option>
         <option name="refresh.display">progressbar</option>
         <drilldown>
-          <link target="_blank">search?q=index%3D*%20sourcetype%3D%22*%3Acontainer%3Asplunk-connect-for-snmp-*%22%20Scheduler%3A%20Sending%20due%20task%20sc4snmp%3B$poll_host$%3B*poll&amp;earliest=-24h@h&amp;latest=now</link>
+          <link target="_blank">search?q=index%3D*%20sourcetype%3D%22*%3Acontainer%3Asplunk-connect-for-snmp-*%22%20Scheduler%3A%20Sending%20due%20task%20sc4snmp%3B*%3B*poll%20%22$poll_host$%22&amp;earliest=-24h@h&amp;latest=now</link>
         </drilldown>
       </chart>
     </panel>
@@ -86,7 +86,7 @@
         <fieldForLabel>ip</fieldForLabel>
         <fieldForValue>ip</fieldForValue>
         <search>
-          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;walk" | rex field=_raw "Sending due task sc4snmp;(?&lt;ip&gt;.+);walk" | stats count by ip</query>
+          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;walk" | rex field=_raw "Sending due task sc4snmp;(?&lt;ip&gt;.+):(?&lt;port&gt;\d+);walk" | stats count by ip</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
         </search>
@@ -94,7 +94,7 @@
       <chart>
         <title>In case of unsuccessful walk status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/bestpractices/</title>
         <search>
-          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.snmp.tasks.walk $walk_status_host$ | rex field=_raw "Task splunk_connect_for_snmp.*\[*\] (?&lt;status&gt;\w+)" | where status != "received" | timechart count by status</query>
+          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.snmp.tasks.walk "$walk_status_host$" | rex field=_raw "Task splunk_connect_for_snmp.*\[*\] (?&lt;status&gt;\w+)" | where status != "received" | timechart count by status</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
           <refresh>5m</refresh>
@@ -105,7 +105,7 @@
         <option name="height">327</option>
         <option name="refresh.display">progressbar</option>
         <drilldown>
-          <link target="_blank">search?q=index%3D*%20sourcetype%3D%22kube%3Acontainer%3Asplunk-connect-for-snmp-*%22%20splunk_connect_for_snmp.snmp.tasks.walk%20$walk_status_host$%20%7C%20rex%20field%3D_raw%20%22Task%20splunk_connect_for_snmp.*%5C%5B*%5C%5D%20(%3F%3Cstatus%3E%5Cw%2B)%22%20%7C%20where%20status%20!%3D%20%22received%22&amp;earliest=-24h@h&amp;latest=now</link>
+          <link target="_blank">search?q=index%3D*%20sourcetype%3D%22kube%3Acontainer%3Asplunk-connect-for-snmp-*%22%20splunk_connect_for_snmp.snmp.tasks.walk%20%22$walk_status_host$%22%20%7C%20rex%20field%3D_raw%20%22Task%20splunk_connect_for_snmp.*%5C%5B*%5C%5D%20(%3F%3Cstatus%3E%5Cw%2B)%22%20%7C%20where%20status%20!%3D%20%22received%22&amp;earliest=-24h@h&amp;latest=now</link>
         </drilldown>
       </chart>
     </panel>
@@ -119,7 +119,7 @@
         <fieldForLabel>ip</fieldForLabel>
         <fieldForValue>ip</fieldForValue>
         <search>
-          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;walk" | rex field=_raw "Sending due task sc4snmp;(?&lt;ip&gt;.+);walk" | stats count by ip</query>
+          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;walk" | rex field=_raw "Sending due task sc4snmp;(?&lt;ip&gt;.+):(?&lt;port&gt;\d+);walk" | stats count by ip</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
         </search>
@@ -127,7 +127,7 @@
       <chart>
         <title>Using this chart you can understand when SC4SNMP scheduled walk for your SNMP device last time. The process works if it runs regularly.</title>
         <search>
-          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" Scheduler: Sending due task sc4snmp;$walk_host$;walk | timechart count</query>
+          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" Scheduler: Sending due task sc4snmp;*;walk "$walk_host$" | timechart count</query>
           <earliest>-24h@h</earliest>
           <latest>now</latest>
           <refresh>5m</refresh>
@@ -138,7 +138,7 @@
         <option name="height">324</option>
         <option name="refresh.display">progressbar</option>
         <drilldown>
-          <link target="_blank">search?q=index%3D*%20sourcetype%3D%22*%3Acontainer%3Asplunk-connect-for-snmp-*%22%20Scheduler%3A%20Sending%20due%20task%20sc4snmp%3B$walk_host$%3Bwalk&amp;earliest=-24h@h&amp;latest=now</link>
+          <link target="_blank">search?q=index%3D*%20sourcetype%3D%22*%3Acontainer%3Asplunk-connect-for-snmp-*%22%20Scheduler%3A%20Sending%20due%20task%20sc4snmp%3B*%3Bwalk%20%22$walk_host$%22&amp;earliest=-24h@h&amp;latest=now</link>
         </drilldown>
       </chart>
     </panel>

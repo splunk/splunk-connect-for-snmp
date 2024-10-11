@@ -2,7 +2,11 @@
 
 Using dashboard you can monitor SC4SNMP and be sure that is healthy and working correctly.
 
+
 ## Presetting
+
+!!! info
+    Dashboard compatible with SC4SNMP 1.11+
 
 1. [Create metrics indexes](gettingstarted/splunk-requirements.md#requirements-for-splunk-enterprise-or-enterprise-cloud) in Splunk.
 2. Enable metrics logging for your runtime:
@@ -13,7 +17,7 @@ Using dashboard you can monitor SC4SNMP and be sure that is healthy and working 
 
 1. In Splunk platform open **Search -> Dashboards**.
 2. Click on **Create New Dashboard** and make an empty dashboard. Be sure to choose Classic Dashboards.
-3. In the **Edit Dashboard** view, go to Source and replace the initial xml with the contents of [dashboard/dashboard.xml](https://github.com/splunk/splunk-connect-for-snmp/blob/main/dashboard/dashboard.xml) published in the SC4SNMP repository.
+3. In the **Edit Dashboard** view, go to Source and replace the initial xml with the contents of **dashboard.xml**. This file you cand find on [release page](https://github.com/splunk/splunk-connect-for-snmp/releases) for your version in attachments. 
 4. Save your changes. Your dashboard is ready to use.
 
 
