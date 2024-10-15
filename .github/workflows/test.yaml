@@ -1,0 +1,35 @@
+name: test
+on:
+  pull_request:
+    branches:
+      - "main"
+      - "develop"
+      - "next"
+
+
+jobs:
+  mike:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      pages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: oleksiyrudenko/gha-git-credentials@v2.1.2
+        with:
+          token: "${{ secrets.PAT_CLATOOL }}"
+
+      - name: Upload Docs
+        run: |
+          sudo apt update
+          sudo apt install gnome-keyring
+          BRANCH=$(echo $GITHUB_REF | cut -d / -f 3)
+          echo $BRANCH
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+          poetry run pip install 'setuptools==65.6.3'
+          poetry run mike list
