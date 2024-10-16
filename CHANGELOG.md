@@ -3,13 +3,17 @@
 ## Unreleased
 
 ### Changed
+
+### Fixed
+
+## [1.12.0]
+
+### Changed
 - add metrics dashboard
 - add support for IPv6 polling and traps for kubernetes deployment
 - add support for IPv6 polling and traps for docker deployment
 - add nodeSelector and podAntiAffinity to sim chart
 - add support for new IP format in dashboard
-
-### Fixed
 
 ## [1.11.0]
 
