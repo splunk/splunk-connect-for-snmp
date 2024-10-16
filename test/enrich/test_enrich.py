@@ -1,14 +1,16 @@
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from splunk_connect_for_snmp.enrich.tasks import (
     enrich,
     enrich_metric_with_fields_from_db,
+    get_current_target,
+    logger,
 )
 
 attributes = {
     "id": "GROUP1",
-    "address": "192.168.0.1",
+    "address": "192.168.0.1:161",
     "fields": {
         "SNMPv2-MIB|sysDescr": {
             "time": 1234,
@@ -36,7 +38,7 @@ attributes = {
 
 attributes2 = {
     "id": "GROUP2",
-    "address": "192.168.0.1",
+    "address": "192.168.0.1:161",
     "fields": {
         "UDP-MIB|extraAttr": {
             "time": 1234,
@@ -49,7 +51,7 @@ attributes2 = {
 }
 
 input_dict = {
-    "address": "192.168.0.1",
+    "address": "192.168.0.1:161",
     "result": {
         "GROUP1": {
             "fields": {
@@ -92,7 +94,7 @@ input_dict = {
 
 input_enrich = {
     "time": 1676291976.2939305,
-    "address": "54.91.99.113",
+    "address": "54.91.99.113:161",
     "result": {
         "ENTITY-MIB::int=1": {
             "metrics": {},
@@ -232,7 +234,7 @@ class TestEnrich(TestCase):
     @patch("pymongo.collection.Collection.bulk_write")
     @patch("splunk_connect_for_snmp.enrich.tasks.check_restart")
     def test_enrich(self, m_check_restart, bulk_write, m_update_one, m_find_one):
-        current_target = {"address": "192.168.0.1"}
+        current_target = {"address": "192.168.0.1:161"}
         m_find_one.side_effect = [current_target, True, attributes, attributes2, {}]
 
         result = enrich(input_dict)
@@ -281,7 +283,7 @@ class TestEnrich(TestCase):
             result["result"]["GROUP2"]["fields"]["UDP-MIB.extraAttr"],
         )
 
-        self.assertEqual("192.168.0.1", result["address"])
+        self.assertEqual("192.168.0.1:161", result["address"])
 
         m_check_restart.assert_called()
         bulk_write.assert_called()
@@ -323,7 +325,7 @@ class TestEnrich(TestCase):
         )
 
         bulk_write.assert_called()
-        self.assertEqual("192.168.0.1", result["address"])
+        self.assertEqual("192.168.0.1:161", result["address"])
 
     def test_enrich_metric_with_fields_from_db(self):
         additional_field = {
@@ -480,3 +482,37 @@ class TestEnrich(TestCase):
         result = snmp_object.copy()
         enrich_metric_with_fields_from_db(snmp_object, additional_field)
         self.assertEqual(result, snmp_object)
+
+    def test_get_current_target(self):
+        address = "127.0.0.1:161"
+        targets_collection = MagicMock()
+        targets_collection.find_one.side_effect = [
+            address,
+            True,
+            attributes,
+            attributes2,
+            {},
+        ]
+        with self.assertLogs(logger, level="INFO") as logs:
+            current_address = get_current_target(address, targets_collection)
+            self.assertEqual("127.0.0.1:161", current_address)
+            self.assertEqual(
+                [
+                    "INFO:splunk_connect_for_snmp.enrich.tasks:Not first time for 127.0.0.1:161"
+                ],
+                logs.output,
+            )
+
+    def test_get_current_target_empty_find(self):
+        address = "127.0.0.1:161"
+        targets_collection = MagicMock()
+        targets_collection.find_one.return_value = None
+        with self.assertLogs(logger, level="INFO") as logs:
+            current_address = get_current_target(address, targets_collection)
+            self.assertEqual({"address": "127.0.0.1:161"}, current_address)
+            self.assertEqual(
+                [
+                    "INFO:splunk_connect_for_snmp.enrich.tasks:First time for 127.0.0.1:161"
+                ],
+                logs.output,
+            )
