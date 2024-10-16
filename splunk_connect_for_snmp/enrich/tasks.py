@@ -96,16 +96,8 @@ def enrich(self, result):
     updates = []
     attribute_updates = []
 
-    current_target = targets_collection.find_one(
-        {"address": address}, {"target": True, "sysUpTime": True}
-    )
-    if current_target is None:
-        logger.info(f"First time for {address}")
-        current_target = {"address": address}
-    else:
-        logger.info(f"Not first time for {address}")
+    current_target = get_current_target(address, targets_collection)
 
-    # TODO: Compare the ts field with the lastmodified time of record and only update if we are newer
     check_restart(current_target, result["result"], targets_collection, address)
     logger.info(f"After check_restart for {address}")
     # First write back to DB new/changed data
@@ -136,46 +128,17 @@ def enrich(self, result):
                 upsert=True,
             )
         new_fields = []
-        for field_key, field_value in group_data["fields"].items():
-            field_key_hash = field_key.replace(".", "|")
-            field_value["name"] = field_key
-            cv = None
-            if current_attributes and field_key_hash in current_attributes.get(
-                "fields", {}
-            ):
-                cv = current_attributes["fields"][field_key_hash]
-
-            # if new field_value is different than the previous one, update
-            if cv and cv != field_value:
-                # modifed
-                attribute_updates.append(
-                    {"$set": {f"fields.{field_key_hash}": field_value}}
-                )
-
-            elif cv:
-                # unchanged
-                pass
-            else:
-                # new
-                new_fields.append({"$set": {f"fields.{field_key_hash}": field_value}})
-            if field_key in TRACKED_F:
-                updates.append(
-                    {"$set": {f"state.{field_key.replace('.', '|')}": field_value}}
-                )
-
-            if len(updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
-                targets_collection.update_one(
-                    {"address": address}, updates, upsert=True
-                )
-                updates.clear()
-
-            if len(attribute_updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
-                attributes_collection.update_one(
-                    {"address": address, "group_key_hash": group_key_hash},
-                    attribute_updates,
-                    upsert=True,
-                )
-                attribute_updates.clear()
+        set_attribute_updates(
+            address,
+            attribute_updates,
+            attributes_collection,
+            current_attributes,
+            group_data,
+            group_key_hash,
+            new_fields,
+            targets_collection,
+            updates,
+        )
         if new_fields:
             attributes_bulk_write_operations.append(
                 UpdateOne(
@@ -186,15 +149,14 @@ def enrich(self, result):
             )
             new_fields.clear()
 
-        if updates:
-            targets_collection.update_one({"address": address}, updates, upsert=True)
-            updates.clear()
-        if attribute_updates:
-            attributes_collection.update_one(
-                {"address": address, "group_key_hash": group_key_hash},
-                attribute_updates,
-            )
-            attribute_updates.clear()
+        update_collections(
+            address,
+            attribute_updates,
+            attributes_collection,
+            group_key_hash,
+            targets_collection,
+            updates,
+        )
 
         # Now add back any fields we need
         if current_attributes:
@@ -203,6 +165,23 @@ def enrich(self, result):
             if attribute_group_id in result["result"]:
                 snmp_object = result["result"][attribute_group_id]
                 enrich_metric_with_fields_from_db(snmp_object, fields)
+    bulk_write_attributes(attributes_bulk_write_operations, attributes_collection)
+    return result
+
+
+def get_current_target(address, targets_collection):
+    current_target = targets_collection.find_one(
+        {"address": address}, {"target": True, "sysUpTime": True}
+    )
+    if current_target is None:
+        logger.info(f"First time for {address}")
+        current_target = {"address": address}
+    else:
+        logger.info(f"Not first time for {address}")
+    return current_target
+
+
+def bulk_write_attributes(attributes_bulk_write_operations, attributes_collection):
     if attributes_bulk_write_operations:
         logger.debug("Start of bulk_write")
         start = time.time()
@@ -214,7 +193,76 @@ def enrich(self, result):
             f"ELAPSED TIME OF BULK: {end - start} for {len(attributes_bulk_write_operations)} operations"
         )
         logger.debug(f"result api: {bulk_result.bulk_api_result}")
-    return result
+
+
+def update_collections(
+    address,
+    attribute_updates,
+    attributes_collection,
+    group_key_hash,
+    targets_collection,
+    updates,
+):
+    if updates:
+        targets_collection.update_one({"address": address}, updates, upsert=True)
+        updates.clear()
+    if attribute_updates:
+        attributes_collection.update_one(
+            {"address": address, "group_key_hash": group_key_hash},
+            attribute_updates,
+        )
+        attribute_updates.clear()
+
+
+def set_attribute_updates(
+    address,
+    attribute_updates,
+    attributes_collection,
+    current_attributes,
+    group_data,
+    group_key_hash,
+    new_fields,
+    targets_collection,
+    updates,
+):
+    for field_key, field_value in group_data["fields"].items():
+        field_key_hash = field_key.replace(".", "|")
+        field_value["name"] = field_key
+        cv = None
+        if current_attributes and field_key_hash in current_attributes.get(
+            "fields", {}
+        ):
+            cv = current_attributes["fields"][field_key_hash]
+
+        # if new field_value is different than the previous one, update
+        if cv and cv != field_value:
+            # modifed
+            attribute_updates.append(
+                {"$set": {f"fields.{field_key_hash}": field_value}}
+            )
+
+        elif cv:
+            # unchanged
+            pass
+        else:
+            # new
+            new_fields.append({"$set": {f"fields.{field_key_hash}": field_value}})
+        if field_key in TRACKED_F:
+            updates.append(
+                {"$set": {f"state.{field_key.replace('.', '|')}": field_value}}
+            )
+
+        if len(updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
+            targets_collection.update_one({"address": address}, updates, upsert=True)
+            updates.clear()
+
+        if len(attribute_updates) >= MONGO_UPDATE_BATCH_THRESHOLD:
+            attributes_collection.update_one(
+                {"address": address, "group_key_hash": group_key_hash},
+                attribute_updates,
+                upsert=True,
+            )
+            attribute_updates.clear()
 
 
 def enrich_metric_with_fields_from_db(snmp_object, fields_from_db):
