@@ -4,9 +4,9 @@ dependencies:
   version: 13.18.5
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 19.6.2
+  version: 20.2.0
 - name: mibserver
   repository: https://pysnmp.github.io/mibs/charts/
-  version: 1.15.11
-digest: sha256:bf06c372ef537ce231d60cc88f571997c6be554e0a2ae0ead95d262183d6aabe
-generated: "2024-07-24T13:03:51.800592+02:00"
+  version: 1.15.13
+digest: sha256:dedfae30b39e9b78a83f8e1822666095f79ba2b9b112b04f7a11a2a318674713
+generated: "2024-10-14T10:28:52.408747265Z"

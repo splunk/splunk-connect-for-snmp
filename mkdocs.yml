@@ -14,6 +14,9 @@ markdown_extensions:
   - codehilite
   - attr_list
   - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
 
 plugins:
   - search:
@@ -41,6 +44,8 @@ nav:
       - Platform Microk8s: "gettingstarted/mk8s/k8s-microk8s.md"
       - Install Splunk OpenTelemetry Collector for Kubernetes: "gettingstarted/sck-installation.md"
       - Install SC4SNMP: "gettingstarted/sc4snmp-installation.md"
+      - Enable IPv6: "gettingstarted/enable-ipv6.md"
+      - Scaling with Microk8s: "gettingstarted/mk8s/k8s-microk8s-scaling.md"
   - Configuration:
       - Deployment: "configuration/deployment-configuration.md"
       - Configurable values: "configuration/values-params-description.md"
@@ -78,12 +83,21 @@ nav:
       - SNMPv3 secrets configuration: "dockercompose/7-snmpv3-secrets.md"
       - Offline installation: "dockercompose/8-offline-installation.md"
       - Sending logs to Splunk: "dockercompose/9-splunk-logging.md"
+      - Enable IPv6: "dockercompose/10-enable-ipv6.md"
   - Lightweight installation: "small-environment.md"
-  - Planning: "planning.md"
+  - Architecture:
+      - High-level design: "architecture/design.md"
+      - Infrastructure Planning: "architecture/planning.md"
   - Security: "security.md"
   - Request MIB: "mib-request.md"
   - Upgrade SC4SNMP: "upgrade.md"
-  - Troubleshooting: "bestpractices.md"
+  - Troubleshooting:
+      - Accessing and configuring logs: "troubleshooting/configuring-logs.md"
+      - Polling issues: "troubleshooting/polling-issues.md"
+      - Traps issues: "troubleshooting/traps-issues.md"
+      - Kubernetes commands: "troubleshooting/k8s-commands.md"
+      - Docker commands: "troubleshooting/docker-commands.md"
   - Releases: "releases.md"
-  - High Availability: ha.md
+  - High Availability: "ha.md"
   - Improved polling performance: "improved-polling.md"
+  - Monitoring dashboard: "dashboard.md"

@@ -4,16 +4,6 @@ Splunk Connect for SNMP (SC4SNMP) is a solution that allows the customer
 to get data from network devices and appliances when a more feature-complete solution, such as the Splunk Universal Forwarder, is not
 available.
 
-## Architecture
-
-SC4SNMP is deployed using a Kubernetes distribution, typically MicroK8s,
-that's designed to be a low-touch experience for integration with sensitive
-edge network devices. It will typically be deployed in the same network
-management zone as the monitored devices and separated from Splunk by an
-existing firewall.
-
-![image](images/sc4snmp_deployment.png)
-
 ## Requirements
 
 -   A supported deployment of MicroK8s
@@ -30,8 +20,7 @@ existing firewall.
     SC4SNMP to the Splunk destination.
 
 -   Splunk Enterprise/Cloud 8.x or newer and/or Splunk Infrastructure Monitoring
-    (SignalFx)
-    
+    (SignalFx) 
 
 ## Planning Infrastructure
 

@@ -13,10 +13,16 @@ from splunk_connect_for_snmp.common.inventory_processor import (
 mock_inventory_only_address = """address
 54.234.85.76"""
 
+mock_inventory_only_address_ipv6 = """address
+2001:0db8:ac10:fe01::0001"""
+
 mock_inventory_host_same_as_in_group = """address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
 group1,,2c,public,,,1805,group_profile,False,False
 0.0.0.0,,2c,public,,,1805,solo_profile1,False,False
-0.0.0.0,1161,2c,public,,,1805,solo_profile2,False,False"""
+0.0.0.0,1161,2c,public,,,1805,solo_profile2,False,False
+2001:0db8:ac10:fe01::0001,,2c,public,,,1805,solo_profile3,False,False
+2001:0db8:ac10:fe01:0000:0000:0000:0001,1166,2c,public,,,1805,solo_profile4,False,False
+"""
 
 
 class TestInventoryProcessor(TestCase):
@@ -47,10 +53,30 @@ class TestInventoryProcessor(TestCase):
         self.assertEqual(("123.0.0.1", 777), transform_key_to_address("123.0.0.1:777"))
         self.assertEqual(("123.0.0.1", 161), transform_key_to_address("123.0.0.1:161"))
         self.assertEqual(("123.0.0.1", 161), transform_key_to_address("123.0.0.1"))
+        self.assertEqual(
+            ("2001:0db8:ac10:fe01:0000:0000:0000:0001", 161),
+            transform_key_to_address("2001:0db8:ac10:fe01:0000:0000:0000:0001:161"),
+        )
+        self.assertEqual(
+            ("2001:0db8:ac10:fe01:0000:0000:0000:0001", 333),
+            transform_key_to_address("2001:0db8:ac10:fe01:0000:0000:0000:0001:333"),
+        )
+        self.assertEqual(
+            ("2001:0db8:ac10:fe01::0001", 161),
+            transform_key_to_address("2001:0db8:ac10:fe01::0001:161"),
+        )
 
     def test_transform_address_to_key(self):
         self.assertEqual(transform_address_to_key("127.0.0.1", 333), "127.0.0.1:333")
-        self.assertEqual(transform_address_to_key("127.0.0.1", 161), "127.0.0.1")
+        self.assertEqual(transform_address_to_key("127.0.0.1", 161), "127.0.0.1:161")
+        self.assertEqual(
+            transform_address_to_key("2001:0db8:ac10:fe01::0001", 161),
+            "2001:0db8:ac10:fe01::0001:161",
+        )
+        self.assertEqual(
+            transform_address_to_key("2001:0db8:ac10:fe01:0000:0000:0000:0001", 333),
+            "2001:0db8:ac10:fe01:0000:0000:0000:0001:333",
+        )
 
     def test_return_hosts_from_deleted_groups_one_host(self):
         previous_groups = {
@@ -80,6 +106,34 @@ class TestInventoryProcessor(TestCase):
             ["1.1.1.1:162"],
         )
 
+    def test_return_hosts_from_deleted_groups_one_host_ipv6(self):
+        previous_groups = {
+            "group1": [
+                {"address": "2001:0db8:ac10:fe01::0001", "port": 161},
+                {"address": "2001:0db8:bc10:fe03:0000:0000:0000:0001", "port": 999},
+            ],
+            "switches": [
+                {"address": "fd02::ae84:454f:3e03:4c80", "port": 161},
+                {"address": "fd01::bc60:000f:4e02:3c70", "port": 162},
+            ],
+        }
+        new_groups = {
+            "group1": [
+                {"address": "2001:0db8:ac10:fe01::0001", "port": 161},
+                {"address": "2001:0db8:bc10:fe03:0000:0000:0000:0001", "port": 999},
+            ],
+            "switches": [{"address": "fd02::ae84:454f:3e03:4c80", "port": 161}],
+        }
+
+        self.assertEqual(
+            return_hosts_from_deleted_groups(
+                previous_groups,
+                new_groups,
+                {"group1": {"port": 161}, "switches": {"port": 161}},
+            ),
+            ["fd01::bc60:000f:4e02:3c70:162"],
+        )
+
     def test_return_hosts_from_deleted_groups_whole_group(self):
         previous_groups = {
             "group1": [
@@ -104,7 +158,7 @@ class TestInventoryProcessor(TestCase):
                 new_groups,
                 {"group1": 161, "switches": 161},
             ),
-            ["12.22.23.33", "1.1.1.1:162"],
+            ["12.22.23.33:161", "1.1.1.1:162"],
         )
 
     def test_return_hosts_from_deleted_groups_one_host_and_group(self):
@@ -128,7 +182,7 @@ class TestInventoryProcessor(TestCase):
                 new_groups,
                 {"group1": 161, "switches": 161},
             ),
-            ["123.0.0.1", "178.8.8.1:999", "1.1.1.1:162"],
+            ["123.0.0.1:161", "178.8.8.1:999", "1.1.1.1:162"],
         )
 
     def test_return_hosts_empty(self):
@@ -283,6 +337,17 @@ class TestInventoryProcessor(TestCase):
         inventory_processor.process_line(source_record)
         inventory_processor.get_group_hosts.assert_called_with(source_record, "group1")
 
+    @patch(
+        "builtins.open",
+        new_callable=mock_open,
+        read_data=mock_inventory_only_address_ipv6,
+    )
+    def test_process_line_host_ipv6(self, m_inventory):
+        source_record = {"address": "2001:0db8:ac10:fe01::0001"}
+        inventory_processor = InventoryProcessor(Mock(), Mock(), Mock())
+        inventory_processor.get_all_hosts()
+        self.assertEqual(inventory_processor.inventory_records, [source_record])
+
     @mock.patch(
         "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO",
         False,
@@ -302,6 +367,7 @@ class TestInventoryProcessor(TestCase):
                 "group1": [
                     {"address": "0.0.0.0", "port": "161"},
                     {"address": "127.0.0.1", "port": "161"},
+                    {"address": "2001:0db8:ac10:fe01::0001", "port": "161"},
                 ]
             }
         ]
@@ -336,6 +402,19 @@ class TestInventoryProcessor(TestCase):
                 "group": "group1",
             },
             {
+                "address": "2001:0db8:ac10:fe01::0001",
+                "port": "161",
+                "version": "2c",
+                "community": "public",
+                "secret": "",
+                "security_engine": "",
+                "walk_interval": "1805",
+                "profiles": "group_profile",
+                "smart_profiles": "False",
+                "delete": "False",
+                "group": "group1",
+            },
+            {
                 "address": "0.0.0.0",
                 "port": "1161",
                 "version": "2c",
@@ -344,6 +423,18 @@ class TestInventoryProcessor(TestCase):
                 "security_engine": "",
                 "walk_interval": "1805",
                 "profiles": "solo_profile2",
+                "smart_profiles": "False",
+                "delete": "False",
+            },
+            {
+                "address": "2001:0db8:ac10:fe01:0000:0000:0000:0001",
+                "port": "1166",
+                "version": "2c",
+                "community": "public",
+                "secret": "",
+                "security_engine": "",
+                "walk_interval": "1805",
+                "profiles": "solo_profile4",
                 "smart_profiles": "False",
                 "delete": "False",
             },
@@ -374,39 +465,37 @@ class TestInventoryProcessor(TestCase):
     def test_return_walk_profile_no_walk_in_inventory(self):
         inventory_profiles = ["generic_switch"]
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(
+        self.assertIsNone(
             inventory_record_manager.return_walk_profile(
                 self.profiles, inventory_profiles
-            ),
-            None,
+            )
         )
 
     def test_return_walk_profile_no_walk_in_config(self):
         inventory_profiles = ["generic_switch", "walk2"]
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(
+        self.assertIsNone(
             inventory_record_manager.return_walk_profile(
                 self.profiles, inventory_profiles
-            ),
-            None,
+            )
         )
 
     def test_return_walk_profile_no_config(self):
         inventory_profiles = ["generic_switch", "walk2"]
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(
-            inventory_record_manager.return_walk_profile({}, inventory_profiles), None
+        self.assertIsNone(
+            inventory_record_manager.return_walk_profile({}, inventory_profiles)
         )
 
     def test_return_walk_profile_no_config_no_inventory(self):
         inventory_profiles = []
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(
-            inventory_record_manager.return_walk_profile({}, inventory_profiles), None
+        self.assertIsNone(
+            inventory_record_manager.return_walk_profile({}, inventory_profiles)
         )
 
     def test_return_walk_profile_no_inventory(self):
         inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(
-            inventory_record_manager.return_walk_profile(self.profiles, []), None
+        self.assertIsNone(
+            inventory_record_manager.return_walk_profile(self.profiles, [])
         )

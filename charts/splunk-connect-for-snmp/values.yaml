@@ -126,6 +126,10 @@ sim:
   autoscaling:
     enabled: false
 
+  podAnnotations: { }
+  podAntiAffinity: soft
+  nodeSelector: { }
+
 ################################################################################
 # SC4SNMP components settings
 ################################################################################
@@ -425,13 +429,19 @@ traps:
     # on a multi-node it's better to set this as NodePort and configure traps.service.nodePort
     type: LoadBalancer
     port: 162
+   # ipv6Port: 2163
+
     # nodePort will be set only when type of service is a NodePort
     #nodePort: 30000
+    #ipv6NodePort: 30003
 
   #loadBalancerIP must be set to the IP address in the metallb pool.
   #It is required when service type is set to LoadBalancer.
   #loadBalancerIP: 18.117.100.37
   loadBalancerIP: ""
+  ipFamilyPolicy: SingleStack
+  ipFamilies:
+   - IPv4
 
   resources: {}
     # limits:

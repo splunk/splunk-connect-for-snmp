@@ -94,6 +94,13 @@ See the following example:
 traps:
   loadBalancerIP: 10.202.4.202
 ```
+If you have enabled the Ipv6 you need to pass IP addresses for both IPv4 and IPv6.
+See the following example:
+
+```yaml
+traps:
+  loadBalancerIP: 10.202.4.202,2001:0DB8:AC10:FE01:0000:0000:0000:0001
+```
 
 If you want to use the SC4SNMP trap receiver in K8S cluster, configure `NodePort` instead. Use the following configuration:
 

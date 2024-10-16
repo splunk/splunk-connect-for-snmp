@@ -19,6 +19,11 @@ Three node minimum per node:
 The following quick start guidance is based on Ubuntu 20.04LTS with MicroK8s and internet access. See other deployment options
 in the MicroK8s [documentation](https://microk8s.io/docs), including offline and with proxy. 
 
+## Enabling IPv6
+
+If you plan to poll or receive trap notifications from IPv6 addresses, firstly check the instructions for [enabling 
+IPv6](../enable-ipv6.md).
+
 ## Install MicroK8s using Snap
 
 ```bash
@@ -36,17 +41,6 @@ Wait for Installation of Mk8S to complete:
 ```bash
 microk8s status --wait-ready
 ```
-
-## Add nodes (optional)
-
-* Repeat the steps above for each additional node (with a minimum of 3 nodes).
-* On the first node, use the following command to see the instructions to join: 
-
-```bash
-microk8s add-node
-```
-
-* On each additional node, use the output from the command above.
 
 ## Install required services for SC4SNMP
 
@@ -82,3 +76,7 @@ the same as the primary IP.
 microk8s enable metallb
 microk8s status --wait-ready
 ```
+
+## Add nodes (optional)
+
+If you need cluster mode please use following [guide](k8s-microk8s-scaling.md#make-microk8s-cluster).

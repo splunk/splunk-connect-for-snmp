@@ -5,6 +5,10 @@ for single node non-HA deployments. It does not have resource requests and limit
 See the mongo, redis, scheduler, worker, and traps configuration sections for guidance
 on production configuration.
 
+## Installing Splunk Connect for SNMP on Linux RedHat 
+Installation of RedHat may be blocking ports required by microk8s. Installing microk8s on RedHat 
+requires checking to see if the firewall is not blocking any of the [required microk8s ports](https://microk8s.io/docs/ports). 
+
 ## Installation process
 
 
@@ -180,7 +184,7 @@ index="netops" sourcetype="sc4snmp:event"
 
 NOTE: Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every `walk_interval`. 
 Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
-In such cases, enable the small walk. See [walk takes too much time](../../bestpractices/#walking-a-device-takes-too-much-time).
+In such cases, enable the small walk. See [walk takes too much time](../../troubleshooting/polling-issues/#walking-a-device-takes-too-much-time).
 When the walk finishes, events appear in Splunk.
 
 ## Next Steps

@@ -41,6 +41,7 @@ services:
       - PROFILES_RELOAD_DELAY=${PROFILES_RELOAD_DELAY:-60}
       - WORKER_CONCURRENCY=${WORKER_SENDER_CONCURRENCY:-2}
       - PREFETCH_COUNT=${PREFETCH_SENDER_COUNT:-1}
+      - PYSNMP_DEBUG=${PYSNMP_DEBUG}
     depends_on:
       - redis
       - mongo
@@ -51,7 +52,7 @@ services:
       - worker-sender-tmp:/tmp/:rw
     restart: on-failure
     networks:
-      - my_network
+      - sc4snmp_network
     dns:
       - ${COREDNS_ADDRESS}
     deploy:

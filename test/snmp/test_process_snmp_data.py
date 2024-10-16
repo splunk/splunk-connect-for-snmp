@@ -1,5 +1,6 @@
+from tokenize import group
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 from splunk_connect_for_snmp.snmp.manager import Poller
 
@@ -314,4 +315,186 @@ class TestProcessSnmpData(TestCase):
                 }
             },
             metrics,
+        )
+
+    @patch("time.time", MagicMock(return_value=12345))
+    def test_handle_metrics_add_fields(self):
+        poller = Poller.__new__(Poller)
+        group_key = "KEY"
+        metric = "sysUpTime"
+        metric_type = "ObjectIdentifier"
+        metric_value = "1234567"
+        metrics = {"KEY": {"metrics": {}, "fields": {}, "profiles": []}}
+        mib = "SNMPv2-MIB"
+        oid = "1.3.6.1.2.1.1.3.0"
+        profile = "some_profile"
+
+        poller.handle_metrics(
+            group_key, metric, metric_type, metric_value, metrics, mib, oid, profile
+        )
+        self.assertEqual(
+            metrics,
+            {
+                "KEY": {
+                    "metrics": {},
+                    "fields": {
+                        "SNMPv2-MIB.sysUpTime": {
+                            "time": 12345,
+                            "type": "ObjectIdentifier",
+                            "value": "1234567",
+                            "oid": "1.3.6.1.2.1.1.3.0",
+                        }
+                    },
+                    "profiles": [],
+                },
+            },
+        )
+
+    @patch("time.time", MagicMock(return_value=12345))
+    def test_handle_metrics_add_metrics_float(self):
+        poller = Poller.__new__(Poller)
+        group_key = "KEY"
+        metric = "sysNum"
+        metric_type = "g"
+        metric_value = 123.0
+        metrics = {"KEY": {"metrics": {}, "fields": {}, "profiles": []}}
+        mib = "SNMPv2-MIB"
+        oid = "1.3.6.1.2.1.1.3.0"
+        profile = "some_profile"
+
+        poller.handle_metrics(
+            group_key, metric, metric_type, metric_value, metrics, mib, oid, profile
+        )
+        self.assertEqual(
+            metrics,
+            {
+                "KEY": {
+                    "fields": {},
+                    "metrics": {
+                        "SNMPv2-MIB.sysNum": {
+                            "time": 12345,
+                            "type": "g",
+                            "value": 123.0,
+                            "oid": "1.3.6.1.2.1.1.3.0",
+                        }
+                    },
+                    "profiles": ["some_profile"],
+                }
+            },
+        )
+
+    def test_set_profile_name_matching_varbind_id(self):
+        poller = Poller.__new__(Poller)
+
+        mapping = {
+            "SNMPv2-MIB::sysDescr.0": "BaseDeviceData",
+            "SNMPv2-MIB::sysName.0": "BaseData",
+        }
+        metric = "sysDescr"
+        mib = "SNMPv2-MIB"
+        varbind_id = "SNMPv2-MIB::sysDescr.0"
+        profile = poller.set_profile_name(mapping, metric, mib, varbind_id)
+        self.assertEqual(profile, "BaseDeviceData")
+
+    def test_set_profile_name_matching_metric(self):
+        poller = Poller.__new__(Poller)
+        mapping = {
+            "SNMPv2-MIB::sysDescr.0": "BaseDeviceData",
+            "SNMPv2-MIB::sysName.0": "BaseData",
+        }
+        metric = "sysDescr"
+        mib = "SNMPv2-MIB"
+        varbind_id = ""
+        profile = poller.set_profile_name(mapping, metric, mib, varbind_id)
+        self.assertEqual(profile, "BaseDeviceData")
+
+    def test_set_profile_name_matching_mib(self):
+        poller = Poller.__new__(Poller)
+        mapping = {
+            "SNMPv2-MIB::sysDescr.0": "BaseDeviceData",
+            "SNMPv2-MIB::sysName.0": "BaseData",
+        }
+        metric = "sysData"
+        mib = "SNMPv2-MIB"
+        varbind_id = ""
+        profile = poller.set_profile_name(mapping, metric, mib, varbind_id)
+        self.assertEqual(profile, "BaseDeviceData")
+
+    def test_set_profile_name_no_match(self):
+        poller = Poller.__new__(Poller)
+        mapping = {
+            "SNMPv2-MIB::sysDescr.0": "BaseDeviceData",
+            "SNMPv2-MIB::sysName.0": "BaseData",
+        }
+        metric = "sysData"
+        mib = "SNMPv3-MIB"
+        varbind_id = ""
+        profile = poller.set_profile_name(mapping, metric, mib, varbind_id)
+        self.assertIsNone(profile)
+
+    def test_match_mapping_to_profile_no_match(self):
+        poller = Poller.__new__(Poller)
+        mapping = {
+            "IF-MIB::sysDescr.0": "BaseDevice",
+            "SNMPv2-MIB::sysDescr.0": "BaseDeviceData",
+            "SNMPv2-MIB::sysName.0": "BaseData",
+        }
+        mib = "SNMPv3-MIB"
+        profile = None
+        profile = poller.match_mapping_to_profile(mapping, mib, profile)
+        self.assertIsNone(profile)
+
+    def test_match_mapping_to_profile_match(self):
+        poller = Poller.__new__(Poller)
+        mapping = {
+            "IF-MIB::sysDescr.0": "BaseDevice",
+            "SNMPv2-MIB::sysDescr.0": "BaseDeviceData",
+            "SNMPv2-MIB::sysName.0": "BaseData",
+        }
+        mib = "SNMPv2-MIB"
+        profile = None
+        profile = poller.match_mapping_to_profile(mapping, mib, profile)
+        self.assertEqual(profile, "BaseDeviceData")
+
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.extract_indexes",
+        MagicMock(return_value=[1]),
+    )
+    def test_handle_groupkey_without_metrics(self):
+        poller = Poller.__new__(Poller)
+        mapping = {
+            "IF-MIB::sysDescr.0": "BaseDevice",
+            "SNMPv2-MIB::sysDescr.0": "BaseDeviceData",
+            "SNMPv2-MIB::sysName.0": "BaseData",
+        }
+        group_key = "SNMPv2-MIB::tuple=int=0"
+        index = MagicMock()
+        metrics = {}
+        poller.handle_groupkey_without_metrics(group_key, index, mapping, metrics)
+        self.assertEqual(
+            metrics,
+            {
+                "SNMPv2-MIB::tuple=int=0": {
+                    "indexes": [1],
+                    "fields": {},
+                    "metrics": {},
+                    "profiles": [],
+                }
+            },
+        )
+
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.extract_indexes",
+        MagicMock(return_value=[1]),
+    )
+    def test_handle_groupkey_without_metrics_no_mapping(self):
+        poller = Poller.__new__(Poller)
+        mapping = {}
+        group_key = "SNMPv2-MIB::tuple=int=0"
+        index = MagicMock()
+        metrics = {}
+        poller.handle_groupkey_without_metrics(group_key, index, mapping, metrics)
+        self.assertEqual(
+            metrics,
+            {"SNMPv2-MIB::tuple=int=0": {"indexes": [1], "fields": {}, "metrics": {}}},
         )
