@@ -85,6 +85,19 @@ The following is an example of an SNMPv3 trap:
 snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 '' 1.3.6.1.2.1.2.2.1.1.1
 ```
 
+### Updating trap configuration
+If you need to update part of the traps configuration, you can do it by editing the `values.yaml` and then running the following command to restart the pod deployment:
+```
+microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-trap -n sc4snmp
+```
+
+!!! info 
+    The name of the deployment can differ based on the helm installation name. 
+    This can be checked with the following command: 
+    ```
+    microk8s kubectl get deployments -n sc4snmp
+    ```
+
 ### Define external gateway for traps
 
 If you use SC4SNMP on a single machine, configure `loadBalancerIP`.
@@ -150,17 +163,4 @@ In case you want to see traps events collected as one event inside Splunk, you c
 traps:
   aggregateTrapsEvents: "true"
 ```
-After that run the upgrade command.
-
-### Updating trap configuration
-If you need to update part of the traps configuration that changes the configmap, you can do it by editing the `values.
-yaml` and then running the following command to restart the pod deployment:
-```
-microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-trap -n sc4snmp
-```
-
-!!! info
-    The name of the deployment can differ based on the helm installation name. This can be checked with the following command: 
-    ```
-    microk8s kubectl get deployments -n sc4snmp
-    ```
+Then the upgrade command can be executed.
