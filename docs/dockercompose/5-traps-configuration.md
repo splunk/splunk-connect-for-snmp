@@ -1,4 +1,3 @@
-# Traps configuration
 
 Scheduler configuration is stored in the `traps-config.yaml` file. This file has the following sections:
 

@@ -2,11 +2,10 @@ import argparse
 import os
 from typing import Union
 
-import yaml
+import ruamel.yaml
 
-DOCKER_COMPOSE_SECRETS = "docker-compose-secrets.yaml"
-DOCKER_COMPOSE_WORKER_POLLER = "docker-compose-worker-poller.yaml"
-DOCKER_COMPOSE_TRAPS = "docker-compose-traps.yaml"
+SERVICE_SECRETS = ["worker-poller", "traps"]
+DOCKER_COMPOSE = "docker-compose.yaml"
 
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
@@ -80,125 +79,97 @@ def create_secrets(
     try:
         # Load docker-compose-secrets.yaml to a dictionary and update "secrets" section. If the same secret
         # has been already configured, stop processing further.
-        with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE_SECRETS)) as file:
-            secrets_file = yaml.load(file, Loader=yaml.FullLoader)
-        if secrets_file["secrets"] is None or "secrets" not in secrets_file:
-            secrets_file["secrets"] = {}
+        yaml = ruamel.yaml.YAML()
+        with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE)) as file:
+            yaml_file = yaml.load(file)
+        if yaml_file["secrets"] is None or "secrets" not in yaml_file:
+            yaml_file["secrets"] = {}
         for new_secret in new_secrets:
-            if new_secret["secret_name"] in secrets_file["secrets"]:
+            if new_secret["secret_name"] in yaml_file["secrets"]:
                 print(f"Secret {secret_name} already configured. New secret not added.")
                 return
-            secrets_file["secrets"][new_secret["secret_name"]] = new_secret[
+            yaml_file["secrets"][new_secret["secret_name"]] = new_secret[
                 "secret_config"
             ]
-        secrets_file_ready = True
-    except Exception:
-        print("Problem with editing docker-compose-secrets.yaml. Secret not added.")
-        secrets_file_ready = False
+        secrets_ready = True
 
-    if make_change_in_worker_poller:
-        worker_poller_file, worker_poller_file_ready = load_compose_worker_poller(
-            new_secrets_in_workers, path_to_compose_files
+        if make_change_in_worker_poller:
+            yaml_file, worker_poller_ready = load_compose_worker_poller(
+                new_secrets_in_workers, yaml_file
+            )
+        else:
+            worker_poller_ready = True
+
+        if make_change_in_traps:
+            yaml_file, traps_ready = load_compose_traps(
+                new_secrets_in_workers, yaml_file
+            )
+        else:
+            traps_ready = True
+
+        save_to_compose_files(
+            path_to_compose_files,
+            secret_name,
+            yaml_file,
+            secrets_ready,
+            traps_ready,
+            variables,
+            worker_poller_ready,
         )
-    else:
-        worker_poller_file = {}
-        worker_poller_file_ready = True
-
-    if make_change_in_traps:
-        traps_file, traps_file_ready = load_compose_traps(
-            new_secrets_in_workers, path_to_compose_files
-        )
-    else:
-        traps_file = {}
-        traps_file_ready = True
-
-    save_to_compose_files(
-        make_change_in_traps,
-        make_change_in_worker_poller,
-        path_to_compose_files,
-        secret_name,
-        secrets_file,
-        secrets_file_ready,
-        traps_file,
-        traps_file_ready,
-        variables,
-        worker_poller_file,
-        worker_poller_file_ready,
-    )
+    except Exception as e:
+        print(f"Problem with adding secrets. Error: {e}")
 
 
 def save_to_compose_files(
-    make_change_in_traps,
-    make_change_in_worker_poller,
     path_to_compose_files,
     secret_name,
-    secrets_file,
-    secrets_file_ready,
-    traps_file,
-    traps_file_ready,
+    yaml_file,
+    secrets_ready,
+    traps_ready,
     variables,
-    worker_poller_file,
-    worker_poller_file_ready,
+    worker_poller_ready,
 ):
-    if secrets_file_ready and worker_poller_file_ready and traps_file_ready:
+    if secrets_ready and worker_poller_ready and traps_ready:
         # If all three files were loaded into dictionary and updated successfully,
         # save the latest configuration to files.
-        save_to_yaml_file(path_to_compose_files, DOCKER_COMPOSE_SECRETS, secrets_file)
         with open(os.path.join(path_to_compose_files, ".env"), "a") as file:
             for k, v in variables.items():
                 if v:
                     file.write(f"\n{secret_name}_{k}={v}")
-        if make_change_in_worker_poller:
-            save_to_yaml_file(
-                path_to_compose_files, DOCKER_COMPOSE_WORKER_POLLER, worker_poller_file
-            )
-        if make_change_in_traps:
-            save_to_yaml_file(path_to_compose_files, DOCKER_COMPOSE_TRAPS, traps_file)
+
+        yaml = ruamel.yaml.YAML()
+        with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE), "w") as file:
+            yaml.dump(yaml_file, file)
 
 
-def save_to_yaml_file(file_path, file_name, file_content):
-    with open(os.path.join(file_path, file_name), "w") as file:
-        yaml.dump(file_content, file, default_flow_style=False)
-
-
-def load_compose_traps(new_secrets_in_workers, path_to_compose_files):
+def load_compose_traps(new_secrets_in_workers, yaml_file):
     # If the secret should be added to traps, load docker-compose-traps.yaml to a dictionary and
     # update "secrets" section.
     try:
-        with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE_TRAPS)) as file:
-            traps_file = yaml.load(file, Loader=yaml.FullLoader)
-        if "secrets" not in traps_file["services"]["traps"]:
-            traps_file["services"]["traps"]["secrets"] = []
-        traps_file["services"]["traps"]["secrets"].extend(new_secrets_in_workers)
-        traps_file_ready = True
-    except Exception:
-        print("Problem with editing docker-compose-traps.yaml. Secret not added.")
-        traps_file = {}
-        traps_file_ready = False
-    return traps_file, traps_file_ready
+        if "secrets" not in yaml_file["services"]["traps"]:
+            yaml_file["services"]["traps"]["secrets"] = []
+        yaml_file["services"]["traps"]["secrets"].extend(new_secrets_in_workers)
+        traps_ready = True
+    except Exception as e:
+        print(f"Problem with editing traps. Secret not added. Error {e}")
+        yaml_file = {}
+        traps_ready = False
+    return yaml_file, traps_ready
 
 
-def load_compose_worker_poller(new_secrets_in_workers, path_to_compose_files):
+def load_compose_worker_poller(new_secrets_in_workers, yaml_file):
     # If the secret should be added to worker poller, load docker-compose-worker-poller.yaml to a dictionary and
     # update "secrets" section.
     try:
-        with open(
-            os.path.join(path_to_compose_files, DOCKER_COMPOSE_WORKER_POLLER)
-        ) as file:
-            worker_poller_file = yaml.load(file, Loader=yaml.FullLoader)
-        if "secrets" not in worker_poller_file["services"]["worker-poller"]:
-            worker_poller_file["services"]["worker-poller"]["secrets"] = []
-        worker_poller_file["services"]["worker-poller"]["secrets"].extend(
-            new_secrets_in_workers
-        )
-        worker_poller_file_ready = True
+        if "secrets" not in yaml_file["services"]["worker-poller"]:
+            yaml_file["services"]["worker-poller"]["secrets"] = []
+        yaml_file["services"]["worker-poller"]["secrets"].extend(new_secrets_in_workers)
+        worker_poller_ready = True
     except Exception:
-        print(
-            "Problem with editing docker-compose-worker-poller.yaml. Secret not added."
-        )
-        worker_poller_file = {}
-        worker_poller_file_ready = False
-    return worker_poller_file, worker_poller_file_ready
+        print("Problem with editing worker-poller. Secret not added.")
+        yaml_file = {}
+        worker_poller_ready = False
+    return yaml_file, worker_poller_ready
 
 
 def store_secrets(secret_name, variables):
@@ -242,45 +213,41 @@ def delete_secrets(
     for key in variables.keys():
         secrets.append(f"{secret_name}_{key}")
 
-    secrets_file = load_compose_secrets(path_to_compose_files, secrets)
+    yaml = ruamel.yaml.YAML()
+    try:
+        with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE)) as file:
+            yaml_file = yaml.load(file)
 
-    # Save the updated docker-compose-secrets.yaml configuration
-    save_to_yaml_file(path_to_compose_files, DOCKER_COMPOSE_SECRETS, secrets_file)
+        yaml_file = load_compose_secrets(yaml_file, secrets)
+        # Save the updated docker-compose-secrets.yaml configuration
+
+        if make_change_in_worker_poller:
+            # filter out secrets destined for deletion
+
+            yaml_file["services"]["worker-poller"]["secrets"] = list(
+                filter(
+                    lambda el: el["source"] not in secrets,
+                    yaml_file["services"]["worker-poller"]["secrets"],
+                )
+            )
+
+        if make_change_in_traps:
+            # Load docker-compose-traps.yaml to dictionary and filter out secrets destined for deletion
+            yaml_file["services"]["traps"]["secrets"] = list(
+                filter(
+                    lambda el: el["source"] not in secrets,
+                    yaml_file["services"]["traps"]["secrets"],
+                )
+            )
+
+    except Exception as e:
+        print(f"Problem with editing secrets section. Secret not added. Error: {e}")
+
+    with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE), "w") as file:
+        yaml.dump(yaml_file, file)
 
     # Delete secrets from .env
     delete_secrets_from_env(path_to_compose_files, secrets)
-
-    if make_change_in_worker_poller:
-        # Load docker-compose-worker-poller.yaml to dictionary and filter out secrets destined for deletion
-        with open(
-            os.path.join(path_to_compose_files, DOCKER_COMPOSE_WORKER_POLLER)
-        ) as file:
-            worker_poller_file = yaml.load(file, Loader=yaml.FullLoader)
-        worker_poller_file["services"]["worker-poller"]["secrets"] = list(
-            filter(
-                lambda el: el["source"] not in secrets,
-                worker_poller_file["services"]["worker-poller"]["secrets"],
-            )
-        )
-
-        # Save updated docker-compose-worker-poller.yaml configuration
-        save_to_yaml_file(
-            path_to_compose_files, DOCKER_COMPOSE_WORKER_POLLER, worker_poller_file
-        )
-
-    if make_change_in_traps:
-        # Load docker-compose-traps.yaml to dictionary and filter out secrets destined for deletion
-        with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE_TRAPS)) as file:
-            traps_file = yaml.load(file, Loader=yaml.FullLoader)
-        traps_file["services"]["traps"]["secrets"] = list(
-            filter(
-                lambda el: el["source"] not in secrets,
-                traps_file["services"]["traps"]["secrets"],
-            )
-        )
-
-        # Save updated docker-compose-traps.yaml configuration
-        save_to_yaml_file(path_to_compose_files, DOCKER_COMPOSE_TRAPS, traps_file)
 
 
 def delete_secrets_from_env(path_to_compose_files, secrets):
@@ -307,14 +274,12 @@ def delete_secrets_from_env(path_to_compose_files, secrets):
         print(f"Error: {e}")
 
 
-def load_compose_secrets(path_to_compose_files, secrets):
+def load_compose_secrets(yaml_file, secrets):
     # Load docker-compose-secrets.yaml file to a dictionary and delete desired secrets
-    with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE_SECRETS)) as file:
-        secrets_file = yaml.load(file, Loader=yaml.FullLoader)
     for secret in secrets:
-        if secret in secrets_file["secrets"]:
-            del secrets_file["secrets"][secret]
-    return secrets_file
+        if secret in yaml_file["secrets"]:
+            del yaml_file["secrets"][secret]
+    return yaml_file
 
 
 def main():
