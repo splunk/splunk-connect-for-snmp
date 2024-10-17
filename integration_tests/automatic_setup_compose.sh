@@ -203,7 +203,7 @@ sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/dat
 
 
 echo $(green "Running up Docker Compose environment")
-sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+sudo docker compose up -d
 wait_for_containers_to_be_up
 
 sudo docker ps
