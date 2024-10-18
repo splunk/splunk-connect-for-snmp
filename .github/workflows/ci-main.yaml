@@ -59,13 +59,11 @@ jobs:
           FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
   semgrep-scan:
     name: semgrep
-    runs-on: ubuntu-latest
     if: (github.actor != 'dependabot[bot]')
-    steps:
-      - uses: actions/checkout@v4
-      - uses: semgrep/semgrep-action@v1
-        with:
-          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
+    uses: splunk/sast-scanning/.github/workflows/sast-scan.yml@main
+    secrets: inherit
+    with:
+      block_mode: "on"
   pre-commit:
     runs-on: ubuntu-latest
     steps:
