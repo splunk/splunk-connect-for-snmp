@@ -1,2 +1,6 @@
-Dockerfile
+docs/
+test/
+ui_tests/
 integration_tests/
+rendered/
+charts/
