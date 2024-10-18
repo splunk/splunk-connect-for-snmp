@@ -21,7 +21,7 @@ testpaths = ["test"]
 python_files = ["test_*.py"]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
+python = ">=3.13,<3.14"
 pymongo = {extras = ["srv"], version = "^4.0.0"}
 requests = {extras = ["crypto"], version = "^2.31.0"}
 celery = {extras = ["tblib"], version = "5.4.0"}
