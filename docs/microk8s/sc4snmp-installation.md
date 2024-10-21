@@ -14,7 +14,7 @@ requires checking to see if the firewall is not blocking any of the [required mi
 
 ### Offline installation
 
-For offline installation instructions see [this page](../offlineinstallation/offline-sc4snmp.md).
+For offline installation instructions see [this page](offlineinstallation/offline-sc4snmp.md).
 
 
 ### Online installation
@@ -42,7 +42,7 @@ The installation of SC4SNMP requires the creation of a `values.yaml` file, which
 2. Review the [examples][examples_link] to determine which areas require configuration.
 3. For more advanced configuration options, refer to the complete default [values.yaml](https://github.com/splunk/splunk-connect-for-snmp/blob/main/charts/splunk-connect-for-snmp/values.yaml)
 or download it directly from Helm using the command `microk8s helm3 show values splunk-connect-for-snmp/splunk-connect-for-snmp` 
-4. In order to learn more about each of the config parts, check [configuration](../configuration/deployment-configuration.md) section.
+4. In order to learn more about each of the configuration parts, check [configuration](configuration/deployment-configuration.md) section.
 
 It is recommended to start by completing the base template and gradually add additional configurations as needed.
 
@@ -71,7 +71,7 @@ microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connec
 ```
 
 From now on, when editing SC4SNMP configuration, the configuration change must be
-inserted in the corresponding section of `values.yaml`. For more details see [configuration](../configuration/deployment-configuration.md) section.
+inserted in the corresponding section of `values.yaml`. For more details see [configuration](configuration/deployment-configuration.md) section.
 
 Use the following command to propagate configuration changes:
 ``` bash
@@ -124,7 +124,7 @@ snmp-splunk-connect-for-snmp-trap   LoadBalancer   10.152.183.33    10.202.9.21 
 ```
 
 If you see `<pending>` communicate instead of the IP address, that means you either provided the wrong IP address
-in `traps.loadBalancerIP` or there's something wrong with the `metallb` microk8s addon.
+in `traps.loadBalancerIP` or there is something wrong with the `metallb` microk8s addon.
 
 In the following example, the default indexes are used, the metric data goes to `netmetrics`, and the events goes to `netops`.
 
@@ -189,11 +189,11 @@ When the walk finishes, events appear in Splunk.
 
 ## Next Steps
 
-A good way to start with SC4SNMP polling is to follow the [Step by Step guide for polling](../configuration/step-by-step-poll.md).
-Advanced configuration of polling is available in the [Poller configuration](../configuration/poller-configuration.md) section.
-The SNMP data format is explained in the [SNMP data format](../configuration/snmp-data-format.md) section.
+A good way to start with SC4SNMP polling is to follow the [Step by Step guide for polling](configuration/step-by-step-poll.md).
+Advanced configuration of polling is available in the [Poller configuration](configuration/poller-configuration.md) section.
+The SNMP data format is explained in the [SNMP data format](configuration/snmp-data-format.md) section.
 
-For advanced trap configuration, see the [Traps configuration](../configuration/trap-configuration.md) section.
+For advanced trap configuration, see the [Traps configuration](configuration/trap-configuration.md) section.
 
 ## Uninstall Splunk Connect for SNMP
 To uninstall SC4SNMP run the following commands:

@@ -2,7 +2,7 @@
 
 Configuration of SNMP v3, when supported by the monitored devices, is the most secure choice available
 for authentication and data privacy. Each set of credentials will be stored as "Secret" objects in k8s,
-and will be referenced in values.yaml. This allows the secret to be created once, including automation
+and will be referenced in `values.yaml`. This allows the secret to be created once, including automation
 by third-party password managers, then consumed without storing sensitive data in plain text.
 
 ```bash

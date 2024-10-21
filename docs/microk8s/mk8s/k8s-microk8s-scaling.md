@@ -10,8 +10,8 @@ Below is the formula that can help with deciding when to scale the system.
 
 where:
 
-* `inventory_size` - How many items we have on inventory (`values.yaml`).
-* `workers_count` - How many workers for `polling` / `walk` we have (pod workers).
+* `inventory_size` - Amount of item in inventory (`values.yaml`).
+* `workers_count` - Amount of running workers for `polling` / `walk` (pod workers).
 * `task_period` - `walk` / `polling` period time (`values.yaml`).
 * `periodic_task_exec_time` - Execution time of `polling` / `walk` task (metrics at screenshot).
 
@@ -70,7 +70,7 @@ i-0b27bcc06fc5c660e   Ready    <none>   25h   v1.30.5
 
 1. [Install SC4SNMP](../sc4snmp-installation.md) if it is not installed yet.
 
-2. Add `worker` section on `values.yaml`:
+2. Add `worker` section in `values.yaml`:
 
 ```yaml
 worker:
@@ -165,13 +165,13 @@ traps:
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
 
-4. Checked that SC4SNMP scaled:
+4. Check that SC4SNMP scaled:
 
 ```bash
 microk8s kubectl get po -n sc4snmp
 ```
 
-After scaling of each worker and trap service 5-10 instances will appear:
+After applying the changes, each worker and trap service will have from 5 to 10 instances:
 
 ```bash
 NAME                                                          READY   STATUS      RESTARTS   AGE

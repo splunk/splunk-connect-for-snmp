@@ -2,7 +2,7 @@
 
 ## Image Section
 
-Detailed documentation about configuring images section can be found in [kubernetes documentation](https://kubernetes.io/docs/concepts/containers/images/)
+Detailed documentation about configuring images section can be found in [kubernetes documentation](https://kubernetes.io/docs/concepts/containers/images/).
 Below are the most common options:
 
 | Variable     | Description                                                 | Example                                            |
@@ -13,7 +13,7 @@ Below are the most common options:
 
 ## UI section
 
-Detailed documentation about configuring UI can be found in [Enable GUI](../gui/enable-gui.md)
+Detailed documentation about configuring UI can be found in [Enable GUI](../gui/enable-gui.md).
 
 | Variable              | Description                                                                                          | Default                               |
 |-----------------------|------------------------------------------------------------------------------------------------------|---------------------------------------|
@@ -45,33 +45,35 @@ Detailed documentation about configuring UI can be found in [Enable GUI](../gui/
 
 ## Sim section
 
-Detailed documentation about configuring sim can be found in [Splunk Infrastructure Monitoring](../configuration/sim-configuration.md)
+Detailed documentation about configuring sim can be found in [Splunk Infrastructure Monitoring](sim-configuration.md).
 
-| Variable                                        | Description                                                                    | Default |
-|-------------------------------------------------|--------------------------------------------------------------------------------|---------|
-| `enabled`                                       | Enables sending data to Splunk Observability Cloud/ SignalFx                   | `false` |
-| `signalfxToken`                                 | Splunk Observability org access token                                          |         |
-| `signalfxRealm`                                 | Splunk Observability realm to send telemetry data to                           |         |
-| `resources`                                     | CPU and memory limits and requests for pod                                     |         |
-| `service.annotations`                           | Annotations to append under sim service                                        |         |
-| `secret.create`                                 | Option to configure `signalfxToken` and `signalfxRealm` as kubernetes secrets  | `true`  |
-| `secret.name`                                   | Name of existing secret in kubernetes with `signalfxToken` and `signalfxRealm` |         |
-| `replicaCount`                                  | Number of created replicas when autoscaling disabled                           | `1`     |
-| `autoscaling.enabled`                           | Enables autoscaling for pods                                                   | `false` |
-| `image`                                         | Refer to [Image Section](./#image-section)                                     |         |
-| `autoscaling.minReplicas`                       | Minimum number of running pods when autoscaling is enabled                     |         |
-| `autoscaling.maxReplicas`                       | Maximum number of running pods when autoscaling is enabled                     |         |
-| `autoscaling.targetCPUUtilizationPercentage`    | CPU % threshold that must be exceeded on pods to spawn another replica         |         |
-| `autoscaling.targetMemoryUtilizationPercentage` | Memory % threshold that must be exceeded on pods to spawn another replica      |         |
+| Variable                                        | Description                                                                                                                     | Default |
+|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|---------|
+| `enabled`                                       | Enables sending data to Splunk Observability Cloud/ SignalFx                                                                    | `false` |
+| `signalfxToken`                                 | Splunk Observability org access token                                                                                           |         |
+| `signalfxRealm`                                 | Splunk Observability realm to send telemetry data to                                                                            |         |
+| `resources`                                     | CPU and memory limits and requests for pod                                                                                      |         |
+| `service.annotations`                           | Annotations to append under sim service                                                                                         |         |
+| `secret.create`                                 | Option to configure `signalfxToken` and `signalfxRealm` as kubernetes secrets                                                   | `true`  |
+| `secret.name`                                   | Name of existing secret in kubernetes with `signalfxToken` and `signalfxRealm`                                                  |         |
+| `replicaCount`                                  | Number of created replicas when autoscaling is disabled                                                                         | `1`     |
+| `autoscaling.enabled`                           | Enables autoscaling for pods                                                                                                    | `false` |
+| `image`                                         | Refer to [Image Section](./#image-section)                                                                                      |         |
+| `autoscaling.minReplicas`                       | Minimum number of running pods when autoscaling is enabled                                                                      |         |
+| `autoscaling.maxReplicas`                       | Maximum number of running pods when autoscaling is enabled                                                                      |         |
+| `autoscaling.targetCPUUtilizationPercentage`    | CPU % threshold that must be exceeded on pods to spawn another replica                                                          |         |
+| `autoscaling.targetMemoryUtilizationPercentage` | Memory % threshold that must be exceeded on pods to spawn another replica                                                       |         |
 | `podAntiAffinity`                               | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | `soft`  |
 | `nodeSelector`                                  | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector)               |         |
 
 
 ## Scheduler
 
-Detailed documentation about configuring scheduler can be found in [Scheduler](../configuration/scheduler-configuration.md)
-Detailed documentation about configuring groups can be found in [Configuring Groups](../configuration/configuring-groups.md)
-Detailed documentation about configuring profiles can be found in [Configuring Profiles](../configuration/configuring-profiles.md)
+Detailed documentation about configuring:
+
+ - scheduler can be found in [Scheduler](scheduler-configuration.md).
+ - groups can be found in [Configuring Groups](configuring-groups.md).
+ - profiles can be found in [Configuring Profiles](configuring-profiles.md).
 
 | Variable             | Description                                                                                                                     | Default |
 |----------------------|---------------------------------------------------------------------------------------------------------------------------------|---------|
@@ -88,7 +90,7 @@ Detailed documentation about configuring profiles can be found in [Configuring P
 
 ## Poller
 
-Detailed documentation about configuring poller can be found in [Poller](../configuration/poller-configuration.md)
+Detailed documentation about configuring poller can be found in [Poller](poller-configuration.md).
 
 | Variable                 | Description                                                   | Default |
 |--------------------------|---------------------------------------------------------------|---------|
@@ -101,7 +103,7 @@ Detailed documentation about configuring poller can be found in [Poller](../conf
 
 ## Worker
 
-Detailed documentation about configuring worker can be found in [Worker](../configuration/worker-configuration.md)
+Detailed documentation about configuring worker can be found in [Worker](worker-configuration.md).
 
 | Variable                                       | Description                                                                                                                     | Default                                     | 
 |------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------|
@@ -138,7 +140,7 @@ Detailed documentation about configuring worker can be found in [Worker](../conf
 
 ## Inventory
 
-Detailed documentation about configuring inventory can be found in [Poller](../configuration/poller-configuration/#configure-inventory)
+Detailed documentation about configuring inventory can be found in [Poller](../poller-configuration#configure-inventory).
 
 | Variable              | Description                                                                                                       | Default |
 |-----------------------|-------------------------------------------------------------------------------------------------------------------|---------|
@@ -151,7 +153,7 @@ Detailed documentation about configuring inventory can be found in [Poller](../c
 
 ## Traps
 
-Detailed documentation about configuring traps can be found in [Traps](../configuration/trap-configuration.md)
+Detailed documentation about configuring traps can be found in [Traps](trap-configuration.md).
 
 | Variable                                        | Description                                                                                                                     | Default          |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|------------------|
@@ -193,11 +195,13 @@ Detailed documentation about configuring traps can be found in [Traps](../config
 
 ## MongoDb
 
-Detailed documentation about configuring mongodb can be found in [MongoDB](../configuration/mongo-configuration.md). It is advised to not change those settings.
+Detailed documentation about configuring mongodb can be found in [MongoDB](mongo-configuration.md). It is advised to 
+not change those settings.
 
 ## Redis
 
-Detailed documentation about configuring redis can be found in [Redis](../configuration/redis-configuration.md). It is advised to not change those settings.
+Detailed documentation about configuring redis can be found in [Redis](redis-configuration.md). It is advised to not 
+change those settings.
 
 ## Others
 

@@ -21,13 +21,14 @@ metadata:
 spec:
   natOutgoing: true
 ```
-You can check with command `microk8s kubectl get ippools -n kube-system` the default name of the ip pool for IPv6. If it differs from `default-ipv6-ippool` you need to change the name in the yaml file.
+You can check with command `microk8s kubectl get ippools -n kube-system` the default name of the ip pool for IPv6. 
+If it differs from `default-ipv6-ippool` you need to change the name in the yaml file.
 Then apply the configuration with the following command:
 ```
 microk8s kubectl apply -f calico-ippool.yaml
 ```
 
-After those changes you can restart the microk8s fot the changes to be applied with the following commands:
+After those changes you can restart the microk8s for the changes to be applied with the following commands:
 ```
 microk8s stop
 microk8s start
@@ -63,3 +64,4 @@ traps:
   ipFamilies: ["IPv4", "IPv6"]
 ```
 Default trap port for notifications for IPv6 is `2163`. You can change it to any other port if needed with `traps.service.ipv6Port` parameter.
+The IPv6 port and IPv4 port cannot be the same. 

@@ -9,14 +9,14 @@ to the SC4SNMP installation server. Those packages are:
 - `dependencies-images.tar`
 - `splunk-connect-for-snmp-chart.tar`
 
-Additionally, you'll need 
+Additionally, you will need:
 
 - `pull_mibserver.sh` script
 - `pull_gui_images.sh` script
 
 to easily pull and export mibserver image and GUI images.
 
-Moreover, the SC4SNMP Docker image must be pulled, saved as a `.tar` package, and then moved to the server as well. 
+Moreover, the SC4SNMP docker image must be pulled, saved as a `.tar` package, and then moved to the server as well. 
 This process requires Docker to be installed locally.
 
 Images can be pulled from the following repository: `ghcr.io/splunk/splunk-connect-for-snmp/container:<tag>`. 
@@ -64,7 +64,7 @@ microk8s ctr image import snmp_image.tar
 microk8s ctr image import mibserver.tar
 ```
 
-Afterwards, create `values.yaml`. It's a little different from `values.yaml` used in an online installation. 
+Afterwards, create `values.yaml`. It is a little different from `values.yaml` used in an online installation. 
 The difference between the two files is the following, which is used for automatic image pulling:
 
 ```yaml

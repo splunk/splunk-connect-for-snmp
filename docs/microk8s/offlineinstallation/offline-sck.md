@@ -37,13 +37,12 @@ microk8s helm3 install sck \
 
 ### Variables description
 
-
-| Placeholder   | Description  | Example  | 
-|---|---|---|
-| splunk_endpoint  | host address of splunk instance   | https://endpoint.example.com:8088/services/collector  |
-| insecure_skip_verify  | is insecure ssl allowed | false |
-| splunk_token | Splunk HTTP Event Collector token  | 450a69af-16a9-4f87-9628-c26f04ad3785  |
-| cluster_name | name of the cluster | my-cluster |
+| Placeholder          | Description                       | Example                                                | 
+|----------------------|-----------------------------------|--------------------------------------------------------|
+| splunk_endpoint      | host address of splunk instance   | `https://endpoint.example.com:8088/services/collector` |
+| insecure_skip_verify | is insecure ssl allowed           | `false`                                                |
+| splunk_token         | Splunk HTTP Event Collector token | `450a69af-16a9-4f87-9628-c26f04ad3785`                 |
+| cluster_name         | name of the cluster               | `my-cluster`                                           |
 
 An example of a correctly filled command is:
 ```bash
@@ -78,13 +77,13 @@ splunk-otel-collector
 ### Variables description
 
 
-| Placeholder   | Description  | Example  | 
-|---|---|---|
-| cluster_name  | name of the cluster | my_cluster |
-| realm | Realm obtained from the Splunk Observability Cloud environment  | us0  |
-| token | Token obtained from the Splunk Observability Cloud environment  | BCwaJ_Ands4Xh7Nrg |
-| ingest_url | Ingest URL from the Splunk Observability Cloud environment | https://ingest..signalfx.com |
-| api_url | API URL from the Splunk Observability Cloud environment  | https://api..signalfx.com |
+| Placeholder  | Description                                                    | Example                        | 
+|--------------|----------------------------------------------------------------|--------------------------------|
+| cluster_name | name of the cluster                                            | `my_cluster`                   |
+| realm        | Realm obtained from the Splunk Observability Cloud environment | `us0`                          |
+| token        | Token obtained from the Splunk Observability Cloud environment | `BCwaJ_Ands4Xh7Nrg`            |
+| ingest_url   | Ingest URL from the Splunk Observability Cloud environment     | `https://ingest..signalfx.com` |
+| api_url      | API URL from the Splunk Observability Cloud environment        | `https://api..signalfx.com`    |
 
 An example of a correctly filled command is:
 ```bash

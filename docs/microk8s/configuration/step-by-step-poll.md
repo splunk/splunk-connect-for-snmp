@@ -61,13 +61,14 @@ poller:
 
 The provided example configuration will make:
 
-1. Walk devices from `switch_group` with `IF-MIB` and `UCD-SNMP-MIB` every 2000 seconds
-2. Poll specific `IF-MIB` fields and the whole `UCD-SNMP-MIB` every 60 seconds
+1. Walk devices from `switch_group` with `IF-MIB` and `UCD-SNMP-MIB` every 2000 seconds.
+2. Poll specific `IF-MIB` fields and the whole `UCD-SNMP-MIB` every 60 seconds.
 
-Note: You can also limit the walk profile even more if you want to enhance the performance.
+!!! info 
+    You can also limit the walk profile even more if you want to enhance the performance.
 
-It makes sense to put the textual values in the walk that aren't required to be constantly monitored, and monitor only the metrics
-you're interested in:
+It makes sense to put the textual values in the walk that are not required to be constantly monitored, and monitor only the metrics
+you are interested in:
 
 ```
 small_walk:
@@ -95,7 +96,7 @@ switch_profile:
 Afterwards, every metric object will be enriched with the textual values gathered from a walk process. See [here](snmp-data-format.md) for more information about SNMP format.
 
 
-Now you're ready to reload SC4SNMP. Run the following `helm3 upgrade` command:
+Now you are ready to reload SC4SNMP. Run the following `helm3 upgrade` command:
 
 ```yaml
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
@@ -146,7 +147,7 @@ Successfully connected to http://snmp-mibserver/index.csv
 {"message": "New Record address='10.202.4.204' port=163 version='2c' community='public' secret=None security_engine=None walk_interval=2000 profiles=['switch_profile'] smart_profiles=True delete=False", "time": "2022-09-05T14:30:30.607641", "level": "INFO"}
 ```
 
-In some time (depending on how long the walk takes), we'll see events using the following query:
+In some time (depending on how long the walk takes), we will see events using the following query:
 
 ```yaml
 | mpreview index=netmetrics | search profiles=switch_profile
@@ -159,7 +160,8 @@ When groups are used, we can also use querying by the group name, for example:
 ```
 
 Querying by profiles/group in Splunk is only possible in the metrics index. Every piece of data being sent
-by SC4SNMP is formed based on the MIB file's definition of the SNMP object's index. The object is forwarded to an event index only if it doesn't have any metric value inside.
+by SC4SNMP is formed based on the MIB file's definition of the SNMP object's index. The object is forwarded to an event 
+index only if it does not have any metric value inside.
 
 The following is a Splunk `raw` metrics example:
 
