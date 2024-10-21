@@ -13,5 +13,6 @@ The default subnet used for SC4SNMP network in docker is `fd02::/64`, this and o
 changed in the `docker-compose-network.yml` file.
 
 Default trap port for notifications for IPv6 is `2163`. You can change it to any other port if needed with `IPv6_TRAPS_PORT` parameter in `.env` file.
+The IPv6 port and IPv4 port cannot be the same.
 
 For more information about IPv6 networking in docker, you can check the [official Docker documentation](https://docs.docker.com/engine/daemon/ipv6/).

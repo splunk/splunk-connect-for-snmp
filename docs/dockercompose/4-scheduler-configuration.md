@@ -17,9 +17,9 @@ groups:
 ```
 
 - `communities`: communities used for version `1` and `2c` of the `snmp`. The default one is `public`.
-- `customTranslations`: configuration of the custom translations. Configuration of this section looks the same as in the `values.yaml` in `scheduler.customTranslations` section, which can be checked in the documentation of [custom translations](../configuration/configuring-profiles.md#custom-translations).
-- `profiles`: configuration of the profiles. Configuration of this section looks the same as in the `values.yaml` in `scheduler.profiles` section, which can be checked in the documentation og [profiles configuration](../configuration/configuring-profiles.md).
-- `groups`: configuration of the groups. Configuration of this section looks the same as in the `values.yaml` in `scheduler.groups` section, which can be checked in the documentation of [groups configuration](../configuration/configuring-groups.md).
+- `customTranslations`: configuration of the custom translations. Configuration of this section looks the same as in the `values.yaml` in `scheduler.customTranslations` section, which can be checked in the documentation of [custom translations](../microk8s/configuration/configuring-profiles.md#custom-translations).
+- `profiles`: configuration of the profiles. Configuration of this section looks the same as in the `values.yaml` in `scheduler.profiles` section, which can be checked in the documentation of [profiles configuration](../microk8s/configuration/configuring-profiles.md).
+- `groups`: configuration of the groups. Configuration of this section looks the same as in the `values.yaml` in `scheduler.groups` section, which can be checked in the documentation of [groups configuration](../microk8s/configuration/configuring-groups.md).
 
 ## Example of the configuration
 

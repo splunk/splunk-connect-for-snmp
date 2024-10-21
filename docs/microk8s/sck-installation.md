@@ -1,7 +1,7 @@
 # Splunk OpenTelemetry Collector for Kubernetes installation
 
 Splunk OpenTelemetry Collector for Kubernetes is not required for SC4SNMP installation. However, Splunk OpenTelemetry Collector for Kubernetes sends logs and metrics from a k8s cluster to a Splunk instance, which makes SC4SNMP easier to debug. 
-You can do the same using the `microk8s kubectl logs` command on instances you're interested in, but if you're not proficient in Kubernetes,
+You can do the same using the `microk8s kubectl logs` command on instances you are interested in, but if you are not proficient in Kubernetes,
 Splunk OpenTelemetry Collector for Kubernetes is recommended. 
 
 The following steps are sufficient for a Splunk OpenTelemetry Collector installation for the SC4SNMP project with Splunk Enterprise/Enterprise Cloud.
@@ -9,7 +9,7 @@ In order to learn more about Splunk OpenTelemetry Collector, visit [Splunk OpenT
 
 ### Offline installation
 
-For offline installation instructions see [Splunk OpenTelemetry Collector for Kubernetes offline installation](../offlineinstallation/offline-sck.md).
+For offline installation instructions see [Splunk OpenTelemetry Collector for Kubernetes offline installation](offlineinstallation/offline-sck.md).
 
 ### Add Splunk OpenTelemetry Collector repository to HELM
 

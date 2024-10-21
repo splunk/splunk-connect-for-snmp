@@ -1,13 +1,13 @@
 # Configuring profiles in GUI
 
-SC4SNMP [profiles](../configuration/configuring-profiles.md) can be configured in `Profiles` tab.
+SC4SNMP [profiles](../microk8s/configuration/configuring-profiles.md) can be configured in `Profiles` tab.
 
 ![Profiles tab](../images/ui_docs/profiles/profiles_list.png){ style="border:2px solid" }
 
 <hr style="border:2px solid">
 
 After pressing `Add profile` button, new profile will be added.
-Configuration of the profile is the same as in the `values.yaml` file [(check here)](../configuration/configuring-profiles.md).
+Configuration of the profile is the same as in the `values.yaml` file [(check here)](../microk8s/configuration/configuring-profiles.md).
 
 
 ![Add standard profile](../images/ui_docs/profiles/add_standard_profile.png){style="border:2px solid; width:500px; height:auto" }

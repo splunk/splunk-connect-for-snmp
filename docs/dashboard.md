@@ -8,9 +8,9 @@ Using dashboard you can monitor SC4SNMP and be sure that is healthy and working 
 !!! info
     Dashboard compatible with SC4SNMP 1.11+
 
-1. [Create metrics indexes](gettingstarted/splunk-requirements.md#requirements-for-splunk-enterprise-or-enterprise-cloud) in Splunk.
+1. [Create metrics indexes](microk8s/splunk-requirements.md#requirements-for-splunk-enterprise-or-enterprise-cloud) in Splunk.
 2. Enable metrics logging for your runtime:
-    * For K8S install [Splunk OpenTelemetry Collector for K8S](gettingstarted/sck-installation.md)
+    * For K8S install [Splunk OpenTelemetry Collector for K8S](microk8s/sck-installation.md)
     * For docker-compose use [Splunk logging driver for docker](dockercompose/9-splunk-logging.md)
 
 ## Install dashboard

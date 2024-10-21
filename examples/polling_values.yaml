@@ -7,7 +7,7 @@ splunk:
   port: "8088"
 # in the worker section you can adjust scaling parameters
 # full description is here:
-# https://splunk.github.io/splunk-connect-for-snmp/main/configuration/worker-configuration
+# https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/worker-configuration
 worker:
   poller:
     replicaCount: 5

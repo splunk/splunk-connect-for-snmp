@@ -26,7 +26,7 @@ image:
 
 Change the directory to `charts/splunk-connect-for-snmp` and run `microk8s helm3 dep update`. You can exit `charts/splunk-connect-for-snmp` directory.
 While running `microk8s helm3 install` or `microk8s helm3 upgrade` commands, path to the helm chart must be modified. 
-In the [sc4snmp installation](./gettingstarted/sc4snmp-installation.md#install-sc4snmp) documentation, the following commands are presented:
+In the [sc4snmp installation](./microk8s/sc4snmp-installation.md#install-sc4snmp) documentation, the following commands are presented:
 ``` bash
 microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
