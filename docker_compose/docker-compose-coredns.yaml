@@ -13,3 +13,4 @@ services:
     networks:
         sc4snmp_network:
             ipv4_address: ${COREDNS_ADDRESS}
+            ipv6_address: ${COREDNS_ADDRESS_IPv6}
