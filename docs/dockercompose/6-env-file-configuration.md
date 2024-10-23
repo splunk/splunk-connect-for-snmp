@@ -13,6 +13,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose` |
 | `COREDNS_ADDRESS`                     | IP address of the coredns inside docker network. Should not be changed                               |
+| `COREDNS_ADDRESS_IPv6`                | IPv6 address of the coredns inside docker network. Should not be changed                             |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                   |
 | `IPv6_ENABLED`                        | Enable receiving traps and polling from IPv6 devices                                                 |
 

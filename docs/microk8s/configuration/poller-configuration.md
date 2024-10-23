@@ -31,6 +31,9 @@ poller:
 !!! info
     The header's line (`address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete`) is necessary for the correct execution of SC4SNMP. Do not remove it.
 
+### IPv6 hostname resolution
+When IPv6 is enabled and device is dual stack, the hostname resolution will try to resolve the name to the IPv6 address first, then to the IPv4 address.
+
 ### Define log level
 The log level for poller can be set by changing the value for the key `logLevel`. The allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` or `FATAL`. 
 The default value is `INFO`.

@@ -48,6 +48,7 @@ deploy_poetry() {
 }
 
 wait_for_containers_to_be_up() {
+  echo $(sudo docker ps)
   while true; do
     CONTAINERS_SC4SNMP=$(sudo docker ps | grep "sc4snmp\|worker-poller\|worker-sender\|worker-trap" | grep -v "Name" | wc -l)
     if [ "$CONTAINERS_SC4SNMP" -gt 0 ]; then
