@@ -29,13 +29,12 @@ ifOperStatus OBJECT-TYPE
                                   -- lower-layer interface(s)
             }
 ```
-[source](https://www.circitor.fr/Mibs/Mib/I/IF-MIB.mib)
 
 Here a numeric value is expected, but actually what SNMP Agents ends up receiving from the device is a `string` value,
 like `up`. To avoid setting textual value as a metric, SC4SNMP does an additional check and tries to cast the
 numeric value to float. If the check fails, the value is classified as a textual field.
 
-See the following simple example. You just added a device and didn't configure anything special. The data from a walk
+See the following simple example. You just added a device and did not configure anything special. The data from a walk
 in Splunk's metrics index is:
 
 ```
@@ -103,7 +102,7 @@ profile_with_one_metric:
     - ['IF-MIB', 'ifInUcastPkts']
 ```
 
-The record that you'll see in Splunk `| mpreview index=net*` for the same case as the previous one would be:
+The record that you will see in Splunk `| mpreview index=net*` for the same case as the previous one would be:
 
 ```
    ifAdminStatus: up
@@ -117,7 +116,7 @@ The record that you'll see in Splunk `| mpreview index=net*` for the same case a
 ```
 
 Only fields specified in `varBinds` are actively polled from the device. In the case of the previous `profile_with_one_metric`, the textual fields `ifAdminStatus`, `ifDescr`, `ifIndex`, `ifOperStatus` and `ifPhysAddress` are taken from the database cache. This is updated on every walk process. This is fine in most cases, as values such as
-MAC address, interface type, or interface status shouldn't change frequently if at all. 
+MAC address, interface type, or interface status should not change frequently if at all. 
 
 If you want to keep `ifOperStatus` and `ifAdminStatus` up to date all the time, define profile using the following example:
 
