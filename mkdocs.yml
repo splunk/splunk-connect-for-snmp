@@ -73,7 +73,7 @@ nav:
               - SNMP data format: "microk8s/configuration/snmp-data-format.md"
           - Traps: "microk8s/configuration/trap-configuration.md"
           - Worker: "microk8s/configuration/worker-configuration.md"
-          - Mongo DB: "microk8s/configuration/mongo-configuration.md"
+          - MongoDB: "microk8s/configuration/mongo-configuration.md"
           - Redis: "microk8s/configuration/redis-configuration.md"
           - SNMPv3 configuration: "microk8s/configuration/snmpv3-configuration.md"
           - Splunk Infrastructure Monitoring: "microk8s/configuration/sim-configuration.md"
