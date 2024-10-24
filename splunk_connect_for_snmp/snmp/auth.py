@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 import os
+import socket
 from typing import Any, Dict, Union
 
 from pysnmp.hlapi import (
@@ -87,7 +88,8 @@ def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpEngine)
 
 
 def setup_transport_target(ir):
-    if ":" in ir.address:
+    ip_address = get_ip_from_socket(ir)
+    if ":" in ip_address:
         transport = Udp6TransportTarget(
             (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
         )
@@ -96,6 +98,10 @@ def setup_transport_target(ir):
             (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
         )
     return transport
+
+
+def get_ip_from_socket(ir):
+    return socket.getaddrinfo(ir.address, ir.port)[0][4][0]
 
 
 def fetch_security_engine_id(observer_context, error_indication, ipaddress):
