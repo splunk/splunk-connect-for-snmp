@@ -6,7 +6,7 @@ after the previous one was applied. If the `Apply changes` button is clicked ear
 and the following message with ETA will be displayed:
 
 
-![ETA](../images/ui_docs/apply_changes/update_time.png){ style="border:2px solid; width:500px; height:auto" }
+![ETA](../../images/ui_docs/apply_changes/update_time.png){ style="border:2px solid; width:500px; height:auto" }
 
 
 Scheduled update triggers new kubernetes job `job/snmp-splunk-connect-for-snmp-inventory`. If the ETA elapsed and the 
@@ -15,4 +15,4 @@ creation of the new job will be retried 10 times. If `Apply changes` is clicked 
 will be displayed:
 
 
-![Retries](../images/ui_docs/apply_changes/retries.png){ style="border:2px solid; width:500px; height:auto" }
+![Retries](../../images/ui_docs/apply_changes/retries.png){ style="border:2px solid; width:500px; height:auto" }

@@ -1,7 +1,7 @@
 # Architecture
 
 SC4SNMP is deployed using a Kubernetes distribution, typically MicroK8s,
-that's designed to be a low-touch experience for integration with sensitive
+that is designed to be a low-touch experience for integration with sensitive
 edge network devices. It will typically be deployed in the same network
 management zone as the monitored devices and separated from Splunk by an
 existing firewall.

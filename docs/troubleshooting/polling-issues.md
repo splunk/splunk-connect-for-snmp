@@ -1,7 +1,7 @@
 # Identifying Polling and Walk Issues
 
 ## Check when SNMP WALK was executed last time for the device
-1. [Configure Splunk OpenTelemetry Collector for Kubernetes](../gettingstarted/sck-installation.md) or [Configure Docker Logs for Splunk](../dockercompose/9-splunk-logging.md)
+1. [Configure Splunk OpenTelemetry Collector for Kubernetes](../microk8s/sck-installation.md) or [Configure Docker Logs for Splunk](../dockercompose/9-splunk-logging.md).
 2. Go to your Splunk and execute search: `index="em_logs"   "Sending due task" "sc4snmp;<IP_ADDRESS>;walk"` 
 and replace <IP_ADDRESS> with the pertinent IP Address. 
 
@@ -42,7 +42,7 @@ If you put in only the IP address (for example, `127.0.0.1`), then errors will b
 
 ## Walking a device takes too much time
 
-See [Configure small walk profile](../../configuration/configuring-profiles/#walk-profile) to enable the small walk 
+See [Configure small walk profile](../../microk8s/configuration/configuring-profiles/#walk-profile) to enable the small walk 
 functionality.
 
 ## An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance
@@ -83,11 +83,11 @@ An example for an appropriate Splunk query would be the following:
 
 ### Unknown USM user
 In case of polling SNMPv3 devices, `Unknown USM user` error suggests wrong username. Verify 
-that the kubernetes secret with the correct username has been created ([SNMPv3 configuration](../configuration/snmpv3-configuration.md)).
+that the kubernetes secret with the correct username has been created ([SNMPv3 configuration](../microk8s/configuration/snmpv3-configuration.md)).
 
 ### Wrong SNMP PDU digest
 In case of polling SNMPv3 devices, `Wrong SNMP PDU digest` error suggests wrong authentication key. Verify 
-that the kubernetes secret with the correct authentication key has been created ([SNMPv3 configuration](../configuration/snmpv3-configuration.md)).
+that the kubernetes secret with the correct authentication key has been created ([SNMPv3 configuration](../microk8s/configuration/snmpv3-configuration.md)).
 
 ### No SNMP response received before timeout
 `No SNMP response received before timeout` error might have several root causes. Some of them are:
@@ -126,7 +126,8 @@ The following groups have invalid configuration and won't be used: ['group1']. P
 The following profiles have invalid configuration and won't be used: ['standard_profile', 'walk_profile']. Please check indentation and keywords spelling inside mentioned profiles configuration.
 ```
 Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to:
-- kubernetes: [Configuring profiles](../configuration/configuring-profiles.md) or [Configuring Groups](../configuration/configuring-groups.md)
+
+- kubernetes: [Configuring profiles](../microk8s/configuration/configuring-profiles.md) or [Configuring Groups](../microk8s/configuration/configuring-groups.md)
 - docker: [Scheduler configuration](../dockercompose/4-scheduler-configuration.md)
 
 sections to check how the correct configuration should look like.

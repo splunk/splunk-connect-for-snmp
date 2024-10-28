@@ -264,4 +264,4 @@ When having the issues with dual-stack configuration the `IP Family Policy` and 
 ### Check service configuration
 
 Checking the service configuration can be useful when having issues with the traps connectivity. 
-For better explanation refer to: [Wrong IP or port](../traps-issues#wrong-ip-or-port)
+For better explanation refer to: [Wrong IP or port](../traps-issues#wrong-ip-or-port).

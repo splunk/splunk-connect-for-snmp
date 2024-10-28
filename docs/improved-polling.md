@@ -2,7 +2,7 @@
 
 SC4SNMP now offers beta support for improved polling performance.
 
-While this is in beta, we encourage users to explore it. Although we've conducted extensive testing, occasional issues may arise.
+While this is in beta, we encourage users to explore it. Although we have conducted extensive testing, occasional issues may arise.
 Your feedback during this phase is crucial in refining and optimizing and can be shared using [issues](https://github.com/splunk/splunk-connect-for-snmp/issues).
 To get started, the zip file with helm chart must be downloaded. It can be found on [feat/improve-polling-time](https://github.com/splunk/splunk-connect-for-snmp/pull/976/checks) branch.
 
@@ -26,7 +26,7 @@ image:
 
 Change the directory to `charts/splunk-connect-for-snmp` and run `microk8s helm3 dep update`. You can exit `charts/splunk-connect-for-snmp` directory.
 While running `microk8s helm3 install` or `microk8s helm3 upgrade` commands, path to the helm chart must be modified. 
-In the [sc4snmp installation](./gettingstarted/sc4snmp-installation.md#install-sc4snmp) documentation, the following commands are presented:
+In the [sc4snmp installation](./microk8s/sc4snmp-installation.md#install-sc4snmp) documentation, the following commands are presented:
 ``` bash
 microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```

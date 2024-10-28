@@ -1,5 +1,5 @@
 # Scheduler configuration
-The scheduler is a service that manages schedules for SNMP walks and GETs. The definitions of the schedules
+The scheduler is a service that manages schedules for SNMP WALKs and GETs. The definitions of the schedules
 are stored in MongoDB. 
  
 ### Scheduler configuration file
@@ -29,10 +29,13 @@ The log level for the scheduler can be set by changing the value for the `logLev
 The default value is `WARNING`.
 
 ### Define resource requests and limits
+
+To change the resource requests ad limits for cpu and memory, modify the `resources` section of the scheduler configuration.
+
 ```yaml
 scheduler:
-  #The following resource specification is appropriate for most deployments to scale the
-  #Larger inventories may require more memory but should not require additional cpu
+  # The following resource specification is appropriate for most deployments to scale the
+  # Larger inventories may require more memory but should not require additional cpu
   resources:
     limits:
         cpu: 1
@@ -45,7 +48,7 @@ scheduler:
 ### Define groups of hosts
 For more information on when to use groups, see [Configuring Groups](configuring-groups.md).
 
-See the following example group configuration:
+See the following example of group configuration:
 ```yaml
 scheduler:
   groups: |
@@ -66,13 +69,14 @@ scheduler:
         port: 999
 ```
 
-The one obligatory field for the host configuration is `address`. If `port` isn't configured its default value is `161`. 
-Other fields that can be modified here are: `community`, `secret`, `version`, and `security_engine`.
+The one obligatory field for the host configuration is `address`. If `port` is not configured its default value is `161`. 
+Other fields that can be modified are: `community`, `secret`, `version`, and `security_engine`.
 However, if they remain unspecified in the host configuration, they will be derived from the inventory record. 
 
 ### Define the expiration time for tasks
 
-Define the time, in seconds, when polling or walk tasks will be revoked if they haven't been picked up by the worker. See the [celery documentation](https://docs.celeryq.dev/en/stable/userguide/calling.html#expiration) for more details.
+Define the time, in seconds, when polling or walk tasks will be revoked if they have not been picked up by the worker.
+See the [celery documentation](https://docs.celeryq.dev/en/stable/userguide/calling.html#expiration) for more details.
 ```yaml
 scheduler:
   tasksExpiryTime: 300

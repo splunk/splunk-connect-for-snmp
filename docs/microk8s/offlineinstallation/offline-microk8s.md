@@ -1,6 +1,7 @@
 # Offline Microk8s installation issues
 
-See [install alternatives](https://microk8s.io/docs/install-alternatives#heading--offline) for offline installation of Microk8s,  but there are additional steps to install microk8s offline. See the following steps to install offline:
+See [install alternatives](https://microk8s.io/docs/install-alternatives#heading--offline) for offline installation of Microk8s. There are additional steps to install microk8s offline.
+See the following steps to install offline:
 
 ## Importing images
 
@@ -24,7 +25,9 @@ kube-system    calico-kube-controllers-7c9c8dd885-fg8f2   0/1     Pending    0  
 kube-system    calico-node-zg4c4                          0/1     Init:0/3   0          23s
 ```
 
-The pods are in the `Pending`/`Init` state because they’re trying to download images, which is impossible to do offline. In order to make them download, you need to download all the images on a different server with an internet connection, pack it up, and import it to a microk8s image registry on your offline server.
+The pods are in the `Pending`/`Init` state because they are trying to download images, which is impossible to do offline. 
+In order to make them download, you need to download all the images on a different server with an internet connection, 
+pack it up, and import it to a microk8s image registry on your offline server.
 
 ### Packing up images for an offline environment
 
@@ -41,7 +44,7 @@ kube-system    0s          Warning   Failed              pod/calico-node-sc784  
 kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Error: ErrImagePull
 ```
 
-The previous information shows you that you lack a `docker.io/calico/cni:v3.21.4` image, and need to import it in order to fix the issue.
+The previous information shows that you lack a `docker.io/calico/cni:v3.21.4` image, and need to import it in order to fix the issue.
 
 The process to do this action is always the following:
 
@@ -93,7 +96,8 @@ microk8s ctr image import pause.tar
 microk8s ctr image import metrics.tar
 ```
 
-NOTE: for other versions of `microk8s`, tags of images may differ. 
+!!! info
+    For other versions of `microk8s`, tags of images may differ. 
 
 After running the following:
 
@@ -115,14 +119,14 @@ kube-system    metrics-server-5f8f64cb86-x7k29            1/1     Running       
 
 ## Enabling DNS and Metallb
 
-`dns` and `metallb` don’t require importing any images, so you can enable them simply through the following commands:
+`dns` and `metallb` do not require importing any images, so you can enable them simply through the following commands:
 
 ```yaml
 microk8s enable dns
 microk8s enable metallb
 ```
 
-For more information on `metallb`, see [Install metallb](../gettingstarted/mk8s/k8s-microk8s.md#install-metallb).
+For more information on `metallb`, see [Install metallb](../mk8s/k8s-microk8s.md#install-metallb).
 
 ## Installing helm3
 
