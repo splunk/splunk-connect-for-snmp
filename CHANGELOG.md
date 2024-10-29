@@ -3,6 +3,8 @@
 ## Unreleased
 
 ### Changed
+- general refactor of documentation
+- merge docker compose files into one
 
 ### Fixed
 

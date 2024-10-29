@@ -182,6 +182,7 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
 mv "$TEMP_ENV_FILE" .env
 
 # Create snmpv3 secret
+python3 -m pip install ruamel.yaml
 python3 $(realpath "manage_secrets.py") --path_to_compose $(pwd) \
 --secret_name sv3poller \
 --userName r-wuser \
@@ -201,9 +202,8 @@ sudo docker run -d -p 1164:161/udp tandrup/snmpsim
 sudo docker run -d -p 1165:161/udp tandrup/snmpsim
 sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
-
 echo $(green "Running up Docker Compose environment")
-sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+sudo docker compose up -d
 wait_for_containers_to_be_up
 
 sudo docker ps

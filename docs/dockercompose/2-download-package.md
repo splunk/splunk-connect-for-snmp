@@ -13,8 +13,12 @@ After configuration, application can be deployed by running the
 following command inside the `docker_compose` directory:
 
 ```shell
-sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+sudo docker compose up -d
 ```
+
+!!! info
+    The installation process changed from version **1.12.1**. For lower version refer to the corresponding 
+    documentation. 
 
 The same command can be run to apply any updated configuration changes.
 
@@ -23,5 +27,5 @@ The same command can be run to apply any updated configuration changes.
 To uninstall the app, run the following command inside the `docker_compose` directory:
 
 ```shell
-sudo docker compose $(find docker* | sed -e 's/^/-f /') down
+sudo docker compose  down
 ```

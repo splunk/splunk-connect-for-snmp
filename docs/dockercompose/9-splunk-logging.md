@@ -37,7 +37,7 @@ python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --enable_lo
 The script will add required configuration for logging under services in docker compose files.
 To apply the changes run the: 
 ```
-sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+sudo docker compose up -d
 ```
 command inside the `docker_compose` directory.
 
@@ -59,7 +59,7 @@ python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --disable_l
 
 To apply the changes run the:
 ```
-sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+sudo docker compose up -d
 ```
 command inside the `docker_compose` directory.
 

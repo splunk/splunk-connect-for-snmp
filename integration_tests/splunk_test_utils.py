@@ -137,7 +137,7 @@ def update_traps_secrets_compose(secrets):
 
 
 def upgrade_docker_compose():
-    os.system("sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d")
+    os.system("sudo docker compose up -d")
 
 
 def create_v3_secrets_compose(
