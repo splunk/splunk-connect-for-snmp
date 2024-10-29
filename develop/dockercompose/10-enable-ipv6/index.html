@@ -1835,7 +1835,7 @@ To enable IPv6, follow instruction below.</p>
 To avoid any problem with configuring the network, it is recommended to use the latest version of Docker. </p>
 <p>To enable IPv6 for SC4SNMP, set <code>IPv6_ENABLED</code> variable to <code>true</code> in <code>.env</code> file.
 The default subnet used for SC4SNMP network in docker is <code>fd02::/64</code>, this and other network configuration can be 
-changed in the <code>docker-compose-network.yml</code> file.</p>
+changed in the <code>docker-compose.yaml</code> file in <code>networks</code> section.</p>
 <p>Default trap port for notifications for IPv6 is <code>2163</code>. You can change it to any other port if needed with <code>IPv6_TRAPS_PORT</code> parameter in <code>.env</code> file.
 The IPv6 port and IPv4 port cannot be the same.</p>
 <p>For more information about IPv6 networking in docker, you can check the <a href="https://docs.docker.com/engine/daemon/ipv6/">official Docker documentation</a>.</p></div>

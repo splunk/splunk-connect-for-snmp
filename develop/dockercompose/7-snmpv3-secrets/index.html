@@ -516,6 +516,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#creating-a-new-secret" class="md-nav__link">
     <span class="md-ellipsis">
       Creating a new secret
@@ -1843,6 +1852,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#creating-a-new-secret" class="md-nav__link">
     <span class="md-ellipsis">
       Creating a new secret
@@ -1908,6 +1926,10 @@
 <div><h1 id="snmpv3-secrets">SNMPv3 secrets<a class="headerlink" href="#snmpv3-secrets" title="Permanent link">¶</a></h1>
 <p>Creating a secret requires updating configuration of several docker compose files. To simplify this process, inside the 
 <code>docker_compose</code> package there is a <code>manage_secrets.py</code> file which will automatically manage secrets.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">¶</a></h2>
+<p>Running script requires installation of <code>ruamel.yaml</code> package for python. It can be done with command:
+</p><div class="highlight"><pre><span></span><code>pip3 install ruamel.yaml
+</code></pre></div>
 <h2 id="creating-a-new-secret">Creating a new secret<a class="headerlink" href="#creating-a-new-secret" title="Permanent link">¶</a></h2>
 <p>To create a new secret, <code>manage_secrets.py</code> must be run with the following flags:</p>
 <table>
@@ -1962,7 +1984,7 @@
 </table>
 <p>This script, apart from updating configuration files, creates environmental variables with values of the secret at the 
 end of the <code>.env</code> file in the <code>docker_compose</code> directory. To apply those secrets run the 
-<code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d</code> command inside the <code>docker_compose</code> directory. After execution of the command, plain text secrets 
+<code>sudo docker compose up -d</code> command inside the <code>docker_compose</code> directory. After execution of the command, plain text secrets 
 from the <code>.env</code> file can be deleted. </p>
 <blockquote>
 <p><strong><em>NOTE:</em></strong> In case of any changes in <code>.env</code>, the secrets must be recreated by <a href="#deleting-a-secret">deleting</a> any 
@@ -1979,7 +2001,7 @@ previously existing secrets and creating them once again. Changes in <code>.env<
 --contextEngineId<span class="w"> </span><span class="m">090807060504037</span>
 </code></pre></div>
 <p>Inside <code>docker_compose</code> directory run:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span><span class="k">$(</span>find<span class="w"> </span>docker*<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-e<span class="w"> </span><span class="s1">'s/^/-f /'</span><span class="k">)</span><span class="w"> </span>up<span class="w"> </span>-d
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
 <p>Now, the following lines from the <code>.env</code> can be deleted:</p>
 <div class="highlight"><pre><span></span><code>my_secret_userName=r-wuser

@@ -1901,7 +1901,7 @@
 </code></pre></div>
 <p>The script will add required configuration for logging under services in docker compose files.
 To apply the changes run the: 
-</p><div class="highlight"><pre><span></span><code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+</p><div class="highlight"><pre><span></span><code>sudo docker compose up -d
 </code></pre></div>
 command inside the <code>docker_compose</code> directory.
 <h2 id="disabling-the-logs">Disabling the logs<a class="headerlink" href="#disabling-the-logs" title="Permanent link">¶</a></h2>
@@ -1929,7 +1929,7 @@ command inside the <code>docker_compose</code> directory.
 </p><div class="highlight"><pre><span></span><code>python3 manage_logs.py --path_to_compose /home/ubuntu/docker_compose --disable_logs
 </code></pre></div>
 <p>To apply the changes run the:
-</p><div class="highlight"><pre><span></span><code>sudo docker compose $(find docker* | sed -e 's/^/-f /') up -d
+</p><div class="highlight"><pre><span></span><code>sudo docker compose up -d
 </code></pre></div>
 command inside the <code>docker_compose</code> directory.
 <p>After that the logs can be reached with <code>docker logs</code> command.</p></div>

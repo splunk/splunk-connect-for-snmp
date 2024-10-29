@@ -1095,6 +1095,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#updating-trap-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Updating trap configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#define-external-gateway-for-traps" class="md-nav__link">
     <span class="md-ellipsis">
       Define external gateway for traps
@@ -1134,15 +1143,6 @@
   <a href="#aggregate-traps" class="md-nav__link">
     <span class="md-ellipsis">
       Aggregate traps
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#updating-trap-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Updating trap configuration
     </span>
   </a>
   
@@ -1923,6 +1923,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#updating-trap-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Updating trap configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#define-external-gateway-for-traps" class="md-nav__link">
     <span class="md-ellipsis">
       Define external gateway for traps
@@ -1962,15 +1971,6 @@
   <a href="#aggregate-traps" class="md-nav__link">
     <span class="md-ellipsis">
       Aggregate traps
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#updating-trap-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Updating trap configuration
     </span>
   </a>
   
@@ -2058,6 +2058,17 @@ in <code>values.yaml</code>.</p>
 The following is an example of an SNMPv3 trap:</p>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 '' 1.3.6.1.2.1.2.2.1.1.1</span>
 </code></pre></div>
+<h3 id="updating-trap-configuration">Updating trap configuration<a class="headerlink" href="#updating-trap-configuration" title="Permanent link">¶</a></h3>
+<p>If you need to update part of the traps configuration, you can do it by editing the <code>values.yaml</code> and then running the following command to restart the pod deployment:
+</p><div class="highlight"><pre><span></span><code>microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-trap -n sc4snmp
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>The name of the deployment can differ based on the helm installation name. 
+This can be checked with the following command: 
+</p><div class="highlight"><pre><span></span><code>microk8s kubectl get deployments -n sc4snmp
+</code></pre></div>
+</div>
 <h3 id="define-external-gateway-for-traps">Define external gateway for traps<a class="headerlink" href="#define-external-gateway-for-traps" title="Permanent link">¶</a></h3>
 <p>If you use SC4SNMP on a single machine, configure <code>loadBalancerIP</code>.
 <code>loadBalancerIP</code> is the IP address in the metallb pool. 
@@ -2105,18 +2116,7 @@ The default value is <code>WARNING</code>.</p>
 </p><div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">aggregateTrapsEvents</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
 </code></pre></div>
-After that run the upgrade command.
-<h3 id="updating-trap-configuration">Updating trap configuration<a class="headerlink" href="#updating-trap-configuration" title="Permanent link">¶</a></h3>
-<p>If you need to update part of the traps configuration that changes the configmap, you can do it by editing the <code>values.
-yaml</code> and then running the following command to restart the pod deployment:
-</p><div class="highlight"><pre><span></span><code>microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-trap -n sc4snmp
-</code></pre></div>
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>The name of the deployment can differ based on the helm installation name. This can be checked with the following command: 
-</p><div class="highlight"><pre><span></span><code>microk8s kubectl get deployments -n sc4snmp
-</code></pre></div>
-</div></div>
+Then the upgrade command can be executed.</div>
 
 
 
