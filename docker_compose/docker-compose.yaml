@@ -47,6 +47,7 @@ x-dns_and_networks: &dns_and_networks
   - sc4snmp_network
   dns:
   - ${COREDNS_ADDRESS}
+  - ${COREDNS_ADDRESS_IPv6}
 
 x-dependency_and_restart_policy: &dependency_and_restart_policy
   depends_on:
@@ -86,6 +87,7 @@ services:
     networks:
       sc4snmp_network:
         ipv4_address: ${COREDNS_ADDRESS}
+        ipv6_address: ${COREDNS_ADDRESS_IPv6}
   snmp-mibserver:
     <<: [*dns_and_networks, *dependend_on_core_dns]
     image: ${MIBSERVER_IMAGE}:${MIBSERVER_TAG:-latest}
