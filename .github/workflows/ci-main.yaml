@@ -59,13 +59,11 @@ jobs:
           FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
   semgrep-scan:
     name: semgrep
-    runs-on: ubuntu-latest
     if: (github.actor != 'dependabot[bot]')
-    steps:
-      - uses: actions/checkout@v4
-      - uses: semgrep/semgrep-action@v1
-        with:
-          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
+    uses: splunk/sast-scanning/.github/workflows/sast-scan.yml@main
+    secrets: inherit
+    with:
+      block_mode: "on"
   pre-commit:
     runs-on: ubuntu-latest
     steps:
@@ -140,6 +138,10 @@ jobs:
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
       - name: run install_microk8s.sh
         run: |
           sudo snap install microk8s --classic --channel=1.30/stable
@@ -162,6 +164,10 @@ jobs:
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
       - name: Install docker compose
         run: |
           # Add Docker's official GPG key:

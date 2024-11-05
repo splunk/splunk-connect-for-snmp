@@ -53,7 +53,7 @@ While sending SNMP v3 traps in case of wrong username or engine id configuration
 2024-02-06 15:42:14,091 ERROR Security Model failure for device ('18.226.181.199', 46066): Unknown SNMP security name encountered
 ```
 
-If this error occurs, verify that the kubernetes secret with the correct username has been created ([SNMPv3 configuration](../configuration/snmpv3-configuration.md)).
+If this error occurs, verify that the kubernetes secret with the correct username has been created ([SNMPv3 configuration](../microk8s/configuration/snmpv3-configuration.md)).
 After creating the secret, add it under `traps.usernameSecrets` in `values.yaml`. Check that the correct snmp engine id
 is configured under `traps.securityEngineId`. See the following example of a `values.yaml` with configured secret and engine id:
 ```yaml
@@ -70,7 +70,7 @@ While sending SNMP v3 traps in case of wrong authentication protocol or password
 ```
 2024-02-06 15:42:14,642 ERROR Security Model failure for device ('18.226.181.199', 54806): Authenticator mismatched
 ```
-If this error occurs, verify that the kubernetes secret with the correct authentication protocol and password has been created ([SNMPv3 configuration](../configuration/snmpv3-configuration.md)).
+If this error occurs, verify that the kubernetes secret with the correct authentication protocol and password has been created ([SNMPv3 configuration](../microk8s/configuration/snmpv3-configuration.md)).
 After creating the secret, add it under `traps.usernameSecrets` in `values.yaml`. See the following example of a `values.yaml` with configured secret:
 ```yaml
 traps:
@@ -83,7 +83,7 @@ While sending SNMP v3 traps in case of wrong privacy protocol or password config
 ```
 2024-02-06 15:42:14,780 ERROR Security Model failure for device ('18.226.181.199', 48249): Ciphering services not available or ciphertext is broken
 ```
-If this error occurs, verify that the kubernetes secret with the correct privacy protocol and password has been created ([SNMPv3 configuration](../configuration/snmpv3-configuration.md)).
+If this error occurs, verify that the kubernetes secret with the correct privacy protocol and password has been created ([SNMPv3 configuration](../microk8s/configuration/snmpv3-configuration.md)).
 After creating the secret, add it under `traps.usernameSecrets` in `values.yaml`. See the following example of a `values.yaml` with configured secret:
 ```yaml
 traps:

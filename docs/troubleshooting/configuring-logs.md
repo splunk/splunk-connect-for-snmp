@@ -15,11 +15,11 @@ Log level configuration can be set for `worker`, `poller`, `scheduler` and `trap
 
 ## Accessing SC4SNMP logs 
 
-SC4SNMP logs can be browsed in Splunk in `em_logs` index, provided that [sck-otel](../gettingstarted/sck-installation.md)
+SC4SNMP logs can be browsed in Splunk in `em_logs` index, provided that [sck-otel](../microk8s/sck-installation.md)
 is installed. Logs can be also accessed directly in kubernetes using terminal.
 
 ### Accessing logs via Splunk
-If [sck-otel](../gettingstarted/sck-installation.md) is installed, browse `em_logs` index. Logs can be further filtered 
+If [sck-otel](../microk8s/sck-installation.md) is installed, browse `em_logs` index. Logs can be further filtered 
 for example by the sourcetype field. Example search command to get logs from poller:
 ```
 index=em_logs sourcetype="kube:container:splunk-connect-for-snmp-worker-poller"

@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 import os
+import socket
+from ipaddress import ip_address
 from typing import Any, Dict, Union
 
 from pysnmp.hlapi import (
@@ -28,11 +30,13 @@ from pysnmp.hlapi import (
 from pysnmp.proto.api.v2c import OctetString
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
+from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
+IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", False))
 
 
 def get_secret_value(
@@ -87,7 +91,8 @@ def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpEngine)
 
 
 def setup_transport_target(ir):
-    if ":" in ir.address:
+    ip = get_ip_from_socket(ir) if IPv6_ENABLED else ir.address
+    if ip_address(ip).version == 6:
         transport = Udp6TransportTarget(
             (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
         )
@@ -96,6 +101,13 @@ def setup_transport_target(ir):
             (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
         )
     return transport
+
+
+def get_ip_from_socket(ir):
+    # Example of response from getaddrinfo
+    # [(< AddressFamily.AF_INET6: 10 >, < SocketKind.SOCK_STREAM: 1 >, 6, '', ('2607:f8b0:4004:c09::64', 161, 0, 0)),
+    # (< AddressFamily.AF_INET: 2 >, < SocketKind.SOCK_STREAM: 1 >, 6, '', ('142.251.16.139', 161))]
+    return socket.getaddrinfo(ir.address, ir.port)[0][4][0]
 
 
 def fetch_security_engine_id(observer_context, error_indication, ipaddress):

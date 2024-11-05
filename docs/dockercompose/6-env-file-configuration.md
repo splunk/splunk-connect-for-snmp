@@ -12,7 +12,8 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`     | Absolute path to [traps-config.yaml](./5-traps-configuration.md) file                                |
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose` |
-| `COREDNS_ADDRESS`                     | IP address of the coredns inside docker network. Shouldn’t be changed                                |
+| `COREDNS_ADDRESS`                     | IP address of the coredns inside docker network. Should not be changed                               |
+| `COREDNS_ADDRESS_IPv6`                | IPv6 address of the coredns inside docker network. Should not be changed                             |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                   |
 | `IPv6_ENABLED`                        | Enable receiving traps and polling from IPv6 devices                                                 |
 
@@ -56,7 +57,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 |------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------| 
 | `WALK_RETRY_MAX_INTERVAL`    | Maximum time interval between walk attempts                                                                                                          |
 | `WALK_MAX_RETRIES`           | Maximum number of walk retries                                                                                                                       |
-| `METRICS_INDEXING_ENABLED`   | Details can be found in [append oid index part to the metrics](../configuration/poller-configuration.md#append-oid-index-part-to-the-metrics)        |
+| `METRICS_INDEXING_ENABLED`   | Details can be found in [append oid index part to the metrics](../microk8s/configuration/poller-configuration.md#append-oid-index-part-to-the-metrics)        |
 | `POLL_BASE_PROFILES`         | Enable polling base profiles (with IF-MIB and SNMPv2-MIB)                                                                                            |
 | `IGNORE_NOT_INCREASING_OIDS` | Ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex: IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6              |
 | `WORKER_LOG_LEVEL`           | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                      |

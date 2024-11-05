@@ -1,12 +1,10 @@
 import argparse
 import os
-import re
 from typing import Union
 
 import ruamel.yaml
 
-DEPENDENCIES = ["snmp-mibserver", "redis", "mongo"]
-DOCKER_COMPOSE_DEPENDENCIES = "docker-compose-dependencies.yaml"
+DOCKER_COMPOSE = "docker-compose.yaml"
 
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
@@ -74,90 +72,35 @@ def load_template(environment: dict, service_name: str) -> dict:
 
 
 def create_logs(environment, path_to_compose_files):
-    files_list = os.listdir(path_to_compose_files)
-    compose_files = [
-        f
-        for f in files_list
-        if re.match(r"docker-compose-(?!dependencies|network|secrets).*.yaml", f)
-    ]
-
-    for filename in compose_files:
-        service_name = filename.removeprefix("docker-compose-").removesuffix(".yaml")
-        template_yaml = load_template(environment, service_name)
-        try:
-            yaml = ruamel.yaml.YAML()
-            with open(os.path.join(path_to_compose_files, filename)) as file:
-                yaml_file = yaml.load(file)
-            yaml_file["services"][service_name].update(template_yaml)
-
-            with open(os.path.join(path_to_compose_files, filename), "w") as file:
-                yaml.dump(yaml_file, file)
-        except Exception as e:
-            print(
-                f"Problem with editing docker-compose-{service_name}.yaml. Error: {e}"
-            )
-
     try:
-        yaml2 = ruamel.yaml.YAML()
-        with open(
-            os.path.join(path_to_compose_files, DOCKER_COMPOSE_DEPENDENCIES)
-        ) as file:
-            yaml_file = yaml2.load(file)
+        yaml = ruamel.yaml.YAML()
+        with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE)) as file:
+            yaml_file = yaml.load(file)
 
-        for service_name in DEPENDENCIES:
+        for service_name in yaml_file["services"].keys():
             template_yaml = load_template(environment, service_name)
             yaml_file["services"][service_name].update(template_yaml)
 
-        with open(
-            os.path.join(path_to_compose_files, DOCKER_COMPOSE_DEPENDENCIES), "w"
-        ) as file:
-            yaml2.dump(yaml_file, file)
+        with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE), "w") as file:
+            yaml.dump(yaml_file, file)
     except Exception as e:
-        print(f"Problem with editing docker-compose-dependencies.yaml. Error: {e}")
+        print(f"Problem with editing docker-compose.yaml. Error: {e}")
 
 
 def delete_logs(path_to_compose_files):
-    files_list = os.listdir(path_to_compose_files)
-    compose_files = [
-        f
-        for f in files_list
-        if re.match(r"docker-compose-(?!dependencies|network|secrets).*.yaml", f)
-    ]
-
-    for filename in compose_files:
-        service_name = filename.removeprefix("docker-compose-").removesuffix(".yaml")
-        try:
-            with open(os.path.join(path_to_compose_files, filename)) as file:
-                yaml = ruamel.yaml.YAML()
-                yaml_file = yaml.load(file)
-
-            yaml_file["services"][service_name]["logging"]["driver"] = "json-file"
-            yaml_file["services"][service_name]["logging"].pop("options")
-
-            with open(os.path.join(path_to_compose_files, filename), "w") as file:
-                yaml.dump(yaml_file, file)
-        except Exception as e:
-            print(
-                f"Problem with editing docker-compose-{service_name}.yaml. Error: {e}"
-            )
-
     try:
-        with open(
-            os.path.join(path_to_compose_files, DOCKER_COMPOSE_DEPENDENCIES)
-        ) as file:
-            yaml2 = ruamel.yaml.YAML()
-            yaml_file = yaml2.load(file)
+        yaml = ruamel.yaml.YAML()
+        with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE)) as file:
+            yaml_file = yaml.load(file)
 
-        for service_name in DEPENDENCIES:
+        for service_name in yaml_file["services"].keys():
             yaml_file["services"][service_name]["logging"]["driver"] = "json-file"
             yaml_file["services"][service_name]["logging"].pop("options")
 
-        with open(
-            os.path.join(path_to_compose_files, DOCKER_COMPOSE_DEPENDENCIES), "w"
-        ) as file:
-            yaml2.dump(yaml_file, file)
+        with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE), "w") as file:
+            yaml.dump(yaml_file, file)
     except Exception as e:
-        print(f"Problem with editing docker-compose-dependencies.yaml. Error: {e}")
+        print(f"Problem with editing docker-compose.yaml. Error: {e}")
 
 
 def main():

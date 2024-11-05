@@ -137,7 +137,7 @@ sim:
 scheduler:
   ### Group definitions ###
   # Create the group definition in case you want to configure polling from multiple hosts
-  # at once, more on this: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-groups/
+  # at once, more on this: https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/configuring-groups/
 
   #groups: |
   #  example_group_1:
@@ -150,7 +150,7 @@ scheduler:
 
   ### Profiles definitions ###
   # Create a profile definition to set varbinds you want to poll from the device.
-  # more on this: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-profiles/
+  # more on this: https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/configuring-profiles/
 
   #profiles: |
   #  smart_profile:
@@ -195,7 +195,7 @@ scheduler:
   profiles: ""
 
   # mapping MIB fields to custom names
-  # more: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-profiles/#custom-translations
+  # more: https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/configuring-profiles/#custom-translations
   customTranslations: {}
 
   # set CPU and Memory limits for a scheduler pod
@@ -217,7 +217,7 @@ scheduler:
 
 poller:
   # Appending OID indexes to metrics.
-  # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#append-oid-index-part-to-the-metrics
+  # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/#append-oid-index-part-to-the-metrics
   metricsIndexingEnabled: false
 
   # Enable polling base profiles (with IF-MIB and SNMPv2-MIB) from
@@ -229,11 +229,11 @@ poller:
   maxOidToProcess: 70
 
   # list of kubernetes secrets name that will be used for polling
-  # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#define-usernamesecrets
+  # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/#define-usernamesecrets
   usernameSecrets: []
 
   # Here is where polling happens. Learn more on how to configure it here:
-  # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/
+  # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/
 
   #inventory: |
   #  address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
@@ -242,7 +242,7 @@ poller:
 
 worker:
   # workers are responsible for the actual execution of polling, processing trap messages, and sending data to Splunk.
-  # More: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/worker-configuration/
+  # More: https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/worker-configuration/
 
   # The poller worker consumes all the tasks related to polling
   poller:
