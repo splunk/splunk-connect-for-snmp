@@ -3,10 +3,17 @@
 ## Unreleased
 
 ### Changed
+
+### Fixed
+
+## [1.12.1]
+
+### Changed
 - general refactor of documentation
 - merge docker compose files into one
 
 ### Fixed
+- dns resolution for ipv6
 
 ## [1.12.0]
 
