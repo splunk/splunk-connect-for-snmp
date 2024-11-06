@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- add IF-MIB.ifOperStatus to baseIF profile
 
 ### Fixed
 
