@@ -68,10 +68,10 @@ networks:
     enable_ipv6: ${IPv6_ENABLED:-false}
     ipam:
       config:
-      - subnet: 172.28.0.0/16
-        gateway: 172.28.0.1
-      - subnet: fd02::/64
-        gateway: fd02::1
+      - subnet: ${IPAM_SUBNET:-172.28.0.0/16}
+        gateway: ${IPAM_GATEWAY:-172.28.0.1}
+      - subnet: ${IPAM_SUBNET_IPv6:-fd02::/64}
+        gateway: ${IPAM_GATEWAY_IPv6:-fd02::1}
 
 services:
   coredns:
