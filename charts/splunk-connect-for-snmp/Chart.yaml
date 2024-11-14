@@ -23,7 +23,7 @@ appVersion: "1.12.1-beta.4"
 #
 dependencies:
   - name: mongodb
-    version: ~13.18.0
+    version: ~16.3.0
     repository: https://charts.bitnami.com/bitnami
   - name: redis
     version: ~20.2.0
