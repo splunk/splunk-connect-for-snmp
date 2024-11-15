@@ -181,36 +181,39 @@ class ProfilesManager(CollectionManager):
                     for key, profile in profiles.items():
                         active_profiles[key] = profile
         if CONFIG_FROM_MONGO:
-            profiles_list = list(self.mongo.sc4snmp.profiles_ui.find({}, {"_id": 0}))
-            for pr in profiles_list:
-                key = list(pr.keys())[0]
-                profile = pr[key]
-                if key in active_profiles:
-                    if not profile.get("enabled", True):
-                        celery_logger.info(f"disabling profile {key}")
-                        del active_profiles[key]
-                    else:
-                        active_profiles[key] = profile
-                else:
-                    active_profiles[key] = profile
+            self.merge_profiles_from_ui(active_profiles)
         else:
-            try:
-                with open(CONFIG_PATH, encoding="utf-8") as file:
-                    config_runtime = yaml.safe_load(file)
-                    if "profiles" in config_runtime:
-                        profiles = config_runtime.get("profiles", {})
-                        celery_logger.info(
-                            f"loading {len(profiles.keys())} profiles from runtime profile group"
-                        )
-                        for key, profile in profiles.items():
-                            if key in active_profiles:
-                                if not profile.get("enabled", True):
-                                    celery_logger.info(f"disabling profile {key}")
-                                    del active_profiles[key]
-                                else:
-                                    active_profiles[key] = profile
-                            else:
-                                active_profiles[key] = profile
-            except FileNotFoundError:
-                celery_logger.info(f"File: {CONFIG_PATH} not found")
+            self.merge_profiles_from_config_file(active_profiles)
         return active_profiles
+
+    def merge_profiles_from_config_file(self, active_profiles):
+        try:
+            with open(CONFIG_PATH, encoding="utf-8") as file:
+                config_runtime = yaml.safe_load(file)
+                if "profiles" in config_runtime:
+                    profiles = config_runtime.get("profiles", {})
+                    celery_logger.info(
+                        f"loading {len(profiles.keys())} profiles from runtime profile group"
+                    )
+                    for key, profile in profiles.items():
+                        self.assign_profiles_to_dict(active_profiles, key, profile)
+        except FileNotFoundError:
+            celery_logger.info(f"File: {CONFIG_PATH} not found")
+
+    @staticmethod
+    def assign_profiles_to_dict(active_profiles, key, profile):
+        if key in active_profiles:
+            if not profile.get("enabled", True):
+                celery_logger.info(f"disabling profile {key}")
+                del active_profiles[key]
+            else:
+                active_profiles[key] = profile
+        else:
+            active_profiles[key] = profile
+
+    def merge_profiles_from_ui(self, active_profiles):
+        profiles_list = list(self.mongo.sc4snmp.profiles_ui.find({}, {"_id": 0}))
+        for pr in profiles_list:
+            key = list(pr.keys())[0]
+            profile = pr[key]
+            self.assign_profiles_to_dict(active_profiles, key, profile)
