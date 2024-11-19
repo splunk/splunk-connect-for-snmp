@@ -49,6 +49,9 @@ UI:
   # valuesFileDirectory directory regardless of valuesFileName proper configuration.
   keepSectionFiles: false
 
+flower:
+  enabled: false
+
 ################################################################################
 # Splunk Cloud / Splunk Enterprise configuration.
 ################################################################################

@@ -1,3 +1,4 @@
+{{- if .Values.flower.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -9,8 +10,9 @@ spec:
     app: flower
   ports:
     - protocol: TCP
-      port: 80
+      port: {{ .Values.flower.port | default 80 }}
       targetPort: 5555
   type: LoadBalancer
   externalIPs:
     - 10.202.16.140
+{{- end }}
