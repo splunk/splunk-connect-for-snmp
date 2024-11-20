@@ -1,0 +1,25 @@
+{{- if .Values.flower.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flower
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flower
+  template:
+    metadata:
+      labels:
+        app: flower
+    spec:
+      containers:
+        - name: flower
+          image: mher/flower
+          env:
+            - name: CELERY_BROKER_URL
+              value: {{ include "splunk-connect-for-snmp.celery_url" . }}
+          ports:
+            - containerPort: 5555
+{{- end }}

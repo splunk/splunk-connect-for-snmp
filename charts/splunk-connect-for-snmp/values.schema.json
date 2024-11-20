@@ -40,6 +40,18 @@
     "pysnmpDebug": {
       "type": "string"
     },
+    "flower": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "port": {
+          "type": "integer"
+        }
+      }
+    },
     "UI": {
       "type": "object",
       "additionalProperties": false,
