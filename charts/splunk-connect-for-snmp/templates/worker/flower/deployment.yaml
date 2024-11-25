@@ -16,10 +16,37 @@ spec:
     spec:
       containers:
         - name: flower
-          image: mher/flower
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            [
+              "celery", "flower",
+            ]
           env:
-            - name: CELERY_BROKER_URL
-              value: {{ include "splunk-connect-for-snmp.celery_url" . }}
+            {{- include "environmental-variables" . | nindent 12 }}
           ports:
             - containerPort: 5555
+          
+          volumeMounts:
+            - name: config
+              mountPath: "/app/config"
+              readOnly: true
+            - name: pysnmp-cache-volume
+              mountPath: "/.pysnmp/"
+              readOnly: false
+            - name: tmp
+              mountPath: "/tmp/"
+              readOnly: false
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "splunk-connect-for-snmp.name" . }}-config
+            items:
+              - key: "config.yaml"
+                path: "config.yaml"
+        - name: pysnmp-cache-volume
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+
 {{- end }}
