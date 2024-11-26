@@ -68,6 +68,8 @@ spec:
               value: "70"
             - name: PYSNMP_DEBUG
               value: ""
+            - name: MAX_REPETITIONS
+              value: "10"
             - name: PROFILES_RELOAD_DELAY
               value: "60"
             - name: MIB_SOURCES
