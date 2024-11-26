@@ -152,13 +152,13 @@ class TestLoader(TestCase):
 
         result = gen_walk_task(inventory_record)
 
-        self.assertEqual("sc4snmp;192.68.0.1;walk", result["name"])
+        self.assertEqual("sc4snmp;192.68.0.1:161;walk", result["name"])
         self.assertEqual("splunk_connect_for_snmp.snmp.tasks.walk", result["task"])
-        self.assertEqual("192.68.0.1", result["target"])
+        self.assertEqual("192.68.0.1:161", result["target"])
         self.assertEqual([], result["args"])
         self.assertEqual(
             {
-                "address": "192.68.0.1",
+                "address": "192.68.0.1:161",
                 "profile": None,
                 "chain_of_tasks_expiry_time": chain_of_tasks_expiry_time,
             },
@@ -250,10 +250,10 @@ class TestLoader(TestCase):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         m_load_profiles.return_value = profiles
-        self.assertEqual(False, load())
+        self.assertFalse(load())
         self.assertEqual(
             {
-                "address": "192.168.0.1",
+                "address": "192.168.0.1:161",
                 "profile": "walk2",
                 "chain_of_tasks_expiry_time": 120,
             },
@@ -305,7 +305,7 @@ class TestLoader(TestCase):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         m_load_profiles.return_value = default_profiles
-        self.assertEqual(False, load())
+        self.assertFalse(load())
 
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
@@ -354,7 +354,7 @@ class TestLoader(TestCase):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         m_load_profiles.return_value = default_profiles
-        self.assertEqual(False, load())
+        self.assertFalse(load())
 
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
@@ -405,7 +405,7 @@ class TestLoader(TestCase):
         periodic_obj_mock.did_expiry_time_change.return_value = False
         m_migrate.return_value = False
         m_load_profiles.return_value = default_profiles
-        self.assertEqual(False, load())
+        self.assertFalse(load())
 
         periodic_obj_mock.manage_task.assert_not_called()
 
@@ -458,7 +458,7 @@ class TestLoader(TestCase):
         m_taskManager.return_value = periodic_obj_mock
         periodic_obj_mock.did_expiry_time_change.return_value = True
         m_load_profiles.return_value = default_profiles
-        self.assertEqual(False, load())
+        self.assertFalse(load())
 
         periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
@@ -504,7 +504,7 @@ class TestLoader(TestCase):
         m_taskManager.return_value = periodic_obj_mock
         m_taskManager.get_chain_of_task_expiry.return_value = 180
         m_load_profiles.return_value = default_profiles
-        self.assertEqual(False, load())
+        self.assertFalse(load())
 
         m_mongo_collection.assert_not_called()
         periodic_obj_mock.manage_task.assert_not_called()
@@ -550,16 +550,16 @@ class TestLoader(TestCase):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         m_load_profiles.return_value = default_profiles
-        self.assertEqual(False, load())
+        self.assertFalse(load())
 
-        periodic_obj_mock.delete_all_tasks_of_host.assert_called_with("192.168.0.1")
+        periodic_obj_mock.delete_all_tasks_of_host.assert_called_with("192.168.0.1:161")
         m_delete.assert_called_with({"address": "192.168.0.1", "port": 161})
 
         calls = m_remove.call_args_list
 
         self.assertEqual(2, len(calls))
-        self.assertEqual(({"address": "192.168.0.1"},), calls[0].args)
-        self.assertEqual(({"address": "192.168.0.1"},), calls[1].args)
+        self.assertEqual(({"address": "192.168.0.1:161"},), calls[0].args)
+        self.assertEqual(({"address": "192.168.0.1:161"},), calls[1].args)
 
     @mock.patch(
         "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", False
@@ -606,7 +606,7 @@ class TestLoader(TestCase):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         m_load_profiles.return_value = default_profiles
-        self.assertEqual(False, load())
+        self.assertFalse(load())
 
         periodic_obj_mock.delete_all_tasks_of_host.assert_called_with("192.168.0.1:345")
         m_delete.assert_called_with({"address": "192.168.0.1", "port": 345})
@@ -669,11 +669,11 @@ class TestLoader(TestCase):
         m_manage_task.side_effect = Exception("Boom!")
         m_load_profiles.return_value = default_profiles
 
-        self.assertEqual(True, load())
+        self.assertTrue(load())
 
     def test_transform_address_to_key_161(self):
-        self.assertEqual(transform_address_to_key("127.0.0.1", 161), "127.0.0.1")
-        self.assertEqual(transform_address_to_key("127.0.0.1", "161"), "127.0.0.1")
+        self.assertEqual(transform_address_to_key("127.0.0.1", 161), "127.0.0.1:161")
+        self.assertEqual(transform_address_to_key("127.0.0.1", "161"), "127.0.0.1:161")
 
     def test_transform_address_to_key(self):
         self.assertEqual(transform_address_to_key("127.0.0.1", 32), "127.0.0.1:32")

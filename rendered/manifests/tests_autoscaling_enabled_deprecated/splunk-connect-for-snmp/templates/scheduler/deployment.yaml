@@ -58,8 +58,6 @@ spec:
               value: "http://release-name-mibserver/standard.txt"
             - name: LOG_LEVEL
               value: INFO
-            - name: INVENTORY_REFRESH_RATE
-              value: "600"
           volumeMounts:
             - name: config
               mountPath: "/app/config"

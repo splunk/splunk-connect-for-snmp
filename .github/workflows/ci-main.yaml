@@ -59,18 +59,18 @@ jobs:
           FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
   semgrep-scan:
     name: semgrep
-    runs-on: ubuntu-latest
     if: (github.actor != 'dependabot[bot]')
-    steps:
-      - uses: actions/checkout@v4
-      - uses: semgrep/semgrep-action@v1
-        with:
-          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
+    uses: splunk/sast-scanning/.github/workflows/sast-scan.yml@main
+    secrets: inherit
+    with:
+      block_mode: "on"
   pre-commit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
       - uses: pre-commit/action@v3.0.1
   test-unit:
     name: Test Unit Python ${{ matrix.python-version }}
@@ -128,8 +128,8 @@ jobs:
       commit_message:
         echo "${{ steps.get_commit_message.outputs.commit_message }}"
 
-  test-integration:
-    name: Run integration tests
+  test-integration-microk8s:
+    name: Run integration tests in microk8s deployment
     needs:
       - integration-tests-check
     runs-on: ubuntu-latest
@@ -138,17 +138,55 @@ jobs:
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
       - name: run install_microk8s.sh
         run: |
           sudo snap install microk8s --classic --channel=1.30/stable
           sudo apt-get install snmp -y
           sudo apt-get install python3-dev -y
-      - name: run automatic_setup.sh
-        run: integration_tests/automatic_setup.sh integration
+      - name: run automatic_setup_microk8s.sh
+        run: integration_tests/automatic_setup_microk8s.sh integration
       - name: run tests
         working-directory: integration_tests
         run: |
-          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)"
+          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="microk8s"
 
+  test-integration-compose:
+    name: Run integration tests in docker compose deployment
+    needs:
+      - integration-tests-check
+    runs-on: ubuntu-latest
+    if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
+    timeout-minutes: 120
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install docker compose
+        run: |
+          # Add Docker's official GPG key:
+          sudo apt-get update
+          sudo apt-get install ca-certificates curl
+          sudo install -m 0755 -d /etc/apt/keyrings
+          sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+          sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-
+          # Add the repository to Apt sources:
+          echo \
+            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+            $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt-get update
+          sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+      - name: run automatic_setup_compose.sh
+        run: integration_tests/automatic_setup_compose.sh integration
+      - name: run tests
+        working-directory: integration_tests
+        run: |
+          poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="docker-compose"

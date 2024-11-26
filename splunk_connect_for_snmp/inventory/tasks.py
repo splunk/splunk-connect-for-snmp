@@ -343,7 +343,7 @@ def create_query(conditions: typing.List[dict], address: str) -> dict:
     def _prepare_query_input(
         operation: str, value: typing.Any, field: str, negate_operation: bool
     ) -> dict:
-        if operation == "regex" and type(value) == list:
+        if operation == "regex" and isinstance(value, list):
             query = {mongo_operation: value[0], "$options": value[1]}
         else:
             query = {mongo_operation: value}

@@ -19,11 +19,15 @@ import time
 from pysnmp.hlapi import *
 
 from integration_tests.splunk_test_utils import (
-    create_v3_secrets,
+    create_v3_secrets_compose,
+    create_v3_secrets_microk8s,
     splunk_single_search,
-    update_file,
-    upgrade_helm,
-    wait_for_pod_initialization,
+    update_file_microk8s,
+    update_traps_secrets_compose,
+    upgrade_docker_compose,
+    upgrade_helm_microk8s,
+    wait_for_containers_initialization,
+    wait_for_pod_initialization_microk8s,
 )
 
 logger = logging.getLogger(__name__)
@@ -150,7 +154,7 @@ def test_more_than_one_varbind(request, setup_splunk):
     # wait for the message to be processed
     time.sleep(2)
 
-    search_query = """search index="netops" | search "SNMPv2-MIB.sysDescr.value"="test_more_than_one_varbind" 
+    search_query = """search index="netops" | search "SNMPv2-MIB.sysDescr.value"="test_more_than_one_varbind"
     "SNMPv2-MIB.sysContact.value"=test_more_than_one_varbind_contact """
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
@@ -181,11 +185,20 @@ def test_loading_mibs(request, setup_splunk):
 
 def test_trap_v3(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
-    create_v3_secrets()
-    update_file(["- secretv4"], "traps_secrets.yaml")
-    upgrade_helm(["traps_secrets.yaml"])
+    deployment = request.config.getoption("sc4snmp_deployment")
+    if deployment == "microk8s":
+        create_v3_secrets_microk8s()
+        update_file_microk8s(["- secretv4"], "traps_secrets.yaml")
+        upgrade_helm_microk8s(["traps_secrets.yaml"])
+    else:
+        create_v3_secrets_compose()
+        update_traps_secrets_compose(["secretv4"])
+        upgrade_docker_compose()
     logger.info(f"I have: {trap_external_ip}")
-    wait_for_pod_initialization()
+    if deployment == "microk8s":
+        wait_for_pod_initialization_microk8s()
+    else:
+        wait_for_containers_initialization()
     time.sleep(15)
     # send trap
     varbind1 = ("1.3.6.1.2.1.1.4.0", OctetString("test_trap_v3"))

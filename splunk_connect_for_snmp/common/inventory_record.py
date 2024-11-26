@@ -33,8 +33,8 @@ ALTERNATIVE_FIELDS = {
 
 
 class InventoryRecord(BaseModel):
-    address: InventoryStr
     port: InventoryInt = 161
+    address: InventoryStr
     version: InventoryStr
     community: InventoryStr
     secret: InventoryStr
@@ -53,7 +53,7 @@ class InventoryRecord(BaseModel):
         super().__init__(*args, **kwargs)
 
     @validator("address", pre=True)
-    def address_validator(cls, value):
+    def address_validator(cls, value, values):
         if value is None:
             raise ValueError("field address cannot be null")
         if value.startswith("#"):
@@ -63,7 +63,7 @@ class InventoryRecord(BaseModel):
                 ip_address(value)
             except ValueError:
                 try:
-                    socket.gethostbyname_ex(value)
+                    socket.getaddrinfo(value, values["port"])
                 except socket.gaierror:
                     raise ValueError(
                         f"field address must be an IP or a resolvable hostname {value}"

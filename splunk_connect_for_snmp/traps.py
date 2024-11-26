@@ -18,6 +18,7 @@ from contextlib import suppress
 
 from pysnmp.proto.api import v2c
 
+from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.snmp.auth import get_secret_value
 
 with suppress(ImportError, OSError):
@@ -27,13 +28,14 @@ with suppress(ImportError, OSError):
 
 import asyncio
 import os
+import sys
 from typing import Any, Dict
 
 import yaml
 from celery import Celery, chain
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
-from pysnmp.carrier.asyncio.dgram import udp
+from pysnmp.carrier.asyncio.dgram import udp, udp6
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
 
@@ -48,11 +50,40 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 SECURITY_ENGINE_ID_LIST = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "80003a8c04").split(
     ","
 )
+IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 
-logging.basicConfig(
-    level=getattr(logging, LOG_LEVEL), format="%(asctime)s %(levelname)s %(message)s"
-)
+logger = logging.getLogger(__name__)
+
+formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(formatter)
+handler.setLevel(getattr(logging, LOG_LEVEL))
+
+logger.addHandler(handler)
+
+
+if PYSNMP_DEBUG:
+    # Usage: PYSNMP_DEBUG=dsp,msgproc,io
+
+    # List of available debug flags:
+    # io, dsp, msgproc, secmod, mibbuild, mibview, mibinstrum, acl, proxy, app, all
+
+    from pysnmp import debug
+
+    debug_flags = list(debug.flagMap.keys())
+    enabled_debug_flags = [
+        debug_flag.strip()
+        for debug_flag in PYSNMP_DEBUG.split(",")
+        if debug_flag.strip() in debug_flags
+    ]
+
+    if enabled_debug_flags:
+        debug.setLogger(
+            debug.Debug(*enabled_debug_flags, options={"loggerName": logger})
+        )
+
 
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
@@ -68,7 +99,7 @@ send_task_signature = send.s
 def cb_fun(
     snmp_engine, state_reference, context_engine_id, context_name, varbinds, cb_ctx
 ):
-    logging.debug(
+    logger.debug(
         'Notification from ContextEngineId "%s", ContextName "%s"'
         % (context_engine_id.prettyPrint(), context_name.prettyPrint())
     )
@@ -94,7 +125,7 @@ def cb_fun(
 
 # Callback function for logging traps authentication errors
 def authentication_observer_cb_fun(snmp_engine, execpoint, variables, contexts):
-    logging.error(
+    logger.error(
         f"Security Model failure for device {variables.get('transportAddress', None)}: "
         f"{variables.get('statusInformation', {}).get('errorIndication', None)}"
     )
@@ -135,6 +166,14 @@ def main():
         udp.domainName,
         udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
     )
+
+    if IPv6_ENABLED:
+        config.addTransport(
+            snmp_engine,
+            udp6.domainName,
+            udp6.Udp6Transport().openServerMode(("::", 2163)),
+        )
+
     with open(CONFIG_PATH, encoding="utf-8") as file:
         config_base = yaml.safe_load(file)
     idx = 0
@@ -154,13 +193,13 @@ def main():
             priv_key = get_secret_value(location, "privKey", required=False)
 
             auth_protocol = get_secret_value(location, "authProtocol", required=False)
-            logging.debug(f"authProtocol: {auth_protocol}")
+            logger.debug(f"authProtocol: {auth_protocol}")
             auth_protocol = AuthProtocolMap.get(auth_protocol.upper(), "NONE")
 
             priv_protocol = get_secret_value(
                 location, "privProtocol", required=False, default="NONE"
             )
-            logging.debug(f"privProtocol: {priv_protocol}")
+            logger.debug(f"privProtocol: {priv_protocol}")
             priv_protocol = PrivProtocolMap.get(priv_protocol.upper(), "NONE")
 
             for security_engine_id in SECURITY_ENGINE_ID_LIST:
@@ -173,7 +212,7 @@ def main():
                     privKey=priv_key,
                     securityEngineId=v2c.OctetString(hexValue=security_engine_id),
                 )
-                logging.debug(
+                logger.debug(
                     f"V3 users: {username} auth {auth_protocol} authkey {len(auth_key)*'*'} privprotocol {priv_protocol} "
                     f"privkey {len(priv_key)*'*'} securityEngineId {len(security_engine_id)*'*'}"
                 )

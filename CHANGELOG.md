@@ -3,12 +3,43 @@
 ## Unreleased
 
 ### Changed
+- add IF-MIB.ifOperStatus to baseIF profile
+- allow to set subnets for docker network configuration from .env file
+
+### Fixed
+
+## [1.12.1]
+
+### Changed
+- general refactor of documentation
+- merge docker compose files into one
+
+### Fixed
+- dns resolution for ipv6
+
+## [1.12.0]
+
+### Changed
+- add metrics dashboard
+- add support for IPv6 polling and traps for kubernetes deployment
+- add support for IPv6 polling and traps for docker deployment
+- add nodeSelector and podAntiAffinity to sim chart
+- add support for new IP format in dashboard
+
+## [1.11.0]
+
+### Changed
 - add docker compose deployment
 - update default microk8s to 1.30
 - change group and user ID in Docker image to 10001:10001
 - create and/or change ownership of /tmp and /.pysnmp to 10001:10001 in Dockerfile
 - while mounting volumes in docker compose explicitly mount them as read only or read write
-- change nonReapeater to 0 and add maxRepetitions as configurable
+- added `values.yaml` schema validation using `values.schema.json`
+- released beta version of improved polling performance
+- added `yamllint` validation for the `values.yaml` formatting
+- added "in code" validation of groups and profiles
+- added logs configuration to docker compose deployment
+- add support for different security level in snmp v3
 
 ### Fixed
 - fixed a bug with configuration from values.yaml not being transferred to the UI while migrating to SC4SNMP-UI

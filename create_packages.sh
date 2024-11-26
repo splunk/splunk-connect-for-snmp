@@ -209,7 +209,8 @@ do
 done
 
 pull_ui_images "/tmp/package/$SPLUNK_DIR"
-docker save "$images_to_pack" > /tmp/package/packages/dependencies-images.tar
+# images_to_pack is a list so it shouldn't be quoted as variable
+docker save $images_to_pack > /tmp/package/packages/dependencies-images.tar
 cd ../..
 tar -czvf packages/splunk-connect-for-snmp-chart.tar splunk-connect-for-snmp
 

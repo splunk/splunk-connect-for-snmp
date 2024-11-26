@@ -8,6 +8,7 @@ metadata:
   annotations:
   {{- if .Values.traps.service.usemetallb }}
     metallb.universe.tf/allow-shared-ip: {{ .Values.traps.service.metallbsharingkey | default "splunk-connect" | quote }}
+    metallb.universe.tf/loadBalancerIPs: {{ .Values.traps.loadBalancerIP }}
   {{- end }}
   {{- if .Values.traps.service.annotations }}
 {{ toYaml .Values.traps.service.annotations | indent 4 }}
@@ -20,7 +21,8 @@ spec:
   type: {{ .Values.traps.service.type }}
   externalTrafficPolicy: {{ .Values.traps.service.externalTrafficPolicy | default "Local" }}
   {{- if .Values.traps.loadBalancerIP }}
-  loadBalancerIP: {{ .Values.traps.loadBalancerIP }}
+  ipFamilyPolicy: {{ .Values.traps.ipFamilyPolicy }}
+  ipFamilies: {{ .Values.traps.ipFamilies | toYaml | nindent 2 }}
   {{- end }}
   ports:
     - port: {{ .Values.traps.service.port }}
@@ -30,6 +32,15 @@ spec:
       targetPort: 2162
       protocol: UDP
       name: snmp-udp
+    {{- if has "IPv6" .Values.traps.ipFamilies}}
+    - port: {{ .Values.traps.service.ipv6Port | default 2163}}
+      {{- if and .Values.traps.service.nodePort (eq .Values.traps.service.type "NodePort")}}
+      nodePort: {{ .Values.traps.service.ipv6NodePort | default 30003 }}
+      {{- end }}
+      targetPort: 2163
+      protocol: UDP
+      name: snmp-udp6
+    {{- end }}
   selector:
     {{- include "splunk-connect-for-snmp.traps.selectorLabels" . | nindent 4 }}
 {{- end -}}
