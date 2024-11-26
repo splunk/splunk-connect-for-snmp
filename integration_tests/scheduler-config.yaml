@@ -1,0 +1,16 @@
+communities:
+  2c:
+    public:
+customTranslations:
+  IP-MIB:
+    icmpOutEchoReps: myCustomName1
+profiles:
+  small_walk:
+    condition:
+      type: "walk"
+    varBinds:
+      - [ 'IP-MIB' ]
+      - [ 'IF-MIB' ]
+      - [ 'TCP-MIB' ]
+      - [ 'UDP-MIB' ]
+groups: {}

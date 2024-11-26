@@ -12,11 +12,14 @@ metadata:
     app.kubernetes.io/managed-by: Helm
   annotations:
     metallb.universe.tf/allow-shared-ip: "splunk-connect"
+    metallb.universe.tf/loadBalancerIPs: 10.202.6.213
     
 spec:
   type: LoadBalancer
   externalTrafficPolicy: Local
-  loadBalancerIP: 10.202.6.213
+  ipFamilyPolicy: SingleStack
+  ipFamilies: 
+  - IPv4
   ports:
     - port: 162
       targetPort: 2162

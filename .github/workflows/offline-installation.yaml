@@ -30,7 +30,7 @@ jobs:
           PYTHON_SCRIPT=$(pwd)/${{ env.GET_YAML_FIELD_SCRIPT }}
           ./${{ env.CREATE_PACKAGES_SCRIPT }} "$PYTHON_SCRIPT"
           VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
-          gh release upload $VERSION /tmp/package/packages/*
+          gh release upload --clobber $VERSION /tmp/package/packages/*
         env:
           CREATE_PACKAGES_SCRIPT: create_packages.sh
           GET_YAML_FIELD_SCRIPT: get_yaml_fields.py

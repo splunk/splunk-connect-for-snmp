@@ -46,3 +46,4 @@ BaseIF:
     - ["IF-MIB", "ifOutOctets"]
     - ["IF-MIB", "ifOutQLen"]
     - ["IF-MIB", "ifOutUcastPkts"]
+    - ["IF-MIB", "ifOperStatus"]

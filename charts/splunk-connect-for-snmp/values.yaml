@@ -30,6 +30,7 @@ UI:
     repository: ghcr.io/splunk/sc4snmp-ui/backend/container
     tag: "main"
     pullPolicy: "Always"
+  # Base container that sets permissions for folders mounted to UI containers
   init:
     repository: registry.access.redhat.com/ubi9/ubi
     pullPolicy: IfNotPresent
@@ -70,7 +71,7 @@ splunk:
   token: 00000000-0000-0000-0000-000000000000
   # Whether to skip checking the certificate of the HEC endpoint when sending
   # data over HTTPS.
-  insecureSSL: "true"
+  insecureSSL: "false"
 
   # sourcetype for trap events
   sourcetypeTraps: "sc4snmp:traps"
@@ -86,7 +87,7 @@ splunk:
 
   # name of the metrics index
   metricsIndex: "netmetrics"
-  
+
 ################################################################################
 # Splunk Observability configuration
 ################################################################################
@@ -94,11 +95,10 @@ splunk:
 sim:
   # Enables sending data to Splunk Observability/SignalFx.
   enabled: false
-
-  # Splunk Observability realm to send telemetry data to.
-  signalfxToken: ""
-  # Required for Splunk Observability (if `realm` is specified). 
   # Splunk Observability org access token.
+  # Required for Splunk Observability (if `realm` is specified).
+  signalfxToken: ""
+  # Splunk Observability realm to send telemetry data to.
   signalfxRealm: ""
 
   resources: {}
@@ -126,6 +126,10 @@ sim:
   autoscaling:
     enabled: false
 
+  podAnnotations: { }
+  podAntiAffinity: soft
+  nodeSelector: { }
+
 ################################################################################
 # SC4SNMP components settings
 ################################################################################
@@ -133,7 +137,7 @@ sim:
 scheduler:
   ### Group definitions ###
   # Create the group definition in case you want to configure polling from multiple hosts
-  # at once, more on this: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-groups/
+  # at once, more on this: https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/configuring-groups/
 
   #groups: |
   #  example_group_1:
@@ -141,11 +145,12 @@ scheduler:
   #      port: 161
   #    - address: 63.2.40.0
   #      port: 161
+  groups: ""
 
 
   ### Profiles definitions ###
   # Create a profile definition to set varbinds you want to poll from the device.
-  # more on this: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-profiles/
+  # more on this: https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/configuring-profiles/
 
   #profiles: |
   #  smart_profile:
@@ -187,9 +192,10 @@ scheduler:
   #      - ['IF-MIB', 'ifAlias']
   #      - ['IF-MIB', 'ifInErrors']
   #      - ['IF-MIB', 'ifOutDiscards']
+  profiles: ""
 
   # mapping MIB fields to custom names
-  # more: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/configuring-profiles/#custom-translations
+  # more: https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/configuring-profiles/#custom-translations
   customTranslations: {}
 
   # set CPU and Memory limits for a scheduler pod
@@ -211,7 +217,7 @@ scheduler:
 
 poller:
   # Appending OID indexes to metrics.
-  # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#append-oid-index-part-to-the-metrics
+  # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/#append-oid-index-part-to-the-metrics
   metricsIndexingEnabled: false
 
   # Enable polling base profiles (with IF-MIB and SNMPv2-MIB) from
@@ -227,19 +233,20 @@ poller:
   maxRepetitions: 10
 
   # list of kubernetes secrets name that will be used for polling
-  # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/#define-usernamesecrets
+  # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/#define-usernamesecrets
   usernameSecrets: []
 
   # Here is where polling happens. Learn more on how to configure it here:
-  # https://splunk.github.io/splunk-connect-for-snmp/main/configuration/poller-configuration/
+  # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/
 
   #inventory: |
   #  address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
   #  example_group_1,,2c,public,,,3000,static_profile,t,
+  logLevel: "INFO"
 
 worker:
   # workers are responsible for the actual execution of polling, processing trap messages, and sending data to Splunk.
-  # More: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/worker-configuration/
+  # More: https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/worker-configuration/
 
   # The poller worker consumes all the tasks related to polling
   poller:
@@ -371,6 +378,9 @@ worker:
   # udpConnectionTimeout timeout in seconds for SNMP operations
   udpConnectionTimeout: 3
 
+  # in case of seeing "Empty SNMP response message" this variable can be set to true
+  ignoreEmptyVarbinds: false
+
 inventory:
   secret:
     # Option for creating a new secret or using an existing one.
@@ -381,7 +391,7 @@ inventory:
     name: ""
 
   service:
-    annotations: { }
+    annotations: {}
 
   # set CPU and Memory limits for an inventory pod
   resources: {}
@@ -423,12 +433,19 @@ traps:
     # on a multi-node it's better to set this as NodePort and configure traps.service.nodePort
     type: LoadBalancer
     port: 162
+   # ipv6Port: 2163
+
     # nodePort will be set only when type of service is a NodePort
     #nodePort: 30000
+    #ipv6NodePort: 30003
 
   #loadBalancerIP must be set to the IP address in the metallb pool.
   #It is required when service type is set to LoadBalancer.
   #loadBalancerIP: 18.117.100.37
+  loadBalancerIP: ""
+  ipFamilyPolicy: SingleStack
+  ipFamilies:
+   - IPv4
 
   resources: {}
     # limits:

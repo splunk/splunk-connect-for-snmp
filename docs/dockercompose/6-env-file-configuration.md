@@ -12,8 +12,23 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`     | Absolute path to [traps-config.yaml](./5-traps-configuration.md) file                                |
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose` |
-| `COREDNS_ADDRESS`                     | IP address of the coredns inside docker network. Shouldn’t be changed                                |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                   |
+
+
+## Network configuration
+
+| Variable               | Description                                                              |
+|------------------------|--------------------------------------------------------------------------| 
+| `COREDNS_ADDRESS`      | IP address of the coredns inside docker network. Should not be changed   |
+| `COREDNS_ADDRESS_IPv6` | IPv6 address of the coredns inside docker network. Should not be changed |
+| `IPv6_ENABLED`         | Enable receiving traps and polling from IPv6 devices                     |
+| `IPAM_SUBNET`          | Subnet in CIDR format that represents a network segment                  |
+| `IPAM_GATEWAY`         | IPv4 gateway for the master subnet                                       |
+| `IPAM_SUBNET_IPv6`     | Subnet in CIDR format that represents a network segment for IPv6         |
+| `IPAM_GATEWAY_IPv6`    | IPv6 gateway for the master subnet                                       |
+
+!!! info
+    In case of configuring more than one IPv4 and IPv6 subnet in IPAM, docker compose file should be edited.
 
 ## Images of dependencies 
 
@@ -30,21 +45,22 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 
 ## Splunk instance
 
-| Variable                            | Description                                                                                                          |
-|-------------------------------------|----------------------------------------------------------------------------------------------------------------------| 
-| `SPLUNK_HEC_HOST`                   | IP address or a domain name of a Splunk instance to send data to                                                     |
-| `SPLUNK_HEC_PROTOCOL`               | The protocol of the HEC endpoint: `https` or `http`                                                                  |
-| `SPLUNK_HEC_PORT`                   | The port of the HEC endpoint                                                                                         |
-| `SPLUNK_HEC_TOKEN`                  | Splunk HTTP Event Collector token                                                                                    |
-| `SPLUNK_HEC_INSECURESSL`            | Whether to skip checking the certificate of the HEC endpoint when sending data over HTTPS                            |
-| `SPLUNK_SOURCETYPE_TRAPS`           | Splunk sourcetype for trap events                                                                                    |
-| `SPLUNK_SOURCETYPE_POLLING_EVENTS`  | Splunk sourcetype for non-metric polling events                                                                      |
-| `SPLUNK_SOURCETYPE_POLLING_METRICS` | Splunk sourcetype for metric polling events                                                                          |
-| `SPLUNK_HEC_INDEX_EVENTS`           | Name of the Splunk event index                                                                                       |
-| `SPLUNK_HEC_INDEX_METRICS`          | Name of the Splunk metrics index                                                                                     |
-| `SPLUNK_HEC_PATH`                   | Path for the HEC endpoint                                                                                            |
-| `SPLUNK_AGGREGATE_TRAPS_EVENTS`     | When set to true makes traps events collected as one event inside splunk                                             |
-| `IGNORE_EMPTY_VARBINDS`             | Details can be found in [empty snmp response message issue](../bestpractices.md#empty-snmp-response-message-problem) |
+| Variable                            | Description                                                                                                                           |
+|-------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------| 
+| `SPLUNK_HEC_HOST`                   | IP address or a domain name of a Splunk instance to send data to                                                                      |
+| `SPLUNK_HEC_PROTOCOL`               | The protocol of the HEC endpoint: `https` or `http`                                                                                   |
+| `SPLUNK_HEC_PORT`                   | The port of the HEC endpoint                                                                                                          |
+| `SPLUNK_HEC_TOKEN`                  | Splunk HTTP Event Collector token                                                                                                     |
+| `SPLUNK_HEC_INSECURESSL`            | Whether to skip checking the certificate of the HEC endpoint when sending data over HTTPS                                             |
+| `SPLUNK_SOURCETYPE_TRAPS`           | Splunk sourcetype for trap events                                                                                                     |
+| `SPLUNK_SOURCETYPE_POLLING_EVENTS`  | Splunk sourcetype for non-metric polling events                                                                                       |
+| `SPLUNK_SOURCETYPE_POLLING_METRICS` | Splunk sourcetype for metric polling events                                                                                           |
+| `SPLUNK_HEC_INDEX_EVENTS`           | Name of the Splunk event index                                                                                                        |
+| `SPLUNK_HEC_INDEX_METRICS`          | Name of the Splunk metrics index                                                                                                      |
+| `SPLUNK_HEC_PATH`                   | Path for the HEC endpoint                                                                                                             |
+| `SPLUNK_AGGREGATE_TRAPS_EVENTS`     | When set to true makes traps events collected as one event inside splunk                                                              |
+| `IGNORE_EMPTY_VARBINDS`             | Details can be found in [empty snmp response message issue](../troubleshooting/polling-issues.md#empty-snmp-response-message-problem) |
+| `SPLUNK_LOG_INDEX`                  | Event index in Splunk where logs from docker containers would be sent                                                                 |
 
 ## Workers
 
@@ -53,7 +69,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 |------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------| 
 | `WALK_RETRY_MAX_INTERVAL`    | Maximum time interval between walk attempts                                                                                                          |
 | `WALK_MAX_RETRIES`           | Maximum number of walk retries                                                                                                                       |
-| `METRICS_INDEXING_ENABLED`   | Details can be found in [append oid index part to the metrics](../configuration/poller-configuration.md#append-oid-index-part-to-the-metrics)        |
+| `METRICS_INDEXING_ENABLED`   | Details can be found in [append oid index part to the metrics](../microk8s/configuration/poller-configuration.md#append-oid-index-part-to-the-metrics)        |
 | `POLL_BASE_PROFILES`         | Enable polling base profiles (with IF-MIB and SNMPv2-MIB)                                                                                            |
 | `IGNORE_NOT_INCREASING_OIDS` | Ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex: IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6              |
 | `WORKER_LOG_LEVEL`           | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                      |
@@ -109,6 +125,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 |------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
 | `SNMP_V3_SECURITY_ENGINE_ID` | SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table of the TRAP receiving application for each USM user, for example: SNMP_V3_SECURITY_ENGINE_ID=80003a8c04,aab123456 |
 | `TRAPS_PORT`                 | External port exposed for traps server                                                                                                                                                                                          |
+| `IPv6_TRAPS_PORT`                             | External port exposed for traps server for IPv6                                                                                                                                                                                 |
 
 ## Scheduler
 

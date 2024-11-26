@@ -52,3 +52,23 @@ class TestMibProcessing(TestCase):
         poller.builder = Mock()
         poller.builder.loadModules.side_effect = error.MibLoadError()
         poller.load_mibs(["a"])
+
+    def test_find_new_mibs_is_found(self):
+        poller = Poller.__new__(Poller)
+        poller.is_mib_known = Mock()
+        poller.is_mib_known.return_value = (True, "SNMPv2-SMI")
+        remote_mib = ["SNMPv2-SMI"]
+        found = poller.find_new_mibs("1.3.6.1.3.4", remote_mib, "address", "some ID")
+
+        self.assertTrue(found)
+        self.assertEqual(remote_mib, ["SNMPv2-SMI"])
+
+    def test_find_new_mibs_add_new(self):
+        poller = Poller.__new__(Poller)
+        poller.is_mib_known = Mock()
+        poller.is_mib_known.return_value = (False, "SNMPv2-SMI")
+        remote_mib = ["RFC1213-MIB"]
+        found = poller.find_new_mibs("1.3.6.1.3.4", remote_mib, "address", "some ID")
+
+        self.assertEqual(remote_mib, ["RFC1213-MIB", "SNMPv2-SMI"])
+        self.assertFalse(found)

@@ -111,8 +111,8 @@ Common labels
   value: {{ .Values.worker.udpConnectionTimeout | default "3" | quote }}
 - name: MAX_OID_TO_PROCESS
   value: {{ .Values.poller.maxOidToProcess | default "70" | quote }}
-- name: MAX_REPETITIONS
-  value: {{ .Values.poller.maxRepetitions | default "10" | quote }}
+- name: PYSNMP_DEBUG
+  value: {{ .Values.pysnmpDebug | default "" | quote }}
 - name: PROFILES_RELOAD_DELAY
   value: {{ .Values.worker.profilesReloadDelay | default "60" | quote }}
 - name: MIB_SOURCES
@@ -166,23 +166,23 @@ Common labels
 
 {{- define "environmental-variables-poller" -}}
 - name: WORKER_CONCURRENCY
-  value: {{ .Values.worker.poller.concurrency | default "2" | quote }}
+  value: {{ .Values.worker.poller.concurrency | default "4" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.poller.prefetch | default "1" | quote }}
 {{- end }}
 
 {{- define "environmental-variables-sender" -}}
 - name: WORKER_CONCURRENCY
-  value: {{ .Values.worker.sender.concurrency | default "2" | quote }}
+  value: {{ .Values.worker.sender.concurrency | default "4" | quote }}
 - name: PREFETCH_COUNT
-  value: {{ .Values.worker.sender.prefetch | default "1" | quote }}
+  value: {{ .Values.worker.sender.prefetch | default "30" | quote }}
 {{- end }}
 
 {{- define "environmental-variables-trap" -}}
 - name: WORKER_CONCURRENCY
-  value: {{ .Values.worker.trap.concurrency | default "2" | quote }}
+  value: {{ .Values.worker.trap.concurrency | default "4" | quote }}
 - name: PREFETCH_COUNT
-  value: {{ .Values.worker.trap.prefetch | default "1" | quote }}
+  value: {{ .Values.worker.trap.prefetch | default "30" | quote }}
 - name: RESOLVE_TRAP_ADDRESS
   value: {{ .Values.worker.trap.resolveAddress.enabled | default "false" | quote }}
 - name: MAX_DNS_CACHE_SIZE_TRAPS

@@ -14,12 +14,15 @@
 # limitations under the License.
 #
 import os
+import socket
+from ipaddress import ip_address
 from typing import Any, Dict, Union
 
 from pysnmp.hlapi import (
     CommunityData,
     ContextData,
     SnmpEngine,
+    Udp6TransportTarget,
     UdpTransportTarget,
     UsmUserData,
     getCmd,
@@ -27,11 +30,13 @@ from pysnmp.hlapi import (
 from pysnmp.proto.api.v2c import OctetString
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
+from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
+IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", False))
 
 
 def get_secret_value(
@@ -54,9 +59,7 @@ def get_secret_value(
 def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpEngine):
     observer_context: Dict[Any, Any] = {}
 
-    transport_target = UdpTransportTarget(
-        (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
-    )
+    transport_target = setup_transport_target(ir)
 
     # Register a callback to be invoked at specified execution point of
     # SNMP Engine and passed local variables at execution point's local scope
@@ -85,6 +88,26 @@ def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpEngine)
     )
     logger.debug(f"securityEngineId={security_engine_id} for device {ir.address}")
     return security_engine_id
+
+
+def setup_transport_target(ir):
+    ip = get_ip_from_socket(ir) if IPv6_ENABLED else ir.address
+    if ip_address(ip).version == 6:
+        transport = Udp6TransportTarget(
+            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
+        )
+    else:
+        transport = UdpTransportTarget(
+            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
+        )
+    return transport
+
+
+def get_ip_from_socket(ir):
+    # Example of response from getaddrinfo
+    # [(< AddressFamily.AF_INET6: 10 >, < SocketKind.SOCK_STREAM: 1 >, 6, '', ('2607:f8b0:4004:c09::64', 161, 0, 0)),
+    # (< AddressFamily.AF_INET: 2 >, < SocketKind.SOCK_STREAM: 1 >, 6, '', ('142.251.16.139', 161))]
+    return socket.getaddrinfo(ir.address, ir.port)[0][4][0]
 
 
 def fetch_security_engine_id(observer_context, error_indication, ipaddress):
@@ -136,8 +159,8 @@ def get_auth_v3(logger, ir: InventoryRecord, snmp_engine: SnmpEngine) -> UsmUser
         )
         return UsmUserData(
             username,
-            authKey=auth_key,
-            privKey=priv_key,
+            authKey=auth_key if auth_key else None,
+            privKey=priv_key if priv_key else None,
             authProtocol=auth_protocol,
             privProtocol=priv_protocol,
             securityEngineId=security_engine_id,
@@ -161,7 +184,6 @@ def get_auth_v1(ir: InventoryRecord) -> CommunityData:
 def get_auth(
     logger, ir: InventoryRecord, snmp_engine: SnmpEngine
 ) -> Union[UsmUserData, CommunityData]:
-
     if ir.version == "1":
         return get_auth_v1(ir)
     elif ir.version == "2c":
