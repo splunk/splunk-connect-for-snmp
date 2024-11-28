@@ -20,7 +20,7 @@ def get_ui_host_ip_address():
 EXECUTION_TYPE_LOCAL = "local"
 EXECUTION_TYPE = get_execution_type()
 
-UI_HOST_FOR_LOCAL_EXECUTION = "PUT_HERE_IP_ADDRESS_OF_SC4SNMP_VM"
+UI_HOST_FOR_LOCAL_EXECUTION = "54.174.213.237"
 UI_HOST = get_ui_host_ip_address()
 UI_URL = f"http://{UI_HOST}:30001/"
 EVENT_INDEX = "netops"

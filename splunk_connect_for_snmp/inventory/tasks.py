@@ -156,40 +156,26 @@ def assign_profiles(ir, profiles, target):
     assigned_profiles: dict[int, list[str]] = {}
     address = transform_address_to_key(ir.address, ir.port)
     computed_profiles = []
-    if ir.smart_profiles:
-        for profile_name, profile in profiles.items():
-
-            if not is_smart_profile_valid(profile_name, profile):
-                continue
-
-            # skip this profile it is static
-            if profile["condition"]["type"] == "base" and POLL_BASE_PROFILES:
-                logger.debug(f"Adding base profile {profile_name}")
-                add_profile_to_assigned_list(
-                    assigned_profiles, profile["frequency"], profile_name
-                )
-
-            elif profile["condition"]["type"] == "field":
-                logger.debug(f"profile is a field condition {profile_name}")
-                if "state" in target and (
-                    profile["condition"]["field"].replace(".", "|") in target["state"]
-                ):
-                    cs = target["state"][
-                        profile["condition"]["field"].replace(".", "|")
-                    ]
-                    if "value" in cs:
-                        for pattern in profile["condition"]["patterns"]:
-                            result = re.search(pattern, cs["value"])
-                            if result:
-                                logger.debug(f"Adding smart profile {profile_name}")
-                                add_profile_to_assigned_list(
-                                    assigned_profiles,
-                                    profile["frequency"],
-                                    profile_name,
-                                )
+    assign_smart_profiles(assigned_profiles, ir, profiles, target)
 
     logger.debug(f"ir.profiles {ir.profiles}")
     logger.debug(f"profiles {profiles}")
+    check_profiles_type(address, assigned_profiles, computed_profiles, ir, profiles)
+
+    mandatory_profiles = [
+        (profile_name, profile.get("frequency"))
+        for profile_name, profile in profiles.items()
+        if profile.get("condition", {}).get("type") == "mandatory"
+    ]
+    for m_profile_name, m_profile_frequency in mandatory_profiles:
+        add_profile_to_assigned_list(
+            assigned_profiles, m_profile_frequency, m_profile_name
+        )
+
+    return assigned_profiles, computed_profiles
+
+
+def check_profiles_type(address, assigned_profiles, computed_profiles, ir, profiles):
     for profile_name in ir.profiles:
         if profile_name in profiles:
             profile = profiles[profile_name]
@@ -216,17 +202,43 @@ def assign_profiles(ir, profiles, target):
                 f"profile {profile_name} was assigned for the host: {address}, no such profile in the config"
             )
 
-    mandatory_profiles = [
-        (profile_name, profile.get("frequency"))
-        for profile_name, profile in profiles.items()
-        if profile.get("condition", {}).get("type") == "mandatory"
-    ]
-    for m_profile_name, m_profile_frequency in mandatory_profiles:
-        add_profile_to_assigned_list(
-            assigned_profiles, m_profile_frequency, m_profile_name
-        )
 
-    return assigned_profiles, computed_profiles
+def assign_smart_profiles(assigned_profiles, ir, profiles, target):
+    if ir.smart_profiles:
+        for profile_name, profile in profiles.items():
+
+            if not is_smart_profile_valid(profile_name, profile):
+                continue
+
+            # skip this profile it is static
+            if profile["condition"]["type"] == "base" and POLL_BASE_PROFILES:
+                logger.debug(f"Adding base profile {profile_name}")
+                add_profile_to_assigned_list(
+                    assigned_profiles, profile["frequency"], profile_name
+                )
+
+            elif profile["condition"]["type"] == "field":
+                logger.debug(f"profile is a field condition {profile_name}")
+                assign_field_smart_profile(
+                    assigned_profiles, profile, profile_name, target
+                )
+
+
+def assign_field_smart_profile(assigned_profiles, profile, profile_name, target):
+    if "state" in target and (
+        profile["condition"]["field"].replace(".", "|") in target["state"]
+    ):
+        cs = target["state"][profile["condition"]["field"].replace(".", "|")]
+        if "value" in cs:
+            for pattern in profile["condition"]["patterns"]:
+                result = re.search(pattern, cs["value"])
+                if result:
+                    logger.debug(f"Adding smart profile {profile_name}")
+                    add_profile_to_assigned_list(
+                        assigned_profiles,
+                        profile["frequency"],
+                        profile_name,
+                    )
 
 
 def is_smart_profile_valid(profile_name, profile):
