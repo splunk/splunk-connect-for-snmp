@@ -166,7 +166,6 @@ def assign_inventory_values(inventory_ui_collection):
 
 def load():
     inventory_errors = False
-    target = None
     # DB managers initialization
     mongo_client = pymongo.MongoClient(MONGO_URI)
     profiles_manager = ProfilesManager(mongo_client)
@@ -205,28 +204,45 @@ def load():
         logger.info(f"Loading inventory from {INVENTORY_PATH}")
     inventory_lines, inventory_group_port_mapping = inventory_processor.get_all_hosts()
 
-    # Function to delete inventory records that are
+    # Function to delete inventory records that are in groups
     hosts_from_groups_to_delete = return_hosts_from_deleted_groups(
         previous_groups, new_groups, inventory_group_port_mapping
     )
+
+    inventory_errors = manage_inventory_records(
+        config_profiles,
+        expiry_time_changed,
+        hosts_from_groups_to_delete,
+        inventory_errors,
+        inventory_lines,
+        inventory_record_manager,
+        mongo_client,
+    )
+
+    return inventory_errors
+
+
+def manage_inventory_records(
+    config_profiles,
+    expiry_time_changed,
+    hosts_from_groups_to_delete,
+    inventory_errors,
+    inventory_lines,
+    inventory_record_manager,
+    mongo_client,
+):
+    # Remove hosts from inventory that were deleted from group
     for host in hosts_from_groups_to_delete:
         inventory_record_manager.delete(host)
 
+    # Update or remove inventory and inventory_ui records
     for new_source_record in inventory_lines:
         try:
             ir = InventoryRecord(**new_source_record)
             target = transform_address_to_key(ir.address, ir.port)
             if ir.delete:
                 inventory_record_manager.delete(target)
-                if CONFIG_FROM_MONGO:
-                    if ir.group is None:
-                        mongo_client.sc4snmp.inventory_ui.delete_one(
-                            {"address": ir.address, "port": ir.port}
-                        )
-                    else:
-                        mongo_client.sc4snmp.inventory_ui.delete_one(
-                            {"address": ir.group}
-                        )
+                delete_from_ui_inventory(ir, mongo_client)
             else:
                 inventory_record_manager.update(
                     ir, new_source_record, config_profiles, expiry_time_changed
@@ -245,8 +261,17 @@ def load():
                 new_source_record["address"], new_source_record["port"]
             )
             logger.exception(f"Exception raised for {target}: {e}")
-
     return inventory_errors
+
+
+def delete_from_ui_inventory(ir, mongo_client):
+    if CONFIG_FROM_MONGO:
+        if ir.group is None:
+            mongo_client.sc4snmp.inventory_ui.delete_one(
+                {"address": ir.address, "port": ir.port}
+            )
+        else:
+            mongo_client.sc4snmp.inventory_ui.delete_one({"address": ir.group})
 
 
 if __name__ == "__main__":
