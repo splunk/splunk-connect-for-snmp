@@ -6,6 +6,7 @@ on:
       - "develop"
       - "next"
       - "sc4snmp-ui-tests"
+      - "chore/run-all-tests-suite-on-merge-develop-2"
   pull_request:
     branches:
       - "main"
@@ -37,7 +38,7 @@ jobs:
     needs:
       - ui-tests-check
     runs-on: ubuntu-latest
-    if: "contains(needs.ui-tests-check.outputs.commit_message, '[run-ui-tests]') || github.ref_name == 'refs/heads/develop'"
+    if: "contains(needs.ui-tests-check.outputs.commit_message, '[run-ui-tests]') || github.ref_name == 'refs/heads/chore/run-all-tests-suite-on-merge-develop-2'"
     timeout-minutes: 120
     env:
       CI_EXECUTION_TYPE: ci
