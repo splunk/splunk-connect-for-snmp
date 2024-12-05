@@ -133,7 +133,7 @@ jobs:
     needs:
       - integration-tests-check
     runs-on: ubuntu-latest
-    if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
+    if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]') || github.ref_name == 'refs/heads/develop'"
     timeout-minutes: 120
     steps:
       - name: Checkout Project
@@ -159,7 +159,7 @@ jobs:
     needs:
       - integration-tests-check
     runs-on: ubuntu-latest
-    if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]')"
+    if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]') || github.ref_name == 'refs/heads/develop'"
     timeout-minutes: 120
     steps:
       - name: Checkout Project

@@ -37,7 +37,7 @@ jobs:
     needs:
       - ui-tests-check
     runs-on: ubuntu-latest
-    if: "contains(needs.ui-tests-check.outputs.commit_message, '[run-ui-tests]')"
+    if: "contains(needs.ui-tests-check.outputs.commit_message, '[run-ui-tests]') || github.ref_name == 'refs/heads/develop'"
     timeout-minutes: 120
     env:
       CI_EXECUTION_TYPE: ci
