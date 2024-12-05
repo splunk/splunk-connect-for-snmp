@@ -29,6 +29,9 @@ jobs:
           elif [[ '${{ github.event_name }}' == 'pull_request' ]]; then
             echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD^2)
           fi
+      - name: debug
+        run: |
+          echo ${{ github.ref_name }}
     outputs:
       commit_message:
         echo "${{ steps.get_commit_message.outputs.commit_message }}"
@@ -38,7 +41,7 @@ jobs:
     needs:
       - ui-tests-check
     runs-on: ubuntu-latest
-    if: "contains(needs.ui-tests-check.outputs.commit_message, '[run-ui-tests]') || github.ref_name == 'refs/heads/chore/run-all-tests-suite-on-merge-develop-2'"
+    if: "contains(needs.ui-tests-check.outputs.commit_message, '[run-ui-tests]') || contains(github.ref_name, 'chore/run-all-tests-suite-on-merge-develop-2')"
     timeout-minutes: 120
     env:
       CI_EXECUTION_TYPE: ci
