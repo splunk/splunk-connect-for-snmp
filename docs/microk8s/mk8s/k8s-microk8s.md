@@ -70,8 +70,8 @@ When installing Metallb, you will be prompted for one or more IPs to use as entr
 into the cluster. If you plan to enable clustering, this IP should not be assigned to the host (floats).
 If you do not plan to cluster, then this IP should be the IP of your host.
 
-Note: a single IP in cidr format is `x.x.x.x/32`. Use CIDR or range syntax for single server installations. This can be
-the same as the primary IP.
+!!! info
+    Single IP in cidr format is `x.x.x.x/32`. Use CIDR or range syntax for single server installations. This can be the same as the primary IP.
 
 ```bash
 microk8s enable metallb

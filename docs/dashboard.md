@@ -6,7 +6,7 @@ show the status of SC4SNMP tasks.
 ## Presetting
 
 !!! info
-    Dashboard is compatible starting from version 1.11.0
+    Dashboard is compatible starting from version **1.11.0** and requires the `logLevel` set at least to **INFO**.
 
 1. [Create metrics index](microk8s/splunk-requirements.md#requirements-for-splunk-enterprise-or-enterprise-cloud) in Splunk.
 2. Enable metrics logging for your runtime:
