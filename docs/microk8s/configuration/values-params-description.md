@@ -171,7 +171,7 @@ Detailed documentation about configuring traps can be found in [Traps](trap-conf
 | `service.externalTrafficPolicy`                 | Controls how Kubernetes routes traffic                                                                                          | `Local`          |
 | `service.ipv6Port`                              | Port of the service to use for IPv6                                                                                             | `162`            |
 | `service.ipv6NodePort`                          | Port when the `service.type` is `nodePort` and IPv6 is enabled                                                                  | `2163`           |
-| `loadBalancerIP`                                | Sets loadBalancer IP address in the metallb pool                                                                                | `30001`          |
+| `loadBalancerIP`                                | Sets loadBalancer IP address in the metallb pool                                                                                | ``               |
 | `ipFamilyPolicy`                                | Specifies if the service is dual stack or single stack                                                                          | `SingleStack`    |
 | `ipFamilies`                                    | Defines the address families used for chosen `ipFamilyPolicy`                                                                   | `IPv4`           |
 | `resources`                                     | CPU and memory limits and requests for pod                                                                                      |                  |

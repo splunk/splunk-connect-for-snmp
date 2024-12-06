@@ -18,7 +18,7 @@
         </search>
       </input>
       <chart>
-        <title>In case of unsuccessful polling status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/bestpractices/</title>
+        <title>In case of unsuccessful polling status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/troubleshooting/polling-issues/</title>
         <search>
           <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.snmp.tasks.poll "$poll_status_host$" | rex field=_raw "Task splunk_connect_for_snmp.*\[*\] (?&lt;status&gt;\w+)" | where status != "received" | timechart count by status</query>
           <earliest>-24h@h</earliest>
@@ -92,7 +92,7 @@
         </search>
       </input>
       <chart>
-        <title>In case of unsuccessful walk status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/bestpractices/</title>
+        <title>In case of unsuccessful walk status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/troubleshooting/polling-issues/</title>
         <search>
           <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.snmp.tasks.walk "$walk_status_host$" | rex field=_raw "Task splunk_connect_for_snmp.*\[*\] (?&lt;status&gt;\w+)" | where status != "received" | timechart count by status</query>
           <earliest>-24h@h</earliest>
@@ -147,7 +147,7 @@
     <panel>
       <title>SNMP trap status</title>
       <chart>
-        <title>In case of unsuccessful trap status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/bestpractices/</title>
+        <title>In case of unsuccessful trap status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/troubleshooting/traps-issues/</title>
         <search>
           <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.snmp.tasks.trap | rex field=_raw "Task splunk_connect_for_snmp.*\[*\] (?&lt;status&gt;\w+)" | where status != "received" | timechart count by status</query>
           <earliest>-24h@h</earliest>
@@ -205,7 +205,7 @@
     <panel>
       <title>SNMP enrich task status</title>
       <chart>
-        <title>In case of unsuccessful enrich status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/bestpractices/</title>
+        <title>In case of unsuccessful enrich status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/troubleshooting/polling-issues/</title>
         <search>
           <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.enrich.tasks.enrich | rex field=_raw "Task splunk_connect_for_snmp.*\[*\] (?&lt;status&gt;\w+)" | where status != "received" | timechart count by status</query>
           <earliest>-24h@h</earliest>
@@ -221,7 +221,7 @@
     <panel>
       <title>SNMP prepare task status</title>
       <chart>
-        <title>In case of unsuccessful enrich status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/bestpractices/</title>
+        <title>In case of unsuccessful enrich status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/troubleshooting/polling-issues/</title>
         <search>
           <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.splunk.tasks.prepare | rex field=_raw "Task splunk_connect_for_snmp.*\[*\] (?&lt;status&gt;\w+)" | where status != "received" | timechart count by status</query>
           <earliest>-24h@h</earliest>
@@ -237,7 +237,7 @@
     <panel>
       <title>SNMP inventory poller task status</title>
       <chart>
-        <title>In case of unsuccessful enrich status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/bestpractices/</title>
+        <title>In case of unsuccessful enrich status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/troubleshooting/polling-issues/</title>
         <search>
           <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.inventory.tasks.inventory_setup_poller | rex field=_raw "Task splunk_connect_for_snmp.*\[*\] (?&lt;status&gt;\w+)" | where status != "received" | timechart count by status</query>
           <earliest>-24h@h</earliest>

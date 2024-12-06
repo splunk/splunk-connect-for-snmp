@@ -182,10 +182,10 @@ index="netops" sourcetype="sc4snmp:event"
 | mpreview index="netmetrics" | search sourcetype="sc4snmp:metric"
 ```
 
-NOTE: Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every `walk_interval`. 
-Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
-In such cases, enable the small walk. See [walk takes too much time](../../troubleshooting/polling-issues/#walking-a-device-takes-too-much-time).
-When the walk finishes, events appear in Splunk.
+> **_NOTE:_** Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every `walk_interval`. 
+> Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
+> In such cases, enable the small walk. See [walk takes too much time](../../troubleshooting/polling-issues/#walking-a-device-takes-too-much-time).
+> When the walk finishes, events appear in Splunk.
 
 ## Next Steps
 
