@@ -2216,10 +2216,12 @@ replacing the IP address <code>10.0.101.22</code> with the server IP address whe
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="p">|</span><span class="w"> </span>mpreview<span class="w"> </span><span class="nv">index</span><span class="o">=</span><span class="s2">"netmetrics"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>search<span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">"sc4snmp:metric"</span>
 </code></pre></div>
-<p>NOTE: Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every <code>walk_interval</code>. 
+<blockquote>
+<p><strong><em>NOTE:</em></strong> Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every <code>walk_interval</code>. 
 Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
 In such cases, enable the small walk. See <a href="../../troubleshooting/polling-issues/#walking-a-device-takes-too-much-time">walk takes too much time</a>.
 When the walk finishes, events appear in Splunk.</p>
+</blockquote>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">¶</a></h2>
 <p>A good way to start with SC4SNMP polling is to follow the <a href="../configuration/step-by-step-poll/">Step by Step guide for polling</a>.
 Advanced configuration of polling is available in the <a href="../configuration/poller-configuration/">Poller configuration</a> section.

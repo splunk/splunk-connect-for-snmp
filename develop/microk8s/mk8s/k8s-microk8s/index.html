@@ -1823,8 +1823,10 @@ microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 <p>When installing Metallb, you will be prompted for one or more IPs to use as entry points
 into the cluster. If you plan to enable clustering, this IP should not be assigned to the host (floats).
 If you do not plan to cluster, then this IP should be the IP of your host.</p>
-<p>Note: a single IP in cidr format is <code>x.x.x.x/32</code>. Use CIDR or range syntax for single server installations. This can be
-the same as the primary IP.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Single IP in cidr format is <code>x.x.x.x/32</code>. Use CIDR or range syntax for single server installations. This can be the same as the primary IP.</p>
+</div>
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>metallb
 microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
