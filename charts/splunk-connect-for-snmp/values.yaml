@@ -49,6 +49,11 @@ UI:
   # valuesFileDirectory directory regardless of valuesFileName proper configuration.
   keepSectionFiles: false
 
+flower:
+  enabled: false
+  port: 80
+  loadBalancerIP: ''
+
 ################################################################################
 # Splunk Cloud / Splunk Enterprise configuration.
 ################################################################################
