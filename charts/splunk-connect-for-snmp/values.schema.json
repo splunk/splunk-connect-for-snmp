@@ -40,6 +40,21 @@
     "pysnmpDebug": {
       "type": "string"
     },
+    "flower": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "loadBalancerIP": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer"
+        }
+      }
+    },
     "UI": {
       "type": "object",
       "additionalProperties": false,

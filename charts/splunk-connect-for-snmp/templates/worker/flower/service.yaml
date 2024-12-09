@@ -1,0 +1,20 @@
+{{- if .Values.flower.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: flower-svc
+  namespace: sc4snmp
+
+spec:
+  selector:
+    app: flower
+  ports:
+    - protocol: TCP
+      port: {{ .Values.flower.port | default 80 }}
+      targetPort: 5555
+  type: LoadBalancer
+  {{- if .Values.flower.loadBalancerIP }}
+  externalIPs:
+    - {{ .Values.flower.loadBalancerIP }}
+  {{- end }}
+{{- end }}
