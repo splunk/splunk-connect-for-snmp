@@ -54,6 +54,11 @@ app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-tr
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{- define "splunk-connect-for-snmp.worker.flower.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-flower
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
 
 {{/*
 Common labels
@@ -75,6 +80,11 @@ Common labels
 
 {{- define "splunk-connect-for-snmp.worker.labels" -}}
 {{ include "splunk-connect-for-snmp.worker.selectorLabels" . }}
+{{ include "splunk-connect-for-snmp.labels" . }}
+{{- end }}
+
+{{- define "splunk-connect-for-snmp.worker.flower.labels" -}}
+{{ include "splunk-connect-for-snmp.worker.flower.selectorLabels" . }}
 {{ include "splunk-connect-for-snmp.labels" . }}
 {{- end }}
 

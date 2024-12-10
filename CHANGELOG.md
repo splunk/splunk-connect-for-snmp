@@ -5,6 +5,7 @@
 ### Changed
 - add IF-MIB.ifOperStatus to baseIF profile
 - allow to set subnets for docker network configuration from .env file
+- add admin panel for celery
 
 ### Fixed
 
