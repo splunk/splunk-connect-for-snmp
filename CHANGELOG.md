@@ -7,6 +7,7 @@
 - allow to set subnets for docker network configuration from .env file
 
 ### Fixed
+- add communities for v1 traps
 
 ## [1.12.1]
 
