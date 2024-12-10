@@ -176,11 +176,8 @@ def main():
 
     with open(CONFIG_PATH, encoding="utf-8") as file:
         config_base = yaml.safe_load(file)
-    idx = 0
-    if "communities" in config_base and "2c" in config_base["communities"]:
-        for community in config_base["communities"]["2c"]:
-            idx += 1
-            config.addV1System(snmp_engine, idx, community)
+
+    add_communities(config_base, snmp_engine)
 
     if "usernameSecrets" in config_base:
         for secret in config_base["usernameSecrets"]:
@@ -222,3 +219,18 @@ def main():
 
     # Run asyncio main loop
     loop.run_forever()
+
+
+def add_communities(config_base, snmp_engine):
+    idx = 0
+    if "communities" in config_base:
+        for version in config_base["communities"]:
+            if version in ["2c", "1"]:
+                idx += 1
+                config.addV1System(
+                    snmp_engine, idx, config_base["communities"][version]
+                )
+            else:
+                logger.error(
+                    "Wrong SNMP version in communities. Only 1 or 2c are supported."
+                )
