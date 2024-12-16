@@ -396,3 +396,28 @@ class TestCreateQuery(unittest.TestCase):
             },
             result,
         )
+
+    def test_convert_to_float(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import convert_to_float
+
+        val = 1
+        result = convert_to_float(val)
+        self.assertIsInstance(result, float)
+
+    def test_convert_to_float_ignore(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import convert_to_float
+
+        val = "up"
+        result = convert_to_float(val, True)
+        self.assertEqual(result, val)
+
+    def test_convert_to_float_error(self, return_all_profiles):
+        from splunk_connect_for_snmp.inventory.tasks import (
+            BadlyFormattedFieldError,
+            convert_to_float,
+        )
+
+        val = "up"
+        with self.assertRaises(BadlyFormattedFieldError) as context:
+            convert_to_float(val)
+        self.assertEqual("Value 'up' should be numeric", context.exception.args[0])
