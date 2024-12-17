@@ -38,7 +38,9 @@ jobs:
       - uses: oleksiyrudenko/gha-git-credentials@v2.1.2
         with:
           token: "${{ secrets.PAT_CLATOOL }}"
-
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
       - name: Upload Docs
         run: |
           sudo apt update
