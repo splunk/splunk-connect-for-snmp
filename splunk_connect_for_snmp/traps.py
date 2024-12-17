@@ -142,6 +142,20 @@ app.autodiscover_tasks(
 )
 
 
+def add_communities(config_base, snmp_engine):
+    idx = 0
+    if "communities" in config_base:
+        if "2c" in config_base["communities"]:
+            for community in config_base["communities"]["2c"]:
+                idx += 1
+                config.addV1System(snmp_engine, idx, community)
+        if "1" in config_base["communities"] or 1 in config_base["communities"]:
+            v = config_base["communities"].get("1", config_base["communities"].get(1))
+            for community in v:
+                idx += 1
+                config.addV1System(snmp_engine, idx, community)
+
+
 def main():
     # Get the event loop for this thread
     loop = asyncio.new_event_loop()
@@ -176,11 +190,8 @@ def main():
 
     with open(CONFIG_PATH, encoding="utf-8") as file:
         config_base = yaml.safe_load(file)
-    idx = 0
-    if "communities" in config_base and "2c" in config_base["communities"]:
-        for community in config_base["communities"]["2c"]:
-            idx += 1
-            config.addV1System(snmp_engine, idx, community)
+
+    add_communities(config_base, snmp_engine)
 
     if "usernameSecrets" in config_base:
         for secret in config_base["usernameSecrets"]:
