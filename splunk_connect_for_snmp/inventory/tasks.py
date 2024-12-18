@@ -36,7 +36,11 @@ from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.hummanbool import (
+    BadlyFormattedFieldError,
+    convert_to_float,
+    human_bool,
+)
 
 from ..poller import app
 
@@ -49,10 +53,6 @@ MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
 POLL_BASE_PROFILES = human_bool(os.getenv("POLL_BASE_PROFILES", "true"))
-
-
-class BadlyFormattedFieldError(Exception):
-    pass
 
 
 class InventoryTask(Task):
@@ -302,15 +302,6 @@ def create_profile(profile_name, frequency, varbinds, records):
     ]
     profile = {profile_name: {"frequency": frequency, "varBinds": varbind_list}}
     return profile
-
-
-def convert_to_float(value: typing.Any, ignore_error: bool = False) -> typing.Any:
-    try:
-        return float(value)
-    except ValueError:
-        if ignore_error:
-            return value
-        raise BadlyFormattedFieldError(f"Value '{value}' should be numeric")
 
 
 def create_query(conditions: typing.List[dict], address: str) -> dict:

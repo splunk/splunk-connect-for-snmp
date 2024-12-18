@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import typing
 from typing import Union
 
 
@@ -42,3 +43,16 @@ def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
         return False
     else:
         return default
+
+
+class BadlyFormattedFieldError(Exception):
+    pass
+
+
+def convert_to_float(value: typing.Any, ignore_error: bool = False) -> typing.Any:
+    try:
+        return float(value)
+    except ValueError:
+        if ignore_error:
+            return value
+        raise BadlyFormattedFieldError(f"Value '{value}' should be numeric")
