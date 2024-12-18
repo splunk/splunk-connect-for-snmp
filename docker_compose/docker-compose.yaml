@@ -234,6 +234,28 @@ services:
         reservations:
           cpus: ${WORKER_TRAP_CPU_RESERVATIONS:-0.25}
           memory: ${WORKER_TRAP_MEMORY_RESERVATIONS:-250M}
+  flower:
+    <<: [*dns_and_networks, *dependency_and_restart_policy]
+    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    command: [celery, flower]
+    environment:
+      <<: [
+        *general_sc4snmp_data,
+        *splunk_general_setup,
+        *splunk_extended_setup,
+        *workers_general_setup,
+        *pysnmp_debug
+      ]
+    profiles: [debug]
+    ports:
+    - mode: host
+      protocol: tcp
+      published: ${FLOWER_PORT}
+      target: 5555
+    volumes:
+    - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
+    - worker-flower-pysnmp-cache-volume:/.pysnmp/:rw
+    - worker-flower-tmp:/tmp/:rw
 volumes:
   snmp-mibserver-tmp:
   inventory-tmp:
@@ -248,3 +270,5 @@ volumes:
   worker-sender-pysnmp-cache-volume:
   worker-trap-tmp:
   worker-trap-pysnmp-cache-volume:
+  worker-flower-tmp:
+  worker-flower-pysnmp-cache-volume:

@@ -1,0 +1,69 @@
+{{- if .Values.flower.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-flower
+  labels:
+    {{- include "splunk-connect-for-snmp.worker.flower.labels" . | nindent 4 }}
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "splunk-connect-for-snmp.worker.flower.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "splunk-connect-for-snmp.worker.flower.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "splunk-connect-for-snmp.serviceAccountName" . }}
+      securityContext:
+        fsGroup: 10001
+      containers:
+        - name: {{ .Chart.Name }}-flower
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            [
+              "celery", "flower",
+            ]
+          env:
+            {{- include "environmental-variables" . | nindent 12 }}
+          ports:
+            - containerPort: 5555
+          
+          volumeMounts:
+            - name: config
+              mountPath: "/app/config"
+              readOnly: true
+            - name: pysnmp-cache-volume
+              mountPath: "/.pysnmp/"
+              readOnly: false
+            - name: tmp
+              mountPath: "/tmp/"
+              readOnly: false
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "splunk-connect-for-snmp.name" . }}-config
+            items:
+              - key: "config.yaml"
+                path: "config.yaml"
+        - name: pysnmp-cache-volume
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+
+{{- end }}
