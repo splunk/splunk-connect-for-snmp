@@ -148,10 +148,6 @@ services:
       protocol: udp
       published: ${TRAPS_PORT}
       target: 2162
-    - mode: host
-      protocol: udp
-      published: ${IPv6_TRAPS_PORT}
-      target: 2163
     volumes:
     - ${TRAPS_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
     - traps-pysnmp-cache-volume:/.pysnmp/:rw

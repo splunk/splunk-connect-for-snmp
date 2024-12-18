@@ -743,12 +743,6 @@
             },
             "nodePort": {
               "type": "integer"
-            },
-            "ipv6Port": {
-              "type": "integer"
-            },
-            "ipv6NodePort": {
-              "type": "integer"
             }
           }
         },
