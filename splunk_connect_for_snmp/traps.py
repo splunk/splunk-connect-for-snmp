@@ -174,18 +174,19 @@ def main():
         cbCtx=observer_context,
     )
 
-    # UDP over IPv4, first listening interface/port
-    config.addTransport(
-        snmp_engine,
-        udp.domainName,
-        udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
-    )
-
+    # UDP socket over IPv6 listens also for IPv4
     if IPv6_ENABLED:
         config.addTransport(
             snmp_engine,
             udp6.domainName,
-            udp6.Udp6Transport().openServerMode(("::", 2163)),
+            udp6.Udp6Transport().openServerMode(("::", 2162)),
+        )
+    else:
+        # UDP over IPv4, first listening interface/port
+        config.addTransport(
+            snmp_engine,
+            udp.domainName,
+            udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
         )
 
     with open(CONFIG_PATH, encoding="utf-8") as file:

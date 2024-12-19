@@ -5,6 +5,7 @@
 ### Changed
 - add IF-MIB.ifOperStatus to baseIF profile
 - allow to set subnets for docker network configuration from .env file
+- update ipv4 and ipv6 traps to be sent on the same port
 
 ### Fixed
 - add communities for v1 traps

@@ -63,5 +63,3 @@ traps:
   ipFamilyPolicy: RequireDualStack
   ipFamilies: ["IPv4", "IPv6"]
 ```
-Default trap port for notifications for IPv6 is `2163`. You can change it to any other port if needed with `traps.service.ipv6Port` parameter.
-The IPv6 port and IPv4 port cannot be the same. 

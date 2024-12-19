@@ -166,11 +166,9 @@ Detailed documentation about configuring traps can be found in [Traps](trap-conf
 | `service.usemetallb`                            | Enables using metallb                                                                                                           | `true`           |
 | `service.metallbsharingkey`                     | Sets metallb.universe.tf/allow-shared-ip annotation in trap service                                                             | `splunk-connect` |
 | `service.type`                                  | [Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)  | `LoadBalancer`   |
-| `service.port`                                  | Port of the service to use for IPv4                                                                                             | `162`            |
+| `service.port`                                  | Port of the service to use for IPv4 and IPv6                                                                                    | `162`            |
 | `service.nodePort`                              | Port when the `service.type` is `nodePort`                                                                                      | `30000`          |
 | `service.externalTrafficPolicy`                 | Controls how Kubernetes routes traffic                                                                                          | `Local`          |
-| `service.ipv6Port`                              | Port of the service to use for IPv6                                                                                             | `162`            |
-| `service.ipv6NodePort`                          | Port when the `service.type` is `nodePort` and IPv6 is enabled                                                                  | `2163`           |
 | `loadBalancerIP`                                | Sets loadBalancer IP address in the metallb pool                                                                                | ``               |
 | `ipFamilyPolicy`                                | Specifies if the service is dual stack or single stack                                                                          | `SingleStack`    |
 | `ipFamilies`                                    | Defines the address families used for chosen `ipFamilyPolicy`                                                                   | `IPv4`           |

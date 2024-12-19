@@ -36,7 +36,7 @@ from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
-IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", False))
+IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 
 
 def get_secret_value(

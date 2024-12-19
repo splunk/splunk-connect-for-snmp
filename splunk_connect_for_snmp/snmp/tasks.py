@@ -51,6 +51,7 @@ OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9]\d*))*$")
 RESOLVE_TRAP_ADDRESS = os.getenv("RESOLVE_TRAP_ADDRESS", "false")
 MAX_DNS_CACHE_SIZE_TRAPS = int(os.getenv("MAX_DNS_CACHE_SIZE_TRAPS", "100"))
 TTL_DNS_CACHE_TRAPS = int(os.getenv("TTL_DNS_CACHE_TRAPS", "1800"))
+IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 
 
 @shared_task(
@@ -152,6 +153,9 @@ def trap(self, work):
     remaining_oids = []
     remotemibs = set()
     metrics = {}
+
+    work["host"] = format_ipv4_address(work["host"])
+
     for w in work["data"]:
 
         if OID_VALIDATOR.match(w[1]):
@@ -201,3 +205,10 @@ def trap(self, work):
         "detectchange": False,
         "sourcetype": SPLUNK_SOURCETYPE_TRAPS,
     }
+
+
+def format_ipv4_address(host: str) -> str:
+    # IPv4 addresses from IPv6 socket have added ::ffff: prefix, which is removed
+    if IPv6_ENABLED and "." in host:
+        return host.split(":")[-1]
+    return host
