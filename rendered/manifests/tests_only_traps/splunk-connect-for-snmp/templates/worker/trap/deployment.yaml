@@ -113,6 +113,8 @@ spec:
               value: "500"
             - name: TTL_DNS_CACHE_TRAPS
               value: "1800"
+            - name: IPv6_ENABLED
+              value: "false"
           volumeMounts:
             - name: config
               mountPath: "/app/config"
