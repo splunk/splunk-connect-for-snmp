@@ -92,7 +92,7 @@ nav:
   - High Availability: "ha.md"
   - Improved polling performance: "improved-polling.md"
   - Lightweight installation: "small-environment.md"
-  - Monitoring dashboard: "dashboard.md"
+  - Splunk dashboards: "dashboard.md"
   - Releases: "releases.md"
   - Request MIB: "mib-request.md"
   - Security: "security.md"

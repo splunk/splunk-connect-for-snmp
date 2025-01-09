@@ -1,9 +1,22 @@
-# Dashboard
+# Dashboards
 
+## Network monitoring dashboard 
+A set of preconfigured dashboards is available in the [observability repository](https://github.com/splunk/observability-content-contrib/tree/main/dashboards-and-dashboard-groups/SC4SNMP),
+which can be imported into Splunk to monitor the basic metrics of SNMP Agents.
+
+**Network Devices Dashboard**
+
+![Network Devices Dashboard](images/dashboard/network_devices_dashboard.png)
+
+**SNMP Agents Dashboard**
+
+![SNMP Agents Dashboard](images/dashboard/snmp_agents_dashboard.png)
+
+## SC4SNMP monitoring dashboard
 The dashboard is a monitoring tool to ensure that SC4SNMP is working correctly. It is a set of charts that 
 show the status of SC4SNMP tasks.
 
-## Presetting
+### Presetting
 
 !!! info
     Dashboard is compatible starting from version **1.11.0** and requires the `logLevel` set at least to **INFO**.
@@ -13,7 +26,7 @@ show the status of SC4SNMP tasks.
     * For Kubernetes install [Splunk OpenTelemetry Collector for K8S](microk8s/sck-installation.md)
     * For Docker Compose use [Splunk logging driver for docker](dockercompose/9-splunk-logging.md)
 
-## Install dashboard
+### Install dashboard
 
 1. In Splunk platform open **Search -> Dashboards**.
 2. Click on **Create New Dashboard** and make an empty dashboard. Be sure to choose **Classic Dashboards**.
@@ -22,9 +35,9 @@ show the status of SC4SNMP tasks.
    attachments under your SC4SNMP version. 
 4. Save your changes. The dashboard is ready to use.
 
-## Metrics explanation
+### Metrics explanation
 
-### Polling dashboards
+#### Polling dashboards
 
 To check that polling on your device is working correctly, look at **SNMP schedule of polling tasks** dashboard.
 With this chart you can understand when SC4SNMP scheduled polling for your device last time. The process works if 
@@ -37,7 +50,7 @@ for that](troubleshooting/polling-issues.md).
 
 ![Polling dashboards](images/dashboard/polling_dashboard.png)
 
-### Walk dashboards
+#### Walk dashboards
 
 To check that walk on your device is working correctly first of all check **SNMP schedule of walk tasks** dashboard.
 Using this chart you can understand when SC4SNMP scheduled walk for your SNMP device last time. The process works if it runs regularly.
@@ -49,7 +62,7 @@ for that](troubleshooting/polling-issues.md).
 
 ![Walk dashboards](images/dashboard/walk_dashboard.png)
 
-### Trap dashboards
+#### Trap dashboards
 
 First of all check **SNMP traps authorisation** dashboard, if you see only **succeeded** status it means that authorisation 
 is configured correctly, otherwise please use [troubleshooting docs for that](troubleshooting/traps-issues.md).
@@ -60,7 +73,7 @@ otherwise we will see information with another status.
 
 ![Trap dashboards](images/dashboard/trap_dashboard.png)
 
-### Other dashboards
+#### Other dashboards
 
 We also have tasks that will be a callback for walk and poll. For example **send** will publish result in Splunk. 
 We need to be sure that after successful walk and poll those callbacks have completed. Please check that we have only 
