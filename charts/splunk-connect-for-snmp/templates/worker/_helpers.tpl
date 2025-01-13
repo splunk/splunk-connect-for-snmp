@@ -199,4 +199,10 @@ Common labels
   value: {{ .Values.worker.trap.resolveAddress.cacheSize | default "500" | quote }}
 - name: TTL_DNS_CACHE_TRAPS
   value: {{ .Values.worker.trap.resolveAddress.cacheTTL | default "1800" | quote }}
+- name: IPv6_ENABLED
+  {{- if has "IPv6" .Values.traps.ipFamilies }}
+  value: "true"
+  {{ else }}
+  value: "false"
+  {{- end }}
 {{- end }}
