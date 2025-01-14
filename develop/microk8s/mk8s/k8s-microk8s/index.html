@@ -1814,6 +1814,21 @@ microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> <
 microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>metrics-server
 microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
+<p><strong><em>NOTE:</em></strong>
+PersistentVolumeClaims created by the <code>hostpath storage provisioner</code> are bound to the local node, 
+so it is impossible to move them to a different node. A hostpath volume can grow beyond the capacity set in 
+the volume claim manifest. For production environment it is recommended to use different storage for mongo and redis pvc,
+for example openebs.</p>
+<p></p><div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>openebs
+</code></pre></div>
+Configuration file:
+<div class="highlight"><pre><span></span><code>mongodb:<span class="w">  </span>
+<span class="w">  </span>persistence:<span class="w"> </span>
+<span class="w">    </span>storageClass:<span class="w"> </span><span class="s2">"openebs-hostpath"</span>
+redis:
+<span class="w">  </span>global:
+<span class="w">    </span>storageClass:<span class="w"> </span><span class="s2">"openebs-hostpath"</span>
+</code></pre></div>
 <p>Install the DNS server for microk8s and configure the forwarding DNS servers. Replace the IP addressed below (opendns) with
 the allowed values for your network: </p>
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>dns:208.67.222.222,208.67.220.220
