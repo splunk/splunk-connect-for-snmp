@@ -56,6 +56,25 @@ microk8s enable metrics-server
 microk8s status --wait-ready
 ```
 
+**_NOTE:_**
+PersistentVolumeClaims created by the `hostpath storage provisioner` are bound to the local node, 
+so it is impossible to move them to a different node. A hostpath volume can grow beyond the capacity set in 
+the volume claim manifest. For production environment it is recommended to use different storage for mongo and redis pvc,
+for example openebs.
+
+```bash
+microk8s enable openebs
+```
+Configuration file:
+```bash
+mongodb:  
+  persistence: 
+    storageClass: "openebs-hostpath"
+redis:
+  global:
+    storageClass: "openebs-hostpath"
+```
+
 Install the DNS server for microk8s and configure the forwarding DNS servers. Replace the IP addressed below (opendns) with
 the allowed values for your network: 
 
