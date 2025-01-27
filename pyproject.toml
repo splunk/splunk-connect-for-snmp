@@ -56,6 +56,7 @@ mkdocs = "^1.2.2"
 mkdocs-material = "^9.0.0"
 python-dotenv = "^1.0.0"
 mkdocs-video = "^1.5.0"
+setuptools = "^69.0.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
