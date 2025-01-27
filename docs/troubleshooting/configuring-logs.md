@@ -74,3 +74,85 @@ Example command to retrieve logs from `splunk-connect-for-snmp-worker-poller`:
 docker logs docker_compose-worker-poller-1
 ```
 
+## Useful Splunk Queries  for Troubleshooting
+
+If you are sending logs from Docker or Kubernetes to Splunk, the best solution to monitor the behavior of the SC4SNMP is
+to download the [dashboard](../dashboard.md#sc4snmp-monitoring-dashboard). Otherwise, you can use some of the Splunk queries mentioned below to check the 
+statuses of specific tasks.
+
+!!!info 
+    In all queries, replace `index=*` with the specific index, set in the OTEL or Docker configuration, to which the logs were sent in Splunk. Sourcetype name may differ based on SC4SNMP deployment.
+
+### Walk status
+
+To check the status of a walk task, you can use the following queries:
+
+If the task was initialized by the scheduler after setting the `walk_interval`, use this query:
+```
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;walk"
+```
+
+The status of a completed task can be `retry`, `succeeded`, or, in the case of an error, a message may include 
+`raised unexpected`.
+If you encounter `retry` or `raised unexpected`, refer to the [troubleshooting polling section](polling-issues.md) of the documentation. 
+The following queries can help filter logs to observe the walk task status:
+```
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.snmp.tasks.walk NOT received
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.walk[*] retry"
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.walk[*] succeeded"
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.walk[*] raised unexpected"
+```
+You can also add the `IP address` to any of the above queries to filter results for a specific device.
+Example response for the `retry` query:
+```
+Task splunk_connect_for_snmp.snmp.tasks.walk[f77c6734-ed37-4759-9938-9345799dea57] retry: Retry in 28s: SnmpActionError('An error of SNMP isWalk=True for a host 127.0.0.1 occurred: No SNMP response received before timeout')
+```
+To check the status and progress of a specific task, filter by the task ID within the `[]`.
+
+### Polling status
+
+To check the status of a polling task, use the following queries:
+
+If the task was initialized by the scheduler after setting the `frequency`, use this query:
+```
+index=* sourcetype="*:container:splunk-connect-for-snmp-scheduler*" "Scheduler: Sending due task sc4snmp;*;*;poll"
+```
+
+The status of a completed task can be either `failed`, `succedded`. 
+If the task shows `failed` refer to the [troubleshooting polling section](polling-issues.md) of the documentation. 
+The following queries can help filter logs to observe the poll task status:
+```
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.poll[*] failed" "'address': '*'"
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.poll[*] succeeded" "'address': '*'"
+```
+
+You can replace `'address': '*'` with the `IP address` of the specific device.
+To check the status and progress of a specific task, filter by the `task ID`, which replaces `[*]`.
+
+### Trap status 
+
+To check the status of a trap task, use the following queries:
+
+The status of a completed task can be either `failed` or `succeeded`.
+If the task shows `failed`, refer to the [troubleshooting traps section](traps-issues.md) of the documentation. 
+The following queries can help filter logs to observe the trap task status:
+```
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.trap[*] succeeded"
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.trap[*] failed"
+```
+
+### Splunk task status
+
+To check if data is being sent properly to Splunk, use the following queries to observe whether they `succeeded` or `failed`:
+```
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.splunk.tasks.send 
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.enrich.tasks.enrich
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.splunk.tasks.prepare
+```
