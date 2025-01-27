@@ -1715,6 +1715,57 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#useful-splunk-queries-for-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Useful Splunk Queries  for Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Useful Splunk Queries for Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#walk-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Walk status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#polling-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Polling status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trap-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trap status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#splunk-task-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Splunk task status
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1890,6 +1941,57 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#useful-splunk-queries-for-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Useful Splunk Queries  for Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Useful Splunk Queries for Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#walk-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Walk status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#polling-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Polling status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trap-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trap status
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#splunk-task-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Splunk task status
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1960,6 +2062,67 @@ a5bef5a5a02c   bitnami/mongodb:6.0.9-debian-11-r5                               
 <p>Now select the desired container and run <code>docker logs &lt;container_name/id&gt;</code> command. 
 Example command to retrieve logs from <code>splunk-connect-for-snmp-worker-poller</code>:</p>
 <div class="highlight"><pre><span></span><code>docker logs docker_compose-worker-poller-1
+</code></pre></div>
+<h2 id="useful-splunk-queries-for-troubleshooting">Useful Splunk Queries  for Troubleshooting<a class="headerlink" href="#useful-splunk-queries-for-troubleshooting" title="Permanent link">¶</a></h2>
+<p>If you are sending logs from Docker or Kubernetes to Splunk, the best solution to monitor the behavior of the SC4SNMP is
+to download the <a href="../../dashboard/#sc4snmp-monitoring-dashboard">dashboard</a>. Otherwise, you can use some of the Splunk queries mentioned below to check the 
+statuses of specific tasks.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>In all queries, replace <code>index=*</code> with the specific index, set in the OTEL or Docker configuration, to which the logs were sent in Splunk. Sourcetype name may differ based on SC4SNMP deployment.</p>
+</div>
+<h3 id="walk-status">Walk status<a class="headerlink" href="#walk-status" title="Permanent link">¶</a></h3>
+<p>To check the status of a walk task, you can use the following queries:</p>
+<p>If the task was initialized by the scheduler after setting the <code>walk_interval</code>, use this query:
+</p><div class="highlight"><pre><span></span><code>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;walk"
+</code></pre></div>
+<p>The status of a completed task can be <code>retry</code>, <code>succeeded</code>, or, in the case of an error, a message may include 
+<code>raised unexpected</code>.
+If you encounter <code>retry</code> or <code>raised unexpected</code>, refer to the <a href="../polling-issues/">troubleshooting polling section</a> of the documentation. 
+The following queries can help filter logs to observe the walk task status:
+</p><div class="highlight"><pre><span></span><code>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.snmp.tasks.walk NOT received
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.walk[*] retry"
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.walk[*] succeeded"
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.walk[*] raised unexpected"
+</code></pre></div>
+You can also add the <code>IP address</code> to any of the above queries to filter results for a specific device.
+Example response for the <code>retry</code> query:
+<div class="highlight"><pre><span></span><code>Task splunk_connect_for_snmp.snmp.tasks.walk[f77c6734-ed37-4759-9938-9345799dea57] retry: Retry in 28s: SnmpActionError('An error of SNMP isWalk=True for a host 127.0.0.1 occurred: No SNMP response received before timeout')
+</code></pre></div>
+To check the status and progress of a specific task, filter by the task ID within the <code>[]</code>.
+<h3 id="polling-status">Polling status<a class="headerlink" href="#polling-status" title="Permanent link">¶</a></h3>
+<p>To check the status of a polling task, use the following queries:</p>
+<p>If the task was initialized by the scheduler after setting the <code>frequency</code>, use this query:
+</p><div class="highlight"><pre><span></span><code>index=* sourcetype="*:container:splunk-connect-for-snmp-scheduler*" "Scheduler: Sending due task sc4snmp;*;*;poll"
+</code></pre></div>
+<p>The status of a completed task can be either <code>failed</code>, <code>succedded</code>. 
+If the task shows <code>failed</code> refer to the <a href="../polling-issues/">troubleshooting polling section</a> of the documentation. 
+The following queries can help filter logs to observe the poll task status:
+</p><div class="highlight"><pre><span></span><code>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.poll[*] failed" "'address': '*'"
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.poll[*] succeeded" "'address': '*'"
+</code></pre></div>
+<p>You can replace <code>'address': '*'</code> with the <code>IP address</code> of the specific device.
+To check the status and progress of a specific task, filter by the <code>task ID</code>, which replaces <code>[*]</code>.</p>
+<h3 id="trap-status">Trap status<a class="headerlink" href="#trap-status" title="Permanent link">¶</a></h3>
+<p>To check the status of a trap task, use the following queries:</p>
+<p>The status of a completed task can be either <code>failed</code> or <code>succeeded</code>.
+If the task shows <code>failed</code>, refer to the <a href="../traps-issues/">troubleshooting traps section</a> of the documentation. 
+The following queries can help filter logs to observe the trap task status:
+</p><div class="highlight"><pre><span></span><code>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.trap[*] succeeded"
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.trap[*] failed"
+</code></pre></div>
+<h3 id="splunk-task-status">Splunk task status<a class="headerlink" href="#splunk-task-status" title="Permanent link">¶</a></h3>
+<p>To check if data is being sent properly to Splunk, use the following queries to observe whether they <code>succeeded</code> or <code>failed</code>:
+</p><div class="highlight"><pre><span></span><code>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.splunk.tasks.send 
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.enrich.tasks.enrich
+
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.splunk.tasks.prepare
 </code></pre></div></div>
 
 
