@@ -131,9 +131,9 @@ sim:
   autoscaling:
     enabled: false
 
-  podAnnotations: { }
+  podAnnotations: {}
   podAntiAffinity: soft
-  nodeSelector: { }
+  nodeSelector: {}
 
 ################################################################################
 # SC4SNMP components settings
@@ -381,6 +381,8 @@ worker:
 
   # in case of seeing "Empty SNMP response message" this variable can be set to true
   ignoreEmptyVarbinds: false
+
+  nodeSelector: {}
 
 inventory:
   secret:
