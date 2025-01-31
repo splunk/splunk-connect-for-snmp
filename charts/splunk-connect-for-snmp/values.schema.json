@@ -638,6 +638,9 @@
         },
         "ignoreEmptyVarbinds": {
           "type": "boolean"
+        },
+        "nodeSelector": {
+          "type": "object"
         }
       }
     },
