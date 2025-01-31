@@ -9,6 +9,8 @@
 
 ### Fixed
 - add communities for v1 traps
+- add nodeSelector to worker chart
+- upgrade base docker image
 
 ## [1.12.1]
 
