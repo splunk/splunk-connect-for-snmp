@@ -15,3 +15,6 @@ There are plenty of versions you can browse:
 
 # Contact
 Feel free to contact us via [#splunk-connect-for-snmp](https://splunk-usergroups.slack.com/archives/C01K4V86WV7) slack channel.
+
+# Support
+SC4SNMP is now officially supported by Splunk. Customers who encounter any issues or require assistance can open a support ticket directly with Splunk Support.
