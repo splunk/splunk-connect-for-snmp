@@ -92,15 +92,12 @@ def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpEngine)
 
 def setup_transport_target(ir):
     ip = get_ip_from_socket(ir) if IPv6_ENABLED else ir.address
-    if ip_address(ip).version == 6:
-        transport = Udp6TransportTarget(
+    if IPv6_ENABLED and ip_address(ip).version == 6:
+        return Udp6TransportTarget(
             (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
         )
-    else:
-        transport = UdpTransportTarget(
-            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
-        )
-    return transport
+
+    return UdpTransportTarget((ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT)
 
 
 def get_ip_from_socket(ir):
