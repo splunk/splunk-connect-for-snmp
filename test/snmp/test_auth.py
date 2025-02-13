@@ -349,11 +349,13 @@ class TestAuth(TestCase):
         transport = setup_transport_target(ir)
         self.assertEqual("UDP4", transport)
 
+    @patch("splunk_connect_for_snmp.snmp.auth.IPv6_ENABLED")
     @patch("splunk_connect_for_snmp.snmp.auth.Udp6TransportTarget")
     @patch("splunk_connect_for_snmp.snmp.auth.UdpTransportTarget")
     def test_setup_transport_target_ipv6(
-        self, m_setup_udp_transport_target, m_setup_udp6_transport_target
+        self, m_setup_udp_transport_target, m_setup_udp6_transport_target, ipv6_enabled
     ):
+        ipv6_enabled.return_value = True
         ir.address = "2001:0db8:ac10:fe01::0001"
         ir.port = 161
         m_setup_udp_transport_target.return_value = "UDP4"

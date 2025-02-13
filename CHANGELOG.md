@@ -11,6 +11,7 @@
 - add communities for v1 traps
 - add nodeSelector to worker chart
 - upgrade base docker image
+- dns resolution if only ipv4 is used
 
 ## [1.12.1]
 
