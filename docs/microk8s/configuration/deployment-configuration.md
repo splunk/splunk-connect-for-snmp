@@ -6,6 +6,9 @@ The `values.yaml` is the main point of SC4SNMP management. You can check all the
 microk8s helm3 inspect values splunk-connect-for-snmp/splunk-connect-for-snmp > values.yaml
 ```
 
+!!!info 
+    If you intend to configure values.yaml, it is recommended to use the [basic template](https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.yaml) as the foundation for your configuration.
+
 The whole file is divided into the following parts:
 
 To configure the endpoint for sending SNMP data:
