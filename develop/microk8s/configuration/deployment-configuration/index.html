@@ -1833,6 +1833,10 @@
 <p>The <code>values.yaml</code> is the main point of SC4SNMP management. You can check all the default values of Helm dependencies using the following command:</p>
 <div class="highlight"><pre><span></span><code>microk8s helm3 inspect values splunk-connect-for-snmp/splunk-connect-for-snmp &gt; values.yaml
 </code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If you intend to configure values.yaml, it is recommended to use the <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.yaml">basic template</a> as the foundation for your configuration.</p>
+</div>
 <p>The whole file is divided into the following parts:</p>
 <p>To configure the endpoint for sending SNMP data:</p>
 <ul>
