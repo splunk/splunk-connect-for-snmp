@@ -14,4 +14,5 @@ There are plenty of versions you can browse:
 3. tagged versions, for ex. `1.7.1` refers to the specific release
 
 # Contact
+
 Feel free to contact us via [#splunk-connect-for-snmp](https://splunk-usergroups.slack.com/archives/C01K4V86WV7) slack channel.
