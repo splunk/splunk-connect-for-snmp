@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 set -e
 . /app/.venv/bin/activate
 LOG_LEVEL=${LOG_LEVEL:=INFO}

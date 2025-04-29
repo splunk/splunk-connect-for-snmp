@@ -1,8 +1,9 @@
-FROM python:3.10-bullseye AS base
+FROM python:3.10-alpine AS base
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
     PYTHONUNBUFFERED=1
+RUN apk add -U git
 RUN mkdir /app
 WORKDIR /app
 
