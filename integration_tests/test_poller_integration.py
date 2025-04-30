@@ -701,7 +701,7 @@ class TestGroupsInventory:
         assert metric_count > 0
 
     def test_routers_group(self, setup_splunk):
-        time.sleep(20)
+        time.sleep(30)
         search_string = """| mpreview index=netmetrics | search profiles=routers_profile | stats dc(event) by host"""
         result_count, _ = run_retried_single_search(setup_splunk, search_string, 2)
         assert result_count == 2
