@@ -8,7 +8,7 @@ setup_kube_roles() {
 }
 
 install_dependencies_on_ubuntu() {
-  sudo snap install microk8s --classic --channel=1.30/stable
+  sudo snap install microk8s --classic --channel=1.32/stable
   sudo snap install docker
   sudo apt-get install snmp -y
   sudo apt-get install python3-dev -y
