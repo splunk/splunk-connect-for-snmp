@@ -72,6 +72,30 @@ jobs:
         with:
           python-version: "3.10"
       - uses: pre-commit/action@v3.0.1
+
+  trivy-scan:
+    runs-on: ubuntu-latest
+    name: "Run trivy scanner to detect CVEs in docker image"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t snmp_local:ci .
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: snmp_local:ci
+          format: table
+          exit-code: 1
+          severity: 'CRITICAL,HIGH,MEDIUM,LOW'
+
   test-unit:
     name: Test Unit Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
