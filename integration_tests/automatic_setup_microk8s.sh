@@ -70,6 +70,47 @@ wait_for_sc4snmp_pods_to_be_up() {
   done
 }
 
+
+create_inventory_upgrade_check_script() {
+    cat << 'EOF' > /home/ubuntu/is_inventory_upgraded.sh
+#!/bin/bash
+while [ "$(sudo microk8s kubectl get job -n sc4snmp | grep Complete | wc -l)" != "1" ]; do
+    echo "Waiting for inventory upgrade to finish..."
+    sleep 1
+done
+EOF
+    chmod a+x /home/ubuntu/is_inventory_upgraded.sh
+}
+
+create_inventory_correctly_deleted_script() {
+    cat << 'EOF' > /home/ubuntu/is_inventory_pod_deleted.sh
+#!/bin/bash
+while [ "$(microk8s kubectl get pods -n sc4snmp | grep splunk-connect-for-snmp-inventory | wc -l )" = "1" ] ; do
+    echo "Waiting for inventory pod to die..."
+    sleep 1
+done
+EOF
+    chmod a+x /home/ubuntu/is_inventory_pod_deleted.sh
+}
+
+create_data_sent_to_splunk_script() {
+    cat << 'EOF' > /home/ubuntu/is_event_sent.sh
+#!/bin/bash
+while [ "$(microk8s kubectl logs deployments/snmp-splunk-connect-for-snmp-worker-sender -n sc4snmp --since=2m | grep prepare | grep "$1" | wc -l)" == "0" ] ; do
+    echo "Waiting sender to send data to Splunk..."
+    sleep 1
+done
+EOF
+    chmod a+x /home/ubuntu/is_event_sent.sh
+}
+
+create_all_tool_scripts() {
+  create_inventory_upgrade_check_script()
+  create_inventory_correctly_deleted_script()
+  create_data_sent_to_splunk_script()
+}
+
+create_all_tool_scripts
 sudo apt-get update -y
 sudo apt-get install snmpd -y
 sudo sed -i -E 's/agentaddress[[:space:]]+127.0.0.1,\[::1\]/#agentaddress  127.0.0.1,\[::1\]\nagentaddress udp:1161,udp6:[::1]:1161/g' /etc/snmp/snmpd.conf
