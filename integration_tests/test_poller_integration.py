@@ -30,7 +30,7 @@ from integration_tests.splunk_test_utils import (
     update_profiles_microk8s,
     upgrade_docker_compose,
     upgrade_helm_microk8s,
-    yaml_escape_list,
+    yaml_escape_list, was_data_sent,
 )
 
 logger = logging.getLogger(__name__)
@@ -640,6 +640,9 @@ def setup_groups(request):
             "inventory.yaml",
         )
         upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml", "groups.yaml"])
+        was_data_sent("router_profile")
+        was_data_sent("switches_profile")
+        was_data_sent("single_profile")
     else:
         update_profiles_compose(profiles)
         update_groups_compose(groups)
@@ -652,7 +655,7 @@ def setup_groups(request):
         )
         upgrade_docker_compose()
 
-    time.sleep(120)
+        time.sleep(120)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -673,7 +676,7 @@ def setup_groups(request):
             ]
         )
         upgrade_docker_compose()
-    time.sleep(100)
+        time.sleep(100)
 
 
 @pytest.mark.usefixtures("setup_groups")

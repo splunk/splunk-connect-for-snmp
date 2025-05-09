@@ -240,6 +240,7 @@ def upgrade_helm_microk8s(yaml_files):
         f"sudo microk8s helm3 upgrade --install snmp {files_string} ./../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
     )
     was_inventory_upgraded()
+    time.sleep(10)
 
 def was_inventory_upgraded():
     os.system("./is_inventory_upgraded.sh")
