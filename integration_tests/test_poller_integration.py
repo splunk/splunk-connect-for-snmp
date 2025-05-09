@@ -94,13 +94,14 @@ def setup_profile(request):
             [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"], "inventory.yaml"
         )
         upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        was_data_sent("generic_switch")
     else:
         update_profiles_compose(profile)
         update_inventory_compose(
             [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"]
         )
         upgrade_docker_compose()
-    time.sleep(30)
+        time.sleep(30)
     yield
     if str(deployment) == "microk8s":
         upgrade_helm_microk8s(
@@ -153,13 +154,14 @@ def setup_profiles(request):
             "inventory.yaml",
         )
         upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        was_data_sent("new_profile")
     else:
         update_profiles_compose(profile)
         update_inventory_compose(
             [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"]
         )
         upgrade_docker_compose()
-    time.sleep(30)
+        time.sleep(30)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -201,13 +203,14 @@ class TestProfilesWorkflow:
                 [f"{trap_external_ip},,2c,public,,,600,new_profile,,"], "inventory.yaml"
             )
             upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+            was_data_sent("new_profile")
         else:
             update_profiles_compose(profile)
             update_inventory_compose(
                 [f"{trap_external_ip},,2c,public,,,600,new_profile,,"]
             )
             upgrade_docker_compose()
-        time.sleep(70)
+            time.sleep(70)
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch earliest=-20s """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -264,11 +267,12 @@ def setup_smart_profiles(request):
             [f"{trap_external_ip},,2c,public,,,600,,t,"], "inventory.yaml"
         )
         upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        was_data_sent("smart_profile_field")
     else:
         update_profiles_compose(profile)
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,600,,t,"])
         upgrade_docker_compose()
-    time.sleep(30)
+        time.sleep(30)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -337,13 +341,14 @@ def setup_modify_profile(request):
             [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"], "inventory.yaml"
         )
         upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        was_data_sent("test_modify")
     else:
         update_profiles_compose(profile)
         update_inventory_compose(
             [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"]
         )
         upgrade_docker_compose()
-    time.sleep(30)
+        time.sleep(30)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -503,12 +508,13 @@ def setup_small_walk(request):
             [f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml"
         )
         upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        was_data_sent("walk1")
     else:
         update_profiles_compose(profile)
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,"])
         upgrade_docker_compose()
 
-    time.sleep(30)
+        time.sleep(30)
 
     yield
     if deployment == "microk8s":
@@ -555,6 +561,7 @@ def setup_v3_connection(request):
             [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,"], "inventory.yaml"
         )
         upgrade_helm_microk8s(["inventory.yaml"])
+        was_data_sent("v3profile")
     else:
         profile = {
             "v3profile": {
@@ -571,7 +578,7 @@ def setup_v3_connection(request):
             [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,"]
         )
         upgrade_docker_compose()
-    time.sleep(30)
+        time.sleep(30)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -640,8 +647,6 @@ def setup_groups(request):
             "inventory.yaml",
         )
         upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml", "groups.yaml"])
-        was_data_sent("router_profile")
-        was_data_sent("switches_profile")
         was_data_sent("single_profile")
     else:
         update_profiles_compose(profiles)

@@ -105,9 +105,9 @@ EOF
 }
 
 create_all_tool_scripts() {
-  create_inventory_upgrade_check_script()
-  create_inventory_correctly_deleted_script()
-  create_data_sent_to_splunk_script()
+  create_inventory_upgrade_check_script
+  create_inventory_correctly_deleted_script
+  create_data_sent_to_splunk_script
 }
 
 create_all_tool_scripts
