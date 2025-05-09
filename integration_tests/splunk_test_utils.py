@@ -235,9 +235,20 @@ def upgrade_helm_microk8s(yaml_files):
     os.system(
         "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
     )
+    was_inventory_correctly_deleted()
     os.system(
         f"sudo microk8s helm3 upgrade --install snmp {files_string} ./../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
     )
+    was_inventory_upgraded()
+
+def was_inventory_upgraded():
+    os.system("./is_inventory_upgraded.sh")
+
+def was_inventory_correctly_deleted():
+    os.system("./is_inventory_pod_deleted.sh")
+
+def was_data_sent(profile_name):
+    os.system("./is_event_sent.sh " + profile_name)
 
 
 def create_v3_secrets_microk8s(
@@ -268,32 +279,3 @@ def wait_for_pod_initialization_microk8s():
     with open("check_for_pods.sh", "w") as fp:
         fp.write(script_body)
     os.system("chmod a+x check_for_pods.sh && ./check_for_pods.sh")
-
-
-# if __name__ == "__main__":
-#     update_inventory(['192.168.0.1,,2c,public,,,600,,,',
-#                       '192.168.0.2,,2c,public,,,602,,,'])
-#
-#     active_profiles = {
-#         "test_2": {
-#             "frequency": 120,
-#             "varBinds": [
-#                 ["IF-MIB", "ifInDiscards", 1],
-#                 ["IF-MIB", "ifOutErrors"],
-#                 ["SNMPv2-MIB", "sysDescr", 0],
-#             ],
-#         },
-#         "new_profiles": {"frequency": 6, "varBinds": [["IP-MIB"]]},
-#         "generic_switch": {
-#             "frequency": 5,
-#             "varBinds": [
-#                 ["SNMPv2-MIB", "sysDescr"],
-#                 ["SNMPv2-MIB", "sysName", 0],
-#                 ["IF-MIB"],
-#                 ["TCP-MIB"],
-#                 ["UDP-MIB"],
-#             ],
-#         },
-#     }
-#
-#     update_profiles(active_profiles)

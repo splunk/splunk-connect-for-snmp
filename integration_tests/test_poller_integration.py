@@ -681,7 +681,7 @@ class TestGroupsInventory:
     def test_ip_address_inventory(self, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-5m | search profiles=single_profile"""
+            """| mpreview index=netmetrics | search profiles=single_profile"""
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -692,7 +692,7 @@ class TestGroupsInventory:
     def test_switches_group(self, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-5m | search profiles=switches_profile"""
+            """| mpreview index=netmetrics | search profiles=switches_profile"""
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -702,7 +702,7 @@ class TestGroupsInventory:
 
     def test_routers_group(self, setup_splunk):
         time.sleep(30)
-        search_string = """| mpreview index=netmetrics earliest=-5m | search profiles=routers_profile | stats dc(event) by host"""
+        search_string = """| mpreview index=netmetrics | search profiles=routers_profile | stats dc(event) by host"""
         result_count, _ = run_retried_single_search(setup_splunk, search_string, 2)
         assert result_count == 2
 
@@ -904,7 +904,7 @@ def setup_single_gt_and_lt_profiles(request):
 class TestSingleGtAndLtCorrectCondition:
     def test_gt_profile(self, request, setup_splunk):
         time.sleep(20)
-        search_string = """| mpreview index=netmetrics earliest=-5m | search profiles=gt_profile """
+        search_string = """| mpreview index=netmetrics | search profiles=gt_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
@@ -913,7 +913,7 @@ class TestSingleGtAndLtCorrectCondition:
 
     def test_lt_profile(self, request, setup_splunk):
         time.sleep(20)
-        search_string = """| mpreview index=netmetrics earliest=-5m | search profiles=lt_profile """
+        search_string = """| mpreview index=netmetrics | search profiles=lt_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
@@ -995,7 +995,7 @@ def setup_single_in_and_equals_profiles(request):
 class TestSingleInAndEqualsCorrectCondition:
     def test_in_profile(self, request, setup_splunk):
         time.sleep(20)
-        search_string = """| mpreview index=netmetrics earliest=-5m | search profiles=in_profile """
+        search_string = """| mpreview index=netmetrics | search profiles=in_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
@@ -1005,7 +1005,7 @@ class TestSingleInAndEqualsCorrectCondition:
     def test_equals_profile(self, request, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-5m | search profiles=equals_profile """
+            """| mpreview index=netmetrics | search profiles=equals_profile """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1090,7 +1090,7 @@ class TestSingleRegexCorrectCondition:
     def test_regex_profile(self, request, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-5m | search profiles=regex_profile """
+            """| mpreview index=netmetrics | search profiles=regex_profile """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1101,7 +1101,7 @@ class TestSingleRegexCorrectCondition:
     def test_regex_with_options_profile(self, request, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-5m | search profiles=options_profile """
+            """| mpreview index=netmetrics | search profiles=options_profile """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1189,7 +1189,7 @@ class TestSingleGtAndLtWithNegationCorrectCondition:
     def test_not_gt_profile(self, request, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-5m | search profiles=not_gt_profile """
+            """| mpreview index=netmetrics | search profiles=not_gt_profile """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1200,7 +1200,7 @@ class TestSingleGtAndLtWithNegationCorrectCondition:
     def test_not_lt_profile(self, request, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-5m | search profiles=not_lt_profile """
+            """| mpreview index=netmetrics | search profiles=not_lt_profile """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1290,7 +1290,7 @@ class TestSingleInAndEqualsWithNegationCorrectCondition:
     def test_not_in_profile(self, request, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-5m | search profiles=not_in_profile """
+            """| mpreview index=netmetrics | search profiles=not_in_profile """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1301,7 +1301,7 @@ class TestSingleInAndEqualsWithNegationCorrectCondition:
     def test_not_equals_profile(self, request, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-5m | search profiles=not_equals_profile """
+            """| mpreview index=netmetrics | search profiles=not_equals_profile """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1391,7 +1391,7 @@ class TestSingleRegexWithNegationCorrectCondition:
     def test_not_regex_profile(self, request, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-5m | search profiles=not_regex_profile """
+            """| mpreview index=netmetrics | search profiles=not_regex_profile """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1402,7 +1402,7 @@ class TestSingleRegexWithNegationCorrectCondition:
     def test_not_regex_with_options_profile(self, request, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics  earliest=-5m | search profiles=not_options_profile """
+            """| mpreview index=netmetrics | search profiles=not_options_profile """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1496,7 +1496,7 @@ class TestMultipleCorrectConditions:
     def test_gt_and_equals_profile(self, request, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-5m | search profiles=gt_and_equals_profile """
+            """| mpreview index=netmetrics | search profiles=gt_and_equals_profile """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1507,7 +1507,7 @@ class TestMultipleCorrectConditions:
     def test_lt_and_in_profile(self, request, setup_splunk):
         time.sleep(20)
         search_string = (
-            """| mpreview index=netmetrics earliest=-5m | search profiles=lt_and_in_profile """
+            """| mpreview index=netmetrics | search profiles=lt_and_in_profile """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1606,7 +1606,7 @@ def setup_wrong_conditions_profiles(request):
 class TestWrongConditions:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)
-        search_string = """| mpreview index=netmetrics earliest=-5m | search profiles=wrong_gt_and_equals_profile OR profiles=wrong_lt_and_in_profile OR profiles=wrong_equals_profile """
+        search_string = """| mpreview index=netmetrics | search profiles=wrong_gt_and_equals_profile OR profiles=wrong_lt_and_in_profile OR profiles=wrong_equals_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
@@ -1705,7 +1705,7 @@ def setup_misconfigured_profiles(request):
 class TestMisconfiguredProfiles:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)
-        search_string = """| mpreview index=netmetrics earliest=-5m | search profiles=no_varbinds_profile OR profiles=no_operation_key_in_condition_profile OR profiles=no_frequency_profile OR profiles=no_patterns_profile """
+        search_string = """| mpreview index=netmetrics | search profiles=no_varbinds_profile OR profiles=no_operation_key_in_condition_profile OR profiles=no_frequency_profile OR profiles=no_patterns_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
@@ -1788,7 +1788,7 @@ def setup_misconfigured_groups(request):
 class TestMisconfiguredGroups:
     def test_wrong_groups(self, request, setup_splunk):
         time.sleep(20)
-        search_string = """| mpreview index=netmetrics earliest=-5m | search profiles=routers_wrong_group_profile OR profiles=routers_wrong_group_profile """
+        search_string = """| mpreview index=netmetrics | search profiles=routers_wrong_group_profile OR profiles=routers_wrong_group_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
         )
