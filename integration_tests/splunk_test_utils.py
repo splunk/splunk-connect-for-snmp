@@ -243,13 +243,13 @@ def upgrade_helm_microk8s(yaml_files):
     time.sleep(10)
 
 def was_inventory_upgraded():
-    os.system("./is_inventory_upgraded.sh")
+    os.system("/home/ubuntu/is_inventory_upgraded.sh")
 
 def was_inventory_correctly_deleted():
-    os.system("./is_inventory_pod_deleted.sh")
+    os.system("/home/ubuntu/is_inventory_pod_deleted.sh")
 
 def was_data_sent(profile_name):
-    os.system("./is_event_sent.sh " + profile_name)
+    os.system("/home/ubuntu/is_event_sent.sh " + profile_name)
 
 
 def create_v3_secrets_microk8s(

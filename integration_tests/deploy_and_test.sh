@@ -119,36 +119,36 @@ fix_local_settings() {
 }
 
 create_inventory_upgrade_check_script() {
-    cat << 'EOF' > is_inventory_upgraded.sh
+    cat << 'EOF' > /home/ubuntu/is_inventory_upgraded.sh
 #!/bin/bash
 while [ "$(sudo microk8s kubectl get job -n sc4snmp | grep Complete | wc -l)" != "1" ]; do
     echo "Waiting for inventory upgrade to finish..."
     sleep 1
 done
 EOF
-    chmod a+x is_inventory_upgraded.sh
+    chmod a+x /home/ubuntu/is_inventory_upgraded.sh
 }
 
 create_inventory_correctly_deleted_script() {
-    cat << 'EOF' > is_inventory_pod_deleted.sh
+    cat << 'EOF' > /home/ubuntu/is_inventory_pod_deleted.sh
 #!/bin/bash
 while [ "$(microk8s kubectl get pods -n sc4snmp | grep splunk-connect-for-snmp-inventory | wc -l )" = "1" ] ; do
     echo "Waiting for inventory pod to die..."
     sleep 1
 done
 EOF
-    chmod a+x is_inventory_pod_deleted.sh
+    chmod a+x /home/ubuntu/is_inventory_pod_deleted.sh
 }
 
 create_data_sent_to_splunk_script() {
-    cat << 'EOF' > is_event_sent.sh
+    cat << 'EOF' > /home/ubuntu/is_event_sent.sh
 #!/bin/bash
 while [ "$(microk8s kubectl logs deployments/snmp-splunk-connect-for-snmp-worker-sender -n sc4snmp --since=2m | grep prepare | grep "$1" | wc -l)" == "0" ] ; do
     echo "Waiting sender to send data to Splunk..."
     sleep 1
 done
 EOF
-    chmod a+x is_event_sent.sh
+    chmod a+x /home/ubuntu/is_event_sent.sh
 }
 
 create_all_tool_scripts() {
