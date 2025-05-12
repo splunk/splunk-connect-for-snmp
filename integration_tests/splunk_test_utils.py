@@ -240,17 +240,12 @@ def upgrade_helm_microk8s(yaml_files):
         f"sudo microk8s helm3 upgrade --install snmp {files_string} ./../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
     )
     was_inventory_upgraded()
-    time.sleep(10)
 
 def was_inventory_upgraded():
     os.system("/home/ubuntu/is_inventory_upgraded.sh")
 
 def was_inventory_correctly_deleted():
     os.system("/home/ubuntu/is_inventory_pod_deleted.sh")
-
-def was_data_sent(profile_name):
-    os.system("/home/ubuntu/is_event_sent.sh " + profile_name)
-
 
 def create_v3_secrets_microk8s(
     secret_name="secretv4",

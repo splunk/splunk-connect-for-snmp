@@ -93,21 +93,9 @@ EOF
     chmod a+x /home/ubuntu/is_inventory_pod_deleted.sh
 }
 
-create_data_sent_to_splunk_script() {
-    cat << 'EOF' > /home/ubuntu/is_event_sent.sh
-#!/bin/bash
-while [ "$(microk8s kubectl logs deployments/snmp-splunk-connect-for-snmp-worker-sender -n sc4snmp --since=2m | grep prepare | grep "$1" | wc -l)" == "0" ] ; do
-    echo "Waiting sender to send data to Splunk..."
-    sleep 1
-done
-EOF
-    chmod a+x /home/ubuntu/is_event_sent.sh
-}
-
 create_all_tool_scripts() {
   create_inventory_upgrade_check_script
   create_inventory_correctly_deleted_script
-  create_data_sent_to_splunk_script
 }
 
 create_all_tool_scripts
