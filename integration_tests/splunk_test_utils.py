@@ -242,10 +242,10 @@ def upgrade_helm_microk8s(yaml_files):
     was_inventory_upgraded()
 
 def was_inventory_upgraded():
-    os.system("/home/ubuntu/is_inventory_upgraded.sh")
+    os.system("/home/runner/work/splunk-connect-for-snmp/splunk-connect-for-snmp/is_inventory_upgraded.sh")
 
 def was_inventory_correctly_deleted():
-    os.system("/home/ubuntu/is_inventory_pod_deleted.sh")
+    os.system("/home/runner/work/splunk-connect-for-snmp/splunk-connect-for-snmp/is_inventory_pod_deleted.sh")
 
 def create_v3_secrets_microk8s(
     secret_name="secretv4",
