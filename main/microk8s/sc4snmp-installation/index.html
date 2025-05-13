@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.40">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.44">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.8c3ca2c6.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0253249f.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -1689,7 +1689,7 @@
         
   
   <span class="md-ellipsis">
-    Monitoring dashboard
+    Splunk dashboards
   </span>
   
 
@@ -2105,15 +2105,25 @@ Example output:
 splunk-connect-for-snmp/splunk-connect-for-snmp        1.0.0        1.0.0       A Helm chart for SNMP Connect for SNMP
 </code></pre></div>
 <h4 id="download-and-modify-valuesyaml">Download and modify values.yaml<a class="headerlink" href="#download-and-modify-valuesyaml" title="Permanent link">¶</a></h4>
-<p>The installation of SC4SNMP requires the creation of a <code>values.yaml</code> file, which serves as the configuration file. To configure this file, see the following steps: </p>
+<p>The installation of SC4SNMP requires the creation of a <code>values.yaml</code> file, which serves as the configuration file. To configure this file,
+see the following steps: </p>
 <ol>
 <li>Review the <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.md">basic configuration template</a>.</li>
 <li>Review the <a href="https://github.com/splunk/splunk-connect-for-snmp/tree/main/examples">examples</a> to determine which areas require configuration.</li>
 <li>For more advanced configuration options, refer to the complete default <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/charts/splunk-connect-for-snmp/values.yaml">values.yaml</a>
-or download it directly from Helm using the command <code>microk8s helm3 show values splunk-connect-for-snmp/splunk-connect-for-snmp</code> </li>
+or download it directly from Helm using the command <code>microk8s helm3 show values splunk-connect-for-snmp/splunk-connect-for-snmp</code>.</li>
+</ol>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Please be aware that copying the entire default <code>values.yaml</code> file may impact the readability of the configuration. We recommend including only the modified configuration sections or starting with <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.yaml">the base template</a>.</p>
+</div>
+<ol start="4">
 <li>In order to learn more about each of the configuration parts, check <a href="../configuration/deployment-configuration/">configuration</a> section.</li>
 </ol>
-<p>It is recommended to start by completing the base template and gradually add additional configurations as needed.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>We recommend starting with the base template and progressively adding additional configurations as required. The <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.yaml">base template</a> can be downloaded from the SC4SNMP repository.</p>
+</div>
 <p>The <code>values.yaml</code> file is validated using <code>JSON schema</code> built into <code>helm chart</code> and inside the code.
 To ensure that your <code>values.yaml</code> follows formatting standards, you can use <code>yamllint</code>. In order to download
 <code>yamllint</code> refer to the <a href="https://yamllint.readthedocs.io/en/stable/quickstart.html#installing-yamllint">installation instructions</a>. 
@@ -2216,10 +2226,12 @@ replacing the IP address <code>10.0.101.22</code> with the server IP address whe
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="p">|</span><span class="w"> </span>mpreview<span class="w"> </span><span class="nv">index</span><span class="o">=</span><span class="s2">"netmetrics"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>search<span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">"sc4snmp:metric"</span>
 </code></pre></div>
-<p>NOTE: Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every <code>walk_interval</code>. 
+<blockquote>
+<p><strong><em>NOTE:</em></strong> Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every <code>walk_interval</code>. 
 Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
 In such cases, enable the small walk. See <a href="../../troubleshooting/polling-issues/#walking-a-device-takes-too-much-time">walk takes too much time</a>.
 When the walk finishes, events appear in Splunk.</p>
+</blockquote>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">¶</a></h2>
 <p>A good way to start with SC4SNMP polling is to follow the <a href="../configuration/step-by-step-poll/">Step by Step guide for polling</a>.
 Advanced configuration of polling is available in the <a href="../configuration/poller-configuration/">Poller configuration</a> section.
@@ -2298,7 +2310,7 @@ snmp-splunk-connect-for-snmp-trap-684d57dc8d-z68lb            1/1     Terminatin
     <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.525ec568.min.js"></script>
+      <script src="../../assets/javascripts/bundle.83f73b43.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

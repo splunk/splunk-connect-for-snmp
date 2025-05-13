@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.40">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.44">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.8c3ca2c6.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0253249f.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -504,6 +504,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#network-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#images-of-dependencies" class="md-nav__link">
     <span class="md-ellipsis">
       Images of dependencies
@@ -585,15 +594,6 @@
   <a href="#traps" class="md-nav__link">
     <span class="md-ellipsis">
       Traps
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#scheduler" class="md-nav__link">
-    <span class="md-ellipsis">
-      Scheduler
     </span>
   </a>
   
@@ -1657,7 +1657,7 @@
         
   
   <span class="md-ellipsis">
-    Monitoring dashboard
+    Splunk dashboards
   </span>
   
 
@@ -1909,6 +1909,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#network-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network configuration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#images-of-dependencies" class="md-nav__link">
     <span class="md-ellipsis">
       Images of dependencies
@@ -1995,15 +2004,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#scheduler" class="md-nav__link">
-    <span class="md-ellipsis">
-      Scheduler
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -2055,6 +2055,21 @@
 <td>Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the <code>docker_compose</code></td>
 </tr>
 <tr>
+<td><code>SC4SNMP_VERSION</code></td>
+<td>Version of SC4SNMP</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-configuration">Network configuration<a class="headerlink" href="#network-configuration" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
 <td><code>COREDNS_ADDRESS</code></td>
 <td>IP address of the coredns inside docker network. Should not be changed</td>
 </tr>
@@ -2063,15 +2078,31 @@
 <td>IPv6 address of the coredns inside docker network. Should not be changed</td>
 </tr>
 <tr>
-<td><code>SC4SNMP_VERSION</code></td>
-<td>Version of SC4SNMP</td>
-</tr>
-<tr>
 <td><code>IPv6_ENABLED</code></td>
 <td>Enable receiving traps and polling from IPv6 devices</td>
 </tr>
+<tr>
+<td><code>IPAM_SUBNET</code></td>
+<td>Subnet in CIDR format that represents a network segment</td>
+</tr>
+<tr>
+<td><code>IPAM_GATEWAY</code></td>
+<td>IPv4 gateway for the master subnet</td>
+</tr>
+<tr>
+<td><code>IPAM_SUBNET_IPv6</code></td>
+<td>Subnet in CIDR format that represents a network segment for IPv6</td>
+</tr>
+<tr>
+<td><code>IPAM_GATEWAY_IPv6</code></td>
+<td>IPv6 gateway for the master subnet</td>
+</tr>
 </tbody>
 </table>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>In case of configuring more than one IPv4 and IPv6 subnet in IPAM, docker compose file should be edited.</p>
+</div>
 <h2 id="images-of-dependencies">Images of dependencies<a class="headerlink" href="#images-of-dependencies" title="Permanent link">¶</a></h2>
 <table>
 <thead>
@@ -2392,12 +2423,11 @@
 <td>External port exposed for traps server</td>
 </tr>
 <tr>
-<td><code>IPv6_TRAPS_PORT</code></td>
-<td>External port exposed for traps server for IPv6</td>
+<td>## Scheduler</td>
+<td></td>
 </tr>
 </tbody>
 </table>
-<h2 id="scheduler">Scheduler<a class="headerlink" href="#scheduler" title="Permanent link">¶</a></h2>
 <table>
 <thead>
 <tr>
@@ -2465,7 +2495,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.525ec568.min.js"></script>
+      <script src="../../assets/javascripts/bundle.83f73b43.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

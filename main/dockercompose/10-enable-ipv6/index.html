@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.40">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.44">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.8c3ca2c6.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0253249f.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -1561,7 +1561,7 @@
         
   
   <span class="md-ellipsis">
-    Monitoring dashboard
+    Splunk dashboards
   </span>
   
 
@@ -1834,10 +1834,8 @@ To enable IPv6, follow instruction below.</p>
 <p>Older versions of Docker do not support IPv6 or have know issues with IPv6 configuration. 
 To avoid any problem with configuring the network, it is recommended to use the latest version of Docker. </p>
 <p>To enable IPv6 for SC4SNMP, set <code>IPv6_ENABLED</code> variable to <code>true</code> in <code>.env</code> file.
-The default subnet used for SC4SNMP network in docker is <code>fd02::/64</code>, this and other network configuration can be 
-changed in the <code>docker-compose.yaml</code> file in <code>networks</code> section.</p>
-<p>Default trap port for notifications for IPv6 is <code>2163</code>. You can change it to any other port if needed with <code>IPv6_TRAPS_PORT</code> parameter in <code>.env</code> file.
-The IPv6 port and IPv4 port cannot be the same.</p>
+The default subnet used for SC4SNMP network in docker is <code>fd02::/64</code>, this configuration can be changed in <code>.env</code> file under <code>Network configuration</code> section.
+In case of configuring more than one IPv4 and IPv6 subnet in IPAM, <code>networks</code> section of <code>docker-compose.yaml</code> should be edited.</p>
 <p>For more information about IPv6 networking in docker, you can check the <a href="https://docs.docker.com/engine/daemon/ipv6/">official Docker documentation</a>.</p></div>
 
 
@@ -1892,7 +1890,7 @@ The IPv6 port and IPv4 port cannot be the same.</p>
     <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.525ec568.min.js"></script>
+      <script src="../../assets/javascripts/bundle.83f73b43.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

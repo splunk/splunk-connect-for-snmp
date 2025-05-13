@@ -16,15 +16,15 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.40">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.44">
     
     
       
-        <title>Monitoring dashboard - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Splunk dashboards - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.8c3ca2c6.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.0253249f.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#dashboard" class="md-skip">
+        <a href="#dashboards" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Monitoring dashboard
+              Splunk dashboards
             
           </span>
         </div>
@@ -1519,7 +1519,7 @@
           
   
   <span class="md-ellipsis">
-    Monitoring dashboard
+    Splunk dashboards
   </span>
   
 
@@ -1530,7 +1530,7 @@
         
   
   <span class="md-ellipsis">
-    Monitoring dashboard
+    Splunk dashboards
   </span>
   
 
@@ -1552,6 +1552,25 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#network-monitoring-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network monitoring dashboard
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sc4snmp-monitoring-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      SC4SNMP monitoring dashboard
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SC4SNMP monitoring dashboard">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#presetting" class="md-nav__link">
     <span class="md-ellipsis">
       Presetting
@@ -1559,8 +1578,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#install-dashboard" class="md-nav__link">
     <span class="md-ellipsis">
       Install dashboard
@@ -1568,8 +1587,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#metrics-explanation" class="md-nav__link">
     <span class="md-ellipsis">
       Metrics explanation
@@ -1612,6 +1631,11 @@
       Other dashboards
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1862,6 +1886,25 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#network-monitoring-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network monitoring dashboard
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sc4snmp-monitoring-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      SC4SNMP monitoring dashboard
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SC4SNMP monitoring dashboard">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#presetting" class="md-nav__link">
     <span class="md-ellipsis">
       Presetting
@@ -1869,8 +1912,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#install-dashboard" class="md-nav__link">
     <span class="md-ellipsis">
       Install dashboard
@@ -1878,8 +1921,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#metrics-explanation" class="md-nav__link">
     <span class="md-ellipsis">
       Metrics explanation
@@ -1929,6 +1972,11 @@
     </nav>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
     </ul>
   
@@ -1945,13 +1993,21 @@
                   
 
 
-<div><h1 id="dashboard">Dashboard<a class="headerlink" href="#dashboard" title="Permanent link">¶</a></h1>
+<div><h1 id="dashboards">Dashboards<a class="headerlink" href="#dashboards" title="Permanent link">¶</a></h1>
+<h2 id="network-monitoring-dashboard">Network monitoring dashboard<a class="headerlink" href="#network-monitoring-dashboard" title="Permanent link">¶</a></h2>
+<p>A set of preconfigured dashboards is available in the <a href="https://github.com/splunk/observability-content-contrib/tree/main/dashboards-and-dashboard-groups/SC4SNMP">observability repository</a>,
+which can be imported into Splunk to monitor the basic metrics of SNMP Agents.</p>
+<p><strong>Network Devices Dashboard</strong></p>
+<p><img alt="Network Devices Dashboard" src="../images/dashboard/network_devices_dashboard.png"></p>
+<p><strong>SNMP Agents Dashboard</strong></p>
+<p><img alt="SNMP Agents Dashboard" src="../images/dashboard/snmp_agents_dashboard.png"></p>
+<h2 id="sc4snmp-monitoring-dashboard">SC4SNMP monitoring dashboard<a class="headerlink" href="#sc4snmp-monitoring-dashboard" title="Permanent link">¶</a></h2>
 <p>The dashboard is a monitoring tool to ensure that SC4SNMP is working correctly. It is a set of charts that 
 show the status of SC4SNMP tasks.</p>
-<h2 id="presetting">Presetting<a class="headerlink" href="#presetting" title="Permanent link">¶</a></h2>
+<h3 id="presetting">Presetting<a class="headerlink" href="#presetting" title="Permanent link">¶</a></h3>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
-<p>Dashboard is compatible starting from version 1.11.0</p>
+<p>Dashboard is compatible starting from version <strong>1.11.0</strong> and requires the <code>logLevel</code> set at least to <strong>INFO</strong>.</p>
 </div>
 <ol>
 <li><a href="../microk8s/splunk-requirements/#requirements-for-splunk-enterprise-or-enterprise-cloud">Create metrics index</a> in Splunk.</li>
@@ -1961,7 +2017,7 @@ show the status of SC4SNMP tasks.</p>
 </ul>
 </li>
 </ol>
-<h2 id="install-dashboard">Install dashboard<a class="headerlink" href="#install-dashboard" title="Permanent link">¶</a></h2>
+<h3 id="install-dashboard">Install dashboard<a class="headerlink" href="#install-dashboard" title="Permanent link">¶</a></h3>
 <ol>
 <li>In Splunk platform open <strong>Search -&gt; Dashboards</strong>.</li>
 <li>Click on <strong>Create New Dashboard</strong> and make an empty dashboard. Be sure to choose <strong>Classic Dashboards</strong>.</li>
@@ -1970,8 +2026,8 @@ show the status of SC4SNMP tasks.</p>
    attachments under your SC4SNMP version. </li>
 <li>Save your changes. The dashboard is ready to use.</li>
 </ol>
-<h2 id="metrics-explanation">Metrics explanation<a class="headerlink" href="#metrics-explanation" title="Permanent link">¶</a></h2>
-<h3 id="polling-dashboards">Polling dashboards<a class="headerlink" href="#polling-dashboards" title="Permanent link">¶</a></h3>
+<h3 id="metrics-explanation">Metrics explanation<a class="headerlink" href="#metrics-explanation" title="Permanent link">¶</a></h3>
+<h4 id="polling-dashboards">Polling dashboards<a class="headerlink" href="#polling-dashboards" title="Permanent link">¶</a></h4>
 <p>To check that polling on your device is working correctly, look at <strong>SNMP schedule of polling tasks</strong> dashboard.
 With this chart you can understand when SC4SNMP scheduled polling for your device last time. The process works if 
 it runs regularly.</p>
@@ -1980,7 +2036,7 @@ For that look at another dashboard <strong>SNMP polling status</strong> and if e
 If something is going wrong you will see also another status (like on screenshot), then use <a href="../troubleshooting/polling-issues/">troubleshooting docs 
 for that</a>.</p>
 <p><img alt="Polling dashboards" src="../images/dashboard/polling_dashboard.png"></p>
-<h3 id="walk-dashboards">Walk dashboards<a class="headerlink" href="#walk-dashboards" title="Permanent link">¶</a></h3>
+<h4 id="walk-dashboards">Walk dashboards<a class="headerlink" href="#walk-dashboards" title="Permanent link">¶</a></h4>
 <p>To check that walk on your device is working correctly first of all check <strong>SNMP schedule of walk tasks</strong> dashboard.
 Using this chart you can understand when SC4SNMP scheduled walk for your SNMP device last time. The process works if it runs regularly.</p>
 <p>After double-checking that SC4SNMP scheduled walk tasks for your SNMP device we need to be sure walk is running.
@@ -1988,14 +2044,14 @@ For that look at another dashboard <strong>SNMP walk status</strong> and if ever
 If something is going wrong you will see another status (like on screenshot), then use <a href="../troubleshooting/polling-issues/">troubleshooting docs 
 for that</a>.</p>
 <p><img alt="Walk dashboards" src="../images/dashboard/walk_dashboard.png"></p>
-<h3 id="trap-dashboards">Trap dashboards<a class="headerlink" href="#trap-dashboards" title="Permanent link">¶</a></h3>
+<h4 id="trap-dashboards">Trap dashboards<a class="headerlink" href="#trap-dashboards" title="Permanent link">¶</a></h4>
 <p>First of all check <strong>SNMP traps authorisation</strong> dashboard, if you see only <strong>succeeded</strong> status it means that authorisation 
 is configured correctly, otherwise please use <a href="../troubleshooting/traps-issues/">troubleshooting docs for that</a>.</p>
 <p>After checking that we do not have any authorisation traps issues we can check that trap tasks are working correctly. 
 For that we need to go <strong>SNMP trap status</strong> dashboard, if we have only <strong>succeeded</strong> status it means that everything is working, 
 otherwise we will see information with another status.</p>
 <p><img alt="Trap dashboards" src="../images/dashboard/trap_dashboard.png"></p>
-<h3 id="other-dashboards">Other dashboards<a class="headerlink" href="#other-dashboards" title="Permanent link">¶</a></h3>
+<h4 id="other-dashboards">Other dashboards<a class="headerlink" href="#other-dashboards" title="Permanent link">¶</a></h4>
 <p>We also have tasks that will be a callback for walk and poll. For example <strong>send</strong> will publish result in Splunk. 
 We need to be sure that after successful walk and poll those callbacks have completed. Please check that we have only 
 successful status for those tasks.</p>
@@ -2053,7 +2109,7 @@ successful status for those tasks.</p>
     <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.525ec568.min.js"></script>
+      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
       
         <script src="../javascripts/footer.js"></script>
       

@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.40">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.44">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.8c3ca2c6.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.0253249f.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
@@ -1563,7 +1563,7 @@
         
   
   <span class="md-ellipsis">
-    Monitoring dashboard
+    Splunk dashboards
   </span>
   
 
@@ -1833,6 +1833,10 @@
 <p>The <code>values.yaml</code> is the main point of SC4SNMP management. You can check all the default values of Helm dependencies using the following command:</p>
 <div class="highlight"><pre><span></span><code>microk8s helm3 inspect values splunk-connect-for-snmp/splunk-connect-for-snmp &gt; values.yaml
 </code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If you intend to configure values.yaml, it is recommended to use the <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.yaml">basic template</a> as the foundation for your configuration.</p>
+</div>
 <p>The whole file is divided into the following parts:</p>
 <p>To configure the endpoint for sending SNMP data:</p>
 <ul>
@@ -1926,7 +1930,7 @@ For more information about scaling resources see the <a href="../../mk8s/k8s-mic
     <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.525ec568.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.83f73b43.min.js"></script>
       
         <script src="../../../javascripts/footer.js"></script>
       
