@@ -142,6 +142,20 @@ app.autodiscover_tasks(
 )
 
 
+def add_communities(config_base, snmp_engine):
+    idx = 0
+    if "communities" in config_base:
+        if "2c" in config_base["communities"]:
+            for community in config_base["communities"]["2c"]:
+                idx += 1
+                config.addV1System(snmp_engine, idx, community)
+        if "1" in config_base["communities"] or 1 in config_base["communities"]:
+            v = config_base["communities"].get("1", config_base["communities"].get(1))
+            for community in v:
+                idx += 1
+                config.addV1System(snmp_engine, idx, community)
+
+
 def main():
     # Get the event loop for this thread
     loop = asyncio.new_event_loop()
@@ -160,27 +174,25 @@ def main():
         cbCtx=observer_context,
     )
 
-    # UDP over IPv4, first listening interface/port
-    config.addTransport(
-        snmp_engine,
-        udp.domainName,
-        udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
-    )
-
+    # UDP socket over IPv6 listens also for IPv4
     if IPv6_ENABLED:
         config.addTransport(
             snmp_engine,
             udp6.domainName,
-            udp6.Udp6Transport().openServerMode(("::", 2163)),
+            udp6.Udp6Transport().openServerMode(("::", 2162)),
+        )
+    else:
+        # UDP over IPv4, first listening interface/port
+        config.addTransport(
+            snmp_engine,
+            udp.domainName,
+            udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
         )
 
     with open(CONFIG_PATH, encoding="utf-8") as file:
         config_base = yaml.safe_load(file)
-    idx = 0
-    if "communities" in config_base and "2c" in config_base["communities"]:
-        for community in config_base["communities"]["2c"]:
-            idx += 1
-            config.addV1System(snmp_engine, idx, community)
+
+    add_communities(config_base, snmp_engine)
 
     if "usernameSecrets" in config_base:
         for secret in config_base["usernameSecrets"]:

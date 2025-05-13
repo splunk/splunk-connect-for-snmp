@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "splunk-connect-for-snmp"
-version = "1.12.1"
+version = "1.12.2-beta.1"
 description = ""
 authors = ["omrozowicz-splunk <omrozowicz@splunk.com>"]
 license = "Apache-2.0"
@@ -46,6 +46,7 @@ JSON-log-formatter ="^0.5.1"
 pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", branch = "main"}
 urllib3 = "^1.26.17"
 jsonschema = "4.23.0"
+flower = "^2.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"

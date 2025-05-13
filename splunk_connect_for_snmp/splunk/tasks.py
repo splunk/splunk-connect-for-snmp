@@ -196,22 +196,7 @@ def prepare(self, work):
                 "index": SPLUNK_HEC_INDEX_METRICS,
                 "fields": {},
             }
-            if "frequency" in work:
-                metric["fields"]["frequency"] = work["frequency"]
-            if "profiles" in data:
-                metric["fields"]["profiles"] = data["profiles"]
-            if work.get("group"):
-                metric["fields"]["group"] = work.get("group")
-            for field, values in data["fields"].items():
-                short_field = field.split(".")[-1]
-                metric["fields"][short_field] = value_as_best(values["value"])
-            for field, values in data["metrics"].items():
-                metric["fields"][f"metric_name:sc4snmp.{field}"] = value_as_best(
-                    values["value"]
-                )
-            if METRICS_INDEXING_ENABLED and "indexes" in data:
-                indexes_to_string = [str(index) for index in data["indexes"]]
-                metric["fields"]["mibIndex"] = ".".join(indexes_to_string)
+            set_metrics_fields(data, metric, work)
             metrics.append(json.dumps(metric, indent=None))
         else:
             event = {
@@ -225,6 +210,25 @@ def prepare(self, work):
             events.append(json.dumps(event, indent=None))
 
     return {"metrics": metrics, "events": events}
+
+
+def set_metrics_fields(data, metric, work):
+    if "frequency" in work:
+        metric["fields"]["frequency"] = work["frequency"]
+    if "profiles" in data:
+        metric["fields"]["profiles"] = data["profiles"]
+    if work.get("group"):
+        metric["fields"]["group"] = work.get("group")
+    for field, values in data["fields"].items():
+        short_field = field.split(".")[-1]
+        metric["fields"][short_field] = value_as_best(values["value"])
+    for field, values in data["metrics"].items():
+        metric["fields"][f"metric_name:sc4snmp.{field}"] = value_as_best(
+            values["value"]
+        )
+    if METRICS_INDEXING_ENABLED and "indexes" in data:
+        indexes_to_string = [str(index) for index in data["indexes"]]
+        metric["fields"]["mibIndex"] = ".".join(indexes_to_string)
 
 
 def prepare_trap_data(work):

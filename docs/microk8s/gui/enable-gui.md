@@ -2,6 +2,9 @@
 
 SC4SNMP GUI is deployed in kubernetes and can be accessed through the web browser.
 
+!!!warning 
+    Please note that the UI is not officially supported as part of the SC4SNMP project. We are actively working on this issue and anticipate a resolution in the near future. Currently the UI does not support any authentication and authorization mechanism and must only be used along with additional controls that restrict access.
+
 ## Enabling GUI
 
 To enable GUI, the following section must be added to `values.yaml` file and `UI.enable` variable must be set to `true`:

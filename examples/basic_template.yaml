@@ -1,0 +1,47 @@
+splunk:
+  enabled: true
+  protocol: https
+  host: ###SPLUNK_HOST###
+  token: ###SPLUNK_TOKEN###
+  insecureSSL: "false"
+  port: "###SPLUNK_PORT###"
+traps:
+  communities:
+    2c:
+      - public
+  usernameSecrets:
+    - testuser1
+  securityEngineId:
+    - "80003a8c04"
+  loadBalancerIP: ###TRAP_RECEIVER_IP###
+scheduler:
+  groups: |
+    switch_group:
+          - address: ###POLLED_DEVICE_IP###
+          - address: ###POLLED_DEVICE_IP###
+          - address: ###POLLED_DEVICE_IP###
+          - address: ###POLLED_DEVICE_IP###
+            port: 163
+  profiles: |
+    small_walk:
+      condition:
+        type: walk
+      varBinds:
+        - ["TCP-MIB"]
+        - ["IF-MIB"]
+        - ["IP-MIB"]
+    generic_switch:
+      frequency: 300
+      varBinds:
+        - ['SNMPv2-MIB', 'sysDescr']
+        - ['SNMPv2-MIB', 'sysName', 0]
+        - ['TCP-MIB', 'tcpActiveOpens']
+        - ['TCP-MIB', 'tcpAttemptFails']
+        - ['IF-MIB']
+poller:
+  usernameSecrets:
+    - testuser1
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+    ###POLLED_DEVICE_IP###,,3,,testuser1,,3000,small_walk;generic_switch,,
+    switch_group,,2c,public,,,3000,small_walk,,

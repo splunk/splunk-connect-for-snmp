@@ -1,4 +1,7 @@
 communities:
+  1:
+    publicv1:
   2c:
     public:
+    homelab:
 usernameSecrets: []
