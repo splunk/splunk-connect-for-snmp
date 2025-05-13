@@ -69,6 +69,7 @@ INVENTORY_KEYS_TRANSFORM = {
 }
 BOOLEAN_INVENTORY_FIELDS = ["delete", "smart_profiles"]
 CHAIN_OF_TASKS_EXPIRY_TIME = int(os.getenv("CHAIN_OF_TASKS_EXPIRY_TIME", "60"))
+DEFAULT_SNMP_PORT = 161
 
 
 def configure_ui_database(mongo_client):
@@ -90,61 +91,10 @@ def configure_ui_database(mongo_client):
         profiles_ui_collection = mongo_client.sc4snmp.profiles_ui
         used_ui_collection.update_one({}, {"$set": {"used_ui": True}}, upsert=True)
 
-        with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
-            ir_reader = DictReader(csv_file)
-            all_inventory_lines = []
-            for inventory_line in ir_reader:
-                for key in INVENTORY_KEYS_TRANSFORM.keys():
-                    if key in inventory_line:
-                        new_key = INVENTORY_KEYS_TRANSFORM[key]
-                        inventory_line[new_key] = inventory_line.pop(key)
-
-                for field in BOOLEAN_INVENTORY_FIELDS:
-                    if inventory_line[field].lower() in ["", "f", "false", "0"]:
-                        inventory_line[field] = False
-                    else:
-                        inventory_line[field] = True
-
-                port = (
-                    int(inventory_line.get("port", 161))
-                    if inventory_line.get("port", 161)
-                    else 161
-                )
-                walk_interval = (
-                    int(inventory_line["walk_interval"])
-                    if int(inventory_line["walk_interval"]) >= 1800
-                    else 1800
-                )
-                inventory_line["port"] = port
-                inventory_line["walk_interval"] = walk_interval
-                if not inventory_line["address"].startswith("#"):
-                    all_inventory_lines.append(inventory_line)
-            inventory_ui_collection.insert_many(all_inventory_lines)
-
-        groups = {}
-        all_profiles = {}
-        try:
-            with open(CONFIG_PATH, encoding="utf-8") as file:
-                config_runtime = yaml.safe_load(file)
-                if "groups" in config_runtime:
-                    groups = config_runtime.get("groups", {})
-
-                if "profiles" in config_runtime:
-                    profiles = config_runtime.get("profiles", {})
-                    logger.info(
-                        f"loading {len(profiles.keys())} profiles from runtime profiles config"
-                    )
-                    for key, profile in profiles.items():
-                        all_profiles[key] = profile
-        except FileNotFoundError:
-            logger.info(f"File: {CONFIG_PATH} not found")
-
-        groups_list = [{key: value} for key, value in groups.items()]
-        if groups_list:
-            groups_ui_collection.insert_many(groups_list)
-        profiles_list = [{key: value} for key, value in all_profiles.items()]
-        if profiles_list:
-            profiles_ui_collection.insert_many(profiles_list)
+        assign_inventory_values(inventory_ui_collection)
+        add_groups_and_profiles_from_config_runtime(
+            groups_ui_collection, profiles_ui_collection
+        )
 
     elif not CONFIG_FROM_MONGO and used_ui:
         used_ui_collection.update_one({}, {"$set": {"used_ui": False}}, upsert=True)
@@ -156,9 +106,66 @@ def configure_ui_database(mongo_client):
         profiles_ui_collection.drop()
 
 
+def add_groups_and_profiles_from_config_runtime(
+    groups_ui_collection, profiles_ui_collection
+):
+    groups = {}
+    all_profiles = {}
+    try:
+        with open(CONFIG_PATH, encoding="utf-8") as file:
+            config_runtime = yaml.safe_load(file)
+            if "groups" in config_runtime:
+                groups = config_runtime.get("groups", {})
+
+            if "profiles" in config_runtime:
+                profiles = config_runtime.get("profiles", {})
+                logger.info(
+                    f"loading {len(profiles.keys())} profiles from runtime profiles config"
+                )
+                for key, profile in profiles.items():
+                    all_profiles[key] = profile
+    except FileNotFoundError:
+        logger.info(f"File: {CONFIG_PATH} not found")
+    groups_list = [{key: value} for key, value in groups.items()]
+    if groups_list:
+        groups_ui_collection.insert_many(groups_list)
+    profiles_list = [{key: value} for key, value in all_profiles.items()]
+    if profiles_list:
+        profiles_ui_collection.insert_many(profiles_list)
+
+
+def assign_inventory_values(inventory_ui_collection):
+    with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
+        ir_reader = DictReader(csv_file)
+        all_inventory_lines = []
+        for inventory_line in ir_reader:
+            for key in INVENTORY_KEYS_TRANSFORM.keys():
+                if key in inventory_line:
+                    new_key = INVENTORY_KEYS_TRANSFORM[key]
+                    inventory_line[new_key] = inventory_line.pop(key)
+
+            for field in BOOLEAN_INVENTORY_FIELDS:
+                inventory_line[field] = human_bool(inventory_line[field], False)
+
+            port = (
+                int(inventory_line.get("port", DEFAULT_SNMP_PORT))
+                if inventory_line.get("port", DEFAULT_SNMP_PORT)
+                else DEFAULT_SNMP_PORT
+            )
+            walk_interval = (
+                int(inventory_line["walk_interval"])
+                if int(inventory_line["walk_interval"]) >= 1800
+                else 1800
+            )
+            inventory_line["port"] = port
+            inventory_line["walk_interval"] = walk_interval
+            if not inventory_line["address"].startswith("#"):
+                all_inventory_lines.append(inventory_line)
+        inventory_ui_collection.insert_many(all_inventory_lines)
+
+
 def load():
     inventory_errors = False
-    target = None
     # DB managers initialization
     mongo_client = pymongo.MongoClient(MONGO_URI)
     profiles_manager = ProfilesManager(mongo_client)
@@ -197,28 +204,45 @@ def load():
         logger.info(f"Loading inventory from {INVENTORY_PATH}")
     inventory_lines, inventory_group_port_mapping = inventory_processor.get_all_hosts()
 
-    # Function to delete inventory records that are
+    # Function to delete inventory records that are in groups
     hosts_from_groups_to_delete = return_hosts_from_deleted_groups(
         previous_groups, new_groups, inventory_group_port_mapping
     )
+
+    inventory_errors = manage_inventory_records(
+        config_profiles,
+        expiry_time_changed,
+        hosts_from_groups_to_delete,
+        inventory_errors,
+        inventory_lines,
+        inventory_record_manager,
+        mongo_client,
+    )
+
+    return inventory_errors
+
+
+def manage_inventory_records(
+    config_profiles,
+    expiry_time_changed,
+    hosts_from_groups_to_delete,
+    inventory_errors,
+    inventory_lines,
+    inventory_record_manager,
+    mongo_client,
+):
+    # Remove hosts from inventory that were deleted from group
     for host in hosts_from_groups_to_delete:
         inventory_record_manager.delete(host)
 
+    # Update or remove inventory and inventory_ui records
     for new_source_record in inventory_lines:
         try:
             ir = InventoryRecord(**new_source_record)
             target = transform_address_to_key(ir.address, ir.port)
             if ir.delete:
                 inventory_record_manager.delete(target)
-                if CONFIG_FROM_MONGO:
-                    if ir.group is None:
-                        mongo_client.sc4snmp.inventory_ui.delete_one(
-                            {"address": ir.address, "port": ir.port}
-                        )
-                    else:
-                        mongo_client.sc4snmp.inventory_ui.delete_one(
-                            {"address": ir.group}
-                        )
+                delete_from_ui_inventory(ir, mongo_client)
             else:
                 inventory_record_manager.update(
                     ir, new_source_record, config_profiles, expiry_time_changed
@@ -237,8 +261,17 @@ def load():
                 new_source_record["address"], new_source_record["port"]
             )
             logger.exception(f"Exception raised for {target}: {e}")
-
     return inventory_errors
+
+
+def delete_from_ui_inventory(ir, mongo_client):
+    if CONFIG_FROM_MONGO:
+        if ir.group is None:
+            mongo_client.sc4snmp.inventory_ui.delete_one(
+                {"address": ir.address, "port": ir.port}
+            )
+        else:
+            mongo_client.sc4snmp.inventory_ui.delete_one({"address": ir.group})
 
 
 if __name__ == "__main__":

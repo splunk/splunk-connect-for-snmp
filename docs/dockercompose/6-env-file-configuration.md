@@ -12,11 +12,23 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`     | Absolute path to [traps-config.yaml](./5-traps-configuration.md) file                                |
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose` |
-| `COREDNS_ADDRESS`                     | IP address of the coredns inside docker network. Should not be changed                               |
-| `COREDNS_ADDRESS_IPv6`                | IPv6 address of the coredns inside docker network. Should not be changed                             |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                   |
-| `IPv6_ENABLED`                        | Enable receiving traps and polling from IPv6 devices                                                 |
 
+
+## Network configuration
+
+| Variable               | Description                                                              |
+|------------------------|--------------------------------------------------------------------------| 
+| `COREDNS_ADDRESS`      | IP address of the coredns inside docker network. Should not be changed   |
+| `COREDNS_ADDRESS_IPv6` | IPv6 address of the coredns inside docker network. Should not be changed |
+| `IPv6_ENABLED`         | Enable receiving traps and polling from IPv6 devices                     |
+| `IPAM_SUBNET`          | Subnet in CIDR format that represents a network segment                  |
+| `IPAM_GATEWAY`         | IPv4 gateway for the master subnet                                       |
+| `IPAM_SUBNET_IPv6`     | Subnet in CIDR format that represents a network segment for IPv6         |
+| `IPAM_GATEWAY_IPv6`    | IPv6 gateway for the master subnet                                       |
+
+!!! info
+    In case of configuring more than one IPv4 and IPv6 subnet in IPAM, docker compose file should be edited.
 
 ## Images of dependencies 
 
@@ -113,8 +125,6 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 |------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
 | `SNMP_V3_SECURITY_ENGINE_ID` | SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table of the TRAP receiving application for each USM user, for example: SNMP_V3_SECURITY_ENGINE_ID=80003a8c04,aab123456 |
 | `TRAPS_PORT`                 | External port exposed for traps server                                                                                                                                                                                          |
-| `IPv6_TRAPS_PORT`                             | External port exposed for traps server for IPv6                                                                                                                                                                                 |
-
 ## Scheduler
 
 | Variable              | Description                                                                                       |

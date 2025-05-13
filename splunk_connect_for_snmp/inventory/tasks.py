@@ -36,7 +36,11 @@ from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.hummanbool import (
+    BadlyFormattedFieldError,
+    convert_to_float,
+    human_bool,
+)
 
 from ..poller import app
 
@@ -49,10 +53,6 @@ MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "300"))
 POLL_BASE_PROFILES = human_bool(os.getenv("POLL_BASE_PROFILES", "true"))
-
-
-class BadlyFormattedFieldError(Exception):
-    pass
 
 
 class InventoryTask(Task):
@@ -156,40 +156,26 @@ def assign_profiles(ir, profiles, target):
     assigned_profiles: dict[int, list[str]] = {}
     address = transform_address_to_key(ir.address, ir.port)
     computed_profiles = []
-    if ir.smart_profiles:
-        for profile_name, profile in profiles.items():
-
-            if not is_smart_profile_valid(profile_name, profile):
-                continue
-
-            # skip this profile it is static
-            if profile["condition"]["type"] == "base" and POLL_BASE_PROFILES:
-                logger.debug(f"Adding base profile {profile_name}")
-                add_profile_to_assigned_list(
-                    assigned_profiles, profile["frequency"], profile_name
-                )
-
-            elif profile["condition"]["type"] == "field":
-                logger.debug(f"profile is a field condition {profile_name}")
-                if "state" in target and (
-                    profile["condition"]["field"].replace(".", "|") in target["state"]
-                ):
-                    cs = target["state"][
-                        profile["condition"]["field"].replace(".", "|")
-                    ]
-                    if "value" in cs:
-                        for pattern in profile["condition"]["patterns"]:
-                            result = re.search(pattern, cs["value"])
-                            if result:
-                                logger.debug(f"Adding smart profile {profile_name}")
-                                add_profile_to_assigned_list(
-                                    assigned_profiles,
-                                    profile["frequency"],
-                                    profile_name,
-                                )
+    assign_smart_profiles(assigned_profiles, ir, profiles, target)
 
     logger.debug(f"ir.profiles {ir.profiles}")
     logger.debug(f"profiles {profiles}")
+    check_profiles_type(address, assigned_profiles, computed_profiles, ir, profiles)
+
+    mandatory_profiles = [
+        (profile_name, profile.get("frequency"))
+        for profile_name, profile in profiles.items()
+        if profile.get("condition", {}).get("type") == "mandatory"
+    ]
+    for m_profile_name, m_profile_frequency in mandatory_profiles:
+        add_profile_to_assigned_list(
+            assigned_profiles, m_profile_frequency, m_profile_name
+        )
+
+    return assigned_profiles, computed_profiles
+
+
+def check_profiles_type(address, assigned_profiles, computed_profiles, ir, profiles):
     for profile_name in ir.profiles:
         if profile_name in profiles:
             profile = profiles[profile_name]
@@ -216,17 +202,43 @@ def assign_profiles(ir, profiles, target):
                 f"profile {profile_name} was assigned for the host: {address}, no such profile in the config"
             )
 
-    mandatory_profiles = [
-        (profile_name, profile.get("frequency"))
-        for profile_name, profile in profiles.items()
-        if profile.get("condition", {}).get("type") == "mandatory"
-    ]
-    for m_profile_name, m_profile_frequency in mandatory_profiles:
-        add_profile_to_assigned_list(
-            assigned_profiles, m_profile_frequency, m_profile_name
-        )
 
-    return assigned_profiles, computed_profiles
+def assign_smart_profiles(assigned_profiles, ir, profiles, target):
+    if ir.smart_profiles:
+        for profile_name, profile in profiles.items():
+
+            if not is_smart_profile_valid(profile_name, profile):
+                continue
+
+            # skip this profile it is static
+            if profile["condition"]["type"] == "base" and POLL_BASE_PROFILES:
+                logger.debug(f"Adding base profile {profile_name}")
+                add_profile_to_assigned_list(
+                    assigned_profiles, profile["frequency"], profile_name
+                )
+
+            elif profile["condition"]["type"] == "field":
+                logger.debug(f"profile is a field condition {profile_name}")
+                assign_field_smart_profile(
+                    assigned_profiles, profile, profile_name, target
+                )
+
+
+def assign_field_smart_profile(assigned_profiles, profile, profile_name, target):
+    if "state" in target and (
+        profile["condition"]["field"].replace(".", "|") in target["state"]
+    ):
+        cs = target["state"][profile["condition"]["field"].replace(".", "|")]
+        if "value" in cs:
+            for pattern in profile["condition"]["patterns"]:
+                result = re.search(pattern, cs["value"])
+                if result:
+                    logger.debug(f"Adding smart profile {profile_name}")
+                    add_profile_to_assigned_list(
+                        assigned_profiles,
+                        profile["frequency"],
+                        profile_name,
+                    )
 
 
 def is_smart_profile_valid(profile_name, profile):
@@ -293,86 +305,78 @@ def create_profile(profile_name, frequency, varbinds, records):
 
 
 def create_query(conditions: typing.List[dict], address: str) -> dict:
-    conditional_profiles_mapping = {
-        "equals": "$eq",
-        "gt": "$gt",
-        "lt": "$lt",
-        "in": "$in",
-        "regex": "$regex",
+    # Define mappings for conditional and negative profiles
+    profile_mappings = {
+        "positive": {
+            "equals": "$eq",
+            "gt": "$gt",
+            "lt": "$lt",
+            "in": "$in",
+            "regex": "$regex",
+        },
+        "negative": {
+            "equals": "$ne",
+            "gt": "$lte",
+            "lt": "$gte",
+            "in": "$nin",
+            "regex": "$regex",
+        },
     }
 
-    negative_profiles_mapping = {
-        "equals": "$ne",
-        "gt": "$lte",
-        "lt": "$gte",
-        "in": "$nin",
-        "regex": "$regex",
-    }
-
+    # Helper functions
     def _parse_mib_component(field: str) -> str:
-        mib_component = field.split("|")
-        if len(mib_component) < 2:
+        components = field.split("|")
+        if len(components) < 2:
             raise BadlyFormattedFieldError(f"Field {field} is badly formatted")
-        return mib_component[0]
-
-    def _convert_to_float(value: typing.Any, ignore_error=False) -> typing.Any:
-        try:
-            return float(value)
-        except ValueError:
-            if ignore_error:
-                return value
-            else:
-                raise BadlyFormattedFieldError(f"Value '{value}' should be numeric")
+        return components[0]
 
     def _prepare_regex(value: str) -> typing.Union[list, str]:
         pattern = value.strip("/").split("/")
-        if len(pattern) > 1:
-            return pattern
-        else:
-            return pattern[0]
+        return pattern if len(pattern) > 1 else pattern[0]
 
-    def _get_value_for_operation(operation: str, value: str) -> typing.Any:
-        if operation in ["lt", "gt"]:
-            return _convert_to_float(value)
-        elif operation == "in":
-            return [_convert_to_float(v, True) for v in value]
-        elif operation == "regex":
-            return _prepare_regex(value)
-        return value
+    def _get_value_for_operation(operation: str, value: typing.Any) -> typing.Any:
+        operation_handlers = {
+            "lt": lambda v: convert_to_float(v),
+            "gt": lambda v: convert_to_float(v),
+            "in": lambda v: [convert_to_float(item, True) for item in v],
+            "regex": lambda v: _prepare_regex(v),
+        }
+        return operation_handlers.get(operation, lambda v: v)(value)
 
     def _prepare_query_input(
-        operation: str, value: typing.Any, field: str, negate_operation: bool
+        operation: str, value: typing.Any, field: str, negate: bool, mongo_op: str
     ) -> dict:
-        if operation == "regex" and isinstance(value, list):
-            query = {mongo_operation: value[0], "$options": value[1]}
-        else:
-            query = {mongo_operation: value}
-        if operation == "regex" and negate_operation:
+        query = (
+            {mongo_op: value}
+            if not (operation == "regex" and isinstance(value, list))
+            else {mongo_op: value[0], "$options": value[1]}
+        )
+        if operation == "regex" and negate:
             query = {"$not": query}
         return {f"fields.{field}.value": query}
 
+    # Main processing loop
     filters = []
-    field = ""
     for condition in conditions:
-        field = condition["field"]
-        # fields in databases are written in convention "IF-MIB|ifInOctets"
-        field = field.replace(".", "|")
+        field = condition["field"].replace(".", "|")  # Standardize field format
         value = condition["value"]
-        negate_operation = human_bool(
-            condition.get("negate_operation", False), default=False
-        )
+        negate = human_bool(condition.get("negate_operation", False), default=False)
         operation = condition["operation"].lower()
-        value_for_querying = _get_value_for_operation(operation, value)
-        mongo_operation = (
-            negative_profiles_mapping.get(operation)
-            if negate_operation
-            else conditional_profiles_mapping.get(operation)
+
+        # Determine MongoDB operator and prepare query
+        mongo_op = profile_mappings["negative" if negate else "positive"].get(
+            operation, ""
         )
+        value_for_query = _get_value_for_operation(operation, value)
         query = _prepare_query_input(
-            operation, value_for_querying, field, negate_operation
+            operation, value_for_query, field, negate, mongo_op
         )
         filters.append(query)
+
+    # Parse MIB component for address matching
     mib_component = _parse_mib_component(field)
+
+    # Construct final query
     return {
         "$and": [
             {"address": address},

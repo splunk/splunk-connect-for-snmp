@@ -289,3 +289,28 @@ class TestTasks(TestCase):
             },
             result,
         )
+
+
+class TestHelpers(TestCase):
+    @patch("splunk_connect_for_snmp.snmp.tasks.IPv6_ENABLED")
+    def test_format_ipv4_address(self, ipv6_enabled):
+        from splunk_connect_for_snmp.snmp.tasks import format_ipv4_address
+
+        ipv6_enabled.return_value = True
+        ip_address = "::ffff:172.31.20.76"
+        host = format_ipv4_address(ip_address)
+        self.assertEqual(host, "172.31.20.76")
+
+    def test_format_ipv4_address_disabled(self):
+        from splunk_connect_for_snmp.snmp.tasks import format_ipv4_address
+
+        ip_address = "::ffff:172.31.20.76"
+        host = format_ipv4_address(ip_address)
+        self.assertEqual(host, "::ffff:172.31.20.76")
+
+    def test_format_ipv4_address_ipv6(self):
+        from splunk_connect_for_snmp.snmp.tasks import format_ipv4_address
+
+        ip_address = "fd02::b24a:409e:a35e:b580"
+        host = format_ipv4_address(ip_address)
+        self.assertEqual(host, "fd02::b24a:409e:a35e:b580")

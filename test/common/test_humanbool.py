@@ -1,6 +1,10 @@
 from unittest import TestCase
 
-from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.hummanbool import (
+    BadlyFormattedFieldError,
+    convert_to_float,
+    human_bool,
+)
 
 
 class TestHumanBool(TestCase):
@@ -32,3 +36,19 @@ class TestHumanBool(TestCase):
         self.assertTrue(human_bool("foo", True))
         self.assertFalse(human_bool("1foo", False))
         self.assertFalse(human_bool("1FoO"))
+
+    def test_convert_to_float(self):
+        value = 1
+        result = convert_to_float(value)
+        self.assertIsInstance(result, float)
+
+    def test_convert_to_float_ignore(self):
+        value = "up"
+        result = convert_to_float(value, True)
+        self.assertEqual(result, value)
+
+    def test_convert_to_float_error(self):
+        value = "up"
+        with self.assertRaises(BadlyFormattedFieldError) as context:
+            convert_to_float(value)
+        self.assertEqual("Value 'up' should be numeric", context.exception.args[0])
