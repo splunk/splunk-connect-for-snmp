@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## [1.12.2]
 
 ### Changed
 - add IF-MIB.ifOperStatus to baseIF profile
@@ -12,6 +12,7 @@
 - add nodeSelector to worker chart
 - upgrade base docker image
 - dns resolution if only ipv4 is used
+- fix CVEs on docker image
 
 ## [1.12.1]
 
