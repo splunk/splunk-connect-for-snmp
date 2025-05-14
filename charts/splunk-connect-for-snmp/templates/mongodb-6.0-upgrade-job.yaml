@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-fcv-upgrade-to-6
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      containers:
+        - name: mongo-fcv-check
+          image: {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              echo "Checking current mongo FCV"
+              FCV=$(mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }} --quiet --eval 'db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 }).featureCompatibilityVersion.version')
+              echo "Current Mongo Feature Compatibility Version: $FCV"
+              
+              if [[ "$FCV" < "6.0" ]]; then
+                echo "FCV < 6.0, setting to 6.0"
+                mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }}  --eval 'db.adminCommand({ setFeatureCompatibilityVersion: "6.0" })'
+              else
+                echo "FCV >= 6.0, nothing to be changed"
+              fi
+      restartPolicy: Never
