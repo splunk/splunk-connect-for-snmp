@@ -491,7 +491,7 @@ mongodb:
     type: Recreate
   initdbScripts:
     setFeatureCompatibilityVersion.js: |
-      db.adminCommand({ setFeatureCompatibilityVersion: "7.0" });
+      db.adminCommand({ setFeatureCompatibilityVersion: "6.0" });
 
   ## @section Global parameters
   ## Global Docker image parameters
