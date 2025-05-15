@@ -16,7 +16,7 @@ spec:
             - -c
             - |
               echo "Checking current mongo feature compability version"
-              MONGO_FT_COMPABILITY_VERSION=$(mongosh --host {{ .Release.Name }}-mongodb.{{ .Release.Namespace }}.svc.cluster.local --quiet --eval 'db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 }).featureCompatibilityVersion.version')              echo "Current FCV: $FCV"
+              MONGO_FT_COMPABILITY_VERSION=$(mongosh --host {{ .Release.Name }}-mongodb.{{ .Release.Namespace }}.svc.cluster.local --quiet --eval 'db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 }).featureCompatibilityVersion.version')
               echo "Current Mongo Feature Compability Version: $MONGO_FT_COMPABILITY_VERSION"
               
               if [[ "$MONGO_FT_COMPABILITY_VERSION" < "6.0" ]]; then
