@@ -15,14 +15,14 @@ spec:
             - /bin/bash
             - -c
             - |
-              echo "Checking FCV na mongodb-0..."
-              FCV=$(mongo --host mongodb-0.mongodb-headless.default.svc.cluster.local --quiet --eval 'db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 }).featureCompatibilityVersion.version')
-              echo "Current FCV: $FCV"
-
-              if [ "$(printf '%s\n' "$FCV" "6.0" | sort -V | head -n1)" != "6.0" ]; then
-                echo "FCV < 6.0, setting na 6.0"
-                mongo --host mongodb-0.mongodb-headless.default.svc.cluster.local --eval 'db.adminCommand({ setFeatureCompatibilityVersion: "6.0" })'
+              echo "Checking current mongo feature compability version"
+              MONGO_FT_COMPABILITY_VERSION=$(mongosh --host {{ .Release.Name }}-mongodb.{{ .Release.Namespace }}.svc.cluster.local --quiet --eval 'db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 }).featureCompatibilityVersion.version')              echo "Current FCV: $FCV"
+              echo "Current Mongo Feature Compability Version: $MONGO_FT_COMPABILITY_VERSION"
+              
+              if [[ "$MONGO_FT_COMPABILITY_VERSION" < "6.0" ]]; then
+                echo "MONGO_FT_COMPABILITY_VERSION < 6.0, setting na 6.0"
+                mongosh --host {{ .Release.Name }}-mongodb.{{ .Release.Namespace }}.svc.cluster.local --eval 'db.adminCommand({ setFeatureCompatibilityVersion: "6.0" })'
               else
-                echo "FCV >= 6.0, nothing to be changed"
+                echo "MONGO_FT_COMPABILITY_VERSION >= 6.0, nothing to be changed"
               fi
       restartPolicy: Never
