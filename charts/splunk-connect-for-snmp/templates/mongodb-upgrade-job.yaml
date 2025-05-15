@@ -10,7 +10,7 @@ spec:
     spec:
       containers:
         - name: mongo-fcv-check
-          image: docker.io/bitnami/mongodb:6.0.10-debian-11-r8
+          image: docker.io/bitnami/mongodb
           command:
             - /bin/bash
             - -c
