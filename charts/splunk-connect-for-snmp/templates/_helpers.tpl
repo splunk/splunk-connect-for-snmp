@@ -7,7 +7,11 @@
 {{- end }}  
 
 {{- define "splunk-connect-for-snmp.celery_url" -}}
+{{- if and ( eq .Values.redis.architecture "replication" ) .Values.redis.sentinel.enabled  }}
+{{- printf "redis://%s-redis:6379/0" .Release.Name }}
+{{- else }}
 {{- printf "redis://%s-redis-master:6379/0" .Release.Name }}
+{{- end }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.redis_url" -}}
