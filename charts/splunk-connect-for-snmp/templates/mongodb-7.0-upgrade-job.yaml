@@ -1,0 +1,49 @@
+{{- $existingRelease := (lookup "v1" "ConfigMap" .Release.Namespace "app-version-config") }}
+{{- if $existingRelease }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-fcv-upgrade-to-7
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      containers:
+        - name: mongo-fcv-check
+          image: {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+
+              PREV_VERSION="{{ .Values.previousAppVersion }}"
+              TARGET_VERSION="{{ .Chart.AppVersion }}"
+
+              echo "Previous app version: $PREV_VERSION"
+              echo "Target app version: $TARGET_VERSION"
+
+              if [ "$PREV_VERSION" < "1.12.3" ]; then
+                echo "ERROR: Cannot upgrade directly from app version $PREV_VERSION to $TARGET_VERSION."
+                echo "Please upgrade to the intermediate version 1.12.3 first."
+                echo "You can do it with a command:"
+                echo "microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version 1.12.3"
+                exit 1
+              fi
+
+              echo "Checking current mongo FCV"
+              FCV=$(mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }} --quiet --eval 'db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 }).featureCompatibilityVersion.version')
+              echo "Current Mongo Feature Compatibility Version: $FCV"
+
+              if [[ "$FCV" < "7.0" ]]; then
+                echo "FCV < 7.0, setting to 7.0"
+                mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }}  --eval 'db.adminCommand({ setFeatureCompatibilityVersion: "6.0" })'
+              else
+                echo "FCV >= 7.0, nothing to be changed"
+              fi
+      restartPolicy: Never
+    {{- end }}
