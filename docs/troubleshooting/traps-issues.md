@@ -11,7 +11,7 @@ microk8s kubectl -n sc4snmp get services
 This command should output similar data:
 ```
 NAME                                TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)         AGE
-snmp-redis-headless                 ClusterIP      None             <none>           6379/TCP        113s
+snmp-redis-master                 ClusterIP      None             <none>           6379/TCP        113s
 snmp-mibserver                      ClusterIP      10.152.183.163   <none>           80/TCP          113s
 snmp-mongodb                        ClusterIP      10.152.183.118   <none>           27017/TCP       113s
 snmp-redis-master                   ClusterIP      10.152.183.61    <none>           6379/TCP        113s

@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- change redis service name workers call from redis-headless to redis-master
+
+### Fixed
+
+
 ## [1.12.2]
 
 ### Changed

@@ -120,7 +120,7 @@ Here is an example of the correct setup:
 
 ```
 NAME                                TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
-snmp-redis-headless                 ClusterIP      None             <none>        6379/TCP        33h
+snmp-redis-master                 ClusterIP      None             <none>        6379/TCP        33h
 snmp-mongodb                        ClusterIP      10.152.183.147   <none>        27017/TCP       33h
 snmp-mibserver                      ClusterIP      10.152.183.253   <none>        80/TCP          33h
 snmp-redis-master                   ClusterIP      10.152.183.135   <none>        6379/TCP        33h
