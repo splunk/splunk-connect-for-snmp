@@ -185,6 +185,18 @@
         },
         "metricsIndex": {
           "type": "string"
+        },
+        "mtls": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "secretRef": {
+              "type": "string"
+            }
+          }
         }
       }
     },

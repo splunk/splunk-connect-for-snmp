@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- add mTLS support
 
 ### Fixed
 
@@ -13,6 +14,7 @@
 - change redis service name workers call from redis-headless to redis-master
 - migrate MongoDB subchart to 15.6.26
 - update MongoDB docker image to 7.0.14 for SC4SNMP docker installation
+- implemented mTLS for Splunk 10
 
 ### Fixed
 - Ensured `.Values.secret.name` is used during secret creation to prevent mismatched secret references in deployments

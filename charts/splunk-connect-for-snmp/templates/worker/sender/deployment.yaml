@@ -46,6 +46,14 @@ spec:
           env:
             {{- include "environmental-variables" . | nindent 12 }}
             {{- include "environmental-variables-sender" . | nindent 12 }}
+            {{- if .Values.splunk.mtls.enabled }}
+            - name: SPLUNK_HEC_MTLS_CLIENT_CERT
+              value: /app/hec-mtls/tls.crt
+            - name: SPLUNK_HEC_MTLS_CLIENT_KEY
+              value: /app/hec-mtls/tls.key
+            - name: SPLUNK_HEC_MTLS_CA_CERT
+              value: /app/hec-mtls/cacert.pem
+            {{- end }}
           {{- if .Values.worker.livenessProbe.enabled }}
           livenessProbe:
             exec:
@@ -63,6 +71,11 @@ spec:
             periodSeconds: {{ .Values.worker.readinessProbe.periodSeconds }}
           {{- end }}
           volumeMounts:
+            {{- if .Values.splunk.mtls.enabled }}
+            - name: hec-mtls
+              mountPath: "/app/hec-mtls"
+              readOnly: true
+            {{- end }}
             - name: config
               mountPath: "/app/config"
               readOnly: true
@@ -102,6 +115,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+        {{- if .Values.splunk.mtls.enabled }}
+        - name: hec-mtls
+          secret:
+            secretName: {{ .Values.splunk.mtls.secretRef }}
+        {{- end }}
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config
           configMap:

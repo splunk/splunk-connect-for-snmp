@@ -93,6 +93,12 @@ splunk:
   # name of the metrics index
   metricsIndex: "netmetrics"
 
+  # new encryption appeared in Splunk 10
+  mtls:
+    enabled: false
+    # name of existing secret (should be created manully), that will store certs for mTLS
+    secretRef: ""
+
 ################################################################################
 # Splunk Observability configuration
 ################################################################################
