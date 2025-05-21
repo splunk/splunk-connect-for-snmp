@@ -19,9 +19,11 @@ In case you want to add a new MIB file to the MIB server, see the following step
 2. Put one or more MIB files under `src/vendor/@vendor_name@` where `@vendor_name@` is the name of the MIB file's vendor. 
 If there is currently no directory of vendors that you need, create it yourself.
    
-3. Create a pull request to a `main` branch.
+3. Create a pull request to a `develop` branch.
    
-4. Name the pull request the following way: `feat: add @vendor_name@ MIB files`.
+4. Name the pull request the following way: 
+   - for new vendor `feat: add @vendor_name@ MIB files` 
+   - for existing vendor `fix: add @vendor_name@ MIB files`
 
 
 An alternative way of adding MIBs to the MIB server is to create an issue in the

@@ -1,0 +1,22 @@
+{{- if .Values.flower.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-flower
+  labels:
+    {{- include "splunk-connect-for-snmp.worker.flower.labels" . | nindent 4 }}
+
+
+spec:
+  selector:
+    {{- include "splunk-connect-for-snmp.worker.flower.selectorLabels" . | nindent 4 }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.flower.port | default 80 }}
+      targetPort: 5555
+  type: LoadBalancer
+  {{- if .Values.flower.loadBalancerIP }}
+  externalIPs:
+    - {{ .Values.flower.loadBalancerIP }}
+  {{- end }}
+{{- end }}

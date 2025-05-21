@@ -36,7 +36,7 @@ from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
-IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", False))
+IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 
 
 def get_secret_value(
@@ -92,15 +92,12 @@ def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpEngine)
 
 def setup_transport_target(ir):
     ip = get_ip_from_socket(ir) if IPv6_ENABLED else ir.address
-    if ip_address(ip).version == 6:
-        transport = Udp6TransportTarget(
+    if IPv6_ENABLED and ip_address(ip).version == 6:
+        return Udp6TransportTarget(
             (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
         )
-    else:
-        transport = UdpTransportTarget(
-            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
-        )
-    return transport
+
+    return UdpTransportTarget((ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT)
 
 
 def get_ip_from_socket(ir):

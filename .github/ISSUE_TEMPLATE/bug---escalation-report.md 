@@ -1,0 +1,35 @@
+---
+name: Bug / Escalation report
+about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
+
+---
+
+**If your issue is not a bug or a feature request, please raise a support ticket through our support portal (Splunk.com > Support > Support Portal). This will help us resolve your issue more efficiently and provide you with better assistance. For more information on how to work with the Splunk Support, please refer to [this guide](https://splunk.my.site.com/customer/s/article/Working-with-Support-and-the-Support-Portal).**
+
+**Was the issue replicated by support?**
+
+**What is the SC4SNMP version?**
+
+**Which runtime (Docker, MicroK8s) are you using for SC4SNMP?**
+
+**Is the issue related to some error during installation or first connection to device?**
+If so share the values.yaml.
+
+**Describe the bug**
+A clear and concise description of what the bug is.
+
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
+
+**Screenshots and logs**
+If applicable, add screenshots to help explain your problem and collect the logs from SC4SNMP.
+
+**Additional context**
+Add any other context about the problem here.
