@@ -32,10 +32,10 @@ spec:
               echo "Target app version: $TARGET_VERSION"
 
               if [ "$(printf '%s\n' "$PREV_VERSION" "1.12.3" | sort -V | head -n1)" != "1.12.3" ]; then
-                echo "ERROR: Cannot upgrade directly from app version $PREV_VERSION to $TARGET_VERSION."
-                echo "Please upgrade to the intermediate version 1.12.3 first."
-                echo "You can do it with a command:"
-                echo "microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version 1.12.3"
+                echo "ERROR: Cannot upgrade directly from app version $PREV_VERSION to $TARGET_VERSION." >&2
+                echo "Please upgrade to the intermediate version 1.12.3 first." >&2
+                echo "You can do it with a command:" >&2
+                echo "microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --version 1.12.3" >&2
                 exit 1
               fi
 
