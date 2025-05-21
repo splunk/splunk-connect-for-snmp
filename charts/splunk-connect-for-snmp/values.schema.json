@@ -347,6 +347,9 @@
         "maxOidToProcess": {
           "type": "integer"
         },
+        "maxRepetitions": {
+          "type": "integer"
+        },
         "usernameSecrets": {
           "type": "array"
         },
