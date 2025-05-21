@@ -1,4 +1,5 @@
-{{- $existingRelease := (lookup "v1" "ConfigMap" .Release.Namespace "app-version-config") }}
+{{- $configMapName := printf "%s-config" (include "splunk-connect-for-snmp.name" .) }}
+{{- $existingRelease := (lookup "v1" "ConfigMap" .Release.Namespace $configMapName) }}
 {{- if $existingRelease }}
 apiVersion: batch/v1
 kind: Job
