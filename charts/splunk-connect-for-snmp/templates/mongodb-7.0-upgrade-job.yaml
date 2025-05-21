@@ -45,7 +45,7 @@ spec:
 
               if [[ "$FCV" < "7.0" ]]; then
                 echo "FCV < 7.0, setting to 7.0"
-                mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }}  --eval 'db.adminCommand({ setFeatureCompatibilityVersion: "6.0" })'
+                mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }}  --eval 'db.adminCommand({ setFeatureCompatibilityVersion: "7.0" })'
               else
                 echo "FCV >= 7.0, nothing to be changed"
               fi
