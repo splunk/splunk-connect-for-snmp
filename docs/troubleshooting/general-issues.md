@@ -1,6 +1,6 @@
 ## General issues
 
-### Upgrading from SC4SNMP 1.12.2 to 1.12.3
+### Upgrading SC4SNMP from 1.12.2 to 1.12.3
 
 When upgrading SC4SNMP from version `1.12.2` to `1.12.3`, the subchart version of MongoDB will be updated from `13.18.5` to `15.6.26`. This upgrade requires an increase in the MongoDB `Feature Compatibility Version (FCV)` from `5.0` to `6.0`.
 

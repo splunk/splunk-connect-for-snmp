@@ -2,6 +2,9 @@
 
 See the following to update SC4SNMP.
 
+!!! warning     
+    Upgrading SC4SNMP from version `1.12.2` to `1.12.3` includes MongoDB upgrade. In case of any issues refer to [this instruction](../troubleshooting/general-issues.md#upgrading-from-sc4snmp-1122-to-1123).
+
 ## Upgrade to the latest version
 To upgrade SC4SNMP to the latest version, simply run the following command:
 
@@ -14,9 +17,6 @@ Afterwards, run:
 ```yaml
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
-
-!!! warning     
-    Upgrade SC4SNMP from version `1.12.2` to `1.12.3` introduces MongoDB upgrade. In case of any issues refer to [this instruction](../troubleshooting/general-issues.md#upgrading-from-sc4snmp-1122-to-1123).
 
 SC4SNMP will be upgraded to the newest version. You can see the latest version after running the following command:
 ```yaml
