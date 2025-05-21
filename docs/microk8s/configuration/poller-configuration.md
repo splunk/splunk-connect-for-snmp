@@ -3,6 +3,7 @@
 Poller is a service which is responsible for querying 
 SNMP devices using the SNMP GET and WALK functionalities. Poller executes two main types of tasks:
 
+
 - The Walk task executes SNMP walk. SNMP walk is an SNMP application that uses SNMP GETBULK requests to 
 collect SNMP data from the network and infrastructure of SNMP-enabled devices, such as switches and routers. It is a time-consuming task,
 which may overload the SNMP device when executed too often. It is used by the SC4SNMP to collect and push all OID values, which the provided ACL has access to. 
@@ -40,6 +41,7 @@ The default value is `INFO`.
 
 ### Define usernameSecrets
 Secrets are required to run SNMPv3 polling. To add v3 authentication details, create the k8s Secret object: [SNMPv3 Configuration](snmpv3-configuration.md), and put its name in `poller.usernameSecrets`.
+
 
 ### Define maxRepetitions
 The maxRepetitions is a parameter used in SNMP GetBulk call. It is responsible for controlling the
