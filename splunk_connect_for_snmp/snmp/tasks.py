@@ -51,6 +51,7 @@ OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9]\d*))*$")
 RESOLVE_TRAP_ADDRESS = os.getenv("RESOLVE_TRAP_ADDRESS", "false")
 MAX_DNS_CACHE_SIZE_TRAPS = int(os.getenv("MAX_DNS_CACHE_SIZE_TRAPS", "100"))
 TTL_DNS_CACHE_TRAPS = int(os.getenv("TTL_DNS_CACHE_TRAPS", "1800"))
+IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 
 
 @shared_task(
@@ -146,20 +147,31 @@ def resolve_address(address: str):
 
 @shared_task(bind=True, base=Poller)
 def trap(self, work):
-
-    varbind_table = []
-    not_translated_oids = []
-    remaining_oids = []
-    remotemibs = set()
+    varbind_table, not_translated_oids, remaining_oids, remotemibs = [], [], [], set()
     metrics = {}
-    for w in work["data"]:
+    work["host"] = format_ipv4_address(work["host"])
 
+    _process_work_data(self, work, varbind_table, not_translated_oids)
+    _process_remaining_oids(
+        self,
+        not_translated_oids,
+        remotemibs,
+        remaining_oids,
+        work["host"],
+        varbind_table,
+    )
+    _, _, result = self.process_snmp_data(varbind_table, metrics, work["host"])
+    if human_bool(RESOLVE_TRAP_ADDRESS):
+        work["host"] = resolve_address(work["host"])
+
+    return _build_result(result, work["host"])
+
+
+def _process_work_data(self, work, varbind_table, not_translated_oids):
+    """Process the data in work to populate varbinds."""
+    for w in work["data"]:
         if OID_VALIDATOR.match(w[1]):
-            with suppress(Exception):
-                found, mib = self.is_mib_known(w[1], w[1], work["host"])
-                if found and mib not in self.already_loaded_mibs:
-                    self.load_mibs([mib])
-                    self.already_loaded_mibs.add(mib)
+            _load_mib_if_needed(self, w[1], work["host"])
 
         try:
             varbind_table.append(
@@ -170,8 +182,22 @@ def trap(self, work):
         except SmiError:
             not_translated_oids.append((w[0], w[1]))
 
+
+def _load_mib_if_needed(self, oid, host):
+    """Load the MIB if it is known and not already loaded."""
+    with suppress(Exception):
+        found, mib = self.is_mib_known(oid, oid, host)
+        if found and mib not in self.already_loaded_mibs:
+            self.load_mibs([mib])
+            self.already_loaded_mibs.add(mib)
+
+
+def _process_remaining_oids(
+    self, not_translated_oids, remotemibs, remaining_oids, host, varbind_table
+):
+    """Process OIDs that could not be translated and add them to other oids."""
     for oid in not_translated_oids:
-        found, mib = self.is_mib_known(oid[0], oid[0], work["host"])
+        found, mib = self.is_mib_known(oid[0], oid[0], host)
         if found and mib not in self.already_loaded_mibs:
             remotemibs.add(mib)
             remaining_oids.append((oid[0], oid[1]))
@@ -179,25 +205,35 @@ def trap(self, work):
     if remotemibs:
         self.load_mibs(remotemibs)
         self.already_loaded_mibs.update(remotemibs)
-        for w in remaining_oids:
-            try:
-                varbind_table.append(
-                    ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
-                        self.mib_view_controller
-                    )
+        _resolve_remaining_oids(self, remaining_oids, varbind_table)
+
+
+def _resolve_remaining_oids(self, remaining_oids, varbind_table):
+    """Resolve remaining OIDs."""
+    for w in remaining_oids:
+        try:
+            varbind_table.append(
+                ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
+                    self.mib_view_controller
                 )
-            except SmiError:
-                logger.warning(f"No translation found for {w[0]}")
+            )
+        except SmiError:
+            logger.warning(f"No translation found for {w[0]}")
 
-    _, _, result = self.process_snmp_data(varbind_table, metrics, work["host"])
 
-    if human_bool(RESOLVE_TRAP_ADDRESS):
-        work["host"] = resolve_address(work["host"])
-
+def _build_result(result, host):
+    """Build the final result dictionary."""
     return {
         "time": time.time(),
         "result": result,
-        "address": work["host"],
+        "address": host,
         "detectchange": False,
         "sourcetype": SPLUNK_SOURCETYPE_TRAPS,
     }
+
+
+def format_ipv4_address(host: str) -> str:
+    # IPv4 addresses from IPv6 socket have added ::ffff: prefix, which is removed
+    if IPv6_ENABLED and "." in host:
+        return host.split(":")[-1]
+    return host

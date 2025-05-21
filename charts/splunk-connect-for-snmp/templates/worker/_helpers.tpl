@@ -54,6 +54,11 @@ app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-tr
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{- define "splunk-connect-for-snmp.worker.flower.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-flower
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
 
 {{/*
 Common labels
@@ -75,6 +80,11 @@ Common labels
 
 {{- define "splunk-connect-for-snmp.worker.labels" -}}
 {{ include "splunk-connect-for-snmp.worker.selectorLabels" . }}
+{{ include "splunk-connect-for-snmp.labels" . }}
+{{- end }}
+
+{{- define "splunk-connect-for-snmp.worker.flower.labels" -}}
+{{ include "splunk-connect-for-snmp.worker.flower.selectorLabels" . }}
 {{ include "splunk-connect-for-snmp.labels" . }}
 {{- end }}
 
@@ -189,4 +199,10 @@ Common labels
   value: {{ .Values.worker.trap.resolveAddress.cacheSize | default "500" | quote }}
 - name: TTL_DNS_CACHE_TRAPS
   value: {{ .Values.worker.trap.resolveAddress.cacheTTL | default "1800" | quote }}
+- name: IPv6_ENABLED
+  {{- if has "IPv6" .Values.traps.ipFamilies }}
+  value: "true"
+  {{ else }}
+  value: "false"
+  {{- end }}
 {{- end }}

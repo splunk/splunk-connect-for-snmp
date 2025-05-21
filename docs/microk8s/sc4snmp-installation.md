@@ -36,15 +36,20 @@ splunk-connect-for-snmp/splunk-connect-for-snmp        1.0.0        1.0.0       
 
 #### Download and modify values.yaml
 
-The installation of SC4SNMP requires the creation of a `values.yaml` file, which serves as the configuration file. To configure this file, see the following steps: 
+The installation of SC4SNMP requires the creation of a `values.yaml` file, which serves as the configuration file. To configure this file,
+see the following steps: 
 
 1. Review the [basic configuration template][basic_template_link].
 2. Review the [examples][examples_link] to determine which areas require configuration.
 3. For more advanced configuration options, refer to the complete default [values.yaml](https://github.com/splunk/splunk-connect-for-snmp/blob/main/charts/splunk-connect-for-snmp/values.yaml)
-or download it directly from Helm using the command `microk8s helm3 show values splunk-connect-for-snmp/splunk-connect-for-snmp` 
+or download it directly from Helm using the command `microk8s helm3 show values splunk-connect-for-snmp/splunk-connect-for-snmp`.
+
+!!! info
+    Please be aware that copying the entire default `values.yaml` file may impact the readability of the configuration. We recommend including only the modified configuration sections or starting with [the base template](https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.yaml).
 4. In order to learn more about each of the configuration parts, check [configuration](configuration/deployment-configuration.md) section.
 
-It is recommended to start by completing the base template and gradually add additional configurations as needed.
+!!!info 
+    We recommend starting with the base template and progressively adding additional configurations as required. The [base template](https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.yaml) can be downloaded from the SC4SNMP repository.
 
 
 The `values.yaml` file is validated using `JSON schema` built into `helm chart` and inside the code.
@@ -182,10 +187,10 @@ index="netops" sourcetype="sc4snmp:event"
 | mpreview index="netmetrics" | search sourcetype="sc4snmp:metric"
 ```
 
-NOTE: Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every `walk_interval`. 
-Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
-In such cases, enable the small walk. See [walk takes too much time](../../troubleshooting/polling-issues/#walking-a-device-takes-too-much-time).
-When the walk finishes, events appear in Splunk.
+> **_NOTE:_** Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every `walk_interval`. 
+> Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
+> In such cases, enable the small walk. See [walk takes too much time](../../troubleshooting/polling-issues/#walking-a-device-takes-too-much-time).
+> When the walk finishes, events appear in Splunk.
 
 ## Next Steps
 

@@ -62,7 +62,7 @@ The requested varbinds in one getBulk call:
 IP-MIB.ipNetToMediaNetAddress
 ```
 
-[![PDU Request Example](../images/request_pdu_flow.png)](../images/request_pdu_flow.png)
+[![PDU Request Example](../../images/request_pdu_flow.png)](../../images/request_pdu_flow.png)
 
 After third ResponsePDU the returned oids are out of scope for requested table, so the call is stopped. 
 It can be spotted on diagram that response for `IP-MIB.ipNetToMediaNetAddress` includes 2 oids as `maxRepetition` was set to 3.

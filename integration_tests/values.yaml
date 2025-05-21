@@ -12,6 +12,8 @@ image:
 traps:
   replicaCount: 1
   communities:
+    1:
+      - publicv1
     2c:
       - public
       - homelab

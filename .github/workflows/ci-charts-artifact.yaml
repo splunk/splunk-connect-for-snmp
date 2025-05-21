@@ -1,10 +1,14 @@
 name: create-charts-zip
 on:
   pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
     branches:
       - "main"
       - "develop"
-      - "next"
 
 jobs:
   build:
@@ -16,7 +20,7 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - 3.9
+          - 3.10
     steps:
       - name: Check out code
         uses: actions/checkout@v4

@@ -40,6 +40,21 @@
     "pysnmpDebug": {
       "type": "string"
     },
+    "flower": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "loadBalancerIP": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer"
+        }
+      }
+    },
     "UI": {
       "type": "object",
       "additionalProperties": false,
@@ -330,6 +345,9 @@
           "type": "boolean"
         },
         "maxOidToProcess": {
+          "type": "integer"
+        },
+        "maxRepetitions": {
           "type": "integer"
         },
         "usernameSecrets": {
@@ -623,6 +641,9 @@
         },
         "ignoreEmptyVarbinds": {
           "type": "boolean"
+        },
+        "nodeSelector": {
+          "type": "object"
         }
       }
     },
@@ -727,12 +748,6 @@
               "type": "integer"
             },
             "nodePort": {
-              "type": "integer"
-            },
-            "ipv6Port": {
-              "type": "integer"
-            },
-            "ipv6NodePort": {
               "type": "integer"
             }
           }
