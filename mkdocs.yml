@@ -100,6 +100,7 @@ nav:
       - Accessing and configuring logs: "troubleshooting/configuring-logs.md"
       - Docker commands: "troubleshooting/docker-commands.md"
       - Kubernetes commands: "troubleshooting/k8s-commands.md"
+      - General issues: "troubleshooting/general-issues.md"
       - Polling issues: "troubleshooting/polling-issues.md"
       - Traps issues: "troubleshooting/traps-issues.md"
 

@@ -2,6 +2,9 @@
 
 See the following to update SC4SNMP.
 
+!!! warning     
+    Upgrading SC4SNMP from version `1.12.2` to `1.12.3` includes MongoDB upgrade. In case of any issues refer to [this instruction](../troubleshooting/general-issues.md#upgrading-from-sc4snmp-1122-to-1123).
+
 ## Upgrade to the latest version
 To upgrade SC4SNMP to the latest version, simply run the following command:
 

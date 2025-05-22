@@ -4,6 +4,7 @@
 
 ### Changed
 - change redis service name workers call from redis-headless to redis-master
+- migrate MongoDB subchart to 15.6.26
 
 ### Fixed
 
