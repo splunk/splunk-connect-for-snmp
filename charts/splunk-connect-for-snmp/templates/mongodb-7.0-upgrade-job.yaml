@@ -10,10 +10,8 @@ metadata:
   name: mongo-fcv-upgrade-to-7
   annotations:
     "helm.sh/hook": pre-upgrade
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
 spec:
   backoffLimit: 1
-  ttlSecondsAfterFinished: 60
   template:
     spec:
       containers:
