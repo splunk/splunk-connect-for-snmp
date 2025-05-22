@@ -3,7 +3,8 @@
 Poller is a service which is responsible for querying 
 SNMP devices using the SNMP GET and WALK functionalities. Poller executes two main types of tasks:
 
-- The Walk task executes SNMP walk. SNMP walk is an SNMP application that uses SNMP GETNEXT requests to 
+
+- The Walk task executes SNMP walk. SNMP walk is an SNMP application that uses SNMP GETBULK requests to 
 collect SNMP data from the network and infrastructure of SNMP-enabled devices, such as switches and routers. It is a time-consuming task,
 which may overload the SNMP device when executed too often. It is used by the SC4SNMP to collect and push all OID values, which the provided ACL has access to. 
   
@@ -40,6 +41,33 @@ The default value is `INFO`.
 
 ### Define usernameSecrets
 Secrets are required to run SNMPv3 polling. To add v3 authentication details, create the k8s Secret object: [SNMPv3 Configuration](snmpv3-configuration.md), and put its name in `poller.usernameSecrets`.
+
+
+### Define maxRepetitions
+The maxRepetitions is a parameter used in SNMP GetBulk call. It is responsible for controlling the
+amount of variables in one request. 
+```yaml
+poller:
+  maxRepetitions: 10
+```
+`maxRepetitions` variable is the amount of requested next oids in response for each of varbinds in one request sent.
+
+For example:
+
+The configured variables:
+```yaml
+poller:
+  maxRepetitions: 2
+```
+The requested varbinds in one getBulk call:
+```
+IP-MIB.ipNetToMediaNetAddress
+```
+
+[![PDU Request Example](../../images/request_pdu_flow.png)](../../images/request_pdu_flow.png)
+
+After third ResponsePDU the returned oids are out of scope for requested table, so the call is stopped. 
+It can be spotted on diagram that response for `IP-MIB.ipNetToMediaNetAddress` includes 2 oids as `maxRepetition` was set to 3.
 
 ### Append OID index part to the metrics
 
