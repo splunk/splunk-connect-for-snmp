@@ -67,14 +67,9 @@ jobs:
         with:
           images: ghcr.io/splunk/splunk-connect-for-snmp/improved-polling
           tags: |
-            type=semver,pattern=v{{major}}.{{minor}}
-            type=semver,pattern=v{{major}}
-            type=semver,pattern=v{{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=semver,pattern={{version}}
-            type=ref,event=branch
-            type=ref,event=pr
+            type=raw,value=latest
+            type=sha
+            type=schedule,pattern={{date 'YYYYMMDD'}}
       - name: Build and push action
         id: docker_action_build
         uses: docker/build-push-action@v6
