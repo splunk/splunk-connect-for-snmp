@@ -65,7 +65,7 @@ jobs:
         id: docker_meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/splunk/splunk-connect-for-snmp/improved-polling-time
+          images: ghcr.io/splunk/splunk-connect-for-snmp/improved-polling
           tags: |
             type=semver,pattern=v{{major}}.{{minor}}
             type=semver,pattern=v{{major}}
@@ -85,18 +85,3 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
           cache-to: type=inline
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "14"
-      - name: Semantic Release
-        id: version
-        uses: splunk/semantic-release-action@v1.3.9
-        with:
-          git_committer_name: ${{ secrets.SA_GH_USER_NAME }}
-          git_committer_email: ${{ secrets.SA_GH_USER_EMAIL }}
-          gpg_private_key: ${{ secrets.SA_GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SA_GPG_PASSPHRASE }}
-          extra_plugins: |
-            @google/semantic-release-replace-plugin@1.2.7
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN_ADMIN }}
