@@ -65,7 +65,7 @@ IP-MIB.ipNetToMediaNetAddress
 [![PDU Request Example](../../images/request_pdu_flow.png)](../../images/request_pdu_flow.png)
 
 After third ResponsePDU the returned oids are out of scope for requested table, so the call is stopped. 
-It can be spotted on diagram that response for `IP-MIB.ipNetToMediaNetAddress` includes 2 oids as `maxRepetition` was set to 3.
+It can be spotted on diagram that response for `IP-MIB.ipNetToMediaNetAddress` includes 2 oids as `maxRepetition` was set to 2.
 
 ### Define usernameSecrets
 Secrets are required to run SNMPv3 polling. To add v3 authentication details, create the k8s Secret object: [SNMPv3 Configuration](snmpv3-configuration.md), and put its name in `poller.usernameSecrets`.
