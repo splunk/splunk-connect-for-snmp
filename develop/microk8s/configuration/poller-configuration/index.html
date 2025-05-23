@@ -954,6 +954,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#define-maxrepetitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Define maxRepetitions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#define-usernamesecrets" class="md-nav__link">
     <span class="md-ellipsis">
       Define usernameSecrets
@@ -1934,6 +1943,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#define-maxrepetitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Define maxRepetitions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#define-usernamesecrets" class="md-nav__link">
     <span class="md-ellipsis">
       Define usernameSecrets
@@ -2044,6 +2062,28 @@ which may overload the SNMP device when executed too often. It is used by the SC
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">¶</a></h3>
 <p>The log level for poller can be set by changing the value for the key <code>logLevel</code>. The allowed values are: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>, <code>CRITICAL</code> or <code>FATAL</code>. 
 The default value is <code>INFO</code>.</p>
+<h3 id="define-maxrepetitions">Define maxRepetitions<a class="headerlink" href="#define-maxrepetitions" title="Permanent link">¶</a></h3>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Released only in improved polling package.</p>
+</div>
+<p>The maxRepetitions is a parameter used in SNMP GetBulk call. It is responsible for controlling the
+amount of variables in one request. 
+</p><div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">maxRepetitions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+</code></pre></div>
+<code>maxRepetitions</code> variable is the amount of requested next oids in response for each of varbinds in one request sent.
+<p>For example:</p>
+<p>The configured variables:
+</p><div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">maxRepetitions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</code></pre></div>
+The requested varbinds in one getBulk call:
+<div class="highlight"><pre><span></span><code>IP-MIB.ipNetToMediaNetAddress
+</code></pre></div>
+<p><a href="../../../images/request_pdu_flow.png"><img alt="PDU Request Example" src="../../../images/request_pdu_flow.png"></a></p>
+<p>After third ResponsePDU the returned oids are out of scope for requested table, so the call is stopped. 
+It can be spotted on diagram that response for <code>IP-MIB.ipNetToMediaNetAddress</code> includes 2 oids as <code>maxRepetition</code> was set to 2.</p>
 <h3 id="define-usernamesecrets">Define usernameSecrets<a class="headerlink" href="#define-usernamesecrets" title="Permanent link">¶</a></h3>
 <p>Secrets are required to run SNMPv3 polling. To add v3 authentication details, create the k8s Secret object: <a href="../snmpv3-configuration/">SNMPv3 Configuration</a>, and put its name in <code>poller.usernameSecrets</code>.</p>
 <h3 id="append-oid-index-part-to-the-metrics">Append OID index part to the metrics<a class="headerlink" href="#append-oid-index-part-to-the-metrics" title="Permanent link">¶</a></h3>
