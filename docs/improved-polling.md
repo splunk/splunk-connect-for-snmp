@@ -7,20 +7,20 @@ Your feedback during this phase is crucial in refining and optimizing and can be
 To get started, the zip file with helm chart must be downloaded. It can be found on [feat/improve-polling-time](https://github.com/splunk/splunk-connect-for-snmp/pull/976/checks) branch.
 
 On the left-hand side click `create-charts-zip`:
-![Workflows](../images/improved-polling-tmp/actions-view.png)
+![Workflows](./images/improved-polling-tmp/actions-view.png)
 
 <hr style="border:2px solid">
 
 At the bottom of the page in the `Artifacts` section there will be 
 `charts` package. Download it and unzip it in your environment.
 
-![Workflows](../images/improved-polling-tmp/charts-zip-view.png)
+![Workflows](./images/improved-polling-tmp/charts-zip-view.png)
 
 In `values.yaml` set the following image settings:
 
 ```yaml
 image:
-  repository: ghcr.io/splunk/splunk-connect-for-snmp/improved-polling-time
+  repository: ghcr.io/splunk/splunk-connect-for-snmp/improved-polling
   tag: "latest"
 ```
 
@@ -36,7 +36,7 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 
 In order to use this beta release, `splunk-connect-for-snmp/splunk-connect-for-snmp` needs to be changed to the path of the `charts/splunk-connect-for-snmp` directory. 
 
-To learn how the new improved polling works, refer to the documentation [Poller Configuration - Define maxRepetitions](https://github.com/splunk/splunk-connect-for-snmp/blob/feat/improve-polling-time/docs/configuration/poller-configuration.md#define-maxrepetitions) 
+To learn how the new improved polling works, refer to the documentation [Poller Configuration - Define maxRepetitions](./microk8s/configuration/poller-configuration.md#define-maxrepetitions) 
 for instructions.
 
 Your involvement in testing new polling support is pivotal, and we look forward to hearing about your experiences.
