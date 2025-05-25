@@ -40,6 +40,8 @@ from splunk_connect_for_snmp.common.inventory_processor import (
 )
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.schema_migration import migrate_database
+from splunk_connect_for_snmp.poller import app
+from celery.schedules import schedule
 
 with suppress(ImportError, OSError):
     from dotenv import load_dotenv
@@ -164,6 +166,23 @@ def assign_inventory_values(inventory_ui_collection):
         inventory_ui_collection.insert_many(all_inventory_lines)
 
 
+def register_autodiscovery_task(periodic_obj):
+    autodiscovery_config = {
+        "name": "sc4snmp;autodiscover;900;discovery",
+        "task": "splunk_connect_for_snmp.discovery.tasks.autodiscover",
+        "schedule": schedule(run_every=300),
+        "args": [],
+        "kwargs": {},
+        "app": app,
+        "options": {
+            "queue": "autodiscover",
+            "priority": 3,
+            "expires": 60,
+        }
+    }
+    periodic_obj.manage_task(**autodiscovery_config)
+
+
 def load():
     inventory_errors = False
     # DB managers initialization
@@ -195,6 +214,7 @@ def load():
     inventory_processor = InventoryProcessor(
         groups_manager, logger, inventory_ui_collection
     )
+    register_autodiscovery_task(periodic_obj)
     inventory_record_manager = InventoryRecordManager(
         mongo_client, periodic_obj, logger
     )
