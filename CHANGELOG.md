@@ -5,6 +5,7 @@
 ### Changed
 - change redis service name workers call from redis-headless to redis-master
 - migrate MongoDB subchart to 15.6.26
+- update MongoDB docker image to 7.0.14 for SC4SNMP docker installation
 
 ### Fixed
 
