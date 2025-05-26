@@ -7,6 +7,7 @@
 - migrate MongoDB subchart to 15.6.26
 
 ### Fixed
+- Ensured `.Vaues.secret.name` is used during secret creation to prevent mismatched secret references in deployments
 
 
 ## [1.12.2]
