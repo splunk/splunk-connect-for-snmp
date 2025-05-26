@@ -8,6 +8,7 @@
 - update MongoDB docker image to 7.0.14 for SC4SNMP docker installation
 
 ### Fixed
+- Ensured `.Vaues.secret.name` is used during secret creation to prevent mismatched secret references in deployments
 
 
 ## [1.12.2]
