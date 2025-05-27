@@ -7,6 +7,10 @@ wait-for-dep "${CELERY_BROKER_URL}" "${REDIS_URL}" "${MONGO_URI}" "${MIB_INDEX}"
 
 case $1 in
 
+autodiscovery)
+    autodiscovery-loader
+    ;;
+
 inventory)
     inventory-loader
     ;;
