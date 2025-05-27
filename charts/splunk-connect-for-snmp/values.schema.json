@@ -746,6 +746,9 @@
             },
             "nodePort": {
               "type": "integer"
+            },
+            "externalTrafficPolicy": {
+              "type": "string"
             }
           }
         },
