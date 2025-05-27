@@ -9,6 +9,7 @@
 
 ### Fixed
 - Ensured `.Vaues.secret.name` is used during secret creation to prevent mismatched secret references in deployments
+- lack of `externalTrafficPolicy` in `values.schema.json`
 
 
 ## [1.12.2]
