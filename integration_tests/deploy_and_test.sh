@@ -91,7 +91,7 @@ deploy_poetry() {
   poetry install
   poetry add -D splunk-sdk
   poetry add -D splunklib
-  poetry add -D pysnmplib
+  poetry add -D pysnmp
 }
 
 run_integration_tests() {
