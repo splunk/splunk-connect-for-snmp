@@ -1,8 +1,8 @@
 def load():
     print("Load autodiscovery task in redbeat")
-    return 1
+    return 0
 
 if __name__ == "__main__":
     r = load()
     if r:
-        sys.exit(1)
+        sys.exit(0)

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name:
+  name: snmp-autodiscovery-loader
 spec:
   template:
     spec:
@@ -11,19 +11,4 @@ spec:
           imagePullPolicy: Never
           args:
               ["autodiscovery"]
-          volumeMounts:
-            - name: config
-              mountPath: "/app/config"
-              readOnly: true
-
-      volumes:
-        # You set volumes at the Pod level, then mount them into containers inside that Pod
-        - name: config
-          configMap:
-            # Provide the name of the ConfigMap you want to mount.
-            name: snmp-config
-            # An array of keys from the ConfigMap to create as files
-            items:
-              - key: "config.yaml"
-                path: "config.yaml"
       restartPolicy: OnFailure
