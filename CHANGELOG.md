@@ -8,8 +8,9 @@
 - update MongoDB docker image to 7.0.14 for SC4SNMP docker installation
 
 ### Fixed
-- Ensured `.Vaues.secret.name` is used during secret creation to prevent mismatched secret references in deployments
+- Ensured `.Values.secret.name` is used during secret creation to prevent mismatched secret references in deployments
 - lack of `externalTrafficPolicy` in `values.schema.json`
+- update `mibserver` to 1.15.21 to fix problems with rendering pvc in case of local mibs compilation
 
 
 ## [1.12.2]
