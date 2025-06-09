@@ -105,11 +105,11 @@ Return full image for thr UI back end.
 {{- end }}
 
 {{- define "splunk-connect-for-snmp-ui.celery_url" -}}
-{{- printf "redis://%s-redis-headless:6379/2" .Release.Name }}
+{{- printf "redis://%s-redis-master:6379/2" .Release.Name }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp-ui.redis_url" -}}
-{{- printf "redis://%s-redis-headless:6379/3" .Release.Name }}
+{{- printf "redis://%s-redis-master:6379/3" .Release.Name }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp-ui.hostMountPath" -}}

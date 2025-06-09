@@ -25,13 +25,13 @@ spec:
         - name: MONGO_URI
           value: mongodb://release-name-mongodb:27017
         - name: REDIS_URL
-          value: redis://release-name-redis-headless:6379/3
+          value: redis://release-name-redis-master:6379/3
         - name: JOB_CONFIG_PATH
           value: /config/job_config.yaml
         - name: JOB_NAMESPACE
           value: sc4snmp
         - name: CELERY_BROKER_URL
-          value: redis://release-name-redis-headless:6379/2
+          value: redis://release-name-redis-master:6379/2
         - name: VALUES_DIRECTORY
           value: /var/values_dir
         ports:

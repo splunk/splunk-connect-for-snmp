@@ -136,8 +136,8 @@ microk8s kubectl logs -f snmp-splunk-connect-for-snmp-inventory-g4bs7  -n sc4snm
 See the following example output:
 
 ```yaml
-Successfully connected to redis://snmp-redis-headless:6379/0
-Successfully connected to redis://snmp-redis-headless:6379/1
+Successfully connected to redis://snmp-redis-master:6379/0
+Successfully connected to redis://snmp-redis-master:6379/1
 Successfully connected to mongodb://snmp-mongodb:27017
 Successfully connected to http://snmp-mibserver/index.csv
 {"message": "Loading inventory from /app/inventory/inventory.csv", "time": "2022-09-05T14:30:30.605420", "level": "INFO"}

@@ -36,11 +36,11 @@ data:
               - name: CONFIG_PATH
                 value: /app/config/config.yaml
               - name: REDIS_URL
-                value: redis://release-name-redis-headless:6379/1
+                value: redis://release-name-redis-master:6379/1
               - name: INVENTORY_PATH
                 value: /app/inventory/inventory.csv
               - name: CELERY_BROKER_URL
-                value: redis://release-name-redis-headless:6379/0
+                value: redis://release-name-redis-master:6379/0
               - name: MONGO_URI
                 value: mongodb://release-name-mongodb:27017
               - name: MIB_SOURCES
