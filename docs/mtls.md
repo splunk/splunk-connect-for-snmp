@@ -12,7 +12,7 @@ Mutual TLS (mTLS) is an extension of the standard TLS protocol that provides mut
 ## How to setup Splunk
 
 !!! info
-    if you using Splunk Cloud please contact to administrator to setup mTLS
+    If you are using Splunk Cloud, reach out to your administrator to configure mutual TLS (mTLS).
 
 1. Ensure that client and server mTLS certificates are already prepared
 
