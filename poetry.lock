@@ -725,13 +725,13 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "json-log-formatter"
-version = "0.5.2"
+version = "1.1.1"
 description = "JSON log formatter"
 optional = false
-python-versions = ">=2.7"
+python-versions = ">=3.6"
 groups = ["main"]
 files = [
-    {file = "JSON-log-formatter-0.5.2.tar.gz", hash = "sha256:7b191ae4056468baf2b7445c5ce651bd9ee6b76b4162a479a7d85db6ae029f2d"},
+    {file = "json_log_formatter-1.1.1.tar.gz", hash = "sha256:0815e3b4469e5c79cf3f6dc8a0613ba6601f4a7464f85ba03655cfa6e3e17d10"},
 ]
 
 [[package]]
@@ -2678,4 +2678,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.8,<3.12"
-content-hash = "e0d7310d84b21cc4d70e2af6162cf0d82a73a527eaabee82d031f8fbee193aeb"
+content-hash = "30c1b5db253844d10da7a9ac63dd3dba3dc612d14b7e3d0707347f400e768184"
