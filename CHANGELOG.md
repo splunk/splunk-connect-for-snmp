@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- implemented mTLS for Splunk 10
 
 ### Fixed
 

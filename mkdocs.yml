@@ -17,6 +17,8 @@ markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.blocks.tab:
+      alternate_style: true
 
 plugins:
   - search:
@@ -96,6 +98,7 @@ nav:
   - Releases: "releases.md"
   - Request MIB: "mib-request.md"
   - Security: "security.md"
+  - mTLS: "mtls.md"
   - Troubleshooting:
       - Accessing and configuring logs: "troubleshooting/configuring-logs.md"
       - Docker commands: "troubleshooting/docker-commands.md"

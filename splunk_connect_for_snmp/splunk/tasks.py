@@ -37,6 +37,9 @@ SPLUNK_HEC_SCHEME = os.getenv("SPLUNK_HEC_SCHEME", "https")
 SPLUNK_HEC_HOST = os.getenv("SPLUNK_HEC_HOST", "127.0.0.1")
 SPLUNK_HEC_PORT = os.getenv("SPLUNK_HEC_PORT", None)
 SPLUNK_HEC_PATH = os.getenv("SPLUNK_HEC_PATH", "services/collector")
+SPLUNK_HEC_MTLS_CLIENT_CERT = os.getenv("SPLUNK_HEC_MTLS_CLIENT_CERT", None)
+SPLUNK_HEC_MTLS_CLIENT_KEY = os.getenv("SPLUNK_HEC_MTLS_CLIENT_KEY", None)
+SPLUNK_HEC_MTLS_CA_CERT = os.getenv("SPLUNK_HEC_MTLS_CA_CERT", None)
 METRICS_INDEXING_ENABLED = human_bool(os.getenv("METRICS_INDEXING_ENABLED", "false"))
 
 url = {
@@ -101,9 +104,30 @@ SPLUNK_AGGREGATE_TRAPS_EVENTS = human_bool(
 class HECTask(Task):
     def __init__(self):
         self.session = Session()
-        self.session.verify = SPLUNK_HEC_TLSVERIFY
+
+        # if we have CA cert for verifacation and we are not under insecureSSL mode
+        if (
+            SPLUNK_HEC_MTLS_CA_CERT is not None
+            and os.path.exists(SPLUNK_HEC_MTLS_CA_CERT)
+            and SPLUNK_HEC_TLSVERIFY
+        ):
+            self.session.verify = SPLUNK_HEC_MTLS_CA_CERT
+        else:
+            self.session.verify = SPLUNK_HEC_TLSVERIFY
+
         self.session.headers = SPLUNK_HEC_HEADERS
         self.session.logger = logger
+
+        if (
+            SPLUNK_HEC_MTLS_CLIENT_CERT is not None
+            and SPLUNK_HEC_MTLS_CLIENT_KEY is not None
+            and os.path.exists(SPLUNK_HEC_MTLS_CLIENT_CERT)
+            and os.path.exists(SPLUNK_HEC_MTLS_CLIENT_KEY)
+        ):
+            self.session.cert = (
+                SPLUNK_HEC_MTLS_CLIENT_CERT,
+                SPLUNK_HEC_MTLS_CLIENT_KEY,
+            )
 
 
 class PrepareTask(Task):
