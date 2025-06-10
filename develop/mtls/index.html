@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../dashboard/">
+        <link rel="prev" href="../security/">
       
       
-        <link rel="next" href="../mib-request/">
+        <link rel="next" href="../troubleshooting/configuring-logs/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Releases - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>mTLS - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#base-information" class="md-skip">
+        <a href="#mtls" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Releases
+              mTLS
             
           </span>
         </div>
@@ -1644,32 +1644,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Releases
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../releases/" class="md-nav__link">
         
   
   
@@ -1680,53 +1658,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#known-issues" class="md-nav__link">
-    <span class="md-ellipsis">
-      Known Issues
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#open-issues-to-the-product" class="md-nav__link">
-    <span class="md-ellipsis">
-      Open issues to the product
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#releases" class="md-nav__link">
-    <span class="md-ellipsis">
-      Releases
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1779,10 +1710,32 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../mtls/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    mTLS
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1793,6 +1746,62 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#intro" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intro
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-setup-splunk" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to setup Splunk
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-setup-sc4snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to setup SC4SNMP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2007,27 +2016,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#known-issues" class="md-nav__link">
+  <a href="#intro" class="md-nav__link">
     <span class="md-ellipsis">
-      Known Issues
+      Intro
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#open-issues-to-the-product" class="md-nav__link">
+  <a href="#how-to-setup-splunk" class="md-nav__link">
     <span class="md-ellipsis">
-      Open issues to the product
+      How to setup Splunk
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#releases" class="md-nav__link">
+  <a href="#how-to-setup-sc4snmp" class="md-nav__link">
     <span class="md-ellipsis">
-      Releases
+      How to setup SC4SNMP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
     </span>
   </a>
   
@@ -2049,14 +2067,124 @@
 
 
 
-<div><h1 id="base-information">Base Information<a class="headerlink" href="#base-information" title="Permanent link">¶</a></h1>
-<h2 id="known-issues">Known Issues<a class="headerlink" href="#known-issues" title="Permanent link">¶</a></h2>
-<p>The list of open known issues is available under <a href="https://github.com/splunk/splunk-connect-for-snmp/issues?q=is%3Aopen+is%3Aissue+label%3A%22known+issue%22">Known issue link</a>.</p>
-<h2 id="open-issues-to-the-product">Open issues to the product<a class="headerlink" href="#open-issues-to-the-product" title="Permanent link">¶</a></h2>
-<p>To open an issue for Splunk Connect for SNMP, go to the <a href="https://github.com/splunk/splunk-connect-for-snmp/issues">github SC4SNMP</a>
-project and open an issue.   </p>
-<h2 id="releases">Releases<a class="headerlink" href="#releases" title="Permanent link">¶</a></h2>
-<p>To check Splunk Connect for SNMP releases, see: <a href="https://github.com/splunk/splunk-connect-for-snmp/releases">SC4SNMP Releases</a></p></div>
+<div><h1 id="mtls">mTLS<a class="headerlink" href="#mtls" title="Permanent link">¶</a></h1>
+<h2 id="intro">Intro<a class="headerlink" href="#intro" title="Permanent link">¶</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>mTLS encryption support is available beginning with Splunk 10</p>
+</div>
+<p>Mutual TLS (mTLS) is an extension of the standard TLS protocol that provides mutual authentication between a client and a server. While TLS typically ensures that the client can verify the server’s identity, mTLS requires both parties to verify each other’s identities using digital certificates. In our case client is SC4SNMP and server is Splunk.</p>
+<h2 id="how-to-setup-splunk">How to setup Splunk<a class="headerlink" href="#how-to-setup-splunk" title="Permanent link">¶</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If you are using Splunk Cloud, reach out to your administrator to configure mutual TLS (mTLS).</p>
+</div>
+<ol>
+<li>
+<p>Ensure that client and server mTLS certificates are already prepared</p>
+</li>
+<li>
+<p>Update <code>$SPLUNK_HOME/etc/system/local/server.conf</code>:</p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><code>[sslConfig]
+requireClientCert = true
+[kvstore]
+hostnameOption = fullyqualifiedname
+</code></pre></div>
+<ol start="3">
+<li>Update <code>$SPLUNK_HOME/etc/system/local/web.conf</code>:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>[settings]
+sslPassword = password
+sslRootCAPath = cacert.pem
+enableSplunkWebSSL = true
+</code></pre></div>
+<ol start="4">
+<li>Restart Splunk:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>$SPLUNK_HOME/bin/splunk restart
+</code></pre></div>
+<h2 id="how-to-setup-sc4snmp">How to setup SC4SNMP<a class="headerlink" href="#how-to-setup-sc4snmp" title="Permanent link">¶</a></h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker-compose</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<ol>
+<li>Add your <strong>client</strong> mTLS certificates to secrets:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>microk8s kubectl create secret generic mtls -n sc4snmp \
+  --from-file=client.crt=./client.crt \
+  --from-file=client.key=./client.key \
+  --from-file=cacert.pem=./cacert.pem
+</code></pre></div>
+<ol start="2">
+<li>Use https protocol to communicate with Splunk. To enforce this, set the <code>splunk.protocol</code> variable in the configuration file values.yaml:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>splunk:
+    protocol: "https"
+</code></pre></div>
+<ol start="3">
+<li>Add <code>mtls</code> section and provide your secret with certificates inside. To do this, update the <code>values.yaml</code> file under the splunk section as shown below:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>splunk:
+    mtls:
+        enabled: true
+        secretRef: "mtls"
+</code></pre></div>
+<ol start="4">
+<li>Redeploy SC4SNMP</li>
+</ol>
+</div>
+<div class="tabbed-block">
+<ol>
+<li>Add your <strong>client</strong> mTLS certificates to secrets. To do this, update the docker-compose.yaml file by adding the following section at the end:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>secrets:
+  cert:
+    file: client.crt
+  key:
+    file: client.key
+  ca:
+    file: cacert.pem
+</code></pre></div>
+<ol start="2">
+<li>To provide the certificates to the <code>worker-sender</code> service, update its definition in the <code>docker-compose.yaml</code> file as shown below:</li>
+</ol>
+<p></p><div class="highlight"><pre><span></span><code>worker-sender:
+    environment:
+        SPLUNK_HEC_MTLS_CLIENT_CERT: /run/secrets/cert
+        SPLUNK_HEC_MTLS_CLIENT_KEY: /run/secrets/key
+        SPLUNK_HEC_MTLS_CA_CERT: /run/secrets/ca
+    secrets:
+        - cert
+        - key
+        - ca
+</code></pre></div>
+3. Use https protocol to communicate with Splunk. To enforce this, set the <code>SPLUNK_HEC_PROTOCOL</code> variable in the configuration file <code>.env</code>:
+<div class="highlight"><pre><span></span><code>SPLUNK_HEC_PROTOCOL=https
+</code></pre></div>
+<ol start="4">
+<li>Redeploy SC4SNMP</li>
+</ol>
+</div>
+</div>
+</div>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">¶</a></h2>
+<ol>
+<li>Double-check that the mTLS certificates you are using are valid. To do this, send a test log message using <code>curl</code> in verbose mode, which can help identify any issues with the certificates:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>curl -k https://${HEC_URL} \
+  -H "Authorization: Splunk ${HEC_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{"event": "Hello", "sourcetype": "manual", "host": "myhost", "source": "myapp"}' \
+  --cert client.crt \
+  --key client.key \
+  --cacert cacert.pem \
+  -vvv
+</code></pre></div>
+<ol start="2">
+<li>Check logs of <code>worker-sender</code>. Refer to the instructions on how to configure logs for <code>kubernetes</code> or <code>docker</code> deployment.</li>
+</ol></div>
 
 
 
