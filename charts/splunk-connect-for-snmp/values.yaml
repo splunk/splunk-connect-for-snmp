@@ -571,3 +571,5 @@ redis:
   auth:
     enabled: false
 commonAnnotations: {}
+discovery:
+  enabled: false
