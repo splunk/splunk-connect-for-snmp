@@ -1,0 +1,54 @@
+{{- if eq (include "splunk-connect-for-snmp.discovery.enable" .) "true" }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "splunk-connect-for-snmp.discovery.fullname" . }}
+  labels:
+    {{- include "splunk-connect-for-snmp.discovery.labels" . | nindent 4 }}
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      # {{- with .Values.inventory.podAnnotations }}
+      # annotations:      
+      #   {{- toYaml . | nindent 8 }}
+      # {{- end }}
+
+      labels:
+        {{- include "splunk-connect-for-snmp.discovery.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-discovery
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+              ["discovery"]
+          env:
+          - name: REDIS_URL
+            value: {{ include "splunk-connect-for-snmp.redis_url" . }}
+          - name: DISCOVERY_CONFIG_PATH
+            value: /app/discovery/discovery-config.yaml
+          volumeMounts:
+            - name: discovery-config
+              mountPath: "/app/discovery"
+              readOnly: true
+            - name: tmp
+              mountPath: "/tmp/"
+              readOnly: false
+
+      volumes:
+        # # You set volumes at the Pod level, then mount them into containers inside that Pod
+        - name: discovery-config
+          configMap:
+            name: {{ include "splunk-connect-for-snmp.name" . }}-discovery-config
+            items:
+              - key: "discovery-config.yaml"
+                path: "discovery-config.yaml"
+        - name: tmp
+          emptyDir: {}
+      restartPolicy: OnFailure
+{{- end -}}

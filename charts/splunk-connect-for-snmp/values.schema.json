@@ -10,7 +10,8 @@
     "poller",
     "worker",
     "inventory",
-    "traps"
+    "traps",
+    "discovery"
   ],
   "title": "Values",
   "additionalProperties": false,
@@ -876,6 +877,76 @@
             },
             "tag": {
               "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "autodiscovery": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^discovery_\\d+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "frequency": {
+                  "type": "integer"
+                },
+                "skip_port_check": {
+                  "type": "boolean"
+                },
+                "delete_already_discovered": {
+                  "type": "boolean"
+                },
+                "network_address": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string",
+                  "enum": ["1", "2c", "3"]
+                },
+                "secret": {
+                  "type": ["string", "null"]
+                },
+                "community": {
+                  "type": ["string", "null"]
+                },
+                "port": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 65535
+                },
+                "device_rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "patterns": {
+                        "type": "string"
+                      },
+                      "group": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "patterns",
+                      "group"
+                    ]
+                  }
+                }
+              }
             }
           }
         }
