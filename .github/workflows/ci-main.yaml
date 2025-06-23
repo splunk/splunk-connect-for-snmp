@@ -168,7 +168,7 @@ jobs:
           python-version: "3.10"
       - name: run install_microk8s.sh
         run: |
-          sudo snap install microk8s --classic --channel=1.30/stable
+          sudo snap install microk8s --classic --channel=1.33/stable
           sudo apt-get install snmp -y
           sudo apt-get install python3-dev -y
       - name: run automatic_setup_microk8s.sh
