@@ -72,7 +72,7 @@ jobs:
 
       - name: install microk8s
         run: |
-          sudo snap install microk8s --classic --channel=1.30/stable
+          sudo snap install microk8s --classic --channel=1.33/stable
           sudo apt-get install snmp -y
           sudo apt-get install python3-dev -y
 

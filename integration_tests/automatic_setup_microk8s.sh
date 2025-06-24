@@ -110,7 +110,7 @@ sudo docker run -d -p 1165:161/udp tandrup/snmpsim
 sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
 sudo microk8s enable helm3
-sudo microk8s enable storage
+sudo microk8s enable hostpath-storage
 sudo microk8s enable dns
 sudo microk8s enable rbac
 sudo microk8s enable community
