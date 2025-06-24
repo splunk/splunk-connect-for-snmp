@@ -35,7 +35,7 @@ microk8s start
 ```
 
 ## Metallb
-As of version `1.30` of microk8s, Metallb add-on does not support passing the IPv6 addresses in enable command. To 
+As of version `1.33` of microk8s, Metallb add-on does not support passing the IPv6 addresses in enable command. To 
 add the IPv6 addresses to your Metallb configuration, you can prepare the yaml file with configuration like below:
 ```
 # addresspool.yaml
