@@ -252,6 +252,47 @@ services:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
     - worker-flower-pysnmp-cache-volume:/.pysnmp/:rw
     - worker-flower-tmp:/tmp/:rw
+  discovery:
+    <<: [ *dns_and_networks, *dependency_and_restart_policy ]
+    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    container_name: sc4snmp-discovery
+    command: [ discovery ]
+    environment:
+      <<: *general_sc4snmp_data
+      LOG_LEVEL: ${DISCOVERY_LOG_LEVEL:-INFO}
+      CHAIN_OF_TASKS_EXPIRY_TIME: ${CHAIN_OF_TASKS_EXPIRY_TIME:-500}
+      CONFIG_FROM_MONGO: ${CONFIG_FROM_MONGO:-false}
+    volumes:
+      - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
+      - ${DISCOVERY_FILE_ABSOLUTE_PATH}:/app/discovery/discovery-config.yaml:ro
+      - discovery-pysnmp-cache-volume:/.pysnmp/:rw
+      - discovery-tmp:/tmp/:rw
+  worker-discovery:
+    <<: [ *dns_and_networks, *dependency_and_restart_policy ]
+    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    command:
+      - celery
+      - worker-discovery
+    deploy:
+      mode: replicated
+      replicas: ${WORKER_DISCOVERY_REPLICAS:-2}
+      resources:
+        limits:
+          cpus: ${WORKER_DISCOVERY_CPU_LIMIT:-0.50}
+          memory: ${WORKER_DISCOVERY_MEMORY_LIMIT:-500M}
+        reservations:
+          cpus: ${WORKER_DISCOVERY_CPU_RESERVATIONS:-0.25}
+          memory: ${WORKER_DISCOVERY_MEMORY_RESERVATIONS:-250M}
+    environment:
+      <<: [ *general_sc4snmp_data, *splunk_general_setup, *splunk_extended_setup,
+            *pysnmp_debug, *ipv6 ]
+      WORKER_CONCURRENCY: ${WORKER_DISCOVERY_CONCURRENCY:-1}
+      SC4SNMP_VERSION: ${SC4SNMP_VERSION:-latest}
+      LOG_LEVEL: ${WORKER_LOG_LEVEL:-INFO}
+    volumes:
+      - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
+      - worker-discovery-pysnmp-cache-volume:/.pysnmp/:rw
+      - worker-discovery-tmp:/tmp/:rw
 volumes:
   snmp-mibserver-tmp:
   inventory-tmp:
@@ -268,3 +309,7 @@ volumes:
   worker-trap-pysnmp-cache-volume:
   worker-flower-tmp:
   worker-flower-pysnmp-cache-volume:
+  discovery-pysnmp-cache-volume:
+  discovery-tmp:
+  worker-discovery-pysnmp-cache-volume:
+  worker-discovery-tmp:
