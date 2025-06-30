@@ -286,7 +286,7 @@ services:
     environment:
       <<: [ *general_sc4snmp_data, *splunk_general_setup, *splunk_extended_setup,
             *pysnmp_debug, *ipv6 ]
-      WORKER_CONCURRENCY: ${WORKER_DISCOVERY_CONCURRENCY:-2}
+      WORKER_CONCURRENCY: ${WORKER_DISCOVERY_CONCURRENCY:-1}
       SC4SNMP_VERSION: ${SC4SNMP_VERSION:-latest}
       LOG_LEVEL: ${WORKER_LOG_LEVEL:-INFO}
     volumes:
