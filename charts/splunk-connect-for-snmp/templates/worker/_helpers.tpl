@@ -95,6 +95,8 @@ Common labels
   value: {{ include "splunk-connect-for-snmp.redis_url" . }}
 - name: SC4SNMP_VERSION
   value: {{ .Chart.Version | default "0.0.0" }}
+- name: SC4SNMP_RUNTIME
+  value: k8s
 - name: CELERY_BROKER_URL
   value: {{ include "splunk-connect-for-snmp.celery_url" . }}
 - name: MONGO_URI

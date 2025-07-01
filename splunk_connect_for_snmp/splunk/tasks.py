@@ -91,6 +91,7 @@ if SPLUNK_HEC_TOKEN:
         "Authorization": f"Splunk {SPLUNK_HEC_TOKEN}",
         "__splunk_app_name": "sc4snmp",
         "__splunk_app_version": SC4SNMP_VERSION,
+        "__splunk_app_runtime": os.getenv("SC4SNMP_RUNTIME", "docker"),
     }
 else:
     SPLUNK_HEC_HEADERS = {}
