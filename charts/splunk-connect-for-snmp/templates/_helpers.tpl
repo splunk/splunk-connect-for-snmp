@@ -1,8 +1,16 @@
 {{- define "splunk-connect-for-snmp.mongo_uri" -}}
 {{- if eq .Values.mongodb.architecture "replicaset" }}
+{{- if .Values.mongodb.auth.enabled }}
+{{- printf "mongodb+srv://%s:%s@%s-mongodb-headless.%s.svc.%s/?tls=false&ssl=false&replicaSet=rs0" .Values.mongodb.auth.rootUser .Values.mongodb.auth.rootPassword .Release.Name .Release.Namespace .Values.mongodb.clusterDomain}}
+{{- else }}
 {{- printf "mongodb+srv://%s-mongodb-headless.%s.svc.%s/?tls=false&ssl=false&replicaSet=rs0" .Release.Name .Release.Namespace .Values.mongodb.clusterDomain}}
+{{- end }}
+{{- else }}
+{{- if .Values.mongodb.auth.enabled }}
+{{- printf "mongodb://%s:%s@%s-mongodb:27017" .Values.mongodb.auth.rootUser .Values.mongodb.auth.rootPassword .Release.Name }}
 {{- else }}
 {{- printf "mongodb://%s-mongodb:27017" .Release.Name }}
+{{- end }}
 {{- end }}  
 {{- end }}  
 
