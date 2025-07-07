@@ -87,6 +87,8 @@ spec:
               value: "true"
             - name: SPLUNK_AGGREGATE_TRAPS_EVENTS
               value: "false"
+            - name: SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE
+              value: "false"
             - name: SPLUNK_HEC_TOKEN
               valueFrom:
                 secretKeyRef:

@@ -242,6 +242,90 @@ class TestPrepare(TestCase):
             result,
         )
 
+    @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE", True)
+    @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
+    def test_prepare_metrics_hyphen_to_underscore(self, m_custom):
+        task_input = {
+            "time": 1234567,
+            "address": "192.168.0.1",
+            "frequency": 15,
+            "result": {
+                "SOME_GROUP_KEY1": {
+                    "indexes": [6],
+                    "metrics": {
+                        "IDRAC-MIB-SMIv2.memoryDeviceTableEntry": {"value": 23},
+                    },
+                    "fields": {
+                        "field_one": {"value": "on"},
+                        "field_two": {"value": "listening"},
+                    },
+                    "profiles": "profile1,profile2",
+                },
+                "SOME_GROUP_KEY2": {
+                    "metrics": {
+                        "IF-MIB.ifInUnknownProtos": {"value": 0},
+                        "IF-MIB.ifLastChange": {"value": 1995499028},
+                    },
+                    "fields": {
+                        "field_three": {"value": "OFF"},
+                        "field_four": {"value": "stopping"},
+                    },
+                    "profiles": "profile1,profile2",
+                },
+            },
+        }
+
+        m_custom.return_value = task_input
+        result = prepare(task_input)
+
+        self.assertEqual("list", type(result["metrics"]).__name__)
+
+        item1 = json.loads(result["metrics"][0])
+        result["metrics"][0] = item1
+
+        item2 = json.loads(result["metrics"][1])
+        result["metrics"][1] = item2
+
+        self.assertEqual(
+            {
+                "metrics": [
+                    {
+                        "time": 1234567,
+                        "event": "metric",
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:metric",
+                        "host": "192.168.0.1",
+                        "index": "test_index_2",
+                        "fields": {
+                            "frequency": 15,
+                            "profiles": "profile1,profile2",
+                            "field_one": "on",
+                            "field_two": "listening",
+                            "metric_name:sc4snmp.IDRAC_MIB_SMIv2.memoryDeviceTableEntry": 23.0
+                        },
+                    },
+                    {
+                        "time": 1234567,
+                        "event": "metric",
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:metric",
+                        "host": "192.168.0.1",
+                        "index": "test_index_2",
+                        "fields": {
+                            "frequency": 15,
+                            "profiles": "profile1,profile2",
+                            "field_three": "OFF",
+                            "field_four": "stopping",
+                            "metric_name:sc4snmp.IF_MIB.ifInUnknownProtos": 0.0,
+                            "metric_name:sc4snmp.IF_MIB.ifLastChange": 1995499028,
+                        },
+                    },
+                ],
+                "events": [],
+            },
+            result,
+        )
+
     @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_metrics_no_indexing(self, m_custom):
         task_input = {
