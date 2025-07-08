@@ -101,19 +101,9 @@ out of this object:
 
 ### Replace "-" with "_" in metrics name
 
-
-When collecting SNMP metrics using SC4SNMP, the default translation of Object Identifiers (OIDs) by pysnmp often results 
-in metric names containing hyphens (e.g., IF-MIB). While this format is natively understood by pysnmp, it can lead to compatibility 
-issues when forwarding these metrics, particularly when integrating with Splunk via the OpenTelemetry (OTel) Collector's Splunk HEC metric endpoint.
-
-The Splunk metric schema, as detailed in the [official Splunk documentation](https://help.splunk.com/en/splunk-enterprise/get-data-in/metrics/9.4/introduction-to-metrics/overview-of-metrics), generally expects metric names to adhere to 
-a specific format that may not accommodate hyphens in certain contexts. Although direct ingestion into Splunk might work, 
-using the [OpenTelemetry Collector Splunk HEC receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/splunkhecreceiver) can expose these naming conflicts, potentially preventing successful 
-data ingestion or proper metric indexing.
-
+There's a known issue with metric names that are not following the Splunk metric schema. Read more [here](../../troubleshooting/general-issues.md#addressing-metric-naming-conflicts-for-splunk-integration).
 To ensure seamless compatibility and avoid potential issues, SC4SNMP provides a configuration option to automatically convert 
 hyphens in metric names to underscores.
-
 
 You can enable this conversion by setting the `splunkMetricNameHyphenToUnderscore` parameter to `true` within the `poller` section of your SC4SNMP configuration:
 
