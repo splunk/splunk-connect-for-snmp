@@ -242,7 +242,10 @@ class TestPrepare(TestCase):
             result,
         )
 
-    @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE", True)
+    @patch(
+        "splunk_connect_for_snmp.splunk.tasks.SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE",
+        True,
+    )
     @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
     def test_prepare_metrics_hyphen_to_underscore(self, m_custom):
         task_input = {
@@ -301,7 +304,7 @@ class TestPrepare(TestCase):
                             "profiles": "profile1,profile2",
                             "field_one": "on",
                             "field_two": "listening",
-                            "metric_name:sc4snmp.IDRAC_MIB_SMIv2.memoryDeviceTableEntry": 23.0
+                            "metric_name:sc4snmp.IDRAC_MIB_SMIv2.memoryDeviceTableEntry": 23.0,
                         },
                     },
                     {
