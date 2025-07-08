@@ -21,7 +21,7 @@ celery)
         celery -A splunk_connect_for_snmp.poller beat -l "$LOG_LEVEL" --max-interval=10
         ;;
     worker-discovery)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q autodiscover --autoscale=8,"$WORKER_CONCURRENCY"
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q discovery --autoscale=8,"$WORKER_CONCURRENCY"
         ;;
     worker-trap)
         celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q traps --autoscale=8,"$WORKER_CONCURRENCY"
