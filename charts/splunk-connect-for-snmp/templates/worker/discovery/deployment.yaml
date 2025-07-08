@@ -40,6 +40,14 @@ spec:
             ]
           env:
             {{- include "environmental-variables" . | nindent 12 }}
+            - name: DISCOVERY_PATH
+              value: /app/discovery/discovery_devices.csv
+            - name: IPv6_ENABLED
+              {{- if .Values.discovery.ipv6Enabled}}
+              value: "true"
+              {{ else }}
+              value: "false"
+              {{- end }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"
@@ -50,6 +58,13 @@ spec:
             - name: tmp
               mountPath: "/tmp/"
               readOnly: false
+            - name: discovery-volume
+              mountPath: /app/discovery
+            {{- range (.Values.discovery).usernameSecrets }}
+            - name: {{ . }}-snmpv3-secrets
+              mountPath: /app/secrets/snmpv3/{{ . }}
+              readOnly: true
+            {{- end }}
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config
@@ -64,4 +79,11 @@ spec:
           emptyDir: {}
         - name: tmp
           emptyDir: {}
+        - name: discovery-volume
+          emptyDir: {}
+        {{- range (.Values.discovery).usernameSecrets }}
+        - name: {{ . }}-snmpv3-secrets
+          secret:
+            secretName: {{ . }}
+        {{- end }}
 {{- end }}

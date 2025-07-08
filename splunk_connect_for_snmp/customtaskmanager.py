@@ -57,6 +57,7 @@ class CustomPeriodicTaskManager:
         if previous_expiry_time is not None and previous_expiry_time != new_expiry_time:
             self.delete_all_walk_tasks()
             self.delete_all_poll_tasks()
+            self.delete_all_discovery_tasks()
             expiry_time_changed = True
         return expiry_time_changed
 
@@ -68,6 +69,11 @@ class CustomPeriodicTaskManager:
     def delete_all_walk_tasks(self):
         self.__delete_all_tasks_of_type(
             "splunk_connect_for_snmp.snmp.tasks.walk", "delete_all_walk_tasks"
+        )
+
+    def delete_all_discovery_tasks(self):
+        self.__delete_all_tasks_of_type(
+            "splunk_connect_for_snmp.discovery.tasks.discovery", "delete_all_discovery_tasks"
         )
 
     def rerun_all_walks(self):

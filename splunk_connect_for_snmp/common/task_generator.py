@@ -132,3 +132,34 @@ class PollTaskGenerator(TaskGenerator):
         if self.schedule_period > 300:
             return True
         return False
+
+class DiscoveryTaskGenerator(TaskGenerator):
+    def __init__(
+        self,
+        discovery_record,
+        app
+    ):
+        super().__init__(target=discovery_record.network_address, schedule_period=discovery_record.frequency, app=app)
+        self.discovery_record = discovery_record
+        self.discovery_name = discovery_record.discovery_name
+        self.DISCOVERY_CHAIN_OF_TASK = {
+            "queue": "discovery",
+            "expires": CHAIN_OF_TASKS_EXPIRY_TIME
+        }
+    
+    def generate_task_definition(self):
+        task_data = super().generate_task_definition()
+        name = f"sc4snmp;{self.discovery_name};discovery"
+        task_data["name"] = name
+        task_data["task"] = "splunk_connect_for_snmp.discovery.tasks.discovery"
+        task_data["run_immediately"] = self.run_immediately
+        task_data["options"] = self.DISCOVERY_CHAIN_OF_TASK
+        task_data["kwargs"] = self.discovery_record.dict()
+        return task_data
+
+    @property
+    def run_immediately(self):
+        if self.schedule_period > 86400:
+            return True
+        return False
+    
