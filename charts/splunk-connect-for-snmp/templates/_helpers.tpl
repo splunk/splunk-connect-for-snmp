@@ -1,8 +1,16 @@
 {{- define "splunk-connect-for-snmp.mongo_uri" -}}
 {{- if eq .Values.mongodb.architecture "replicaset" }}
+{{- if .Values.mongodb.auth.enabled }}
+{{- printf "mongodb+srv://%s:%s@%s-mongodb-headless.%s.svc.%s/?tls=false&ssl=false&replicaSet=rs0" .Values.mongodb.auth.rootUser .Values.mongodb.auth.rootPassword .Release.Name .Release.Namespace .Values.mongodb.clusterDomain}}
+{{- else }}
 {{- printf "mongodb+srv://%s-mongodb-headless.%s.svc.%s/?tls=false&ssl=false&replicaSet=rs0" .Release.Name .Release.Namespace .Values.mongodb.clusterDomain}}
+{{- end }}
+{{- else }}
+{{- if .Values.mongodb.auth.enabled }}
+{{- printf "mongodb://%s:%s@%s-mongodb:27017" .Values.mongodb.auth.rootUser .Values.mongodb.auth.rootPassword .Release.Name }}
 {{- else }}
 {{- printf "mongodb://%s-mongodb:27017" .Release.Name }}
+{{- end }}
 {{- end }}  
 {{- end }}  
 
@@ -16,17 +24,33 @@
 
 {{- define "splunk-connect-for-snmp.celery_url" -}}
 {{- if and ( eq .Values.redis.architecture "replication" ) .Values.redis.sentinel.enabled  }}
+{{- if .Values.redis.auth.enabled }}
+{{- printf "redis://:%s@%s-redis:6379/0" .Values.redis.auth.password .Release.Name }}
+{{- else }}
 {{- printf "redis://%s-redis:6379/0" .Release.Name }}
+{{- end }}
+{{- else }}
+{{- if .Values.redis.auth.enabled }}
+{{- printf "redis://:%s@%s-redis-master:6379/0" .Values.redis.auth.password .Release.Name }}
 {{- else }}
 {{- printf "redis://%s-redis-master:6379/0" .Release.Name }}
+{{- end }}
 {{- end }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.redis_url" -}}
 {{- if and ( eq .Values.redis.architecture "replication" ) .Values.redis.sentinel.enabled  }}
+{{- if .Values.redis.auth.enabled }}
+{{- printf "redis://:%s@%s-redis:6379/1" .Values.redis.auth.password .Release.Name }}
+{{- else }}
 {{- printf "redis://%s-redis:6379/1" .Release.Name }}
+{{- end }}
+{{- else }}
+{{- if .Values.redis.auth.enabled }}
+{{- printf "redis://:%s@%s-redis-master:6379/1" .Values.redis.auth.password .Release.Name }}
 {{- else }}
 {{- printf "redis://%s-redis-master:6379/1" .Release.Name }}
+{{- end }}
 {{- end }}
 {{- end }}
 

@@ -21,12 +21,12 @@ spec:
             - -c
             - |
               echo "Checking current mongo FCV"
-              FCV=$(mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }} --quiet --eval 'db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 }).featureCompatibilityVersion.version')
+              FCV=$(mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }} {{- if .Values.mongodb.auth.enabled }} --username {{ .Values.mongodb.auth.rootUser }} --password {{ .Values.mongodb.auth.rootPassword }} {{- end }} --quiet --eval 'db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 }).featureCompatibilityVersion.version')
               echo "Current Mongo Feature Compatibility Version: $FCV"
               
               if [[ "$FCV" < "6.0" ]]; then
                 echo "FCV < 6.0, setting to 6.0"
-                mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }}  --eval 'db.adminCommand({ setFeatureCompatibilityVersion: "6.0" })'
+                mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }} {{- if .Values.mongodb.auth.enabled }} --username {{ .Values.mongodb.auth.rootUser }} --password {{ .Values.mongodb.auth.rootPassword }} {{- end }} --eval 'db.adminCommand({ setFeatureCompatibilityVersion: "6.0" })'
               else
                 echo "FCV >= 6.0, nothing to be changed"
               fi
