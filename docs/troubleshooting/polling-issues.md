@@ -45,6 +45,8 @@ If you put in only the IP address (for example, `127.0.0.1`), then errors will b
 See [Configure small walk profile](../../microk8s/configuration/configuring-profiles/#walk-profile) to enable the small walk 
 functionality.
 
+Check if `poller.enableFullWalk` flag is set to `false`. See [poller configuration](../microk8s/configuration/poller-configuration/#poller-configuration-file).
+
 ## An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance
 
 If you see many `An error of SNMP isWalk=True` errors in your logs, that means that there is a connection problem 
