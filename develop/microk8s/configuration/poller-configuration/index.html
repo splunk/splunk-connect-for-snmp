@@ -1048,6 +1048,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#replace-with-_-in-metrics-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      Replace &ldquo;-&rdquo; with &ldquo;_&rdquo; in metrics name
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#disable-automatic-polling-of-base-profiles" class="md-nav__link">
     <span class="md-ellipsis">
       Disable automatic polling of base profiles
@@ -2136,6 +2145,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#replace-with-_-in-metrics-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      Replace &ldquo;-&rdquo; with &ldquo;_&rdquo; in metrics name
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#disable-automatic-polling-of-base-profiles" class="md-nav__link">
     <span class="md-ellipsis">
       Disable automatic polling of base profiles
@@ -2272,6 +2290,55 @@ It can be spotted on diagram that response for <code>IP-MIB.ipNetToMediaNetAddre
    metric_name:sc4snmp.TCP-MIB.tcpListenerProcess: 309
    profiles: generic_switch
 }
+</code></pre></div>
+<h3 id="replace-with-_-in-metrics-name">Replace “-” with “_” in metrics name<a class="headerlink" href="#replace-with-_-in-metrics-name" title="Permanent link">¶</a></h3>
+<p>There is a known issue with metric names that are not following the Splunk metric schema. Read more at <a href="../../../troubleshooting/general-issues/#addressing-metric-naming-conflicts-for-splunk-integration">addressing metric naming</a>.
+To ensure seamless compatibility and avoid potential issues, SC4SNMP provides a configuration option to automatically convert 
+hyphens in metric names to underscores.</p>
+<p>You can enable this conversion by setting the <code>splunkMetricNameHyphenToUnderscore</code> parameter to <code>true</code> within the <code>poller</code> section of your SC4SNMP configuration:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">splunkMetricNameHyphenToUnderscore</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<p>Enabling this option transforms metric names from their hyphenated format to an underscore-separated format, aligning them with common Splunk metric naming conventions.</p>
+<p>Before conversion (hyphens):</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"frequency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"60"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifAdminStatus"</span><span class="p">:</span><span class="w"> </span><span class="s2">"up"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifAlias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifDescr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GigabitEthernet1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifIndex"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Gi1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifOperStatus"</span><span class="p">:</span><span class="w"> </span><span class="s2">"up"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifPhysAddress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0a:aa:ef:53:67:15"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ethernetCsmacd"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF-MIB.ifInDiscards"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF-MIB.ifInErrors"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF-MIB.ifInOctets"</span><span class="p">:</span><span class="w"> </span><span class="mi">1481605109</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF-MIB.ifOutDiscards"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF-MIB.ifOutErrors"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF-MIB.ifOutOctets"</span><span class="p">:</span><span class="w"> </span><span class="mi">3942570709</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"profiles"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TEST"</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>After conversion (underscores):</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"frequency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"60"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifAdminStatus"</span><span class="p">:</span><span class="w"> </span><span class="s2">"up"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifAlias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifDescr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GigabitEthernet1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifIndex"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Gi1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifOperStatus"</span><span class="p">:</span><span class="w"> </span><span class="s2">"up"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifPhysAddress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0a:aa:ef:53:67:15"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ethernetCsmacd"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF_MIB.ifInDiscards"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF_MIB.ifInErrors"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF_MIB.ifInOctets"</span><span class="p">:</span><span class="w"> </span><span class="mi">1481605109</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF_MIB.ifOutDiscards"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF_MIB.ifOutErrors"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF_MIB.ifOutOctets"</span><span class="p">:</span><span class="w"> </span><span class="mi">3942570709</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"profiles"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TEST"</span>
+<span class="p">}</span>
 </code></pre></div>
 <h3 id="disable-automatic-polling-of-base-profiles">Disable automatic polling of base profiles<a class="headerlink" href="#disable-automatic-polling-of-base-profiles" title="Permanent link">¶</a></h3>
 <p>There are <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/splunk_connect_for_snmp/profiles/base.yaml">two profiles</a> that are being polled by default, so that even without any configuration set up, you can see
