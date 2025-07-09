@@ -1,2 +1,2 @@
-Walk profiles no longer include IF-MIB family by default.
-If you've used this functionality before, please update the walk profile with ['IF-MIB'] varBind.
+Default walk no longer calls full oid tree, instead it is collecting only 'SNMPv2-MIB'.
+If you want to call full oid for the devices, you have to set enableFullWalk flag to true.

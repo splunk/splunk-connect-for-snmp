@@ -50,6 +50,8 @@ spec:
             value: {{ .Values.scheduler.tasksExpiryTime | quote }}
           - name: CONFIG_FROM_MONGO
             value: {{ quote .Values.UI.enable | default "false" }}
+          - name: ENABLE_FULL_WALK
+            value: {{ .Values.poller.enableFullWalk | default "false" | quote }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"

@@ -1,3 +1,4 @@
+import logging
 import os
 from unittest import TestCase, mock
 from unittest.mock import Mock, mock_open, patch
@@ -9,6 +10,9 @@ from splunk_connect_for_snmp.common.inventory_processor import (
     transform_address_to_key,
     transform_key_to_address,
 )
+
+import pytest
+from _pytest.logging import caplog
 
 mock_inventory_only_address = """address
 54.234.85.76"""
@@ -24,7 +28,8 @@ group1,,2c,public,,,1805,group_profile,False,False
 2001:0db8:ac10:fe01:0000:0000:0000:0001,1166,2c,public,,,1805,solo_profile4,False,False
 """
 
-
+# TODO: write new test for walkProfile and full walk with flag
+@pytest.mark.usefixtures("caplog")
 class TestInventoryProcessor(TestCase):
     profiles = {
         "test5": {"frequency": 6, "varBinds": [["IP-MIB"]]},
@@ -264,7 +269,7 @@ class TestInventoryProcessor(TestCase):
                 "delete": "",
             },
         ]
-        inventory_processor = InventoryProcessor(group_manager, Mock(), Mock())
+        inventory_processor = InventoryProcessor(group_manager, Mock())
         group_manager.return_element.return_value = [
             {
                 "group1": [
@@ -278,7 +283,12 @@ class TestInventoryProcessor(TestCase):
             inventory_processor.inventory_records, group_object_returned
         )
 
-    def test_get_group_hosts_hostname(self):
+    # @mock.patch(
+    #     "splunk_connect_for_snmp.common.inventory_processor.ENABLE_FULL_WALK",
+    #     True,
+    # )
+    @mock.patch("splunk_connect_for_snmp.common.inventory_processor.logger")
+    def test_get_group_hosts_hostname(self, logger):
         group_manager = Mock()
         logger = Mock()
         group_object = {
@@ -293,7 +303,7 @@ class TestInventoryProcessor(TestCase):
             "SmartProfiles": "f",
             "delete": "",
         }
-        inventory_processor = InventoryProcessor(group_manager, logger, Mock())
+        inventory_processor = InventoryProcessor(group_manager, Mock())
         group_manager.return_element.return_value = []
         inventory_processor.get_group_hosts(
             group_object, "ec2-54-91-99-115.compute-1.amazonaws.com"
@@ -304,10 +314,15 @@ class TestInventoryProcessor(TestCase):
         self.assertEqual(inventory_processor.single_hosts, [group_object])
         self.assertEqual(inventory_processor.inventory_records, [])
 
-    def test_process_line_comment(self):
+    # @mock.patch(
+    #     "splunk_connect_for_snmp.common.inventory_processor.ENABLE_FULL_WALK",
+    #     True,
+    # )
+    @mock.patch("splunk_connect_for_snmp.common.inventory_processor.logger")
+    def test_process_line_comment(self, logger):
         logger = Mock()
         source_record = {"address": "#54.234.85.76"}
-        inventory_processor = InventoryProcessor(Mock(), logger, Mock())
+        inventory_processor = InventoryProcessor(Mock(), Mock())
         inventory_processor.process_line(source_record)
         logger.warning.assert_called_with(
             "Record: #54.234.85.76 is commented out. Skipping..."
@@ -326,13 +341,13 @@ class TestInventoryProcessor(TestCase):
     )
     def test_process_line_host(self, m_inventory):
         source_record = {"address": "54.234.85.76"}
-        inventory_processor = InventoryProcessor(Mock(), Mock(), Mock())
+        inventory_processor = InventoryProcessor(Mock(), Mock())
         inventory_processor.get_all_hosts()
         self.assertEqual(inventory_processor.inventory_records, [source_record])
 
     def test_process_line_group(self):
         source_record = {"address": "group1"}
-        inventory_processor = InventoryProcessor(Mock(), Mock(), Mock())
+        inventory_processor = InventoryProcessor(Mock(), Mock())
         inventory_processor.get_group_hosts = Mock()
         inventory_processor.process_line(source_record)
         inventory_processor.get_group_hosts.assert_called_with(source_record, "group1")
@@ -344,7 +359,7 @@ class TestInventoryProcessor(TestCase):
     )
     def test_process_line_host_ipv6(self, m_inventory):
         source_record = {"address": "2001:0db8:ac10:fe01::0001"}
-        inventory_processor = InventoryProcessor(Mock(), Mock(), Mock())
+        inventory_processor = InventoryProcessor(Mock(), Mock())
         inventory_processor.get_all_hosts()
         self.assertEqual(inventory_processor.inventory_records, [source_record])
 
@@ -442,19 +457,22 @@ class TestInventoryProcessor(TestCase):
         inventory_processor.get_all_hosts()
         self.assertEqual(expected, inventory_processor.inventory_records)
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.ENABLE_FULL_WALK",
+        True,
+    )
     def test_return_walk_profile(self):
         inventory_profiles = ["walk1", "generic_switch"]
-        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
-        self.assertEqual(
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock())
+        self.assertIsNone(
             inventory_record_manager.return_walk_profile(
                 self.profiles, inventory_profiles
-            ),
-            "walk1",
+            )
         )
 
-    def test_return_walk_profile_more_than_one(self):
+    def test_return_walk_profile_more_than_one_no_enable(self):
         inventory_profiles = ["walk1", "test_33", "generic_switch"]
-        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock())
         self.assertEqual(
             inventory_record_manager.return_walk_profile(
                 self.profiles, inventory_profiles
@@ -462,40 +480,103 @@ class TestInventoryProcessor(TestCase):
             "test_33",
         )
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.ENABLE_FULL_WALK",
+        True,
+    )
     def test_return_walk_profile_no_walk_in_inventory(self):
         inventory_profiles = ["generic_switch"]
-        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock())
         self.assertIsNone(
             inventory_record_manager.return_walk_profile(
                 self.profiles, inventory_profiles
             )
         )
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.ENABLE_FULL_WALK",
+        True,
+    )
     def test_return_walk_profile_no_walk_in_config(self):
         inventory_profiles = ["generic_switch", "walk2"]
-        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock())
         self.assertIsNone(
             inventory_record_manager.return_walk_profile(
                 self.profiles, inventory_profiles
             )
         )
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.ENABLE_FULL_WALK",
+        True,
+    )
     def test_return_walk_profile_no_config(self):
         inventory_profiles = ["generic_switch", "walk2"]
-        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock())
         self.assertIsNone(
             inventory_record_manager.return_walk_profile({}, inventory_profiles)
         )
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.ENABLE_FULL_WALK",
+        True,
+    )
     def test_return_walk_profile_no_config_no_inventory(self):
         inventory_profiles = []
-        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock())
         self.assertIsNone(
             inventory_record_manager.return_walk_profile({}, inventory_profiles)
         )
 
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.ENABLE_FULL_WALK",
+        True,
+    )
     def test_return_walk_profile_no_inventory(self):
-        inventory_record_manager = InventoryRecordManager(Mock(), Mock(), Mock())
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock())
         self.assertIsNone(
             inventory_record_manager.return_walk_profile(self.profiles, [])
+        )
+
+    def test_return_walk_profile_no_enable(self):
+        inventory_profiles = ["walk1", "generic_switch"]
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock())
+        self.assertEqual(
+            inventory_record_manager.return_walk_profile(
+                self.profiles, inventory_profiles
+            ),
+            "walk1",
+        )
+
+    def test_return_walk_profile_no_walk_in_inventory_no_enable(self):
+        inventory_profiles = ["generic_switch"]
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock())
+        self.assertEqual(
+            inventory_record_manager.return_walk_profile(
+                self.profiles, inventory_profiles
+            ),
+            "WalkProfile",
+        )
+
+    def test_return_walk_profile_no_config_no_enable(self):
+        inventory_profiles = ["generic_switch", "walk2"]
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock())
+        self.assertEqual(
+            inventory_record_manager.return_walk_profile({}, inventory_profiles),
+            "WalkProfile",
+        )
+
+    def test_return_walk_profile_no_config_no_inventory_no_enable(self):
+        inventory_profiles = []
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock())
+        self.assertEqual(
+            inventory_record_manager.return_walk_profile({}, inventory_profiles),
+            "WalkProfile",
+        )
+
+    def test_return_walk_profile_no_inventory_no_enable(self):
+        inventory_record_manager = InventoryRecordManager(Mock(), Mock())
+        self.assertEqual(
+            inventory_record_manager.return_walk_profile(self.profiles, []),
+            "WalkProfile",
         )

@@ -23,6 +23,7 @@ poller:
    - sc4snmp-hlab-sha-aes
    - sc4snmp-hlab-sha-des
   logLevel: "WARN"
+  enableFullWalk: false
   inventory: |
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
     10.202.4.202,,2c,public,,,2000,,,
@@ -30,6 +31,9 @@ poller:
 
 !!! info
     The header's line (`address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete`) is necessary for the correct execution of SC4SNMP. Do not remove it.
+
+### Default walk scope
+The default walk profile is polling only `SNMPv2-MIB`. If the full oid tree walk is required it can be enabled by changing `enableFullWalk` flag to true.
 
 ### IPv6 hostname resolution
 When IPv6 is enabled and device is dual stack, the hostname resolution will try to resolve the name to the IPv6 address first, then to the IPv4 address.

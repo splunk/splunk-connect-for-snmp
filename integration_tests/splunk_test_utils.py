@@ -54,6 +54,13 @@ inventory_template_compose = """address,port,version,community,secret,security_e
 """
 
 inventory_template_microk8s = """poller:
+  enableFullWalk: true
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+"""
+
+inventory_template_microk8s_no_walk = """poller:
+  enableFullWalk: false
   inventory: |
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
 """
@@ -80,6 +87,7 @@ polling_secrets_template_microk8s = """poller:
 
 TEMPLATE_MAPPING_MICROK8S = {
     "inventory.yaml": inventory_template_microk8s,
+    "inventory2.yaml": inventory_template_microk8s_no_walk,
     "profiles.yaml": profiles_template_microk8s,
     "scheduler_secrets.yaml": poller_secrets_template_microk8s,
     "traps_secrets.yaml": traps_secrets_template_microk8s,
