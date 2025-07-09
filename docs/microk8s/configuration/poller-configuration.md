@@ -99,6 +99,67 @@ out of this object:
 }
 ```
 
+### Replace "-" with "_" in metrics name
+
+There is a known issue with metric names that are not following the Splunk metric schema. Read more at [addressing metric naming](../../troubleshooting/general-issues.md#addressing-metric-naming-conflicts-for-splunk-integration).
+To ensure seamless compatibility and avoid potential issues, SC4SNMP provides a configuration option to automatically convert 
+hyphens in metric names to underscores.
+
+You can enable this conversion by setting the `splunkMetricNameHyphenToUnderscore` parameter to `true` within the `poller` section of your SC4SNMP configuration:
+
+```yaml
+poller:
+  splunkMetricNameHyphenToUnderscore: true
+```
+
+Enabling this option transforms metric names from their hyphenated format to an underscore-separated format, aligning them with common Splunk metric naming conventions.
+
+Before conversion (hyphens):
+
+```json
+{
+  "frequency": "60",
+  "ifAdminStatus": "up",
+  "ifAlias": "1",
+  "ifDescr": "GigabitEthernet1",
+  "ifIndex": "1",
+  "ifName": "Gi1",
+  "ifOperStatus": "up",
+  "ifPhysAddress": "0a:aa:ef:53:67:15",
+  "ifType": "ethernetCsmacd",
+  "metric_name:sc4snmp.IF-MIB.ifInDiscards": 0,
+  "metric_name:sc4snmp.IF-MIB.ifInErrors": 0,
+  "metric_name:sc4snmp.IF-MIB.ifInOctets": 1481605109,
+  "metric_name:sc4snmp.IF-MIB.ifOutDiscards": 0,
+  "metric_name:sc4snmp.IF-MIB.ifOutErrors": 0,
+  "metric_name:sc4snmp.IF-MIB.ifOutOctets": 3942570709,
+  "profiles": "TEST"
+}
+```
+
+After conversion (underscores):
+
+```json
+{
+  "frequency": "60",
+  "ifAdminStatus": "up",
+  "ifAlias": "1",
+  "ifDescr": "GigabitEthernet1",
+  "ifIndex": "1",
+  "ifName": "Gi1",
+  "ifOperStatus": "up",
+  "ifPhysAddress": "0a:aa:ef:53:67:15",
+  "ifType": "ethernetCsmacd",
+  "metric_name:sc4snmp.IF_MIB.ifInDiscards": 0,
+  "metric_name:sc4snmp.IF_MIB.ifInErrors": 0,
+  "metric_name:sc4snmp.IF_MIB.ifInOctets": 1481605109,
+  "metric_name:sc4snmp.IF_MIB.ifOutDiscards": 0,
+  "metric_name:sc4snmp.IF_MIB.ifOutErrors": 0,
+  "metric_name:sc4snmp.IF_MIB.ifOutOctets": 3942570709,
+  "profiles": "TEST"
+}
+```
+
 ### Disable automatic polling of base profiles
 
 There are [two profiles](https://github.com/splunk/splunk-connect-for-snmp/blob/main/splunk_connect_for_snmp/profiles/base.yaml) that are being polled by default, so that even without any configuration set up, you can see
@@ -108,7 +169,6 @@ the data in Splunk. You can disable it with the following `pollBaseProfiles` par
 poller:
   pollBaseProfiles: false
 ```
-
 
 ### Configure inventory 
 To update inventory, see [Update Inventory and Profile](#update-inventory).

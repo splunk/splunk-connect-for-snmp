@@ -152,6 +152,8 @@ Common labels
   value: {{ .Values.splunk.insecureSSL | default "false" | quote }}
 - name: SPLUNK_AGGREGATE_TRAPS_EVENTS
   value: {{ .Values.traps.aggregateTrapsEvents | default "false" | quote }}
+- name: SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE
+  value: {{ .Values.poller.splunkMetricNameHyphenToUnderscore | default "false" | quote }}
 - name: SPLUNK_HEC_TOKEN
   valueFrom:
     secretKeyRef:

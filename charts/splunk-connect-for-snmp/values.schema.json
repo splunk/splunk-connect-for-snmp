@@ -353,6 +353,9 @@
         "metricsIndexingEnabled": {
           "type": "boolean"
         },
+        "splunkMetricNameHyphenToUnderscore": {
+          "type": "boolean"
+        },
         "pollBaseProfiles": {
           "type": "boolean"
         },

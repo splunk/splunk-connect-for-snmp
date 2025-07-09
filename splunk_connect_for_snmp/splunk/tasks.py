@@ -40,6 +40,9 @@ SPLUNK_HEC_PATH = os.getenv("SPLUNK_HEC_PATH", "services/collector")
 SPLUNK_HEC_MTLS_CLIENT_CERT = os.getenv("SPLUNK_HEC_MTLS_CLIENT_CERT", None)
 SPLUNK_HEC_MTLS_CLIENT_KEY = os.getenv("SPLUNK_HEC_MTLS_CLIENT_KEY", None)
 SPLUNK_HEC_MTLS_CA_CERT = os.getenv("SPLUNK_HEC_MTLS_CA_CERT", None)
+SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE = human_bool(
+    os.getenv("SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE", "false")
+)
 METRICS_INDEXING_ENABLED = human_bool(os.getenv("METRICS_INDEXING_ENABLED", "false"))
 
 url = {
@@ -247,6 +250,8 @@ def set_metrics_fields(data, metric, work):
         short_field = field.split(".")[-1]
         metric["fields"][short_field] = value_as_best(values["value"])
     for field, values in data["metrics"].items():
+        if SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE:
+            field = field.replace("-", "_")
         metric["fields"][f"metric_name:sc4snmp.{field}"] = value_as_best(
             values["value"]
         )
