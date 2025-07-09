@@ -67,6 +67,33 @@ rules:
 Configuration above can be found in the `examples` directory in SC4SNMP [GitHub repository](https://github.com/splunk/splunk-connect-for-snmp).
 Next run `yamllint -c <path to custom-config.yamllint> <path to values.yaml>` command. Warnings can be ignored.
 
+
+### Protect Mongo and Redis by password
+
+Update `values.yaml` before deploy:
+
+```
+redis:
+  auth:
+    enabled: true
+    password: pass
+
+mongodb:
+  auth:
+    enabled: true
+    rootUser: user
+    rootPassword: pass
+```
+
+If you don't want to provide credentials in `values.yaml` you can provide credentials during deployment using `--set` option:
+
+```
+microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp \
+--namespace=sc4snmp --create-namespace \
+--set redis.auth.enabled=true --set redis.auth.password=pass \
+--set mongodb.auth.enabled=true --set mongodb.auth.rootUser=user --set mongodb.auth.rootPassword=pass
+```
+
 #### Install SC4SNMP
 
 After the `values.yaml` creation, you can proceed with the SC4SNMP installation:
