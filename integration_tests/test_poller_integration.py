@@ -544,6 +544,7 @@ class TestSmallWalk:
         assert result_count > 0
         assert metric_count > 0
 
+
 @pytest.fixture
 def setup_small_walk_with_full_walk_enabled(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
@@ -625,6 +626,7 @@ class TestPartialWalk:
         )
         assert result_count > 0
         assert metric_count > 0
+
 
 @pytest.fixture()
 def setup_v3_connection(request):

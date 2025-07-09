@@ -3,6 +3,9 @@ import os
 from unittest import TestCase, mock
 from unittest.mock import Mock, mock_open, patch
 
+import pytest
+from _pytest.logging import caplog
+
 from splunk_connect_for_snmp.common.inventory_processor import (
     InventoryProcessor,
     InventoryRecordManager,
@@ -10,9 +13,6 @@ from splunk_connect_for_snmp.common.inventory_processor import (
     transform_address_to_key,
     transform_key_to_address,
 )
-
-import pytest
-from _pytest.logging import caplog
 
 mock_inventory_only_address = """address
 54.234.85.76"""
@@ -27,6 +27,7 @@ group1,,2c,public,,,1805,group_profile,False,False
 2001:0db8:ac10:fe01::0001,,2c,public,,,1805,solo_profile3,False,False
 2001:0db8:ac10:fe01:0000:0000:0000:0001,1166,2c,public,,,1805,solo_profile4,False,False
 """
+
 
 # TODO: write new test for walkProfile and full walk with flag
 @pytest.mark.usefixtures("caplog")
@@ -290,7 +291,6 @@ class TestInventoryProcessor(TestCase):
     @mock.patch("splunk_connect_for_snmp.common.inventory_processor.logger")
     def test_get_group_hosts_hostname(self, logger):
         group_manager = Mock()
-        logger = Mock()
         group_object = {
             "address": "ec2-54-91-99-115.compute-1.amazonaws.com",
             "port": "",
@@ -320,7 +320,6 @@ class TestInventoryProcessor(TestCase):
     # )
     @mock.patch("splunk_connect_for_snmp.common.inventory_processor.logger")
     def test_process_line_comment(self, logger):
-        logger = Mock()
         source_record = {"address": "#54.234.85.76"}
         inventory_processor = InventoryProcessor(Mock(), Mock())
         inventory_processor.process_line(source_record)
@@ -388,7 +387,7 @@ class TestInventoryProcessor(TestCase):
         ]
         group_manager = Mock()
         group_manager.return_element.return_value = returned_group
-        inventory_processor = InventoryProcessor(group_manager, Mock(), Mock())
+        inventory_processor = InventoryProcessor(group_manager, Mock())
         expected = [
             {
                 "address": "0.0.0.0",

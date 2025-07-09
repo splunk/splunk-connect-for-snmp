@@ -47,6 +47,7 @@ handler.setLevel("DEBUG")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+
 def transform_key_to_address(target):
     if ":" in target:
         address, port = target.rsplit(":", 1)
