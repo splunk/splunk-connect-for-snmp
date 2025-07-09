@@ -30,9 +30,8 @@ If the `mongo-fcv-upgrade-to-6` job fails for any reason, there are two recovery
 
 #### Addressing Metric Naming Conflicts for Splunk Integration
 
-When collecting SNMP metrics using SC4SNMP, the default translation of Object Identifiers (OIDs) by pysnmp often results 
-in metric names containing hyphens (e.g., IF-MIB). While this format is natively understood by pysnmp, it can lead to compatibility 
-issues when forwarding these metrics, particularly when integrating with Splunk via the OpenTelemetry (OTel) Collector's Splunk HEC metric endpoint.
+When collecting SNMP metrics using SC4SNMP, metric names often contain hyphens (e.g., IF-MIB) because the default MIB format includes hyphens in Object Identifiers (OIDs) as specified by standard MIB naming conventions. 
+While this naming convention is standard for SNMP MIBs, it can lead to compatibility issues when forwarding these metrics, particularly when integrating with Splunk via the OpenTelemetry (OTel) Collector's Splunk HEC metric endpoint.
 
 The Splunk metric schema, as detailed in the [official Splunk documentation](https://help.splunk.com/en/splunk-enterprise/get-data-in/metrics/9.4/introduction-to-metrics/overview-of-metrics), generally expects metric names to adhere to 
 a specific format that may not accommodate hyphens in certain contexts. Although direct ingestion into Splunk might work, 

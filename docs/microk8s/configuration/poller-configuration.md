@@ -101,7 +101,7 @@ out of this object:
 
 ### Replace "-" with "_" in metrics name
 
-There's a known issue with metric names that are not following the Splunk metric schema. Read more [here](../../troubleshooting/general-issues.md#addressing-metric-naming-conflicts-for-splunk-integration).
+There is a known issue with metric names that are not following the Splunk metric schema. Read more at [addressing metric naming](../../troubleshooting/general-issues.md#addressing-metric-naming-conflicts-for-splunk-integration).
 To ensure seamless compatibility and avoid potential issues, SC4SNMP provides a configuration option to automatically convert 
 hyphens in metric names to underscores.
 

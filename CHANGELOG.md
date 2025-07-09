@@ -5,6 +5,7 @@
 ### Changed
 - implemented mTLS for Splunk 10
 - update default microk8s to 1.33
+- introduce `splunkMetricNameHyphenToUnderscore` parameter to make metric names follow Splunk schema
 
 ### Fixed
 
