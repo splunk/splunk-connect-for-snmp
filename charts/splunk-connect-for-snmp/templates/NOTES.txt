@@ -1,2 +1,3 @@
 Walk profiles no longer include IF-MIB family by default.
 If you've used this functionality before, please update the walk profile with ['IF-MIB'] varBind.
+Discovery time may increase if the specified subnet contains a large number of devicesß

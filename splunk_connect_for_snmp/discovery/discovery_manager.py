@@ -42,7 +42,7 @@ class Discovery(Task):
     def get_host_list(self, subnet, skip_active_check: bool, is_ipv6: bool):
         """Get host list based on the active check flag"""
         try:
-            logger.debug("Skip active check : {skip_active_check}")
+            logger.debug(f"Skip active check : {skip_active_check}")
             if skip_active_check:
                 network = ipaddress.ip_network(subnet)
                 return list(str(ip) for ip in network.hosts())
@@ -105,7 +105,7 @@ class Discovery(Task):
                     result = future.result()
                     if result:
                         devices_detail.append(result)
-                        logger.info(f"SNMP device found: {result}. Device is from discovery: {discovery_record.discovery_name}")
+                        logger.debug(f"SNMP device found: {result}. Device is from discovery: {discovery_record.discovery_name}")
                 except Exception as e:
                     logger.error(f"Snmp check for device {ip} generated an exception : {e}")
 

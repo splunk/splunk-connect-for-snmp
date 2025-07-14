@@ -895,6 +895,9 @@
         "usernameSecrets": {
           "type": "array"
         },
+        "discoveryPath": {
+          "type": "string"
+        },
         "logLevel": {
           "type": "string"
         },

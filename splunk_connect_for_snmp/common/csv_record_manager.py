@@ -10,7 +10,7 @@ class CSVRecordManager:
         self.columns = ['key', 'subnet', 'ip', 'port', 'version', 'group', 'secret', 'community']
         
         try: 
-            if not os.path.isfile(filename):
+            if os.path.getsize(filename) == 0:
                 pd.DataFrame(columns=self.columns).to_csv(filename, index=False)
                 self.df = pd.DataFrame(columns=self.columns)  # Initialize empty DataFrame
             else:
@@ -32,6 +32,8 @@ class CSVRecordManager:
     def create_rows(self, inputs):
         try:
             new_df = pd.DataFrame(inputs)
+            new_df = new_df.fillna('').astype(str).apply(lambda x: x.str.strip())
+            self.df = self.df.fillna('').astype(str).apply(lambda x: x.str.strip())
             self.df = pd.concat([self.df, new_df], ignore_index=True)
             self.df = self.df.drop_duplicates()
         except Exception as e:
