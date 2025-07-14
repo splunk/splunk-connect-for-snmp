@@ -367,6 +367,9 @@
         },
         "logLevel": {
           "type": "string"
+        },
+        "enableFullWalk": {
+          "type": "boolean"
         }
       }
     },
