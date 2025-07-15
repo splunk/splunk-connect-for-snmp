@@ -545,23 +545,27 @@ class TestSmallWalk:
         assert metric_count > 0
 
 
-    @pytest.fixture
-    def setup_small_walk_with_full_walk_enabled(request):
-        trap_external_ip = request.config.getoption("trap_external_ip")
-        profile = {
-            "walk1": {
-                "condition": {"type": "walk"},
-                "varBinds": [yaml_escape_list(sq("IP-MIB"))],
-            },
-        }
-        update_profiles(profile)
-        update_file([f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml")
-        upgrade_helm(["inventory.yaml", "profiles.yaml"])
-        time.sleep(20)
-        yield
-        update_file([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml")
-        upgrade_helm(["inventory.yaml"])
-        time.sleep(20)
+@pytest.fixture
+def setup_small_walk_with_full_walk_enabled(request):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    profile = {
+        "walk1": {
+            "condition": {"type": "walk"},
+            "varBinds": [yaml_escape_list(sq("IP-MIB"))],
+        },
+    }
+    update_profiles_microk8s(profile)
+    update_file_microk8s(
+        [f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml"
+    )
+    upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    time.sleep(20)
+    yield
+    update_file_microk8s(
+        [f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml"
+    )
+    upgrade_helm_microk8s(["inventory.yaml"])
+    time.sleep(20)
 
 
 @pytest.mark.usefixtures("setup_small_walk_with_full_walk_enabled")
