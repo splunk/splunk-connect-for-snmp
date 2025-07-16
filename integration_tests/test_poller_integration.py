@@ -548,23 +548,33 @@ class TestSmallWalk:
 @pytest.fixture
 def setup_small_walk_with_full_walk_enabled(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
     profile = {
         "walk1": {
             "condition": {"type": "walk"},
             "varBinds": [yaml_escape_list(sq("IP-MIB"))],
         },
     }
-    update_profiles_microk8s(profile)
-    update_file_microk8s(
-        [f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml"
-    )
-    upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    if deployment == "microk8s":
+        update_profiles_microk8s(profile)
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profile)
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,"])
+        upgrade_docker_compose()
     time.sleep(20)
     yield
-    update_file_microk8s(
-        [f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml"
-    )
-    upgrade_helm_microk8s(["inventory.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"])
+        upgrade_docker_compose()
     time.sleep(20)
 
 
@@ -593,12 +603,22 @@ class TestSmallWalkWithFullWalkEnabled:
 @pytest.fixture
 def setup_walk(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
-    update_file([f"{trap_external_ip},,2c,public,,,20,,f,"], "inventory2.yaml")
-    upgrade_helm(["inventory2.yaml", "profiles.yaml"])
+    deployment = request.config.getoption("sc4snmp_deployment")
+
+    if deployment == "microk8s":
+        update_file_microk8s([f"{trap_external_ip},,2c,public,,,20,,f,"], "inventory2.yaml")
+        upgrade_helm_microk8s(["inventory2.yaml", "profiles.yaml"])
+    else:
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,"])
+        upgrade_docker_compose()
     time.sleep(30)
     yield
-    update_file([f"{trap_external_ip},,2c,public,,,20,,f,t"], "inventory2.yaml")
-    upgrade_helm(["inventory2.yaml"])
+    if deployment == "microk8s":
+        update_file_microk8s([f"{trap_external_ip},,2c,public,,,20,,f,t"], "inventory2.yaml")
+        upgrade_helm_microk8s(["inventory2.yaml"])
+    else:
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"])
+        upgrade_docker_compose()
     time.sleep(20)
 
 
