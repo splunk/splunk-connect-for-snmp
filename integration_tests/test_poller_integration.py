@@ -606,20 +606,24 @@ def setup_walk(request):
     deployment = request.config.getoption("sc4snmp_deployment")
 
     if deployment == "microk8s":
-        update_file_microk8s([f"{trap_external_ip},,2c,public,,,20,,f,"], "inventory2.yaml")
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,20,,f,"], "inventory2.yaml"
+        )
         upgrade_helm_microk8s(["inventory2.yaml", "profiles.yaml"])
     else:
-        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,"])
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,"])
         upgrade_docker_compose()
     time.sleep(30)
     yield
-    if deployment == "microk8s":
-        update_file_microk8s([f"{trap_external_ip},,2c,public,,,20,,f,t"], "inventory2.yaml")
-        upgrade_helm_microk8s(["inventory2.yaml"])
-    else:
-        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"])
-        upgrade_docker_compose()
-    time.sleep(20)
+    # if deployment == "microk8s":
+    #     update_file_microk8s(
+    #         [f"{trap_external_ip},,2c,public,,,20,,f,t"], "inventory2.yaml"
+    #     )
+    #     upgrade_helm_microk8s(["inventory2.yaml"])
+    # else:
+    #     update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,t"])
+    #     upgrade_docker_compose()
+    # time.sleep(20)
 
 
 @pytest.mark.usefixtures("setup_walk")
