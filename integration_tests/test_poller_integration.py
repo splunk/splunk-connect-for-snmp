@@ -506,6 +506,7 @@ def setup_small_walk(request):
         upgrade_helm_microk8s(["inventory2.yaml", "profiles.yaml"])
     else:
         update_profiles_compose(profile)
+        upgrade_env_compose("ENABLE_FULL_WALK", "false")
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,"])
         upgrade_docker_compose()
 
@@ -518,6 +519,7 @@ def setup_small_walk(request):
         )
         upgrade_helm_microk8s(["inventory2.yaml"])
     else:
+        upgrade_env_compose("ENABLE_FULL_WALK", "true")
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"])
         upgrade_docker_compose()
 
@@ -575,7 +577,6 @@ def setup_small_walk_with_full_walk_enabled(request):
         )
         upgrade_helm_microk8s(["inventory.yaml"])
     else:
-        upgrade_env_compose("ENABLE_FULL_WALK", "false")
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"])
         upgrade_docker_compose()
     time.sleep(20)
@@ -614,10 +615,21 @@ def setup_partial_walk(request):
         )
         upgrade_helm_microk8s(["inventory2.yaml", "profiles.yaml"])
     else:
+        upgrade_env_compose("ENABLE_FULL_WALK", "false")
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,"])
         upgrade_docker_compose()
     time.sleep(30)
     yield
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,20,,f,t"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        upgrade_env_compose("ENABLE_FULL_WALK", "true")
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,"])
+        upgrade_docker_compose()
+    time.sleep(20)
 
 @pytest.mark.usefixtures("setup_partial_walk")
 class TestPartialWalk:
@@ -657,39 +669,20 @@ def setup_walk(request):
         update_file_microk8s(
             [f"{trap_external_ip},,2c,public,,,20,,f,"], "inventory.yaml"
         )
-        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        upgrade_helm_microk8s(["inventory.yaml"])
     else:
         upgrade_env_compose("ENABLE_FULL_WALK", "true")
-        #update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,"])
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,"])
         upgrade_docker_compose()
     time.sleep(30)
     yield
-    if deployment == "microk8s":
-        update_file_microk8s(
-            [f"{trap_external_ip},,2c,public,,,20,,f,"], "inventory2.yaml"
-        )
-        upgrade_helm_microk8s(["inventory.yaml"])
-    else:
-        upgrade_env_compose("ENABLE_FULL_WALK", "false")
-        #update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,"])
-        upgrade_docker_compose()
-    time.sleep(20)
-
 
 @pytest.mark.usefixtures("setup_walk")
 class TestPartialWalk:
     def test_check_if_walk_is_done(self, setup_splunk):
-        time.sleep(20)
+        time.sleep(60)
         search_string = (
-            """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
-        )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 1
-        )
-        assert result_count > 0
-        assert metric_count > 0
-        search_string = (
-            """| mpreview index=netmetrics earliest=-20s | search "IP-MIB" """
+            """| mpreview index=netmetrics earliest=-60s | search "TCP-MIB" """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -697,7 +690,15 @@ class TestPartialWalk:
         assert result_count > 0
         assert metric_count > 0
         search_string = (
-            """| mpreview index=netmetrics earliest=-20s | search "SNMPv2-MIB" """
+            """| mpreview index=netmetrics earliest=-60s | search "IP-MIB" """
+        )
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+        search_string = (
+            """| mpreview index=netmetrics earliest=-60s | search "SNMPv2-MIB" """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
