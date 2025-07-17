@@ -32,11 +32,15 @@ from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
+from splunk_connect_for_snmp.common.discovery_record import DiscoveryRecord
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
+
+
+RecordType = Union[DiscoveryRecord, InventoryRecord]
 
 
 def get_secret_value(
@@ -56,10 +60,10 @@ def get_secret_value(
 # To discover remote SNMP EngineID we will tap on SNMP engine inner workings
 # by setting up execution point observer setup on INTERNAL class PDU processing
 #
-def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpEngine):
+def get_security_engine_id(logger, rt: RecordType, snmp_engine: SnmpEngine):
     observer_context: Dict[Any, Any] = {}
 
-    transport_target = setup_transport_target(ir)
+    transport_target = setup_transport_target(rt)
 
     # Register a callback to be invoked at specified execution point of
     # SNMP Engine and passed local variables at execution point's local scope
@@ -84,27 +88,27 @@ def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpEngine)
 
     # See if our SNMP engine received REPORT PDU containing securityEngineId
     security_engine_id = fetch_security_engine_id(
-        observer_context, error_indication, ir.address
+        observer_context, error_indication, rt.address
     )
-    logger.debug(f"securityEngineId={security_engine_id} for device {ir.address}")
+    logger.debug(f"securityEngineId={security_engine_id} for device {rt.address}")
     return security_engine_id
 
 
-def setup_transport_target(ir):
-    ip = get_ip_from_socket(ir) if IPv6_ENABLED else ir.address
+def setup_transport_target(rt):
+    ip = get_ip_from_socket(rt) if IPv6_ENABLED else rt.address
     if IPv6_ENABLED and ip_address(ip).version == 6:
         return Udp6TransportTarget(
-            (ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT
+            (rt.address, rt.port), timeout=UDP_CONNECTION_TIMEOUT
         )
 
-    return UdpTransportTarget((ir.address, ir.port), timeout=UDP_CONNECTION_TIMEOUT)
+    return UdpTransportTarget((rt.address, rt.port), timeout=UDP_CONNECTION_TIMEOUT)
 
 
-def get_ip_from_socket(ir):
+def get_ip_from_socket(rt):
     # Example of response from getaddrinfo
     # [(< AddressFamily.AF_INET6: 10 >, < SocketKind.SOCK_STREAM: 1 >, 6, '', ('2607:f8b0:4004:c09::64', 161, 0, 0)),
     # (< AddressFamily.AF_INET: 2 >, < SocketKind.SOCK_STREAM: 1 >, 6, '', ('142.251.16.139', 161))]
-    return socket.getaddrinfo(ir.address, ir.port)[0][4][0]
+    return socket.getaddrinfo(rt.address, rt.port)[0][4][0]
 
 
 def fetch_security_engine_id(observer_context, error_indication, ipaddress):
@@ -116,8 +120,8 @@ def fetch_security_engine_id(observer_context, error_indication, ipaddress):
         )
 
 
-def get_auth_v3(logger, ir: InventoryRecord, snmp_engine: SnmpEngine) -> UsmUserData:
-    location = os.path.join("secrets/snmpv3", ir.secret)  # type: ignore
+def get_auth_v3(logger, rt: RecordType, snmp_engine: SnmpEngine) -> UsmUserData:
+    location = os.path.join("secrets/snmpv3", rt.secret)  # type: ignore
     if os.path.exists(location):
         username = get_secret_value(location, "userName", required=True)
 
@@ -140,14 +144,14 @@ def get_auth_v3(logger, ir: InventoryRecord, snmp_engine: SnmpEngine) -> UsmUser
             get_secret_value(location, "privKeyType", required=False, default="0")
         )
         if (
-            isinstance(ir.security_engine, str)
-            and ir.security_engine != ""
-            and not ir.security_engine.isdigit()
+            isinstance(rt.security_engine, str)
+            and rt.security_engine != ""
+            and not rt.security_engine.isdigit()
         ):
-            security_engine_id = OctetString(hexValue=ir.security_engine)
+            security_engine_id = OctetString(hexValue=rt.security_engine)
             logger.debug(f"Security eng from profile {security_engine_id}")
         else:
-            security_engine_id = get_security_engine_id(logger, ir, snmp_engine)
+            security_engine_id = get_security_engine_id(logger, rt, snmp_engine)
             logger.debug(f"Security eng dynamic {security_engine_id}")
 
         security_name = None
@@ -167,23 +171,23 @@ def get_auth_v3(logger, ir: InventoryRecord, snmp_engine: SnmpEngine) -> UsmUser
         )
 
     else:
-        raise FileNotFoundError(f"invalid username from secret {ir.secret}")
+        raise FileNotFoundError(f"invalid username from secret {rt.secret}")
 
 
-def get_auth_v2c(ir: InventoryRecord) -> CommunityData:
-    return CommunityData(ir.community, mpModel=1)
+def get_auth_v2c(rt: RecordType) -> CommunityData:
+    return CommunityData(rt.community, mpModel=1)
 
 
-def get_auth_v1(ir: InventoryRecord) -> CommunityData:
-    return CommunityData(ir.community, mpModel=0)
+def get_auth_v1(rt: RecordType) -> CommunityData:
+    return CommunityData(rt.community, mpModel=0)
 
 
 def get_auth(
-    logger, ir: InventoryRecord, snmp_engine: SnmpEngine
+    logger, rt: RecordType, snmp_engine: SnmpEngine
 ) -> Union[UsmUserData, CommunityData]:
-    if ir.version == "1":
-        return get_auth_v1(ir)
-    elif ir.version == "2c":
-        return get_auth_v2c(ir)
+    if rt.version == "1":
+        return get_auth_v1(rt)
+    elif rt.version == "2c":
+        return get_auth_v2c(rt)
     else:
-        return get_auth_v3(logger, ir, snmp_engine)
+        return get_auth_v3(logger, rt, snmp_engine)

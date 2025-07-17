@@ -573,3 +573,6 @@ redis:
 commonAnnotations: {}
 discovery:
   enabled: false
+  usernameSecrets: []
+  ipv6Enabled: false
+  logLevel: "INFO"

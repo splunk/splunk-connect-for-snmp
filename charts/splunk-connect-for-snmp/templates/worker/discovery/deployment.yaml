@@ -22,6 +22,15 @@ spec:
       serviceAccountName: {{ include "splunk-connect-for-snmp.serviceAccountName" . }}
       securityContext:
         fsGroup: 10001
+      initContainers:
+        - name: discovery-permissions
+          image: alpine:3.19
+          command: ["sh", "-c", "mkdir -p /app/discovery && touch /app/discovery/discovery_devices.csv && chmod 777 /app/discovery/discovery_devices.csv"]
+          volumeMounts:
+            - name: discovery-volume
+              mountPath: /app/discovery
+          securityContext:
+            runAsUser: 0
       containers:
         - name: {{ .Chart.Name }}-discovery
           securityContext:
@@ -40,6 +49,14 @@ spec:
             ]
           env:
             {{- include "environmental-variables" . | nindent 12 }}
+            - name: DISCOVERY_PATH
+              value: /app/discovery/discovery_devices.csv
+            - name: IPv6_ENABLED
+              {{- if .Values.discovery.ipv6Enabled}}
+              value: "true"
+              {{ else }}
+              value: "false"
+              {{- end }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"
@@ -50,6 +67,13 @@ spec:
             - name: tmp
               mountPath: "/tmp/"
               readOnly: false
+            - name: discovery-volume
+              mountPath: /app/discovery
+            {{- range (.Values.discovery).usernameSecrets }}
+            - name: {{ . }}-snmpv3-secrets
+              mountPath: /app/secrets/snmpv3/{{ . }}
+              readOnly: true
+            {{- end }}
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config
@@ -64,4 +88,13 @@ spec:
           emptyDir: {}
         - name: tmp
           emptyDir: {}
+        - name: discovery-volume
+          hostPath:
+            path: {{ .Values.discovery.discoveryPath }}
+            type: DirectoryOrCreate
+        {{- range (.Values.discovery).usernameSecrets }}
+        - name: {{ . }}-snmpv3-secrets
+          secret:
+            secretName: {{ . }}
+        {{- end }}
 {{- end }}
