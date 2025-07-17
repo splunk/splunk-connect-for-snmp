@@ -147,11 +147,12 @@ def update_traps_secrets_compose(secrets):
 def upgrade_docker_compose():
     os.system("sudo docker compose up -d")
 
+
 def upgrade_env_compose(variable, new_value, env_path=".env"):
     lines = []
     found = False
     if os.path.exists(env_path):
-        with open(env_path, "r") as f:
+        with open(env_path) as f:
             for line in f:
                 if line.strip().startswith(f"{variable}="):
                     lines.append(f"{variable}={new_value}\n")

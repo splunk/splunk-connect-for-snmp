@@ -22,7 +22,6 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
 from integration_tests.splunk_test_utils import (
     splunk_single_search,
-    upgrade_env_compose,
     update_file_microk8s,
     update_groups_compose,
     update_groups_microk8s,
@@ -30,6 +29,7 @@ from integration_tests.splunk_test_utils import (
     update_profiles_compose,
     update_profiles_microk8s,
     upgrade_docker_compose,
+    upgrade_env_compose,
     upgrade_helm_microk8s,
     yaml_escape_list,
 )
@@ -631,6 +631,7 @@ def setup_partial_walk(request):
         upgrade_docker_compose()
     time.sleep(20)
 
+
 @pytest.mark.usefixtures("setup_partial_walk")
 class TestPartialWalk:
     def test_check_if_partial_walk_is_done(self, setup_splunk):
@@ -660,6 +661,7 @@ class TestPartialWalk:
         assert result_count > 0
         assert metric_count > 0
 
+
 @pytest.fixture
 def setup_walk(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
@@ -677,8 +679,9 @@ def setup_walk(request):
     time.sleep(30)
     yield
 
+
 @pytest.mark.usefixtures("setup_walk")
-class TestPartialWalk:
+class TestWalk:
     def test_check_if_walk_is_done(self, setup_splunk):
         time.sleep(60)
         search_string = (
