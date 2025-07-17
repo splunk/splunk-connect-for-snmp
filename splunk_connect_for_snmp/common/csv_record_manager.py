@@ -23,6 +23,7 @@ class CSVRecordManager:
             raise
             
     def dataframe_to_csv(self, dataframe):
+        """Save the given dataframe to the CSV file."""
         try:
             dataframe.to_csv(self.filename, index=False)
         except Exception as e:
@@ -30,20 +31,22 @@ class CSVRecordManager:
             raise
 
     def create_rows(self, inputs):
+        """Create new rows in the csv file, also replace missing values with empty strings and removes duplicate rows."""
         try:
-            new_df = pd.DataFrame(inputs)
-            new_df = new_df.fillna('').astype(str).apply(lambda x: x.str.strip())
-            self.df = self.df.fillna('').astype(str).apply(lambda x: x.str.strip())
-            self.df = pd.concat([self.df, new_df], ignore_index=True)
+            inputs_df = pd.DataFrame(inputs)
+            inputs_df = inputs_df.fillna('').astype(str).apply(lambda field: field.str.strip())
+            self.df = self.df.fillna('').astype(str).apply(lambda field: field.str.strip())
+            self.df = pd.concat([self.df, inputs_df], ignore_index=True)
             self.df = self.df.drop_duplicates()
         except Exception as e:
             logger.error(f"Error occured while adding new row : {e}")
             raise
 
-    def delete_rows_by_key(self, key_value):
+    def delete_rows_by_key(self, key):
+        """Delete all the rows from the csv file where the 'key' column matches the given key."""
         try:
-            self.df['key'] = self.df['key'].astype(str).str.strip()  
-            self.df = self.df[self.df['key'] != key_value]
+            self.df['key'] = self.df['key'].astype(str).str.strip()
+            self.df = self.df[self.df['key'] != key]
         except Exception as e:
             logger.error(f"Error occured while deleting row by key: {e}")
             raise

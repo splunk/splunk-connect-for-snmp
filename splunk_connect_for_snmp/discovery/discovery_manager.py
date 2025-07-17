@@ -69,7 +69,7 @@ class Discovery(Task):
         error_indication, error_status, error_index, var_binds = next(iterator)  
         
         if not error_indication and error_status == 0:
-            group_name = "Default_group"
+            group_name = "default_group"
             _, value = var_binds[0]
             for device_rule in discovery_record.device_rules:
                 regex_pattern = fnmatch.translate(device_rule["patterns"]) 
