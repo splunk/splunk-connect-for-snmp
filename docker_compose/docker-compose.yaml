@@ -117,6 +117,7 @@ services:
       LOG_LEVEL: ${INVENTORY_LOG_LEVEL:-INFO}
       CHAIN_OF_TASKS_EXPIRY_TIME: ${CHAIN_OF_TASKS_EXPIRY_TIME:-500}
       CONFIG_FROM_MONGO: ${CONFIG_FROM_MONGO:-false}
+      ENABLE_FULL_WALK: ${ENABLE_FULL_WALK:-false}
     volumes:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
     - ${INVENTORY_FILE_ABSOLUTE_PATH}:/app/inventory/inventory.csv:ro

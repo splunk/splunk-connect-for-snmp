@@ -29,6 +29,7 @@ from integration_tests.splunk_test_utils import (
     update_profiles_compose,
     update_profiles_microk8s,
     upgrade_docker_compose,
+    upgrade_env_compose,
     upgrade_helm_microk8s,
     yaml_escape_list,
 )
@@ -500,11 +501,12 @@ def setup_small_walk(request):
     if deployment == "microk8s":
         update_profiles_microk8s(profile)
         update_file_microk8s(
-            [f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml"
+            [f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory2.yaml"
         )
-        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+        upgrade_helm_microk8s(["inventory2.yaml", "profiles.yaml"])
     else:
         update_profiles_compose(profile)
+        upgrade_env_compose("ENABLE_FULL_WALK", "false")
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,"])
         upgrade_docker_compose()
 
@@ -513,10 +515,11 @@ def setup_small_walk(request):
     yield
     if deployment == "microk8s":
         update_file_microk8s(
-            [f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml"
+            [f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory2.yaml"
         )
-        upgrade_helm_microk8s(["inventory.yaml"])
+        upgrade_helm_microk8s(["inventory2.yaml"])
     else:
+        upgrade_env_compose("ENABLE_FULL_WALK", "true")
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"])
         upgrade_docker_compose()
 
@@ -537,6 +540,120 @@ class TestSmallWalk:
         assert metric_count == 0
         search_string = (
             """| mpreview index=netmetrics earliest=-20s | search "IP-MIB" """
+        )
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+
+@pytest.fixture
+def setup_small_walk_with_full_walk_enabled(request):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
+    profile = {
+        "walk1": {
+            "condition": {"type": "walk"},
+            "varBinds": [yaml_escape_list(sq("IP-MIB"))],
+        },
+    }
+    if deployment == "microk8s":
+        update_profiles_microk8s(profile)
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,20,walk1,f,"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profile)
+        upgrade_env_compose("ENABLE_FULL_WALK", "true")
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,"])
+        upgrade_docker_compose()
+    time.sleep(20)
+    yield
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,20,walk1,f,t"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"])
+        upgrade_docker_compose()
+    time.sleep(20)
+
+
+@pytest.mark.usefixtures("setup_small_walk_with_full_walk_enabled")
+class TestSmallWalkWithFullWalkEnabled:
+    def test_check_if_full_walk_is_done_with_profile_set(self, setup_splunk):
+        time.sleep(20)
+        search_string = (
+            """| mpreview index=netmetrics earliest=-40s | search "TCP-MIB" """
+        )
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 1
+        )
+        assert result_count > 0
+        assert metric_count > 0
+        search_string = (
+            """| mpreview index=netmetrics earliest=-40s | search "IP-MIB" """
+        )
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+
+@pytest.fixture
+def setup_partial_walk(request):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
+
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,20,,f,"], "inventory2.yaml"
+        )
+        upgrade_helm_microk8s(["inventory2.yaml", "profiles.yaml"])
+    else:
+        upgrade_env_compose("ENABLE_FULL_WALK", "false")
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,"])
+        upgrade_docker_compose()
+    time.sleep(30)
+    yield
+    if deployment == "microk8s":
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,20,,f,t"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml"])
+    else:
+        upgrade_env_compose("ENABLE_FULL_WALK", "true")
+        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,"])
+        upgrade_docker_compose()
+    time.sleep(20)
+
+
+@pytest.mark.usefixtures("setup_partial_walk")
+class TestPartialWalk:
+    def test_check_if_partial_walk_is_done(self, setup_splunk):
+        time.sleep(20)
+        search_string = (
+            """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
+        )
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 1
+        )
+        assert result_count == 0
+        assert metric_count == 0
+        search_string = (
+            """| mpreview index=netmetrics earliest=-20s | search "IP-MIB" """
+        )
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count == 0
+        assert metric_count == 0
+        search_string = (
+            """| mpreview index=netmetrics earliest=-20s | search "SNMPv2-MIB" """
         )
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2

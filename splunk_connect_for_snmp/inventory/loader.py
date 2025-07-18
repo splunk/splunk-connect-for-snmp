@@ -192,12 +192,8 @@ def load():
     new_groups = groups_manager.return_collection()
 
     inventory_ui_collection = mongo_client.sc4snmp.inventory_ui
-    inventory_processor = InventoryProcessor(
-        groups_manager, logger, inventory_ui_collection
-    )
-    inventory_record_manager = InventoryRecordManager(
-        mongo_client, periodic_obj, logger
-    )
+    inventory_processor = InventoryProcessor(groups_manager, inventory_ui_collection)
+    inventory_record_manager = InventoryRecordManager(mongo_client, periodic_obj)
     if CONFIG_FROM_MONGO:
         logger.info("Loading inventory from inventory_ui collection")
     else:
