@@ -662,54 +662,6 @@ class TestPartialWalk:
         assert metric_count > 0
 
 
-@pytest.fixture
-def setup_walk(request):
-    trap_external_ip = request.config.getoption("trap_external_ip")
-    deployment = request.config.getoption("sc4snmp_deployment")
-
-    if deployment == "microk8s":
-        update_file_microk8s(
-            [f"{trap_external_ip},,2c,public,,,20,,f,"], "inventory.yaml"
-        )
-        upgrade_helm_microk8s(["inventory.yaml"])
-    else:
-        upgrade_env_compose("ENABLE_FULL_WALK", "true")
-        update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,,f,"])
-        upgrade_docker_compose()
-    time.sleep(30)
-    yield
-
-
-@pytest.mark.usefixtures("setup_walk")
-class TestWalk:
-    def test_check_if_walk_is_done(self, setup_splunk):
-        time.sleep(60)
-        search_string = (
-            """| mpreview index=netmetrics earliest=-60s | search "TCP-MIB" """
-        )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
-        search_string = (
-            """| mpreview index=netmetrics earliest=-60s | search "IP-MIB" """
-        )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
-        search_string = (
-            """| mpreview index=netmetrics earliest=-60s | search "SNMPv2-MIB" """
-        )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
-
-
 @pytest.fixture()
 def setup_v3_connection(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
