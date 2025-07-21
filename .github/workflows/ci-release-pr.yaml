@@ -72,5 +72,5 @@ jobs:
           cache-to: type=inline
       - uses: actions/setup-node@v4
         with:
-          node-version: "14"
+          node-version: "22"
 
