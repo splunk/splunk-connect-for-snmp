@@ -397,6 +397,8 @@ worker:
 
   nodeSelector: {}
 
+  enableIPv6: false
+
 inventory:
   secret:
     # Option for creating a new secret or using an existing one.

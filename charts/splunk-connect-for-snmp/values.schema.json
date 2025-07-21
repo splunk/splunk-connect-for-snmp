@@ -659,6 +659,9 @@
         },
         "nodeSelector": {
           "type": "object"
+        },
+        "enableIPv6": {
+          "type": "boolean"
         }
       }
     },

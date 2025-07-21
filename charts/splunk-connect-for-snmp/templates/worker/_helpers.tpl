@@ -181,6 +181,8 @@ Common labels
   value: {{ .Values.worker.poller.concurrency | default "4" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.poller.prefetch | default "1" | quote }}
+- name: IPv6_ENABLED
+  value: {{ .Values.worker.poller.enableIPv6 | default "false" | quote }}
 {{- end }}
 
 {{- define "environmental-variables-sender" -}}
