@@ -63,3 +63,9 @@ traps:
   ipFamilyPolicy: RequireDualStack
   ipFamilies: ["IPv4", "IPv6"]
 ```
+
+To configure poller to poll IPv4 and IPv6 addresses, you need to add the following configuration to the `values.yaml` file:
+``` 
+poller:
+  ipv6Enabled: true
+```

@@ -98,6 +98,8 @@ Detailed documentation about configuring poller can be found in [Poller](poller-
 | `splunkMetricNameHyphenToUnderscore` | Replaces hyphens with underscores in generated metric names to ensure compatibility with Splunk's metric schema | `false` |
 | `pollBaseProfiles`                   | Enables polling base profiles                                                                                   | `true`  |
 | `maxOidToProcess`                    | Maximum number of OIDs requested from SNMP Agent at once                                                        | `70`    |
+| `ipv6Enabled`                        | Enables polling for IPv6 addresses                                                                              | `false` |
+| `enableFullWalk`                     | Enables full walk of OIDs from device                                                                           | `false` |
 | `usernameSecrets`                    | List of kubernetes secrets name that will be used for polling                                                   |         |
 | `inventory`                          | List of configuration for polling                                                                               |         |
 | `logLevel`                           | Log level for a poller pod                                                                                      | `INFO`  |
