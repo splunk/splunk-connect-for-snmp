@@ -1003,6 +1003,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#default-walk-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      Default walk scope
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ipv6-hostname-resolution" class="md-nav__link">
     <span class="md-ellipsis">
       IPv6 hostname resolution
@@ -2100,6 +2109,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#default-walk-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      Default walk scope
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ipv6-hostname-resolution" class="md-nav__link">
     <span class="md-ellipsis">
       IPv6 hostname resolution
@@ -2234,6 +2252,7 @@ which may overload the SNMP device when executed too often. It is used by the SC
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-hlab-sha-aes</span>
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-hlab-sha-des</span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"WARN"</span>
+<span class="w">  </span><span class="nt">enableFullWalk</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">  </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
 <span class="w">    </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span>
 <span class="w">    </span><span class="no">10.202.4.202,,2c,public,,,2000,,,</span>
@@ -2242,6 +2261,8 @@ which may overload the SNMP device when executed too often. It is used by the SC
 <p class="admonition-title">Info</p>
 <p>The header’s line (<code>address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</code>) is necessary for the correct execution of SC4SNMP. Do not remove it.</p>
 </div>
+<h3 id="default-walk-scope">Default walk scope<a class="headerlink" href="#default-walk-scope" title="Permanent link">¶</a></h3>
+<p>The default walk profile is polling only <code>SNMPv2-MIB</code>. If the full oid tree walk is required it can be enabled by changing <code>enableFullWalk</code> flag to true.</p>
 <h3 id="ipv6-hostname-resolution">IPv6 hostname resolution<a class="headerlink" href="#ipv6-hostname-resolution" title="Permanent link">¶</a></h3>
 <p>When IPv6 is enabled and device is dual stack, the hostname resolution will try to resolve the name to the IPv6 address first, then to the IPv4 address.</p>
 <h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">¶</a></h3>

@@ -2267,6 +2267,10 @@ To configure Static Profile, the following value needs to be set in the <code>pr
 <h3 id="particular-kinds-of-static-profiles">Particular kinds of static profiles<a class="headerlink" href="#particular-kinds-of-static-profiles" title="Permanent link">¶</a></h3>
 <p>Sometimes static profiles have additional functionalities to be used in specific scenarios. </p>
 <h4 id="walk-profile">WALK profile<a class="headerlink" href="#walk-profile" title="Permanent link">¶</a></h4>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>By default the walk without any profile set is polling only <code>SNMPv2-MIB</code>. For changing the scope of the walk you can configure new walk profile or use <code>enableFullWalk</code> flag. More about it in <a href="../poller-configuration/#poller-configuration-file">poller configuration</a>.</p>
+</div>
 <p>If you would like to limit the scope of the walk, you should set one of the profiles in the inventory to point to the profile 
 definition of the <code>walk</code> type:
 </p><div class="highlight"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>

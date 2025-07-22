@@ -2257,6 +2257,7 @@ that causes infinite retry of walk operation, add <code>worker.ignoreNotIncreasi
 <h2 id="walking-a-device-takes-too-much-time">Walking a device takes too much time<a class="headerlink" href="#walking-a-device-takes-too-much-time" title="Permanent link">¶</a></h2>
 <p>See <a href="../../microk8s/configuration/configuring-profiles/#walk-profile">Configure small walk profile</a> to enable the small walk 
 functionality.</p>
+<p>Check if <code>poller.enableFullWalk</code> flag is set to <code>false</code>. See <a href="../microk8s/configuration/poller-configuration/#poller-configuration-file">poller configuration</a>.</p>
 <h2 id="an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance">An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance<a class="headerlink" href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance" title="Permanent link">¶</a></h2>
 <p>If you see many <code>An error of SNMP isWalk=True</code> errors in your logs, that means that there is a connection problem 
 with the hosts you are polling from.

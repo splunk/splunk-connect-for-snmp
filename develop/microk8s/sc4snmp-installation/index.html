@@ -2414,6 +2414,10 @@ replacing the IP address <code>10.0.101.22</code> with the server IP address whe
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="p">|</span><span class="w"> </span>mpreview<span class="w"> </span><span class="nv">index</span><span class="o">=</span><span class="s2">"netmetrics"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>search<span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">"sc4snmp:metric"</span>
 </code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Default walk profile is polling only <code>SNMPv2-MIB</code>. To enable full oid tree polling see <a href="../configuration/poller-configuration/#poller-configuration-file">poller configuration</a>.</p>
+</div>
 <blockquote>
 <p><strong><em>NOTE:</em></strong> Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every <code>walk_interval</code>. 
 Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
