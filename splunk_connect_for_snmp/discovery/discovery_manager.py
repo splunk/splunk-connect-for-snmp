@@ -27,13 +27,12 @@ DISCOVERY_PATH = os.getenv("DISCOVERY_PATH", "/app/discovery/discovery_devices.c
 class Discovery(Task):
     def __init__(self):
         self.snmp_engine = SnmpEngine()
-        pass
 
     def discover_active_hosts(self, subnet, is_ipv6):
         """Scan subnet for active host using nmap"""
         nm = nmap.PortScanner()
         try:
-            nm.scan(hosts=subnet, arguments= ("-6 " if is_ipv6 else "") + "-sn -Pn -T4 --min-rate 1000")
+            nm.scan(hosts=subnet, arguments= ("-6 " if is_ipv6 else "") + "-sn -T4 --min-rate 1000")
             return nm.all_hosts() 
         except Exception as e:
             logger.error(f"Error occured running nmap scan: {e}")
@@ -99,7 +98,7 @@ class Discovery(Task):
                 for ip in ip_list
             }
 
-            for count, future in enumerate(as_completed(future_to_ip), start=10):
+            for _, future in enumerate(as_completed(future_to_ip), start=1):
                 ip = future_to_ip[future]
                 try:
                     result = future.result()

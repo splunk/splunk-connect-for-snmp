@@ -10,7 +10,7 @@ class CSVRecordManager:
         self.columns = ['key', 'subnet', 'ip', 'port', 'version', 'group', 'secret', 'community']
         
         try: 
-            if os.path.getsize(filename) == 0:
+            if not os.path.isfile(filename):
                 pd.DataFrame(columns=self.columns).to_csv(filename, index=False)
                 self.df = pd.DataFrame(columns=self.columns)  # Initialize empty DataFrame
             else:

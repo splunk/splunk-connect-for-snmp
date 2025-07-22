@@ -22,15 +22,6 @@ spec:
       serviceAccountName: {{ include "splunk-connect-for-snmp.serviceAccountName" . }}
       securityContext:
         fsGroup: 10001
-      initContainers:
-        - name: discovery-permissions
-          image: alpine:3.19
-          command: ["sh", "-c", "mkdir -p /app/discovery && touch /app/discovery/discovery_devices.csv && chmod 777 /app/discovery/discovery_devices.csv"]
-          volumeMounts:
-            - name: discovery-volume
-              mountPath: /app/discovery
-          securityContext:
-            runAsUser: 0
       containers:
         - name: {{ .Chart.Name }}-discovery
           securityContext:
@@ -91,7 +82,7 @@ spec:
         - name: discovery-volume
           hostPath:
             path: {{ .Values.discovery.discoveryPath }}
-            type: DirectoryOrCreate
+            type: Directory
         {{- range (.Values.discovery).usernameSecrets }}
         - name: {{ . }}-snmpv3-secrets
           secret:
