@@ -258,6 +258,7 @@ poller:
   #  example_group_1,,2c,public,,,3000,static_profile,t,
   logLevel: "INFO"
 
+  ipv6Enabled: false
 worker:
   # workers are responsible for the actual execution of polling, processing trap messages, and sending data to Splunk.
   # More: https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/worker-configuration/
