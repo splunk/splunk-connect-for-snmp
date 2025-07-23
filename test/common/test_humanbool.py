@@ -1,3 +1,4 @@
+import math
 from unittest import TestCase
 
 from splunk_connect_for_snmp.common.hummanbool import (
@@ -52,3 +53,8 @@ class TestHumanBool(TestCase):
         with self.assertRaises(BadlyFormattedFieldError) as context:
             convert_to_float(value)
         self.assertEqual("Value 'up' should be numeric", context.exception.args[0])
+
+    def test_convert_to_float_scientific_notation(self):
+        self.assertEqual(convert_to_float("260E3100"), "260E3100")
+        self.assertEqual(convert_to_float("849867E3"), "849867E3")
+        self.assertEqual(convert_to_float("849867E2"), "849867E2")
