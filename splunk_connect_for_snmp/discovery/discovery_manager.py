@@ -110,11 +110,11 @@ class Discovery(Task):
 
         return devices_detail
         
-    def add_devices_detail_to_csv(self, snmp_devices_detail, delete_flag):
+    def add_devices_detail_to_csv(self, snmp_devices_detail, delete_flag, dicovery_name):
         """Add snmp devices detail to CSV"""
         csv_service = CSVRecordManager(DISCOVERY_PATH)
         if delete_flag == True:    
-            csv_service.delete_rows_by_key(snmp_devices_detail[0]['key'])
+            csv_service.delete_rows_by_key(dicovery_name)
         csv_service.create_rows(snmp_devices_detail)
         csv_service.dataframe_to_csv(csv_service.df)
 
@@ -123,7 +123,7 @@ class Discovery(Task):
             host_list = self.get_host_list(discovery_record.network_address, discovery_record.skip_active_check, discovery_record.is_ipv6)
             logger.debug(f"Number of Active hosts: {len(host_list)}")
             snmp_devices_detail = self.discover_snmp_devices_details(host_list, discovery_record, max_threads=10)
-            self.add_devices_detail_to_csv(snmp_devices_detail, discovery_record.delete_already_discovered)
+            self.add_devices_detail_to_csv(snmp_devices_detail, discovery_record.delete_already_discovered, discovery_record.discovery_name)
             
             return snmp_devices_detail
         except Exception as e:

@@ -215,3 +215,10 @@ Common labels
   value: "false"
   {{- end }}
 {{- end }}
+
+{{- define "environmental-variables-discovery" -}}
+- name: WORKER_CONCURRENCY
+  value: {{ .Values.worker.discovery.concurrency | default "4" | quote }}
+- name: PREFETCH_COUNT
+  value: {{ .Values.worker.discovery.prefetch | default "30" | quote }}
+{{- end }}

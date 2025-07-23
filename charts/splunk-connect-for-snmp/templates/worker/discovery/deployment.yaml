@@ -6,7 +6,9 @@ metadata:
   labels:
     {{- include "splunk-connect-for-snmp.worker.discovery.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  {{- if not .Values.worker.discovery.autoscaling.enabled }}
+  replicas: {{ .Values.worker.discovery.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "splunk-connect-for-snmp.worker.discovery.selectorLabels" . | nindent 6 }}

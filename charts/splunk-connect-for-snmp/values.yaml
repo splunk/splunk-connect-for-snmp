@@ -334,6 +334,32 @@ worker:
         # the resources requests for sender worker container
       requests:
         cpu: 250m
+
+  # The discovery worker handles auto discovery of snmp enabled devices and create CSV file for it
+  discovery:
+    # number of the discovery replicas when autoscaling is set to false
+    replicaCount: 1
+    # minimum number of threads in a pod
+    concurrency: 4
+    # how many tasks are consumed from the queue at once
+    prefetch: 30
+    autoscaling:
+      # enabling autoscaling for discovery worker pods
+      enabled: false
+      # minimum number of running discovery worker pods when autoscaling is enabled
+      minReplicas: 2
+      # maximum number of running discovery worker pods when autoscaling is enabled
+      maxReplicas: 10
+      # CPU % threshold that must be exceeded on discovery worker pods to spawn another replica
+      targetCPUUtilizationPercentage: 80
+    resources:
+      # the resources limits for discovery worker container
+      limits:
+        cpu: 500m
+        # the resources requests for discovery worker container
+      requests:
+        cpu: 250m
+
   # Liveness probes are used in Kubernetes to know when a pod is alive or dead.
   # A pod can be in a dead state for a number of reasons;
   # the application could be crashed, some error in the application etc.
