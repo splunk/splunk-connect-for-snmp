@@ -56,7 +56,7 @@ def convert_to_float(value: typing.Any, ignore_error: bool = False) -> typing.An
     try:
         # When the values are of a format "849867E3" it is typically something like a serial number
         # we don't want to interpret it like a scientific notation 849867 * 10^3
-        if SCIENTIFIC_VALUE.match(value):
+        if isinstance(value, str) and SCIENTIFIC_VALUE.match(value):
             return value
         return float(value)
     except ValueError:
