@@ -1,4 +1,3 @@
-import math
 from unittest import TestCase
 
 from splunk_connect_for_snmp.common.hummanbool import (
