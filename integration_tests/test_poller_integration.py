@@ -1801,6 +1801,6 @@ def run_retried_single_search(setup_splunk, search_string, retries):
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         if result_count or metric_count:
             return result_count, metric_count
-        logger.info("No results returned from search. Retrying in 2 seconds...")
-        time.sleep(2)
+        logger.info("No results returned from search. Retrying in 30 seconds...")
+        time.sleep(30)
     return 0, 0

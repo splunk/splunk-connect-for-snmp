@@ -67,6 +67,43 @@ rules:
 Configuration above can be found in the `examples` directory in SC4SNMP [GitHub repository](https://github.com/splunk/splunk-connect-for-snmp).
 Next run `yamllint -c <path to custom-config.yamllint> <path to values.yaml>` command. Warnings can be ignored.
 
+
+### Protect Mongo and Redis by password
+
+Create secrets for Mongo and Redis:
+
+```
+kubectl create secret generic redis-auth-secret \
+  --from-literal=redis-password=your_password -n sc4snmp
+
+microk8s kubectl create secret generic mongodb-auth-secret \
+  --from-literal=mongodb-root-password=your_password -n sc4snmp
+```
+
+Reference on this secrets in  `values.yaml`:
+
+```
+redis:
+   auth:
+     enabled: true
+     existingSecret: "redis-auth-secret"
+
+mongodb:
+   auth:
+     enabled: true
+     existingSecret: "mongodb-auth-secret"
+```
+
+And **only after that** you can deploy your SC4SNMP.
+
+!!! warning
+    If you wanna update the password, in case of mongo you need to use [passwordUpdateJob](https://artifacthub.io/packages/helm/bitnami/mongodb#automated-update-using-a-password-update-job) (for that just place it in `mongodb` section) and after that redeploy SC4SNMP.
+    
+    But in case of redis helm charm [it's not supporting that automatically](https://artifacthub.io/packages/helm/bitnami/mongodb#automated-update-using-a-password-update-job), you need upadte the password using `redis-cli` and after that update existing secret and redeploy SC4SNMP.
+
+    For that reason will be good to provide credentials during first deploy.
+    
+
 #### Install SC4SNMP
 
 After the `values.yaml` creation, you can proceed with the SC4SNMP installation:
