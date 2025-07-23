@@ -182,7 +182,7 @@ Common labels
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.poller.prefetch | default "1" | quote }}
 - name: IPv6_ENABLED
-  value: {{ .Values.poller.enableIPv6 | default "false" | quote }}
+  value: {{ .Values.poller.ipv6Enabled | default "false" | quote }}
 {{- end }}
 
 {{- define "environmental-variables-sender" -}}

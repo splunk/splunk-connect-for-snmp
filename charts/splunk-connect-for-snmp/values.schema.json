@@ -371,7 +371,7 @@
         "logLevel": {
           "type": "string"
         },
-        "enableIPv6": {
+        "ipv6Enabled": {
           "type": "boolean"
         },
         "enableFullWalk": {
