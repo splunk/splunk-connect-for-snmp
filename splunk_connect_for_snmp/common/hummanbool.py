@@ -19,6 +19,7 @@ from typing import Union
 
 SCIENTIFIC_VALUE = re.compile(r"^[+-]?\d+(\.\d+)?[eE][+-]?\d+$")
 
+
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
 
     if flag is None:
