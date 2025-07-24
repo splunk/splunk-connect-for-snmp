@@ -16,6 +16,7 @@
 import logging
 import time
 
+import pytest
 from pysnmp.hlapi import *
 
 from integration_tests.splunk_test_utils import (
@@ -75,6 +76,7 @@ def send_v3_trap(host, port, object_identity, *var_binds):
         logger.error(f"{error_indication}")
 
 
+@pytest.mark.part5
 def test_trap_v1(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -105,6 +107,7 @@ def test_trap_v1(request, setup_splunk):
     assert result_count == 1
 
 
+@pytest.mark.part5
 def test_trap_v2(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -135,6 +138,7 @@ def test_trap_v2(request, setup_splunk):
     assert result_count == 1
 
 
+@pytest.mark.part5
 def test_added_varbind(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -158,6 +162,7 @@ def test_added_varbind(request, setup_splunk):
     assert result_count == 1
 
 
+@pytest.mark.part5
 def test_many_traps(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -188,6 +193,7 @@ def test_many_traps(request, setup_splunk):
     assert result_count == 5
 
 
+@pytest.mark.part5
 def test_more_than_one_varbind(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -218,6 +224,7 @@ def test_more_than_one_varbind(request, setup_splunk):
     assert result_count == 1
 
 
+@pytest.mark.part5
 def test_loading_mibs(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -245,6 +252,7 @@ def test_loading_mibs(request, setup_splunk):
     assert result_count == 1
 
 
+@pytest.mark.part5
 def test_trap_v3(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
