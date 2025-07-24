@@ -9,6 +9,7 @@
 - change default walk to get only SNMPv2-MIB
 
 ### Fixed
+- fix text SNMP values with numbers and 'E' being interpreted as scientific notation
 
 
 ## [1.12.3]
