@@ -641,7 +641,7 @@ def setup_partial_walk(request):
 
 
 @pytest.mark.usefixtures("setup_partial_walk")
-@pytest.mark.part3
+@pytest.mark.part2
 class TestPartialWalk:
     def test_check_if_partial_walk_is_done(self, setup_splunk):
         time.sleep(20)
@@ -714,7 +714,7 @@ def setup_v3_connection(request):
 
 
 @pytest.mark.usefixtures("setup_v3_connection")
-@pytest.mark.part3
+@pytest.mark.part2
 class TestSNMPv3Connection:
     def test_snmpv3_walk(self, setup_splunk):
         time.sleep(200)
@@ -1122,7 +1122,7 @@ def setup_single_in_and_equals_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_single_in_and_equals_profiles")
-@pytest.mark.part3
+@pytest.mark.part4
 class TestSingleInAndEqualsCorrectCondition:
     def test_in_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1217,7 +1217,7 @@ def setup_single_regex_and_options_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_single_regex_and_options_profiles")
-@pytest.mark.part3
+@pytest.mark.part4
 class TestSingleRegexCorrectCondition:
     def test_regex_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1317,7 +1317,7 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
 
 
 @pytest.mark.usefixtures("setup_single_gt_and_lt_profiles_with_negation")
-@pytest.mark.part3
+@pytest.mark.part4
 class TestSingleGtAndLtWithNegationCorrectCondition:
     def test_not_gt_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1419,7 +1419,7 @@ def setup_single_in_and_equals_profiles_with_negation(request):
 
 
 @pytest.mark.usefixtures("setup_single_in_and_equals_profiles_with_negation")
-@pytest.mark.part3
+@pytest.mark.part4
 class TestSingleInAndEqualsWithNegationCorrectCondition:
     def test_not_in_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1521,7 +1521,7 @@ def setup_single_regex_and_options_profiles_with_negation(request):
 
 
 @pytest.mark.usefixtures("setup_single_regex_and_options_profiles_with_negation")
-@pytest.mark.part3
+@pytest.mark.part5
 class TestSingleRegexWithNegationCorrectCondition:
     def test_not_regex_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1627,7 +1627,7 @@ def setup_multiple_conditions_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_multiple_conditions_profiles")
-@pytest.mark.part4
+@pytest.mark.part5
 class TestMultipleCorrectConditions:
     def test_gt_and_equals_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1739,7 +1739,7 @@ def setup_wrong_conditions_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_wrong_conditions_profiles")
-@pytest.mark.part4
+@pytest.mark.part5
 class TestWrongConditions:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)
@@ -1839,7 +1839,7 @@ def setup_misconfigured_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_misconfigured_profiles")
-@pytest.mark.part4
+@pytest.mark.part5
 class TestMisconfiguredProfiles:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)
@@ -1923,7 +1923,7 @@ def setup_misconfigured_groups(request):
 
 
 @pytest.mark.usefixtures("setup_misconfigured_groups")
-@pytest.mark.part4
+@pytest.mark.part5
 class TestMisconfiguredGroups:
     def test_wrong_groups(self, request, setup_splunk):
         time.sleep(20)
