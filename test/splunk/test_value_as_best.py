@@ -30,4 +30,4 @@ class TestValueAsBest(TestCase):
         self.assertIsNone(value_as_best(None))
 
     def test_list(self):
-        self.assertEqual(value_as_best([1,2,3]), [1,2,3])
+        self.assertEqual(value_as_best([1, 2, 3]), [1, 2, 3])
