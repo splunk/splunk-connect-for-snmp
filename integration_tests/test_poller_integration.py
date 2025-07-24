@@ -37,6 +37,7 @@ from integration_tests.splunk_test_utils import (
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.part1
 class TestSanity:
     def test_poller_integration_event(self, setup_splunk):
         logger.info("Integration test for poller event")
@@ -116,6 +117,7 @@ def setup_profile(request):
 
 
 @pytest.mark.usefixtures("setup_profile")
+@pytest.mark.part1
 class TestProfiles:
     def test_static_profiles_metrics(self, setup_splunk):
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch
@@ -177,6 +179,7 @@ def setup_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_profiles")
+@pytest.mark.part1
 class TestProfilesWorkflow:
     def test_add_new_profile_and_reload(self, setup_splunk):
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=new_profile """
@@ -283,6 +286,7 @@ def setup_smart_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_smart_profiles")
+@pytest.mark.part1
 class TestSmartProfiles:
     def test_smart_profiles_field(self, setup_splunk):
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field | search icmpOutDestUnreachs """
@@ -360,6 +364,7 @@ def setup_modify_profile(request):
 
 
 @pytest.mark.usefixtures("setup_modify_profile")
+@pytest.mark.part2
 class TestModifyProfilesFrequency:
     def test_sanity_frequency_field(self, setup_splunk):
         search_string = """| mpreview index=netmetrics earliest=-30s | search profiles=test_modify frequency=5 """
@@ -416,6 +421,7 @@ class TestModifyProfilesFrequency:
 
 
 @pytest.mark.usefixtures("setup_modify_profile")
+@pytest.mark.part2
 class TestModifyProfilesVarBinds:
     def test_sanity_varBinds_field(self, setup_splunk):
         search_string = """| mpreview index=netmetrics earliest=-30s | search profiles=test_modify UDP-MIB"""
@@ -527,6 +533,7 @@ def setup_small_walk(request):
 
 
 @pytest.mark.usefixtures("setup_small_walk")
+@pytest.mark.part2
 class TestSmallWalk:
     def test_check_if_walk_scope_was_smaller(self, setup_splunk):
         time.sleep(20)
@@ -583,6 +590,7 @@ def setup_small_walk_with_full_walk_enabled(request):
 
 
 @pytest.mark.usefixtures("setup_small_walk_with_full_walk_enabled")
+@pytest.mark.part2
 class TestSmallWalkWithFullWalkEnabled:
     def test_check_if_full_walk_is_done_with_profile_set(self, setup_splunk):
         time.sleep(20)
@@ -633,6 +641,7 @@ def setup_partial_walk(request):
 
 
 @pytest.mark.usefixtures("setup_partial_walk")
+@pytest.mark.part2
 class TestPartialWalk:
     def test_check_if_partial_walk_is_done(self, setup_splunk):
         time.sleep(20)
@@ -705,6 +714,7 @@ def setup_v3_connection(request):
 
 
 @pytest.mark.usefixtures("setup_v3_connection")
+@pytest.mark.part2
 class TestSNMPv3Connection:
     def test_snmpv3_walk(self, setup_splunk):
         time.sleep(200)
@@ -794,6 +804,7 @@ def setup_groups(request):
 
 
 @pytest.mark.usefixtures("setup_groups")
+@pytest.mark.part3
 class TestGroupsInventory:
     def test_ip_address_inventory(self, setup_splunk):
         time.sleep(20)
@@ -923,6 +934,7 @@ def setup_single_ang_group(request):
 
 
 @pytest.mark.usefixtures("setup_single_ang_group")
+@pytest.mark.part3
 class TestIgnoreSingleIfInGroup:
     def test_host_from_group(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
@@ -1018,6 +1030,7 @@ def setup_single_gt_and_lt_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_single_gt_and_lt_profiles")
+@pytest.mark.part3
 class TestSingleGtAndLtCorrectCondition:
     def test_gt_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1109,6 +1122,7 @@ def setup_single_in_and_equals_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_single_in_and_equals_profiles")
+@pytest.mark.part4
 class TestSingleInAndEqualsCorrectCondition:
     def test_in_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1203,6 +1217,7 @@ def setup_single_regex_and_options_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_single_regex_and_options_profiles")
+@pytest.mark.part4
 class TestSingleRegexCorrectCondition:
     def test_regex_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1302,6 +1317,7 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
 
 
 @pytest.mark.usefixtures("setup_single_gt_and_lt_profiles_with_negation")
+@pytest.mark.part4
 class TestSingleGtAndLtWithNegationCorrectCondition:
     def test_not_gt_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1403,6 +1419,7 @@ def setup_single_in_and_equals_profiles_with_negation(request):
 
 
 @pytest.mark.usefixtures("setup_single_in_and_equals_profiles_with_negation")
+@pytest.mark.part4
 class TestSingleInAndEqualsWithNegationCorrectCondition:
     def test_not_in_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1504,6 +1521,7 @@ def setup_single_regex_and_options_profiles_with_negation(request):
 
 
 @pytest.mark.usefixtures("setup_single_regex_and_options_profiles_with_negation")
+@pytest.mark.part5
 class TestSingleRegexWithNegationCorrectCondition:
     def test_not_regex_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1609,6 +1627,7 @@ def setup_multiple_conditions_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_multiple_conditions_profiles")
+@pytest.mark.part5
 class TestMultipleCorrectConditions:
     def test_gt_and_equals_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1720,6 +1739,7 @@ def setup_wrong_conditions_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_wrong_conditions_profiles")
+@pytest.mark.part5
 class TestWrongConditions:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)
@@ -1819,6 +1839,7 @@ def setup_misconfigured_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_misconfigured_profiles")
+@pytest.mark.part6
 class TestMisconfiguredProfiles:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)
@@ -1902,6 +1923,7 @@ def setup_misconfigured_groups(request):
 
 
 @pytest.mark.usefixtures("setup_misconfigured_groups")
+@pytest.mark.part6
 class TestMisconfiguredGroups:
     def test_wrong_groups(self, request, setup_splunk):
         time.sleep(20)
