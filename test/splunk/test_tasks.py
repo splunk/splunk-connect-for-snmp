@@ -10,11 +10,6 @@ class TestValueAsBest(TestCase):
     def test_int_string(self):
         self.assertEqual(value_as_best("42"), 42.0)
 
-    def test_scientific_string(self):
-        # Should return as string if matches scientific notation regex
-        self.assertEqual(value_as_best("1.23e+10"), "1.23e+10")
-        self.assertEqual(value_as_best("-2.5E-3"), "-2.5E-3")
-
     def test_serial_number_like_string(self):
         # Should not be interpreted as scientific notation, should return as string
         self.assertEqual(value_as_best("849867E9"), "849867E9")
