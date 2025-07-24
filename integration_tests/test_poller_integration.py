@@ -1839,7 +1839,7 @@ def setup_misconfigured_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_misconfigured_profiles")
-@pytest.mark.part5
+@pytest.mark.part6
 class TestMisconfiguredProfiles:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)
@@ -1923,7 +1923,7 @@ def setup_misconfigured_groups(request):
 
 
 @pytest.mark.usefixtures("setup_misconfigured_groups")
-@pytest.mark.part5
+@pytest.mark.part6
 class TestMisconfiguredGroups:
     def test_wrong_groups(self, request, setup_splunk):
         time.sleep(20)
