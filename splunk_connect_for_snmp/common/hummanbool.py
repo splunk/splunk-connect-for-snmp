@@ -13,11 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import re
 import typing
 from typing import Union
-
-SCIENTIFIC_VALUE = re.compile(r"^[+-]?\d+(\.\d+)?[eE][+-]?\d+$")
 
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
@@ -54,10 +51,6 @@ class BadlyFormattedFieldError(Exception):
 
 def convert_to_float(value: typing.Any, ignore_error: bool = False) -> typing.Any:
     try:
-        # When the values are of a format "849867E3" it is typically something like a serial number
-        # we don't want to interpret it like a scientific notation 849867 * 10^3
-        if isinstance(value, str) and SCIENTIFIC_VALUE.match(value):
-            return value
         return float(value)
     except ValueError:
         if ignore_error:
