@@ -101,7 +101,7 @@ def setup_profile(request):
             [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"]
         )
         upgrade_docker_compose()
-    time.sleep(30)
+    time.sleep(90)
     yield
     if str(deployment) == "microk8s":
         upgrade_helm_microk8s(
@@ -112,7 +112,7 @@ def setup_profile(request):
             [f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"]
         )
         upgrade_docker_compose()
-    time.sleep(20)
+    time.sleep(90)
 
 
 @pytest.mark.usefixtures("setup_profile")
@@ -160,7 +160,7 @@ def setup_profiles(request):
             [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,"]
         )
         upgrade_docker_compose()
-    time.sleep(30)
+    time.sleep(90)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -173,7 +173,7 @@ def setup_profiles(request):
             [f"{trap_external_ip},,2c,public,,,600,new_profile;generic_switch,,t"]
         )
         upgrade_docker_compose()
-    time.sleep(20)
+    time.sleep(90)
 
 
 @pytest.mark.usefixtures("setup_profiles")
@@ -269,7 +269,7 @@ def setup_smart_profiles(request):
         update_profiles_compose(profile)
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,600,,t,"])
         upgrade_docker_compose()
-    time.sleep(30)
+    time.sleep(90)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -279,7 +279,7 @@ def setup_smart_profiles(request):
     else:
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,600,,t,t"])
         upgrade_docker_compose()
-    time.sleep(20)
+    time.sleep(90)
 
 
 @pytest.mark.usefixtures("setup_smart_profiles")
@@ -344,7 +344,7 @@ def setup_modify_profile(request):
             [f"{trap_external_ip},,2c,public,,,600,test_modify,f,"]
         )
         upgrade_docker_compose()
-    time.sleep(30)
+    time.sleep(90)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -356,7 +356,7 @@ def setup_modify_profile(request):
             [f"{trap_external_ip},,2c,public,,,600,test_modify,f,t"]
         )
         upgrade_docker_compose()
-    time.sleep(20)
+    time.sleep(90)
 
 
 @pytest.mark.usefixtures("setup_modify_profile")
@@ -392,7 +392,7 @@ class TestModifyProfilesFrequency:
             )
             upgrade_docker_compose()
 
-        time.sleep(60)
+        time.sleep(90)
 
         if deployment == "microk8s":
             update_file_microk8s(
@@ -510,7 +510,7 @@ def setup_small_walk(request):
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,"])
         upgrade_docker_compose()
 
-    time.sleep(30)
+    time.sleep(90)
 
     yield
     if deployment == "microk8s":
@@ -523,7 +523,7 @@ def setup_small_walk(request):
         update_inventory_compose([f"{trap_external_ip},,2c,public,,,20,walk1,f,t"])
         upgrade_docker_compose()
 
-    time.sleep(20)
+    time.sleep(90)
 
 
 @pytest.mark.usefixtures("setup_small_walk")
@@ -688,7 +688,7 @@ def setup_v3_connection(request):
             [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,"]
         )
         upgrade_docker_compose()
-    time.sleep(30)
+    time.sleep(90)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -701,7 +701,7 @@ def setup_v3_connection(request):
             [f"{trap_external_ip},1161,3,,sv3poller,,20,v3profile,f,t"]
         )
         upgrade_docker_compose()
-    time.sleep(20)
+    time.sleep(90)
 
 
 @pytest.mark.usefixtures("setup_v3_connection")
