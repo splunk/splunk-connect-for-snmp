@@ -43,7 +43,7 @@ class Discovery(Task):
         try:
             logger.debug(f"Skip active check : {skip_active_check}")
             if skip_active_check:
-                network = ipaddress.ip_network(subnet)
+                network = ipaddress.ip_network(subnet, strict=False)
                 return list(str(ip) for ip in network.hosts())
             else:
                 hosts = self.discover_active_hosts(subnet, is_ipv6)
