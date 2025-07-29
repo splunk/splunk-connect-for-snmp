@@ -261,7 +261,7 @@ services:
       <<: *general_sc4snmp_data
       LOG_LEVEL: ${DISCOVERY_LOG_LEVEL:-INFO}
       CHAIN_OF_TASKS_EXPIRY_TIME: ${CHAIN_OF_TASKS_EXPIRY_TIME:-500}
-      CONFIG_FROM_MONGO: ${CONFIG_FROM_MONGO:-false}
+      DISCOVERY_CONFIG_PATH: ${DISCOVERY_CONFIG_PATH:-/app/discovery/discovery-config.yaml}
     volumes:
       - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
       - ${DISCOVERY_FILE_ABSOLUTE_PATH}:/app/discovery/discovery-config.yaml:ro
@@ -275,7 +275,7 @@ services:
       - worker-discovery
     deploy:
       mode: replicated
-      replicas: ${WORKER_DISCOVERY_REPLICAS:-2}
+      replicas: ${WORKER_DISCOVERY_REPLICAS:-1}
       resources:
         limits:
           cpus: ${WORKER_DISCOVERY_CPU_LIMIT:-0.50}
@@ -284,13 +284,14 @@ services:
           cpus: ${WORKER_DISCOVERY_CPU_RESERVATIONS:-0.25}
           memory: ${WORKER_DISCOVERY_MEMORY_RESERVATIONS:-250M}
     environment:
-      <<: [ *general_sc4snmp_data, *splunk_general_setup, *splunk_extended_setup,
-            *pysnmp_debug, *ipv6 ]
+      <<: [*general_sc4snmp_data, *pysnmp_debug, *workers_general_setup, ]
       WORKER_CONCURRENCY: ${WORKER_DISCOVERY_CONCURRENCY:-1}
-      SC4SNMP_VERSION: ${SC4SNMP_VERSION:-latest}
-      LOG_LEVEL: ${WORKER_LOG_LEVEL:-INFO}
+      PREFETCH_COUNT: ${PREFETCH_SENDER_COUNT:-1}
+      DISCOVERY_PATH: ${DISCOVERY_PATH:-/app/discovery/discovery_devices.csv}
+      IPv6_ENABLED: ${IPv6_ENABLED:-false}
     volumes:
       - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
+      - ${LOCAL_DISCOVERY_PATH}:/app/discovery/:rw
       - worker-discovery-pysnmp-cache-volume:/.pysnmp/:rw
       - worker-discovery-tmp:/tmp/:rw
 volumes:
@@ -313,3 +314,4 @@ volumes:
   discovery-tmp:
   worker-discovery-pysnmp-cache-volume:
   worker-discovery-tmp:
+  worker-discovery-volume:
