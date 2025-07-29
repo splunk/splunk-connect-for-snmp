@@ -22,7 +22,7 @@ from pysnmp.hlapi import (
 
 logger = get_task_logger(__name__)
 
-DISCOVERY_PATH = os.getenv("DISCOVERY_PATH", "/app/discovery/discovery_devices.csv")
+DISCOVERY_CSV_PATH = os.getenv("DISCOVERY_CSV_PATH", "/app/discovery/discovery_devices.csv")
 
 class Discovery(Task):
     def __init__(self):
@@ -112,7 +112,7 @@ class Discovery(Task):
         
     def add_devices_detail_to_csv(self, snmp_devices_detail, delete_flag, dicovery_name):
         """Add snmp devices detail to CSV"""
-        csv_service = CSVRecordManager(DISCOVERY_PATH)
+        csv_service = CSVRecordManager(DISCOVERY_CSV_PATH)
         if delete_flag == True:    
             csv_service.delete_rows_by_key(dicovery_name)
         csv_service.create_rows(snmp_devices_detail)

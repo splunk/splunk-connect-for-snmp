@@ -261,10 +261,10 @@ services:
       <<: *general_sc4snmp_data
       LOG_LEVEL: ${DISCOVERY_LOG_LEVEL:-INFO}
       CHAIN_OF_TASKS_EXPIRY_TIME: ${CHAIN_OF_TASKS_EXPIRY_TIME:-500}
-      DISCOVERY_CONFIG_PATH: ${DISCOVERY_CONFIG_PATH:-/app/discovery/discovery-config.yaml}
+      DISCOVERY_CONFIG_PATH: /app/discovery/discovery-config.yaml
     volumes:
       - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
-      - ${DISCOVERY_FILE_ABSOLUTE_PATH}:/app/discovery/discovery-config.yaml:ro
+      - ${DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH}:/app/discovery/discovery-config.yaml:ro
       - discovery-pysnmp-cache-volume:/.pysnmp/:rw
       - discovery-tmp:/tmp/:rw
   worker-discovery:
@@ -284,14 +284,15 @@ services:
           cpus: ${WORKER_DISCOVERY_CPU_RESERVATIONS:-0.25}
           memory: ${WORKER_DISCOVERY_MEMORY_RESERVATIONS:-250M}
     environment:
-      <<: [*general_sc4snmp_data, *pysnmp_debug, *workers_general_setup, ]
+      <<: [ *general_sc4snmp_data, *pysnmp_debug, *ipv6 ]
+      SC4SNMP_VERSION: ${SC4SNMP_VERSION:-latest}
+      LOG_LEVEL: ${WORKER_LOG_LEVEL:-INFO}
       WORKER_CONCURRENCY: ${WORKER_DISCOVERY_CONCURRENCY:-1}
       PREFETCH_COUNT: ${PREFETCH_SENDER_COUNT:-1}
-      DISCOVERY_PATH: ${DISCOVERY_PATH:-/app/discovery/discovery_devices.csv}
-      IPv6_ENABLED: ${IPv6_ENABLED:-false}
+      DISCOVERY_CSV_PATH: /app/discovery/discovery_devices.csv
     volumes:
       - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
-      - ${LOCAL_DISCOVERY_PATH}:/app/discovery/:rw
+      - ${DISCOVERY_PATH}:/app/discovery/:rw
       - worker-discovery-pysnmp-cache-volume:/.pysnmp/:rw
       - worker-discovery-tmp:/tmp/:rw
 volumes:

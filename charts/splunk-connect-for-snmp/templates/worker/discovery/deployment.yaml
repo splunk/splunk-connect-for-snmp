@@ -42,7 +42,7 @@ spec:
             ]
           env:
             {{- include "environmental-variables" . | nindent 12 }}
-            - name: DISCOVERY_PATH
+            - name: DISCOVERY_CSV_PATH
               value: /app/discovery/discovery_devices.csv
             - name: IPv6_ENABLED
               {{- if .Values.discovery.ipv6Enabled}}
