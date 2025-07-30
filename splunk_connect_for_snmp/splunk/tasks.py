@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import re
 from contextlib import suppress
 
 from splunk_connect_for_snmp.common.custom_translations import load_custom_translations
@@ -85,6 +86,7 @@ else:
     SPLUNK_HEC_TLSVERIFY = True
 
 OTEL_METRICS_URL = os.getenv("OTEL_METRICS_URL", None)
+SCIENTIFIC_VALUE = re.compile(r"^[+-]?\d+(\.\d+)?[eE][+-]?\d+$")
 
 logger = get_task_logger(__name__)
 
@@ -191,6 +193,10 @@ def do_send(data, destination_url, self):
 
 def value_as_best(value) -> Union[str, float]:
     try:
+        # When the values are of a format "849867E3" it is typically something like a serial number
+        # we don't want to interpret it like a scientific notation 849867 * 10^3
+        if isinstance(value, str) and SCIENTIFIC_VALUE.match(value):
+            return value
         return float(value)
     except ValueError:
         return value
