@@ -56,7 +56,7 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format='[%(asctime)s: %(levelname)s/%(name)s] %(message)s',
     level=getattr(logging, LOG_LEVEL),
     stream=sys.stdout,
     force=True  # This will override any existing configuration
@@ -64,7 +64,6 @@ logging.basicConfig(
 
 # Now create the module logger
 logger = logging.getLogger(__name__)
-logger.setLevel(getattr(logging, LOG_LEVEL))
 
 # Configure third-party loggers
 logging.getLogger('pymongo').setLevel(logging.WARNING)
