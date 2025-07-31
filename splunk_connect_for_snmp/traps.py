@@ -57,13 +57,10 @@ PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 
 logger = get_task_logger(__name__)
 logger.setLevel(LOG_LEVEL)
-logger.setFormat("%(asctime)s %(levelname)s %(message)s")
-# formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
-# handler = logging.StreamHandler(sys.stdout)
-# handler.setFormatter(formatter)
-# handler.setLevel(getattr(logging, LOG_LEVEL))
-#
-# logger.addHandler(handler)
+formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+for handler in logger.handlers:
+    handler.setFormatter(formatter)
+
 logging.getLogger('pymongo').setLevel(logging.WARNING)
 logging.getLogger('mongodb').setLevel(logging.WARNING)
 logging.info(f"Logging level set to {LOG_LEVEL}")
