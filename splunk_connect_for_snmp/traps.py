@@ -63,6 +63,7 @@ handler.setLevel(getattr(logging, LOG_LEVEL))
 
 logger.addHandler(handler)
 
+logger.debug("Logging configured")
 
 if PYSNMP_DEBUG:
     # Usage: PYSNMP_DEBUG=dsp,msgproc,io
