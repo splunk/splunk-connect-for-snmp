@@ -62,6 +62,7 @@ handler.setFormatter(formatter)
 handler.setLevel(getattr(logging, LOG_LEVEL))
 
 logger.addHandler(handler)
+logging.getLogger('pymongo').setLevel(logging.WARNING)
 
 logger.debug("Logging configured")
 
