@@ -57,7 +57,7 @@ PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 
 logger = get_task_logger(__name__)
 logger.setLevel(LOG_LEVEL)
-
+logger.setFormat("%(asctime)s %(levelname)s %(message)s")
 # formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
 # handler = logging.StreamHandler(sys.stdout)
 # handler.setFormatter(formatter)
