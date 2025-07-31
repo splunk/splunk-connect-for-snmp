@@ -63,8 +63,6 @@ handler.setLevel(getattr(logging, LOG_LEVEL))
 
 logger.addHandler(handler)
 logging.getLogger('pymongo').setLevel(logging.WARNING)
-logger.info("Logging configured")
-logger.debug("Logging DEBUG configured")
 
 if PYSNMP_DEBUG:
     # Usage: PYSNMP_DEBUG=dsp,msgproc,io
@@ -159,6 +157,8 @@ def add_communities(config_base, snmp_engine):
 
 
 def main():
+    logger.info("Logging configured")
+    logger.debug("Logging DEBUG configured")
     # Get the event loop for this thread
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
