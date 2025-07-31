@@ -10,6 +10,7 @@
 
 ### Fixed
 - fix text SNMP values with numbers and 'E' being interpreted as scientific notation
+- added missing `ipv6Enabled` flag in poller
 
 
 ## [1.12.3]

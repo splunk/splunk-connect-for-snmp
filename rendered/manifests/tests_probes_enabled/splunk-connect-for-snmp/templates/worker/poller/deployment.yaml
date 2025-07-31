@@ -109,6 +109,8 @@ spec:
               value: "4"
             - name: PREFETCH_COUNT
               value: "1"
+            - name: IPv6_ENABLED
+              value: "false"
           livenessProbe:
             exec:
               command:
