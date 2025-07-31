@@ -63,6 +63,7 @@ handler.setLevel(getattr(logging, LOG_LEVEL))
 
 logger.addHandler(handler)
 logging.getLogger('pymongo').setLevel(logging.WARNING)
+print(f"Logging level set to {LOG_LEVEL}")
 
 if PYSNMP_DEBUG:
     # Usage: PYSNMP_DEBUG=dsp,msgproc,io
