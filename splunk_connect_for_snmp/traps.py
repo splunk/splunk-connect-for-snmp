@@ -59,8 +59,22 @@ PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 logger = logging.getLogger(__name__)
 logger.setLevel(LOG_LEVEL)
 formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
-for handler in logger.handlers:
+if not logger.handlers:
+    # Create a formatter
+    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+
+    # Create a stream handler that outputs to standard output
+    handler = logging.StreamHandler(sys.stdout)
+
+    # Set the formatter for the handler
     handler.setFormatter(formatter)
+
+    # Set the minimum level for this specific handler
+    # Messages below this level will be ignored by this handler.
+    handler.setLevel(getattr(logging, LOG_LEVEL))
+
+    # Add the configured handler to the logger
+    logger.addHandler(handler)
 
 logging.getLogger('pymongo').setLevel(logging.WARNING)
 logging.getLogger('mongodb').setLevel(logging.WARNING)
