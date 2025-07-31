@@ -16,6 +16,7 @@
 import logging
 from contextlib import suppress
 
+from celery.utils.log import get_task_logger
 from pysnmp.proto.api import v2c
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
@@ -54,7 +55,7 @@ IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 
-logger = logging.getLogger(__name__)
+logger = get_task_logger(__name__)
 
 formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
 handler = logging.StreamHandler(sys.stdout)
