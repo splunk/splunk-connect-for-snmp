@@ -55,7 +55,8 @@ IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 
-logger = get_task_logger(__name__)
+# logger = get_task_logger(__name__)
+logger = logging.getLogger(__name__)
 logger.setLevel(LOG_LEVEL)
 formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
 for handler in logger.handlers:
