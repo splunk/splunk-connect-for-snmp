@@ -55,30 +55,23 @@ IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 
-# logger = get_task_logger(__name__)
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=getattr(logging, LOG_LEVEL),
+    stream=sys.stdout,
+    force=True  # This will override any existing configuration
+)
+
+# Now create the module logger
 logger = logging.getLogger(__name__)
-logger.setLevel(LOG_LEVEL)
-formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
-if not logger.handlers:
-    # Create a formatter
-    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+logger.setLevel(getattr(logging, LOG_LEVEL))
 
-    # Create a stream handler that outputs to standard output
-    handler = logging.StreamHandler(sys.stdout)
-
-    # Set the formatter for the handler
-    handler.setFormatter(formatter)
-
-    # Set the minimum level for this specific handler
-    # Messages below this level will be ignored by this handler.
-    handler.setLevel(getattr(logging, LOG_LEVEL))
-
-    # Add the configured handler to the logger
-    logger.addHandler(handler)
-
+# Configure third-party loggers
 logging.getLogger('pymongo').setLevel(logging.WARNING)
 logging.getLogger('mongodb').setLevel(logging.WARNING)
-logging.info(f"Logging level set to {LOG_LEVEL}")
+
+# Remove the direct logging call and use logger instead
+logger.info(f"Logging level set to {LOG_LEVEL}")
 
 if PYSNMP_DEBUG:
     # Usage: PYSNMP_DEBUG=dsp,msgproc,io
