@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
 import re
 from contextlib import suppress
 
@@ -40,6 +41,8 @@ from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.snmp.manager import Poller, get_inventory
 
 logger = get_task_logger(__name__)
+logging.getLogger('pymongo').setLevel(logging.WARNING)
+logging.getLogger('mongodb').setLevel(logging.WARNING)
 
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB", "sc4snmp")

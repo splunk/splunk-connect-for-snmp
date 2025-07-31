@@ -16,6 +16,7 @@
 import logging
 from contextlib import suppress
 
+from celery.utils.log import get_task_logger
 from pysnmp.proto.api import v2c
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
@@ -54,15 +55,22 @@ IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 
+logging.basicConfig(
+    format='[%(asctime)s: %(levelname)s/%(name)s] %(message)s',
+    level=getattr(logging, LOG_LEVEL),
+    stream=sys.stdout,
+    force=True  # This will override any existing configuration
+)
+
+# Now create the module logger
 logger = logging.getLogger(__name__)
 
-formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(formatter)
-handler.setLevel(getattr(logging, LOG_LEVEL))
+# Configure third-party loggers
+logging.getLogger('pymongo').setLevel(logging.WARNING)
+logging.getLogger('mongodb').setLevel(logging.WARNING)
 
-logger.addHandler(handler)
-
+# Remove the direct logging call and use logger instead
+logger.info(f"Logging level set to {LOG_LEVEL}")
 
 if PYSNMP_DEBUG:
     # Usage: PYSNMP_DEBUG=dsp,msgproc,io
@@ -157,6 +165,8 @@ def add_communities(config_base, snmp_engine):
 
 
 def main():
+    logger.info("Logging configured")
+    logger.debug("Logging DEBUG configured")
     # Get the event loop for this thread
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
