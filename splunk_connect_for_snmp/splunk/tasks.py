@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
 from contextlib import suppress
 
 from splunk_connect_for_snmp.common.custom_translations import load_custom_translations
@@ -87,6 +88,9 @@ else:
 OTEL_METRICS_URL = os.getenv("OTEL_METRICS_URL", None)
 
 logger = get_task_logger(__name__)
+logging.getLogger('pymongo').setLevel(logging.WARNING)
+logging.getLogger('mongodb').setLevel(logging.WARNING)
+
 
 # Token is only appropriate if we are working direct with Splunk
 if SPLUNK_HEC_TOKEN:
