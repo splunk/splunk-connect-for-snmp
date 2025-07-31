@@ -2123,6 +2123,10 @@ You can add the single ip or subnets for both IPv4 and IPv6 under <code>spec.add
 </p><div class="highlight"><pre><span></span><code>traps:
   ipFamilyPolicy: RequireDualStack
   ipFamilies: ["IPv4", "IPv6"]
+</code></pre></div>
+<p>To configure poller to poll IPv4 and IPv6 addresses, you need to add the following configuration to the <code>values.yaml</code> file:
+</p><div class="highlight"><pre><span></span><code>poller:
+  ipv6Enabled: true
 </code></pre></div></div>
 
 
