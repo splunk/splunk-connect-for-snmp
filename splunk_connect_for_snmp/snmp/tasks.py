@@ -164,8 +164,9 @@ def trap(self, work):
     _, _, result = self.process_snmp_data(varbind_table, metrics, work["host"])
     if human_bool(RESOLVE_TRAP_ADDRESS):
         work["host"] = resolve_address(work["host"])
+    fields = work.get("fields", None)
 
-    return _build_result(result, work["host"])
+    return _build_result(result, work["host"], fields)
 
 
 def _process_work_data(self, work, varbind_table, not_translated_oids):
@@ -222,15 +223,18 @@ def _resolve_remaining_oids(self, remaining_oids, varbind_table):
             logger.warning(f"No translation found for {w[0]}")
 
 
-def _build_result(result, host):
+def _build_result(result, host, fields=None):
     """Build the final result dictionary."""
-    return {
+    result = {
         "time": time.time(),
         "result": result,
         "address": host,
         "detectchange": False,
         "sourcetype": SPLUNK_SOURCETYPE_TRAPS,
     }
+    if fields:
+        result["fields"] = fields
+    return result
 
 
 def format_ipv4_address(host: str) -> str:

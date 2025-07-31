@@ -746,6 +746,9 @@
         "aggregateTrapsEvents": {
           "type": ["string", "boolean"]
         },
+        "includeSecurityContextId": {
+          "type": ["string", "boolean"]
+        },
         "communities": {
           "type": "object"
         },

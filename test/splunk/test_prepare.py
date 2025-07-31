@@ -2,7 +2,7 @@ import json
 from unittest import TestCase
 from unittest.mock import patch
 
-from splunk_connect_for_snmp.splunk.tasks import apply_custom_translations, prepare
+from splunk_connect_for_snmp.splunk.tasks import apply_custom_translations, prepare, prepare_trap_data
 
 
 @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS", "test_index")
@@ -601,3 +601,56 @@ class TestPrepare(TestCase):
             },
             result,
         )
+
+@patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")
+@patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS", "netops")
+class TestPrepareTrapData(TestCase):
+    def test_prepare_trap_data_basic(self):
+        work = {
+            "time": 1640609779.473053,
+            "address": "192.168.0.1",
+            "result": {
+                "GROUP1": {
+                    "metrics": {
+                        "metric_one": {"value": 23},
+                        "metric_two": {"value": 26},
+                    },
+                    "fields": {
+                        "field_one": {"value": "on"},
+                        "field_two": {"value": "listening"},
+                    },
+                }
+            }
+        }
+        events = prepare_trap_data(work)
+        self.assertEqual(len(events), 1)
+        event = json.loads(events[0])
+        self.assertEqual(event["time"], 1640609779.473053)
+        self.assertEqual(event["source"], "sc4snmp")
+        self.assertEqual(event["sourcetype"], "sc4snmp:traps")
+        self.assertEqual(event["host"], "192.168.0.1")
+        self.assertEqual(event["index"], "netops")
+        event_data = json.loads(event["event"])
+        self.assertEqual(event_data["field_one"]["value"], "on")
+        self.assertEqual(event_data["field_two"]["value"], "listening")
+        self.assertEqual(event_data["metric_one"]["value"], 23.0)
+        self.assertEqual(event_data["metric_two"]["value"], 26.0)
+
+    def test_prepare_trap_data_with_extra_fields(self):
+        work = {
+            "time": 1640609779.473053,
+            "address": "192.168.0.1",
+            "fields": {"context_engine_id": "800000c1010a010fc4"},
+            "result": {
+                "GROUP1": {
+                    "metrics": {},
+                    "fields": {
+                        "context_engine_id": "800000c1010a010fc4",
+                    },
+                }
+            }
+        }
+        events = prepare_trap_data(work)
+        event = json.loads(events[0])
+        self.assertIn("fields", event)
+        self.assertEqual(event["fields"], {"context_engine_id": "800000c1010a010fc4"})

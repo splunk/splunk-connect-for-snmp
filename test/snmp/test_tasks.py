@@ -156,6 +156,44 @@ class TestTasks(TestCase):
 
     @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
+    @patch("time.time")
+    def test_trap_with_context_engine_id(
+        self,
+        m_time,
+        m_poller,
+        m_process_data,
+        m_resolved,
+        m_mongo_client,
+    ):
+        m_poller.return_value = None
+        from splunk_connect_for_snmp.snmp.tasks import trap
+
+        m_time.return_value = 1640692955.365186
+
+        m_resolved.return_value = None
+
+        work = {"data": [("asd", "tre")], "host": "192.168.0.1", "fields": {"context_engine_id": "80003a8c04"}}
+        m_process_data.return_value = (False, [], {"test": "value1"})
+        m_poller.builder = MagicMock()
+        m_poller.trap = trap
+        m_poller.trap.mib_view_controller = MagicMock()
+        result = trap(work)
+
+        self.assertEqual(
+            {
+                "address": "192.168.0.1",
+                "detectchange": False,
+                "result": {"test": "value1"},
+                "sourcetype": "sc4snmp:traps",
+                "time": 1640692955.365186,
+                "fields": {"context_engine_id": "80003a8c04"}
+            },
+            result,
+        )
+
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")

@@ -438,6 +438,7 @@ traps:
     - "80003a8c04"
   # aggregateTrapsEvents flag set to true makes traps events collected as one event inside splunk
   aggregateTrapsEvents: "false"
+  includeSecurityContextId: "false"
 
   # communities define a version of SNMP protocol and SNMP community string, which should be used
   communities: {}

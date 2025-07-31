@@ -16,6 +16,8 @@
 import logging
 from contextlib import suppress
 
+from pyasn1.codec.ber import decoder
+from pyasn1.type import univ
 from pysnmp.proto.api import v2c
 
 from splunk_connect_for_snmp.common.hummanbool import disable_mongo_logging, human_bool
@@ -50,6 +52,7 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 SECURITY_ENGINE_ID_LIST = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "80003a8c04").split(
     ","
 )
+INCLUDE_SECURITY_CONTEXT_ID = human_bool(os.getenv("INCLUDE_SECURITY_CONTEXT_ID", "false"))
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
@@ -57,6 +60,7 @@ DISABLE_MONGO_DEBUG_LOGGING = human_bool(
     os.getenv("DISABLE_MONGO_DEBUG_LOGGING", "true")
 )
 
+# Now create the module logger
 logging.basicConfig(
     format="[%(asctime)s: %(levelname)s/%(name)s] %(message)s",
     level=getattr(logging, LOG_LEVEL),
@@ -98,6 +102,23 @@ trap_task_signature = trap.s
 prepare_task_signature = prepare.s
 send_task_signature = send.s
 
+def decode_security_context(hexstr: bytes) -> str | None:
+    try:
+        decoded_message, _ = decoder.decode(hexstr, asn1Spec=univ.Sequence())
+        msg_version = decoded_message.getComponentByPosition(0)
+        if msg_version._value != 3:
+            logger.warning("SNMP message version is not 3, skipping security context decoding.")
+            return None
+        msg_security_parameters_raw = decoded_message.getComponentByPosition(2).asOctets()
+        usm_message, _ = decoder.decode(msg_security_parameters_raw, asn1Spec=univ.Sequence())
+        usm_engine_id_obj = usm_message.getComponentByPosition(0)
+        usm_engine_id_bytes = usm_engine_id_obj.asOctets()
+        return usm_engine_id_bytes.hex()
+    except PyAsn1Error as e:
+        logger.error(f"ASN.1 decoding error: {e}")
+    except Exception as e:
+        logger.error(f"Error decoding SNMPv3 engineID: {e}")
+    return None
 
 # Callback function for receiving notifications
 # noinspection PyUnusedLocal
@@ -108,7 +129,6 @@ def cb_fun(
         'Notification from ContextEngineId "%s", ContextName "%s"'
         % (context_engine_id.prettyPrint(), context_name.prettyPrint())
     )
-
     exec_context = snmp_engine.observer.getExecutionContext(
         "rfc3412.receiveMessage:request"
     )
@@ -116,10 +136,16 @@ def cb_fun(
     data = []
     device_ip = exec_context["transportAddress"][0]
 
+    logger.debug("Device IP is %s", device_ip)
+
     for name, val in varbinds:
         data.append((name.prettyPrint(), val.prettyPrint()))
 
     work = {"data": data, "host": device_ip}
+    if INCLUDE_SECURITY_CONTEXT_ID:
+        context_engine_id = decode_security_context(exec_context.get("wholeMsg"))
+        if context_engine_id:
+            work["fields"] = {"context_engine_id": context_engine_id}
     my_chain = chain(
         trap_task_signature(work).set(queue="traps").set(priority=5),
         prepare_task_signature().set(queue="send").set(priority=1),
