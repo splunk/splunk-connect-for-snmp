@@ -32,6 +32,8 @@ spec:
             value: {{ include "splunk-connect-for-snmp.redis_url" . }}
           - name: DISCOVERY_CONFIG_PATH
             value: /app/discovery/discovery-config.yaml
+          - name: LOG_LEVEL
+            value: {{ .Values.discovery.logLevel | default "INFO" }}
           volumeMounts:
             - name: discovery-config
               mountPath: "/app/discovery"

@@ -6,7 +6,9 @@ metadata:
   labels:
     {{- include "splunk-connect-for-snmp.worker.discovery.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  {{- if not .Values.worker.discovery.autoscaling.enabled }}
+  replicas: {{ .Values.worker.discovery.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "splunk-connect-for-snmp.worker.discovery.selectorLabels" . | nindent 6 }}
@@ -40,6 +42,14 @@ spec:
             ]
           env:
             {{- include "environmental-variables" . | nindent 12 }}
+            - name: DISCOVERY_CSV_PATH
+              value: /app/discovery/discovery_devices.csv
+            - name: IPv6_ENABLED
+              {{- if .Values.discovery.ipv6Enabled}}
+              value: "true"
+              {{ else }}
+              value: "false"
+              {{- end }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"
@@ -50,6 +60,13 @@ spec:
             - name: tmp
               mountPath: "/tmp/"
               readOnly: false
+            - name: discovery-volume
+              mountPath: /app/discovery
+            {{- range (.Values.discovery).usernameSecrets }}
+            - name: {{ . }}-snmpv3-secrets
+              mountPath: /app/secrets/snmpv3/{{ . }}
+              readOnly: true
+            {{- end }}
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
         - name: config
@@ -64,4 +81,13 @@ spec:
           emptyDir: {}
         - name: tmp
           emptyDir: {}
+        - name: discovery-volume
+          hostPath:
+            path: {{ .Values.discovery.discoveryPath }}
+            type: Directory
+        {{- range (.Values.discovery).usernameSecrets }}
+        - name: {{ . }}-snmpv3-secrets
+          secret:
+            secretName: {{ . }}
+        {{- end }}
 {{- end }}

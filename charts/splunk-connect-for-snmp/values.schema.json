@@ -582,6 +582,69 @@
             }
           }
         },
+        "discovery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "replicaCount": {
+              "type": "integer"
+            },
+            "concurrency": {
+              "type": "integer"
+            },
+            "prefetch": {
+              "type": "integer"
+            },
+            "autoscaling": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "minReplicas": {
+                  "type": "integer"
+                },
+                "maxReplicas": {
+                  "type": "integer"
+                },
+                "targetCPUUtilizationPercentage": {
+                  "type": "integer"
+                }
+              }
+            },
+            "resources": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "limits": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "cpu": {
+                      "type": ["integer", "string"]
+                    },
+                    "memory": {
+                      "type": ["integer", "string"]
+                    }
+                  }
+                },
+                "requests": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "cpu": {
+                      "type": ["integer", "string"]
+                    },
+                    "memory": {
+                      "type": ["integer", "string"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "livenessProbe": {
           "type": "object",
           "additionalProperties": false,
@@ -889,18 +952,30 @@
         "enabled": {
           "type": "boolean"
         },
+        "ipv6Enabled": {
+          "type": "boolean"
+        },
+        "usernameSecrets": {
+          "type": "array"
+        },
+        "discoveryPath": {
+          "type": "string"
+        },
+        "logLevel": {
+          "type": "string"
+        },
         "autodiscovery": {
           "type": "object",
           "additionalProperties": false,
           "patternProperties": {
-            "^discovery_\\d+$": {
+            "^[^0-9].*": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
                 "frequency": {
                   "type": "integer"
                 },
-                "skip_port_check": {
+                "skip_active_check": {
                   "type": "boolean"
                 },
                 "delete_already_discovered": {
@@ -923,6 +998,9 @@
                   "type": "integer",
                   "minimum": 1,
                   "maximum": 65535
+                },
+                "security_engine": {
+                  "type": "string"
                 },
                 "device_rules": {
                   "type": "array",

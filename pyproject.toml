@@ -49,6 +49,7 @@ urllib3 = "^1.26.17"
 jsonschema = "4.24.0"
 flower = "^2.0.1"
 python-nmap = "^0.7.1"
+pandas = ">=1.5,<2.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
