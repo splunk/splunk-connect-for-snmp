@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import re
 import logging
+import re
 from contextlib import suppress
 
 from splunk_connect_for_snmp.common.custom_translations import load_custom_translations
@@ -90,8 +90,8 @@ OTEL_METRICS_URL = os.getenv("OTEL_METRICS_URL", None)
 SCIENTIFIC_VALUE = re.compile(r"^[+-]?\d+(\.\d+)?[eE][+-]?\d+$")
 
 logger = get_task_logger(__name__)
-logging.getLogger('pymongo').setLevel(logging.WARNING)
-logging.getLogger('mongodb').setLevel(logging.WARNING)
+logging.getLogger("pymongo").setLevel(logging.WARNING)
+logging.getLogger("mongodb").setLevel(logging.WARNING)
 
 
 # Token is only appropriate if we are working direct with Splunk
