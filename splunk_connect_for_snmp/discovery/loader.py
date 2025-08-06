@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 from contextlib import suppress
@@ -8,7 +9,9 @@ from splunk_connect_for_snmp import customtaskmanager
 from splunk_connect_for_snmp.common.task_generator import DiscoveryTaskGenerator
 from splunk_connect_for_snmp.common.discovery_record import DiscoveryRecord
 from splunk_connect_for_snmp.poller import app
-from celery.utils.log import get_task_logger
+from splunk_connect_for_snmp.common.customised_json_formatter import (
+    CustomisedJSONFormatter,
+)
 
 
 with suppress(ImportError, OSError):
@@ -20,9 +23,18 @@ DISCOVERY_CONFIG_PATH = os.getenv(
     "DISCOVERY_CONFIG_PATH", "/app/discovery/discovery-config.yaml"
 )
 CHAIN_OF_TASKS_EXPIRY_TIME = os.getenv("CHAIN_OF_TASKS_EXPIRY_TIME", "60")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG")
 
+formatter = CustomisedJSONFormatter()
 
-logger = get_task_logger(__name__)
+logger = logging.getLogger(__name__)
+logger.setLevel(LOG_LEVEL)
+
+# writing to stdout
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(LOG_LEVEL)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 def autodiscovery_task_definition(

@@ -712,6 +712,9 @@
         "udpConnectionTimeout": {
           "type": "integer"
         },
+        "udpConnectionRetries": {
+          "type": "integer"
+        },
         "ignoreEmptyVarbinds": {
           "type": "boolean"
         },

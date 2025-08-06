@@ -128,6 +128,8 @@ Common labels
   value: {{ .Values.worker.logLevel | default "INFO" }}
 - name: UDP_CONNECTION_TIMEOUT
   value: {{ .Values.worker.udpConnectionTimeout | default "3" | quote }}
+- name: UDP_CONNECTION_RETRIES
+  value: {{ .Values.worker.udpConnectionRetries | default "5" | quote }}
 - name: MAX_OID_TO_PROCESS
   value: {{ .Values.poller.maxOidToProcess | default "70" | quote }}
 - name: PYSNMP_DEBUG

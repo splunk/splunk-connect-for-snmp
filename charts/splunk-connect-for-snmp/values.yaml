@@ -410,6 +410,8 @@ worker:
   podAntiAffinity: soft
   # udpConnectionTimeout timeout in seconds for SNMP operations
   udpConnectionTimeout: 3
+  # udpConnectionRetries Number of retries for SNMP operations
+  udpConnectionRetries: 5
 
   # in case of seeing "Empty SNMP response message" this variable can be set to true
   ignoreEmptyVarbinds: false
@@ -598,7 +600,12 @@ redis:
     enabled: false
 commonAnnotations: {}
 discovery:
+  # Enables discovering SNMP enabled device and create CSV file.
   enabled: false
+  # list of kubernetes secrets name that will be used for discovery
+  # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/discovery-configuration/#define-usernamesecrets
   usernameSecrets: []
+  # Enabled device detection using IPv6 subnet.
   ipv6Enabled: false
+  # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
   logLevel: "INFO"
