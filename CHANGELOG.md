@@ -4,6 +4,7 @@
 
 ### Changed
 - implemented mTLS for Splunk 10
+- added SNMP-enabled device discovery feature
 
 ### Fixed
 
