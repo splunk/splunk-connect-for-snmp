@@ -35,7 +35,7 @@ class Discovery(Task):
         """Scan subnet for active host using nmap"""
         nm = nmap.PortScanner()
         try:
-            nm.scan(hosts=subnet, arguments= ("-6 " if is_ipv6 else "") + "-sn -T4 --min-rate 1000")
+            nm.scan(hosts=subnet, arguments= ("-6 " if is_ipv6 else "") + "-sn -T4")
             return nm.all_hosts() 
         except Exception as e:
             logger.error(f"Error occured running nmap scan: {e}")
