@@ -31,13 +31,20 @@ from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 
 from splunk_connect_for_snmp.celery_signals_handlers import *
+from splunk_connect_for_snmp.common.hummanbool import human_bool
+
+DISABLE_MONGO_DEBUG_LOGGING = human_bool(
+    os.getenv("DISABLE_MONGO_DEBUG_LOGGING", "true").lower()
+)
 
 provider = TracerProvider()
 trace.set_tracer_provider(provider)
 
 logger = get_task_logger(__name__)
-logging.getLogger("pymongo").setLevel(logging.WARNING)
-logging.getLogger("mongodb").setLevel(logging.WARNING)
+
+if DISABLE_MONGO_DEBUG_LOGGING:
+    logging.getLogger("pymongo").setLevel(logging.WARNING)
+    logging.getLogger("mongodb").setLevel(logging.WARNING)
 
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp_poller")

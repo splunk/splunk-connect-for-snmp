@@ -389,6 +389,7 @@ worker:
   ignoreNotIncreasingOid: []
   # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
   logLevel: "INFO"
+  disableMongoDebugLogging: true
   podAntiAffinity: soft
   # udpConnectionTimeout timeout in seconds for SNMP operations
   udpConnectionTimeout: 3

@@ -117,6 +117,8 @@ Common labels
 {{- end}}
 - name: LOG_LEVEL
   value: {{ .Values.worker.logLevel | default "INFO" }}
+- name: DISABLE_MONGO_DEBUG_LOGGING
+  value: {{ .Values.worker.disableMongoDebugLogging | default "true" | quote }}
 - name: UDP_CONNECTION_TIMEOUT
   value: {{ .Values.worker.udpConnectionTimeout | default "3" | quote }}
 - name: MAX_OID_TO_PROCESS

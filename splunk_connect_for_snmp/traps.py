@@ -16,7 +16,6 @@
 import logging
 from contextlib import suppress
 
-from celery.utils.log import get_task_logger
 from pysnmp.proto.api import v2c
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
@@ -54,6 +53,9 @@ SECURITY_ENGINE_ID_LIST = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "80003a8c04").
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
+DISABLE_MONGO_DEBUG_LOGGING = human_bool(
+    os.getenv("DISABLE_MONGO_DEBUG_LOGGING", "true").lower()
+)
 
 logging.basicConfig(
     format="[%(asctime)s: %(levelname)s/%(name)s] %(message)s",
@@ -65,9 +67,9 @@ logging.basicConfig(
 # Now create the module logger
 logger = logging.getLogger(__name__)
 
-# Configure third-party loggers
-logging.getLogger("pymongo").setLevel(logging.WARNING)
-logging.getLogger("mongodb").setLevel(logging.WARNING)
+if DISABLE_MONGO_DEBUG_LOGGING:
+    logging.getLogger("pymongo").setLevel(logging.WARNING)
+    logging.getLogger("mongodb").setLevel(logging.WARNING)
 
 # Remove the direct logging call and use logger instead
 logger.info(f"Logging level set to {LOG_LEVEL}")

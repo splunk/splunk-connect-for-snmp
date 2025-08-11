@@ -59,6 +59,8 @@ spec:
               value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/standard.txt"
             - name: LOG_LEVEL
               value: {{ .Values.traps.logLevel | default "INFO" }}
+            - name: DISABLE_MONGO_DEBUG_LOGGING
+              value: {{ .Values.worker.disableMongoDebugLogging | default "true" | quote }}
             - name: PYSNMP_DEBUG
               value: {{ .Values.pysnmpDebug | default "" | quote }}
             {{- if .Values.splunk.protocol }}
