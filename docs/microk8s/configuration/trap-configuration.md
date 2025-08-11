@@ -22,6 +22,8 @@ traps:
 
   # Overrides the logLevel tag whose default is the chart
   logLevel: "WARN"
+  # disableMongoDebugLogging is used to disable extensive debug logging for MongoDB+pymongo while logLevel is set to DEBUG.
+  disableMongoDebugLogging: true
   # replicas: Number of replicas for trap container should be 2x number of nodes
   replicas: 2
   #loadBalancerIP: The IP address in the metallb pool

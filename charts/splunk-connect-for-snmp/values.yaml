@@ -389,6 +389,7 @@ worker:
   ignoreNotIncreasingOid: []
   # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
   logLevel: "INFO"
+  # disableMongoDebugLogging is used to disable extensive debug logging for MongoDB+pymongo while logLevel is set to DEBUG.
   disableMongoDebugLogging: true
   podAntiAffinity: soft
   # udpConnectionTimeout timeout in seconds for SNMP operations
@@ -480,6 +481,8 @@ traps:
 
   # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
   logLevel: "INFO"
+  # disableMongoDebugLogging is used to disable extensive debug logging for MongoDB+pymong whiel logLevel is set to DEBUG.
+  disableMongoDebugLogging: true
   nodeSelector: {}
   tolerations: []
   podAntiAffinity: soft

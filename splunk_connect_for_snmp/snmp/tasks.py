@@ -54,6 +54,7 @@ MAX_DNS_CACHE_SIZE_TRAPS = int(os.getenv("MAX_DNS_CACHE_SIZE_TRAPS", "100"))
 TTL_DNS_CACHE_TRAPS = int(os.getenv("TTL_DNS_CACHE_TRAPS", "1800"))
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 
+
 @shared_task(
     bind=True,
     base=Poller,

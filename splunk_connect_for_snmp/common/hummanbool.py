@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
 import typing
 from typing import Union
-import logging
 
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:

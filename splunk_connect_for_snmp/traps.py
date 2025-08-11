@@ -18,7 +18,7 @@ from contextlib import suppress
 
 from pysnmp.proto.api import v2c
 
-from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.hummanbool import disable_mongo_logging, human_bool
 from splunk_connect_for_snmp.snmp.auth import get_secret_value
 
 with suppress(ImportError, OSError):
@@ -68,8 +68,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 if DISABLE_MONGO_DEBUG_LOGGING:
-    logging.getLogger("pymongo").setLevel(logging.WARNING)
-    logging.getLogger("mongodb").setLevel(logging.WARNING)
+    disable_mongo_logging()
 
 # Remove the direct logging call and use logger instead
 logger.info(f"Logging level set to {LOG_LEVEL}")
