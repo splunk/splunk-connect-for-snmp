@@ -50,6 +50,7 @@ jsonschema = "4.24.0"
 flower = "^2.0.1"
 python-nmap = "^0.7.1"
 pandas = ">=1.5,<2.2"
+filelock = "^3.18.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"

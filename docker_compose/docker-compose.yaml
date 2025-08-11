@@ -293,7 +293,7 @@ services:
       UDP_CONNECTION_RETRIES: ${UDP_CONNECTION_RETRIES:-5}
       WORKER_CONCURRENCY: ${WORKER_DISCOVERY_CONCURRENCY:-1}
       PREFETCH_COUNT: ${PREFETCH_SENDER_COUNT:-1}
-      DISCOVERY_CSV_PATH: /app/discovery/discovery_devices.csv
+      DISCOVERY_FOLDER_PATH: /app/discovery
     volumes:
       - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
       - ${DISCOVERY_PATH}:/app/discovery/:rw
