@@ -54,7 +54,7 @@ IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 DISABLE_MONGO_DEBUG_LOGGING = human_bool(
-    os.getenv("DISABLE_MONGO_DEBUG_LOGGING", "true").lower()
+    os.getenv("DISABLE_MONGO_DEBUG_LOGGING", "true")
 )
 
 logging.basicConfig(
@@ -64,14 +64,10 @@ logging.basicConfig(
     force=True,  # This will override any existing configuration
 )
 
-# Now create the module logger
 logger = logging.getLogger(__name__)
 
 if DISABLE_MONGO_DEBUG_LOGGING:
     disable_mongo_logging()
-
-# Remove the direct logging call and use logger instead
-logger.info(f"Logging level set to {LOG_LEVEL}")
 
 if PYSNMP_DEBUG:
     # Usage: PYSNMP_DEBUG=dsp,msgproc,io
