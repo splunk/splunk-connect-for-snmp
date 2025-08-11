@@ -15,6 +15,7 @@
 #
 import typing
 from typing import Union
+import logging
 
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
@@ -56,3 +57,8 @@ def convert_to_float(value: typing.Any, ignore_error: bool = False) -> typing.An
         if ignore_error:
             return value
         raise BadlyFormattedFieldError(f"Value '{value}' should be numeric")
+
+
+def disable_mongo_logging():
+    logging.getLogger("mongo").setLevel(logging.CRITICAL)
+    logging.getLogger("pymongo").setLevel(logging.CRITICAL)

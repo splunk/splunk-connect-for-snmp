@@ -53,14 +53,6 @@ RESOLVE_TRAP_ADDRESS = os.getenv("RESOLVE_TRAP_ADDRESS", "false")
 MAX_DNS_CACHE_SIZE_TRAPS = int(os.getenv("MAX_DNS_CACHE_SIZE_TRAPS", "100"))
 TTL_DNS_CACHE_TRAPS = int(os.getenv("TTL_DNS_CACHE_TRAPS", "1800"))
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
-DISABLE_MONGO_DEBUG_LOGGING = human_bool(
-    os.getenv("DISABLE_MONGO_DEBUG_LOGGING", "false").lower()
-)
-
-if not DISABLE_MONGO_DEBUG_LOGGING:
-    logging.getLogger("pymongo").setLevel(logging.WARNING)
-    logging.getLogger("mongodb").setLevel(logging.WARNING)
-
 
 @shared_task(
     bind=True,

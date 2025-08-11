@@ -149,6 +149,9 @@ worker:
   ignoreNotIncreasingOid: []
   # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
   logLevel: "INFO"
+  # MongoDB+pymongo generates a lot of debug logs when logLevel is set to DEBUG, what makes difficult to read the worker's log. 
+  # This flag controls MongoDB+pymongo debug logging for worker's and trap pods.
+  disableMongoDebugLogging: true
   podAntiAffinity: soft
   # udpConnectionTimeout timeout in seconds for SNMP operations
   udpConnectionTimeout: 3
@@ -368,6 +371,7 @@ Trap worker uses in memory cache to store the results of the reverse dns lookup.
 | worker.walkMaxRetries                                    | Maximum number of walk retries                                                                                                  | 5                 |
 | worker.ignoreNotIncreasingOid                            | Ignoring `occurred: OID not increasing` issues for hosts specified in the array                                                 | []                |
 | worker.logLevel                                          | Logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                | INFO              |
+| worker.disableMongoDebugLogging                          | Disable extensive MongoDB and pymongo debug logging on SC4SNMP pods                                                             | true              |
 | worker.podAntiAffinity                                   | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | soft              |
 | worker.udpConnectionTimeout                              | Timeout for SNMP operations in seconds                                                                                          | 3                 |
 | worker.ignoreEmptyVarbinds                               | Ignores “Empty SNMP response message” in responses                                                                              | false             |

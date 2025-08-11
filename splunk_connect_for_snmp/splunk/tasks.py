@@ -88,15 +88,8 @@ else:
 
 OTEL_METRICS_URL = os.getenv("OTEL_METRICS_URL", None)
 SCIENTIFIC_VALUE = re.compile(r"^[+-]?\d+(\.\d+)?[eE][+-]?\d+$")
-DISABLE_MONGO_DEBUG_LOGGING = human_bool(
-    os.getenv("DISABLE_MONGO_DEBUG_LOGGING", "true").lower()
-)
 
 logger = get_task_logger(__name__)
-if DISABLE_MONGO_DEBUG_LOGGING:
-    logging.getLogger("pymongo").setLevel(logging.WARNING)
-    logging.getLogger("mongodb").setLevel(logging.WARNING)
-
 
 # Token is only appropriate if we are working direct with Splunk
 if SPLUNK_HEC_TOKEN:
