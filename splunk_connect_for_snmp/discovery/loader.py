@@ -23,7 +23,7 @@ DISCOVERY_CONFIG_PATH = os.getenv(
     "DISCOVERY_CONFIG_PATH", "/app/discovery/discovery-config.yaml"
 )
 CHAIN_OF_TASKS_EXPIRY_TIME = os.getenv("CHAIN_OF_TASKS_EXPIRY_TIME", "60")
-LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
 formatter = CustomisedJSONFormatter()
 

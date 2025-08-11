@@ -410,7 +410,7 @@ worker:
   podAntiAffinity: soft
   # udpConnectionTimeout timeout in seconds for SNMP operations
   udpConnectionTimeout: 3
-  # udpConnectionRetries Number of retries for SNMP operations
+  # udpConnectionRetries number of retries for SNMP operations
   udpConnectionRetries: 5
 
   # in case of seeing "Empty SNMP response message" this variable can be set to true
