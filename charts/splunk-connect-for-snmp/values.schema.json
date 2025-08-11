@@ -652,7 +652,7 @@
           "type": "string"
         },
         "disableMongoDebugLogging": {
-          "type": "boolean"
+          "type": ["string", "boolean"]
         },
         "podAntiAffinity": {
           "type": "string"
@@ -837,7 +837,7 @@
           "type": "string"
         },
         "disableMongoDebugLogging": {
-          "type": "boolean"
+          "type": ["string", "boolean"]
         },
         "nodeSelector": {
           "type": "object"
