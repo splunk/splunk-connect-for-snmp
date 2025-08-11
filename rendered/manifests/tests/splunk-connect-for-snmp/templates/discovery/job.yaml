@@ -33,6 +33,10 @@ spec:
             value: /app/discovery/discovery-config.yaml
           - name: LOG_LEVEL
             value: INFO
+          - name: CHAIN_OF_TASKS_EXPIRY_TIME
+            value: "60"
+          - name: CELERY_TASK_TIMEOUT
+            value: "2400"
           volumeMounts:
             - name: discovery-config
               mountPath: "/app/discovery"
