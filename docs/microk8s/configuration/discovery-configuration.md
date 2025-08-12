@@ -1,13 +1,13 @@
 # Discovery Configuration
-  
-The discovery feature automatically discover SNMP-enabled devices within a given subnet. Based on the discovery results, a discovery_devices.csv is generated and can be used to configure polling.
+
+The discovery feature automatically discovers SNMP-enabled devices within a given subnet. Based on the discovery results, a discovery_devices.csv is generated and can be used to configure polling.
 
 Discovery supports IPv4 and IPv6 subnets, SNMP v1, v2c, and v3 devices, and basic grouping of devices using SNMP `sysDescr` from `SNMPv2-MIB` (OID `1.3.6.1.2.1.1.1.0`).
 
 
 ### Discovery configuration file
 
-The discovery configuration is kept in the `values.yaml` file in section discovery.
+The discovery configuration is kept in the `values.yaml` file in the section discovery.
 `values.yaml` is used during the installation process for configuring Kubernetes values.
 
 See the following discovery example configuration:
@@ -19,7 +19,7 @@ discovery:
   discoveryPath: "/home/user/sc4snmp"
   usernameSecrets:
     - sc4snmp-hlab-sha-aes
-  
+
   autodiscovery:
     discovery_version2c:
       frequency: 86400
@@ -59,21 +59,21 @@ The log level for discovery can be set by changing the value for the `logLevel` 
 The default value is `WARNING`.
 
 ### Enable IPv6
-To enable IPv6 subnet scanning set `ipv6Enabled` key.
+To enable IPv6 subnet scanning, set `ipv6Enabled` key.
 
 !!! info 
-    If `ipv6Enabled` is `false` then task will not be created for discovery key with IPv6 network address.
+    If `ipv6Enabled` is `false`, then the task will not be created for discovery key with IPv6 network address.
 
 ### Define Discovery Path
 `discoveryPath` specifies the absolute path on the local file system where the discovery_devices.csv file will be created.
-If the CSV file is not already present then new file will be created.
+If the CSV file is not already present, then a new file will be created.
 
 !!! info
     The path provided should have read-write permission for user and group `10001`.
 
 ### Define usernamesecrets
 The `usernameSecrets` key in the `discovery` section defines the SNMPv3 secrets for the discovery of the SNMP device. 
-`usernameSecrets` defines which secrets in "Secret" objects in k8s should be used, as a value it needs the name of "Secret" objects. 
+`usernameSecrets` defines which secrets in "Secret" objects in k8s should be used, as a value, it needs the name of "Secret" objects. 
 For more information on how to define the "Secret" object for SNMPv3, see [SNMPv3 Configuration](snmpv3-configuration.md).
 
 See the following example:
@@ -92,8 +92,8 @@ Each task has the following fields to configure:
 
 | Field                          | Description                                                                                                                                                                                                                             | Default | Required |
 |------------------              |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|----------|
-| `frequency`                    | Time interval (in minutes) between each run of the discovery task. Note: If the feequency is less than 6 hours, it will be taken as 6 hours by default.                                                                                                                                                                        | `86400` | NO       |
-| `skip_active_check`            | Skips namp check and assumes all IPs are active.                                                                                                                                                                                          | `false` | NO       |
+| `frequency`                    | Time interval (in minutes) between each run of the discovery task. Note: If the frequency is less than 6 hours, it will be taken as 6 hours by default.                                                                                                                                                                        | `86400` | NO       |
+| `skip_active_check`            | Skips the namp check and assumes all IPs are active.                                                                                                                                                                                          | `false` | NO       |
 | `delete_already_discovered`    | Deletes old entries of a particular discovery key before writing new ones.                                                                                                                                                              | `false` | NO       |
 | `network_address`              | Subnet in CIDR notation to scan. Supports IPv4 or IPv6.                                                                                                                                                                                 |         | YES      |
 | `port`                         | SNMP listening port.                                                                                                                                                                                                                    | `161`   | NO       |
@@ -110,9 +110,9 @@ If `false`, it will first use Nmap to find active devices and then proceed only 
 The `delete_already_discovered` flag controls whether devices found in previous discovery runs are kept.
 
 Since the discovery task runs at fixed intervals to scan for SNMP-enabled devices:
-  - If set to `true`, all devices discovered in previous run under the same discovery key will be deleted. This is useful when you want to ensure that the list always reflects the most up-to-date set of devices.
-  - If set to `false`, will retain devices discovered in earlier runs, and new devices will be appended to the existing list. This is useful when you want to keep a cumulative list of all SNMP-enabled devices discovered over time
-    
+  - If set to `true`, all devices discovered in the previous run under the same discovery key will be deleted. This is useful when you want to ensure that the list always reflects the most up-to-date set of devices.
+  - If set to `false`, it will retain devices discovered in earlier runs, and new devices will be appended to the existing list. This is useful when you want to keep a cumulative list of all SNMP-enabled devices discovered over time.
+
 ### Define Device Rules
 The `device_rules` section is used to organize discovered devices into logical groups based on pattern matching against their SNMP system descriptions (sysDescr).
 

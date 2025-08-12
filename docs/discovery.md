@@ -37,7 +37,7 @@ Once the list of active devices is identified:
 This output can later be used by the user to configure polling.
 
 ### Multi-Subnet Support
-Multiple discovery jobs can be configured to run independently for different subnets. Each job can have its own frequency, SNMP version, credentials, and grouping logic. This makes it easy to scan different parts of your network separately.
+Multiple discovery jobs can be configured to run independently for different subnets. Each job can have its frequency, SNMP version, credentials, and grouping logic. This makes it easy to scan different parts of your network separately.
 
 ## Output Format
 After each discovery run, a file named discovery_devices.csv is generated in the path defined by `discoveryPath`. This file includes all successfully discovered SNMP devices and can be used in poller configuration. The CSV file contains fields like key (discovery name), subnet, ip address, port, snmp version, group, secret, and community

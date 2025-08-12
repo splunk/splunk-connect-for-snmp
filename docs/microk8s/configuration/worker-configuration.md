@@ -12,7 +12,7 @@ SC4SNMP has two base functionalities: monitoring traps and polling. These operat
 
 3. The `sender` worker handles sending data to Splunk. You need to always have at least one sender pod running.
 
-SC4SNMP also has a discovery functionality which is handled by the below worker:
+SC4SNMP also has a discovery functionality which is handled by the worker below:
 
 1. The `discovery` worker consumes all the tasks related to discovery.
 
@@ -106,7 +106,7 @@ worker:
         # the resources requests for sender worker container
       requests:
         cpu: 250m
-  # The discovery worker handles auto discovery of snmp enabled devices and create CSV file for it
+  # The discovery worker handles auto discovery of SNMP-enabled devices and creates a CSV file for it
   discovery:
     # number of the discovery replicas when autoscaling is set to false
     replicaCount: 1
@@ -180,7 +180,7 @@ worker:
   podAntiAffinity: soft
   # udpConnectionTimeout timeout in seconds for SNMP operations
   udpConnectionTimeout: 3
-  # udpConnectionRetries Number of retries for SNMP operations
+  # udpConnectionRetries number of retries for SNMP operations
   udpConnectionRetries: 5
 
   # in case of seeing "Empty SNMP response message" this variable can be set to true

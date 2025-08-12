@@ -25,7 +25,7 @@ autodiscovery:
 - `ipv6Enabled`: To enable IPv6 subnet scanning set `ipv6Enabled` key.
 
 !!! info 
-    If `ipv6Enabled` is `false` then task will not be created for discovery key with IPv6 network address.
+    If `ipv6Enabled` is `false`, then the task will not be created for discovery key with IPv6 network address.
 
 - `autodiscovery`: Discovery tasks are defined under the autodiscovery section. Each task can target a specific subnet with its own SNMP version and settings. 
 Task name must start with a letter (not a number). Configuration of this section looks the same as in the `values.yaml` in `discovery.autodiscovery` section, which can be checked in the documentation of [discovery configuration](../microk8s/configuration/discovery-configuration.md).

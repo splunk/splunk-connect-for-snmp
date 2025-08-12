@@ -191,7 +191,7 @@ Detailed documentation about configuring discovery can be found in [Discovery](d
 
 | Variable                                        | Description                                                                                                                     | Default          |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|------------------|
-| `enabled`                                       | Enables discovering SNMP enabled device and create CSV file.                                                                    | `false`          |
+| `enabled`                                       | Enables discovering SNMP-enabled devices and creates a CSV file.                                                                    | `false`          |
 | `usernameSecrets`                               | Defines SNMPv3 secrets for trap messages sent by SNMP device                                                                    |                  |
 | `ipv6Enabled`                                   | Enabled device detection using IPv6 subnet                                                                                      | `false`          |
 | `logLevel`                                      | Log level for a discovery pod                                                                                                   | `INFO`           |

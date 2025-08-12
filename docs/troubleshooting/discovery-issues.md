@@ -19,9 +19,9 @@ sudo chown 10001:10001 /your/local/folder/path
 sudo chmod 755 /your/local/folder/path
 ```
 
-## Discovery not completing within the time limit
+## Discovery not completed within the time limit
 
-If the subnet being scanned has a large IP range (e.g., `/22`, `/21`, or bigger), the task may not complete within the default time limit of **2400 seconds**. In such cases, you may see the following error:
+If the subnet being scanned has a large IP range (e.g., `/22`, `/21`, or bigger), the task may not be completed within the default time limit of **2400 seconds**. In such cases, you may see the following error:
 
 ```log
 [2025-08-07 06:03:29,415: ERROR/MainProcess] Hard time limit (2400s) exceeded for splunk_connect_for_snmp.discovery.tasks.discovery
@@ -42,7 +42,7 @@ Discovery tasks may take longer to complete due to unnecessary SNMP requests or 
 **Enable Active Device Check**
 
 Set the `skip_active_check` flag to `false` so that SNMP requests are sent **only** to devices that are active in the given subnet.  
-This reduces the total number of SNMP request and speeds up the discovery process.
+This reduces the total number of SNMP requests and speeds up the discovery process.
 
 **Adjust Timeout and Retries**
   
