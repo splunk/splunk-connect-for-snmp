@@ -651,6 +651,9 @@
         "logLevel": {
           "type": "string"
         },
+        "disableMongoDebugLogging": {
+          "type": ["string", "boolean"]
+        },
         "podAntiAffinity": {
           "type": "string"
         },
@@ -832,6 +835,9 @@
         },
         "logLevel": {
           "type": "string"
+        },
+        "disableMongoDebugLogging": {
+          "type": ["string", "boolean"]
         },
         "nodeSelector": {
           "type": "object"

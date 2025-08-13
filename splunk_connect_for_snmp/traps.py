@@ -18,7 +18,7 @@ from contextlib import suppress
 
 from pysnmp.proto.api import v2c
 
-from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.hummanbool import disable_mongo_logging, human_bool
 from splunk_connect_for_snmp.snmp.auth import get_secret_value
 
 with suppress(ImportError, OSError):
@@ -53,16 +53,21 @@ SECURITY_ENGINE_ID_LIST = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "80003a8c04").
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
+DISABLE_MONGO_DEBUG_LOGGING = human_bool(
+    os.getenv("DISABLE_MONGO_DEBUG_LOGGING", "true")
+)
+
+logging.basicConfig(
+    format="[%(asctime)s: %(levelname)s/%(name)s] %(message)s",
+    level=getattr(logging, LOG_LEVEL),
+    stream=sys.stdout,
+    force=True,  # This will override any existing configuration
+)
 
 logger = logging.getLogger(__name__)
 
-formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(formatter)
-handler.setLevel(getattr(logging, LOG_LEVEL))
-
-logger.addHandler(handler)
-
+if DISABLE_MONGO_DEBUG_LOGGING:
+    disable_mongo_logging()
 
 if PYSNMP_DEBUG:
     # Usage: PYSNMP_DEBUG=dsp,msgproc,io
