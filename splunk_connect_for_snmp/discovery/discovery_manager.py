@@ -9,6 +9,7 @@ from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.common.discovery_record import DiscoveryRecord
 from splunk_connect_for_snmp.common.csv_record_manager import CSVRecordManager
 from splunk_connect_for_snmp.snmp.auth import get_auth, setup_transport_target
+from filelock import FileLock
 
 import nmap
 from celery.utils.log import get_task_logger
@@ -22,7 +23,9 @@ from pysnmp.hlapi import (
 
 logger = get_task_logger(__name__)
 
-DISCOVERY_CSV_PATH = os.getenv("DISCOVERY_CSV_PATH", "/app/discovery/discovery_devices.csv")
+DISCOVERY_FOLDER_PATH = os.getenv("DISCOVERY_FOLDER_PATH", "/app/discovery")
+DISCOVERY_CSV_PATH = os.path.join(DISCOVERY_FOLDER_PATH, "discovery_devices.csv")
+DISCOVERY_LOCK_PATH = os.path.join(DISCOVERY_FOLDER_PATH, "discovery_devices.lock")
 
 class Discovery(Task):
     def __init__(self):
@@ -32,7 +35,7 @@ class Discovery(Task):
         """Scan subnet for active host using nmap"""
         nm = nmap.PortScanner()
         try:
-            nm.scan(hosts=subnet, arguments= ("-6 " if is_ipv6 else "") + "-sn -T4 --min-rate 1000")
+            nm.scan(hosts=subnet, arguments= ("-6 " if is_ipv6 else "") + "-sn -T4")
             return nm.all_hosts() 
         except Exception as e:
             logger.error(f"Error occured running nmap scan: {e}")
@@ -112,11 +115,13 @@ class Discovery(Task):
         
     def add_devices_detail_to_csv(self, snmp_devices_detail, delete_flag, dicovery_name):
         """Add snmp devices detail to CSV"""
-        csv_service = CSVRecordManager(DISCOVERY_CSV_PATH)
-        if delete_flag == True:    
-            csv_service.delete_rows_by_key(dicovery_name)
-        csv_service.create_rows(snmp_devices_detail)
-        csv_service.dataframe_to_csv(csv_service.df)
+        lock = FileLock(DISCOVERY_LOCK_PATH)
+        with lock:
+            csv_service = CSVRecordManager(DISCOVERY_CSV_PATH)
+            if delete_flag is True:
+                csv_service.delete_rows_by_key(dicovery_name)
+            csv_service.create_rows(snmp_devices_detail)
+            csv_service.dataframe_to_csv(csv_service.df)
 
     def do_work(self, discovery_record: DiscoveryRecord) -> list:
         try:

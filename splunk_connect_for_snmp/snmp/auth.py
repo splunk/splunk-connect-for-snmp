@@ -37,6 +37,7 @@ from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
+UDP_CONNECTION_RETRIES = int(os.getenv("UDP_CONNECTION_RETRIES", 5))
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 
 
@@ -98,10 +99,10 @@ def setup_transport_target(rt):
     ip = get_ip_from_socket(rt) if IPv6_ENABLED else rt.address
     if IPv6_ENABLED and ip_address(ip).version == 6:
         return Udp6TransportTarget(
-            (rt.address, rt.port), timeout=UDP_CONNECTION_TIMEOUT
+            (rt.address, rt.port), timeout=UDP_CONNECTION_TIMEOUT, retries=UDP_CONNECTION_RETRIES
         )
 
-    return UdpTransportTarget((rt.address, rt.port), timeout=UDP_CONNECTION_TIMEOUT)
+    return UdpTransportTarget((rt.address, rt.port), timeout=UDP_CONNECTION_TIMEOUT, retries=UDP_CONNECTION_RETRIES)
 
 
 def get_ip_from_socket(rt):

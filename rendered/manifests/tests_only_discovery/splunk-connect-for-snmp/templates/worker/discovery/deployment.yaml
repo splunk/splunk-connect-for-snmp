@@ -25,15 +25,6 @@ spec:
       serviceAccountName: release-name-splunk-connect-for-snmp-user
       securityContext:
         fsGroup: 10001
-      initContainers:
-        - name: discovery-permissions
-          image: alpine:3.19
-          command: ["sh", "-c", "mkdir -p /app/discovery && touch /app/discovery/discovery_devices.csv && chmod 777 /app/discovery/discovery_devices.csv"]
-          volumeMounts:
-            - name: discovery-volume
-              mountPath: /app/discovery
-          securityContext:
-            runAsUser: 0
       containers:
         - name: splunk-connect-for-snmp-discovery
           securityContext:
@@ -73,6 +64,8 @@ spec:
               value: INFO
             - name: UDP_CONNECTION_TIMEOUT
               value: "3"
+            - name: UDP_CONNECTION_RETRIES
+              value: "5"
             - name: MAX_OID_TO_PROCESS
               value: "70"
             - name: PYSNMP_DEBUG
@@ -110,8 +103,10 @@ spec:
               value: "sc4snmp:event"
             - name: SPLUNK_SOURCETYPE_POLLING_METRICS
               value: "sc4snmp:metric"
-            - name: DISCOVERY_PATH
-              value: /app/discovery/discovery_devices.csv
+            - name: DISCOVERY_FOLDER_PATH
+              value: /app/discovery
+            - name: CELERY_TASK_TIMEOUT
+              value: "2400"
             - name: IPv6_ENABLED
               value: "true"
               
@@ -147,7 +142,7 @@ spec:
         - name: discovery-volume
           hostPath:
             path: /home/devuser/discovery-test2
-            type: DirectoryOrCreate
+            type: Directory
         - name: secret-snmpv3-secrets
           secret:
             secretName: secret
