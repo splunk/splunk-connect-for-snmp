@@ -17,6 +17,7 @@ import logging
 from contextlib import suppress
 
 from pyasn1.codec.ber import decoder
+from pyasn1.error import PyAsn1Error
 from pyasn1.type import univ
 from pysnmp.proto.api import v2c
 
