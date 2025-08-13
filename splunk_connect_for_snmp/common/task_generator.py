@@ -152,14 +152,7 @@ class DiscoveryTaskGenerator(TaskGenerator):
         name = f"sc4snmp;{self.discovery_name};discovery"
         task_data["name"] = name
         task_data["task"] = "splunk_connect_for_snmp.discovery.tasks.discovery"
-        task_data["run_immediately"] = self.run_immediately
+        task_data["run_immediately"] = True
         task_data["options"] = self.DISCOVERY_CHAIN_OF_TASK
         task_data["kwargs"] = self.discovery_record.dict()
         return task_data
-
-    @property
-    def run_immediately(self):
-        if self.schedule_period > 86400:
-            return True
-        return False
-    

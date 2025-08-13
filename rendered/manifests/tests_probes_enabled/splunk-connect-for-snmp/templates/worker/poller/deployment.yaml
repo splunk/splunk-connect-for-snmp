@@ -64,6 +64,8 @@ spec:
               value: INFO
             - name: UDP_CONNECTION_TIMEOUT
               value: "3"
+            - name: UDP_CONNECTION_RETRIES
+              value: "5"
             - name: MAX_OID_TO_PROCESS
               value: "70"
             - name: PYSNMP_DEBUG
