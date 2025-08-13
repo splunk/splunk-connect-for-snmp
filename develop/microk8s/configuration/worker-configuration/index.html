@@ -2323,6 +2323,8 @@ The <code>worker</code> default configuration is the following: </p>
 <span class="w">  </span><span class="nt">ignoreNotIncreasingOid</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
 <span class="w">  </span><span class="c1"># logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL</span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"INFO"</span>
+<span class="w">  </span><span class="c1"># disableMongoDebugLogging is used to disable extensive debug logging for MongoDB+pymongo while logLevel is set to DEBUG.</span>
+<span class="w">  </span><span class="nt">disableMongoDebugLogging</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="nt">podAntiAffinity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">soft</span>
 <span class="w">  </span><span class="c1"># udpConnectionTimeout timeout in seconds for SNMP operations</span>
 <span class="w">  </span><span class="nt">udpConnectionTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
@@ -2674,6 +2676,11 @@ for the incoming traps using the following configuration:</p>
 <td>worker.logLevel</td>
 <td>Logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL</td>
 <td>INFO</td>
+</tr>
+<tr>
+<td>worker.disableMongoDebugLogging</td>
+<td>Disable extensive MongoDB and pymongo debug logging on SC4SNMP worker pods</td>
+<td>true</td>
 </tr>
 <tr>
 <td>worker.podAntiAffinity</td>
