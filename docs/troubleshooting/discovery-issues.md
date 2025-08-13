@@ -39,12 +39,12 @@ worker:
 
 Discovery tasks may take longer to complete due to unnecessary SNMP requests or long wait times when scanning large subnets. Below are few ways to optimize performance:
 
-**Enable Active Device Check**
+### Enable Active Device Check
 
 Set the `skip_active_check` flag to `false` so that SNMP requests are sent **only** to devices that are active in the given subnet.  
 This reduces the total number of SNMP requests and speeds up the discovery process.
 
-**Adjust Timeout and Retries**
+### Adjust Timeout and Retries
   
 If the subnet has very few SNMP-enabled devices, high timeout and retry values can significantly slow down the process.  
 For example, with the default `udpConnectionTimeout` of `3` seconds and `udpConnectionRetries` of `5`, a non-SNMP-enabled device will take up to **15 seconds** before moving to the next IP.  
@@ -56,7 +56,8 @@ worker:
   udpConnectionRetries: 2
 ```
 
-> **Note:** Reduce these values carefully. Setting them too low may cause missed detections in slow or high-latency networks, which can impact data accuracy.
+!!! info
+    Reduce these values carefully. Setting them too low may cause missed detections in slow or high-latency networks, which can impact data accuracy.
 
 ## No Output in `discovery_devices.csv`
 

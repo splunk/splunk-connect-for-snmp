@@ -3,7 +3,8 @@
 ## Purpose
 The SNMP Discovery feature in Splunk Connect for SNMP provides an automated way to identify SNMP-enabled devices within user-specified subnets. Instead of manually scanning networks or maintaining a static list of devices, users can now use this feature to generate an up-to-date list of IP addresses where SNMP is actively running.
 
-> **Note:** The current implementation does not automatically integrate discovered devices into the polling pipeline. The discovered IPs are saved to an output file, which can then be reviewed or used manually to update your SNMP polling configuration.
+!!! info
+    The current implementation does not automatically integrate discovered devices into the polling pipeline. The discovered IPs are saved to an output file, which can then be reviewed or used manually to update your SNMP polling configuration.
 
 
 ### This feature is useful when:
@@ -40,7 +41,7 @@ This output can later be used by the user to configure polling.
 Multiple discovery jobs can be configured to run independently for different subnets. Each job can have its frequency, SNMP version, credentials, and grouping logic. This makes it easy to scan different parts of your network separately.
 
 ## Output Format
-After each discovery run, a file named discovery_devices.csv is generated in the path defined by `discoveryPath`. This file includes all successfully discovered SNMP devices and can be used in poller configuration. The CSV file contains fields like key (discovery name), subnet, ip address, port, snmp version, group, secret, and community
+After each discovery run, a file named `discovery_devices.csv` is generated in the path defined by `discoveryPath`. This file includes all successfully discovered SNMP devices and can be used in poller configuration. The CSV file contains fields like key (discovery name), subnet, ip address, port, snmp version, group, secret, and community.
 
 To use this feature, the user must provide a valid path where the CSV file will be created. Note that this is a single shared file, and all discovery jobs for different subnets will update the same file.
 
@@ -48,10 +49,11 @@ Example:
 
 ```csv
 key,subnet,ip,port,version,group,secret,community
-discovery_version2c,10.202.4.202/30,10.202.4.202,161,2c,linux-group,,public
+discovery_version2c,10.202.4.200/30,10.202.4.202,161,2c,linux-group,,public
 ```
 
-> **Note:** This file serves as a reference and does not automatically update any active polling configuration. Users are expected to manually review and incorporate this list into their SNMP polling setup as needed.
+!!! info
+    This file serves as a reference and does not automatically update any active polling configuration. Users are expected to manually review and incorporate this list into their SNMP polling setup as needed.
 
 
 ## Configuration

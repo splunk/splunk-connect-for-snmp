@@ -1,13 +1,13 @@
 # Discovery Configuration
 
-The discovery feature automatically discovers SNMP-enabled devices within a given subnet. Based on the discovery results, a discovery_devices.csv is generated and can be used to configure polling.
+The discovery feature automatically discovers SNMP-enabled devices within a given subnet. Based on the discovery results, a `discovery_devices.csv` is generated and can be used to configure polling.
 
 Discovery supports IPv4 and IPv6 subnets, SNMP v1, v2c, and v3 devices, and basic grouping of devices using SNMP `sysDescr` from `SNMPv2-MIB` (OID `1.3.6.1.2.1.1.1.0`).
 
 
 ### Discovery configuration file
 
-The discovery configuration is kept in the `values.yaml` file in the section discovery.
+The discovery configuration is kept in the `values.yaml` file in the discovery section.
 `values.yaml` is used during the installation process for configuring Kubernetes values.
 
 See the following discovery example configuration:
@@ -25,7 +25,7 @@ discovery:
       frequency: 86400
       skip_active_check: false
       delete_already_discovered: true
-      network_address: 10.202.4.202/30
+      network_address: 10.202.4.200/30
       version: "2c"
       community: "public"
       port: 161
@@ -38,7 +38,7 @@ discovery:
       frequency: 43200
       skip_active_check: false
       delete_already_discovered: false
-      network_address: 10.202.4.202/30
+      network_address: 10.202.4.200/30
       version: "3"
       port: 161
       secret: sc4snmp-hlab-sha-aes
@@ -65,7 +65,7 @@ To enable IPv6 subnet scanning, set `ipv6Enabled` key.
     If `ipv6Enabled` is `false`, then the task will not be created for discovery key with IPv6 network address.
 
 ### Define Discovery Path
-`discoveryPath` specifies the absolute path on the local file system where the discovery_devices.csv file will be created.
+`discoveryPath` specifies the absolute path on the local file system where the `discovery_devices.csv` file will be created.
 If the CSV file is not already present, then a new file will be created.
 
 !!! info
@@ -113,14 +113,14 @@ Since the discovery task runs at fixed intervals to scan for SNMP-enabled device
   - If set to `true`, all devices discovered in the previous run under the same discovery key will be deleted. This is useful when you want to ensure that the list always reflects the most up-to-date set of devices.
   - If set to `false`, it will retain devices discovered in earlier runs, and new devices will be appended to the existing list. This is useful when you want to keep a cumulative list of all SNMP-enabled devices discovered over time.
 
-### Define Device Rules
+### Define device_rules
 The `device_rules` section is used to organize discovered devices into logical groups based on pattern matching against their SNMP system descriptions (sysDescr).
 
 Each rule consists of:
 
-- **name**: A label to identify the rule. It is used for reference and should be unique within the list.
-- **patterns**: A wildcard pattern (supports `*`) that matches against the `sysDescr` returned from SNMP.
-- **group**: The name of the group to assign the matched devices to. This group can later be referenced for polling or other configurations.
+- `name`: A label to identify the rule. It is used for reference and should be unique within the list.
+- `patterns`: A wildcard pattern (supports `*`) that matches against the `sysDescr` returned from SNMP.
+- `group`: The name of the group to assign the matched devices to. This group can later be referenced for polling or other configurations.
 
 **Example**
 ```yaml
@@ -146,16 +146,16 @@ The following fields help control how long discovery tasks run and how SNMP resp
 
 Defines the **maximum execution time (in seconds)** for a single discovery task.  
 - Default: `2400` seconds.  
-- Increase this if you're scanning large subnets or using longer SNMP retry configurations.
+- Increase this if you are scanning large subnets or using longer SNMP retry configurations.
 
 Make sure `taskTimeout` is large enough to accommodate the `nmap` scan and the SNMP checks across all IPs.
 
 #### `udpConnectionTimeout`
 
 Specifies the **timeout (in seconds)** for each SNMP request (`getCmd`).  
-Increase this if devices take longer to respond or if there’s network latency.
+Increase this if devices take longer to respond or if there is network latency.
 
 #### `udpConnectionRetries`
 
-Determines how many times a request is retried if there’s no response.  
+Determines how many times a request is retried if there is no response.  
 Higher retries can improve success rates on unstable networks, but will increase total execution time.

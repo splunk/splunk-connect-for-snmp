@@ -22,7 +22,7 @@ autodiscovery:
 ```
 
 - `enabled`: To enable or disable the discovery feature set `enabled` key. The default value is `false`. 
-- `ipv6Enabled`: To enable IPv6 subnet scanning set `ipv6Enabled` key.
+- `ipv6Enabled`: To enable IPv6 subnet scanning set `ipv6Enabled` key to be `true`.
 
 !!! info 
     If `ipv6Enabled` is `false`, then the task will not be created for discovery key with IPv6 network address.
@@ -40,7 +40,7 @@ autodiscovery:
     frequency: 86400
     skip_active_check: false
     delete_already_discovered: true
-    network_address: 10.202.4.202/30
+    network_address: 10.202.4.200/30
     version: "2c"
     community: "public"
     port: 161
@@ -53,7 +53,7 @@ autodiscovery:
     frequency: 43200
     skip_active_check: false
     delete_already_discovered: false
-    network_address: 10.202.4.202/30
+    network_address: 10.202.4.200/30
     version: "3"
     port: 161
     secret: sc4snmp-hlab-sha-aes
