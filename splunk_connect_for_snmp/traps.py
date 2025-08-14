@@ -107,6 +107,10 @@ send_task_signature = send.s
 
 
 def decode_security_context(hexstr: bytes) -> str | None:
+    """
+    Decodes SNMPv3 security context from ASN.1 bytes and returns the engineID as a hex string.
+    Sometimes (for example in ERICSSON devices) the engineID is the only place where device IP is stored.
+    """
     try:
         decoded_message, _ = decoder.decode(hexstr, asn1Spec=univ.Sequence())
         msg_version = decoded_message.getComponentByPosition(0)
