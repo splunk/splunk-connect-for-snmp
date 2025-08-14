@@ -173,7 +173,11 @@ class TestTasks(TestCase):
 
         m_resolved.return_value = None
 
-        work = {"data": [("asd", "tre")], "host": "192.168.0.1", "fields": {"context_engine_id": "80003a8c04"}}
+        work = {
+            "data": [("asd", "tre")],
+            "host": "192.168.0.1",
+            "fields": {"context_engine_id": "80003a8c04"},
+        }
         m_process_data.return_value = (False, [], {"test": "value1"})
         m_poller.builder = MagicMock()
         m_poller.trap = trap
@@ -187,7 +191,7 @@ class TestTasks(TestCase):
                 "result": {"test": "value1"},
                 "sourcetype": "sc4snmp:traps",
                 "time": 1640692955.365186,
-                "fields": {"context_engine_id": "80003a8c04"}
+                "fields": {"context_engine_id": "80003a8c04"},
             },
             result,
         )

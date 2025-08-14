@@ -281,7 +281,7 @@ def prepare_trap_data(work):
             "source": "sc4snmp",
             "sourcetype": SPLUNK_SOURCETYPE_TRAPS,
             "host": work["address"],
-            "index": SPLUNK_HEC_INDEX_EVENTS
+            "index": SPLUNK_HEC_INDEX_EVENTS,
         }
         if "fields" in work:
             event["fields"] = work["fields"]

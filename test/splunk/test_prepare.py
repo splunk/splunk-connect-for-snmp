@@ -2,7 +2,11 @@ import json
 from unittest import TestCase
 from unittest.mock import patch
 
-from splunk_connect_for_snmp.splunk.tasks import apply_custom_translations, prepare, prepare_trap_data
+from splunk_connect_for_snmp.splunk.tasks import (
+    apply_custom_translations,
+    prepare,
+    prepare_trap_data,
+)
 
 
 @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS", "test_index")
@@ -602,6 +606,7 @@ class TestPrepare(TestCase):
             result,
         )
 
+
 @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")
 @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS", "netops")
 class TestPrepareTrapData(TestCase):
@@ -620,7 +625,7 @@ class TestPrepareTrapData(TestCase):
                         "field_two": {"value": "listening"},
                     },
                 }
-            }
+            },
         }
         events = prepare_trap_data(work)
         self.assertEqual(len(events), 1)
@@ -648,7 +653,7 @@ class TestPrepareTrapData(TestCase):
                         "context_engine_id": "800000c1010a010fc4",
                     },
                 }
-            }
+            },
         }
         events = prepare_trap_data(work)
         event = json.loads(events[0])

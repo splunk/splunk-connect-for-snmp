@@ -53,7 +53,9 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 SECURITY_ENGINE_ID_LIST = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "80003a8c04").split(
     ","
 )
-INCLUDE_SECURITY_CONTEXT_ID = human_bool(os.getenv("INCLUDE_SECURITY_CONTEXT_ID", "false"))
+INCLUDE_SECURITY_CONTEXT_ID = human_bool(
+    os.getenv("INCLUDE_SECURITY_CONTEXT_ID", "false")
+)
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
@@ -103,15 +105,22 @@ trap_task_signature = trap.s
 prepare_task_signature = prepare.s
 send_task_signature = send.s
 
+
 def decode_security_context(hexstr: bytes) -> str | None:
     try:
         decoded_message, _ = decoder.decode(hexstr, asn1Spec=univ.Sequence())
         msg_version = decoded_message.getComponentByPosition(0)
         if msg_version._value != 3:
-            logger.warning("SNMP message version is not 3, skipping security context decoding.")
+            logger.warning(
+                "SNMP message version is not 3, skipping security context decoding."
+            )
             return None
-        msg_security_parameters_raw = decoded_message.getComponentByPosition(2).asOctets()
-        usm_message, _ = decoder.decode(msg_security_parameters_raw, asn1Spec=univ.Sequence())
+        msg_security_parameters_raw = decoded_message.getComponentByPosition(
+            2
+        ).asOctets()
+        usm_message, _ = decoder.decode(
+            msg_security_parameters_raw, asn1Spec=univ.Sequence()
+        )
         usm_engine_id_obj = usm_message.getComponentByPosition(0)
         usm_engine_id_bytes = usm_engine_id_obj.asOctets()
         return usm_engine_id_bytes.hex()
@@ -120,6 +129,7 @@ def decode_security_context(hexstr: bytes) -> str | None:
     except Exception as e:
         logger.error(f"Error decoding SNMPv3 engineID: {e}")
     return None
+
 
 # Callback function for receiving notifications
 # noinspection PyUnusedLocal
