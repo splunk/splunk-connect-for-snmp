@@ -6,7 +6,7 @@ from splunk_connect_for_snmp.common.discovery_record import DiscoveryRecord
 logger = get_task_logger(__name__)
 
 
-@shared_task(bind=True, expires=60, base=Discovery)
+@shared_task(bind=True, base=Discovery)
 def discovery(self, **kwargs) -> dict:
     discovery_record = DiscoveryRecord(**kwargs)
     result = self.do_work(discovery_record)
