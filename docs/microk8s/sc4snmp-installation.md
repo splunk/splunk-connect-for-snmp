@@ -94,16 +94,17 @@ microk8s kubectl get pods -n sc4snmp
 Example output:
 
 ``` 
-NAME                                                      READY   STATUS             RESTARTS      AGE
-snmp-splunk-connect-for-snmp-scheduler-7ddbc8d75-bljsj        1/1     Running   0          133m
-snmp-splunk-connect-for-snmp-worker-poller-57cd8f4665-9z9vx   1/1     Running   0          133m
-snmp-splunk-connect-for-snmp-worker-sender-5c44cbb9c5-ppmb5   1/1     Running   0          133m
-snmp-splunk-connect-for-snmp-worker-trap-549766d4-28qzh       1/1     Running   0          133m
-snmp-mibserver-7f879c5b7c-hz9tz                               1/1     Running   0          133m
-snmp-mongodb-869cc8586f-vvr9f                                 2/2     Running   0          133m
-snmp-redis-master-0                                           1/1     Running   0          133m
-snmp-splunk-connect-for-snmp-trap-78759bfc8b-79m6d            1/1     Running   0          99m
-snmp-splunk-connect-for-snmp-inventory-mjccw                  0/1     Completed 0          6s
+NAME                                                              READY   STATUS             RESTARTS      AGE
+snmp-splunk-connect-for-snmp-scheduler-7ddbc8d75-bljsj            1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-poller-57cd8f4665-9z9vx       1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-sender-5c44cbb9c5-ppmb5       1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-trap-549766d4-28qzh           1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-discovery-7d9fdc5d56-js474    1/1     Running   0          133m
+snmp-mibserver-7f879c5b7c-hz9tz                                   1/1     Running   0          133m
+snmp-mongodb-869cc8586f-vvr9f                                     2/2     Running   0          133m
+snmp-redis-master-0                                               1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-trap-78759bfc8b-79m6d                1/1     Running   0          99m
+snmp-splunk-connect-for-snmp-inventory-mjccw                      0/1     Completed 0          6s
 ```
 
 The output might vary depending on the configuration. In the above example, both polling and traps are configured, 
@@ -211,13 +212,14 @@ To uninstall SC4SNMP run the following commands:
 Example of pods terminating:
 
 ```
-NAME                                                          READY   STATUS        RESTARTS        AGE
-snmp-mibserver-bb8994c64-twk42                                1/1     Terminating   2 (5h21m ago)   46h
-snmp-splunk-connect-for-snmp-worker-sender-7f5557678b-psj97   1/1     Terminating   1 (5h21m ago)   22h
-snmp-splunk-connect-for-snmp-worker-trap-dfcc487c-lh2dl       1/1     Terminating   1 (5h21m ago)   22h
-snmp-splunk-connect-for-snmp-worker-trap-dfcc487c-5z5sq       1/1     Terminating   1 (5h21m ago)   22h
-snmp-splunk-connect-for-snmp-trap-684d57dc8d-722tv            1/1     Terminating   1 (5h21m ago)   22h
-snmp-splunk-connect-for-snmp-trap-684d57dc8d-z68lb            1/1     Terminating   1 (5h21m ago)   22h
+NAME                                                             READY   STATUS        RESTARTS        AGE
+snmp-mibserver-bb8994c64-twk42                                   1/1     Terminating   2 (5h21m ago)   46h
+snmp-splunk-connect-for-snmp-worker-sender-7f5557678b-psj97      1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-worker-trap-dfcc487c-lh2dl          1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-worker-discovery-7d9fdc5d56-js474   1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-worker-trap-dfcc487c-5z5sq          1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-trap-684d57dc8d-722tv               1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-trap-684d57dc8d-z68lb               1/1     Terminating   1 (5h21m ago)   22h
 ```
 
 ## Restart Splunk Connect for SNMP

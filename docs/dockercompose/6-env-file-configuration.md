@@ -11,6 +11,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to [scheduler-config.yaml](./4-scheduler-configuration.md) file                        |
 | `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`     | Absolute path to [traps-config.yaml](./5-traps-configuration.md) file                                |
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                |
+| `DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to [discovery-config.yaml](./11-discovery-configuration.md) file                       |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose` |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                   |
 
@@ -74,6 +75,8 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `IGNORE_NOT_INCREASING_OIDS` | Ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex: IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6              |
 | `WORKER_LOG_LEVEL`           | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                      |
 | `UDP_CONNECTION_TIMEOUT`     | Timeout in seconds for SNMP operations                                                                                                               |
+| `UDP_CONNECTION_RETRIES`     | Number of retries for SNMP operations                                                                                                                |
+| `CELERY_TASK_TIMEOUT`        | Timeout in seconds for celery task                                                                                                                   |
 | `MAX_OID_TO_PROCESS`         | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS |
 
 ### Worker Poller
@@ -112,6 +115,17 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `WORKER_TRAP_CPU_RESERVATIONS`    | Dedicated cpu resources for worker trap container                                                |
 | `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
 
+### Worker Discovery
+| Variable                               | Description                                                                   |
+|----------------------------------------|-------------------------------------------------------------------------------| 
+| `WORKER_DISCOVERY_CONCURRENCY`         | Minimum number of threads in the discovery container                          |
+| `PREFETCH_DISCOVERY_COUNT`             | How many tasks are consumed from the queue at once in the discovery container |
+| `WORKER_DISCOVERY_REPLICAS`            | Number of docker replicas of worker discovery container                       |
+| `WORKER_DISCOVERY_CPU_LIMIT`           | Limit of cpu that worker discovery container can use                          |
+| `WORKER_DISCOVERY_MEMORY_LIMIT`        | Limit of memory that worker discovery container can use                       |
+| `WORKER_DISCOVERY_CPU_RESERVATIONS`    | Dedicated cpu resources for worker discovery container                        |
+| `WORKER_DISCOVERY_MEMORY_RESERVATIONS` | Dedicated memory resources for worker discovery container                     |
+
 ## Inventory
 
 | Variable                     | Description                                                                                       |
@@ -125,8 +139,17 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 |------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
 | `SNMP_V3_SECURITY_ENGINE_ID` | SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table of the TRAP receiving application for each USM user, for example: SNMP_V3_SECURITY_ENGINE_ID=80003a8c04,aab123456 |
 | `TRAPS_PORT`                 | External port exposed for traps server                                                                                                                                                                                          |
+
 ## Scheduler
 
 | Variable              | Description                                                                                       |
 |-----------------------|---------------------------------------------------------------------------------------------------| 
 | `SCHEDULER_LOG_LEVEL` | Logging level of the scheduler, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL |
+
+## Discovery
+
+| Variable              | Description                                                                                                                                                                           |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
+| `DISCOVERY_ENABLE`    | Enable for discovery feature                                                                                                                                                          |
+| `DISCOVERY_LOG_LEVEL` | Logging level of the discovery, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                                                     |
+| `DISCOVERY_PATH`      | It specifies the absolute path on the local file system where the `discovery_devices.csv` file will be created. If the CSV file is not already present then new file will be created. |

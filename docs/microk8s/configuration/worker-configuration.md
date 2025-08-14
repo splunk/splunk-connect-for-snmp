@@ -12,6 +12,10 @@ SC4SNMP has two base functionalities: monitoring traps and polling. These operat
 
 3. The `sender` worker handles sending data to Splunk. You need to always have at least one sender pod running.
 
+SC4SNMP also has a discovery functionality which is handled by the worker below:
+
+1. The `discovery` worker consumes all the tasks related to discovery.
+
 ### Worker configuration file
 
 Worker configuration is kept in the `values.yaml` file in the `worker` section. `worker` has 3 subsections: `poller`, `sender`, and `trap`, that refer to the workers types.
@@ -102,6 +106,30 @@ worker:
         # the resources requests for sender worker container
       requests:
         cpu: 250m
+  # The discovery worker handles auto discovery of SNMP-enabled devices and creates a CSV file for it
+  discovery:
+    # number of the discovery replicas when autoscaling is set to false
+    replicaCount: 1
+    # minimum number of threads in a pod
+    concurrency: 4
+    # how many tasks are consumed from the queue at once
+    prefetch: 30
+    autoscaling:
+      # enabling autoscaling for discovery worker pods
+      enabled: false
+      # minimum number of running discovery worker pods when autoscaling is enabled
+      minReplicas: 2
+      # maximum number of running discovery worker pods when autoscaling is enabled
+      maxReplicas: 10
+      # CPU % threshold that must be exceeded on discovery worker pods to spawn another replica
+      targetCPUUtilizationPercentage: 80
+    resources:
+      # the resources limits for discovery worker container
+      limits:
+        cpu: 500m
+        # the resources requests for discovery worker container
+      requests:
+        cpu: 250m
   # Liveness probes are used in Kubernetes to know when a pod is alive or dead.
   # A pod can be in a dead state for a number of reasons;
   # the application could be crashed, some error in the application etc.
@@ -152,6 +180,8 @@ worker:
   podAntiAffinity: soft
   # udpConnectionTimeout timeout in seconds for SNMP operations
   udpConnectionTimeout: 3
+  # udpConnectionRetries number of retries for SNMP operations
+  udpConnectionRetries: 5
 
   # in case of seeing "Empty SNMP response message" this variable can be set to true
   ignoreEmptyVarbinds: false
@@ -182,6 +212,8 @@ worker:
     replicaCount: 1
   poller:
     replicaCount: 0
+  discovery:
+    replicaCount: 0
   logLevel: "WARNING"
 ```
 
@@ -202,6 +234,8 @@ worker:
       maxReplicas: 5
       targetCPUUtilizationPercentage: 80
   poller:
+    replicaCount: 0
+  discovery:
     replicaCount: 0
   logLevel: "WARNING"
 ```
@@ -253,6 +287,8 @@ worker:
       minReplicas: 2
       maxReplicas: 20
       targetCPUUtilizationPercentage: 80
+  discovery:
+    replicaCount: 0
   logLevel: "WARNING"
 ```
 
@@ -323,51 +359,61 @@ Trap worker uses in memory cache to store the results of the reverse dns lookup.
 
 ### Worker parameters
 
-| Variable                                                 | Description                                                                                                                     | Default           |
-|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| worker.poller.replicaCount                               | Number of poller worker replicas                                                                                                | 2                 |
-| worker.poller.concurrency                                | Minimum number of threads in a poller worker pod                                                                                | 4                 |
-| worker.poller.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 1                 |
-| worker.poller.autoscaling.enabled                        | Enabling autoscaling for poller worker pods                                                                                     | false             |
-| worker.poller.autoscaling.minReplicas                    | Minimum number of running poller worker pods when autoscaling is enabled                                                        | 2                 |
-| worker.poller.autoscaling.maxReplicas                    | Maximum number of running poller worker pods when autoscaling is enabled                                                        | 10                |
-| worker.poller.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on poller worker pods to spawn another replica                                            | 80                |
-| worker.poller.resources.limits                           | The resources limits for poller worker container                                                                                | cpu: 500m         |
-| worker.poller.resources.requests                         | The requested resources for poller worker container                                                                             | cpu: 250m         |
-| worker.trap.replicaCount                                 | Number of trap worker replicas                                                                                                  | 2                 |
-| worker.trap.concurrency                                  | Minimum number of threads in a trap worker pod                                                                                  | 4                 |
-| worker.trap.prefetch                                     | Number of tasks consumed from the queue at once                                                                                 | 30                |
-| worker.trap.resolveAddress.enabled                       | Enable reverse dns lookup of the IP address of the processed trap                                                               | false             |
-| worker.trap.resolveAddress.cacheSize                     | Maximum number of reverse dns lookup result records stored in cache                                                             | 500               |
-| worker.trap.resolveAddress.cacheTTL                      | Time to live of the cached reverse dns lookup record in seconds                                                                 | 1800              |
-| worker.trap.autoscaling.enabled                          | Enabling autoscaling for trap worker pods                                                                                       | false             |
-| worker.trap.autoscaling.minReplicas                      | Minimum number of running trap worker pods when autoscaling is enabled                                                          | 2                 |
-| worker.trap.autoscaling.maxReplicas                      | Maximum number of running trap worker pods when autoscaling is enabled                                                          | 10                |
-| worker.trap.autoscaling.targetCPUUtilizationPercentage   | CPU % threshold that must be exceeded on trap worker pods to spawn another replica                                              | 80                |
-| worker.trap.resources.limits                             | The resource limit for the poller worker container                                                                              | cpu: 500m         |
-| worker.trap.resources.requests                           | The requested resources for the poller worker container                                                                         | cpu: 250m         |
-| worker.sender.replicaCount                               | The number of sender worker replicas                                                                                            | 1                 |
-| worker.sender.concurrency                                | Minimum number of threads in a sender worker pod                                                                                | 4                 |
-| worker.sender.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 30                |
-| worker.sender.autoscaling.enabled                        | Enabling autoscaling for sender worker pods                                                                                     | false             |
-| worker.sender.autoscaling.minReplicas                    | Minimum number of running sender worker pods when autoscaling is enabled                                                        | 2                 |
-| worker.sender.autoscaling.maxReplicas                    | Maximum number of running sender worker pods when autoscaling is enabled                                                        | 10                |
-| worker.sender.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on sender worker pods to spawn another replica                                            | 80                |
-| worker.sender.resources.limits                           | The resource limit for the poller worker container                                                                              | cpu: 500m         |
-| worker.sender.resources.requests                         | The requested resources for the poller worker container                                                                         | cpu: 250m         |
-| worker.livenessProbe.enabled                             | Whether the liveness probe is enabled                                                                                           | false             |
-| worker.livenessProbe.exec.command                        | The exec command for the liveness probe to run in the container                                                                 | Check values.yaml |
-| worker.livenessProbe.initialDelaySeconds                 | Number of seconds after the container has started before liveness probe is initiated                                            | 80                |
-| worker.livenessProbe.periodSeconds                       | Frequency of performing the probe in seconds                                                                                    | 10                |
-| worker.readinessProbe.enabled                            | Whether the readiness probe should be turned on or not                                                                          | false             |
-| worker.readinessProbe.exec.command                       | The exec command for the readiness probe to run in the container                                                                | Check values.yaml |
-| worker.readinessProbe.initialDelaySeconds                | Number of seconds after the container has started before readiness probe is initiated                                           | 30                |
-| worker.readinessProbe.periodSeconds                      | Frequency of performing the probe in seconds                                                                                    | 5                 |
-| worker.taskTimeout                                       | Task timeout in seconds when process takes a long time                                                                          | 2400              |
-| worker.walkRetryMaxInterval                              | Maximum time interval between walk attempts                                                                                     | 180               |
-| worker.walkMaxRetries                                    | Maximum number of walk retries                                                                                                  | 5                 |
-| worker.ignoreNotIncreasingOid                            | Ignoring `occurred: OID not increasing` issues for hosts specified in the array                                                 | []                |
-| worker.logLevel                                          | Logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                | INFO              |
-| worker.podAntiAffinity                                   | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | soft              |
-| worker.udpConnectionTimeout                              | Timeout for SNMP operations in seconds                                                                                          | 3                 |
-| worker.ignoreEmptyVarbinds                               | Ignores “Empty SNMP response message” in responses                                                                              | false             |
+| Variable                                                    | Description                                                                                                                     | Default           |
+|-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| worker.poller.replicaCount                                  | Number of poller worker replicas                                                                                                | 2                 |
+| worker.poller.concurrency                                   | Minimum number of threads in a poller worker pod                                                                                | 4                 |
+| worker.poller.prefetch                                      | Number of tasks consumed from the queue at once                                                                                 | 1                 |
+| worker.poller.autoscaling.enabled                           | Enabling autoscaling for poller worker pods                                                                                     | false             |
+| worker.poller.autoscaling.minReplicas                       | Minimum number of running poller worker pods when autoscaling is enabled                                                        | 2                 |
+| worker.poller.autoscaling.maxReplicas                       | Maximum number of running poller worker pods when autoscaling is enabled                                                        | 10                |
+| worker.poller.autoscaling.targetCPUUtilizationPercentage    | CPU % threshold that must be exceeded on poller worker pods to spawn another replica                                            | 80                |
+| worker.poller.resources.limits                              | The resources limits for poller worker container                                                                                | cpu: 500m         |
+| worker.poller.resources.requests                            | The requested resources for poller worker container                                                                             | cpu: 250m         |
+| worker.trap.replicaCount                                    | Number of trap worker replicas                                                                                                  | 2                 |
+| worker.trap.concurrency                                     | Minimum number of threads in a trap worker pod                                                                                  | 4                 |
+| worker.trap.prefetch                                        | Number of tasks consumed from the queue at once                                                                                 | 30                |
+| worker.trap.resolveAddress.enabled                          | Enable reverse dns lookup of the IP address of the processed trap                                                               | false             |
+| worker.trap.resolveAddress.cacheSize                        | Maximum number of reverse dns lookup result records stored in cache                                                             | 500               |
+| worker.trap.resolveAddress.cacheTTL                         | Time to live of the cached reverse dns lookup record in seconds                                                                 | 1800              |
+| worker.trap.autoscaling.enabled                             | Enabling autoscaling for trap worker pods                                                                                       | false             |
+| worker.trap.autoscaling.minReplicas                         | Minimum number of running trap worker pods when autoscaling is enabled                                                          | 2                 |
+| worker.trap.autoscaling.maxReplicas                         | Maximum number of running trap worker pods when autoscaling is enabled                                                          | 10                |
+| worker.trap.autoscaling.targetCPUUtilizationPercentage      | CPU % threshold that must be exceeded on trap worker pods to spawn another replica                                              | 80                |
+| worker.trap.resources.limits                                | The resource limit for the poller worker container                                                                              | cpu: 500m         |
+| worker.trap.resources.requests                              | The requested resources for the poller worker container                                                                         | cpu: 250m         |
+| worker.sender.replicaCount                                  | The number of sender worker replicas                                                                                            | 1                 |
+| worker.sender.concurrency                                   | Minimum number of threads in a sender worker pod                                                                                | 4                 |
+| worker.sender.prefetch                                      | Number of tasks consumed from the queue at once                                                                                 | 30                |
+| worker.sender.autoscaling.enabled                           | Enabling autoscaling for sender worker pods                                                                                     | false             |
+| worker.sender.autoscaling.minReplicas                       | Minimum number of running sender worker pods when autoscaling is enabled                                                        | 2                 |
+| worker.sender.autoscaling.maxReplicas                       | Maximum number of running sender worker pods when autoscaling is enabled                                                        | 10                |
+| worker.sender.autoscaling.targetCPUUtilizationPercentage    | CPU % threshold that must be exceeded on sender worker pods to spawn another replica                                            | 80                |
+| worker.sender.resources.limits                              | The resource limit for the poller worker container                                                                              | cpu: 500m         |
+| worker.sender.resources.requests                            | The requested resources for the poller worker container                                                                         | cpu: 250m         |
+| worker.discovery.replicaCount                               | Number of discovery worker replicas                                                                                             | 1                 |
+| worker.discovery.concurrency                                | Minimum number of threads in a discovery worker pod                                                                             | 4                 |
+| worker.discovery.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 30                |
+| worker.discovery.autoscaling.enabled                        | Enabling autoscaling for discovery worker pods                                                                                  | false             |
+| worker.discovery.autoscaling.minReplicas                    | Minimum number of running discovery worker pods when autoscaling is enabled                                                     | 2                 |
+| worker.discovery.autoscaling.maxReplicas                    | Maximum number of running discovery worker pods when autoscaling is enabled                                                     | 10                |
+| worker.discovery.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on discovery worker pods to spawn another replica                                         | 80                |
+| worker.discovery.resources.limits                           | The resources limits for discovery worker container                                                                             | cpu: 500m         |
+| worker.discovery.resources.requests                         | The requested resources for discovery worker container                                                                          | cpu: 250m         |
+| worker.livenessProbe.enabled                                | Whether the liveness probe is enabled                                                                                           | false             |
+| worker.livenessProbe.exec.command                           | The exec command for the liveness probe to run in the container                                                                 | Check values.yaml |
+| worker.livenessProbe.initialDelaySeconds                    | Number of seconds after the container has started before liveness probe is initiated                                            | 80                |
+| worker.livenessProbe.periodSeconds                          | Frequency of performing the probe in seconds                                                                                    | 10                |
+| worker.readinessProbe.enabled                               | Whether the readiness probe should be turned on or not                                                                          | false             |
+| worker.readinessProbe.exec.command                          | The exec command for the readiness probe to run in the container                                                                | Check values.yaml |
+| worker.readinessProbe.initialDelaySeconds                   | Number of seconds after the container has started before readiness probe is initiated                                           | 30                |
+| worker.readinessProbe.periodSeconds                         | Frequency of performing the probe in seconds                                                                                    | 5                 |
+| worker.taskTimeout                                          | Task timeout in seconds when process takes a long time                                                                          | 2400              |
+| worker.walkRetryMaxInterval                                 | Maximum time interval between walk attempts                                                                                     | 180               |
+| worker.walkMaxRetries                                       | Maximum number of walk retries                                                                                                  | 5                 |
+| worker.ignoreNotIncreasingOid                               | Ignoring `occurred: OID not increasing` issues for hosts specified in the array                                                 | []                |
+| worker.logLevel                                             | Logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                | INFO              |
+| worker.podAntiAffinity                                      | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | soft              |
+| worker.udpConnectionTimeout                                 | Timeout for SNMP operations in seconds                                                                                          | 3                 |
+| worker.udpConnectionretries                                 | Number of retries for SNMP operations                                                                                           | 5                 |
+| worker.ignoreEmptyVarbinds                                  | Ignores “Empty SNMP response message” in responses                                                                              | false             |

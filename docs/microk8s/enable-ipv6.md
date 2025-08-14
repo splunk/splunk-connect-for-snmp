@@ -63,3 +63,9 @@ traps:
   ipFamilyPolicy: RequireDualStack
   ipFamilies: ["IPv4", "IPv6"]
 ```
+To enable SNMP device detection for IPv6 subnet, you need to add the following configuration to `values.yaml` file:
+
+```
+discovery:
+  ipv6Enabled: true
+```
