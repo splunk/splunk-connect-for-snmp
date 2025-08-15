@@ -13,7 +13,7 @@ jobs:
       packages: write
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Upload dashboard to release assets
         run: |
           VERSION=$(echo $GITHUB_REF | cut -d / -f 3)
