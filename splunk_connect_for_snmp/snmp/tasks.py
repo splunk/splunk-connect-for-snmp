@@ -178,7 +178,8 @@ def _process_work_data(self, work, varbind_table, not_translated_oids):
         try:
             varbind_table.append(
                 ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
-                    self.mib_view_controller
+                    self.mib_view_controller,
+                    ignoreErrors=True
                 )
             )
         except SmiError:
