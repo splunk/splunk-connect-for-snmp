@@ -520,6 +520,7 @@ class Poller(Task):
 
             if is_mib_resolved(varbind_id):
                 group_key = get_group_key(mib, oid, index)
+                logger.info(f"found group {group_key}")
                 self.handle_groupkey_without_metrics(group_key, index, mapping, metrics)
                 try:
 
@@ -619,6 +620,7 @@ class Poller(Task):
     def handle_groupkey_without_metrics(self, group_key, index, mapping, metrics):
         if group_key not in metrics:
             indexes = extract_indexes(index)
+            logger.info("Extracted indexes: %s", indexes)
             metrics[group_key] = {
                 "metrics": {},
                 "fields": {},
@@ -629,6 +631,7 @@ class Poller(Task):
 
     def init_snmp_data(self, varbind):
         mib, metric, index = varbind[0].getMibSymbol()
+        logger.info(f"Mib: {mib}, Metric: {metric}, Index: {index}")
         varbind_id = varbind[0].prettyPrint()
         oid = str(varbind[0].getOid())
         return index, metric, mib, oid, varbind_id
