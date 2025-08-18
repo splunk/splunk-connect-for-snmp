@@ -92,14 +92,17 @@ Detailed documentation about configuring:
 
 Detailed documentation about configuring poller can be found in [Poller](poller-configuration.md).
 
-| Variable                 | Description                                                   | Default |
-|--------------------------|---------------------------------------------------------------|---------|
-| `metricsIndexingEnabled` | Appends OID indexes to metrics                                | `false` |
-| `pollBaseProfiles`       | Enables polling base profiles                                 | `true`  |
-| `maxOidToProcess`        | Maximum number of OIDs requested from SNMP Agent at once      | `70`    |
-| `usernameSecrets`        | List of kubernetes secrets name that will be used for polling |         |
-| `inventory`              | List of configuration for polling                             |         |
-| `logLevel`               | Log level for a poller pod                                    | `INFO`  |
+| Variable                             | Description                                                                                                     | Default |
+|--------------------------------------|-----------------------------------------------------------------------------------------------------------------|---------|
+| `metricsIndexingEnabled`             | Appends OID indexes to metrics                                                                                  | `false` |
+| `splunkMetricNameHyphenToUnderscore` | Replaces hyphens with underscores in generated metric names to ensure compatibility with Splunk's metric schema | `false` |
+| `pollBaseProfiles`                   | Enables polling base profiles                                                                                   | `true`  |
+| `maxOidToProcess`                    | Maximum number of OIDs requested from SNMP Agent at once                                                        | `70`    |
+| `ipv6Enabled`                        | Enables polling for IPv6 addresses                                                                              | `false` |
+| `enableFullWalk`                     | Enables full walk of OIDs from device                                                                           | `false` |
+| `usernameSecrets`                    | List of kubernetes secrets name that will be used for polling                                                   |         |
+| `inventory`                          | List of configuration for polling                                                                               |         |
+| `logLevel`                           | Log level for a poller pod                                                                                      | `INFO`  |
 
 ## Worker
 
@@ -163,6 +166,7 @@ Detailed documentation about configuring traps can be found in [Traps](trap-conf
 | `usernameSecrets`                               | Defines SNMPv3 secrets for trap messages sent by SNMP device                                                                    |                  |
 | `securityEngineId`                              | SNMP Engine ID of the TRAP sending application                                                                                  | `80003a8c04`     |
 | `aggregateTrapsEvents`                          | Enables collecting traps events as one event inside Splunk                                                                      | `false`          |
+| `includeSecurityContextId`                      | Controls whether to add the context_engine_id field to v3 trap events                                                           | `false`          |
 | `communities`                                   | Defines a version of SNMP protocol and SNMP community string                                                                    |                  |
 | `service.annotations`                           | Annotations to append under traps service                                                                                       |                  |
 | `service.usemetallb`                            | Enables using metallb                                                                                                           | `true`           |

@@ -126,6 +126,8 @@ Common labels
 {{- end}}
 - name: LOG_LEVEL
   value: {{ .Values.worker.logLevel | default "INFO" }}
+- name: DISABLE_MONGO_DEBUG_LOGGING
+  value: {{ .Values.worker.disableMongoDebugLogging | quote }}
 - name: UDP_CONNECTION_TIMEOUT
   value: {{ .Values.worker.udpConnectionTimeout | default "3" | quote }}
 - name: UDP_CONNECTION_RETRIES
@@ -163,6 +165,8 @@ Common labels
   value: {{ .Values.splunk.insecureSSL | default "false" | quote }}
 - name: SPLUNK_AGGREGATE_TRAPS_EVENTS
   value: {{ .Values.traps.aggregateTrapsEvents | default "false" | quote }}
+- name: SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE
+  value: {{ .Values.poller.splunkMetricNameHyphenToUnderscore | default "false" | quote }}
 - name: SPLUNK_HEC_TOKEN
   valueFrom:
     secretKeyRef:
@@ -190,6 +194,8 @@ Common labels
   value: {{ .Values.worker.poller.concurrency | default "4" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.poller.prefetch | default "1" | quote }}
+- name: IPv6_ENABLED
+  value: {{ .Values.poller.ipv6Enabled | default "false" | quote }}
 {{- end }}
 
 {{- define "environmental-variables-sender" -}}

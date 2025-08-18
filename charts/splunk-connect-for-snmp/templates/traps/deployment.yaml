@@ -59,6 +59,8 @@ spec:
               value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/standard.txt"
             - name: LOG_LEVEL
               value: {{ .Values.traps.logLevel | default "INFO" }}
+            - name: DISABLE_MONGO_DEBUG_LOGGING
+              value: {{ .Values.traps.disableMongoDebugLogging | quote }}
             - name: PYSNMP_DEBUG
               value: {{ .Values.pysnmpDebug | default "" | quote }}
             {{- if .Values.splunk.protocol }}
@@ -77,6 +79,8 @@ spec:
             {{- end}}
             - name: SPLUNK_HEC_INSECURESSL
               value: {{ .Values.splunk.insecureSSL | default "false" | quote }}
+            - name: INCLUDE_SECURITY_CONTEXT_ID
+              value: {{ .Values.traps.includeSecurityContextId | default "false" | quote }}
             - name: SNMP_V3_SECURITY_ENGINE_ID
               value: {{ join "," .Values.traps.securityEngineId }}
             - name: SPLUNK_HEC_TOKEN

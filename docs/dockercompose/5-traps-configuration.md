@@ -1,5 +1,5 @@
 
-Scheduler configuration is stored in the `traps-config.yaml` file. This file has the following sections:
+Traps configuration is stored in the `traps-config.yaml` file. This file has the following sections:
 
 ```yaml
 communities:

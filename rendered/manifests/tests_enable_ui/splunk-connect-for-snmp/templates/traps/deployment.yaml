@@ -56,6 +56,8 @@ spec:
               value: "http://release-name-mibserver/standard.txt"
             - name: LOG_LEVEL
               value: INFO
+            - name: DISABLE_MONGO_DEBUG_LOGGING
+              value: "true"
             - name: PYSNMP_DEBUG
               value: ""
             - name: SPLUNK_HEC_SCHEME
@@ -66,6 +68,8 @@ spec:
               value: "8088"
             - name: SPLUNK_HEC_INSECURESSL
               value: "true"
+            - name: INCLUDE_SECURITY_CONTEXT_ID
+              value: "false"
             - name: SNMP_V3_SECURITY_ENGINE_ID
               value: 80003a8c04
             - name: SPLUNK_HEC_TOKEN

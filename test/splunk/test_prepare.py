@@ -2,7 +2,11 @@ import json
 from unittest import TestCase
 from unittest.mock import patch
 
-from splunk_connect_for_snmp.splunk.tasks import apply_custom_translations, prepare
+from splunk_connect_for_snmp.splunk.tasks import (
+    apply_custom_translations,
+    prepare,
+    prepare_trap_data,
+)
 
 
 @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS", "test_index")
@@ -234,6 +238,93 @@ class TestPrepare(TestCase):
                             "field_four": "stopping",
                             "metric_name:sc4snmp.metric_three": 67.0,
                             "metric_name:sc4snmp.metric_four": 90.0,
+                        },
+                    },
+                ],
+                "events": [],
+            },
+            result,
+        )
+
+    @patch(
+        "splunk_connect_for_snmp.splunk.tasks.SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE",
+        True,
+    )
+    @patch("splunk_connect_for_snmp.splunk.tasks.apply_custom_translations")
+    def test_prepare_metrics_hyphen_to_underscore(self, m_custom):
+        task_input = {
+            "time": 1234567,
+            "address": "192.168.0.1",
+            "frequency": 15,
+            "result": {
+                "SOME_GROUP_KEY1": {
+                    "indexes": [6],
+                    "metrics": {
+                        "IDRAC-MIB-SMIv2.memoryDeviceTableEntry": {"value": 23},
+                    },
+                    "fields": {
+                        "field_one": {"value": "on"},
+                        "field_two": {"value": "listening"},
+                    },
+                    "profiles": "profile1,profile2",
+                },
+                "SOME_GROUP_KEY2": {
+                    "metrics": {
+                        "IF-MIB.ifInUnknownProtos": {"value": 0},
+                        "IF-MIB.ifLastChange": {"value": 1995499028},
+                    },
+                    "fields": {
+                        "field_three": {"value": "OFF"},
+                        "field_four": {"value": "stopping"},
+                    },
+                    "profiles": "profile1,profile2",
+                },
+            },
+        }
+
+        m_custom.return_value = task_input
+        result = prepare(task_input)
+
+        self.assertEqual("list", type(result["metrics"]).__name__)
+
+        item1 = json.loads(result["metrics"][0])
+        result["metrics"][0] = item1
+
+        item2 = json.loads(result["metrics"][1])
+        result["metrics"][1] = item2
+
+        self.assertEqual(
+            {
+                "metrics": [
+                    {
+                        "time": 1234567,
+                        "event": "metric",
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:metric",
+                        "host": "192.168.0.1",
+                        "index": "test_index_2",
+                        "fields": {
+                            "frequency": 15,
+                            "profiles": "profile1,profile2",
+                            "field_one": "on",
+                            "field_two": "listening",
+                            "metric_name:sc4snmp.IDRAC_MIB_SMIv2.memoryDeviceTableEntry": 23.0,
+                        },
+                    },
+                    {
+                        "time": 1234567,
+                        "event": "metric",
+                        "source": "sc4snmp",
+                        "sourcetype": "sc4snmp:metric",
+                        "host": "192.168.0.1",
+                        "index": "test_index_2",
+                        "fields": {
+                            "frequency": 15,
+                            "profiles": "profile1,profile2",
+                            "field_three": "OFF",
+                            "field_four": "stopping",
+                            "metric_name:sc4snmp.IF_MIB.ifInUnknownProtos": 0.0,
+                            "metric_name:sc4snmp.IF_MIB.ifLastChange": 1995499028,
                         },
                     },
                 ],
@@ -514,3 +605,57 @@ class TestPrepare(TestCase):
             },
             result,
         )
+
+
+@patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")
+@patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS", "netops")
+class TestPrepareTrapData(TestCase):
+    def test_prepare_trap_data_basic(self):
+        work = {
+            "time": 1640609779.473053,
+            "address": "192.168.0.1",
+            "result": {
+                "GROUP1": {
+                    "metrics": {
+                        "metric_one": {"value": 23},
+                        "metric_two": {"value": 26},
+                    },
+                    "fields": {
+                        "field_one": {"value": "on"},
+                        "field_two": {"value": "listening"},
+                    },
+                }
+            },
+        }
+        events = prepare_trap_data(work)
+        self.assertEqual(len(events), 1)
+        event = json.loads(events[0])
+        self.assertEqual(event["time"], 1640609779.473053)
+        self.assertEqual(event["source"], "sc4snmp")
+        self.assertEqual(event["sourcetype"], "sc4snmp:traps")
+        self.assertEqual(event["host"], "192.168.0.1")
+        self.assertEqual(event["index"], "netops")
+        event_data = json.loads(event["event"])
+        self.assertEqual(event_data["field_one"]["value"], "on")
+        self.assertEqual(event_data["field_two"]["value"], "listening")
+        self.assertEqual(event_data["metric_one"]["value"], 23.0)
+        self.assertEqual(event_data["metric_two"]["value"], 26.0)
+
+    def test_prepare_trap_data_with_extra_fields(self):
+        work = {
+            "time": 1640609779.473053,
+            "address": "192.168.0.1",
+            "fields": {"context_engine_id": "800000c1010a010fc4"},
+            "result": {
+                "GROUP1": {
+                    "metrics": {},
+                    "fields": {
+                        "context_engine_id": "800000c1010a010fc4",
+                    },
+                }
+            },
+        }
+        events = prepare_trap_data(work)
+        event = json.loads(events[0])
+        self.assertIn("fields", event)
+        self.assertEqual(event["fields"], {"context_engine_id": "800000c1010a010fc4"})

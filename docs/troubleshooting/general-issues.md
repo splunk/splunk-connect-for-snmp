@@ -27,3 +27,72 @@ If the `mongo-fcv-upgrade-to-6` job fails for any reason, there are two recovery
      ```
 
     Replace `<mongodb-pod-id>` with the actual Pod ID of your MongoDB instance.
+
+#### Addressing Metric Naming Conflicts for Splunk Integration
+
+When collecting SNMP metrics using SC4SNMP, metric names often contain hyphens (e.g., IF-MIB) because the default MIB format includes hyphens in Object Identifiers (OIDs) as specified by standard MIB naming conventions. 
+While this naming convention is standard for SNMP MIBs, it can lead to compatibility issues when forwarding these metrics, particularly when integrating with Splunk via the OpenTelemetry (OTel) Collector's Splunk HEC metric endpoint.
+
+The Splunk metric schema, as detailed in the [official Splunk documentation](https://help.splunk.com/en/splunk-enterprise/get-data-in/metrics/9.4/introduction-to-metrics/overview-of-metrics), generally expects metric names to adhere to 
+a specific format that may not accommodate hyphens in certain contexts. Although direct ingestion into Splunk might work, 
+using the [OpenTelemetry Collector Splunk HEC receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/splunkhecreceiver) can expose these naming conflicts, potentially preventing successful 
+data ingestion or proper metric indexing.
+
+To ensure seamless compatibility and avoid potential issues, SC4SNMP provides a configuration option to automatically convert 
+hyphens in metric names to underscores.
+
+
+You can enable this conversion by setting the `splunkMetricNameHyphenToUnderscore` parameter to `true` within the `poller` section of your SC4SNMP configuration:
+
+```yaml
+poller:
+  splunkMetricNameHyphenToUnderscore: true
+```
+
+Enabling this option transforms metric names from their hyphenated format to an underscore-separated format, aligning them with common Splunk metric naming conventions.
+
+Before conversion (hyphens):
+
+```json
+{
+  "frequency": "60",
+  "ifAdminStatus": "up",
+  "ifAlias": "1",
+  "ifDescr": "GigabitEthernet1",
+  "ifIndex": "1",
+  "ifName": "Gi1",
+  "ifOperStatus": "up",
+  "ifPhysAddress": "0a:aa:ef:53:67:15",
+  "ifType": "ethernetCsmacd",
+  "metric_name:sc4snmp.IF-MIB.ifInDiscards": 0,
+  "metric_name:sc4snmp.IF-MIB.ifInErrors": 0,
+  "metric_name:sc4snmp.IF-MIB.ifInOctets": 1481605109,
+  "metric_name:sc4snmp.IF-MIB.ifOutDiscards": 0,
+  "metric_name:sc4snmp.IF-MIB.ifOutErrors": 0,
+  "metric_name:sc4snmp.IF-MIB.ifOutOctets": 3942570709,
+  "profiles": "TEST"
+}
+```
+
+After conversion (underscores):
+
+```json
+{
+  "frequency": "60",
+  "ifAdminStatus": "up",
+  "ifAlias": "1",
+  "ifDescr": "GigabitEthernet1",
+  "ifIndex": "1",
+  "ifName": "Gi1",
+  "ifOperStatus": "up",
+  "ifPhysAddress": "0a:aa:ef:53:67:15",
+  "ifType": "ethernetCsmacd",
+  "metric_name:sc4snmp.IF_MIB.ifInDiscards": 0,
+  "metric_name:sc4snmp.IF_MIB.ifInErrors": 0,
+  "metric_name:sc4snmp.IF_MIB.ifInOctets": 1481605109,
+  "metric_name:sc4snmp.IF_MIB.ifOutDiscards": 0,
+  "metric_name:sc4snmp.IF_MIB.ifOutErrors": 0,
+  "metric_name:sc4snmp.IF_MIB.ifOutOctets": 3942570709,
+  "profiles": "TEST"
+}
+```

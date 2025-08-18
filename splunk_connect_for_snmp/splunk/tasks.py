@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
+import re
 from contextlib import suppress
 
 from splunk_connect_for_snmp.common.custom_translations import load_custom_translations
@@ -40,6 +42,9 @@ SPLUNK_HEC_PATH = os.getenv("SPLUNK_HEC_PATH", "services/collector")
 SPLUNK_HEC_MTLS_CLIENT_CERT = os.getenv("SPLUNK_HEC_MTLS_CLIENT_CERT", None)
 SPLUNK_HEC_MTLS_CLIENT_KEY = os.getenv("SPLUNK_HEC_MTLS_CLIENT_KEY", None)
 SPLUNK_HEC_MTLS_CA_CERT = os.getenv("SPLUNK_HEC_MTLS_CA_CERT", None)
+SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE = human_bool(
+    os.getenv("SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE", "false")
+)
 METRICS_INDEXING_ENABLED = human_bool(os.getenv("METRICS_INDEXING_ENABLED", "false"))
 
 url = {
@@ -82,6 +87,7 @@ else:
     SPLUNK_HEC_TLSVERIFY = True
 
 OTEL_METRICS_URL = os.getenv("OTEL_METRICS_URL", None)
+SCIENTIFIC_VALUE = re.compile(r"^[+-]?\d+(\.\d+)?[eE][+-]?\d+$")
 
 logger = get_task_logger(__name__)
 
@@ -188,6 +194,10 @@ def do_send(data, destination_url, self):
 
 def value_as_best(value) -> Union[str, float]:
     try:
+        # When the values are of a format "849867E3" it is typically something like a serial number
+        # we don't want to interpret it like a scientific notation 849867 * 10^3
+        if isinstance(value, str) and SCIENTIFIC_VALUE.match(value):
+            return value
         return float(value)
     except ValueError:
         return value
@@ -247,6 +257,8 @@ def set_metrics_fields(data, metric, work):
         short_field = field.split(".")[-1]
         metric["fields"][short_field] = value_as_best(values["value"])
     for field, values in data["metrics"].items():
+        if SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE:
+            field = field.replace("-", "_")
         metric["fields"][f"metric_name:sc4snmp.{field}"] = value_as_best(
             values["value"]
         )
@@ -271,6 +283,8 @@ def prepare_trap_data(work):
             "host": work["address"],
             "index": SPLUNK_HEC_INDEX_EVENTS,
         }
+        if "fields" in work:
+            event["fields"] = work["fields"]
         events.append(event)
     if SPLUNK_AGGREGATE_TRAPS_EVENTS:
         events = aggregate_traps(events)

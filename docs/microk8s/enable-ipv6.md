@@ -35,7 +35,7 @@ microk8s start
 ```
 
 ## Metallb
-As of version `1.30` of microk8s, Metallb add-on does not support passing the IPv6 addresses in enable command. To 
+As of version `1.33` of microk8s, Metallb add-on does not support passing the IPv6 addresses in enable command. To 
 add the IPv6 addresses to your Metallb configuration, you can prepare the yaml file with configuration like below:
 ```
 # addresspool.yaml
@@ -63,9 +63,16 @@ traps:
   ipFamilyPolicy: RequireDualStack
   ipFamilies: ["IPv4", "IPv6"]
 ```
-To enable SNMP device detection for IPv6 subnet, you need to add the following configuration to `values.yaml` file:
+
+To enable SNMP device detection for IPv4 and IPv6 subnet, you need to add the following configuration to `values.yaml` file:
 
 ```
 discovery:
+  ipv6Enabled: true
+```
+
+To configure poller to poll IPv4 and IPv6 addresses, you need to add the following configuration to the `values.yaml` file:
+``` 
+poller:
   ipv6Enabled: true
 ```

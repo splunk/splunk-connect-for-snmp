@@ -90,7 +90,7 @@ sudo microk8s ctr image import myimage.tar
 
 sudo docker pull splunk/splunk:latest
 echo $(green "Running Splunk in Docker")
-sudo docker run -d -p 8000:8000 -p 8088:8088 -p 8089:8089 -e SPLUNK_START_ARGS='--accept-license' -e SPLUNK_PASSWORD='changeme2' splunk/splunk:latest
+sudo docker run -d -p 8000:8000 -p 8088:8088 -p 8089:8089 -e SPLUNK_GENERAL_TERMS=--accept-sgt-current-at-splunk-com  -e SPLUNK_START_ARGS='--accept-license' -e SPLUNK_PASSWORD='changeme2' splunk/splunk:latest
 
 wait_for_splunk
 
@@ -110,7 +110,7 @@ sudo docker run -d -p 1165:161/udp tandrup/snmpsim
 sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
 sudo microk8s enable helm3
-sudo microk8s enable storage
+sudo microk8s enable hostpath-storage
 sudo microk8s enable dns
 sudo microk8s enable rbac
 sudo microk8s enable community
@@ -120,7 +120,7 @@ yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
 sudo microk8s status --wait-ready
 
 cd ../charts/splunk-connect-for-snmp
-microk8s helm3 dep update
+sudo microk8s helm3 dep update
 cd ../../integration_tests
 
 echo $(green "Installing SC4SNMP on Kubernetes")

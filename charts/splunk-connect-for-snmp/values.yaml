@@ -231,6 +231,10 @@ poller:
   # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/#append-oid-index-part-to-the-metrics
   metricsIndexingEnabled: false
 
+  # Replace "-" in a mib name to "_" to make it compatible to Splunk metric schema
+  # https://help.splunk.com/en/splunk-enterprise/get-data-in/metrics/9.4/introduction-to-metrics/overview-of-metrics
+  splunkMetricNameHyphenToUnderscore: false
+
   # Enable polling base profiles (with IF-MIB and SNMPv2-MIB) from
   # https://github:com/splunk/splunk-connect-for-snmp/blob/main/splunk_connect_for_snmp/profiles/base.yaml
   pollBaseProfiles: true
@@ -243,6 +247,9 @@ poller:
   # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/#define-usernamesecrets
   usernameSecrets: []
 
+  # flag to enable polling full walk tree for devices
+  enableFullWalk: false
+
   # Here is where polling happens. Learn more on how to configure it here:
   # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/
 
@@ -251,6 +258,7 @@ poller:
   #  example_group_1,,2c,public,,,3000,static_profile,t,
   logLevel: "INFO"
 
+  ipv6Enabled: false
 worker:
   # workers are responsible for the actual execution of polling, processing trap messages, and sending data to Splunk.
   # More: https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/worker-configuration/
@@ -407,6 +415,8 @@ worker:
   ignoreNotIncreasingOid: []
   # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
   logLevel: "INFO"
+  # disableMongoDebugLogging is used to disable extensive debug logging for MongoDB+pymongo while logLevel is set to DEBUG.
+  disableMongoDebugLogging: true
   podAntiAffinity: soft
   # udpConnectionTimeout timeout in seconds for SNMP operations
   udpConnectionTimeout: 3
@@ -456,6 +466,8 @@ traps:
     - "80003a8c04"
   # aggregateTrapsEvents flag set to true makes traps events collected as one event inside splunk
   aggregateTrapsEvents: "false"
+  # controls whether to add the context_engine_id field to v3 trap events
+  includeSecurityContextId: "false"
 
   # communities define a version of SNMP protocol and SNMP community string, which should be used
   communities: {}
@@ -499,6 +511,8 @@ traps:
 
   # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
   logLevel: "INFO"
+  # disableMongoDebugLogging is used to disable extensive debug logging for MongoDB+pymongo while logLevel is set to DEBUG.
+  disableMongoDebugLogging: true
   nodeSelector: {}
   tolerations: []
   podAntiAffinity: soft

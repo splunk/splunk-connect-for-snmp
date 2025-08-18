@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
 
 # Support use of .env file for developers
 from contextlib import suppress
@@ -35,7 +36,6 @@ provider = TracerProvider()
 trace.set_tracer_provider(provider)
 
 logger = get_task_logger(__name__)
-
 # //using rabbitmq as the message broker
 app = Celery("sc4snmp_poller")
 app.config_from_object("splunk_connect_for_snmp.celery_config")

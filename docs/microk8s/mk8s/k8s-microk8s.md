@@ -28,7 +28,7 @@ IPv6](../enable-ipv6.md).
 ## Install MicroK8s using Snap
 
 ```bash
-sudo snap install microk8s --classic --channel=1.30/stable
+sudo snap install microk8s --classic --channel=1.33/stable
 ```
 
 Add a user to the microk8s group so the `sudo` command is no longer necessary:

@@ -61,6 +61,8 @@ spec:
               value: "true"
             - name: LOG_LEVEL
               value: INFO
+            - name: DISABLE_MONGO_DEBUG_LOGGING
+              value: "true"
             - name: UDP_CONNECTION_TIMEOUT
               value: "3"
             - name: UDP_CONNECTION_RETRIES
@@ -89,6 +91,8 @@ spec:
               value: "true"
             - name: SPLUNK_AGGREGATE_TRAPS_EVENTS
               value: "false"
+            - name: SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE
+              value: "false"
             - name: SPLUNK_HEC_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -108,6 +112,8 @@ spec:
               value: "4"
             - name: PREFETCH_COUNT
               value: "1"
+            - name: IPv6_ENABLED
+              value: "false"
           volumeMounts:
             - name: config
               mountPath: "/app/config"
