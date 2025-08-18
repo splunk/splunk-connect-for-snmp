@@ -630,6 +630,7 @@ class Poller(Task):
                 metrics[group_key]["profiles"] = []
 
     def init_snmp_data(self, varbind):
+        logger.info(f"Processing varbind: {varbind}")
         mib, metric, index = varbind[0].getMibSymbol()
         logger.info(f"Mib: {mib}, Metric: {metric}, Index: {index}")
         varbind_id = varbind[0].prettyPrint()
