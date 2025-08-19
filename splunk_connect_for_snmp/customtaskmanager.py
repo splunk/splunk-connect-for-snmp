@@ -73,7 +73,8 @@ class CustomPeriodicTaskManager:
 
     def delete_all_discovery_tasks(self):
         self.__delete_all_tasks_of_type(
-            "splunk_connect_for_snmp.discovery.tasks.discovery", "delete_all_discovery_tasks"
+            "splunk_connect_for_snmp.discovery.tasks.discovery",
+            "delete_all_discovery_tasks",
         )
 
     def rerun_all_walks(self):

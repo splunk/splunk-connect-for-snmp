@@ -15,6 +15,7 @@
 
 from ipaddress import ip_network
 from typing import List, Union
+
 from pydantic import BaseModel, validator
 
 from splunk_connect_for_snmp.common.hummanbool import human_bool
@@ -23,6 +24,7 @@ DiscoveryStr = Union[None, str]
 DiscoveryInt = Union[None, int]
 DiscoveryBool = Union[None, bool]
 DiscoveryList = Union[None, List[dict]]
+
 
 class DiscoveryRecord(BaseModel):
     discovery_name: DiscoveryStr
@@ -38,7 +40,6 @@ class DiscoveryRecord(BaseModel):
     skip_active_check: DiscoveryBool
     device_rules: DiscoveryList
     is_ipv6: DiscoveryBool
-    
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -51,9 +52,7 @@ class DiscoveryRecord(BaseModel):
             try:
                 ip_network(value, strict=False)
             except ValueError:
-                raise ValueError(
-                        f"field network address must be an valid subnet"
-                    )
+                raise ValueError(f"field network address must be an valid subnet")
 
             return value
 
@@ -103,7 +102,6 @@ class DiscoveryRecord(BaseModel):
         if value is None:
             return False
         return human_bool(value)
-
 
     def asdict(self) -> dict:
         return self.dict()

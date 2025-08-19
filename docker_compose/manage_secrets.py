@@ -108,7 +108,7 @@ def create_secrets(
             )
         else:
             traps_ready = True
-            
+
         if make_change_in_worker_discovery:
             yaml_file, worker_discovery_ready = load_compose_worker_discovery(
                 new_secrets_in_workers, yaml_file
@@ -167,13 +167,16 @@ def load_compose_traps(new_secrets_in_workers, yaml_file):
         traps_ready = False
     return yaml_file, traps_ready
 
+
 def load_compose_worker_discovery(new_secrets_in_workers, yaml_file):
     # If the secret should be added to worker discovery, load docker-compose-worker-discovery.yaml to a dictionary and
     # update "secrets" section.
     try:
         if "secrets" not in yaml_file["services"]["worker-discovery"]:
             yaml_file["services"]["worker-discovery"]["secrets"] = []
-        yaml_file["services"]["worker-discovery"]["secrets"].extend(new_secrets_in_workers)
+        yaml_file["services"]["worker-discovery"]["secrets"].extend(
+            new_secrets_in_workers
+        )
         worker_discovery_ready = True
     except Exception as e:
         print(f"Problem with editing worker-discovery. Secret not added. Error {e}")
@@ -266,7 +269,7 @@ def delete_secrets(
                     yaml_file["services"]["traps"]["secrets"],
                 )
             )
-            
+
         if make_change_in_worker_discovery:
             # filter out secrets destined for deletion
 
@@ -276,7 +279,6 @@ def delete_secrets(
                     yaml_file["services"]["worker-discovery"]["secrets"],
                 )
             )
-
 
     except Exception as e:
         print(f"Problem with editing secrets section. Secret not added. Error: {e}")

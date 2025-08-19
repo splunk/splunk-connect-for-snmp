@@ -1,7 +1,8 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
-from splunk_connect_for_snmp.discovery.discovery_manager import Discovery
+
 from splunk_connect_for_snmp.common.discovery_record import DiscoveryRecord
+from splunk_connect_for_snmp.discovery.discovery_manager import Discovery
 
 logger = get_task_logger(__name__)
 
