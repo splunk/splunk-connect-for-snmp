@@ -37,7 +37,7 @@ class Discovery(Task):
             logger.error(f"Error occured running nmap scan: {e}")
             raise
 
-    def get_host_list(self, subnet, skip_active_check: bool, is_ipv6: bool):
+    def get_host_list(self, subnet, skip_active_check, is_ipv6):
         """Get host list based on the active check flag"""
         try:
             logger.debug(f"Skip active check : {skip_active_check}")
@@ -69,11 +69,12 @@ class Discovery(Task):
         if not error_indication and error_status == 0:
             group_name = "default_group"
             _, value = var_binds[0]
-            for device_rule in discovery_record.device_rules:
-                regex_pattern = fnmatch.translate(device_rule["patterns"])
-                if re.search(regex_pattern, value.prettyPrint(), re.IGNORECASE):
-                    group_name = device_rule["group"]
-                    break
+            if isinstance(discovery_record.device_rules, list):
+                for device_rule in discovery_record.device_rules:
+                    regex_pattern = fnmatch.translate(device_rule["patterns"])
+                    if re.search(regex_pattern, value.prettyPrint(), re.IGNORECASE):
+                        group_name = device_rule["group"]
+                        break
             return {
                 "key": discovery_record.discovery_name,
                 "ip": ip,
