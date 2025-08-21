@@ -52,7 +52,7 @@ class CSVRecordManager:
     def create_rows(self, inputs, delete_flag):
         """Add new rows into the CSV, also replace missing values with empty strings and removes duplicate rows."""
         try:
-            new_rows = [self._normalize_row(r) for r in inputs]
+            new_rows = [self._normalize_row(row) for row in inputs]
 
             # Deduplicate: use tuple of values as unique key
             if delete_flag:
@@ -61,10 +61,10 @@ class CSVRecordManager:
                 existing = {
                     tuple(row[col] for col in self.columns) for row in self.rows
                 }
-            for r in new_rows:
-                key = tuple(r[col] for col in self.columns)
+            for row in new_rows:
+                key = tuple(row[col] for col in self.columns)
                 if key not in existing:
-                    self.rows.append(r)
+                    self.rows.append(row)
                     existing.add(key)
 
             self._write_to_csv()
@@ -75,7 +75,7 @@ class CSVRecordManager:
     def delete_rows_by_key(self, key):
         """Delete all rows where the 'key' column matches."""
         try:
-            self.rows = [r for r in self.rows if r["key"].strip() != str(key).strip()]
+            self.rows = [row for row in self.rows if row["key"].strip() != str(key).strip()]
         except Exception as e:
             logger.error(f"Error occurred while deleting row by key: {e}")
             raise
