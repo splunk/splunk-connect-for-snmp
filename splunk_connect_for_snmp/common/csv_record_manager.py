@@ -28,14 +28,14 @@ class CSVRecordManager:
             else:
                 with open(filename, mode="r", newline="") as f:
                     reader = csv.DictReader(f)
-                    self.rows = [self._normalize_row(row) for row in reader]
+                    self.rows = list(reader)
         except Exception as e:
             logger.error(f"Error occurred while reading CSV file: {e}")
             raise
 
     def _normalize_row(self, row: dict) -> dict:
         """Strip whitespace and ensure all keys exist with empty string defaults."""
-        return {col: (row.get(col, "") or "").strip() for col in self.columns}
+        return {k: str(v).strip() if v is not None else '' for k, v in row.items()}
 
     def _write_to_csv(self):
         """Save current rows back to the CSV file."""
