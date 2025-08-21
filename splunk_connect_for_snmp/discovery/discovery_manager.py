@@ -128,8 +128,7 @@ class Discovery(Task):
             csv_service = CSVRecordManager(DISCOVERY_CSV_PATH)
             if delete_flag is True:
                 csv_service.delete_rows_by_key(dicovery_name)
-            csv_service.create_rows(snmp_devices_detail)
-            csv_service.dataframe_to_csv(csv_service.df)
+            csv_service.create_rows(snmp_devices_detail, delete_flag)
 
     def do_work(self, discovery_record: DiscoveryRecord) -> list:
         try:
