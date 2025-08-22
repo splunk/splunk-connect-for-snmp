@@ -75,7 +75,9 @@ class CSVRecordManager:
     def delete_rows_by_key(self, key):
         """Delete all rows where the 'key' column matches."""
         try:
-            self.rows = [row for row in self.rows if row["key"].strip() != str(key).strip()]
+            self.rows = [
+                row for row in self.rows if row["key"].strip() != str(key).strip()
+            ]
         except Exception as e:
             logger.error(f"Error occurred while deleting row by key: {e}")
             raise
