@@ -50,6 +50,7 @@ nav:
       - Inventory configuration: "dockercompose/3-inventory-configuration.md"
       - Scheduler configuration: "dockercompose/4-scheduler-configuration.md"
       - Traps configuration: "dockercompose/5-traps-configuration.md"
+      - Discovery configuration: "dockercompose/11-discovery-configuration.md"
       - .env file configuration: "dockercompose/6-env-file-configuration.md"
       - SNMPv3 secrets configuration: "dockercompose/7-snmpv3-secrets.md"
       - Offline installation: "dockercompose/8-offline-installation.md"
@@ -75,6 +76,7 @@ nav:
               - SNMP data format: "microk8s/configuration/snmp-data-format.md"
           - Traps: "microk8s/configuration/trap-configuration.md"
           - Worker: "microk8s/configuration/worker-configuration.md"
+          - Discovery: "microk8s/configuration/discovery-configuration.md"
           - MongoDB: "microk8s/configuration/mongo-configuration.md"
           - Redis: "microk8s/configuration/redis-configuration.md"
           - SNMPv3 configuration: "microk8s/configuration/snmpv3-configuration.md"
@@ -95,6 +97,7 @@ nav:
   - Improved polling performance: "improved-polling.md"
   - Lightweight installation: "small-environment.md"
   - Splunk dashboards: "dashboard.md"
+  - Discovery: "discovery.md"
   - Releases: "releases.md"
   - Request MIB: "mib-request.md"
   - Security: "security.md"
@@ -106,6 +109,7 @@ nav:
       - General issues: "troubleshooting/general-issues.md"
       - Polling issues: "troubleshooting/polling-issues.md"
       - Traps issues: "troubleshooting/traps-issues.md"
+      - Discovery issues: "troubleshooting/discovery-issues.md"
 
 
 

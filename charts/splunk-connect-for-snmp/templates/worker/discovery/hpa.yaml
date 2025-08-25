@@ -1,0 +1,24 @@
+{{- if and ( eq (include "splunk-connect-for-snmp.discovery.enable" .) "true" ) (eq ( toString .Values.worker.discovery.autoscaling.enabled) "true") }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-discovery
+  labels:
+    {{- include "splunk-connect-for-snmp.worker.discovery.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-discovery
+  minReplicas: {{ .Values.worker.discovery.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.worker.discovery.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.worker.discovery.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.worker.discovery.autoscaling.targetCPUUtilizationPercentage | default 80 }}
+    {{- end }}
+{{- end }}

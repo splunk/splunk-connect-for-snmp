@@ -9,6 +9,7 @@
 - change default walk to get only SNMPv2-MIB
 - add `disableMongoDebugLogging` parameter to disable extensive pymnogo logs while `logLevel` is set to `DEBUG`
 - add `includeSecurityContextId` parameter to control whether to add the `context_engine_id` field to v3 trap events
+- added SNMP-enabled device discovery feature
 
 ### Fixed
 - fix text SNMP values with numbers and 'E' being interpreted as scientific notation
