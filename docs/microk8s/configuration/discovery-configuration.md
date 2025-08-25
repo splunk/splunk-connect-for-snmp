@@ -85,8 +85,8 @@ discovery:
 ```   
 
 ### Configure discovery tasks
-Discovery tasks are defined under the autodiscovery section. Each task can target a specific subnet with its own SNMP version and settings. 
-Task name must start with a letter (not a number).
+Discovery tasks are defined under the autodiscovery section. Each discovery task can target a specific subnet with its own SNMP version and settings. 
+Discovery key (i.e. task name) must start with a letter (not a number).
 
 Each task has the following fields to configure:
 
