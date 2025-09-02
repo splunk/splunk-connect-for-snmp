@@ -92,17 +92,15 @@ Detailed documentation about configuring:
 
 Detailed documentation about configuring poller can be found in [Poller](poller-configuration.md).
 
-| Variable                             | Description                                                                                                     | Default |
-|--------------------------------------|-----------------------------------------------------------------------------------------------------------------|---------|
-| `metricsIndexingEnabled`             | Appends OID indexes to metrics                                                                                  | `false` |
-| `splunkMetricNameHyphenToUnderscore` | Replaces hyphens with underscores in generated metric names to ensure compatibility with Splunk's metric schema | `false` |
-| `pollBaseProfiles`                   | Enables polling base profiles                                                                                   | `true`  |
-| `maxOidToProcess`                    | Maximum number of OIDs requested from SNMP Agent at once                                                        | `70`    |
-| `ipv6Enabled`                        | Enables polling for IPv6 addresses                                                                              | `false` |
-| `enableFullWalk`                     | Enables full walk of OIDs from device                                                                           | `false` |
-| `usernameSecrets`                    | List of kubernetes secrets name that will be used for polling                                                   |         |
-| `inventory`                          | List of configuration for polling                                                                               |         |
-| `logLevel`                           | Log level for a poller pod                                                                                      | `INFO`  |
+| Variable                 | Description                                                                            | Default |
+|--------------------------|----------------------------------------------------------------------------------------|---------|
+| `metricsIndexingEnabled` | Appends OID indexes to metrics                                                         | `false` |
+| `pollBaseProfiles`       | Enables polling base profiles                                                          | `true`  |
+| `maxOidToProcess`        | Maximum number of OIDs requested from SNMP Agent at once                               | `70`    |
+| `usernameSecrets`        | List of kubernetes secrets name that will be used for polling                          |         |
+| `inventory`              | List of configuration for polling                                                      |         |
+| `maxRepetitions`         | the amount of requested next oids in response for each of varbinds in one request sent | `10`    |
+| `logLevel`               | Log level for a poller pod                                                             | `INFO`  |
 
 ## Worker
 

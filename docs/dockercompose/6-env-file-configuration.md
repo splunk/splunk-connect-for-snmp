@@ -76,6 +76,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `WORKER_LOG_LEVEL`           | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                        |
 | `UDP_CONNECTION_TIMEOUT`     | Timeout in seconds for SNMP operations                                                                                                                 |
 | `MAX_OID_TO_PROCESS`         | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS   |
+| `MAX_REPETITIONS`            | The amount of requested next oids in response for each of varbinds in one request sent                                                               |
 
 ### Worker Poller
 | Variable                            | Description                                                                |

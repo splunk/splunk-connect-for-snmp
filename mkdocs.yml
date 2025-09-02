@@ -92,7 +92,6 @@ nav:
           - Apply changes: "microk8s/gui/apply-changes.md"
       - Upgrade SC4SNMP: "microk8s/upgrade.md"
   - High Availability: "ha.md"
-  - Improved polling performance: "improved-polling.md"
   - Lightweight installation: "small-environment.md"
   - Splunk dashboards: "dashboard.md"
   - Releases: "releases.md"
