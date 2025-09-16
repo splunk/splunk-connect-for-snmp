@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.342714a4.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e37652d.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
@@ -1875,6 +1875,28 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../../mtls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    mTLS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -1884,10 +1906,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
@@ -1900,8 +1922,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             Troubleshooting
           </label>
@@ -2544,6 +2566,11 @@ Below are the most common options:</p>
 <td><code>false</code></td>
 </tr>
 <tr>
+<td><code>splunkMetricNameHyphenToUnderscore</code></td>
+<td>Replaces hyphens with underscores in generated metric names to ensure compatibility with Splunk’s metric schema</td>
+<td><code>false</code></td>
+</tr>
+<tr>
 <td><code>pollBaseProfiles</code></td>
 <td>Enables polling base profiles</td>
 <td><code>true</code></td>
@@ -2552,6 +2579,16 @@ Below are the most common options:</p>
 <td><code>maxOidToProcess</code></td>
 <td>Maximum number of OIDs requested from SNMP Agent at once</td>
 <td><code>70</code></td>
+</tr>
+<tr>
+<td><code>ipv6Enabled</code></td>
+<td>Enables polling for IPv6 addresses</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>enableFullWalk</code></td>
+<td>Enables full walk of OIDs from device</td>
+<td><code>false</code></td>
 </tr>
 <tr>
 <td><code>usernameSecrets</code></td>
@@ -2808,6 +2845,11 @@ Below are the most common options:</p>
 <td><code>false</code></td>
 </tr>
 <tr>
+<td><code>includeSecurityContextId</code></td>
+<td>Controls whether to add the context_engine_id field to v3 trap events</td>
+<td><code>false</code></td>
+</tr>
+<tr>
 <td><code>communities</code></td>
 <td>Defines a version of SNMP protocol and SNMP community string</td>
 <td></td>
@@ -3029,7 +3071,7 @@ change those settings.</p>
       <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.50899def.min.js"></script>
       
         <script src="../../../javascripts/footer.js"></script>
       

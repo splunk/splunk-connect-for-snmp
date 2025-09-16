@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -1710,6 +1710,28 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mtls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    mTLS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -1723,10 +1745,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" checked>
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
@@ -1739,8 +1761,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             Troubleshooting
           </label>
@@ -1905,6 +1927,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#addressing-metric-naming-conflicts-for-splunk-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Addressing Metric Naming Conflicts for Splunk Integration
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2039,6 +2070,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#addressing-metric-naming-conflicts-for-splunk-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Addressing Metric Naming Conflicts for Splunk Integration
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2090,7 +2130,61 @@ db.adminCommand<span class="o">(</span><span class="w"> </span><span class="o">{
 </code></pre></div>
 <p>Replace <code>&lt;mongodb-pod-id&gt;</code> with the actual Pod ID of your MongoDB instance.</p>
 </li>
-</ol></div>
+</ol>
+<h4 id="addressing-metric-naming-conflicts-for-splunk-integration">Addressing Metric Naming Conflicts for Splunk Integration<a class="headerlink" href="#addressing-metric-naming-conflicts-for-splunk-integration" title="Permanent link">¶</a></h4>
+<p>When collecting SNMP metrics using SC4SNMP, metric names often contain hyphens (e.g., IF-MIB) because the default MIB format includes hyphens in Object Identifiers (OIDs) as specified by standard MIB naming conventions. 
+While this naming convention is standard for SNMP MIBs, it can lead to compatibility issues when forwarding these metrics, particularly when integrating with Splunk via the OpenTelemetry (OTel) Collector’s Splunk HEC metric endpoint.</p>
+<p>The Splunk metric schema, as detailed in the <a href="https://help.splunk.com/en/splunk-enterprise/get-data-in/metrics/9.4/introduction-to-metrics/overview-of-metrics">official Splunk documentation</a>, generally expects metric names to adhere to 
+a specific format that may not accommodate hyphens in certain contexts. Although direct ingestion into Splunk might work, 
+using the <a href="https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/splunkhecreceiver">OpenTelemetry Collector Splunk HEC receiver</a> can expose these naming conflicts, potentially preventing successful 
+data ingestion or proper metric indexing.</p>
+<p>To ensure seamless compatibility and avoid potential issues, SC4SNMP provides a configuration option to automatically convert 
+hyphens in metric names to underscores.</p>
+<p>You can enable this conversion by setting the <code>splunkMetricNameHyphenToUnderscore</code> parameter to <code>true</code> within the <code>poller</code> section of your SC4SNMP configuration:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">splunkMetricNameHyphenToUnderscore</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<p>Enabling this option transforms metric names from their hyphenated format to an underscore-separated format, aligning them with common Splunk metric naming conventions.</p>
+<p>Before conversion (hyphens):</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"frequency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"60"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifAdminStatus"</span><span class="p">:</span><span class="w"> </span><span class="s2">"up"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifAlias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifDescr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GigabitEthernet1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifIndex"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Gi1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifOperStatus"</span><span class="p">:</span><span class="w"> </span><span class="s2">"up"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifPhysAddress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0a:aa:ef:53:67:15"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ethernetCsmacd"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF-MIB.ifInDiscards"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF-MIB.ifInErrors"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF-MIB.ifInOctets"</span><span class="p">:</span><span class="w"> </span><span class="mi">1481605109</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF-MIB.ifOutDiscards"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF-MIB.ifOutErrors"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF-MIB.ifOutOctets"</span><span class="p">:</span><span class="w"> </span><span class="mi">3942570709</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"profiles"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TEST"</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>After conversion (underscores):</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"frequency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"60"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifAdminStatus"</span><span class="p">:</span><span class="w"> </span><span class="s2">"up"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifAlias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifDescr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GigabitEthernet1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifIndex"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Gi1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifOperStatus"</span><span class="p">:</span><span class="w"> </span><span class="s2">"up"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifPhysAddress"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0a:aa:ef:53:67:15"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ifType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ethernetCsmacd"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF_MIB.ifInDiscards"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF_MIB.ifInErrors"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF_MIB.ifInOctets"</span><span class="p">:</span><span class="w"> </span><span class="mi">1481605109</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF_MIB.ifOutDiscards"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF_MIB.ifOutErrors"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"metric_name:sc4snmp.IF_MIB.ifOutOctets"</span><span class="p">:</span><span class="w"> </span><span class="mi">3942570709</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"profiles"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TEST"</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 
 
@@ -2146,7 +2240,7 @@ db.adminCommand<span class="o">(</span><span class="w"> </span><span class="o">{
       <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      <script src="../../assets/javascripts/bundle.50899def.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       
