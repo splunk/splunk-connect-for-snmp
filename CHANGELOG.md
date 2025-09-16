@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## [1.13.0]
+
 ### Changed
 - implemented mTLS for Splunk 10
 - update default microk8s to 1.33
