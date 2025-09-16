@@ -39,7 +39,7 @@ microk8s add-node
 1. Installing microk8s on replica node: 
 
 ```bash
-sudo snap install microk8s --classic --channel=1.30/stable
+sudo snap install microk8s --classic --channel=1.33/stable
 sudo usermod -a -G microk8s $USER
 sudo chown -f -R $USER ~/.kube
 su - $USER

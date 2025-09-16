@@ -185,6 +185,18 @@
         },
         "metricsIndex": {
           "type": "string"
+        },
+        "mtls": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "secretRef": {
+              "type": "string"
+            }
+          }
         }
       }
     },
@@ -341,6 +353,9 @@
         "metricsIndexingEnabled": {
           "type": "boolean"
         },
+        "splunkMetricNameHyphenToUnderscore": {
+          "type": "boolean"
+        },
         "pollBaseProfiles": {
           "type": "boolean"
         },
@@ -355,6 +370,12 @@
         },
         "logLevel": {
           "type": "string"
+        },
+        "ipv6Enabled": {
+          "type": "boolean"
+        },
+        "enableFullWalk": {
+          "type": "boolean"
         }
       }
     },
@@ -630,6 +651,9 @@
         "logLevel": {
           "type": "string"
         },
+        "disableMongoDebugLogging": {
+          "type": ["string", "boolean"]
+        },
         "podAntiAffinity": {
           "type": "string"
         },
@@ -722,6 +746,9 @@
         "aggregateTrapsEvents": {
           "type": ["string", "boolean"]
         },
+        "includeSecurityContextId": {
+          "type": ["string", "boolean"]
+        },
         "communities": {
           "type": "object"
         },
@@ -811,6 +838,9 @@
         },
         "logLevel": {
           "type": "string"
+        },
+        "disableMongoDebugLogging": {
+          "type": ["string", "boolean"]
         },
         "nodeSelector": {
           "type": "object"

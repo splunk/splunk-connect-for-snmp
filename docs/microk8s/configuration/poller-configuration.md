@@ -23,6 +23,7 @@ poller:
    - sc4snmp-hlab-sha-aes
    - sc4snmp-hlab-sha-des
   logLevel: "WARN"
+  enableFullWalk: false
   inventory: |
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
     10.202.4.202,,2c,public,,,2000,,,
@@ -30,6 +31,9 @@ poller:
 
 !!! info
     The header's line (`address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete`) is necessary for the correct execution of SC4SNMP. Do not remove it.
+
+### Default walk scope
+The default walk profile is polling only `SNMPv2-MIB`. If the full oid tree walk is required it can be enabled by changing `enableFullWalk` flag to true.
 
 ### IPv6 hostname resolution
 When IPv6 is enabled and device is dual stack, the hostname resolution will try to resolve the name to the IPv6 address first, then to the IPv4 address.
@@ -99,6 +103,67 @@ out of this object:
 }
 ```
 
+### Replace "-" with "_" in metrics name
+
+There is a known issue with metric names that are not following the Splunk metric schema. Read more at [addressing metric naming](../../troubleshooting/general-issues.md#addressing-metric-naming-conflicts-for-splunk-integration).
+To ensure seamless compatibility and avoid potential issues, SC4SNMP provides a configuration option to automatically convert 
+hyphens in metric names to underscores.
+
+You can enable this conversion by setting the `splunkMetricNameHyphenToUnderscore` parameter to `true` within the `poller` section of your SC4SNMP configuration:
+
+```yaml
+poller:
+  splunkMetricNameHyphenToUnderscore: true
+```
+
+Enabling this option transforms metric names from their hyphenated format to an underscore-separated format, aligning them with common Splunk metric naming conventions.
+
+Before conversion (hyphens):
+
+```json
+{
+  "frequency": "60",
+  "ifAdminStatus": "up",
+  "ifAlias": "1",
+  "ifDescr": "GigabitEthernet1",
+  "ifIndex": "1",
+  "ifName": "Gi1",
+  "ifOperStatus": "up",
+  "ifPhysAddress": "0a:aa:ef:53:67:15",
+  "ifType": "ethernetCsmacd",
+  "metric_name:sc4snmp.IF-MIB.ifInDiscards": 0,
+  "metric_name:sc4snmp.IF-MIB.ifInErrors": 0,
+  "metric_name:sc4snmp.IF-MIB.ifInOctets": 1481605109,
+  "metric_name:sc4snmp.IF-MIB.ifOutDiscards": 0,
+  "metric_name:sc4snmp.IF-MIB.ifOutErrors": 0,
+  "metric_name:sc4snmp.IF-MIB.ifOutOctets": 3942570709,
+  "profiles": "TEST"
+}
+```
+
+After conversion (underscores):
+
+```json
+{
+  "frequency": "60",
+  "ifAdminStatus": "up",
+  "ifAlias": "1",
+  "ifDescr": "GigabitEthernet1",
+  "ifIndex": "1",
+  "ifName": "Gi1",
+  "ifOperStatus": "up",
+  "ifPhysAddress": "0a:aa:ef:53:67:15",
+  "ifType": "ethernetCsmacd",
+  "metric_name:sc4snmp.IF_MIB.ifInDiscards": 0,
+  "metric_name:sc4snmp.IF_MIB.ifInErrors": 0,
+  "metric_name:sc4snmp.IF_MIB.ifInOctets": 1481605109,
+  "metric_name:sc4snmp.IF_MIB.ifOutDiscards": 0,
+  "metric_name:sc4snmp.IF_MIB.ifOutErrors": 0,
+  "metric_name:sc4snmp.IF_MIB.ifOutOctets": 3942570709,
+  "profiles": "TEST"
+}
+```
+
 ### Disable automatic polling of base profiles
 
 There are [two profiles](https://github.com/splunk/splunk-connect-for-snmp/blob/main/splunk_connect_for_snmp/profiles/base.yaml) that are being polled by default, so that even without any configuration set up, you can see
@@ -108,7 +173,6 @@ the data in Splunk. You can disable it with the following `pollBaseProfiles` par
 poller:
   pollBaseProfiles: false
 ```
-
 
 ### Configure inventory 
 To update inventory, see [Update Inventory and Profile](#update-inventory).

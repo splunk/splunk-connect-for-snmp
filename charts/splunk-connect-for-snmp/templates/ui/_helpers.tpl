@@ -51,6 +51,8 @@ spec:
             value: {{ .Values.scheduler.logLevel | default "INFO" }}
           - name: CONFIG_FROM_MONGO
             value: {{ quote .Values.UI.enable | default "false" }}
+          - name: ENABLE_FULL_WALK
+            value: {{ .Values.poller.enableFullWalk | default "false" | quote }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"

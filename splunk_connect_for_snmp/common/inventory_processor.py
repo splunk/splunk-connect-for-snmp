@@ -1,5 +1,7 @@
 import copy
+import logging
 import os
+import sys
 from contextlib import suppress
 from csv import DictReader
 from typing import List
@@ -29,6 +31,21 @@ ALLOWED_KEYS_VALUES = [
     "security_engine",
     "securityEngine",
 ]
+
+ENABLE_FULL_WALK = human_bool(os.getenv("ENABLE_FULL_WALK", "false").lower())
+from splunk_connect_for_snmp.common.customised_json_formatter import (
+    CustomisedJSONFormatter,
+)
+
+formatter = CustomisedJSONFormatter()
+logger = logging.getLogger(__name__)
+logger.setLevel("DEBUG")
+
+# writing to stdout
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel("DEBUG")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 def transform_key_to_address(target):
@@ -88,10 +105,9 @@ def get_groups_keys(list_of_groups, group_name, inventory_group_port_mapping):
 
 
 class InventoryProcessor:
-    def __init__(self, group_manager: GroupsManager, logger, inventory_ui_collection):
+    def __init__(self, group_manager: GroupsManager, inventory_ui_collection):
         self.inventory_records: List[dict] = []
         self.group_manager = group_manager
-        self.logger = logger
         self.hosts_from_groups: dict = {}
         self.inventory_group_port_mapping: dict = {}
         self.single_hosts: List[dict] = []
@@ -99,11 +115,11 @@ class InventoryProcessor:
 
     def get_all_hosts(self):
         if CONFIG_FROM_MONGO:
-            self.logger.info("Loading inventory from inventory_ui collection")
+            logger.info("Loading inventory from inventory_ui collection")
             ir_reader = list(self.inventory_ui_collection.find({}, {"_id": 0}))
         else:
             with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
-                self.logger.info(f"Loading inventory from {INVENTORY_PATH}")
+                logger.info(f"Loading inventory from {INVENTORY_PATH}")
                 ir_reader = list(DictReader(csv_file))
         for inventory_line in ir_reader:
             self.process_line(inventory_line)
@@ -115,7 +131,7 @@ class InventoryProcessor:
             if was_present is None:
                 self.inventory_records.append(source_record)
             else:
-                self.logger.warning(
+                logger.warning(
                     f"Record: {host} has been already configured in group. Skipping..."
                 )
         return self.inventory_records, self.inventory_group_port_mapping
@@ -124,7 +140,7 @@ class InventoryProcessor:
         address = source_record["address"]
         # Inventory record is commented out
         if address.startswith("#"):
-            self.logger.warning(f"Record: {address} is commented out. Skipping...")
+            logger.warning(f"Record: {address} is commented out. Skipping...")
         # Address is an IP address
         elif address[0].isdigit():
             self.single_hosts.append(source_record)
@@ -146,7 +162,7 @@ class InventoryProcessor:
                     if key in ALLOWED_KEYS_VALUES:
                         host_group_object[key] = group_object[key]
                     else:
-                        self.logger.warning(
+                        logger.warning(
                             f"Key {key} is not allowed to be changed from the group level"
                         )
                 address = str(group_object["address"])
@@ -156,19 +172,18 @@ class InventoryProcessor:
                 host_group_object["group"] = group_name
                 self.inventory_records.append(host_group_object)
         else:
-            self.logger.warning(
+            logger.warning(
                 f"Group {group_name} doesn't exist in the configuration. Treating {group_name} as a hostname"
             )
             self.single_hosts.append(source_object)
 
 
 class InventoryRecordManager:
-    def __init__(self, mongo_client, periodic_objects_collection, logger):
+    def __init__(self, mongo_client, periodic_objects_collection):
         self.targets_collection = mongo_client.sc4snmp.targets
         self.inventory_collection = mongo_client.sc4snmp.inventory
         self.attributes_collection = mongo_client.sc4snmp.attributes
         self.periodic_object_collection = periodic_objects_collection
-        self.logger = logger
 
     def delete(self, target):
         address, port = transform_key_to_address(target)
@@ -176,7 +191,7 @@ class InventoryRecordManager:
         self.inventory_collection.delete_one({"address": address, "port": port})
         self.targets_collection.delete_many({"address": target})
         self.attributes_collection.delete_many({"address": target})
-        self.logger.info(f"Deleting record: {target}")
+        logger.info(f"Deleting record: {target}")
 
     def update(
         self, inventory_record, new_source_record, runtime_profiles, expiry_time_changed
@@ -191,13 +206,13 @@ class InventoryRecordManager:
             upsert=True,
         )
         if status.matched_count == 0:
-            self.logger.info(f"New Record {inventory_record} {status.upserted_id}")
+            logger.info(f"New Record {inventory_record} {status.upserted_id}")
         elif status.modified_count == 1 and status.upserted_id is None:
-            self.logger.info(f"Modified Record {inventory_record}")
+            logger.info(f"Modified Record {inventory_record}")
         else:
-            self.logger.info(f"Unchanged Record {inventory_record}")
+            logger.info(f"Unchanged Record {inventory_record}")
             if expiry_time_changed:
-                self.logger.info(
+                logger.info(
                     f"Task expiry time was modified, generating new tasks for record {inventory_record}"
                 )
             else:
@@ -211,6 +226,8 @@ class InventoryRecordManager:
 
     def return_walk_profile(self, runtime_profiles, inventory_profiles):
         walk_profile = None
+        if ENABLE_FULL_WALK:
+            return None
         if inventory_profiles:
             walk_profiles = [
                 p
@@ -221,4 +238,6 @@ class InventoryRecordManager:
             if walk_profiles:
                 # if there's more than one walk profile, we're choosing the last one on the list
                 walk_profile = walk_profiles[-1]
+        if not walk_profile:
+            walk_profile = "WalkProfile"
         return walk_profile

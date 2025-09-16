@@ -8,7 +8,7 @@ In the following example, there are 4 hosts you want to poll from:
 4. `10.202.4.204:163`
    
 To retrieve data from the device efficiently, first determine the specific data needed. Instead of walking through 
-the entire `1.3.6.1`, limit the walk to poll only the necessary data. Configure the `IF-MIB` family for interfaces and 
+the entire `1.3.6.1` or polling only `SNMPv2-MIB`, limit or expand the walk to poll the necessary data. Configure the `IF-MIB` family for interfaces and 
 the `UCD-SNMP-MIB` for CPU-related statistics. In the `scheduler` section of `values.yaml`, define the target group and 
 establish the polling parameters, known as the profile, to gather the desired data precisely. See the following example: 
 

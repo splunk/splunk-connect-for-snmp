@@ -45,36 +45,37 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 
 ## Splunk instance
 
-| Variable                            | Description                                                                                                                           |
-|-------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------| 
-| `SPLUNK_HEC_HOST`                   | IP address or a domain name of a Splunk instance to send data to                                                                      |
-| `SPLUNK_HEC_PROTOCOL`               | The protocol of the HEC endpoint: `https` or `http`                                                                                   |
-| `SPLUNK_HEC_PORT`                   | The port of the HEC endpoint                                                                                                          |
-| `SPLUNK_HEC_TOKEN`                  | Splunk HTTP Event Collector token                                                                                                     |
-| `SPLUNK_HEC_INSECURESSL`            | Whether to skip checking the certificate of the HEC endpoint when sending data over HTTPS                                             |
-| `SPLUNK_SOURCETYPE_TRAPS`           | Splunk sourcetype for trap events                                                                                                     |
-| `SPLUNK_SOURCETYPE_POLLING_EVENTS`  | Splunk sourcetype for non-metric polling events                                                                                       |
-| `SPLUNK_SOURCETYPE_POLLING_METRICS` | Splunk sourcetype for metric polling events                                                                                           |
-| `SPLUNK_HEC_INDEX_EVENTS`           | Name of the Splunk event index                                                                                                        |
-| `SPLUNK_HEC_INDEX_METRICS`          | Name of the Splunk metrics index                                                                                                      |
-| `SPLUNK_HEC_PATH`                   | Path for the HEC endpoint                                                                                                             |
-| `SPLUNK_AGGREGATE_TRAPS_EVENTS`     | When set to true makes traps events collected as one event inside splunk                                                              |
-| `IGNORE_EMPTY_VARBINDS`             | Details can be found in [empty snmp response message issue](../troubleshooting/polling-issues.md#empty-snmp-response-message-problem) |
-| `SPLUNK_LOG_INDEX`                  | Event index in Splunk where logs from docker containers would be sent                                                                 |
+| Variable                                  | Description                                                                                                                           |
+|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------| 
+| `SPLUNK_HEC_HOST`                         | IP address or a domain name of a Splunk instance to send data to                                                                      |
+| `SPLUNK_HEC_PROTOCOL`                     | The protocol of the HEC endpoint: `https` or `http`                                                                                   |
+| `SPLUNK_HEC_PORT`                         | The port of the HEC endpoint                                                                                                          |
+| `SPLUNK_HEC_TOKEN`                        | Splunk HTTP Event Collector token                                                                                                     |
+| `SPLUNK_HEC_INSECURESSL`                  | Whether to skip checking the certificate of the HEC endpoint when sending data over HTTPS                                             |
+| `SPLUNK_SOURCETYPE_TRAPS`                 | Splunk sourcetype for trap events                                                                                                     |
+| `SPLUNK_SOURCETYPE_POLLING_EVENTS`        | Splunk sourcetype for non-metric polling events                                                                                       |
+| `SPLUNK_SOURCETYPE_POLLING_METRICS`       | Splunk sourcetype for metric polling events                                                                                           |
+| `SPLUNK_HEC_INDEX_EVENTS`                 | Name of the Splunk event index                                                                                                        |
+| `SPLUNK_HEC_INDEX_METRICS`                | Name of the Splunk metrics index                                                                                                      |
+| `SPLUNK_HEC_PATH`                         | Path for the HEC endpoint                                                                                                             |
+| `SPLUNK_AGGREGATE_TRAPS_EVENTS`           | When set to true makes traps events collected as one event inside splunk                                                              |
+| `SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE` | Replaces hyphens with underscores in generated metric names to ensure compatibility with Splunk's metric schema                       |
+| `IGNORE_EMPTY_VARBINDS`                   | Details can be found in [empty snmp response message issue](../troubleshooting/polling-issues.md#empty-snmp-response-message-problem) |
+| `SPLUNK_LOG_INDEX`                        | Event index in Splunk where logs from docker containers would be sent                                                                 |
 
 ## Workers
 
 ### General
-| Variable                     | Description                                                                                                                                          |
-|------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------| 
-| `WALK_RETRY_MAX_INTERVAL`    | Maximum time interval between walk attempts                                                                                                          |
-| `WALK_MAX_RETRIES`           | Maximum number of walk retries                                                                                                                       |
-| `METRICS_INDEXING_ENABLED`   | Details can be found in [append oid index part to the metrics](../microk8s/configuration/poller-configuration.md#append-oid-index-part-to-the-metrics)        |
-| `POLL_BASE_PROFILES`         | Enable polling base profiles (with IF-MIB and SNMPv2-MIB)                                                                                            |
-| `IGNORE_NOT_INCREASING_OIDS` | Ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex: IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6              |
-| `WORKER_LOG_LEVEL`           | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                      |
-| `UDP_CONNECTION_TIMEOUT`     | Timeout in seconds for SNMP operations                                                                                                               |
-| `MAX_OID_TO_PROCESS`         | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS |
+| Variable                     | Description                                                                                                                                            |
+|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------| 
+| `WALK_RETRY_MAX_INTERVAL`    | Maximum time interval between walk attempts                                                                                                            |
+| `WALK_MAX_RETRIES`           | Maximum number of walk retries                                                                                                                         |
+| `METRICS_INDEXING_ENABLED`   | Details can be found in [append oid index part to the metrics](../microk8s/configuration/poller-configuration.md#append-oid-index-part-to-the-metrics) |
+| `POLL_BASE_PROFILES`         | Enable polling base profiles (with IF-MIB and SNMPv2-MIB)                                                                                              |
+| `IGNORE_NOT_INCREASING_OIDS` | Ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex: IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6                |
+| `WORKER_LOG_LEVEL`           | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                        |
+| `UDP_CONNECTION_TIMEOUT`     | Timeout in seconds for SNMP operations                                                                                                                 |
+| `MAX_OID_TO_PROCESS`         | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS   |
 
 ### Worker Poller
 | Variable                            | Description                                                                |
@@ -124,6 +125,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | Variable                     | Description                                                                                                                                                                                                                     |
 |------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
 | `SNMP_V3_SECURITY_ENGINE_ID` | SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table of the TRAP receiving application for each USM user, for example: SNMP_V3_SECURITY_ENGINE_ID=80003a8c04,aab123456 |
+| `INCLUDE_SECURITY_CONTEXT_ID` | Controls whether to add the context_engine_id field to v3 trap events                                                                                                                                                           |
 | `TRAPS_PORT`                 | External port exposed for traps server                                                                                                                                                                                          |
 ## Scheduler
 

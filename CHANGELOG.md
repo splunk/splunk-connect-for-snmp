@@ -2,9 +2,19 @@
 
 ## Unreleased
 
+## [1.13.0]
+
 ### Changed
+- implemented mTLS for Splunk 10
+- update default microk8s to 1.33
+- introduce `splunkMetricNameHyphenToUnderscore` parameter to make metric names follow Splunk schema
+- change default walk to get only SNMPv2-MIB
+- add `disableMongoDebugLogging` parameter to disable extensive pymnogo logs while `logLevel` is set to `DEBUG`
+- add `includeSecurityContextId` parameter to control whether to add the `context_engine_id` field to v3 trap events
 
 ### Fixed
+- fix text SNMP values with numbers and 'E' being interpreted as scientific notation
+- added missing `ipv6Enabled` flag in poller
 
 
 ## [1.12.3]

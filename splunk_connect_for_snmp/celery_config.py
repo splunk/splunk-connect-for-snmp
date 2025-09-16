@@ -18,6 +18,8 @@ from contextlib import suppress
 
 from kombu import Queue
 
+from splunk_connect_for_snmp.common.hummanbool import disable_mongo_logging, human_bool
+
 with suppress(ImportError, OSError):
     from dotenv import load_dotenv
 
@@ -31,9 +33,15 @@ PREFETCH_COUNT = int(os.getenv("PREFETCH_COUNT", 1))
 redbeat_redis_url = os.getenv("REDIS_URL")
 # broker
 broker_url = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672//")
+DISABLE_MONGO_DEBUG_LOGGING = human_bool(
+    os.getenv("DISABLE_MONGO_DEBUG_LOGGING", "true")
+)
 result_extended = True
 beat_scheduler = "redbeat.RedBeatScheduler"
 redbeat_lock_key = None
+
+if DISABLE_MONGO_DEBUG_LOGGING:
+    disable_mongo_logging()
 
 # Optimization for long running tasks
 # https://docs.celeryproject.org/en/stable/userguide/optimizing.html#reserve-one-task-at-a-time

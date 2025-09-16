@@ -1,0 +1,5 @@
+WalkProfile:
+  condition:
+    type: "walk"
+  varBinds:
+    - ['SNMPv2-MIB']
