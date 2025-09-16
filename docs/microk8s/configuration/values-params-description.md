@@ -166,7 +166,6 @@ Detailed documentation about configuring traps can be found in [Traps](trap-conf
 | `securityEngineId`                              | SNMP Engine ID of the TRAP sending application                                                                                  | `80003a8c04`     |
 | `aggregateTrapsEvents`                          | Enables collecting traps events as one event inside Splunk                                                                      | `false`          |
 | `includeSecurityContextId`                      | Controls whether to add the context_engine_id field to v3 trap events                                                           | `false`          |
-| `includeSecurityContextId`                      | Controls whether to add the context_engine_id field to v3 trap events                                                           | `false`          |
 | `communities`                                   | Defines a version of SNMP protocol and SNMP community string                                                                    |                  |
 | `service.annotations`                           | Annotations to append under traps service                                                                                       |                  |
 | `service.usemetallb`                            | Enables using metallb                                                                                                           | `true`           |
