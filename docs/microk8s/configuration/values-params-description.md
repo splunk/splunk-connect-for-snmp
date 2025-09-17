@@ -102,6 +102,7 @@ Detailed documentation about configuring poller can be found in [Poller](poller-
 | `enableFullWalk`                     | Enables full walk of OIDs from device                                                                           | `false` |
 | `usernameSecrets`                    | List of kubernetes secrets name that will be used for polling                                                   |         |
 | `inventory`                          | List of configuration for polling                                                                               |         |
+| `maxRepetitions`                     | the amount of requested next oids in response for each of varbinds in one request sent                          | `10`    |
 | `logLevel`                           | Log level for a poller pod                                                                                      | `INFO`  |
 
 ## Worker
