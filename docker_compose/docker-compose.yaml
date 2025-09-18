@@ -98,6 +98,7 @@ services:
       NGINX_ENTRYPOINT_QUIET_LOGS: ${NGINX_ENTRYPOINT_QUIET_LOGS:-1}
     volumes:
     - snmp-mibserver-tmp:/tmp/
+    - ${PATH_TO_LOCAL_MIBS}:/app/new_mibs/src/vendor
   redis:
     <<: [*dns_and_networks, *dependend_on_core_dns]
     image: ${REDIS_IMAGE}:${REDIS_TAG:-latest}
