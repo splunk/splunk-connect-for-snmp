@@ -53,7 +53,7 @@ microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-
 microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-poller -n sc4snmp
 ```
 
-## Beta: use MIB server with local MIBs
+## Use MIB server with local MIBs
 
 From the `1.15.0` version of the MIB server, there is a way to use local MIB files. This may be useful when your MIB 
 files are proprietary, or you use SC4SNMP offline. This way, you can update necessary MIBs by yourself, without having to
@@ -68,7 +68,9 @@ vendor names will not make compilation fail, this is more for the logging purpos
 troubleshooting easier.
 3. MIB files should be named the same as the contained MIB module. The MIB module name is specified at the beginning of
 the MIB file before `::= BEGIN` keyword.
-4. Add the following to the `values.yaml`:
+
+### Configuring path to local MIBs for k8s installation
+Add the following to the `values.yaml`:
 
 ```yaml
 mibserver:
@@ -96,3 +98,21 @@ using `persistence.existingClaim`. If you go with the `localMibs.pathToMibs` sol
 (with `nodeSelector` set up to schedule MIB server pods on the same node where the MIB files are),
 when the Node with the mapped hostPath fails, you will have to access the MIB files on another node.
 
+### Configuring path to local mibs for docker-compose installation
+Add the following to the `.env`:
+
+```
+PATH_TO_LOCAL_MIBS=/home/user/local_mibs
+```
+
+Whenever you add new MIB files, restart MIB service to compile them again, using the following command:
+
+```bash
+sudo docker compose restart snmp-mibserver
+```
+
+To verify that the process of compilation was completed successfully, check the mibserver logs using the following command:
+
+```bash
+sudo docker logs snmp-mibserver
+```
