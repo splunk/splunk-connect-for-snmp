@@ -516,6 +516,8 @@ mongodb:
   initdbScripts:
     setFeatureCompatibilityVersion.js: |
       db.adminCommand({ setFeatureCompatibilityVersion: "6.0" });
+  image:
+    repository: bitnamilegacy/mongodb
 
   ## @section Global parameters
   ## Global Docker image parameters
@@ -588,4 +590,6 @@ redis:
   architecture: standalone
   auth:
     enabled: false
+  image:
+    repository: bitnamilegacy/redis
 commonAnnotations: {}
