@@ -178,10 +178,12 @@ services:
         *pysnmp_debug, *ipv6]
       WORKER_CONCURRENCY: ${WORKER_POLLER_CONCURRENCY:-2}
       PREFETCH_COUNT: ${PREFETCH_POLLER_COUNT:-1}
+      ENABLE_WORKER_POLLER_SECRETS: ${ENABLE_WORKER_POLLER_SECRETS:-false}
     volumes:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
     - worker-poller-pysnmp-cache-volume:/.pysnmp/:rw
     - worker-poller-tmp:/tmp/:rw
+    - ${SECRET_FOLDER_PATH}:/app/secrets/tmp:ro
   worker-sender:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
@@ -221,10 +223,12 @@ services:
       RESOLVE_TRAP_ADDRESS: ${RESOLVE_TRAP_ADDRESS:-false}
       MAX_DNS_CACHE_SIZE_TRAPS: ${MAX_DNS_CACHE_SIZE_TRAPS:-500}
       TTL_DNS_CACHE_TRAPS: ${TTL_DNS_CACHE_TRAPS:-1800}
+    ENABLE_WORKER_TRAPS_SECRETS: ${ENABLE_WORKER_TRAPS_SECRETS:-false}
     volumes:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
     - worker-trap-pysnmp-cache-volume:/.pysnmp/:rw
     - worker-trap-tmp:/tmp/:rw
+    - ${SECRET_FOLDER_PATH}:/app/secrets/tmp:ro
     deploy:
       mode: replicated
       replicas: ${WORKER_TRAP_REPLICAS:-2}
