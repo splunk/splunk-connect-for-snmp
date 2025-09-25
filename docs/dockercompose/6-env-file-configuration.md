@@ -78,6 +78,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `MAX_REPETITIONS`            | The amount of requested next oids in response for each of varbinds in one request sent                                                                |
 | `MAX_SNMP_BULK_WALK_CONCURRENCY` | The maximum number of concurrent SNMP bulk walks (bulk_walk_cmd) that can be executed at the same time. Default is 5. Setting this control determines the number of OIDsubtrees are walked in parallel and helps prevent overwhelming the target device or network. |
                                                             |
+| `MAX_REPETITIONS`            | The amount of requested next oids in response for each of varbinds in one request sent                                                               |
 
 ### Worker Poller
 | Variable                            | Description                                                                |
