@@ -277,7 +277,7 @@ def get_max_bulk_walk_concurrency(count: int) -> int:
 
     :return int: The concurrency to use for SNMP operation
     """
-    if count < 5:
+    if count < MAX_SNMP_BULK_WALK_CONCURRENCY:
         return count
     return MAX_SNMP_BULK_WALK_CONCURRENCY
 

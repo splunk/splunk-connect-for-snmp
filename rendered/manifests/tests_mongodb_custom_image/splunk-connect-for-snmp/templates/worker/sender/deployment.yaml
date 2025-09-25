@@ -72,6 +72,8 @@ spec:
               value: "10"
             - name: MAX_SNMP_BULK_WALK_CONCURRENCY
               value: "5"
+            - name: MAX_REPETITIONS
+              value: "10"
             - name: PYSNMP_DEBUG
               value: ""
             - name: PROFILES_RELOAD_DELAY
