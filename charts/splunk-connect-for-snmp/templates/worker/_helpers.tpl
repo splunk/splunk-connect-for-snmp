@@ -123,8 +123,6 @@ Common labels
   value: {{ .Values.worker.udpConnectionTimeout | default "3" | quote }}
 - name: MAX_OID_TO_PROCESS
   value: {{ .Values.poller.maxOidToProcess | default "70" | quote }}
-- name: MAX_REPETITIONS
-  value: {{ .Values.poller.maxRepetitions | default "10" | quote }}
 - name: PYSNMP_DEBUG
   value: {{ .Values.pysnmpDebug | default "" | quote }}
 - name: PROFILES_RELOAD_DELAY

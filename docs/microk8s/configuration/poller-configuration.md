@@ -43,6 +43,9 @@ The log level for poller can be set by changing the value for the key `logLevel`
 The default value is `INFO`.
 
 ### Define maxRepetitions
+!!! info
+    Released only in improved polling package.
+
 The maxRepetitions is a parameter used in SNMP GetBulk call. It is responsible for controlling the
 amount of variables in one request. 
 ```yaml
