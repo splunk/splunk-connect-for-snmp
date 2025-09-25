@@ -64,7 +64,6 @@ PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "60"))
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 3))
 MAX_OID_TO_PROCESS = int(os.getenv("MAX_OID_TO_PROCESS", 70))
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
-MAX_REPETITIONS = int(os.getenv("MAX_REPETITIONS", 10))
 
 DEFAULT_STANDARD_MIBS = [
     "HOST-RESOURCES-MIB",
@@ -431,8 +430,8 @@ class Poller(Task):
             auth_data,
             transport,
             context_data,
-            0,
-            MAX_REPETITIONS,
+            1,
+            10,
             *varbinds_bulk,
             lexicographicMode=False,
             ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),

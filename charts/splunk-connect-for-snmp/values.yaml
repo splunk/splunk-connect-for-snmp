@@ -239,13 +239,9 @@ poller:
   # https://github:com/splunk/splunk-connect-for-snmp/blob/main/splunk_connect_for_snmp/profiles/base.yaml
   pollBaseProfiles: true
 
-  # Sometimes SNMP Agent cannot accept more than X OIDs per once for SNMP GetRequest, so if the error "TooBig" is visible in logs,
+  # Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs,
   # decrease the number
   maxOidToProcess: 70
-
-  # maxRepetitions is a number of varbinds requested in response for each of the MIB variables in the request
-  # If this number is too high it can cause issues with SNMP response especially for old SNMP devices.
-  maxRepetitions: 10
 
   # list of kubernetes secrets name that will be used for polling
   # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/#define-usernamesecrets
@@ -516,8 +512,6 @@ mongodb:
   initdbScripts:
     setFeatureCompatibilityVersion.js: |
       db.adminCommand({ setFeatureCompatibilityVersion: "6.0" });
-  image:
-    repository: bitnamilegacy/mongodb
 
   ## @section Global parameters
   ## Global Docker image parameters
@@ -590,6 +584,4 @@ redis:
   architecture: standalone
   auth:
     enabled: false
-  image:
-    repository: bitnamilegacy/redis
 commonAnnotations: {}
