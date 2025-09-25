@@ -15,6 +15,7 @@
 #
 import logging
 import re
+from asyncio import run
 from contextlib import suppress
 
 from pysnmp.smi.error import SmiError
@@ -55,6 +56,35 @@ TTL_DNS_CACHE_TRAPS = int(os.getenv("TTL_DNS_CACHE_TRAPS", "1800"))
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 
 
+async def walk_async_wrapper(self, **kwargs):
+    address = kwargs["address"]
+    profile = kwargs.get("profile", [])
+    group = kwargs.get("group")
+    chain_of_tasks_expiry_time = kwargs.get("chain_of_tasks_expiry_time")
+    if profile:
+        profile = [profile]
+    mongo_client = pymongo.MongoClient(MONGO_URI)
+    mongo_db = mongo_client[MONGO_DB]
+    mongo_inventory = mongo_db.inventory
+
+    ir = get_inventory(mongo_inventory, address)
+    retry = True
+    while retry:
+        retry, result = await self.do_work(ir, walk=True, profiles=profile)
+
+    # After a Walk tell schedule to recalc
+    work = {
+        "time": time.time(),
+        "address": address,
+        "result": result,
+        "chain_of_tasks_expiry_time": chain_of_tasks_expiry_time,
+    }
+    if group:
+        work["group"] = group
+
+    return work
+
+
 @shared_task(
     bind=True,
     base=Poller,
@@ -71,27 +101,27 @@ IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
     ),
 )
 def walk(self, **kwargs):
+    return run(walk_async_wrapper(self, **kwargs))
+
+
+async def poll_async_wrapper(self, **kwargs):
     address = kwargs["address"]
-    profile = kwargs.get("profile", [])
+    profiles = kwargs["profiles"]
     group = kwargs.get("group")
-    chain_of_tasks_expiry_time = kwargs.get("chain_of_tasks_expiry_time")
-    if profile:
-        profile = [profile]
     mongo_client = pymongo.MongoClient(MONGO_URI)
     mongo_db = mongo_client[MONGO_DB]
     mongo_inventory = mongo_db.inventory
 
     ir = get_inventory(mongo_inventory, address)
-    retry = True
-    while retry:
-        retry, result = self.do_work(ir, walk=True, profiles=profile)
+    _, result = await self.do_work(ir, profiles=profiles)
 
     # After a Walk tell schedule to recalc
     work = {
         "time": time.time(),
         "address": address,
         "result": result,
-        "chain_of_tasks_expiry_time": chain_of_tasks_expiry_time,
+        "detectchange": False,
+        "frequency": kwargs["frequency"],
     }
     if group:
         work["group"] = group
@@ -110,29 +140,7 @@ def walk(self, **kwargs):
     expires=30,
 )
 def poll(self, **kwargs):
-
-    address = kwargs["address"]
-    profiles = kwargs["profiles"]
-    group = kwargs.get("group")
-    mongo_client = pymongo.MongoClient(MONGO_URI)
-    mongo_db = mongo_client[MONGO_DB]
-    mongo_inventory = mongo_db.inventory
-
-    ir = get_inventory(mongo_inventory, address)
-    _, result = self.do_work(ir, profiles=profiles)
-
-    # After a Walk tell schedule to recalc
-    work = {
-        "time": time.time(),
-        "address": address,
-        "result": result,
-        "detectchange": False,
-        "frequency": kwargs["frequency"],
-    }
-    if group:
-        work["group"] = group
-
-    return work
+    return run(poll_async_wrapper(self, **kwargs))
 
 
 @ttl_lru_cache(maxsize=MAX_DNS_CACHE_SIZE_TRAPS, ttl=TTL_DNS_CACHE_TRAPS)
@@ -177,7 +185,7 @@ def _process_work_data(self, work, varbind_table, not_translated_oids):
 
         try:
             varbind_table.append(
-                ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
+                ObjectType(ObjectIdentity(w[0]), w[1]).resolve_with_mib(
                     self.mib_view_controller
                 )
             )
@@ -215,7 +223,7 @@ def _resolve_remaining_oids(self, remaining_oids, varbind_table):
     for w in remaining_oids:
         try:
             varbind_table.append(
-                ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
+                ObjectType(ObjectIdentity(w[0]), w[1]).resolve_with_mib(
                     self.mib_view_controller
                 )
             )

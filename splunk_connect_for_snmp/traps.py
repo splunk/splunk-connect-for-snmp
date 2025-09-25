@@ -194,12 +194,12 @@ def add_communities(config_base, snmp_engine):
         if "2c" in config_base["communities"]:
             for community in config_base["communities"]["2c"]:
                 idx += 1
-                config.addV1System(snmp_engine, idx, community)
+                config.add_v1_system(snmp_engine, str(idx), community)
         if "1" in config_base["communities"] or 1 in config_base["communities"]:
             v = config_base["communities"].get("1", config_base["communities"].get(1))
             for community in v:
                 idx += 1
-                config.addV1System(snmp_engine, idx, community)
+                config.add_v1_system(snmp_engine, str(idx), community)
 
 
 def main():
@@ -213,7 +213,7 @@ def main():
 
     # Register a callback function to log errors with traps authentication
     observer_context: Dict[Any, Any] = {}
-    snmp_engine.observer.registerObserver(
+    snmp_engine.observer.register_observer(
         authentication_observer_cb_fun,
         "rfc2576.prepareDataElements:sm-failure",
         "rfc3412.prepareDataElements:sm-failure",
@@ -222,17 +222,17 @@ def main():
 
     # UDP socket over IPv6 listens also for IPv4
     if IPv6_ENABLED:
-        config.addTransport(
+        config.add_transport(
             snmp_engine,
-            udp6.domainName,
-            udp6.Udp6Transport().openServerMode(("::", 2162)),
+            udp6.DOMAIN_NAME,
+            udp6.Udp6Transport().open_server_mode(("::", 2162)),
         )
     else:
         # UDP over IPv4, first listening interface/port
-        config.addTransport(
+        config.add_transport(
             snmp_engine,
-            udp.domainName,
-            udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
+            udp.DOMAIN_NAME,
+            udp.UdpTransport().open_server_mode(("0.0.0.0", 2162)),
         )
 
     with open(CONFIG_PATH, encoding="utf-8") as file:
@@ -261,7 +261,7 @@ def main():
             priv_protocol = PrivProtocolMap.get(priv_protocol.upper(), "NONE")
 
             for security_engine_id in SECURITY_ENGINE_ID_LIST:
-                config.addV3User(
+                config.add_v3_user(
                     snmp_engine,
                     userName=username,
                     authProtocol=auth_protocol,
