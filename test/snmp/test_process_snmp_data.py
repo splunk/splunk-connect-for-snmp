@@ -36,15 +36,15 @@ class TestProcessSnmpData(TestCase):
         varbind_mock2_1 = Mock()
         varbind_mock2_2 = Mock()
 
-        varbind_mock1_1.getMibSymbol.return_value = "IF-MIB", "some_metric", 1
+        varbind_mock1_1.get_mib_symbol.return_value = "IF-MIB", "some_metric", 1
         varbind_mock1_1.prettyPrint.return_value = "some text"
-        varbind_mock1_1.getOid.return_value = "1.2.3.4.5.6.7"
+        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
 
         varbind_mock1_2.prettyPrint.return_value = 65
 
-        varbind_mock2_1.getMibSymbol.return_value = "UDP-MIB", "next_metric", 1
+        varbind_mock2_1.get_mib_symbol.return_value = "UDP-MIB", "next_metric", 1
         varbind_mock2_1.prettyPrint.return_value = "some text2"
-        varbind_mock2_1.getOid.return_value = "9.8.7.6"
+        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
 
         varbind_mock2_2.prettyPrint.return_value = 123
 
@@ -111,15 +111,15 @@ class TestProcessSnmpData(TestCase):
         varbind_mock2_1 = Mock()
         varbind_mock2_2 = Mock()
 
-        varbind_mock1_1.getMibSymbol.return_value = "IF-MIB", "some_metric", 1
+        varbind_mock1_1.get_mib_symbol.return_value = "IF-MIB", "some_metric", 1
         varbind_mock1_1.prettyPrint.return_value = "some text"
-        varbind_mock1_1.getOid.return_value = "1.2.3.4.5.6.7"
+        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
 
         varbind_mock1_2.prettyPrint.return_value = 65
 
-        varbind_mock2_1.getMibSymbol.return_value = "UDP-MIB", "next_metric", 1
+        varbind_mock2_1.get_mib_symbol.return_value = "UDP-MIB", "next_metric", 1
         varbind_mock2_1.prettyPrint.return_value = "some text2"
-        varbind_mock2_1.getOid.return_value = "9.8.7.6"
+        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
 
         varbind_mock2_2.prettyPrint.return_value = 123
 
@@ -192,15 +192,15 @@ class TestProcessSnmpData(TestCase):
         varbind_mock2_1 = Mock()
         varbind_mock2_2 = Mock()
 
-        varbind_mock1_1.getMibSymbol.return_value = "IF-MIB", "some_metric", 1
+        varbind_mock1_1.get_mib_symbol.return_value = "IF-MIB", "some_metric", 1
         varbind_mock1_1.prettyPrint.return_value = "some text"
-        varbind_mock1_1.getOid.return_value = "1.2.3.4.5.6.7"
+        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
 
         varbind_mock1_2.prettyPrint.return_value = 65
 
-        varbind_mock2_1.getMibSymbol.return_value = "UDP-MIB", "some_field", 1
+        varbind_mock2_1.get_mib_symbol.return_value = "UDP-MIB", "some_field", 1
         varbind_mock2_1.prettyPrint.return_value = "some text2"
-        varbind_mock2_1.getOid.return_value = "9.8.7.6"
+        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
 
         varbind_mock2_2.prettyPrint.return_value = "up and running"
 
@@ -268,15 +268,15 @@ class TestProcessSnmpData(TestCase):
         varbind_mock2_1 = Mock()
         varbind_mock2_2 = Mock()
 
-        varbind_mock1_1.getMibSymbol.return_value = "IF-MIB", "some_metric", 1
+        varbind_mock1_1.get_mib_symbol.return_value = "IF-MIB", "some_metric", 1
         varbind_mock1_1.prettyPrint.return_value = "some text"
-        varbind_mock1_1.getOid.return_value = "1.2.3.4.5.6.7"
+        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
 
         varbind_mock1_2.prettyPrint.return_value = 65
 
-        varbind_mock2_1.getMibSymbol.return_value = "UDP-MIB", "next_metric", 1
+        varbind_mock2_1.get_mib_symbol.return_value = "UDP-MIB", "next_metric", 1
         varbind_mock2_1.prettyPrint.return_value = "some text2"
-        varbind_mock2_1.getOid.return_value = "9.8.7.6"
+        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
 
         varbind_mock2_2.prettyPrint.return_value = 123
 

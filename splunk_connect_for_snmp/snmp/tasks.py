@@ -177,7 +177,7 @@ def trap(self, work):
     return _build_result(result, work["host"], fields)
 
 
-def _process_work_data(self, work, varbind_table, not_translated_oids):
+def _process_work_data(self: Poller, work, varbind_table, not_translated_oids):
     """Process the data in work to populate varbinds."""
     for w in work["data"]:
         if OID_VALIDATOR.match(w[1]):
@@ -193,7 +193,7 @@ def _process_work_data(self, work, varbind_table, not_translated_oids):
             not_translated_oids.append((w[0], w[1]))
 
 
-def _load_mib_if_needed(self, oid, host):
+def _load_mib_if_needed(self: Poller, oid, host):
     """Load the MIB if it is known and not already loaded."""
     with suppress(Exception):
         found, mib = self.is_mib_known(oid, oid, host)
@@ -203,7 +203,7 @@ def _load_mib_if_needed(self, oid, host):
 
 
 def _process_remaining_oids(
-    self, not_translated_oids, remotemibs, remaining_oids, host, varbind_table
+    self: Poller, not_translated_oids, remotemibs, remaining_oids, host, varbind_table
 ):
     """Process OIDs that could not be translated and add them to other oids."""
     for oid in not_translated_oids:
@@ -218,7 +218,7 @@ def _process_remaining_oids(
         _resolve_remaining_oids(self, remaining_oids, varbind_table)
 
 
-def _resolve_remaining_oids(self, remaining_oids, varbind_table):
+def _resolve_remaining_oids(self: Poller, remaining_oids, varbind_table):
     """Resolve remaining OIDs."""
     for w in remaining_oids:
         try:

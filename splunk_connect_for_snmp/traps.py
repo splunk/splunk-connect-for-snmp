@@ -138,13 +138,18 @@ def decode_security_context(hexstr: bytes) -> str | None:
 # Callback function for receiving notifications
 # noinspection PyUnusedLocal
 def cb_fun(
-    snmp_engine, state_reference, context_engine_id, context_name, varbinds, cb_ctx
+    snmp_engine: engine.SnmpEngine,
+    state_reference,
+    context_engine_id,
+    context_name,
+    varbinds,
+    cb_ctx,
 ):
     logger.debug(
         'Notification from ContextEngineId "%s", ContextName "%s"'
         % (context_engine_id.prettyPrint(), context_name.prettyPrint())
     )
-    exec_context = snmp_engine.observer.getExecutionContext(
+    exec_context = snmp_engine.observer.get_execution_context(
         "rfc3412.receiveMessage:request"
     )
 
@@ -188,7 +193,7 @@ app.autodiscover_tasks(
 )
 
 
-def add_communities(config_base, snmp_engine):
+def add_communities(config_base: dict, snmp_engine: engine.SnmpEngine):
     idx = 0
     if "communities" in config_base:
         if "2c" in config_base["communities"]:
