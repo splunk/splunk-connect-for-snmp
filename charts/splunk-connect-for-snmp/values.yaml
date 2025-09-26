@@ -247,6 +247,11 @@ poller:
   # If this number is too high it can cause issues with SNMP response especially for old SNMP devices.
   maxRepetitions: 10
 
+  # The maximum number of concurrent SNMP bulk walks (bulk_walk_cmd) that can be executed at the same time.
+  # Setting this control determines the number of OIDsubtrees are walked in parallel and helps prevent overwhelming the target device or network.
+  # Default is 5.
+  maxSnmpBulkWalkConcurrency: 5
+
   # list of kubernetes secrets name that will be used for polling
   # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/#define-usernamesecrets
   usernameSecrets: []
