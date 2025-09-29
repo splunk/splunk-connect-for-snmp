@@ -79,7 +79,7 @@ async def test_trap_v1(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
 
-    await asyncio.sleep(2)
+    await asyncio.sleep(4)
     # send trap
     varbind1 = ("1.3.6.1.6.3.1.1.4.3.0", "1.3.6.1.4.1.20408.4.1.1.2")
     varbind2 = ("1.3.6.1.2.1.1.4.0", OctetString("my contact"))
@@ -216,7 +216,7 @@ async def test_more_than_one_varbind(request, setup_splunk):
     )
 
     # wait for the message to be processed
-    await asyncio.sleep(2)
+    await asyncio.sleep(5)
 
     search_query = """search index="netops" | search "SNMPv2-MIB.sysDescr.value"="test_more_than_one_varbind"
     "SNMPv2-MIB.sysContact.value"=test_more_than_one_varbind_contact """
@@ -246,7 +246,7 @@ async def test_loading_mibs(request, setup_splunk):
     )
 
     # wait for the message to be processed
-    await asyncio.sleep(2)
+    await asyncio.sleep(5)
 
     search_query = """search index=netops "SNMPv2-MIB.snmpTrapOID.value"="AVAMAR-MCS-MIB::eventTrap"  """
 
