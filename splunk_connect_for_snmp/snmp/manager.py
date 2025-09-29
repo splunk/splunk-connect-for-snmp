@@ -559,7 +559,7 @@ class Poller(Task):
                     )
                     break
                 except Exception as e:
-                    logger.exception(
+                    logger.error(
                         f"BulkQueue worker-{worker_id} encountered an error: {e}."
                     )
                     break
@@ -569,9 +569,15 @@ class Poller(Task):
                 bulk_queue.task_done()
                 logger.debug(f"BulkQueue worker-{worker_id} completed task-{_wid}")
 
-        async with TaskGroup() as tg:
-            for wid in range(1, get_max_bulk_walk_concurrency(len(varbinds_bulk)) + 1):
-                tg.create_task(_worker(wid))
+        try:
+            async with TaskGroup() as tg:
+                for wid in range(
+                    1, get_max_bulk_walk_concurrency(len(varbinds_bulk)) + 1
+                ):
+                    tg.create_task(_worker(wid))
+        except ExceptionGroup as eg:
+            for e in eg.exceptions:
+                raise e
 
     def get_varbind_chunk(self, lst, n):
         for i in range(0, len(lst), n):

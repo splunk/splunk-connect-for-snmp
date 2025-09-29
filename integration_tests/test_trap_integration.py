@@ -74,6 +74,7 @@ async def send_v3_trap(host, port, object_identity, *var_binds):
 
 
 @pytest.mark.part6
+@pytest.mark.asyncio
 async def test_trap_v1(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -105,6 +106,7 @@ async def test_trap_v1(request, setup_splunk):
 
 
 @pytest.mark.part6
+@pytest.mark.asyncio
 async def test_trap_v2(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -136,6 +138,7 @@ async def test_trap_v2(request, setup_splunk):
 
 
 @pytest.mark.part6
+@pytest.mark.asyncio
 async def test_added_varbind(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -160,6 +163,7 @@ async def test_added_varbind(request, setup_splunk):
 
 
 @pytest.mark.part6
+@pytest.mark.asyncio
 async def test_many_traps(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -191,6 +195,7 @@ async def test_many_traps(request, setup_splunk):
 
 
 @pytest.mark.part6
+@pytest.mark.asyncio
 async def test_more_than_one_varbind(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -222,6 +227,7 @@ async def test_more_than_one_varbind(request, setup_splunk):
 
 
 @pytest.mark.part6
+@pytest.mark.asyncio
 async def test_loading_mibs(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -250,6 +256,7 @@ async def test_loading_mibs(request, setup_splunk):
 
 
 @pytest.mark.part6
+@pytest.mark.asyncio
 async def test_trap_v3(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
