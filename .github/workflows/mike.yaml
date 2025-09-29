@@ -40,7 +40,7 @@ jobs:
           token: "${{ secrets.PAT_CLATOOL }}"
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.12"
       - name: Upload Docs
         run: |
           sudo apt update
