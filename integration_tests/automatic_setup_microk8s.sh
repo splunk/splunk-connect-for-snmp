@@ -45,6 +45,7 @@ deploy_poetry() {
   poetry add --group dev splunk-sdk
   poetry add --group dev splunklib
   poetry add --group dev pysnmp
+  poetry add --group dev pytest-asyncio
 }
 
 wait_for_pod_initialization() {

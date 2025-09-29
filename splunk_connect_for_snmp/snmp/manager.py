@@ -559,7 +559,7 @@ class Poller(Task):
                     )
                     break
                 except Exception as e:
-                    logger.exception(
+                    logger.error(
                         f"BulkQueue worker-{worker_id} encountered an error: {e}."
                     )
                     break
@@ -569,9 +569,15 @@ class Poller(Task):
                 bulk_queue.task_done()
                 logger.debug(f"BulkQueue worker-{worker_id} completed task-{_wid}")
 
-        async with TaskGroup() as tg:
-            for wid in range(1, get_max_bulk_walk_concurrency(len(varbinds_bulk)) + 1):
-                tg.create_task(_worker(wid))
+        try:
+            async with TaskGroup() as tg:
+                for wid in range(
+                    1, get_max_bulk_walk_concurrency(len(varbinds_bulk)) + 1
+                ):
+                    tg.create_task(_worker(wid))
+        except ExceptionGroup as eg:
+            for e in eg.exceptions:
+                raise e
 
     def get_varbind_chunk(self, lst, n):
         for i in range(0, len(lst), n):
@@ -748,7 +754,25 @@ class Poller(Task):
                 metrics[group_key]["profiles"] = []
 
     def init_snmp_data(self, varbind):
-        mib, metric, index = varbind[0].get_mib_symbol()
-        varbind_id = varbind[0].prettyPrint()
+        """
+        Extract SNMP varbind information in a way that preserves compatibility with
+        older PySNMP behavior while avoiding changes to the underlying library.
+
+        :param varbind: ObjectType
+
+        :return: A resolved index, metric, mib, oid, varbind_id
+
+        ## NOTE
+        - In old fork of pysnmp, calling `getMibSymbol()` and `prettyPrint()` on
+        a varbind returned fully resolved MIB names, variable names, and indices.
+
+        - In lextudio's pysnmp, `get_mib_symbol()` and `prettyPrint()`
+        by default may return partially resolved names unless `resolve_with_mib()`
+        is explicitly called. This is why `metric` and `varbind_id` appear
+        different from older versions.
+        """
         oid = str(varbind[0].get_oid())
+        resolved_oid = ObjectIdentity(oid).resolve_with_mib(self.mib_view_controller)
+        mib, metric, index = resolved_oid.get_mib_symbol()
+        varbind_id = resolved_oid.prettyPrint()
         return index, metric, mib, oid, varbind_id
