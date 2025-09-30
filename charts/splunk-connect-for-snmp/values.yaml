@@ -454,8 +454,8 @@ traps:
     # was introduced to allow using splunk-connect-for-syslog on the same machine
     usemetallb: true
     metallbsharingkey: "splunk-connect"
-    # when using SC4SNMP on a standalone k8s installation, LoadBalancer is a good choice
-    # on a multi-node it's better to set this as NodePort and configure traps.service.nodePort
+    # when using SC4SNMP on a multinode k8s installation, LoadBalancer is a good choice
+    # on a multi-node it's enough to set this as NodePort and configure traps.service.nodePort
     type: LoadBalancer
     port: 162
 
