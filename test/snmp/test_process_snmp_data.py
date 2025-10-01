@@ -2,6 +2,9 @@ from tokenize import group
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
+from pysnmp.entity.engine import SnmpEngine
+from pysnmp.smi import view
+
 from splunk_connect_for_snmp.snmp.manager import Poller
 
 
@@ -11,10 +14,12 @@ class TestProcessSnmpData(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_indexes")
+    @patch("splunk_connect_for_snmp.snmp.manager.ObjectIdentity.resolve_with_mib")
     @patch("time.time")
     def test_multiple_metrics_single_group(
         self,
         m_time,
+        m_resolve_with_mib,
         m_extract_indexes,
         m_extract_index_number,
         m_map_metric_type,
@@ -22,6 +27,9 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
+        poller.snmpEngine = SnmpEngine()
+        poller.builder = poller.snmpEngine.get_mib_builder()
+        poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
         m_get_group_key.return_value = "QWERTYUIOP"
@@ -31,32 +39,33 @@ class TestProcessSnmpData(TestCase):
 
         m_time.return_value = 1640609779.473053
 
-        varbind_mock1_1 = Mock()
-        varbind_mock1_2 = Mock()
-        varbind_mock2_1 = Mock()
-        varbind_mock2_2 = Mock()
+        resolved1 = Mock()
+        resolved1.get_mib_symbol.return_value = ("IF-MIB", "some_metric", 1)
+        resolved1.prettyPrint.return_value = "IF-MIB::some_metric.1"
+        resolved2 = Mock()
 
-        varbind_mock1_1.get_mib_symbol.return_value = "IF-MIB", "some_metric", 1
-        varbind_mock1_1.prettyPrint.return_value = "some text"
-        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
+        resolved2.get_mib_symbol.return_value = ("UDP-MIB", "next_metric", 1)
+        resolved2.prettyPrint.return_value = "UDP-MIB::next_metric.1"
+        m_resolve_with_mib.side_effect = [resolved1, resolved2]
 
-        varbind_mock1_2.prettyPrint.return_value = 65
+        v1 = Mock()
+        v1.get_oid.return_value = "1.2.3.4.5.6.7"
 
-        varbind_mock2_1.get_mib_symbol.return_value = "UDP-MIB", "next_metric", 1
-        varbind_mock2_1.prettyPrint.return_value = "some text2"
-        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
+        v2 = Mock()
+        v2.prettyPrint.return_value = 65
 
-        varbind_mock2_2.prettyPrint.return_value = 123
+        v3 = Mock()
+        v3.get_oid.return_value = "9.8.7.6"
 
-        varbind_table = [
-            (varbind_mock1_1, varbind_mock1_2),
-            (varbind_mock2_1, varbind_mock2_2),
-        ]
+        v4 = Mock()
+        v4.prettyPrint.return_value = 123
+
+        varbind_table = [(v1, v2), (v3, v4)]
         metrics = {}
         mapping = {}
 
         poller.process_snmp_data(varbind_table, metrics, mapping)
-
+        print(f"metric={metrics}")
         self.assertEqual(
             {
                 "QWERTYUIOP": {
@@ -86,10 +95,12 @@ class TestProcessSnmpData(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_indexes")
+    @patch("splunk_connect_for_snmp.snmp.manager.ObjectIdentity.resolve_with_mib")
     @patch("time.time")
     def test_multiple_metrics_multiple_groups(
         self,
         m_time,
+        m_resolve_with_mib,
         m_extract_indexes,
         m_extract_index_number,
         m_map_metric_type,
@@ -97,6 +108,9 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
+        poller.snmpEngine = SnmpEngine()
+        poller.builder = poller.snmpEngine.get_mib_builder()
+        poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
         m_get_group_key.side_effect = ["GROUP1", "GROUP2"]
@@ -106,21 +120,24 @@ class TestProcessSnmpData(TestCase):
 
         m_time.return_value = 1640609779.473053
 
+        resolved1 = Mock()
+        resolved1.get_mib_symbol.return_value = ("IF-MIB", "some_metric", 1)
+        resolved1.prettyPrint.return_value = "IF-MIB::some_metric.1"
+
+        resolved2 = Mock()
+        resolved2.get_mib_symbol.return_value = ("UDP-MIB", "next_metric", 1)
+        resolved2.prettyPrint.return_value = "UDP-MIB::next_metric.1"
+
+        m_resolve_with_mib.side_effect = [resolved1, resolved2]
+
         varbind_mock1_1 = Mock()
-        varbind_mock1_2 = Mock()
-        varbind_mock2_1 = Mock()
-        varbind_mock2_2 = Mock()
-
-        varbind_mock1_1.get_mib_symbol.return_value = "IF-MIB", "some_metric", 1
-        varbind_mock1_1.prettyPrint.return_value = "some text"
         varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
-
+        varbind_mock1_2 = Mock()
         varbind_mock1_2.prettyPrint.return_value = 65
 
-        varbind_mock2_1.get_mib_symbol.return_value = "UDP-MIB", "next_metric", 1
-        varbind_mock2_1.prettyPrint.return_value = "some text2"
+        varbind_mock2_1 = Mock()
         varbind_mock2_1.get_oid.return_value = "9.8.7.6"
-
+        varbind_mock2_2 = Mock()
         varbind_mock2_2.prettyPrint.return_value = 123
 
         varbind_table = [
@@ -167,10 +184,12 @@ class TestProcessSnmpData(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_indexes")
+    @patch("splunk_connect_for_snmp.snmp.manager.ObjectIdentity.resolve_with_mib")
     @patch("time.time")
     def test_metrics_and_fields(
         self,
         m_time,
+        m_resolve_with_mib,
         m_extract_indexes,
         m_extract_index_number,
         m_map_metric_type,
@@ -178,39 +197,37 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
+        poller.snmpEngine = SnmpEngine()
+        poller.builder = poller.snmpEngine.get_mib_builder()
+        poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
         m_get_group_key.return_value = "GROUP1"
         m_map_metric_type.side_effect = ["g", "r"]
         m_extract_index_number.return_value = 1
         m_extract_indexes.return_value = [7]
-
         m_time.return_value = 1640609779.473053
+        resolved_metric = Mock()
+        resolved_metric.get_mib_symbol.return_value = ("IF-MIB", "some_metric", 1)
+        resolved_metric.prettyPrint.return_value = "IF-MIB::some_metric.1"
 
-        varbind_mock1_1 = Mock()
-        varbind_mock1_2 = Mock()
-        varbind_mock2_1 = Mock()
-        varbind_mock2_2 = Mock()
+        resolved_field = Mock()
+        resolved_field.get_mib_symbol.return_value = ("UDP-MIB", "some_field", 1)
+        resolved_field.prettyPrint.return_value = "UDP-MIB::some_field.1"
+        m_resolve_with_mib.side_effect = [resolved_metric, resolved_field]
 
-        varbind_mock1_1.get_mib_symbol.return_value = "IF-MIB", "some_metric", 1
-        varbind_mock1_1.prettyPrint.return_value = "some text"
-        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
+        v1 = Mock()
+        v1.get_oid.return_value = "1.2.3.4.5.6.7"
+        v2 = Mock()
+        v2.prettyPrint.return_value = 65  # metric value
 
-        varbind_mock1_2.prettyPrint.return_value = 65
+        v3 = Mock()
+        v3.get_oid.return_value = "9.8.7.6"
+        v4 = Mock()
+        v4.prettyPrint.return_value = "up and running"
 
-        varbind_mock2_1.get_mib_symbol.return_value = "UDP-MIB", "some_field", 1
-        varbind_mock2_1.prettyPrint.return_value = "some text2"
-        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
-
-        varbind_mock2_2.prettyPrint.return_value = "up and running"
-
-        varbind_table = [
-            (varbind_mock1_1, varbind_mock1_2),
-            (varbind_mock2_1, varbind_mock2_2),
-        ]
-        metrics = {}
-        mapping = {}
-
+        varbind_table = [(v1, v2), (v3, v4)]
+        metrics, mapping = {}, {}
         poller.process_snmp_data(varbind_table, metrics, mapping)
 
         self.assertEqual(
@@ -243,10 +260,12 @@ class TestProcessSnmpData(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_indexes")
+    @patch("splunk_connect_for_snmp.snmp.manager.ObjectIdentity.resolve_with_mib")
     @patch("time.time")
     def test_metrics_with_profile(
         self,
         m_time,
+        m_resolve_with_mib,
         m_extract_indexes,
         m_extract_index_number,
         m_map_metric_type,
@@ -254,36 +273,35 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
+        poller.snmpEngine = SnmpEngine()
+        poller.builder = poller.snmpEngine.get_mib_builder()
+        poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
         m_get_group_key.return_value = "QWERTYUIOP"
         m_map_metric_type.side_effect = ["g", "g"]
         m_extract_index_number.return_value = 1
         m_extract_indexes.return_value = [6, 7]
-
         m_time.return_value = 1640609779.473053
 
-        varbind_mock1_1 = Mock()
-        varbind_mock1_2 = Mock()
-        varbind_mock2_1 = Mock()
-        varbind_mock2_2 = Mock()
+        resolved1 = Mock()
+        resolved1.get_mib_symbol.return_value = ("IF-MIB", "some_metric", 1)
+        resolved1.prettyPrint.return_value = "IF-MIB::some_metric.1"
+        resolved2 = Mock()
+        resolved2.get_mib_symbol.return_value = ("UDP-MIB", "next_metric", 1)
+        resolved2.prettyPrint.return_value = "UDP-MIB::next_metric.1"
+        m_resolve_with_mib.side_effect = [resolved1, resolved2]
 
-        varbind_mock1_1.get_mib_symbol.return_value = "IF-MIB", "some_metric", 1
-        varbind_mock1_1.prettyPrint.return_value = "some text"
-        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
+        v1 = Mock()
+        v1.get_oid.return_value = "1.2.3.4.5.6.7"
+        v2 = Mock()
+        v2.prettyPrint.return_value = 65
+        v3 = Mock()
+        v3.get_oid.return_value = "9.8.7.6"
+        v4 = Mock()
+        v4.prettyPrint.return_value = 123
 
-        varbind_mock1_2.prettyPrint.return_value = 65
-
-        varbind_mock2_1.get_mib_symbol.return_value = "UDP-MIB", "next_metric", 1
-        varbind_mock2_1.prettyPrint.return_value = "some text2"
-        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
-
-        varbind_mock2_2.prettyPrint.return_value = 123
-
-        varbind_table = [
-            (varbind_mock1_1, varbind_mock1_2),
-            (varbind_mock2_1, varbind_mock2_2),
-        ]
+        varbind_table = [(v1, v2), (v3, v4)]
         metrics = {}
         mapping = {
             "IF-MIB::some_metric": "profile1",
