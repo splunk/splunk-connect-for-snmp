@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Changed
+
+### Fixes
+- fix problem with service rendering when `traps.service.usemetallb` is set to false
+
 ## [1.14.1]
 - update mongodb volumePermission image repository to `bitnamileagcy`
 
