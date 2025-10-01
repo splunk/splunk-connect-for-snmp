@@ -754,7 +754,25 @@ class Poller(Task):
                 metrics[group_key]["profiles"] = []
 
     def init_snmp_data(self, varbind):
-        mib, metric, index = varbind[0].get_mib_symbol()
-        varbind_id = varbind[0].prettyPrint()
+        """
+        Extract SNMP varbind information in a way that preserves compatibility with
+        older PySNMP behavior while avoiding changes to the underlying library.
+
+        :param varbind: ObjectType
+
+        :return: A resolved index, metric, mib, oid, varbind_id
+
+        ## NOTE
+        - In old fork of pysnmp, calling `getMibSymbol()` and `prettyPrint()` on
+        a varbind returned fully resolved MIB names, variable names, and indices.
+
+        - In lextudio's pysnmp, `get_mib_symbol()` and `prettyPrint()`
+        by default may return partially resolved names unless `resolve_with_mib()`
+        is explicitly called. This is why `metric` and `varbind_id` appear
+        different from older versions.
+        """
         oid = str(varbind[0].get_oid())
+        resolved_oid = ObjectIdentity(oid).resolve_with_mib(self.mib_view_controller)
+        mib, metric, index = resolved_oid.get_mib_symbol()
+        varbind_id = resolved_oid.prettyPrint()
         return index, metric, mib, oid, varbind_id
