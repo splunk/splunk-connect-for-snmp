@@ -1,5 +1,5 @@
 x-general_sc4snmp_data: &general_sc4snmp_data
-  CONFIG_PATH: /app/config/config.yaml
+  CONFIG_PATH: app/config/config.yaml
   REDIS_URL: redis://redis:6379/1
   CELERY_BROKER_URL: redis://redis:6379/0
   MONGO_URI: mongodb://mongo:27017/
@@ -78,7 +78,8 @@ networks:
 
 services:
   coredns:
-    image: ${COREDNS_IMAGE}:${COREDNS_TAG:-latest}
+    #    image: ${COREDNS_IMAGE}:${COREDNS_TAG:-latest}
+    image: ${COREDNS_IMAGE}:${COREDNS_TAG}
     command: [-conf, /Corefile]
     container_name: coredns
     restart: on-failure
@@ -93,7 +94,8 @@ services:
         ipv6_address: ${COREDNS_ADDRESS_IPv6}
   snmp-mibserver:
     <<: [*dns_and_networks, *dependend_on_core_dns]
-    image: ${MIBSERVER_IMAGE}:${MIBSERVER_TAG:-latest}
+      #image: ${MIBSERVER_IMAGE}:${MIBSERVER_TAG:-latest}
+    image: ${MIBSERVER_IMAGE}:${MIBSERVER_TAG}
     container_name: snmp-mibserver
     environment:
       NGINX_ENTRYPOINT_QUIET_LOGS: ${NGINX_ENTRYPOINT_QUIET_LOGS:-1}
@@ -101,17 +103,20 @@ services:
     - snmp-mibserver-tmp:/tmp/
   redis:
     <<: [*dns_and_networks, *dependend_on_core_dns]
-    image: ${REDIS_IMAGE}:${REDIS_TAG:-latest}
+      #image: ${REDIS_IMAGE}:${REDIS_TAG:-latest}
+    image: ${REDIS_IMAGE}:${REDIS_TAG}
     container_name: redis
     environment:
       ALLOW_EMPTY_PASSWORD: yes
   mongo:
     <<: [*dns_and_networks, *dependend_on_core_dns]
-    image: ${MONGO_IMAGE}:${MONGO_TAG:-latest}
+      #image: ${MONGO_IMAGE}:${MONGO_TAG:-latest}
+    image: ${MONGO_IMAGE}:${MONGO_TAG}
     container_name: mongo
   inventory:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
-    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+      #image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG}
     container_name: sc4snmp-inventory
     command: [inventory]
     environment:
@@ -127,7 +132,8 @@ services:
     - inventory-tmp:/tmp/:rw
   scheduler:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
-    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+      #image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG}
     container_name: sc4snmp-scheduler
     command: [celery, beat]
     environment:
@@ -159,7 +165,8 @@ services:
     - traps-tmp:/tmp/:rw
   worker-poller:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
-    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG}
+      #image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
     command:
     - celery
     - worker-poller
