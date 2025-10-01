@@ -35,23 +35,23 @@ MONGO_TAG=6.0.9-debian-11-r5
 They must be downloaded in the online environment by following commands:
 
 ```shell
-docker pull ghcr.io/splunk/splunk-connect-for-snmp/container:latest
-docker pull coredns/coredns:1.11.1
-docker pull ghcr.io/pysnmp/mibs/container:latest
-docker pull docker.io/bitnami/redis:7.2.1-debian-11-r0
-docker pull docker.io/bitnami/mongodb:6.0.9-debian-11-r5
+docker pull ghcr.io/splunk/splunk-connect-for-snmp/container:main
+docker pull ghcr.io/pysnmp/mibs/container:main
+docker pull bitnamilegacy/redis:7.2.1-debian-11-r0
+docker pull bitnamilegacy/mongodb:7.0.14-debian-12-r8
+docker pull  coredns/coredns:1.11.1
 ```
 
 Next step is to save them to `sc4snmp_offline_images.tar` archive:
 ```shell
-docker save ghcr.io/splunk/splunk-connect-for-snmp/container:latest \
+docker save ghcr.io/splunk/splunk-connect-for-snmp/container:main \
+ghcr.io/pysnmp/mibs/container:main \
+bitnamilegacy/redis:7.2.1-debian-11-r0 \
 coredns/coredns:1.11.1 \
-ghcr.io/pysnmp/mibs/container:latest \
-docker.io/bitnami/redis:7.2.1-debian-11-r0 \
-docker.io/bitnami/mongodb:6.0.9-debian-11-r5 > sc4snmp_offline_images.tar
+bitnamilegacy/mongodb:7.0.14-debian-12-r8 > sc4snmp_offline.tar 
 ```
 
-After moving `sc4snmp_offline_images.tar` archive to the offline environment, images can be loaded to docker:
+After moving `sc4snmp_offline.tar` archive to the offline environment, images can be loaded to docker:
 ```shell
-docker load --input sc4snmp_offline_images.tar
+docker load --input sc4snmp_offline.tar.tar
 ```
