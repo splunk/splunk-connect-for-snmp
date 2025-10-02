@@ -879,6 +879,9 @@
     "mongodb": {
       "type": "object"
     },
+    "mongodbMigration": {
+      "type": "object"
+    },
     "redis": {
       "type": "object"
     },

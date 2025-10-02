@@ -509,47 +509,30 @@ useDeprecatedAPI: false
 #############################################################################
 ### Please do not modify below values, unless you know what you're doing! ###
 #############################################################################
+# MongoDB subchart values for SC4SNMP using the official Helm chart
 mongodb:
+  # Chart architecture
   architecture: "standalone"
-  updateStrategy:
-    type: Recreate
-  initdbScripts:
-    setFeatureCompatibilityVersion.js: |
-      db.adminCommand({ setFeatureCompatibilityVersion: "6.0" });
-  image:
-    repository: bitnamilegacy/mongodb
-
-  ## @section Global parameters
-  ## Global Docker image parameters
-  ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
-  ## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
-
-  ## @section Common parameters
-  ##
-
-  ## @param clusterDomain Default Kubernetes cluster domain
-  ##
   clusterDomain: cluster.local
 
-  ##
-  auth:
-    ## @param auth.enabled Enable authentication
-    ## ref: https://docs.mongodb.com/manual/tutorial/enable-authentication/
-    ##
-    enabled: false
+  # Image settings — using official mongo image
+  image:
+    repository: mongo
+    tag: "6.0"
+    pullPolicy: IfNotPresent
 
-  ## MongoDB&reg; containers' resource requests and limits.
-  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## We usually recommend not to specify default resources and to leave this as a conscious
-  ## choice for the user. This also increases chances charts run on environments with little
-  ## resources, such as Minikube. If you do want to specify resources, uncomment the following
-  ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  ## @param resources.limits The resources limits for MongoDB&reg; containers
-  ## @param resources.requests The requested resources for MongoDB&reg; containers
-  ##
-  rbac:
-    create: true
+  # Authentication disabled (same as Bitnami's "auth.enabled: false")
+  auth:
+    enabled: false
+    # If enabling auth in the future:
+    # rootPassword: changemeRootPassword
+    # username: yourappuser
+    # password: yourapppassword
+    # database: yourappdb
+
+  # Resource requests/limits
   resources: {}
+    # Uncomment to set resource limits
     # limits:
     #   cpu: 1000m
     #   memory: 768Mi
@@ -557,35 +540,36 @@ mongodb:
     #   cpu: 250m
     #   memory: 512Mi
 
-  ## @section Volume Permissions parameters
-
-  ## @section Metrics parameters
-
-  metrics:
-    ## @param metrics.enabled Enable using a sidecar Prometheus exporter
-    ##
+  # Persistence configuration
+  persistence:
     enabled: true
-    containerPort: 9216
-    ## Prometheus Exporter service configuration
-    ##
+    storageClass: "microk8s-hostpath"
+    size: 8Gi
+
+  # Enable PodDisruptionBudget
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  # Metrics — Prometheus annotations
+  metrics:
+    enabled: true
+    extraArgs:
+      - --collect-all
     service:
-      ## @param metrics.service.annotations [object] Annotations for Prometheus Exporter pods. Evaluated as a template.
-      ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
-      ##
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9216"
-  pdb:
-    create: true
 
-  ## In MicroK8s there is an addon providing PersistentVolumes.
-  ## "microk8s-hostpath" is the default storageClassName ref: https://microk8s.io/docs/addon-hostpath-storage.
-  ## If something else than MicroK8s is used, then persistence.storageClass needs to be adjusted accordingly:
-  ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1
-  persistence:
-    storageClass: "microk8s-hostpath"
-  volumePermissions:
-    enabled: true
+  # Mount init scripts (replacement for Bitnami's initdbScripts)
+  extraVolumes:
+    - name: mongo-init-scripts
+      configMap:
+        name: mongo-init-scripts
+  extraVolumeMounts:
+    - name: mongo-init-scripts
+      mountPath: /docker-entrypoint-initdb.d
+      readOnly: true
 redis:
   architecture: standalone
   auth:
@@ -593,3 +577,8 @@ redis:
   image:
     repository: bitnamilegacy/redis
 commonAnnotations: {}
+mongodbMigration:
+  image:
+    repository: bitnami/mongodb
+    tag: "6.0.5"
+    pullPolicy: IfNotPresent

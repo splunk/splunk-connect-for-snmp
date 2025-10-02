@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongodb-postupgrade-restore
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: mongo-restore
+          image: {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag | default "7.0" }}
+          imagePullPolicy: {{ .Values.mongodb.image.pullPolicy | default "IfNotPresent" }}
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for new MongoDB to be ready..."
+              until mongo --host {{ .Release.Name }}-mongodb --eval 'db.adminCommand("ping")' >/dev/null 2>&1; do
+                sleep 5
+              done
+              echo "Restoring MongoDB backup..."
+              mongorestore --uri="mongodb://{{ .Release.Name }}-mongodb:27017" /dump
+              echo "Restore complete."
+          volumeMounts:
+            - name: backup-volume
+              mountPath: /dump
+      volumes:
+        - name: backup-volume
+          persistentVolumeClaim:
+            claimName: mongodb-backup-pvc

@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongodb-preupgrade-backup
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: mongo-backup
+          image: {{ .Values.mongodbMigration.image.repository }}:{{ .Values.mongodbMigration.image.tag }}
+          imagePullPolicy: {{ .Values.mongodbMigration.image.pullPolicy | default "IfNotPresent" }}
+          command:
+            - sh
+            - -c
+            - |
+              echo "Starting MongoDB backup..."
+              mongodump --uri="mongodb://{{ .Release.Name }}-mongodb:27017" --out=/dump
+              echo "Backup complete."
+          volumeMounts:
+            - name: backup-volume
+              mountPath: /dump
+      volumes:
+        - name: backup-volume
+          persistentVolumeClaim:
+            claimName: mongodb-backup-pvc
