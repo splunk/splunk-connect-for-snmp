@@ -2015,25 +2015,25 @@ COREDNS_TAG=1.11.1
 MIBSERVER_IMAGE=ghcr.io/pysnmp/mibs/container
 MIBSERVER_TAG=latest
 
-REDIS_IMAGE=docker.io/bitnami/redis
+REDIS_IMAGE=docker.io/bitnamilegacy/redis
 REDIS_TAG=7.2.1-debian-11-r0
 
-MONGO_IMAGE=docker.io/bitnami/mongodb
-MONGO_TAG=6.0.9-debian-11-r5
+MONGO_IMAGE=docker.io/bitnamilegacy/mongodb
+MONGO_TAG=7.0.14-debian-12-r3
 </code></pre></div>
 <p>They must be downloaded in the online environment by following commands:</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/splunk/splunk-connect-for-snmp/container:latest
 docker<span class="w"> </span>pull<span class="w"> </span>coredns/coredns:1.11.1
 docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/pysnmp/mibs/container:latest
-docker<span class="w"> </span>pull<span class="w"> </span>docker.io/bitnami/redis:7.2.1-debian-11-r0
-docker<span class="w"> </span>pull<span class="w"> </span>docker.io/bitnami/mongodb:6.0.9-debian-11-r5
+docker<span class="w"> </span>pull<span class="w"> </span>docker.io/bitnamilegacy/redis:7.2.1-debian-11-r0
+docker<span class="w"> </span>pull<span class="w"> </span>docker.io/bitnamilegacy/mongodb:7.0.14-debian-12-r3
 </code></pre></div>
 <p>Next step is to save them to <code>sc4snmp_offline_images.tar</code> archive:
 </p><div class="highlight"><pre><span></span><code>docker<span class="w"> </span>save<span class="w"> </span>ghcr.io/splunk/splunk-connect-for-snmp/container:latest<span class="w"> </span><span class="se">\</span>
 coredns/coredns:1.11.1<span class="w"> </span><span class="se">\</span>
 ghcr.io/pysnmp/mibs/container:latest<span class="w"> </span><span class="se">\</span>
-docker.io/bitnami/redis:7.2.1-debian-11-r0<span class="w"> </span><span class="se">\</span>
-docker.io/bitnami/mongodb:6.0.9-debian-11-r5<span class="w"> </span>&gt;<span class="w"> </span>sc4snmp_offline_images.tar
+docker.io/bitnamilegacy/redis:7.2.1-debian-11-r0<span class="w"> </span><span class="se">\</span>
+docker.io/bitnamilegacy/mongodb:7.0.14-debian-12-r3<span class="w"> </span>&gt;<span class="w"> </span>sc4snmp_offline_images.tar
 </code></pre></div>
 <p>After moving <code>sc4snmp_offline_images.tar</code> archive to the offline environment, images can be loaded to docker:
 </p><div class="highlight"><pre><span></span><code>docker<span class="w"> </span>load<span class="w"> </span>--input<span class="w"> </span>sc4snmp_offline_images.tar
