@@ -104,7 +104,7 @@ run_integration_tests() {
     tail -1 | sed -e 's/[[:space:]]\+/\t/g' | cut -f4)
 
   deploy_poetry
-  poetry run pytest --asyncio-mode=auto --splunk_host="$splunk_ip" --splunk_password="$splunk_password" \
+  poetry run pytest --splunk_host="$splunk_ip" --splunk_password="$splunk_password" \
     --trap_external_ip="${trap_external_ip}"
 }
 
