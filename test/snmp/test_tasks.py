@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from pysnmp.smi.error import SmiError
 
@@ -8,7 +8,9 @@ from pysnmp.smi.error import SmiError
 class TestTasks(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.Poller.do_work", new_callable=AsyncMock
+    )
     @patch("time.time")
     def test_walk(
         self,
@@ -42,7 +44,9 @@ class TestTasks(TestCase):
 
     @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.Poller.do_work", new_callable=AsyncMock
+    )
     @patch("time.time")
     def test_poll_with_group(
         self,
@@ -81,7 +85,9 @@ class TestTasks(TestCase):
 
     @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.Poller.do_work", new_callable=AsyncMock
+    )
     @patch("time.time")
     def test_walk_with_group(
         self,
@@ -117,7 +123,7 @@ class TestTasks(TestCase):
             result,
         )
 
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("time.time")
@@ -154,7 +160,7 @@ class TestTasks(TestCase):
             result,
         )
 
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("time.time")
@@ -196,7 +202,7 @@ class TestTasks(TestCase):
             result,
         )
 
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -243,7 +249,7 @@ class TestTasks(TestCase):
             result,
         )
 
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
@@ -293,7 +299,7 @@ class TestTasks(TestCase):
 
     @patch("splunk_connect_for_snmp.snmp.tasks.RESOLVE_TRAP_ADDRESS", "true")
     @patch("splunk_connect_for_snmp.snmp.tasks.resolve_address")
-    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolve_with_mib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("time.time")
