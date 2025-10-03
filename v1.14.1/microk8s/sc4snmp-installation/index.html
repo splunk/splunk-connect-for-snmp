@@ -1,0 +1,2491 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../sck-installation/">
+      
+      
+        <link rel="next" href="../enable-ipv6/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+    
+    
+      
+        <title>Install SC4SNMP - Splunk Connect for SNMP (SC4SNMP)</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sc4snmp-helm-installation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Splunk Connect for SNMP (SC4SNMP)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Install SC4SNMP
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Splunk Connect for SNMP (SC4SNMP)
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    High-level design
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/planning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Infrastructure Planning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started with Docker Compose
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started with Docker Compose
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/1-install-docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Install Docker
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/2-download-package/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Download package
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/3-inventory-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inventory configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/4-scheduler-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scheduler configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/5-traps-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Traps configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/6-env-file-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    .env file configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/7-snmpv3-secrets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SNMPv3 secrets configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/8-offline-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Offline installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/9-splunk-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sending logs to Splunk
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/10-enable-ipv6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Enable IPv6
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting Started with Microk8s
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started with Microk8s
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            Installation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splunk-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Splunk Requirements
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mk8s/k8s-microk8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Platform Microk8s
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sck-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Install Splunk OpenTelemetry Collector for Kubernetes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Install SC4SNMP
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Install SC4SNMP
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installing-splunk-connect-for-snmp-on-linux-redhat" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installing Splunk Connect for SNMP on Linux RedHat
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation process
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation process">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#offline-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Offline installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#online-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Online installation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Online installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-sc4snmp-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add SC4SNMP repository
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#download-and-modify-valuesyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      Download and modify values.yaml
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-sc4snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install SC4SNMP
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-of-the-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification of the deployment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification of the deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-snmp-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test SNMP Traps
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-snmp-poller" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test SNMP Poller
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uninstall-splunk-connect-for-snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Uninstall Splunk Connect for SNMP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#restart-splunk-connect-for-snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Restart Splunk Connect for SNMP
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enable-ipv6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Enable IPv6
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mk8s/k8s-microk8s-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scaling with Microk8s
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Configuration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/deployment-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deployment
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/values-params-description/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configurable values
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2_3" id="__nav_4_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Polling
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Polling
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/poller-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Poller
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/scheduler-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scheduler
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/configuring-profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuring Profiles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/configuring-groups/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuring Groups
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/step-by-step-poll/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Step by Step polling example
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/snmp-data-format/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SNMP data format
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/trap-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Traps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/worker-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Worker
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/mongo-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    MongoDB
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/redis-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Redis
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/snmpv3-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SNMPv3 configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/sim-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Splunk Infrastructure Monitoring
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/coredns-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CoreDNS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Offline Installation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Offline Installation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../offlineinstallation/offline-microk8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Install Microk8s
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../offlineinstallation/offline-sck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Install Splunk OpenTelemetry Collector for Kubernetes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../offlineinstallation/offline-sc4snmp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Install SC4SNMP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    GUI
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            GUI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gui/enable-gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Enable GUI
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gui/profiles-gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuring Profiles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gui/groups-gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuring Groups
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gui/inventory-gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuring Inventory
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gui/apply-changes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Apply changes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../upgrade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Upgrade SC4SNMP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ha/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    High Availability
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../small-environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lightweight installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dashboard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Splunk dashboards
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Releases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mib-request/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Request MIB
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Security
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mtls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    mTLS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Troubleshooting
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/configuring-logs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Accessing and configuring logs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/docker-commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Docker commands
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/k8s-commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Kubernetes commands
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/general-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    General issues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/polling-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Polling issues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/traps-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Traps issues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installing-splunk-connect-for-snmp-on-linux-redhat" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installing Splunk Connect for SNMP on Linux RedHat
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation process
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation process">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#offline-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Offline installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#online-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Online installation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Online installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-sc4snmp-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add SC4SNMP repository
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#download-and-modify-valuesyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      Download and modify values.yaml
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-sc4snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install SC4SNMP
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-of-the-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification of the deployment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification of the deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-snmp-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test SNMP Traps
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-snmp-poller" class="md-nav__link">
+    <span class="md-ellipsis">
+      Test SNMP Poller
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uninstall-splunk-connect-for-snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Uninstall Splunk Connect for SNMP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#restart-splunk-connect-for-snmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Restart Splunk Connect for SNMP
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<div><h1 id="sc4snmp-helm-installation">SC4SNMP Helm installation<a class="headerlink" href="#sc4snmp-helm-installation" title="Permanent link">¶</a></h1>
+<p>The basic installation and configuration process discussed in this section is typical 
+for single node non-HA deployments. It does not have resource requests and limits.
+See the mongo, redis, scheduler, worker, and traps configuration sections for guidance
+on production configuration.</p>
+<h2 id="installing-splunk-connect-for-snmp-on-linux-redhat">Installing Splunk Connect for SNMP on Linux RedHat<a class="headerlink" href="#installing-splunk-connect-for-snmp-on-linux-redhat" title="Permanent link">¶</a></h2>
+<p>Installation of RedHat may be blocking ports required by microk8s. Installing microk8s on RedHat 
+requires checking to see if the firewall is not blocking any of the <a href="https://microk8s.io/docs/ports">required microk8s ports</a>. </p>
+<h2 id="installation-process">Installation process<a class="headerlink" href="#installation-process" title="Permanent link">¶</a></h2>
+<h3 id="offline-installation">Offline installation<a class="headerlink" href="#offline-installation" title="Permanent link">¶</a></h3>
+<p>For offline installation instructions see <a href="../offlineinstallation/offline-sc4snmp/">this page</a>.</p>
+<h3 id="online-installation">Online installation<a class="headerlink" href="#online-installation" title="Permanent link">¶</a></h3>
+<h4 id="add-sc4snmp-repository">Add SC4SNMP repository<a class="headerlink" href="#add-sc4snmp-repository" title="Permanent link">¶</a></h4>
+<p></p><div class="highlight"><pre><span></span><code>microk8s helm3 repo add splunk-connect-for-snmp https://splunk.github.io/splunk-connect-for-snmp
+microk8s helm3 repo update
+</code></pre></div>
+Now the package should be visible in <code>helm3</code> search command result:
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>search<span class="w"> </span>repo<span class="w"> </span>snmp
+</code></pre></div>
+Example output:
+<div class="highlight"><pre><span></span><code>NAME                                               CHART VERSION  APP VERSION    DESCRIPTION                           
+splunk-connect-for-snmp/splunk-connect-for-snmp        1.0.0        1.0.0       A Helm chart for SNMP Connect for SNMP
+</code></pre></div>
+<h4 id="download-and-modify-valuesyaml">Download and modify values.yaml<a class="headerlink" href="#download-and-modify-valuesyaml" title="Permanent link">¶</a></h4>
+<p>The installation of SC4SNMP requires the creation of a <code>values.yaml</code> file, which serves as the configuration file. To configure this file,
+see the following steps: </p>
+<ol>
+<li>Review the <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.md">basic configuration template</a>.</li>
+<li>Review the <a href="https://github.com/splunk/splunk-connect-for-snmp/tree/main/examples">examples</a> to determine which areas require configuration.</li>
+<li>For more advanced configuration options, refer to the complete default <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/charts/splunk-connect-for-snmp/values.yaml">values.yaml</a>
+or download it directly from Helm using the command <code>microk8s helm3 show values splunk-connect-for-snmp/splunk-connect-for-snmp</code>.</li>
+</ol>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Please be aware that copying the entire default <code>values.yaml</code> file may impact the readability of the configuration. We recommend including only the modified configuration sections or starting with <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.yaml">the base template</a>.</p>
+</div>
+<ol start="4">
+<li>In order to learn more about each of the configuration parts, check <a href="../configuration/deployment-configuration/">configuration</a> section.</li>
+</ol>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>We recommend starting with the base template and progressively adding additional configurations as required. The <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.yaml">base template</a> can be downloaded from the SC4SNMP repository.</p>
+</div>
+<p>The <code>values.yaml</code> file is validated using <code>JSON schema</code> built into <code>helm chart</code> and inside the code.
+To ensure that your <code>values.yaml</code> follows formatting standards, you can use <code>yamllint</code>. In order to download
+<code>yamllint</code> refer to the <a href="https://yamllint.readthedocs.io/en/stable/quickstart.html#installing-yamllint">installation instructions</a>. 
+Then create <code>custom-config.yamllint</code> file and add the following configuration:
+</p><div class="highlight"><pre><span></span><code><span class="nt">extends</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+
+<span class="nt">rules</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">line-length</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">warning</span>
+</code></pre></div>
+Configuration above can be found in the <code>examples</code> directory in SC4SNMP <a href="https://github.com/splunk/splunk-connect-for-snmp">GitHub repository</a>.
+Next run <code>yamllint -c &lt;path to custom-config.yamllint&gt; &lt;path to values.yaml&gt;</code> command. Warnings can be ignored.
+<h4 id="install-sc4snmp">Install SC4SNMP<a class="headerlink" href="#install-sc4snmp" title="Permanent link">¶</a></h4>
+<p>After the <code>values.yaml</code> creation, you can proceed with the SC4SNMP installation:</p>
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+</code></pre></div>
+<p>From now on, when editing SC4SNMP configuration, the configuration change must be
+inserted in the corresponding section of <code>values.yaml</code>. For more details see <a href="../configuration/deployment-configuration/">configuration</a> section.</p>
+<p>Use the following command to propagate configuration changes:
+</p><div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+</code></pre></div>
+<h2 id="verification-of-the-deployment">Verification of the deployment<a class="headerlink" href="#verification-of-the-deployment" title="Permanent link">¶</a></h2>
+<p>In a few minutes, all pods should be up and running. It can be verified with:</p>
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>sc4snmp
+</code></pre></div>
+<p>Example output:</p>
+<div class="highlight"><pre><span></span><code>NAME                                                      READY   STATUS             RESTARTS      AGE
+snmp-splunk-connect-for-snmp-scheduler-7ddbc8d75-bljsj        1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-poller-57cd8f4665-9z9vx   1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-sender-5c44cbb9c5-ppmb5   1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-worker-trap-549766d4-28qzh       1/1     Running   0          133m
+snmp-mibserver-7f879c5b7c-hz9tz                               1/1     Running   0          133m
+snmp-mongodb-869cc8586f-vvr9f                                 2/2     Running   0          133m
+snmp-redis-master-0                                           1/1     Running   0          133m
+snmp-splunk-connect-for-snmp-trap-78759bfc8b-79m6d            1/1     Running   0          99m
+snmp-splunk-connect-for-snmp-inventory-mjccw                  0/1     Completed 0          6s
+</code></pre></div>
+<p>The output might vary depending on the configuration. In the above example, both polling and traps are configured, 
+and the data is being sent to Splunk.</p>
+<p>If you have <code>traps</code> configured, you should see <code>EXTERNAL-IP</code> in the <code>snmp-splunk-connect-for-snmp-trap</code> service.
+Check it using the following command:</p>
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>svc<span class="w"> </span>-n<span class="w"> </span>sc4snmp<span class="w"> </span>
+</code></pre></div>
+<p>Here is an example of the correct setup:</p>
+<div class="highlight"><pre><span></span><code>NAME                                TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
+snmp-redis-master                 ClusterIP      None             &lt;none&gt;        6379/TCP        33h
+snmp-mongodb                        ClusterIP      10.152.183.147   &lt;none&gt;        27017/TCP       33h
+snmp-mibserver                      ClusterIP      10.152.183.253   &lt;none&gt;        80/TCP          33h
+snmp-redis-master                   ClusterIP      10.152.183.135   &lt;none&gt;        6379/TCP        33h
+snmp-mongodb-metrics                ClusterIP      10.152.183.217   &lt;none&gt;        9216/TCP        33h
+snmp-splunk-connect-for-snmp-trap   LoadBalancer   10.152.183.33    10.202.9.21   162:30161/UDP   33h
+</code></pre></div>
+<p>If you see <code>&lt;pending&gt;</code> communicate instead of the IP address, that means you either provided the wrong IP address
+in <code>traps.loadBalancerIP</code> or there is something wrong with the <code>metallb</code> microk8s addon.</p>
+<p>In the following example, the default indexes are used, the metric data goes to <code>netmetrics</code>, and the events goes to <code>netops</code>.</p>
+<h4 id="test-snmp-traps">Test SNMP Traps<a class="headerlink" href="#test-snmp-traps" title="Permanent link">¶</a></h4>
+<ol>
+<li>Simulate the event. On a Linux system, you can download <code>snmpd</code> package for its purpose and run:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>apt<span class="w"> </span>update
+apt-get<span class="w"> </span>install<span class="w"> </span>snmpd
+snmptrap<span class="w"> </span>-v2c<span class="w"> </span>-c<span class="w"> </span>public<span class="w"> </span>EXTERNAL-IP<span class="w"> </span><span class="m">123</span><span class="w"> </span><span class="m">1</span>.3.6.1.2.1.1.4<span class="w"> </span><span class="m">1</span>.3.6.1.2.1.1.4<span class="w"> </span>s<span class="w"> </span><span class="nb">test</span>
+</code></pre></div>
+<p>Remember to replace the <code>EXTERNAL-IP</code> with the IP address of the <code>snmp-splunk-connect-for-snmp-trap</code> service from the previous list.</p>
+<ol start="2">
+<li>After using the following command in the Splunk search box, you should see one event per trap command, with the host value of the test machine <code>EXTERNAL-IP</code> IP address: </li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">"netops"</span><span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">"sc4snmp:traps"</span>
+</code></pre></div>
+<h4 id="test-snmp-poller">Test SNMP Poller<a class="headerlink" href="#test-snmp-poller" title="Permanent link">¶</a></h4>
+<ol>
+<li>To test SNMP poller, you can either use the device you already have, or configure snmpd on your Linux system. 
+Snmpd needs to be configured to listen on the external IP. To enable snmpd to listen to external IP, go to the <code>/etc/snmp/snmpd.conf</code> configuration file, and replace the IP address <code>10.0.101.22</code> with the server IP address where snmpd is configured:
+<code>agentaddress  10.0.101.22,127.0.0.1,[::1]</code>. Restart snmpd through the following execute command:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>service<span class="w"> </span>snmpd<span class="w"> </span>stop
+service<span class="w"> </span>snmpd<span class="w"> </span>start
+</code></pre></div>
+<ol start="2">
+<li>
+<p>Configure SC4SNMP Poller to test and add the IP address which you want to poll. Add the configuration entry into the <code>values.yaml</code> file by 
+replacing the IP address <code>10.0.101.22</code> with the server IP address where the snmpd was configured. See the following:
+</p><div class="highlight"><pre><span></span><code>poller:
+<span class="w">  </span>inventory:<span class="w"> </span><span class="p">|</span>
+<span class="w">    </span>address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+<span class="w">    </span><span class="m">10</span>.0.101.22,,2c,public,,,42000,,,
+</code></pre></div>
+</li>
+<li>
+<p>Load <code>values.yaml</code> file into SC4SNMP using the following command: </p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+</code></pre></div>
+<ol start="4">
+<li>Verify if the records appeared in Splunk using the following command: </li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">"netops"</span><span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">"sc4snmp:event"</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">|</span><span class="w"> </span>mpreview<span class="w"> </span><span class="nv">index</span><span class="o">=</span><span class="s2">"netmetrics"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>search<span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">"sc4snmp:metric"</span>
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Default walk profile is polling only <code>SNMPv2-MIB</code>. To enable full oid tree polling see <a href="../configuration/poller-configuration/#poller-configuration-file">poller configuration</a>.</p>
+</div>
+<blockquote>
+<p><strong><em>NOTE:</em></strong> Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every <code>walk_interval</code>. 
+Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
+In such cases, enable the small walk. See <a href="../../troubleshooting/polling-issues/#walking-a-device-takes-too-much-time">walk takes too much time</a>.
+When the walk finishes, events appear in Splunk.</p>
+</blockquote>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">¶</a></h2>
+<p>A good way to start with SC4SNMP polling is to follow the <a href="../configuration/step-by-step-poll/">Step by Step guide for polling</a>.
+Advanced configuration of polling is available in the <a href="../configuration/poller-configuration/">Poller configuration</a> section.
+The SNMP data format is explained in the <a href="../configuration/snmp-data-format/">SNMP data format</a> section.</p>
+<p>For advanced trap configuration, see the <a href="../configuration/trap-configuration/">Traps configuration</a> section.</p>
+<h2 id="uninstall-splunk-connect-for-snmp">Uninstall Splunk Connect for SNMP<a class="headerlink" href="#uninstall-splunk-connect-for-snmp" title="Permanent link">¶</a></h2>
+<p>To uninstall SC4SNMP run the following commands:</p>
+<div class="highlight"><pre><span></span><code> microk8s helm3 uninstall snmp -n sc4snmp
+ microk8s kubectl delete pvc --all -n sc4snmp
+</code></pre></div>
+<p>Example of pods terminating:</p>
+<div class="highlight"><pre><span></span><code>NAME                                                          READY   STATUS        RESTARTS        AGE
+snmp-mibserver-bb8994c64-twk42                                1/1     Terminating   2 (5h21m ago)   46h
+snmp-splunk-connect-for-snmp-worker-sender-7f5557678b-psj97   1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-worker-trap-dfcc487c-lh2dl       1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-worker-trap-dfcc487c-5z5sq       1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-trap-684d57dc8d-722tv            1/1     Terminating   1 (5h21m ago)   22h
+snmp-splunk-connect-for-snmp-trap-684d57dc8d-z68lb            1/1     Terminating   1 (5h21m ago)   22h
+</code></pre></div>
+<h2 id="restart-splunk-connect-for-snmp">Restart Splunk Connect for SNMP<a class="headerlink" href="#restart-splunk-connect-for-snmp" title="Permanent link">¶</a></h2>
+<p>First run the command to uninstall SC4SNMP, wait until all pods are removed, then use the command to install sc4snmp again.</p>
+<div class="highlight"><pre><span></span><code> microk8s helm3 uninstall snmp -n sc4snmp
+ microk8s kubectl delete pvc --all -n sc4snmp
+ microk8s helm3 install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
+</code></pre></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      <p>Webpages built on GitHub Pages | <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">Github Terms</a> | <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement">GitHub Privacy</a></p>
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.50899def.min.js"></script>
+      
+        <script src="../../javascripts/footer.js"></script>
+      
+    
+  </body>
+</html>
