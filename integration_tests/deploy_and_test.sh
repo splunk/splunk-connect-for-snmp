@@ -93,6 +93,7 @@ deploy_poetry() {
   poetry add -D splunklib
   poetry add -D pysnmp
   poetry add -D pytest-asyncio
+  poetry add -D pysnmpcrypto
 }
 
 run_integration_tests() {

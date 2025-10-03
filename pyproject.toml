@@ -48,7 +48,7 @@ jsonschema = "4.24.0"
 flower = "^2.0.1"
 pysnmp = "^7.1.21"
 pysnmp-pysmi = "^1.1.12"
-pycryptodomex = "^3.23.0"
+pysnmpcrypto = "^0.1.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
