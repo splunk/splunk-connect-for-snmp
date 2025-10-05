@@ -257,7 +257,6 @@ async def test_loading_mibs(request, setup_splunk):
 
 @pytest.mark.part6
 @pytest.mark.asyncio
-@pytest.mark.xfail(strict=False)
 async def test_trap_v3(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
