@@ -270,9 +270,9 @@ def main():
                     snmp_engine,
                     userName=username,
                     authProtocol=auth_protocol,
-                    authKey=auth_key,
+                    authKey=auth_key if auth_key else None,
                     privProtocol=priv_protocol,
-                    privKey=priv_key,
+                    privKey=priv_key if priv_key else None,
                     securityEngineId=v2c.OctetString(hexValue=security_engine_id),
                 )
                 logger.debug(
