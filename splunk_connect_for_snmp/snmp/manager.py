@@ -335,6 +335,22 @@ class Poller(Task):
         walk: bool = False,
         profiles: Union[List[str], None] = None,
     ):
+        """
+         ## NOTE
+        - When a task arrived at poll queue starts with a fresh SnmpEngine (which has no transport_dispatcher
+          attached), SNMP requests (get_cmd or bulk_walk_cmd or any other) run normally.
+        - if a later task finds that the SnmpEngine already has a transport_dispatcher, it reuse that transport_dispatcher.
+          this causes SNMP requests to hang infinite time.
+        - If this hang occurs, then as per our Celery configuration, any task that
+          remains in the queue longer than the default 2400s will be forcefully
+          hard-timed-out and discarded.
+        - The issue does not always appear on the alternate task but it may happen
+          on the second, third, or any subsequent task, depending on timing and
+          concurrency.
+
+        The only way to eliminate this hang is to create new SnmpEngine for each poll task.
+
+        """
         snmpEngine = SnmpEngine()
         retry = False
         address = transform_address_to_key(ir.address, ir.port)

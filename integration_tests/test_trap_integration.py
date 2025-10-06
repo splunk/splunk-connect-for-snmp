@@ -15,8 +15,6 @@
 #   ########################################################################
 import asyncio
 import logging
-import os
-import re
 
 import pytest
 from pysnmp.hlapi.v3arch.asyncio import *
@@ -256,40 +254,6 @@ async def test_loading_mibs(request, setup_splunk):
     assert result_count == 1
 
 
-def mask_ip(line: str) -> str:
-    line = re.sub(r"(\d{1,3}\.){3}\d{1,3}", "XXX.XXX.XXX.XXX", line)
-    line = re.sub(
-        r"([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4}",
-        "XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX",
-        line,
-    )
-    return line
-
-
-def log_trap_errors_microk8s():
-    pods_cmd = "sudo microk8s kubectl get pods -n sc4snmp --no-headers | awk '/snmp-splunk-connect-for-snmp-trap/ {print $1}'"
-    pods = os.popen(pods_cmd).read().splitlines()
-
-    for pod in pods:
-        logs_cmd = f"sudo microk8s kubectl logs -n sc4snmp {pod} --tail=200"
-        logs = os.popen(logs_cmd).read().splitlines()
-        for line in logs:
-            print(mask_ip(line))
-
-
-def log_trap_errors_docker():
-    containers_cmd = (
-        "sudo docker ps --format '{{.Names}}' | grep snmp-splunk-connect-for-snmp-trap"
-    )
-    containers = os.popen(containers_cmd).read().splitlines()
-
-    for container in containers:
-        logs_cmd = f"sudo docker logs --tail 200 {container}"
-        logs = os.popen(logs_cmd).read().splitlines()
-        for line in logs:
-            print(mask_ip(line))
-
-
 @pytest.mark.part6
 @pytest.mark.asyncio
 async def test_trap_v3(request, setup_splunk):
@@ -321,10 +285,5 @@ async def test_trap_v3(request, setup_splunk):
     )
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
-
-    if deployment == "microk8s":
-        log_trap_errors_microk8s()
-    else:
-        log_trap_errors_docker()
 
     assert result_count == 1
