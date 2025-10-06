@@ -20,17 +20,38 @@ spec:
                   {{- else }}
                     {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
                   {{- end }}
+
+          {{- $mongoPass := lookup "v1" "Secret" .Release.Namespace "snmp-mongodb" }}
+          {{- $mongoSecret := lookup "v1" "Secret" .Release.Namespace .Values.mongodb.auth.existingSecret }}
+          
+          {{- if $mongoPass }}
+          env:
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: snmp-mongodb
+                  key: mongodb-root-password
+          {{- end }}
+
+          {{- if and $mongoSecret .Values.mongodb.auth.existingSecret}}
+          env:
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mongodb.auth.existingSecret }}
+                  key: mongodb-root-password
+          {{- end }}
           command:
             - /bin/bash
             - -c
             - |
               echo "Checking current mongo FCV"
-              FCV=$(mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }} --quiet --eval 'db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 }).featureCompatibilityVersion.version')
+              FCV=$(mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }} {{- if or $mongoPass .Values.mongodb.auth.existingSecret }} --username root --password $MONGO_PASSWORD {{- end }} --quiet --eval 'db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 }).featureCompatibilityVersion.version')
               echo "Current Mongo Feature Compatibility Version: $FCV"
               
               if [[ "$FCV" < "6.0" ]]; then
                 echo "FCV < 6.0, setting to 6.0"
-                mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }}  --eval 'db.adminCommand({ setFeatureCompatibilityVersion: "6.0" })'
+                mongosh --host {{ include "splunk-connect-for-snmp.mongodbHost" . | quote }} {{- if or $mongoPass .Values.mongodb.auth.existingSecret }}  --username root --password $MONGO_PASSWORD {{- end }} --eval 'db.adminCommand({ setFeatureCompatibilityVersion: "6.0" })'
               else
                 echo "FCV >= 6.0, nothing to be changed"
               fi
