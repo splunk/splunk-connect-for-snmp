@@ -329,44 +329,13 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {mib_response.status_code}"
             )
 
-    def refresh_snmp_engine(self):
-        """
-        Reset the SNMP engine if the current one already has a live dispatcher
-        and assign a new SnmpEngine else keep that as it is.
-        :return:
-
-        ## NOTE Why this is required to do?
-        - When a task arrived at poll queue starts with a fresh SnmpEngine (which has no transport_dispatcher
-          attached), SNMP requests (get_cmd or bulk_walk_cmd or any other) run normally.
-        - if a later task finds that the SnmpEngine already has a transport_dispatcher, it reuse that transport_dispatcher.
-          this causes SNMP requests to hang infinite time.
-        - If this hang occurs, then as per our Celery configuration, any task that
-          remains in the queue longer than the default 2400s will be forcefully
-          hard-timed-out and discarded.
-        - The issue does not always appear on the alternate task but it may happen
-          on the second, third, or any subsequent task, depending on timing and
-          concurrency.
-
-        The only way to eliminate this hang is to discards the old SnmpEngine whenever it already has a transport_dispatcher
-        and creates a new one. This ensures that each run starts with a clean
-        engine, avoiding the "stuck on later tasks" problem.
-
-        """
-        dispatcher = getattr(self.snmpEngine, "transport_dispatcher", None)
-        if dispatcher:
-            logger.debug(
-                "Transport dispatcher is registered with SnmpEngine. Creating a new SnmpEngine"
-            )
-            self.snmpEngine = SnmpEngine()
-        else:
-            logger.debug("No transport dispatcher found on SnmpEngine")
-
     async def do_work(
         self,
         ir: InventoryRecord,
         walk: bool = False,
         profiles: Union[List[str], None] = None,
     ):
+        snmpEngine = SnmpEngine()
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
         logger.info(f"Preparing task for {ir.address}")
@@ -381,7 +350,7 @@ class Poller(Task):
             address, walk=walk, profiles=profiles
         )
 
-        auth_data = await get_auth(logger, ir, self.snmpEngine)
+        auth_data = await get_auth(logger, ir, snmpEngine)
         context_data = get_context_data()
 
         transport = await setup_transport_target(ir)
@@ -402,6 +371,7 @@ class Poller(Task):
                 transport,
                 varbinds_bulk,
                 walk,
+                snmpEngine,
             )
 
         if varbinds_get:
@@ -415,6 +385,7 @@ class Poller(Task):
                 transport,
                 varbinds_get,
                 walk,
+                snmpEngine,
             )
 
         for group_key, metric in metrics.items():
@@ -436,13 +407,13 @@ class Poller(Task):
         transport,
         varbinds_get,
         walk,
+        snmpEngine: SnmpEngine,
     ):
-        self.refresh_snmp_engine()
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
             (error_indication, error_status, error_index, varbind_table) = (
                 await get_cmd(
-                    self.snmpEngine, auth_data, transport, context_data, *varbind_chunk
+                    snmpEngine, auth_data, transport, context_data, *varbind_chunk
                 )
             )
 
@@ -467,6 +438,7 @@ class Poller(Task):
         transport,
         varbinds_bulk,
         walk,
+        snmpEngine: SnmpEngine,
     ):
         """
         Perform asynchronous SNMP BULK requests on multiple varbinds with concurrency control.
@@ -495,7 +467,6 @@ class Poller(Task):
         - Used `bulk_walk_cmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
         but handles only one varBind at a time.
         """
-        self.refresh_snmp_engine()
 
         async def _walk_single_varbind(varbind, wid):
             """
@@ -509,7 +480,7 @@ class Poller(Task):
                 error_index,
                 varbind_table,
             ) in bulk_walk_cmd(
-                self.snmpEngine,
+                snmpEngine,
                 auth_data,
                 transport,
                 context_data,
@@ -537,7 +508,7 @@ class Poller(Task):
                         )
 
         # Preparing the queue for bulk request
-        bulk_queue = Queue()
+        bulk_queue: Queue[tuple[int, ObjectType]] = Queue()
         for _wid, _varbind in enumerate(varbinds_bulk, start=1):
             bulk_queue.put_nowait((_wid, _varbind))
 
@@ -767,9 +738,9 @@ class Poller(Task):
         a varbind returned fully resolved MIB names, variable names, and indices.
 
         - In lextudio's pysnmp, `get_mib_symbol()` and `prettyPrint()`
-        by default may return partially resolved names unless `resolve_with_mib()`
-        is explicitly called. This is why `metric` and `varbind_id` appear
-        different from older versions.
+        by default may return partially resolved names as snmp request it self not
+        resolved it fully, unless `resolve_with_mib()` is explicitly called.
+        This is why `metric` and `varbind_id` appear different from older versions.
         """
         oid = str(varbind[0].get_oid())
         resolved_oid = ObjectIdentity(oid).resolve_with_mib(self.mib_view_controller)

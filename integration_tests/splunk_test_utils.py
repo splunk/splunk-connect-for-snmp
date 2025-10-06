@@ -171,7 +171,7 @@ def create_v3_secrets_compose(
     auth_key="PASSWORD1",
     priv_key="PASSWORD1",
     auth_protocol="SHA",
-    priv_protocol="AES",
+    priv_protocol="DES",
 ):
     os.system(
         f'python3 $(realpath "manage_secrets.py") --path_to_compose $(pwd) \
@@ -271,7 +271,7 @@ def create_v3_secrets_microk8s(
     auth_key="PASSWORD1",
     priv_key="PASSWORD1",
     auth_protocol="SHA",
-    priv_protocol="AES",
+    priv_protocol="DES",
 ):
     os.system(
         f"sudo microk8s kubectl create -n sc4snmp secret generic {secret_name} \
