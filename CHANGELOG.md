@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Updated MongoDB and Redis image sources from bitnami to bitnamilegacy repository to resolve CI/CD "offline-installation" failure
 
 ## [1.14.1]
 - update mongodb volumePermission image repository to `bitnamileagcy`
