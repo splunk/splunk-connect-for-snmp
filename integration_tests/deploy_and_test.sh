@@ -105,7 +105,7 @@ run_integration_tests() {
 
   deploy_poetry
   poetry run pytest --splunk_host="$splunk_ip" --splunk_password="$splunk_password" \
-    --trap_external_ip="${trap_external_ip} -v -s"
+    --trap_external_ip="${trap_external_ip}"
 }
 
 post_installation_kubernetes_config() {

@@ -28,8 +28,8 @@ AuthProtocolMap = {
 PrivProtocolMap = {
     "DES": config.USM_PRIV_CBC56_DES,
     "3DES": config.USM_PRIV_CBC168_3DES,
-    "AES": config.USM_PRIV_CFB192_AES,
-    "AES128": config.USM_PRIV_CFB192_AES,
+    "AES": config.USM_PRIV_CFB128_AES,
+    "AES128": config.USM_PRIV_CFB128_AES,
     "AES192": config.USM_PRIV_CFB192_AES,
     "AES192BLMT": config.USM_PRIV_CFB192_AES_BLUMENTHAL,
     "AES256": config.USM_PRIV_CFB256_AES,
