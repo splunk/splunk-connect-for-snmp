@@ -21,7 +21,10 @@ See the following prerequisites for the Splunk Connect for SNMP.
 4. Use the shared IP address for SNMP traps. Simple and POC deployments will use the same IP address as the host server. For an HA deployment, use the management interface and the IP address of each cluster member. 
 5. Obtain the IP address of an internal DNS server that can resolve the Splunk Endpoint.
 
-### Requirements (Splunk Infrastructure Monitoring)
+### Requirements for Splunk Infrastructure Monitoring
+
+!!!warning 
+    The Splunk Observability Cloud integration is experimental. Effective use depends on well‑curated SNMP profiles whose metric names, types, and dimensions align with Splunk Observability data model expectations. Profiles not tailored may produce superfluous metrics. Future releases may change configuration behavior.
 
 Obtain the following from your Splunk Observability Cloud environment:
 
