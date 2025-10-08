@@ -568,6 +568,8 @@ mongodb:
     containerPort: 9216
     ## Prometheus Exporter service configuration
     ##
+    image:
+      repository: bitnamilegacy/mongodb-exporter
     service:
       ## @param metrics.service.annotations [object] Annotations for Prometheus Exporter pods. Evaluated as a template.
       ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
@@ -585,6 +587,8 @@ mongodb:
   persistence:
     storageClass: "microk8s-hostpath"
   volumePermissions:
+    image:
+      repository: bitnamilegacy/os-shell
     enabled: true
 redis:
   architecture: standalone
