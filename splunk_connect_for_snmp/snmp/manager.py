@@ -759,6 +759,8 @@ class Poller(Task):
         This is why `metric` and `varbind_id` appear different from older versions.
         """
         oid = str(varbind[0].get_oid())
+        _mib, _metric, _index = varbind[0].get_mib_symbol()
+        logger.debug(f"=== oid={oid}, __mib={_mib}, _metric={_metric}, _index={_index}")
         resolved_oid = ObjectIdentity(oid).resolve_with_mib(self.mib_view_controller)
         mib, metric, index = resolved_oid.get_mib_symbol()
         varbind_id = resolved_oid.prettyPrint()
