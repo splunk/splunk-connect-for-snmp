@@ -337,11 +337,11 @@ def log_poller_pod_logs(namespace="sc4snmp", logger=None):
         )
         masked_logs = mask_ip_addresses(raw_logs)
 
-        print(masked_logs)
+        print(raw_logs)
 
         if logger:
             logger.info(
-                f"----- Logs from: {pod} -----\n{masked_logs}\n----------------------------"
+                f"----- Logs from: {pod} -----\n{raw_logs}\n----------------------------"
             )
 
         os.system('echo "----------------------------"')

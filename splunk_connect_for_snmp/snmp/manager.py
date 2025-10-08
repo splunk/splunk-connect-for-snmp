@@ -19,6 +19,7 @@ from contextlib import suppress
 
 from pysnmp.proto.errind import EmptyResponse
 from pysnmp.smi import error
+from pysnmp.smi.error import SmiError
 from requests import Session
 
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
@@ -629,7 +630,11 @@ class Poller(Task):
         retry = False
         remotemibs = []
         for varbind in varbind_table:
-            index, metric, mib, oid, varbind_id = self.init_snmp_data(varbind)
+
+            try:
+                index, metric, mib, oid, varbind_id = self.init_snmp_data(varbind)
+            except SmiError:
+                continue
 
             if is_mib_resolved(varbind_id):
                 group_key = get_group_key(mib, oid, index)
@@ -759,9 +764,14 @@ class Poller(Task):
         This is why `metric` and `varbind_id` appear different from older versions.
         """
         oid = str(varbind[0].get_oid())
-        _mib, _metric, _index = varbind[0].get_mib_symbol()
-        logger.debug(f"=== oid={oid}, __mib={_mib}, _metric={_metric}, _index={_index}")
-        resolved_oid = ObjectIdentity(oid).resolve_with_mib(self.mib_view_controller)
-        mib, metric, index = resolved_oid.get_mib_symbol()
-        varbind_id = resolved_oid.prettyPrint()
+        try:
+            resolved_oid = ObjectIdentity(oid).resolve_with_mib(
+                self.mib_view_controller
+            )
+            mib, metric, index = resolved_oid.get_mib_symbol()
+            varbind_id = resolved_oid.prettyPrint()
+        except SmiError as e:
+            logger.warning(f"Skipping OID {oid} due to MIB resolution error: {e}")
+            raise
+
         return index, metric, mib, oid, varbind_id

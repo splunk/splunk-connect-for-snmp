@@ -6,6 +6,7 @@ x-general_sc4snmp_data: &general_sc4snmp_data
   MIB_SOURCES: http://snmp-mibserver:8000/asn1/@mib@
   MIB_INDEX: http://snmp-mibserver:8000/index.csv
   MIB_STANDARD: http://snmp-mibserver:8000/standard.txt
+  USER: ${DEPLOYMENT_USER:-sc4snmp}
 
 x-splunk_general_setup: &splunk_general_setup
   SPLUNK_HEC_HOST: ${SPLUNK_HEC_HOST}

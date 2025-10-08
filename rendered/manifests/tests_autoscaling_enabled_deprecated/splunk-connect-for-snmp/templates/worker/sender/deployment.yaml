@@ -41,6 +41,8 @@ spec:
               "celery", "worker-sender",
             ]
           env:
+            - name: USER
+              value: "sc4snmp"
             - name: CONFIG_PATH
               value: /app/config/config.yaml
             - name: REDIS_URL

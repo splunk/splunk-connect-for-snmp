@@ -13,6 +13,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose` |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                   |
+| `DEPLOYMENT_USER`                       | A user name to set in the deployment environment. The default value is sc4snmp.                                                   |
 
 
 ## Network configuration
