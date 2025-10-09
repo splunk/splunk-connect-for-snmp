@@ -48,8 +48,9 @@ Detailed documentation about configuring UI can be found in [Enable GUI](../gui/
 Detailed documentation about configuring sim can be found in [Splunk Infrastructure Monitoring](sim-configuration.md).
 
 !!!warning 
-    The Splunk Observability Cloud integration (`sim`) is experimental. Effective use depends on well‑curated SNMP profiles whose metric names, types, and dimensions align with Splunk Observability data model expectations. Profiles not tailored may produce superfluous metrics. Validate and refine profiles in controlled environments before enabling sim.enabled: true for broader use; otherwise keep it disabled. Future releases may change configuration behavior.
-    Splunk OpenTelemetry Collector is a component that provides an option to send metrics to Splunk Observability Cloud.
+  The Splunk Observability Cloud integration (sim) uses the Splunk OpenTelemetry Collector as an additional component in our pipeline. In this setup, the collector transforms metrics received via Splunk HEC into the SignalFx format for ingestion into Splunk Observability Cloud.
+  Because this path is primarily a transformation layer rather than a native O11y instrumentation, the resulting metrics may not fully match Splunk Observability Cloud’s data model, naming conventions, or recommended dimensions.
+  We recommend validating output carefully in a controlled environment before enabling sim.enabled: true broadly, and adjusting SNMP profiles or transformation rules to ensure consistency.
 
 
 | Variable                                        | Description                                                                                                                     | Default |

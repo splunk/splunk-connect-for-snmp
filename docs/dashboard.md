@@ -21,7 +21,7 @@ show the status of SC4SNMP tasks.
 !!! info
     Dashboard is compatible starting from version **1.11.0** and requires the `logLevel` set at least to **INFO**.
 
-1. [Create metrics index](splunk-requirements.md#requirements-for-splunk-enterprise-or-enterprise-cloud) in Splunk.
+1. [Create metrics index](dockercompose/0-splunk-requirements.md#requirements-for-splunk-enterprise-or-enterprise-cloud) in Splunk.
 2. Enable metrics logging for your runtime:
     * For Kubernetes install [Splunk OpenTelemetry Collector for K8S](microk8s/sck-installation.md)
     * For Docker Compose use [Splunk logging driver for docker](dockercompose/9-splunk-logging.md)
