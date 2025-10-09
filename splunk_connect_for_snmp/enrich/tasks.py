@@ -105,6 +105,9 @@ def enrich(self, result):
     is_any_address_in_attributes_collection = attributes_collection.find_one(
         {"address": address},
     )
+    logger.info(
+        f"==== enrich, address={address}, current_target={current_target} result={result['result']} targets_collection={targets_collection} ===="
+    )
 
     for group_key, group_data in result["result"].items():
         group_key_hash = group_key.replace(".", "|")

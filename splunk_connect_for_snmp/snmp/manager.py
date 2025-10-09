@@ -300,6 +300,10 @@ class Poller(Task):
             self.builder.loadModules(mib)
 
         mib_response = self.session.get(f"{MIB_INDEX}")
+        print(f"=== self.profiles={self.profiles} ===")
+        print(
+            f"=== self.profiles_collection.list_of_profiles={self.profiles_collection.list_of_profiles} ==="
+        )
         self.mib_map = {}
         if mib_response.status_code == 200:
             with StringIO(mib_response.text) as index_csv:
@@ -485,6 +489,7 @@ class Poller(Task):
         varbinds_get = set()
         get_mapping = {}
         bulk_mapping = {}
+        logger.info(f"=== profiles={profiles} ===")
         if walk and not profiles:
             varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
             return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
@@ -492,13 +497,16 @@ class Poller(Task):
         joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
             profiles, walk
         )
+        logger.info(f"=== joined_profile_object={joined_profile_object} ===")
         if joined_profile_object:
             mib_families = joined_profile_object.get_mib_families()
+            logger.info(f"==== mib_families={mib_families} ====")
             mib_files_to_load = [
                 mib_family
                 for mib_family in mib_families
                 if mib_family not in self.already_loaded_mibs
             ]
+            logger.info(f"=== mib_files_to_load={mib_files_to_load} ===")
             if mib_files_to_load:
                 self.load_mibs(mib_files_to_load)
             (
@@ -528,6 +536,10 @@ class Poller(Task):
                         index, target, varbind
                     )
 
+                    logger.info(
+                        f"=== val={varbind[1]}, group_key={group_key}, metric_type={metric_type}, metric_value={metric_value}, metric={metric}, mib={mib}, varbind_id={varbind_id}, oid={oid}, index={index} ===="
+                    )
+
                     profile = self.set_profile_name(mapping, metric, mib, varbind_id)
                     if metric_value == "No more variables left in this MIB View":
                         continue
@@ -547,11 +559,15 @@ class Poller(Task):
                         f"Exception processing data from {target} {varbind}"
                     )
             else:
+                logger.info(
+                    f"<=== not resolved varbind_id={varbind_id}, oid={oid} ,metric={metric} index={index}, val={varbind[1]}, mapping={mapping} ===>"
+                )
                 found = self.find_new_mibs(oid, remotemibs, target, varbind_id)
                 if found:
                     retry = True
                     break
 
+        logger.info(f" =====> metrics={metrics}")
         return retry, remotemibs, metrics
 
     def find_new_mibs(self, oid, remotemibs, target, varbind_id):
@@ -632,4 +648,7 @@ class Poller(Task):
         mib, metric, index = varbind[0].getMibSymbol()
         varbind_id = varbind[0].prettyPrint()
         oid = str(varbind[0].getOid())
+        logger.info(
+            f"<--- mib={mib}, metric={metric}, varbind_id={varbind_id}, oid={oid}, val={varbind[1]}, index={index} --->"
+        )
         return index, metric, mib, oid, varbind_id
