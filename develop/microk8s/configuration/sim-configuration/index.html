@@ -357,6 +357,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../splunk-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Splunk Requirements
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../dockercompose/1-install-docker/" class="md-nav__link">
         
   
@@ -672,7 +695,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../splunk-requirements/" class="md-nav__link">
+      <a href="../../../splunk-requirements/" class="md-nav__link">
         
   
   
@@ -2044,10 +2067,13 @@
 
 
 <div><h1 id="otel-and-splunk-observability-cloud-configuration">OTEL and Splunk Observability Cloud configuration<a class="headerlink" href="#otel-and-splunk-observability-cloud-configuration" title="Permanent link">¶</a></h1>
-<p>Splunk OpenTelemetry Collector is a component that provides an option to send metrics to Splunk Observability Cloud.
-In order to use it, you must set <code>enabled</code> flag in <code>values.yaml</code> to <code>true</code>:</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The Splunk Observability Cloud integration (<code>sim</code>) is experimental. Effective use depends on well‑curated SNMP profiles whose metric names, types, and dimensions align with Splunk Observability data model expectations. Profiles not tailored may produce superfluous metrics. Validate and refine profiles in controlled environments before enabling sim.enabled: true for broader use; otherwise keep it disabled. Future releases may change configuration behavior.
+Splunk OpenTelemetry Collector is a component that provides an option to send metrics to Splunk Observability Cloud.</p>
+</div>
 <div class="highlight"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span>
-<span class="w">  </span><span class="c1"># sim must be enabled if you want to use SignalFx</span>
+<span class="w">  </span><span class="c1"># sim must be enabled if you want to use Splunk Observability Cloud</span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
 <h2 id="token-and-realm">Token and realm<a class="headerlink" href="#token-and-realm" title="Permanent link">¶</a></h2>
