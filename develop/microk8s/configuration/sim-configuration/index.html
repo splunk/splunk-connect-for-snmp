@@ -357,7 +357,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../splunk-requirements/" class="md-nav__link">
+      <a href="../../../dockercompose/0-splunk-requirements/" class="md-nav__link">
         
   
   
@@ -695,7 +695,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../splunk-requirements/" class="md-nav__link">
+      <a href="../../splunk-requirements/" class="md-nav__link">
         
   
   
@@ -2069,8 +2069,9 @@
 <div><h1 id="otel-and-splunk-observability-cloud-configuration">OTEL and Splunk Observability Cloud configuration<a class="headerlink" href="#otel-and-splunk-observability-cloud-configuration" title="Permanent link">¶</a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The Splunk Observability Cloud integration (<code>sim</code>) is experimental. Effective use depends on well‑curated SNMP profiles whose metric names, types, and dimensions align with Splunk Observability data model expectations. Profiles not tailored may produce superfluous metrics. Validate and refine profiles in controlled environments before enabling sim.enabled: true for broader use; otherwise keep it disabled. Future releases may change configuration behavior.
-Splunk OpenTelemetry Collector is a component that provides an option to send metrics to Splunk Observability Cloud.</p>
+<p>The Splunk Observability Cloud integration (sim) uses the Splunk OpenTelemetry Collector as an additional component in our pipeline. In this setup, the collector transforms metrics received via Splunk HEC into the SignalFx format for ingestion into Splunk Observability Cloud.
+Because this path is primarily a transformation layer rather than a native O11y instrumentation, the resulting metrics may not fully match Splunk Observability Cloud’s data model, naming conventions, or recommended dimensions.
+We recommend validating output carefully in a controlled environment before enabling sim.enabled: true broadly, and adjusting SNMP profiles or transformation rules to ensure consistency.</p>
 </div>
 <div class="highlight"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># sim must be enabled if you want to use Splunk Observability Cloud</span>
