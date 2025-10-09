@@ -427,7 +427,7 @@ class Poller(Task):
         walk,
         snmpEngine: SnmpEngine,
     ):
-        visited_oid = defaultdict(int)
+        visited_oid: defaultdict[str, int] = defaultdict(int)
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
             (error_indication, error_status, error_index, varbind_table) = (
@@ -488,7 +488,7 @@ class Poller(Task):
         - Used `bulk_walk_cmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
         but handles only one varBind at a time.
         """
-        visited_oid = defaultdict(int)
+        visited_oid: defaultdict[str, int] = defaultdict(int)
 
         async def _walk_single_varbind(varbind, wid):
             """
@@ -639,13 +639,13 @@ class Poller(Task):
         for varbind in varbind_table:
 
             try:
-                index, metric, mib, oid, varbind_id = self.init_snmp_data(
-                    varbind, visited_oid
+                index, metric, mib, oid, varbind_id, is_partially_resolved = (
+                    self.init_snmp_data(varbind, visited_oid)
                 )
             except SmiError:
                 continue
 
-            if is_mib_resolved(varbind_id):
+            if is_mib_resolved(varbind_id) or is_partially_resolved:
                 group_key = get_group_key(mib, oid, index)
                 self.handle_groupkey_without_metrics(group_key, index, mapping, metrics)
                 try:
@@ -785,11 +785,17 @@ class Poller(Task):
             mib, metric, index = varbind[0].get_mib_symbol()
             varbind_id = varbind[0].prettyPrint()
 
+            if visited_oid[oid] == 1:
+                logger.warning(f"OID: {oid} having MIB resolution error: {se}")
+
             if visited_oid[oid] > 1:
-                logger.warning(f"Skipping OID {oid} due to MIB resolution error: {se}")
-                raise se
+                logger.warning(
+                    f"Continue with partially resolved varbind_id: {varbind_id}, oid: {oid} for mib: {mib}"
+                )
+
+        is_partially_resolved = True if visited_oid[oid] > 1 else False
 
         logger.debug(
             f"index={index}, metric={metric}, mib={mib}, oid={oid}, varbind_id={varbind_id}"
         )
-        return index, metric, mib, oid, varbind_id
+        return index, metric, mib, oid, varbind_id, is_partially_resolved
