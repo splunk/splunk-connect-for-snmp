@@ -14,14 +14,17 @@ See the following prerequisites for the Splunk Connect for SNMP.
        * netops (event type)
    
 > **_Note:_** `netmetrics` and `netops` are the default names of SC4SNMP indexes. You can use the index names of your choice and
-> reference it in the `values.yaml` file later on. See [SC4SNMP Parameters](sc4snmp-installation.md#configure-splunk-enterprise-or-splunk-cloud-connection) for details.
+> reference it in the `values.yaml` file later on. See [SC4SNMP Parameters](microk8s/sc4snmp-installation.md#configure-splunk-enterprise-or-splunk-cloud-connection) for details.
 
 2. Create or obtain a new Splunk HTTP Event Collector token and the correct HTTPS endpoint.
 3. Verify the token using [curl](https://docs.splunk.com/Documentation/Splunk/8.1.3/Data/FormateventsforHTTPEventCollector). The endpoint must use a publicly trusted certificate authority.
 4. Use the shared IP address for SNMP traps. Simple and POC deployments will use the same IP address as the host server. For an HA deployment, use the management interface and the IP address of each cluster member. 
 5. Obtain the IP address of an internal DNS server that can resolve the Splunk Endpoint.
 
-### Requirements (Splunk Infrastructure Monitoring)
+### Requirements for Splunk Infrastructure Monitoring
+
+!!!warning 
+    The Splunk Observability Cloud integration is experimental. Effective use depends on well‑curated SNMP profiles whose metric names, types, and dimensions align with Splunk Observability data model expectations. Profiles not tailored may produce superfluous metrics. Future releases may change configuration behavior.
 
 Obtain the following from your Splunk Observability Cloud environment:
 

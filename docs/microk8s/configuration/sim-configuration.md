@@ -1,11 +1,12 @@
 # OTEL and Splunk Observability Cloud configuration
 
-Splunk OpenTelemetry Collector is a component that provides an option to send metrics to Splunk Observability Cloud.
-In order to use it, you must set `enabled` flag in `values.yaml` to `true`:
+!!!warning 
+    The Splunk Observability Cloud integration (`sim`) is experimental. Effective use depends on well‑curated SNMP profiles whose metric names, types, and dimensions align with Splunk Observability data model expectations. Profiles not tailored may produce superfluous metrics. Validate and refine profiles in controlled environments before enabling sim.enabled: true for broader use; otherwise keep it disabled. Future releases may change configuration behavior.
+    Splunk OpenTelemetry Collector is a component that provides an option to send metrics to Splunk Observability Cloud.
 
 ```yaml
 sim:
-  # sim must be enabled if you want to use SignalFx
+  # sim must be enabled if you want to use Splunk Observability Cloud
   enabled: true
 ```
 
