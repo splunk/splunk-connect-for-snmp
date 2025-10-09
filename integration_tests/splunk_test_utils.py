@@ -295,6 +295,63 @@ def wait_for_pod_initialization_microk8s():
     os.system("chmod a+x check_for_pods.sh && ./check_for_pods.sh")
 
 
+def mask_ip_addresses(text):
+    import re
+
+    """Mask IPv4 and IPv6 addresses in text."""
+    text = re.sub(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", "[IPv4_MASKED]", text)
+    text = re.sub(
+        r"\b(?:[0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}\b", "[IPv6_MASKED]", text
+    )
+    return text
+
+
+def log_poll(namespace="sc4snmp", logger=None):
+    import subprocess
+
+    """Fetch and echo logs from all poller pods, mask IPs, and optionally log via Python logger."""
+
+    os.system('echo "===== POLLER POD LOGS ====="')
+    os.system('echo "===== ALL POLLER PODS ====="')
+
+    # List all poller pods (console only)
+    list_pods_cmd = (
+        f"sudo microk8s kubectl get pods -A | grep poll | awk '{{print $2}}'"
+    )
+    os.system(list_pods_cmd)
+
+    os.system('echo "===== STARTING POLLER LOGS ====="')
+
+    # Fetch logs for each poller pod
+    pods = subprocess.getoutput(list_pods_cmd).splitlines()
+    if not pods:
+        os.system('echo "No poller pods found."')
+        if logger:
+            logger.info("No poller pods found.")
+        return
+
+    for pod in pods:
+        os.system(f'echo "----- Logs from: {pod} -----"')
+
+        raw_logs = subprocess.getoutput(
+            f"sudo microk8s kubectl logs {pod} -n {namespace}"
+        )
+        masked_logs = mask_ip_addresses(raw_logs)
+
+        print(raw_logs)
+
+        if logger:
+            logger.info(
+                f"----- Logs from: {pod} -----\n{raw_logs}\n----------------------------"
+            )
+
+        os.system('echo "----------------------------"')
+
+    os.system('echo "===== END POLLER LOGS ====="')
+    if logger:
+        logger.info("===== End of poller pod logs =====")
+
+
 # if __name__ == "__main__":
 #     update_inventory(['192.168.0.1,,2c,public,,,600,,,',
 #                       '192.168.0.2,,2c,public,,,602,,,'])

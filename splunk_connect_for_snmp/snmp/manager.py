@@ -632,4 +632,14 @@ class Poller(Task):
         mib, metric, index = varbind[0].getMibSymbol()
         varbind_id = varbind[0].prettyPrint()
         oid = str(varbind[0].getOid())
+        logger.debug(
+            f"==== without resolved  metric={metric}, mib={mib}, oid={oid}, varbind_id={varbind_id} index={index} ===="
+        )
+
+        resolved_oid = ObjectIdentity(oid).resolveWithMib(self.mib_view_controller)
+        mib, metric, index = resolved_oid.getMibSymbol()
+        varbind_id = resolved_oid.prettyPrint()
+        logger.debug(
+            f"==== metric={metric}, mib={mib}, oid={oid}, varbind_id={varbind_id} index={index} ===="
+        )
         return index, metric, mib, oid, varbind_id
