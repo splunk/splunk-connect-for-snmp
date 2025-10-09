@@ -14,7 +14,7 @@ See the following prerequisites for the Splunk Connect for SNMP.
        * netops (event type)
    
 > **_Note:_** `netmetrics` and `netops` are the default names of SC4SNMP indexes. You can use the index names of your choice and
-> reference it in the `values.yaml` file later on. See [SC4SNMP Parameters](../microk8s/sc4snmp-installation.md#configure-splunk-enterprise-or-splunk-cloud-connection) for details.
+> reference it in the `.env` file later on. See [SC4SNMP Parameters](6-env-file-configuration.md#splunk-instance) for details.
 
 2. Create or obtain a new Splunk HTTP Event Collector token and the correct HTTPS endpoint.
 3. Verify the token using [curl](https://docs.splunk.com/Documentation/Splunk/8.1.3/Data/FormateventsforHTTPEventCollector). The endpoint must use a publicly trusted certificate authority.
