@@ -45,7 +45,7 @@ nav:
       - High-level design: "architecture/design.md"
       - Infrastructure Planning: "architecture/planning.md"
   - Getting Started with Docker Compose:
-      - Splunk Requirements: "splunk-requirements.md"
+      - Splunk Requirements: "dockercompose/0-splunk-requirements.md"
       - Install Docker: "dockercompose/1-install-docker.md"
       - Download package: "dockercompose/2-download-package.md"
       - Inventory configuration: "dockercompose/3-inventory-configuration.md"
@@ -58,7 +58,7 @@ nav:
       - Enable IPv6: "dockercompose/10-enable-ipv6.md"
   - Getting Started with Microk8s:
       - Installation:
-        - Splunk Requirements: "splunk-requirements.md"
+        - Splunk Requirements: "microk8s/splunk-requirements.md"
         - Platform Microk8s: "microk8s/mk8s/k8s-microk8s.md"
         - Install Splunk OpenTelemetry Collector for Kubernetes: "microk8s/sck-installation.md"
         - Install SC4SNMP: "microk8s/sc4snmp-installation.md"
