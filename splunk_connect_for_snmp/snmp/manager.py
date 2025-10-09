@@ -15,6 +15,7 @@
 #
 import typing
 from asyncio import Queue, QueueEmpty, TaskGroup
+from collections import defaultdict
 from contextlib import suppress
 
 from pysnmp.proto.errind import EmptyResponse
@@ -426,6 +427,7 @@ class Poller(Task):
         walk,
         snmpEngine: SnmpEngine,
     ):
+        visited_oid = defaultdict(int)
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
             (error_indication, error_status, error_index, varbind_table) = (
@@ -442,7 +444,9 @@ class Poller(Task):
                 ir.address,
                 walk,
             ):
-                self.process_snmp_data(varbind_table, metrics, address, get_mapping)
+                self.process_snmp_data(
+                    varbind_table, metrics, address, get_mapping, visited_oid
+                )
 
     async def run_bulk_request(
         self,
@@ -484,6 +488,7 @@ class Poller(Task):
         - Used `bulk_walk_cmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
         but handles only one varBind at a time.
         """
+        visited_oid = defaultdict(int)
 
         async def _walk_single_varbind(varbind, wid):
             """
@@ -516,12 +521,12 @@ class Poller(Task):
                     walk,
                 ):
                     _, tmp_mibs, _ = self.process_snmp_data(
-                        varbind_table, metrics, address, bulk_mapping
+                        varbind_table, metrics, address, bulk_mapping, visited_oid
                     )
                     if tmp_mibs:
                         self.load_mibs(tmp_mibs)
                         self.process_snmp_data(
-                            varbind_table, metrics, address, bulk_mapping
+                            varbind_table, metrics, address, bulk_mapping, visited_oid
                         )
 
         # Preparing the queue for bulk request
@@ -626,13 +631,17 @@ class Poller(Task):
         logger.debug(f"host={address} bulk_mapping={bulk_mapping}")
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
-    def process_snmp_data(self, varbind_table, metrics, target, mapping={}):
+    def process_snmp_data(
+        self, varbind_table, metrics, target, mapping={}, visited_oid=defaultdict(int)
+    ):
         retry = False
         remotemibs = []
         for varbind in varbind_table:
 
             try:
-                index, metric, mib, oid, varbind_id = self.init_snmp_data(varbind)
+                index, metric, mib, oid, varbind_id = self.init_snmp_data(
+                    varbind, visited_oid
+                )
             except SmiError:
                 continue
 
@@ -745,7 +754,7 @@ class Poller(Task):
             if mapping:
                 metrics[group_key]["profiles"] = []
 
-    def init_snmp_data(self, varbind):
+    def init_snmp_data(self, varbind, visited_oid: defaultdict):
         """
         Extract SNMP varbind information in a way that preserves compatibility with
         older PySNMP behavior while avoiding changes to the underlying library.
@@ -764,14 +773,23 @@ class Poller(Task):
         This is why `metric` and `varbind_id` appear different from older versions.
         """
         oid = str(varbind[0].get_oid())
+        visited_oid[oid] += 1
+
         try:
             resolved_oid = ObjectIdentity(oid).resolve_with_mib(
                 self.mib_view_controller
             )
             mib, metric, index = resolved_oid.get_mib_symbol()
             varbind_id = resolved_oid.prettyPrint()
-        except SmiError as e:
-            logger.warning(f"Skipping OID {oid} due to MIB resolution error: {e}")
-            raise
+        except SmiError as se:
+            mib, metric, index = varbind[0].get_mib_symbol()
+            varbind_id = varbind[0].prettyPrint()
 
+            if visited_oid[oid] > 1:
+                logger.warning(f"Skipping OID {oid} due to MIB resolution error: {se}")
+                raise se
+
+        logger.debug(
+            f"index={index}, metric={metric}, mib={mib}, oid={oid}, varbind_id={varbind_id}"
+        )
         return index, metric, mib, oid, varbind_id
