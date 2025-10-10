@@ -21,6 +21,7 @@ from ruamel.yaml.scalarstring import DoubleQuotedScalarString as dq
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
 from integration_tests.splunk_test_utils import (
+    log_poll,
     splunk_single_search,
     update_file_microk8s,
     update_groups_compose,
@@ -1525,6 +1526,7 @@ def setup_single_regex_and_options_profiles_with_negation(request):
 class TestSingleRegexWithNegationCorrectCondition:
     def test_not_regex_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poll(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_regex_profile """
         )
@@ -1536,6 +1538,7 @@ class TestSingleRegexWithNegationCorrectCondition:
 
     def test_not_regex_with_options_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poll(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_options_profile """
         )
@@ -1631,6 +1634,7 @@ def setup_multiple_conditions_profiles(request):
 class TestMultipleCorrectConditions:
     def test_gt_and_equals_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poll(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=gt_and_equals_profile """
         )
@@ -1642,6 +1646,7 @@ class TestMultipleCorrectConditions:
 
     def test_lt_and_in_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poll(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=lt_and_in_profile """
         )
@@ -1743,6 +1748,7 @@ def setup_wrong_conditions_profiles(request):
 class TestWrongConditions:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)
+        log_poll(logger=logger)
         search_string = """| mpreview index=netmetrics | search profiles=wrong_gt_and_equals_profile OR profiles=wrong_lt_and_in_profile OR profiles=wrong_equals_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
