@@ -20,7 +20,7 @@ from contextlib import suppress
 
 from pysnmp.proto.errind import EmptyResponse
 from pysnmp.smi import error
-from pysnmp.smi.error import SmiError
+from pysnmp.smi.builder import MibBuilder
 from requests import Session
 
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
@@ -284,6 +284,96 @@ def get_max_bulk_walk_concurrency(count: int) -> int:
     return MAX_SNMP_BULK_WALK_CONCURRENCY
 
 
+def patch_inet_address_classes(mib_builder: MibBuilder) -> bool:
+    """
+    Adjust InetAddress classes for compatibility with legacy length-prefixed
+    OID index decoding used by earlier PySNMP versions (RFC 4001).
+
+    ## NOTE
+    In current pysmp, the INET-ADDRESS-MIB definitions for
+    InetAddressIPv4, InetAddressIPv6, InetAddressIPv4z, and InetAddressIPv6z
+    include a `fixed_length` attribute, e.g.:
+
+        class InetAddressIPv4(TextualConvention, OctetString):
+            subtypeSpec = OctetString.subtypeSpec + ConstraintsUnion(
+                ValueSizeConstraint(4, 4),
+            )
+            fixed_length = 4
+
+    Older pysnmp releases did **not** define `fixed_length`. When present,
+    the SNMP `setFromName()` method takes the *fixed-length* branch:
+
+        elif obj.is_fixed_length():
+            fixed_length = obj.get_fixed_length()
+            return obj.clone(tuple(value[:fixed_length])), value[fixed_length:]
+
+    instead of the *length-prefixed* branch required by RFC 4001:
+
+        else:
+            return obj.clone(tuple(value[1:value[0]+1])), value[value[0]+1:]
+
+    This changes how address-based table indices (e.g. **IP-MIB::ipAddressTable**)
+    are parsed.
+
+    Example:
+        OID index: 1.3.6.1.2.1.4.34.1.3.1.4.127.0.0.1
+        Expected:  ipAddressIfIndex.ipv4."127.0.0.1"
+
+        Index portion: (1, 4, 127, 0, 0, 1)
+        |---| |-----------|
+        |        |__ Address octets
+        |__ Length prefix (4)
+
+    With `fixed_length = 4`:
+        --> Parsed as (4,127,0,0) + leftover (1)
+        --> Raises “Excessive instance identifier sub-OIDs left …”
+
+    Without `fixed_length`:
+        - Correctly parses (127,0,0,1) as the IPv4 address.
+
+    Fix:
+        This patch disables the `fixed_length` attribute.
+
+    :param mib_builder: MibBuilder that has loaded INET-ADDRESS-MIB.
+    :return: True if patch applied successfully, False otherwise.
+    """
+
+    try:
+        (InetAddressIPv4, InetAddressIPv6, InetAddressIPv4z, InetAddressIPv6z) = (
+            mib_builder.import_symbols(
+                "INET-ADDRESS-MIB",
+                "InetAddressIPv4",
+                "InetAddressIPv6",
+                "InetAddressIPv4z",
+                "InetAddressIPv6z",
+            )
+        )
+
+        logger.info("Applying InetAddress monkey patch for lextudio pysnmp v7.x bug...")
+
+        classes_to_patch = [
+            ("InetAddressIPv4", InetAddressIPv4),
+            ("InetAddressIPv6", InetAddressIPv6),
+            ("InetAddressIPv4z", InetAddressIPv4z),
+            ("InetAddressIPv6z", InetAddressIPv6z),
+        ]
+
+        for class_name, cls in classes_to_patch:
+            cls.fixed_length = None
+            logger.debug(f"Removed the problematic fixed_length attribute {class_name}")
+
+        logger.debug("All InetAddress classes successfully patched")
+        return True
+
+    except ImportError as e:
+        logger.warning(f"Could not import INET-ADDRESS-MIB for patching: {e}")
+        return False
+
+    except Exception as e:
+        logger.warning(f"Unexpected error while patching InetAddress classes: {e}")
+        return False
+
+
 class Poller(Task):
     def __init__(self, **kwargs):
         self.standard_mibs = []
@@ -316,6 +406,8 @@ class Poller(Task):
         for mib in DEFAULT_STANDARD_MIBS:
             self.standard_mibs.append(mib)
             self.builder.load_modules(mib)
+
+        patch_inet_address_classes(self.builder)
 
         mib_response = self.session.get(f"{MIB_INDEX}")
         self.mib_map = {}
@@ -427,7 +519,6 @@ class Poller(Task):
         walk,
         snmpEngine: SnmpEngine,
     ):
-        visited_oid: defaultdict[str, int] = defaultdict(int)
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
             (error_indication, error_status, error_index, varbind_table) = (
@@ -444,9 +535,7 @@ class Poller(Task):
                 ir.address,
                 walk,
             ):
-                self.process_snmp_data(
-                    varbind_table, metrics, address, get_mapping, visited_oid
-                )
+                self.process_snmp_data(varbind_table, metrics, address, get_mapping)
 
     async def run_bulk_request(
         self,
@@ -488,7 +577,6 @@ class Poller(Task):
         - Used `bulk_walk_cmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
         but handles only one varBind at a time.
         """
-        visited_oid: defaultdict[str, int] = defaultdict(int)
 
         async def _walk_single_varbind(varbind, wid):
             """
@@ -521,12 +609,12 @@ class Poller(Task):
                     walk,
                 ):
                     _, tmp_mibs, _ = self.process_snmp_data(
-                        varbind_table, metrics, address, bulk_mapping, visited_oid
+                        varbind_table, metrics, address, bulk_mapping
                     )
                     if tmp_mibs:
                         self.load_mibs(tmp_mibs)
                         self.process_snmp_data(
-                            varbind_table, metrics, address, bulk_mapping, visited_oid
+                            varbind_table, metrics, address, bulk_mapping
                         )
 
         # Preparing the queue for bulk request
@@ -631,21 +719,14 @@ class Poller(Task):
         logger.debug(f"host={address} bulk_mapping={bulk_mapping}")
         return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
-    def process_snmp_data(
-        self, varbind_table, metrics, target, mapping={}, visited_oid=defaultdict(int)
-    ):
+    def process_snmp_data(self, varbind_table, metrics, target, mapping={}):
         retry = False
         remotemibs = []
         for varbind in varbind_table:
 
-            try:
-                index, metric, mib, oid, varbind_id, is_partially_resolved = (
-                    self.init_snmp_data(varbind, visited_oid)
-                )
-            except SmiError:
-                continue
+            index, metric, mib, oid, varbind_id = self.init_snmp_data(varbind)
 
-            if is_mib_resolved(varbind_id) or is_partially_resolved:
+            if is_mib_resolved(varbind_id):
                 group_key = get_group_key(mib, oid, index)
                 self.handle_groupkey_without_metrics(group_key, index, mapping, metrics)
                 try:
@@ -754,7 +835,7 @@ class Poller(Task):
             if mapping:
                 metrics[group_key]["profiles"] = []
 
-    def init_snmp_data(self, varbind, visited_oid: defaultdict):
+    def init_snmp_data(self, varbind):
         """
         Extract SNMP varbind information in a way that preserves compatibility with
         older PySNMP behavior while avoiding changes to the underlying library.
@@ -773,29 +854,8 @@ class Poller(Task):
         This is why `metric` and `varbind_id` appear different from older versions.
         """
         oid = str(varbind[0].get_oid())
-        visited_oid[oid] += 1
 
-        try:
-            resolved_oid = ObjectIdentity(oid).resolve_with_mib(
-                self.mib_view_controller
-            )
-            mib, metric, index = resolved_oid.get_mib_symbol()
-            varbind_id = resolved_oid.prettyPrint()
-        except SmiError as se:
-            mib, metric, index = varbind[0].get_mib_symbol()
-            varbind_id = varbind[0].prettyPrint()
-
-            if visited_oid[oid] == 1:
-                logger.warning(f"OID: {oid} having MIB resolution error: {se}")
-
-            if visited_oid[oid] > 1:
-                logger.warning(
-                    f"Continue with partially resolved varbind_id: {varbind_id}, oid: {oid} for mib: {mib}"
-                )
-
-        is_partially_resolved = True if visited_oid[oid] > 1 else False
-
-        logger.debug(
-            f"index={index}, metric={metric}, mib={mib}, oid={oid}, varbind_id={varbind_id}"
-        )
-        return index, metric, mib, oid, varbind_id, is_partially_resolved
+        resolved_oid = ObjectIdentity(oid).resolve_with_mib(self.mib_view_controller)
+        mib, metric, index = resolved_oid.get_mib_symbol()
+        varbind_id = resolved_oid.prettyPrint()
+        return index, metric, mib, oid, varbind_id
