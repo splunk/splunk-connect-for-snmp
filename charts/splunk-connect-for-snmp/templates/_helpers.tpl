@@ -21,13 +21,6 @@
 {{- $password = .Values.redis.auth.password -}}
 {{- end -}}
 {{- end -}}
-{{- if and (eq .Values.redis.architecture "replication") .Values.redis.sentinel.enabled }}
-{{- if $password }}
-{{- printf "redis://:%s@%s-redis-sentinel:26379/0" $password .Release.Name }}
-{{- else }}
-{{- printf "redis://%s-redis-sentinel:26379/0" .Release.Name }}
-{{- end }}
-{{- else }}
 {{- if $password }}
 {{- printf "redis://:%s@%s-redis:6379/0" $password .Release.Name }}
 {{- else }}
