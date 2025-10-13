@@ -530,7 +530,6 @@ class Poller(Task):
                 )
             except Exception as e:
                 logger.exception(f"Error while performing get_cmd: {e}")
-                return
 
             if not _any_failure_happened(
                 error_indication,
