@@ -21,6 +21,7 @@ from contextlib import suppress
 from pysnmp.proto.errind import EmptyResponse
 from pysnmp.smi import error
 from pysnmp.smi.builder import MibBuilder
+from pysnmp.smi.error import SmiError
 from requests import Session
 
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
@@ -360,17 +361,17 @@ def patch_inet_address_classes(mib_builder: MibBuilder) -> bool:
 
         for class_name, cls in classes_to_patch:
             cls.fixed_length = None
-            logger.debug(f"Removed the problematic fixed_length attribute {class_name}")
+            logger.info(f"Removed the problematic fixed_length attribute {class_name}")
 
-        logger.debug("All InetAddress classes successfully patched")
+        logger.info("All InetAddress classes successfully patched")
         return True
 
     except ImportError as e:
-        logger.warning(f"Could not import INET-ADDRESS-MIB for patching: {e}")
+        logger.info(f"Could not import INET-ADDRESS-MIB for patching: {e}")
         return False
 
     except Exception as e:
-        logger.warning(f"Unexpected error while patching InetAddress classes: {e}")
+        logger.info(f"Unexpected error while patching InetAddress classes: {e}")
         return False
 
 
@@ -406,8 +407,6 @@ class Poller(Task):
         for mib in DEFAULT_STANDARD_MIBS:
             self.standard_mibs.append(mib)
             self.builder.load_modules(mib)
-
-        patch_inet_address_classes(self.builder)
 
         mib_response = self.session.get(f"{MIB_INDEX}")
         self.mib_map = {}
@@ -523,7 +522,7 @@ class Poller(Task):
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
             (error_indication, error_status, error_index, varbind_table) = (
                 await get_cmd(
-                    snmpEngine, auth_data, transport, context_data, *varbind_chunk
+                    SnmpEngine(), auth_data, transport, context_data, *varbind_chunk
                 )
             )
 
@@ -590,7 +589,7 @@ class Poller(Task):
                 error_index,
                 varbind_table,
             ) in bulk_walk_cmd(
-                snmpEngine,
+                SnmpEngine(),
                 auth_data,
                 transport,
                 context_data,
@@ -855,7 +854,25 @@ class Poller(Task):
         """
         oid = str(varbind[0].get_oid())
 
-        resolved_oid = ObjectIdentity(oid).resolve_with_mib(self.mib_view_controller)
-        mib, metric, index = resolved_oid.get_mib_symbol()
-        varbind_id = resolved_oid.prettyPrint()
+        try:
+            resolved_oid = ObjectIdentity(oid).resolve_with_mib(
+                self.mib_view_controller
+            )
+            mib, metric, index = resolved_oid.get_mib_symbol()
+            varbind_id = resolved_oid.prettyPrint()
+            logger.info(
+                f"===== mib={mib}, oid={oid}, varbind_id={varbind_id}, val={varbind[1]} ======="
+            )
+        except SmiError as se:
+            logger.info(f"=========SmiError=======")
+            patch_inet_address_classes(self.builder)
+            resolved_oid = ObjectIdentity(oid).resolve_with_mib(
+                self.mib_view_controller
+            )
+            mib, metric, index = resolved_oid.get_mib_symbol()
+            varbind_id = resolved_oid.prettyPrint()
+            logger.info(
+                f"===== {mib}, oid={oid}, varbind_id={varbind_id} val={varbind[1]} ======="
+            )
+
         return index, metric, mib, oid, varbind_id

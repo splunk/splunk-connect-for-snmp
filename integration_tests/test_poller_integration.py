@@ -1035,6 +1035,7 @@ def setup_single_gt_and_lt_profiles(request):
 class TestSingleGtAndLtCorrectCondition:
     def test_gt_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = """| mpreview index=netmetrics | search profiles=gt_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1044,6 +1045,7 @@ class TestSingleGtAndLtCorrectCondition:
 
     def test_lt_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = """| mpreview index=netmetrics | search profiles=lt_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1322,6 +1324,7 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
 class TestSingleGtAndLtWithNegationCorrectCondition:
     def test_not_gt_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_gt_profile """
         )
@@ -1333,6 +1336,7 @@ class TestSingleGtAndLtWithNegationCorrectCondition:
 
     def test_not_lt_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_lt_profile """
         )
@@ -1609,7 +1613,7 @@ def setup_multiple_conditions_profiles(request):
             ]
         )
         upgrade_docker_compose()
-    time.sleep(120)
+    time.sleep(160)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -1626,7 +1630,7 @@ def setup_multiple_conditions_profiles(request):
             ]
         )
         upgrade_docker_compose()
-    time.sleep(120)
+    time.sleep(160)
 
 
 @pytest.mark.usefixtures("setup_multiple_conditions_profiles")
