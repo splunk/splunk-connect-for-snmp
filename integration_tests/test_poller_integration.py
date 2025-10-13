@@ -132,6 +132,7 @@ class TestProfiles:
         assert metric_count > 0
 
     def test_static_profiles_event(self, setup_splunk):
+        log_poller_pod_logs(logger=logger)
         search_string = """search index=netops sourcetype="sc4snmp:event" "IF-MIB.ifType" AND NOT "IF-MIB.ifAdminStatus" """
         logger.info("Integration test static profile - events")
         result_count, metric_count = run_retried_single_search(

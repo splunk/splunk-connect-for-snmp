@@ -480,7 +480,6 @@ class Poller(Task):
                 transport,
                 varbinds_bulk,
                 walk,
-                snmpEngine,
             )
 
         if varbinds_get:
@@ -494,7 +493,6 @@ class Poller(Task):
                 transport,
                 varbinds_get,
                 walk,
-                snmpEngine,
             )
 
         for group_key, metric in metrics.items():
@@ -516,20 +514,23 @@ class Poller(Task):
         transport,
         varbinds_get,
         walk,
-        snmpEngine: SnmpEngine,
     ):
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
-            (error_indication, error_status, error_index, varbind_table) = (
-                await get_cmd(
-                    SnmpEngine(),
-                    auth_data,
-                    transport,
-                    context_data,
-                    *varbind_chunk,
-                    lookupMib=False,
+            try:
+                (error_indication, error_status, error_index, varbind_table) = (
+                    await get_cmd(
+                        SnmpEngine(),
+                        auth_data,
+                        transport,
+                        context_data,
+                        *varbind_chunk,
+                        lookupMib=False,
+                    )
                 )
-            )
+            except Exception as e:
+                logger.exception(f"Error while performing get_cmd: {e}")
+                return
 
             if not _any_failure_happened(
                 error_indication,
@@ -552,7 +553,6 @@ class Poller(Task):
         transport,
         varbinds_bulk,
         walk,
-        snmpEngine: SnmpEngine,
     ):
         """
         Perform asynchronous SNMP BULK requests on multiple varbinds with concurrency control.
@@ -588,39 +588,44 @@ class Poller(Task):
             :param varbind: SNMP ObjectType varbind to be walked
             :return:
             """
-            async for (
-                error_indication,
-                error_status,
-                error_index,
-                varbind_table,
-            ) in bulk_walk_cmd(
-                SnmpEngine(),
-                auth_data,
-                transport,
-                context_data,
-                0,
-                MAX_REPETITIONS,
-                varbind,
-                lexicographicMode=False,
-                lookupMib=False,
-                ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
-            ):
-                if not _any_failure_happened(
+            try:
+                async for (
                     error_indication,
                     error_status,
                     error_index,
                     varbind_table,
-                    ir.address,
-                    walk,
+                ) in bulk_walk_cmd(
+                    SnmpEngine(),
+                    auth_data,
+                    transport,
+                    context_data,
+                    0,
+                    MAX_REPETITIONS,
+                    varbind,
+                    lexicographicMode=False,
+                    lookupMib=False,
+                    ignoreNonIncreasingOid=is_increasing_oids_ignored(
+                        ir.address, ir.port
+                    ),
                 ):
-                    _, tmp_mibs, _ = self.process_snmp_data(
-                        varbind_table, metrics, address, bulk_mapping
-                    )
-                    if tmp_mibs:
-                        self.load_mibs(tmp_mibs)
-                        self.process_snmp_data(
+                    if not _any_failure_happened(
+                        error_indication,
+                        error_status,
+                        error_index,
+                        varbind_table,
+                        ir.address,
+                        walk,
+                    ):
+                        _, tmp_mibs, _ = self.process_snmp_data(
                             varbind_table, metrics, address, bulk_mapping
                         )
+                        if tmp_mibs:
+                            self.load_mibs(tmp_mibs)
+                            self.process_snmp_data(
+                                varbind_table, metrics, address, bulk_mapping
+                            )
+            except Exception as e:
+                logger.exception(f"Error while performing bulk_walk_cmd: {e}")
 
         # Preparing the queue for bulk request
         bulk_queue: Queue[tuple[int, ObjectType]] = Queue()
