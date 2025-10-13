@@ -37,25 +37,6 @@ from integration_tests.splunk_test_utils import (
     yaml_escape_list,
 )
 
-os.makedirs("logs", exist_ok=True)
-
-
-matrix_index = os.getenv("MATRIX_INDEX", "unknown")
-
-log_file = f"logs/integration_part_{matrix_index}.log"
-
-
-rotating_handler = RotatingFileHandler(
-    log_file, maxBytes=10 * 1024 * 1024, backupCount=10, encoding="utf-8"
-)
-console_handler = logging.StreamHandler()
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[rotating_handler, console_handler],
-)
-
 logger = logging.getLogger(__name__)
 
 

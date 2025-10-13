@@ -597,6 +597,7 @@ class Poller(Task):
                 MAX_REPETITIONS,
                 varbind,
                 lexicographicMode=False,
+                lookupMib=False,
                 ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
             ):
                 if not _any_failure_happened(
@@ -852,7 +853,7 @@ class Poller(Task):
         resolved it fully, unless `resolve_with_mib()` is explicitly called.
         This is why `metric` and `varbind_id` appear different from older versions.
         """
-        oid = str(varbind[0].get_oid())
+        oid = str(varbind[0])
 
         try:
             resolved_oid = ObjectIdentity(oid).resolve_with_mib(
@@ -860,11 +861,8 @@ class Poller(Task):
             )
             mib, metric, index = resolved_oid.get_mib_symbol()
             varbind_id = resolved_oid.prettyPrint()
-            logger.info(
-                f"===== mib={mib}, oid={oid}, varbind_id={varbind_id}, val={varbind[1]} ======="
-            )
         except SmiError as se:
-            logger.info(f"=========SmiError=======")
+            logger.info(f"===> SmiError for oid={oid}: {se}")
             patch_inet_address_classes(self.builder)
             resolved_oid = ObjectIdentity(oid).resolve_with_mib(
                 self.mib_view_controller
