@@ -1,16 +1,18 @@
-{{- if eq .Values.redis.architecture "standalone" }}
-{{- $bitnamiPVC := printf "redis-data-%s-redis-master-0" .Release.Name }}
-{{- $existingPVC := lookup "v1" "PersistentVolumeClaim" .Release.Namespace $bitnamiPVC }}
+{{- if eq .Values.redis.architecture "replication" }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-redis-standalone
+  name: {{ .Release.Name }}-redis-ha
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ .Release.Name }}-redis
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: database
 spec:
-  serviceName: {{ .Release.Name }}-redis
-  replicas: 1
+  serviceName: {{ .Release.Name }}-redis-headless
+  replicas: {{ .Values.redis.replicas | default 3 }}
+  podManagementPolicy: Parallel
   selector:
     matchLabels:
       app: {{ .Release.Name }}-redis
@@ -26,6 +28,7 @@ spec:
         runAsUser: {{ .runAsUser }}
         fsGroup: {{ .fsGroup }}
       {{- end }}
+      {{- if .Values.redis.storage.enabled }}
       initContainers:
       - name: fix-permissions
         image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
@@ -34,22 +37,16 @@ spec:
         - sh
         - -c
         - |
-          echo "=== Redis Init: Fixing Permissions ==="
-          echo "Current ownership:"
-          ls -ln /data
-          echo ""
-          echo "Fixing ownership to {{ .Values.redis.podSecurityContext.runAsUser }}:{{ .Values.redis.podSecurityContext.fsGroup }}..."
+          echo "Fixing permissions on /data..."
           chown -R {{ .Values.redis.podSecurityContext.runAsUser }}:{{ .Values.redis.podSecurityContext.fsGroup }} /data
           chmod -R 755 /data
-          echo ""
-          echo "New ownership:"
           ls -ln /data
-          echo "=== Permissions Fixed ==="
         volumeMounts:
         - name: redis-data
           mountPath: /data
         securityContext:
-          runAsUser: 0  # Must run as root to chown
+          runAsUser: 0
+      {{- end }}
       containers:
       - name: redis
         image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
@@ -57,37 +54,58 @@ spec:
         ports:
         - containerPort: 6379
           name: redis
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        {{- if .Values.redis.auth.enabled }}
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.redis.auth.existingSecret }}
+              name: {{ .Values.redis.auth.existingSecret }}
+              key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
+              {{- else }}
+              name: {{ .Release.Name }}-redis-secret
+              key: password
+              {{- end }}
+        {{- end }}
         command:
         - sh
         - -c
         args:
         - |
-          # Copy config to writable location
           cp /etc/redis/redis.conf /tmp/redis.conf
 
           {{- if .Values.redis.auth.enabled }}
-          # Append password at runtime
           echo "requirepass $REDIS_PASSWORD" >> /tmp/redis.conf
+          echo "masterauth $REDIS_PASSWORD" >> /tmp/redis.conf
           {{- end }}
 
+          # Announce pod IP for Sentinel
+          echo "replica-announce-ip $POD_IP" >> /tmp/redis.conf
+          echo "replica-announce-port 6379" >> /tmp/redis.conf
+
           # Start Redis
+          # Sentinel will handle promotion - all start as replicas initially
+          HOSTNAME=$(hostname)
+          MASTER_NAME="{{ .Release.Name }}-redis-ha-0"
+          MASTER_HOST="$MASTER_NAME.{{ .Release.Name }}-redis-headless"
+
+          if [ "$HOSTNAME" = "$MASTER_NAME" ]; then
+            echo "Starting as master"
+          else
+            echo "replicaof $MASTER_HOST 6379" >> /tmp/redis.conf
+            echo "Starting as replica of $MASTER_HOST"
+          fi
+
           exec redis-server /tmp/redis.conf
-        {{- if .Values.redis.auth.enabled }}
-        env:
-          - name: REDIS_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                {{- if .Values.redis.auth.existingSecret }}
-                name: {{ .Values.redis.auth.existingSecret }}
-                key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
-                {{- else }}
-                name: {{ .Release.Name }}-redis-secret
-                key: password
-                {{- end }}
-        {{- end }}
         volumeMounts:
+        {{- if .Values.redis.storage.enabled }}
         - name: redis-data
           mountPath: /data
+        {{- end }}
         - name: redis-config
           mountPath: /etc/redis
         resources:
@@ -104,8 +122,10 @@ spec:
               {{- else }}
               redis-cli ping
               {{- end }}
-          initialDelaySeconds: 30
-          periodSeconds: 10
+          initialDelaySeconds: {{ .Values.redis.livenessProbe.initialDelaySeconds | default 30 }}
+          periodSeconds: {{ .Values.redis.livenessProbe.periodSeconds | default 10 }}
+          timeoutSeconds: {{ .Values.redis.livenessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.redis.livenessProbe.failureThreshold | default 3 }}
         {{- end }}
         {{- if .Values.redis.readinessProbe.enabled | default true }}
         readinessProbe:
@@ -119,35 +139,20 @@ spec:
               {{- else }}
               redis-cli ping
               {{- end }}
-          initialDelaySeconds: 5
-          periodSeconds: 5
+          initialDelaySeconds: {{ .Values.redis.readinessProbe.initialDelaySeconds | default 5 }}
+          periodSeconds: {{ .Values.redis.readinessProbe.periodSeconds | default 5 }}
+          timeoutSeconds: {{ .Values.redis.readinessProbe.timeoutSeconds | default 3 }}
+          failureThreshold: {{ .Values.redis.readinessProbe.failureThreshold | default 3 }}
         {{- end }}
-      {{- if and .Values.redis.storage.enabled $existingPVC }}
-      # Reuse existing Bitnami PVC
-      volumes:
-      - name: redis-data
-        persistentVolumeClaim:
-          claimName: {{ $bitnamiPVC }}
-      - name: redis-config
-        configMap:
-          name: {{ .Release.Name }}-redis-config
-      {{- else if .Values.redis.storage.enabled }}
-      # Storage enabled but no existing PVC - use volumeClaimTemplates below
       volumes:
       - name: redis-config
         configMap:
           name: {{ .Release.Name }}-redis-config
-      {{- else }}
-      # Storage disabled - use emptyDir (ephemeral)
-      volumes:
+      {{- if not .Values.redis.storage.enabled }}
       - name: redis-data
         emptyDir: {}
-      - name: redis-config
-        configMap:
-          name: {{ .Release.Name }}-redis-config
       {{- end }}
-  {{- if and .Values.redis.storage.enabled (not $existingPVC) }}
-  # No existing PVC found, create new one via volumeClaimTemplates
+  {{- if .Values.redis.storage.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: redis-data

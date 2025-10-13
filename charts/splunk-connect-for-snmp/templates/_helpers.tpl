@@ -95,3 +95,62 @@ Whether enable polling
 {{- printf "false" }}
 {{- end -}}
 {{- end }}
+
+{{- /*
+Generate Redis environment variables for application pods
+*/ -}}
+{{- define "splunk-connect-for-snmp.redis-env" -}}
+{{- if eq .Values.redis.architecture "replication" }}
+- name: REDIS_MODE
+  value: "replication"
+- name: REDIS_SENTINEL_SERVICE
+  value: {{ .Release.Name }}-redis-sentinel
+- name: REDIS_HEADLESS_SERVICE
+  value: {{ .Release.Name }}-redis-headless
+- name: NAMESPACE
+  value: {{ .Release.Namespace }}
+- name: REDIS_SENTINEL_REPLICAS
+  value: {{ .Values.redis.sentinel.replicas | quote }}
+- name: REDIS_SENTINEL_PORT
+  value: "26379"
+- name: REDIS_MASTER_NAME
+  value: mymaster
+{{- else -}}
+- name: REDIS_MODE
+  value: "standalone"
+- name: REDIS_HOST
+  value: {{ .Release.Name }}-redis
+- name: REDIS_PORT
+  value: "6379"
+{{- end }}
+- name: REDIS_DB
+  value: "1"
+- name: CELERY_DB
+  value: "0"
+{{- if .Values.redis.auth.enabled }}
+- name: REDIS_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      {{- if .Values.redis.auth.existingSecret }}
+      name: {{ .Values.redis.auth.existingSecret }}
+      key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
+      {{- else }}
+      name: {{ .Release.Name }}-redis-secret
+      key: password
+      {{- end }}
+{{- end -}}
+{{- end }}
+
+{{- /*
+Generate Redis environment variables for application pods
+*/ -}}
+{{- define "splunk-connect-for-snmp.redis-annotations" -}}
+{{- if eq .Values.redis.architecture "replication" }}
+checksum/redis-config: {{ include (print $.Template.BasePath "/redis/redis-ha-config.yaml") . | sha256sum }}
+{{- else -}}
+checksum/redis-config: {{ include (print $.Template.BasePath "/redis/redis-config.yaml") . | sha256sum }}
+{{- end }}
+{{- if .Values.redis.auth.enabled }}
+checksum/redis-secret: {{ include (print $.Template.BasePath "/redis/redis-secret.yaml") . | sha256sum }}
+{{- end }}
+{{- end }}
