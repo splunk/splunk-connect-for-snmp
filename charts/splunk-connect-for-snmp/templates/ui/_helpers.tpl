@@ -37,8 +37,6 @@ spec:
             value: {{ include "splunk-connect-for-snmp.redis_url" . }}
           - name: INVENTORY_PATH
             value: /app/inventory/inventory.csv
-          - name: CELERY_BROKER_URL
-            value: {{ include "splunk-connect-for-snmp.celery_url" . }}
           - name: MONGO_URI
             value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
           - name: MIB_SOURCES
@@ -104,14 +102,6 @@ Return full image for thr UI back end.
 */}}
 {{- define "splunk-connect-for-snmp.uiBackImage" -}}
 {{ .Values.UI.backEnd.repository }}:{{ .Values.UI.backEnd.tag | default "latest" }}
-{{- end }}
-
-{{- define "splunk-connect-for-snmp-ui.celery_url" -}}
-{{- printf "redis://%s-redis-master:6379/2" .Release.Name }}
-{{- end }}
-
-{{- define "splunk-connect-for-snmp-ui.redis_url" -}}
-{{- printf "redis://%s-redis-master:6379/3" .Release.Name }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp-ui.hostMountPath" -}}
