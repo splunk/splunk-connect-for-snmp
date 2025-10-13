@@ -178,10 +178,17 @@ jobs:
       - name: run automatic_setup_microk8s.sh
         run: integration_tests/automatic_setup_microk8s.sh integration
       - name: run tests
+        env:
+          MATRIX_INDEX: ${{ matrix.index }}
         working-directory: integration_tests
         run: |
           poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="microk8s" -m part${{ matrix.index }}
-
+      - name: Upload integration logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-logs-microk8s-part${{ matrix.index }}
+          path: integration_tests/logs/
   test-integration-compose:
     continue-on-error: true
     name: Run integration tests in docker compose deployment
@@ -220,5 +227,7 @@ jobs:
         run: integration_tests/automatic_setup_compose.sh integration
       - name: run tests
         working-directory: integration_tests
+        env:
+          MATRIX_INDEX: ${{ matrix.index }}
         run: |
           poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="docker-compose" -m part${{ matrix.index }}
