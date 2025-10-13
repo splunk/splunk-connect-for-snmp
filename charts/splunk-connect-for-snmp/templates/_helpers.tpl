@@ -27,7 +27,6 @@
 {{- printf "redis://%s-redis:6379/0" .Release.Name }}
 {{- end }}
 {{- end }}
-{{- end }}
 
 {{- define "splunk-connect-for-snmp.redis_url" -}}
 {{- $password := "" -}}
