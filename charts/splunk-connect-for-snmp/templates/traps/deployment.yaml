@@ -47,8 +47,6 @@ spec:
           env:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
-            - name: CELERY_BROKER_URL
-              value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
             - name: MIB_SOURCES

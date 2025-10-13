@@ -3,6 +3,16 @@ set -e
 . /app/.venv/bin/activate
 LOG_LEVEL=${LOG_LEVEL:=INFO}
 WORKER_CONCURRENCY=${WORKER_CONCURRENCY:=4}
+
+if [ -n "$REDIS_PASSWORD" ]; then
+  REDIS_BASE="redis://:${REDIS_PASSWORD}@"
+else
+  REDIS_BASE="redis://"
+fi
+
+export CELERY_BROKER_URL="${REDIS_BASE}${REDIS_HOST}:${REDIS_PORT:-6379}/${CELERY_DB:-0}"
+export REDIS_URL="${REDIS_BASE}${REDIS_HOST}:${REDIS_PORT:-6379}/${REDIS_DB:-1}"
+
 wait-for-dep "${CELERY_BROKER_URL}" "${REDIS_URL}" "${MONGO_URI}" "${MIB_INDEX}"
 
 case $1 in
