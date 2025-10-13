@@ -2,7 +2,7 @@
 {{- if .Values.redis.storage.enabled }}
 {{- $bitnamiPVC := printf "data-%s-redis-master-0" .Release.Name }}
 {{- $existingPVC := lookup "v1" "PersistentVolumeClaim" .Release.Namespace $bitnamiPVC }}
-{{- $statefulSetPVC := printf "redis-data-%s-redis-0" .Release.Name }}
+{{- $statefulSetPVC := printf "redis-data-%s-redis-master-0" .Release.Name }}
 {{- $newPVCExists := lookup "v1" "PersistentVolumeClaim" .Release.Namespace $statefulSetPVC }}
 {{- if and $existingPVC (not $newPVCExists) }}
 apiVersion: v1
