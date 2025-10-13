@@ -882,6 +882,9 @@
     "redis": {
       "type": "object"
     },
+    "redis-operator": {
+      "type": "object"
+    },
     "mibserver": {
       "type": "object",
       "properties": {

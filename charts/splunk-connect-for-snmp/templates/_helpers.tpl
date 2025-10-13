@@ -15,18 +15,46 @@
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.celery_url" -}}
-{{- if and ( eq .Values.redis.architecture "replication" ) .Values.redis.sentinel.enabled  }}
-{{- printf "redis://%s-redis:6379/0" .Release.Name }}
+{{- $password := "" -}}
+{{- if .Values.redis.auth.enabled -}}
+{{- if .Values.redis.auth.password -}}
+{{- $password = .Values.redis.auth.password -}}
+{{- end -}}
+{{- end -}}
+{{- if and (eq .Values.redis.architecture "replication") .Values.redis.sentinel.enabled }}
+{{- if $password }}
+{{- printf "redis://:%s@%s-redis-sentinel:26379/0" $password .Release.Name }}
 {{- else }}
-{{- printf "redis://%s-redis-master:6379/0" .Release.Name }}
+{{- printf "redis://%s-redis-sentinel:26379/0" .Release.Name }}
+{{- end }}
+{{- else }}
+{{- if $password }}
+{{- printf "redis://:%s@%s-redis:6379/0" $password .Release.Name }}
+{{- else }}
+{{- printf "redis://%s-redis:6379/0" .Release.Name }}
+{{- end }}
 {{- end }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.redis_url" -}}
-{{- if and ( eq .Values.redis.architecture "replication" ) .Values.redis.sentinel.enabled  }}
-{{- printf "redis://%s-redis:6379/1" .Release.Name }}
+{{- $password := "" -}}
+{{- if .Values.redis.auth.enabled -}}
+{{- if .Values.redis.auth.password -}}
+{{- $password = .Values.redis.auth.password -}}
+{{- end -}}
+{{- end -}}
+{{- if and (eq .Values.redis.architecture "replication") .Values.redis.sentinel.enabled }}
+{{- if $password }}
+{{- printf "redis://:%s@%s-redis-sentinel:26379/1" $password .Release.Name }}
 {{- else }}
-{{- printf "redis://%s-redis-master:6379/1" .Release.Name }}
+{{- printf "redis://%s-redis-sentinel:26379/1" .Release.Name }}
+{{- end }}
+{{- else }}
+{{- if $password }}
+{{- printf "redis://:%s@%s-redis:6379/1" $password .Release.Name }}
+{{- else }}
+{{- printf "redis://%s-redis:6379/1" .Release.Name }}
+{{- end }}
 {{- end }}
 {{- end }}
 

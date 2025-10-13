@@ -1,0 +1,15 @@
+{{- if eq .Values.redis.architecture "standalone" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-redis
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: redis
+  selector:
+    app: {{ .Release.Name }}-redis
+{{- end }}

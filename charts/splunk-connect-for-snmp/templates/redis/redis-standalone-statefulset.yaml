@@ -1,0 +1,96 @@
+{{- if eq .Values.redis.architecture "standalone" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-redis
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-redis
+spec:
+  serviceName: {{ .Release.Name }}-redis
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-redis
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-redis
+    spec:
+      {{- with .Values.redis.podSecurityContext }}
+      securityContext:
+        runAsUser: {{ .runAsUser }}
+        fsGroup: {{ .fsGroup }}
+      {{- end }}
+      containers:
+      - name: redis
+        image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+        imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+        ports:
+        - containerPort: 6379
+          name: redis
+        command:
+        - sh
+        - -c
+        args:
+        - |
+          {{- if .Values.redis.auth.enabled }}
+          redis-server --requirepass "$REDIS_PASSWORD" --dir /data
+          {{- else }}
+          redis-server --dir /data
+          {{- end }}
+        {{- if .Values.redis.auth.enabled }}
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.redis.auth.existingSecret | default (printf "%s-redis-secret" .Release.Name) }}
+              key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
+        {{- end }}
+        {{- if .Values.redis.storage.enabled }}
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        {{- end }}
+        resources:
+          {{- toYaml .Values.redis.resources | nindent 10 }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - |
+              {{- if .Values.redis.auth.enabled }}
+              redis-cli -a "$REDIS_PASSWORD" ping
+              {{- else }}
+              redis-cli ping
+              {{- end }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - |
+              {{- if .Values.redis.auth.enabled }}
+              redis-cli -a "$REDIS_PASSWORD" ping
+              {{- else }}
+              redis-cli ping
+              {{- end }}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+  {{- if .Values.redis.storage.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-data
+    spec:
+      accessModes: {{ toYaml .Values.redis.storage.accessModes | nindent 8 }}
+      {{- if .Values.redis.storage.storageClassName }}
+      storageClassName: {{ .Values.redis.storage.storageClassName }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.redis.storage.size }}
+  {{- end }}
+{{- end }}
