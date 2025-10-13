@@ -522,7 +522,12 @@ class Poller(Task):
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
             (error_indication, error_status, error_index, varbind_table) = (
                 await get_cmd(
-                    SnmpEngine(), auth_data, transport, context_data, *varbind_chunk
+                    SnmpEngine(),
+                    auth_data,
+                    transport,
+                    context_data,
+                    *varbind_chunk,
+                    lookupMib=False,
                 )
             )
 
@@ -862,7 +867,7 @@ class Poller(Task):
             mib, metric, index = resolved_oid.get_mib_symbol()
             varbind_id = resolved_oid.prettyPrint()
         except SmiError as se:
-            logger.info(f"===> SmiError for oid={oid}: {se}")
+            logger.info(f"===> SmiError for oid={oid}: {se} <===")
             patch_inet_address_classes(self.builder)
             resolved_oid = ObjectIdentity(oid).resolve_with_mib(
                 self.mib_view_controller
@@ -870,7 +875,7 @@ class Poller(Task):
             mib, metric, index = resolved_oid.get_mib_symbol()
             varbind_id = resolved_oid.prettyPrint()
             logger.info(
-                f"===== {mib}, oid={oid}, varbind_id={varbind_id} val={varbind[1]} ======="
+                f"===== {mib}, oid={oid}, varbind_id={varbind_id}, metric={metric} val={varbind[1]} ====="
             )
 
         return index, metric, mib, oid, varbind_id
