@@ -4,20 +4,20 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-redis-master
+  name: {{ .Release.Name }}-redis
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ .Release.Name }}-redis-master
+    app: {{ .Release.Name }}-redis
 spec:
-  serviceName: {{ .Release.Name }}-redis-master
+  serviceName: {{ .Release.Name }}-redis
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-redis-master
+      app: {{ .Release.Name }}-redis
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-redis-master
+        app: {{ .Release.Name }}-redis
     spec:
       {{- with .Values.redis.podSecurityContext }}
       securityContext:
