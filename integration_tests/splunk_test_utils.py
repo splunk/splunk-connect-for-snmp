@@ -15,7 +15,7 @@
 #   ########################################################################
 import os
 import time
-
+import json
 import ruamel
 
 
@@ -173,16 +173,23 @@ def create_v3_secrets_compose(
     auth_protocol="SHA",
     priv_protocol="AES",
 ):
-    os.system(
-        f'python3 $(realpath "manage_secrets.py") --path_to_compose $(pwd) \
-    --secret_name {secret_name} \
-    --userName {user_name} \
-    --privProtocol {priv_protocol} \
-    --privKey {priv_key} \
-    --authProtocol {auth_protocol} \
-    --authKey {auth_key} \
-    --contextEngineId 8000000903000A397056B8AC'
-    )
+    upgrade_env_compose("ENABLE_WORKER_TRAPS_SECRETS", "true")
+    upgrade_env_compose("ENABLE_WORKER_POLLER_SECRETS", "true")
+    upgrade_env_compose("SECRET_FOLDER_PATH", "sample_v3_secrets")
+    os.makedirs("sample_v3_secrets", exist_ok=True)
+    secrets = {
+        secret_name: {
+            "username": user_name,
+            "privprotocol": priv_protocol,
+            "privkey": priv_key,
+            "authprotocol": auth_protocol,
+            "authkey": auth_key,
+            "contextengineid": "8000000903000A397056B8AC"
+        },
+    }
+
+    with open("sample_v3_secrets/secrets.json", "w") as file:
+        json.dump(secrets, file, indent=4)
 
 
 def wait_for_containers_initialization():
