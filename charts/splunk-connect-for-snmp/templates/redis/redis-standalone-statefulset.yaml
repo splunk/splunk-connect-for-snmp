@@ -73,10 +73,14 @@ spec:
         {{- if .Values.redis.auth.enabled }}
         env:
         - name: REDIS_PASSWORD
+          {{- if or .Values.redis.auth.existingSecret }}
           valueFrom:
             secretKeyRef:
               name: {{ .Values.redis.auth.existingSecret | default (printf "%s-redis-secret" .Release.Name) }}
               key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
+          {{- else }}
+          value: {{ .Values.redis.auth.password | quote }}
+          {{- end }}
         {{- end }}
         volumeMounts:
         - name: redis-data
