@@ -42,7 +42,7 @@ from typing import Any, Dict, List, Tuple, Union
 import pymongo
 from celery import Task
 from celery.utils.log import get_task_logger
-from pysnmp.hlapi.asyncio import SnmpEngine, bulk_walk_cmd, get_cmd
+from pysnmp.hlapi.asyncio import SnmpEngine, bulkWalkCmd, getCmd
 from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
@@ -400,13 +400,13 @@ class Poller(Task):
         self.last_modified = time.time()
         self.snmpEngine = SnmpEngine()
         self.already_loaded_mibs = set()
-        self.builder = self.snmpEngine.get_mib_builder()
+        self.builder = self.snmpEngine.getMibBuilder()
         self.mib_view_controller = view.MibViewController(self.builder)
-        compiler.add_mib_compiler(self.builder, sources=[MIB_SOURCES])
+        compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
 
         for mib in DEFAULT_STANDARD_MIBS:
             self.standard_mibs.append(mib)
-            self.builder.load_modules(mib)
+            self.builder.loadModules(mib)
 
         mib_response = self.session.get(f"{MIB_INDEX}")
         self.mib_map = {}
@@ -519,7 +519,7 @@ class Poller(Task):
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
             try:
                 (error_indication, error_status, error_index, varbind_table) = (
-                    await get_cmd(
+                    await getCmd(
                         SnmpEngine(),
                         auth_data,
                         transport,
@@ -594,7 +594,7 @@ class Poller(Task):
                     error_status,
                     error_index,
                     varbind_table,
-                ) in bulk_walk_cmd(
+                ) in bulkWalkCmd(
                     SnmpEngine(),
                     auth_data,
                     transport,
@@ -679,7 +679,7 @@ class Poller(Task):
         for mib in mibs:
             if mib:
                 try:
-                    self.builder.load_modules(mib)
+                    self.builder.loadModules(mib)
                 except Exception as e:
                     logger.warning(f"Error loading mib for {mib}, {e}")
 
@@ -764,6 +764,9 @@ class Poller(Task):
                         f"Exception processing data from {target} {varbind}"
                     )
             else:
+                logger.info(
+                    f"<=== not resolved varbind_id={varbind_id}, oid={oid} ,metric={metric} index={index}, mapping={mapping} ===>"
+                )
                 found = self.find_new_mibs(oid, remotemibs, target, varbind_id)
                 if found:
                     retry = True
@@ -863,24 +866,8 @@ class Poller(Task):
         resolved it fully, unless `resolve_with_mib()` is explicitly called.
         This is why `metric` and `varbind_id` appear different from older versions.
         """
-        oid = str(varbind[0])
-
-        try:
-            resolved_oid = ObjectIdentity(oid).resolve_with_mib(
-                self.mib_view_controller
-            )
-            mib, metric, index = resolved_oid.get_mib_symbol()
-            varbind_id = resolved_oid.prettyPrint()
-        except SmiError as se:
-            logger.info(f"===> SmiError for oid={oid}: {se} <===")
-            patch_inet_address_classes(self.builder)
-            resolved_oid = ObjectIdentity(oid).resolve_with_mib(
-                self.mib_view_controller
-            )
-            mib, metric, index = resolved_oid.get_mib_symbol()
-            varbind_id = resolved_oid.prettyPrint()
-            logger.info(
-                f"===== {mib}, oid={oid}, varbind_id={varbind_id}, metric={metric} val={varbind[1]} ====="
-            )
-
+        oid = str(varbind[0].getOid())
+        resolved_oid = ObjectIdentity(oid).resolveWithMib(self.mib_view_controller)
+        varbind_id = resolved_oid.prettyPrint()
+        mib, metric, index = resolved_oid.getMibSymbol()
         return index, metric, mib, oid, varbind_id

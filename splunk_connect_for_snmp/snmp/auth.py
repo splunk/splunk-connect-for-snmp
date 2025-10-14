@@ -25,7 +25,7 @@ from pysnmp.hlapi.asyncio import (
     Udp6TransportTarget,
     UdpTransportTarget,
     UsmUserData,
-    get_cmd,
+    getCmd,
 )
 from pysnmp.proto.api.v2c import OctetString
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
@@ -63,7 +63,7 @@ async def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpE
 
     # Register a callback to be invoked at specified execution point of
     # SNMP Engine and passed local variables at execution point's local scope
-    snmp_engine.observer.register_observer(
+    snmp_engine.observer.registerObserver(
         lambda e, p, v, c: c.update(securityEngineId=v["securityEngineId"]),
         "rfc3412.prepareDataElements:internal",
         cbCtx=observer_context,
@@ -72,7 +72,7 @@ async def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpE
     # Send probe SNMP request with invalid credentials
     auth_data = UsmUserData("non-existing-user")
 
-    error_indication, _, _, _ = await get_cmd(
+    error_indication, _, _, _ = await getCmd(
         snmp_engine,
         auth_data,
         transport_target,
@@ -88,7 +88,7 @@ async def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpE
     return security_engine_id
 
 
-async def setup_transport_target(ir):
+async def setup_transport_target(ir: InventoryRecord):
     ip = get_ip_from_socket(ir) if IPv6_ENABLED else ir.address
     if IPv6_ENABLED and ip_address(ip).version == 6:
         return await Udp6TransportTarget.create(
@@ -100,7 +100,7 @@ async def setup_transport_target(ir):
     )
 
 
-def get_ip_from_socket(ir):
+def get_ip_from_socket(ir: InventoryRecord):
     # Example of response from getaddrinfo
     # [(< AddressFamily.AF_INET6: 10 >, < SocketKind.SOCK_STREAM: 1 >, 6, '', ('2607:f8b0:4004:c09::64', 161, 0, 0)),
     # (< AddressFamily.AF_INET: 2 >, < SocketKind.SOCK_STREAM: 1 >, 6, '', ('142.251.16.139', 161))]

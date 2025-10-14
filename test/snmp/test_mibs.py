@@ -11,7 +11,7 @@ class TestMibProcessing(TestCase):
         poller = Poller.__new__(Poller)
         poller.builder = Mock()
         poller.load_mibs(["a", "b", "c"])
-        calls = poller.builder.load_modules.call_args_list
+        calls = poller.builder.loadModules.call_args_list
 
         self.assertEqual("a", calls[0][0][0])
         self.assertEqual("b", calls[1][0][0])
@@ -50,7 +50,7 @@ class TestMibProcessing(TestCase):
     def test_exception_during_loading(self):
         poller = Poller.__new__(Poller)
         poller.builder = Mock()
-        poller.builder.load_modules.side_effect = error.MibLoadError()
+        poller.builder.loadModules.side_effect = error.MibLoadError()
         poller.load_mibs(["a"])
 
     def test_find_new_mibs_is_found(self):

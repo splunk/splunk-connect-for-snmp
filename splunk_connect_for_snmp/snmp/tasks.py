@@ -185,7 +185,7 @@ def _process_work_data(self: Poller, work, varbind_table, not_translated_oids):
 
         try:
             varbind_table.append(
-                ObjectType(ObjectIdentity(w[0]), w[1]).resolve_with_mib(
+                ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
                     self.mib_view_controller
                 )
             )
@@ -223,7 +223,7 @@ def _resolve_remaining_oids(self: Poller, remaining_oids, varbind_table):
     for w in remaining_oids:
         try:
             varbind_table.append(
-                ObjectType(ObjectIdentity(w[0]), w[1]).resolve_with_mib(
+                ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
                     self.mib_view_controller
                 )
             )

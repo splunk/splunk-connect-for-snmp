@@ -37,15 +37,15 @@ logger = logging.getLogger(__name__)
 async def send_trap(
     host, port, object_identity, mib_to_load, community, mp_model, *var_binds
 ):
-    error_indication, error_status, error_index, varBinds = await send_notification(
+    error_indication, error_status, error_index, varBinds = await sendNotification(
         SnmpEngine(),
         CommunityData(community, mpModel=mp_model),
         await UdpTransportTarget.create((host, port)),
         ContextData(),
         "trap",
         NotificationType(ObjectIdentity(object_identity))
-        .add_varbinds(*var_binds)
-        .load_mibs(mib_to_load),
+        .addVarBinds(*var_binds)
+        .loadMibs(mib_to_load),
     )
 
     if error_indication:
@@ -53,7 +53,7 @@ async def send_trap(
 
 
 async def send_v3_trap(host, port, object_identity, *var_binds):
-    error_indication, error_status, error_index, varBinds = await send_notification(
+    error_indication, error_status, error_index, varBinds = await sendNotification(
         SnmpEngine(OctetString(hexValue="80003a8c04")),
         UsmUserData(
             userName="snmp-poller",
@@ -65,7 +65,7 @@ async def send_v3_trap(host, port, object_identity, *var_binds):
         await UdpTransportTarget.create((host, port)),
         ContextData(),
         "trap",
-        NotificationType(ObjectIdentity(object_identity)).add_varbinds(*var_binds),
+        NotificationType(ObjectIdentity(object_identity)).addVarBinds(*var_binds),
     )
 
     if error_indication:

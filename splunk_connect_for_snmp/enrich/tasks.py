@@ -97,6 +97,9 @@ def enrich(self, result):
     attribute_updates = []
 
     current_target = get_current_target(address, targets_collection)
+    logger.info(
+        f"==== enrich,  address={address}, current_target={current_target} result={result['result']} ===="
+    )
 
     check_restart(current_target, result["result"], targets_collection, address)
     logger.info(f"After check_restart for {address}")
