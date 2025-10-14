@@ -25,9 +25,9 @@
   {{- end -}}
 {{- end -}}
 {{- if $password }}
-redis://:{{ $password }}@{{ .Release.Name }}-redis:6379/0
+{{- printf "redis://:%s@%s-redis:6379/0" $password .Release.Name | quote -}}
 {{- else }}
-redis://{{ .Release.Name }}-redis:6379/0
+{{- printf "redis://%s-redis:6379/0" .Release.Name | quote -}}
 {{- end }}
 {{- end }}
 
@@ -42,9 +42,9 @@ redis://{{ .Release.Name }}-redis:6379/0
   {{- end -}}
 {{- end -}}
 {{- if $password }}
-redis://:{{ $password }}@{{ .Release.Name }}-redis:6379/1
+{{- printf "redis://:%s@%s-redis:6379/1" $password .Release.Name | quote -}}
 {{- else }}
-redis://{{ .Release.Name }}-redis:6379/1
+{{- printf "redis://%s-redis:6379/1" .Release.Name | quote -}}
 {{- end }}
 {{- end }}
 
