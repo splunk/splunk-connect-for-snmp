@@ -42,6 +42,8 @@ spec:
               "trap"
             ] 
           env:
+            - name: USER
+              value: "sc4snmp"
             - name: CONFIG_PATH
               value: /app/config/config.yaml
             - name: CELERY_BROKER_URL

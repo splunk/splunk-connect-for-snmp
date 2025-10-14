@@ -13,7 +13,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
+import logging
 import os
+import re
 import time
 
 import ruamel
@@ -293,6 +295,61 @@ def wait_for_pod_initialization_microk8s():
     with open("check_for_pods.sh", "w") as fp:
         fp.write(script_body)
     os.system("chmod a+x check_for_pods.sh && ./check_for_pods.sh")
+
+
+def mask_ip_addresses(text):
+    """Mask all IPv4 and IPv6 addresses in a given string."""
+    ipv4_pattern = r"\b\d{1,3}(?:\.\d{1,3}){3}\b"
+    ipv6_pattern = r"\b(?:[A-Fa-f0-9]{0,4}:){2,7}[A-Fa-f0-9]{0,4}\b"
+    masked = re.sub(ipv4_pattern, "[IPv4_MASKED]", text)
+    masked = re.sub(ipv6_pattern, "[IPv6_MASKED]", masked)
+    return masked
+
+
+def log_poller_pod_logs(namespace="sc4snmp", logger=None):
+    import subprocess
+
+    """Fetch and echo logs from poller pods (MicroK8s) or containers (Docker Compose)."""
+
+    os.system('echo "===== ALL POLLER PODS ====="')
+
+    list_pods_cmd = (
+        f"sudo microk8s kubectl get pods -A | grep poll | awk '{{print $2}}'"
+    )
+    os.system(list_pods_cmd)
+
+    os.system('echo "===== STARTING POLLER LOGS ====="')
+    logger.info("===== STARTING POLLER LOGS =====")
+    logger.info(f"list_pods_cmd={list_pods_cmd}")
+
+    pods = subprocess.getoutput(list_pods_cmd).splitlines()
+    if not pods:
+        os.system('echo " No poller pods found."')
+        if logger:
+            logger.info("===== No poller pods found. =====")
+        return
+
+    for pod in pods:
+        os.system(f'echo "----- Logs from: {pod} -----"')
+
+        raw_logs = subprocess.getoutput(
+            f"sudo microk8s kubectl logs {pod} -n {namespace}"
+        )
+        masked_logs = mask_ip_addresses(raw_logs)
+
+        print(raw_logs)
+
+        if logger:
+            logger.info(
+                f"----- Logs from: {pod} -----\n{raw_logs}\n----------------------------"
+            )
+
+        os.system('echo "----------------------------"')
+
+    os.system('echo "===== END POLLER LOGS ====="')
+
+    if logger:
+        logger.info("===== End of poller logs =====")
 
 
 # if __name__ == "__main__":

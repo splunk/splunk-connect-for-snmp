@@ -6,6 +6,7 @@ x-general_sc4snmp_data: &general_sc4snmp_data
   MIB_SOURCES: http://snmp-mibserver:8000/asn1/@mib@
   MIB_INDEX: http://snmp-mibserver:8000/index.csv
   MIB_STANDARD: http://snmp-mibserver:8000/standard.txt
+  USER: ${DEPLOYMENT_USER:-sc4snmp}
 
 x-splunk_general_setup: &splunk_general_setup
   SPLUNK_HEC_HOST: ${SPLUNK_HEC_HOST}
@@ -37,6 +38,7 @@ x-workers_general_setup: &workers_general_setup
   UDP_CONNECTION_TIMEOUT: ${UDP_CONNECTION_TIMEOUT:-3}
   MAX_OID_TO_PROCESS: ${MAX_OID_TO_PROCESS:-70}
   MAX_REPETITIONS: ${MAX_REPETITIONS:-10}
+  MAX_SNMP_BULK_WALK_CONCURRENCY: ${MAX_SNMP_BULK_WALK_CONCURRENCY:-5}
   PROFILES_RELOAD_DELAY: ${PROFILES_RELOAD_DELAY:-60}
 
 x-ipv6: &ipv6

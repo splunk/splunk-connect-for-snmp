@@ -14,7 +14,9 @@
 #    limitations under the License.
 #   ########################################################################
 import logging
+import os
 import time
+from logging.handlers import RotatingFileHandler
 
 import pytest
 import splunklib.client as client
@@ -87,3 +89,27 @@ def setup_splunk(request):
                 raise
             time.sleep(1)
     return service
+
+
+def pytest_configure(config):
+    """
+    Configure rotating log files per CI matrix index and mirror pytest logs.
+    """
+    os.makedirs("logs", exist_ok=True)
+
+    matrix_index = os.getenv("MATRIX_INDEX", "unknown")
+    log_file = f"logs/integration_part_{matrix_index}.log"
+
+    file_handler = RotatingFileHandler(
+        log_file, maxBytes=5 * 1024 * 1024, backupCount=10, encoding="utf-8"
+    )
+    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+    file_handler.setFormatter(formatter)
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG)
+    root_logger.addHandler(file_handler)
+
+    logging.getLogger("pytest").setLevel(logging.DEBUG)
+
+    print(f"Logging initialized for MATRIX_INDEX={matrix_index}, writing to {log_file}")

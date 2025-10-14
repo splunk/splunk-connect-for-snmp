@@ -45,6 +45,8 @@ spec:
               "celery", "worker-poller",
             ]
           env:
+            - name: USER
+              value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
             {{- include "environmental-variables" . | nindent 12 }}
             {{- include "environmental-variables-poller" . | nindent 12 }}
           {{- if .Values.worker.livenessProbe.enabled }}

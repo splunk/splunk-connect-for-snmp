@@ -14,13 +14,16 @@
 #    limitations under the License.
 #   ########################################################################
 import logging
+import os
 import time
+from logging.handlers import RotatingFileHandler
 
 import pytest
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString as dq
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
 from integration_tests.splunk_test_utils import (
+    log_poller_pod_logs,
     splunk_single_search,
     update_file_microk8s,
     update_groups_compose,
@@ -129,6 +132,7 @@ class TestProfiles:
         assert metric_count > 0
 
     def test_static_profiles_event(self, setup_splunk):
+        log_poller_pod_logs(logger=logger)
         search_string = """search index=netops sourcetype="sc4snmp:event" "IF-MIB.ifType" AND NOT "IF-MIB.ifAdminStatus" """
         logger.info("Integration test static profile - events")
         result_count, metric_count = run_retried_single_search(
@@ -1034,6 +1038,7 @@ def setup_single_gt_and_lt_profiles(request):
 class TestSingleGtAndLtCorrectCondition:
     def test_gt_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = """| mpreview index=netmetrics | search profiles=gt_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1043,6 +1048,7 @@ class TestSingleGtAndLtCorrectCondition:
 
     def test_lt_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = """| mpreview index=netmetrics | search profiles=lt_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1321,6 +1327,7 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
 class TestSingleGtAndLtWithNegationCorrectCondition:
     def test_not_gt_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_gt_profile """
         )
@@ -1332,6 +1339,7 @@ class TestSingleGtAndLtWithNegationCorrectCondition:
 
     def test_not_lt_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_lt_profile """
         )
@@ -1525,6 +1533,7 @@ def setup_single_regex_and_options_profiles_with_negation(request):
 class TestSingleRegexWithNegationCorrectCondition:
     def test_not_regex_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_regex_profile """
         )
@@ -1536,6 +1545,7 @@ class TestSingleRegexWithNegationCorrectCondition:
 
     def test_not_regex_with_options_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_options_profile """
         )
@@ -1606,7 +1616,7 @@ def setup_multiple_conditions_profiles(request):
             ]
         )
         upgrade_docker_compose()
-    time.sleep(120)
+    time.sleep(360)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -1623,7 +1633,7 @@ def setup_multiple_conditions_profiles(request):
             ]
         )
         upgrade_docker_compose()
-    time.sleep(120)
+    time.sleep(360)
 
 
 @pytest.mark.usefixtures("setup_multiple_conditions_profiles")
@@ -1631,6 +1641,7 @@ def setup_multiple_conditions_profiles(request):
 class TestMultipleCorrectConditions:
     def test_gt_and_equals_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=gt_and_equals_profile """
         )
@@ -1642,6 +1653,7 @@ class TestMultipleCorrectConditions:
 
     def test_lt_and_in_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=lt_and_in_profile """
         )
