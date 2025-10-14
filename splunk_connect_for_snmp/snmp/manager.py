@@ -525,11 +525,12 @@ class Poller(Task):
                         transport,
                         context_data,
                         *varbind_chunk,
-                        lookupMib=False,
+                        lookupMib=True,
                     )
                 )
             except Exception as e:
                 logger.exception(f"Error while performing get_cmd: {e}")
+                continue
 
             if not _any_failure_happened(
                 error_indication,
@@ -602,7 +603,7 @@ class Poller(Task):
                     MAX_REPETITIONS,
                     varbind,
                     lexicographicMode=False,
-                    lookupMib=False,
+                    lookupMib=True,
                     ignoreNonIncreasingOid=is_increasing_oids_ignored(
                         ir.address, ir.port
                     ),

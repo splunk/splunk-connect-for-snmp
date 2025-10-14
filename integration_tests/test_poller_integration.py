@@ -1616,7 +1616,7 @@ def setup_multiple_conditions_profiles(request):
             ]
         )
         upgrade_docker_compose()
-    time.sleep(160)
+    time.sleep(360)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -1633,7 +1633,7 @@ def setup_multiple_conditions_profiles(request):
             ]
         )
         upgrade_docker_compose()
-    time.sleep(160)
+    time.sleep(360)
 
 
 @pytest.mark.usefixtures("setup_multiple_conditions_profiles")
