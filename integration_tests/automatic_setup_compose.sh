@@ -105,7 +105,7 @@ SCHEDULER_CONFIG_FILE="scheduler-config.yaml"
 TRAPS_CONFIG_FILE="traps-config.yaml"
 INVENTORY_FILE="inventory-tests.csv"
 COREFILE="Corefile"
-SECRET_FOLDER_PATH="sample_v3_secrets"
+SECRET_FOLDER="sample_v3_values"
 
 # Get the absolute paths of the files
 SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=$(realpath "$SCHEDULER_CONFIG_FILE")
@@ -114,7 +114,7 @@ INVENTORY_FILE_ABSOLUTE_PATH=$(realpath "$INVENTORY_FILE")
 COREFILE_ABS_PATH=$(realpath "$COREFILE")
 SPLUNK_HEC_HOST=$(hostname -I | cut -d " " -f1)
 SPLUNK_HEC_TOKEN=$(cat hec_token)
-SECRET_FOLDER_ABS_PATH=$(realpath "$SECRET_FOLDER_PATH")
+SECRET_FOLDER_PATH=$(realpath "$SECRET_FOLDER")
 
 # Temporary file to store the updated .env content
 TEMP_ENV_FILE=".env.tmp"
@@ -126,7 +126,7 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
     -v corefile_path="$COREFILE_ABS_PATH" \
     -v splunk_hec_host="$SPLUNK_HEC_HOST" \
     -v splunk_hec_token="$SPLUNK_HEC_TOKEN" \
-    -v secret_folder_path="$SECRET_FOLDER_ABS_PATH" \
+    -v secret_folder_path="$SECRET_FOLDER_PATH" \
     '
     BEGIN {
         updated["SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH"] = 0;
@@ -135,7 +135,7 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
         updated["COREFILE_ABS_PATH"] = 0;
         updated["SPLUNK_HEC_HOST"] = 0;
         updated["SPLUNK_HEC_TOKEN"] = 0;
-        updated["SECRET_FOLDER_ABS_PATH"] = 0;
+        updated["SECRET_FOLDER_PATH"] = 0;
     }
     {
         if ($1 == "SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=") {
@@ -156,9 +156,9 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
         } else if ($1 == "SPLUNK_HEC_TOKEN=") {
             print "SPLUNK_HEC_TOKEN=" splunk_hec_token;
             updated["SPLUNK_HEC_TOKEN"] = 1;
-        } else if ($1 == "SECRET_FOLDER_ABS_PATH=") {
-            print "SECRET_FOLDER_ABS_PATH=" secret_folder_path;
-            updated["SECRET_FOLDER_ABS_PATH"] = 1;
+        } else if ($1 == "SECRET_FOLDER_PATH=") {
+            print "SECRET_FOLDER_PATH=" secret_folder_path;
+            updated["SECRET_FOLDER_PATH"] = 1;
         } else {
             print $0;
         }
@@ -182,8 +182,8 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
         if (updated["SPLUNK_HEC_TOKEN"] == 0) {
             print "SPLUNK_HEC_TOKEN=" splunk_hec_token;
         }
-        if (updated["SECRET_FOLDER_ABS_PATH"] == 0) {
-            print "SECRET_FOLDER_ABS_PATH=" secret_folder_path;
+        if (updated["SECRET_FOLDER_PATH"] == 0) {
+            print "SECRET_FOLDER_PATH=" secret_folder_path;
         }
     }
     ' .env > "$TEMP_ENV_FILE"
