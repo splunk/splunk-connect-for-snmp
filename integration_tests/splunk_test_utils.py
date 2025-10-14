@@ -168,7 +168,7 @@ def upgrade_env_compose(variable, new_value, env_path=".env"):
 def create_v3_secrets_compose():
     upgrade_env_compose("ENABLE_WORKER_TRAPS_SECRETS", "true")
     upgrade_env_compose("SECRET_FOLDER_PATH", "sample_v3_values")
-   
+
 
 def wait_for_containers_initialization():
     script_body = """ 
