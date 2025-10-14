@@ -80,14 +80,3 @@ sim:
   enabled: false
 #  signalfxToken: BCwaJ_Ands4Xh7Nrg
 #  signalfxRealm: us0
-mongodb:
-  pdb:
-    create: true
-  persistence:
-    storageClass: "microk8s-hostpath"
-  volumePermissions:
-    enabled: true
-redis:
-  architecture: standalone
-  auth:
-    enabled: false

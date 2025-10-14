@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+## [1.14.1]
+- update mongodb volumePermission image repository to `bitnamileagcy`
+
 ## [1.14.0]
 - change bulkWalk `nonRepeater` to 0 and allow user to set `MAX_REPETITIONS` to achieve better polling performance
 - update bitnami image repository to `bitnamileagcy`
