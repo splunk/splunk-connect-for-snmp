@@ -26,21 +26,28 @@ spec:
       {{- end }}
       initContainers:
       - name: fix-permissions
-        image: busybox:1.36
+        image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+        imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
         command:
         - sh
         - -c
         - |
-          echo "Fixing permissions on /data..."
+          echo "=== Redis Init: Fixing Permissions ==="
+          echo "Current ownership:"
+          ls -ln /data
+          echo ""
+          echo "Fixing ownership to 999:999..."
           chown -R 999:999 /data
           chmod -R 755 /data
-          echo "Permissions fixed"
+          echo ""
+          echo "New ownership:"
           ls -ln /data
+          echo "=== Permissions Fixed ==="
         volumeMounts:
         - name: redis-data
           mountPath: /data
         securityContext:
-          runAsUser: 0  # Run as root to change ownership
+          runAsUser: 0  # Must run as root to chown
       containers:
       - name: redis
         image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
