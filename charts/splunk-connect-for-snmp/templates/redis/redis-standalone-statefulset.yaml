@@ -36,11 +36,14 @@ spec:
         - -c
         args:
         - |
+          # Copy config to writable location and expand env vars
           {{- if .Values.redis.auth.enabled }}
-          redis-server --requirepass "$REDIS_PASSWORD" --dir /data
+          envsubst < /etc/redis/redis.conf > /tmp/redis.conf
           {{- else }}
-          redis-server --dir /data
+          cp /etc/redis/redis.conf /tmp/redis.conf
           {{- end }}
+          # Start Redis with config file
+          redis-server /tmp/redis.conf
         {{- if .Values.redis.auth.enabled }}
         env:
         - name: REDIS_PASSWORD
@@ -52,6 +55,8 @@ spec:
         volumeMounts:
         - name: redis-data
           mountPath: /data
+        - name: redis-config
+          mountPath: /etc/redis
         resources:
           {{- toYaml .Values.redis.resources | nindent 10 }}
         livenessProbe:
@@ -86,6 +91,14 @@ spec:
       - name: redis-data
         persistentVolumeClaim:
           claimName: {{ $bitnamiPVC }}
+      - name: redis-config
+        configMap:
+          name: {{ .Release.Name }}-redis-config
+      {{- else }}
+      volumes:
+      - name: redis-config
+        configMap:
+          name: {{ .Release.Name }}-redis-config
       {{- end }}
   {{- if and .Values.redis.storage.enabled (not $existingPVC) }}
   # No existing PVC found, create new one via volumeClaimTemplates

@@ -629,7 +629,10 @@ redis:
     accessModes:
       - ReadWriteOnce
     size: 5Gi
-
+  persistence:
+    aof:
+      enabled: true        # Enable AOF
+      fsync: everysec
   # Security
   podSecurityContext:
     runAsUser: 999
