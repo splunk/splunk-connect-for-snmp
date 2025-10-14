@@ -24,6 +24,23 @@ spec:
         runAsUser: {{ .runAsUser }}
         fsGroup: {{ .fsGroup }}
       {{- end }}
+      initContainers:
+      - name: fix-permissions
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Fixing permissions on /data..."
+          chown -R 999:999 /data
+          chmod -R 755 /data
+          echo "Permissions fixed"
+          ls -ln /data
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        securityContext:
+          runAsUser: 0  # Run as root to change ownership
       containers:
       - name: redis
         image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
@@ -36,14 +53,16 @@ spec:
         - -c
         args:
         - |
-          # Copy config to writable location and expand env vars
-          {{- if .Values.redis.auth.enabled }}
-          envsubst < /etc/redis/redis.conf > /tmp/redis.conf
-          {{- else }}
+          # Copy config to writable location
           cp /etc/redis/redis.conf /tmp/redis.conf
+
+          {{- if .Values.redis.auth.enabled }}
+          # Append password at runtime
+          echo "requirepass $REDIS_PASSWORD" >> /tmp/redis.conf
           {{- end }}
-          # Start Redis with config file
-          redis-server /tmp/redis.conf
+
+          # Start Redis
+          exec redis-server /tmp/redis.conf
         {{- if .Values.redis.auth.enabled }}
         env:
         - name: REDIS_PASSWORD
