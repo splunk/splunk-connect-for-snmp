@@ -37,6 +37,10 @@ data:
 
     # Network
     bind 0.0.0.0
+    {{- if .Values.redis.auth.enabled }}
     protected-mode no
+    {{- else }}
+    protected-mode yes
+    {{- end }}
     port 6379
 {{- end }}

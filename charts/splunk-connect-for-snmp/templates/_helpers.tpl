@@ -17,36 +17,34 @@
 {{- define "splunk-connect-for-snmp.celery_url" -}}
 {{- $password := "" -}}
 {{- if .Values.redis.auth.enabled -}}
-{{- if .Values.redis.auth.password -}}
-{{- $password = .Values.redis.auth.password -}}
-{{- end -}}
+  {{- $secretName := .Values.redis.auth.existingSecret | default (printf "%s-redis-secret" .Release.Name) -}}
+  {{- $secret := lookup "v1" "Secret" .Release.Namespace $secretName -}}
+  {{- if $secret -}}
+    {{- $passwordKey := .Values.redis.auth.existingSecretPasswordKey | default "password" -}}
+    {{- $password = index $secret.data $passwordKey | b64dec -}}
+  {{- end -}}
 {{- end -}}
 {{- if $password }}
-{{- printf "redis://:%s@%s-redis:6379/0" $password .Release.Name }}
+redis://:{{ $password }}@{{ .Release.Name }}-redis:6379/0
 {{- else }}
-{{- printf "redis://%s-redis:6379/0" .Release.Name }}
+redis://{{ .Release.Name }}-redis:6379/0
 {{- end }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.redis_url" -}}
 {{- $password := "" -}}
 {{- if .Values.redis.auth.enabled -}}
-{{- if .Values.redis.auth.password -}}
-{{- $password = .Values.redis.auth.password -}}
+  {{- $secretName := .Values.redis.auth.existingSecret | default (printf "%s-redis-secret" .Release.Name) -}}
+  {{- $secret := lookup "v1" "Secret" .Release.Namespace $secretName -}}
+  {{- if $secret -}}
+    {{- $passwordKey := .Values.redis.auth.existingSecretPasswordKey | default "password" -}}
+    {{- $password = index $secret.data $passwordKey | b64dec -}}
+  {{- end -}}
 {{- end -}}
-{{- end -}}
-{{- if and (eq .Values.redis.architecture "replication") .Values.redis.sentinel.enabled }}
 {{- if $password }}
-{{- printf "redis://:%s@%s-redis-sentinel:26379/1" $password .Release.Name }}
+redis://:{{ $password }}@{{ .Release.Name }}-redis:6379/1
 {{- else }}
-{{- printf "redis://%s-redis-sentinel:26379/1" .Release.Name }}
-{{- end }}
-{{- else }}
-{{- if $password }}
-{{- printf "redis://:%s@%s-redis:6379/1" $password .Release.Name }}
-{{- else }}
-{{- printf "redis://%s-redis:6379/1" .Release.Name }}
-{{- end }}
+redis://{{ .Release.Name }}-redis:6379/1
 {{- end }}
 {{- end }}
 

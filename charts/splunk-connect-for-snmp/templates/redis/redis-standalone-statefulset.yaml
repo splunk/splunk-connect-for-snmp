@@ -36,8 +36,8 @@ spec:
           echo "Current ownership:"
           ls -ln /data
           echo ""
-          echo "Fixing ownership to 999:999..."
-          chown -R 999:999 /data
+          echo "Fixing ownership to {{ .Values.redis.podSecurityContext.runAsUser }}:{{ .Values.redis.podSecurityContext.fsGroup }}..."
+          chown -R {{ .Values.redis.podSecurityContext.runAsUser }}:{{ .Values.redis.podSecurityContext.fsGroup }} /data
           chmod -R 755 /data
           echo ""
           echo "New ownership:"
