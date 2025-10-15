@@ -63,6 +63,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE` | Replaces hyphens with underscores in generated metric names to ensure compatibility with Splunk's metric schema                       |
 | `IGNORE_EMPTY_VARBINDS`                   | Details can be found in [empty snmp response message issue](../troubleshooting/polling-issues.md#empty-snmp-response-message-problem) |
 | `SPLUNK_LOG_INDEX`                        | Event index in Splunk where logs from docker containers would be sent                                                                 |
+
 ## Workers
 
 ### General
