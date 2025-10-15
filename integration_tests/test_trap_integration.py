@@ -277,7 +277,7 @@ def test_trap_v3(request, setup_splunk):
     send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.1.0", varbind1)
 
     # wait for the message to be processed
-    time.sleep(2)
+    time.sleep(20)
 
     log_poller_pod_logs(logger=logger)
     search_query = (

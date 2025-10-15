@@ -318,5 +318,9 @@ def log_poller_pod_logs(namespace="sc4snmp", logger=None):
     )
     logger.info(raw_logs)
 
+    raw_logs = subprocess.getoutput(
+        f"sudo docker logs integration_tests-worker-trap-2"
+    )
+    logger.info(raw_logs)
     if logger:
         logger.info("===== End of poller logs =====")
