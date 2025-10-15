@@ -314,7 +314,7 @@ def log_poller_pod_logs(namespace="sc4snmp", logger=None):
     import subprocess
 
     raw_logs = subprocess.getoutput(
-        f"sudo docker logs docker_compose-worker-trap-1"
+        f"sudo docker logs integration_tests-worker-trap-1"
     )
     logger.info(raw_logs)
 
