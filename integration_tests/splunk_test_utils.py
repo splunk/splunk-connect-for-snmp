@@ -142,6 +142,7 @@ def update_traps_secrets_compose(secrets):
     traps_config["usernameSecrets"] = secrets
     with open("traps-config.yaml", "w") as file:
         yaml.dump(traps_config, file)
+    
 
 
 def upgrade_docker_compose():

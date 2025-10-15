@@ -268,9 +268,17 @@ def test_trap_v3(request, setup_splunk):
         update_file_microk8s(["- secretv4"], "traps_secrets.yaml")
         upgrade_helm_microk8s(["traps_secrets.yaml"])
     else:
+        logger.info("Creating secrets")
         create_v3_secrets_compose()
+        logger.info("Adding secret to compose")
         update_traps_secrets_compose(["secretv4"])
+        with open("traps-config.yaml") as f_tmp:
+            traps_config = yaml.load(f_tmp)
+            logger.info(f"traps config: {traps_config}")
+        logger.info("Upgrading container")
+        
         upgrade_docker_compose()
+        logger.info("Upgraded successfullt")
 
     logger.info(f"I have: {trap_external_ip}")
     if deployment == "microk8s":
