@@ -306,32 +306,25 @@ def mask_ip_addresses(text):
     return masked
 
 
-def log_poller_pod_logs(namespace="sc4snmp", logger=None):
+def log_poller_pod_logs(namespace="sc4snmp", pod="poll", msg=None, logger=None):
     import subprocess
 
     """Fetch and echo logs from poller pods (MicroK8s) or containers (Docker Compose)."""
 
-    os.system('echo "===== ALL POLLER PODS ====="')
-
     list_pods_cmd = (
-        f"sudo microk8s kubectl get pods -A | grep poll | awk '{{print $2}}'"
+        f"sudo microk8s kubectl get pods -A | grep {pod} | awk '{{print $2}}'"
     )
     os.system(list_pods_cmd)
 
-    os.system('echo "===== STARTING POLLER LOGS ====="')
-    logger.info("===== STARTING POLLER LOGS =====")
-    logger.info(f"list_pods_cmd={list_pods_cmd}")
-
+    logger.info(f"===== STARTING {pod} for {msg} LOGS =====")
     pods = subprocess.getoutput(list_pods_cmd).splitlines()
+    logger.info(f"total_pods={pods}")
     if not pods:
-        os.system('echo " No poller pods found."')
         if logger:
-            logger.info("===== No poller pods found. =====")
+            logger.info(f"===== No {pod} pods found. =====")
         return
 
     for pod in pods:
-        os.system(f'echo "----- Logs from: {pod} -----"')
-
         raw_logs = subprocess.getoutput(
             f"sudo microk8s kubectl logs {pod} -n {namespace}"
         )
@@ -344,12 +337,8 @@ def log_poller_pod_logs(namespace="sc4snmp", logger=None):
                 f"----- Logs from: {pod} -----\n{raw_logs}\n----------------------------"
             )
 
-        os.system('echo "----------------------------"')
-
-    os.system('echo "===== END POLLER LOGS ====="')
-
     if logger:
-        logger.info("===== End of poller logs =====")
+        logger.info(f"===== End of {pod} logs =====")
 
 
 # if __name__ == "__main__":

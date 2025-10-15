@@ -808,7 +808,7 @@ def setup_groups(request):
 
 
 @pytest.mark.usefixtures("setup_groups")
-@pytest.mark.part3
+@pytest.mark.part33
 class TestGroupsInventory:
     def test_ip_address_inventory(self, setup_splunk):
         time.sleep(20)
@@ -938,7 +938,7 @@ def setup_single_ang_group(request):
 
 
 @pytest.mark.usefixtures("setup_single_ang_group")
-@pytest.mark.part3
+@pytest.mark.part33
 class TestIgnoreSingleIfInGroup:
     def test_host_from_group(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
@@ -1037,8 +1037,8 @@ def setup_single_gt_and_lt_profiles(request):
 @pytest.mark.part3
 class TestSingleGtAndLtCorrectCondition:
     def test_gt_profile(self, request, setup_splunk):
+        log_poller_pod_logs(logger=logger, msg="test_gt_profile", pod="poll")
         time.sleep(20)
-        log_poller_pod_logs(logger=logger)
         search_string = """| mpreview index=netmetrics | search profiles=gt_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1047,8 +1047,8 @@ class TestSingleGtAndLtCorrectCondition:
         assert metric_count > 0
 
     def test_lt_profile(self, request, setup_splunk):
+        log_poller_pod_logs(logger=logger, msg="test_lt_profile", pod="poll")
         time.sleep(20)
-        log_poller_pod_logs(logger=logger)
         search_string = """| mpreview index=netmetrics | search profiles=lt_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1529,7 +1529,7 @@ def setup_single_regex_and_options_profiles_with_negation(request):
 
 
 @pytest.mark.usefixtures("setup_single_regex_and_options_profiles_with_negation")
-@pytest.mark.part5
+@pytest.mark.part55
 class TestSingleRegexWithNegationCorrectCondition:
     def test_not_regex_profile(self, request, setup_splunk):
         time.sleep(20)
@@ -1603,7 +1603,7 @@ def setup_multiple_conditions_profiles(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,60,gt_and_equals_profile;lt_and_in_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1612,16 +1612,16 @@ def setup_multiple_conditions_profiles(request):
         update_profiles_compose(profiles)
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,"
+                f"{trap_external_ip},1166,2c,public,,,60,gt_and_equals_profile;lt_and_in_profile,,"
             ]
         )
         upgrade_docker_compose()
-    time.sleep(150)
+    time.sleep(200)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,60,gt_and_equals_profile;lt_and_in_profile,,t",
             ],
             "inventory.yaml",
         )
@@ -1629,7 +1629,7 @@ def setup_multiple_conditions_profiles(request):
     else:
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,t"
+                f"{trap_external_ip},1166,2c,public,,,60,gt_and_equals_profile;lt_and_in_profile,,t"
             ]
         )
         upgrade_docker_compose()
@@ -1640,8 +1640,11 @@ def setup_multiple_conditions_profiles(request):
 @pytest.mark.part5
 class TestMultipleCorrectConditions:
     def test_gt_and_equals_profile(self, request, setup_splunk):
+        log_poller_pod_logs(
+            logger=logger, pod="inventory", msg="test_gt_and_equals_profile"
+        )
         time.sleep(20)
-        log_poller_pod_logs(logger=logger)
+        log_poller_pod_logs(logger=logger, msg="test_gt_and_equals_profile", pod="poll")
         search_string = (
             """| mpreview index=netmetrics | search profiles=gt_and_equals_profile """
         )
@@ -1652,8 +1655,11 @@ class TestMultipleCorrectConditions:
         assert metric_count > 0
 
     def test_lt_and_in_profile(self, request, setup_splunk):
+        log_poller_pod_logs(
+            logger=logger, pod="inventory", msg="test_lt_and_in_profile"
+        )
         time.sleep(20)
-        log_poller_pod_logs(logger=logger)
+        log_poller_pod_logs(logger=logger, msg="test_lt_and_in_profile", pod="poll")
         search_string = (
             """| mpreview index=netmetrics | search profiles=lt_and_in_profile """
         )
@@ -1751,7 +1757,7 @@ def setup_wrong_conditions_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_wrong_conditions_profiles")
-@pytest.mark.part5
+@pytest.mark.part55
 class TestWrongConditions:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)

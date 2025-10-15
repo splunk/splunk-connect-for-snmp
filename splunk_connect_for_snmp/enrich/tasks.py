@@ -98,7 +98,7 @@ def enrich(self, result):
 
     current_target = get_current_target(address, targets_collection)
     logger.info(
-        f"==== enrich,  address={address}, current_target={current_target} result={result['result']} ===="
+        f"==== enrich,  address={address}, current_target={current_target} result={result['result']} targets_collection={targets_collection} ===="
     )
 
     check_restart(current_target, result["result"], targets_collection, address)
