@@ -1,72 +1,11 @@
 # SNMPv3 secrets
 
-Creating a secret requires updating configuration of several docker compose files. To simplify this process, inside the 
-`docker_compose` package there is a `manage_secrets.py` file which will automatically manage secrets.
+## Migration steps
+Managing SNMPv3 secrets previously required updating docker compose files using the manage_secrets.py script.
+From SC4SNMP 1.15.0, this process has been simplified and can manage all SNMPv3 secrets using a single secrets.json file.
 
-## Prerequisites
-
-Running script requires installation of `ruamel.yaml` package for python. It can be done with command:
-```
-pip3 install ruamel.yaml
-```
-
-## Creating a new secret
-
-To create a new secret, `manage_secrets.py` must be run with the following flags:
-
-| Flag                | Description                                                                    |
-|---------------------|--------------------------------------------------------------------------------| 
-| `--secret_name`     | New secret name                                                                |
-| `--path_to_compose` | Absolute path to directory with docker compose files                           |
-| `--worker_poller`   | \[OPTIONAL\] Add new secrets to worker poller. Default value is set to 'true'. |
-| `--traps`           | \[OPTIONAL\] Add new secrets to traps server. Default value is set to 'true'.  |
-| `--userName`        | SNMPv3 userName                                                                |
-| `--privProtocol`    | SNMPv3 privProtocol                                                            |
-| `--privKey`         | SNMPv3 privKey                                                                 |
-| `--authProtocol`    | SNMPv3 authProtocol                                                            |
-| `--authKey`         | SNMPv3 authKey                                                                 |
-| `--contextEngineId` | \[OPTIONAL\] SNMPv3 engine id                                                  |  
-
- 
-This script, apart from updating configuration files, creates environmental variables with values of the secret at the 
-end of the `.env` file in the `docker_compose` directory. To apply those secrets run the 
-`sudo docker compose up -d` command inside the `docker_compose` directory. After execution of the command, plain text secrets 
-from the `.env` file can be deleted. 
-> **_NOTE:_** In case of any changes in `.env`, the secrets must be recreated by [deleting](#deleting-a-secret) any 
-> previously existing secrets and creating them once again. Changes in `.env` include creating new secrets.
-
-### Example of creating a secret
-```shell
-python3 <path_to_manage_secrets.py> --path_to_compose <path_to_compose> \
---secret_name my_secret \
---userName r-wuser \
---privProtocol AES \
---privKey admin1234 \
---authProtocol SHA \
---authKey admin1234 \
---contextEngineId 090807060504037
-```
-
-Inside `docker_compose` directory run:
-
-```shell
-sudo docker compose up -d
-```
-
-Now, the following lines from the `.env` can be deleted:
-
-```.env
-my_secret_userName=r-wuser
-my_secret_privProtocol=AES
-my_secret_privKey=admin1234
-my_secret_authProtocol=SHA
-my_secret_authKey=admin1234
-my_secret_contextEngineId=090807060504037
-```
-
-## Deleting a secret
-
-To delete a secret, `manage_secrets.py` must be run with the following flags:
+#### 1. For setups not yet migrated to latest version
+First, delete all existing secrets from docker-compose.yaml using manage_secrets.py with the following flags:
 
 | Flag                | Description                                          |
 |---------------------|------------------------------------------------------| 
@@ -77,9 +16,74 @@ To delete a secret, `manage_secrets.py` must be run with the following flags:
 This will delete the secret with a given name from all docker compose files. If this secret hasn't been deleted from `.env` 
 file, it will be removed from there. 
 
-### Example of deleting a secret
+#### 2. For setups already migrated to latest version
+Manually delete the secrets from the docker-compose.yaml file under the worker-poller and worker-trap services.
+Remove the corresponding entries from the .env file.
+
+
+After deleting the secrets, follow the below mention steps to configure secrets.
+
+## Prerequisites
+
+A folder must be created to store the secrets file.
+Inside this folder, create a secrets.json file that contains all SNMPv3 secrets.
+
+#### Example of secrets.json
+```json
+{
+  "secret_name": {
+    "username": "user1",
+    "privprotocol": "AES",
+    "privkey": "privkey1",
+    "authprotocol": "SHA",
+    "authkey": "authkey1",
+    "contextengineid": "engineid1"
+  },
+}
+```
+
+> **_NOTE:_** The name of json file should be secrets.json and secrets should have non-empty fields (except contextengineid).
+
+## Configuration
+In the .env file, set the path to the local folder containing the secrets.json:
+```
+SECRET_FOLDER_PATH=/absolute/path/to/secrets/folder
+```
+
+Secrets usage for worker-poller and worker-trap can be controlled by flags in .env:
+```
+ENABLE_TRAPS_SECRETS=true
+ENABLE_WORKER_POLLER_SECRETS=true
+```
+
+
+## Creating a new secret
+
+To create a new secret, 
+create secrets.json file inside folder (at SECRET_FOLDER_PATH), add entry for the new secrets with all the details.
+
+Inside `docker_compose` directory run:
+
 ```shell
-python3 <path_to_manage_secrets.py> --path_to_compose <path_to_compose> \
---secret_name my_secret \
---delete true 
+<!-- sudo docker compose up -d -->
+```
+
+## Updating existing secret
+
+To update any secret, 
+update the required fields (e.g., keys, protocols, username) for any existing secret inside secrets.json file.
+
+Inside `docker_compose` directory run:
+```shell
+<!-- docker-compose up -d --force-recreate <service_name> -->
+```
+
+## Deleting a secret
+
+To delete a secret,
+delete its entry from the secrets.json file.
+
+Inside `docker_compose` directory run:
+```shell
+<!-- docker-compose up -d --force-recreate <service_name> -->
 ```
