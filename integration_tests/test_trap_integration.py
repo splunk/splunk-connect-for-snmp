@@ -22,6 +22,7 @@ from pysnmp.hlapi import *
 from integration_tests.splunk_test_utils import (
     create_v3_secrets_compose,
     create_v3_secrets_microk8s,
+    log_poller_pod_logs,
     splunk_single_search,
     update_file_microk8s,
     update_traps_secrets_compose,
@@ -264,6 +265,7 @@ def test_trap_v3(request, setup_splunk):
         create_v3_secrets_compose()
         update_traps_secrets_compose(["secretv4"])
         upgrade_docker_compose()
+
     logger.info(f"I have: {trap_external_ip}")
     if deployment == "microk8s":
         wait_for_pod_initialization_microk8s()
@@ -277,6 +279,7 @@ def test_trap_v3(request, setup_splunk):
     # wait for the message to be processed
     time.sleep(2)
 
+    log_poller_pod_logs(logger=logger)
     search_query = (
         """search index=netops "SNMPv2-MIB.sysContact.value"="test_trap_v3"  """
     )

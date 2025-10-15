@@ -160,6 +160,7 @@ def upgrade_env_compose(variable, new_value, env_path=".env"):
                 else:
                     lines.append(line)
     if not found:
+        logger.info(" ==== File not found ===")
         lines.append(f"{variable}={new_value}\n")
     with open(env_path, "w") as f:
         f.writelines(lines)
@@ -307,3 +308,49 @@ def wait_for_pod_initialization_microk8s():
 #     }
 #
 #     update_profiles(active_profiles)
+
+
+def log_poller_pod_logs(namespace="sc4snmp", logger=None):
+    import subprocess
+
+    """Fetch and echo logs from poller pods (MicroK8s) or containers (Docker Compose)."""
+
+    os.system('echo "===== ALL POLLER PODS ====="')
+
+    list_pods_cmd = (
+        f"sudo microk8s kubectl get pods -A | grep trap | awk '{{print $2}}'"
+    )
+    os.system(list_pods_cmd)
+
+    os.system('echo "===== STARTING POLLER LOGS ====="')
+    logger.info("===== STARTING POLLER LOGS =====")
+    logger.info(f"list_pods_cmd={list_pods_cmd}")
+
+    pods = subprocess.getoutput(list_pods_cmd).splitlines()
+    if not pods:
+        os.system('echo " No poller pods found."')
+        if logger:
+            logger.info("===== No poller pods found. =====")
+        return
+
+    for pod in pods:
+        os.system(f'echo "----- Logs from: {pod} -----"')
+
+        raw_logs = subprocess.getoutput(
+            f"sudo microk8s kubectl logs {pod} -n {namespace}"
+        )
+        masked_logs = mask_ip_addresses(raw_logs)
+
+        print(raw_logs)
+
+        if logger:
+            logger.info(
+                f"----- Logs from: {pod} -----\n{raw_logs}\n----------------------------"
+            )
+
+        os.system('echo "----------------------------"')
+
+    os.system('echo "===== END POLLER LOGS ====="')
+
+    if logger:
+        logger.info("===== End of poller logs =====")

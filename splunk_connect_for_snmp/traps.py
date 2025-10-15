@@ -260,14 +260,16 @@ def main():
             logger.debug(f"privProtocol: {priv_protocol}")
             priv_protocol = PrivProtocolMap.get(priv_protocol.upper(), "NONE")
 
+            logger.info(f"username :{username}")
+
             for security_engine_id in SECURITY_ENGINE_ID_LIST:
                 config.addV3User(
                     snmp_engine,
                     userName=username,
                     authProtocol=auth_protocol,
-                    authKey=auth_key,
+                    authKey=auth_key if auth_key else None,
                     privProtocol=priv_protocol,
-                    privKey=priv_key,
+                    privKey=priv_key if auth_key else None,
                     securityEngineId=v2c.OctetString(hexValue=security_engine_id),
                 )
                 logger.debug(
