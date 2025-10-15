@@ -4,4 +4,4 @@ communities:
   2c:
     public:
     homelab:
-usernameSecrets: []
+usernameSecrets: ['secretv4']
