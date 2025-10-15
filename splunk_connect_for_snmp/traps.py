@@ -240,6 +240,7 @@ def main():
 
     add_communities(config_base, snmp_engine)
 
+    logger.info(f"config_base={config_base}")
     if "usernameSecrets" in config_base:
         for secret in config_base["usernameSecrets"]:
             location = os.path.join("secrets/snmpv3", secret)

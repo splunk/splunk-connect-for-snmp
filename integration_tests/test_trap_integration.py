@@ -75,6 +75,10 @@ def send_v3_trap(host, port, object_identity, *var_binds):
 
     if error_indication:
         logger.error(f"{error_indication}")
+    elif error_status:
+        logger.error(f"{error_status}")
+    else:
+        logger.info(f"Successfully send traps: {var_binds}")
 
 
 @pytest.mark.part66
@@ -277,7 +281,7 @@ def test_trap_v3(request, setup_splunk):
     send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.1.0", varbind1)
 
     # wait for the message to be processed
-    time.sleep(20)
+    time.sleep(2)
 
     log_poller_pod_logs(logger=logger)
     search_query = (
