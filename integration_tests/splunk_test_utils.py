@@ -313,14 +313,22 @@ def wait_for_pod_initialization_microk8s():
 def log_poller_pod_logs(namespace="sc4snmp", logger=None):
     import subprocess
 
+    logger.info("===== Traps =====")
+    raw_logs = subprocess.getoutput(
+        f"sudo docker logs sc4snmp-traps"
+    )
+    logger.info(raw_logs)
+    
+    logger.info("===== Traps worker 1 =====")
     raw_logs = subprocess.getoutput(
         f"sudo docker logs integration_tests-worker-trap-1"
     )
     logger.info(raw_logs)
 
+    logger.info("===== Traps worker 2 =====")
     raw_logs = subprocess.getoutput(
         f"sudo docker logs integration_tests-worker-trap-2"
     )
     logger.info(raw_logs)
     if logger:
-        logger.info("===== End of poller logs =====")
+        logger.info("===== End of traps logs =====")
