@@ -23,6 +23,8 @@ RUN poetry config virtualenvs.in-project true ;\
 FROM base AS final
 
 RUN mkdir /.pysnmp && chown 10001:10001 /.pysnmp
+COPY manage_secrets.py /app/secrets/
+RUN chown 10001:10001 /app/secrets/
 RUN chown 10001:10001 /tmp
 USER 10001:10001
 COPY --from=builder /app/.venv /app/.venv
