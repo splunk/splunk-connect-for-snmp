@@ -15,7 +15,7 @@
 #   ########################################################################
 import logging
 import time
-
+import yaml
 import pytest
 from pysnmp.hlapi import *
 
