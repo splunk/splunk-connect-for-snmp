@@ -147,6 +147,7 @@ services:
       LOG_LEVEL: ${TRAP_LOG_LEVEL:-INFO}
       SNMP_V3_SECURITY_ENGINE_ID: ${SNMP_V3_SECURITY_ENGINE_ID:-80003a8c04}
       DISABLE_MONGO_DEBUG_LOGGING: ${TRAP_DISABLE_MONGO_DEBUG_LOGGING:-true}
+      ENABLE_WORKER_TRAPS_SECRETS: ${ENABLE_WORKER_TRAPS_SECRETS:-false}
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
     ports:
     - mode: host
@@ -157,6 +158,7 @@ services:
     - ${TRAPS_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
     - traps-pysnmp-cache-volume:/.pysnmp/:rw
     - traps-tmp:/tmp/:rw
+    - ${SECRET_FOLDER_PATH}:/app/secrets/tmp:ro
   worker-poller:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
