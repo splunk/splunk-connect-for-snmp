@@ -1212,6 +1212,39 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Define external gateway for traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-metallb-loadbalancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using MetalLB LoadBalancer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-nodeport" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using NodePort
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-cloud-load-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Cloud Load Balancer
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2126,6 +2159,39 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Define external gateway for traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-metallb-loadbalancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using MetalLB LoadBalancer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-nodeport" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using NodePort
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-cloud-load-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Cloud Load Balancer
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2263,32 +2329,41 @@ This can be checked with the following command:
 </code></pre></div>
 </div>
 <h3 id="define-external-gateway-for-traps">Define external gateway for traps<a class="headerlink" href="#define-external-gateway-for-traps" title="Permanent link">¶</a></h3>
-<p>If you use SC4SNMP on a single machine, configure <code>loadBalancerIP</code>.
-<code>loadBalancerIP</code> is the IP address in the metallb pool. 
+<h4 id="using-metallb-loadbalancer">Using MetalLB LoadBalancer<a class="headerlink" href="#using-metallb-loadbalancer" title="Permanent link">¶</a></h4>
+<p>If you use SC4SNMP on a multinode setup, configure <code>loadBalancerIP</code>.
+<code>loadBalancerIP</code> should be an IP assigned from your MetalLB address pool in the same subnet as your cluster nodes can reach.
 See the following example:</p>
 <p></p><div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">loadBalancerIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.202</span>
 </code></pre></div>
-If you have enabled the Ipv6 you need to pass IP addresses for both IPv4 and IPv6.
+If you have enabled IPv6 dual‑stack, provide both IPv4 and IPv6 addresses as a comma‑separated list:
 See the following example:
 <div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">loadBalancerIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.202,2001:0DB8:AC10:FE01:0000:0000:0000:0001</span>
 </code></pre></div>
-<p>If you want to use the SC4SNMP trap receiver in K8S cluster, configure <code>NodePort</code> instead. Use the following configuration:</p>
+<h4 id="using-nodeport">Using NodePort<a class="headerlink" href="#using-nodeport" title="Permanent link">¶</a></h4>
+<p>For single‑node clusters or simple setups without a load balancer, you can expose the traps receiver on a fixed port across all node IPs with <code>NodePort</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NodePort</span>
 <span class="w">    </span><span class="nt">externalTrafficPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Cluster</span>
 <span class="w">    </span><span class="nt">nodePort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30000</span>
 </code></pre></div>
-<p>Using this method, the SNMP trap will always be forwarded to one of the trap receiver pods listening on port 30000 (like in the
-example above, you can configure to any other port). So, it does not matter that IP address of which node you use. 
-Adding nodePort will make it end up in the correct place everytime. </p>
-<p>A good practice is to create an IP floating address/Anycast pointing to the healthy nodes, so the traffic is forwarded in case of the
-failover. To do this, create an external LoadBalancer that balances the traffic between nodes.</p>
+<p>This way the trap receiver will be available on all node IPs on port 30000.</p>
+<h4 id="using-cloud-load-balancer">Using Cloud Load Balancer<a class="headerlink" href="#using-cloud-load-balancer" title="Permanent link">¶</a></h4>
+<p>You can also deploy the traps receiver without MetalLB or NodePort, using Kubernetes Service annotations supported by your cloud platform.
+For example, on AWS EKS you can enable an AWS Network Load Balancer with annotations:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">service</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">usemetallb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">service.beta.kubernetes.io/aws-load-balancer-type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">external</span>
+<span class="w">      </span><span class="nt">service.beta.kubernetes.io/aws-load-balancer-nlb-target-type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ip</span>
+<span class="w">      </span><span class="nt">service.beta.kubernetes.io/aws-load-balancer-scheme</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">internal</span>
+</code></pre></div>
 <h3 id="define-number-of-traps-server-replica">Define number of traps server replica<a class="headerlink" href="#define-number-of-traps-server-replica" title="Permanent link">¶</a></h3>
-<p><code>replicaCount</code> defines that the number of replicas per trap container should be 2 times the number of nodes.
-</p><div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<p><code>replicaCount</code> defines that the number of replicas per trap container should be 2 times the number of nodes.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="c1">#For production deployments the value should be at least 2x the number of nodes</span>
 <span class="w">  </span><span class="c1"># Minimum 2 for a single node</span>
 <span class="w">  </span><span class="c1"># Minimum 6 for multi-node HA</span>
