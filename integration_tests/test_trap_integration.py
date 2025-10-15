@@ -78,7 +78,9 @@ def send_v3_trap(host, port, object_identity, *var_binds):
     elif error_status:
         logger.error(f"{error_status}")
     else:
-        logger.info(f"Successfully send traps: {var_binds}")
+        logger.info(f"Successfully send traps: ")
+        for name,val in var_binds:
+            logger.info(f"{name} : {val}")
 
 
 @pytest.mark.part66
