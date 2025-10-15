@@ -273,6 +273,7 @@ def test_trap_v3(request, setup_splunk):
         logger.info("Adding secret to compose")
         update_traps_secrets_compose(["secretv4"])
         with open("traps-config.yaml") as f_tmp:
+            yaml = ruamel.yaml.YAML()
             traps_config = yaml.load(f_tmp)
             logger.info(f"traps config: {traps_config}")
         logger.info("Upgrading container")
