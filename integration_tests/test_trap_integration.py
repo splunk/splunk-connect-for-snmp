@@ -17,6 +17,7 @@ import logging
 import time
 import yaml
 import pytest
+import ruamel
 from pysnmp.hlapi import *
 
 from integration_tests.splunk_test_utils import (
