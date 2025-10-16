@@ -1,10 +1,36 @@
 {{- define "splunk-connect-for-snmp.mongo_uri" -}}
+
+{{- if or (not (empty .Values.mongodb.auth.existingSecret)) (not (empty .Values.mongodb.auth.rootPassword)) }}
+    {{- $mongoPassword := "" }}
+
+    {{- if (not (empty .Values.mongodb.auth.existingSecret)) }}
+        {{- $mongoSecretName := .Values.mongodb.auth.existingSecret }}
+        {{- $mongoSecret := lookup "v1" "Secret" .Release.Namespace $mongoSecretName }}
+
+        {{- if not $mongoSecret }}
+            {{- fail (printf "Secret '%s' not found in namespace '%s'. Please create it before deploying." $mongoSecretName .Release.Namespace) }}
+        {{- end }}
+
+        {{- $mongoPassword = get $mongoSecret.data "mongodb-root-password" | b64dec }}
+    {{- else }}
+        {{- $mongoPassword = .Values.mongodb.auth.rootPassword }}
+    {{- end }}
+
+    {{- if eq .Values.mongodb.architecture "replicaset" }}
+        {{- printf "mongodb+srv://root:%s@%s-mongodb-headless.%s.svc.%s/?tls=false&ssl=false&replicaSet=rs0"  $mongoPassword .Release.Name .Release.Namespace .Values.mongodb.clusterDomain}}
+    {{- else }}
+        {{- printf "mongodb://root:%s@%s-mongodb:27017" $mongoPassword  .Release.Name }}
+    {{- end }}
+{{- else }}
+
 {{- if eq .Values.mongodb.architecture "replicaset" }}
 {{- printf "mongodb+srv://%s-mongodb-headless.%s.svc.%s/?tls=false&ssl=false&replicaSet=rs0" .Release.Name .Release.Namespace .Values.mongodb.clusterDomain}}
 {{- else }}
 {{- printf "mongodb://%s-mongodb:27017" .Release.Name }}
-{{- end }}  
-{{- end }}  
+{{- end }}
+
+{{- end }}
+{{- end }}
 
 {{- define "splunk-connect-for-snmp.mongodbHost" -}}
 {{- if .Values.mongodbHost }}
@@ -15,18 +41,73 @@
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.celery_url" -}}
+
+{{- if or (not (empty .Values.redis.auth.existingSecret)) (not (empty .Values.redis.auth.password)) }}
+
+    {{- $redisPassword := "" }}
+
+    {{- if (not (empty .Values.redis.auth.existingSecret)) }}
+        {{- $redisSecretName := .Values.redis.auth.existingSecret }}
+        {{- $redisSecret := lookup "v1" "Secret" .Release.Namespace $redisSecretName }}
+
+        {{- if not $redisSecret }}
+            {{- fail (printf "Secret '%s' not found in namespace '%s'. Please create it before deploying." $redisSecretName .Release.Namespace) }}
+        {{- end }}
+
+        {{- $redisPassword = get $redisSecret.data "redis-password" | b64dec }}
+    {{- else }}
+        {{- $redisPassword = .Values.redis.auth.password }}
+    {{- end }}
+
+    {{- if and ( eq .Values.redis.architecture "replication" ) .Values.redis.sentinel.enabled  }}
+        {{- printf "redis://:%s@%s-redis:6379/0" $redisPassword .Release.Name }}
+    {{- else }}
+        {{- printf "redis://:%s@%s-redis-master:6379/0" $redisPassword .Release.Name }}
+    {{- end }}
+{{- else }}
+
+
 {{- if and ( eq .Values.redis.architecture "replication" ) .Values.redis.sentinel.enabled  }}
 {{- printf "redis://%s-redis:6379/0" .Release.Name }}
 {{- else }}
 {{- printf "redis://%s-redis-master:6379/0" .Release.Name }}
 {{- end }}
+
+{{- end }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.redis_url" -}}
+
+{{- if or (not (empty .Values.redis.auth.existingSecret)) (not (empty .Values.redis.auth.password)) }}
+
+    {{- $redisPassword := "" }}
+
+    {{- if (not (empty .Values.redis.auth.existingSecret)) }}
+        {{- $redisSecretName := .Values.redis.auth.existingSecret }}
+        {{- $redisSecret := lookup "v1" "Secret" .Release.Namespace $redisSecretName }}
+
+        {{- if not $redisSecret }}
+            {{- fail (printf "Secret '%s' not found in namespace '%s'. Please create it before deploying." $redisSecretName .Release.Namespace) }}
+        {{- end }}
+
+        {{- $redisPassword = get $redisSecret.data "redis-password" | b64dec }}
+    {{- else }}
+        {{- $redisPassword = .Values.redis.auth.password }}
+    {{- end }}
+
+    {{- if and ( eq .Values.redis.architecture "replication" ) .Values.redis.sentinel.enabled  }}
+        {{- printf "redis://:%s@%s-redis:6379/1" $redisPassword .Release.Name }}
+    {{- else }}
+        {{- printf "redis://:%s@%s-redis-master:6379/1" $redisPassword .Release.Name }}
+    {{- end }}
+{{- else }}
+
 {{- if and ( eq .Values.redis.architecture "replication" ) .Values.redis.sentinel.enabled  }}
 {{- printf "redis://%s-redis:6379/1" .Release.Name }}
 {{- else }}
 {{- printf "redis://%s-redis-master:6379/1" .Release.Name }}
+{{- end }}
+
 {{- end }}
 {{- end }}
 
