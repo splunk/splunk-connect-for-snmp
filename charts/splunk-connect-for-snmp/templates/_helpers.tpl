@@ -14,40 +14,6 @@
 {{- end }}
 {{- end }}
 
-{{- define "splunk-connect-for-snmp.celery_url" -}}
-{{- $password := "" -}}
-{{- if .Values.redis.auth.enabled -}}
-  {{- $secretName := .Values.redis.auth.existingSecret | default (printf "%s-redis-secret" .Release.Name) -}}
-  {{- $secret := lookup "v1" "Secret" .Release.Namespace $secretName -}}
-  {{- if $secret -}}
-    {{- $passwordKey := .Values.redis.auth.existingSecretPasswordKey | default "password" -}}
-    {{- $password = index $secret.data $passwordKey | b64dec -}}
-  {{- end -}}
-{{- end -}}
-{{- if $password }}
-{{- printf "redis://:%s@%s-redis:6379/0" $password .Release.Name | quote -}}
-{{- else }}
-{{- printf "redis://%s-redis:6379/0" .Release.Name | quote -}}
-{{- end }}
-{{- end }}
-
-{{- define "splunk-connect-for-snmp.redis_url" -}}
-{{- $password := "" -}}
-{{- if .Values.redis.auth.enabled -}}
-  {{- $secretName := .Values.redis.auth.existingSecret | default (printf "%s-redis-secret" .Release.Name) -}}
-  {{- $secret := lookup "v1" "Secret" .Release.Namespace $secretName -}}
-  {{- if $secret -}}
-    {{- $passwordKey := .Values.redis.auth.existingSecretPasswordKey | default "password" -}}
-    {{- $password = index $secret.data $passwordKey | b64dec -}}
-  {{- end -}}
-{{- end -}}
-{{- if $password }}
-{{- printf "redis://:%s@%s-redis:6379/1" $password .Release.Name | quote -}}
-{{- else }}
-{{- printf "redis://%s-redis:6379/1" .Release.Name | quote -}}
-{{- end }}
-{{- end }}
-
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).

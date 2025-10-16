@@ -30,9 +30,27 @@ import os
 
 CELERY_TASK_TIMEOUT = int(os.getenv("CELERY_TASK_TIMEOUT", "2400"))
 PREFETCH_COUNT = int(os.getenv("PREFETCH_COUNT", 1))
-redbeat_redis_url = os.getenv("REDIS_URL")
-# broker
-broker_url = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672//")
+
+# Read components
+redis_host = os.getenv("REDIS_HOST", "snmp-redis")
+redis_port = os.getenv("REDIS_PORT", "6379")
+redis_password = os.getenv("REDIS_PASSWORD", "")
+redis_db = os.getenv("REDIS_DB", "1")
+celery_db = os.getenv("CELERY_DB", "0")
+
+# Construct redbeat_redis_url
+if redis_password:
+    redis_base = f"redis://:{redis_password}@{redis_host}:{redis_port}"
+else:
+    redis_base = f"redis://{redis_host}:{redis_port}"
+
+redbeat_redis_url = f"{redis_db}/{redis_db}"
+broker_url = f"{redis_base}/{celery_db}"
+
+# Fallback to env vars if set (backward compatibility)
+redbeat_redis_url = os.getenv("REDIS_URL", redbeat_redis_url)
+broker_url = os.getenv("CELERY_BROKER_URL", broker_url)
+
 DISABLE_MONGO_DEBUG_LOGGING = human_bool(
     os.getenv("DISABLE_MONGO_DEBUG_LOGGING", "true")
 )
