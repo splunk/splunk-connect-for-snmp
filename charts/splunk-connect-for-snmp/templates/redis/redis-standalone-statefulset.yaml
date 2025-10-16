@@ -83,7 +83,6 @@ spec:
                 key: password
                 {{- end }}
         {{- end }}
-        {{- end }}
         volumeMounts:
         - name: redis-data
           mountPath: /data
