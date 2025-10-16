@@ -125,8 +125,17 @@ spec:
       - name: redis-config
         configMap:
           name: {{ .Release.Name }}-redis-config
-      {{- else }}
+      {{- else if .Values.redis.storage.enabled }}
+      # Storage enabled but no existing PVC - use volumeClaimTemplates below
       volumes:
+      - name: redis-config
+        configMap:
+          name: {{ .Release.Name }}-redis-config
+      {{- else }}
+      # Storage disabled - use emptyDir (ephemeral)
+      volumes:
+      - name: redis-data
+        emptyDir: {}
       - name: redis-config
         configMap:
           name: {{ .Release.Name }}-redis-config
