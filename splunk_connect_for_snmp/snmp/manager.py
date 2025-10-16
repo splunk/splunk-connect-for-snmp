@@ -755,6 +755,9 @@ class Poller(Task):
                     metric_type, metric_value = self.set_metrics_index(
                         index, target, varbind
                     )
+                    logger.info(
+                        f"=== val={varbind[1]}, group_key={group_key}, metric_type={metric_type}, metric_value={metric_value}, metric={metric}, mib={mib}, varbind_id={varbind_id}, oid={oid}, index={index} ===="
+                    )
 
                     profile = self.set_profile_name(mapping, metric, mib, varbind_id)
                     if metric_value == "No more variables left in this MIB View":
@@ -776,13 +779,14 @@ class Poller(Task):
                     )
             else:
                 logger.info(
-                    f"<=== not resolved varbind_id={varbind_id}, oid={oid} ,metric={metric} index={index}, mapping={mapping} ===>"
+                    f"<=== not resolved varbind_id={varbind_id}, oid={oid} ,metric={metric} index={index}, val={varbind[1]}, mapping={mapping} ===>"
                 )
                 found = self.find_new_mibs(oid, remotemibs, target, varbind_id)
                 if found:
                     retry = True
                     break
 
+        logger.info(f"=====> metrics={metrics}")
         return retry, remotemibs, metrics
 
     def find_new_mibs(self, oid, remotemibs, target, varbind_id):
@@ -881,4 +885,7 @@ class Poller(Task):
         resolved_oid = ObjectIdentity(oid).resolveWithMib(self.mib_view_controller)
         varbind_id = resolved_oid.prettyPrint()
         mib, metric, index = resolved_oid.getMibSymbol()
+        logger.info(
+            f"<--- mib={mib}, metric={metric}, varbind_id={varbind_id}, oid={oid}, val={varbind[1]}, index={index} --->"
+        )
         return index, metric, mib, oid, varbind_id
