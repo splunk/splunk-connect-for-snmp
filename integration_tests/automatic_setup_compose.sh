@@ -127,6 +127,7 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
     -v splunk_hec_host="$SPLUNK_HEC_HOST" \
     -v splunk_hec_token="$SPLUNK_HEC_TOKEN" \
     -v secret_folder_path="$SECRET_FOLDER_PATH" \
+    -v enable_worker_poller_secrets="true" \
     '
     BEGIN {
         updated["SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH"] = 0;
@@ -136,6 +137,7 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
         updated["SPLUNK_HEC_HOST"] = 0;
         updated["SPLUNK_HEC_TOKEN"] = 0;
         updated["SECRET_FOLDER_PATH"] = 0;
+        updated["ENABLE_WORKER_POLLER_SECRETS"] = 0;
     }
     {
         if ($1 == "SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=") {
@@ -159,6 +161,9 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
         } else if ($1 == "SECRET_FOLDER_PATH=") {
             print "SECRET_FOLDER_PATH=" secret_folder_path;
             updated["SECRET_FOLDER_PATH"] = 1;
+        } else if ($1 == "ENABLE_WORKER_POLLER_SECRETS=") {
+            print "ENABLE_WORKER_POLLER_SECRETS=" enable_worker_poller_secrets;
+            updated["ENABLE_WORKER_POLLER_SECRETS"] = 1;
         } else {
             print $0;
         }
@@ -184,6 +189,9 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
         }
         if (updated["SECRET_FOLDER_PATH"] == 0) {
             print "SECRET_FOLDER_PATH=" secret_folder_path;
+        }
+        if (updated["ENABLE_WORKER_POLLER_SECRETS"] == 0) {
+            print "ENABLE_WORKER_POLLER_SECRETS=" enable_worker_poller_secrets;
         }
     }
     ' .env > "$TEMP_ENV_FILE"
