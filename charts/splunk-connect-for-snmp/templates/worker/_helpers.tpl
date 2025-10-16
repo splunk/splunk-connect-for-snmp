@@ -101,8 +101,6 @@ Common labels
   value: "0"
 - name: SC4SNMP_VERSION
   value: {{ .Chart.Version | default "0.0.0" }}
-- name: CELERY_BROKER_URL
-  value: {{ include "splunk-connect-for-snmp.celery_url" . }}
 - name: MONGO_URI
   value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
 - name: WALK_RETRY_MAX_INTERVAL

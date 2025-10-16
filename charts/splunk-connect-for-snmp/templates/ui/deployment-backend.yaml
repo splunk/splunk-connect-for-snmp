@@ -69,8 +69,6 @@ spec:
           value: /config/job_config.yaml
         - name: JOB_NAMESPACE
           value: sc4snmp
-        - name: CELERY_BROKER_URL
-          value: {{ include "splunk-connect-for-snmp-ui.celery_url" . }}
         - name: VALUES_DIRECTORY
           {{- if .Values.UI.valuesFileDirectory }}
           value: {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }}
