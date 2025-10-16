@@ -72,15 +72,17 @@ spec:
           exec redis-server /tmp/redis.conf
         {{- if .Values.redis.auth.enabled }}
         env:
-        - name: REDIS_PASSWORD
-          {{- if or .Values.redis.auth.existingSecret }}
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.redis.auth.existingSecret | default (printf "%s-redis-secret" .Release.Name) }}
-              key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
-          {{- else }}
-          value: {{ .Values.redis.auth.password | quote }}
-          {{- end }}
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                {{- if .Values.redis.auth.existingSecret }}
+                name: {{ .Values.redis.auth.existingSecret }}
+                key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
+                {{- else }}
+                name: {{ .Release.Name }}-redis-secret
+                key: password
+                {{- end }}
+        {{- end }}
         {{- end }}
         volumeMounts:
         - name: redis-data

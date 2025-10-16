@@ -11,11 +11,6 @@ data:
     # Data directory
     dir /data
 
-    {{- if .Values.redis.auth.enabled }}
-    # Authentication
-    requirepass ${REDIS_PASSWORD}
-    {{- end }}
-
     # Persistence - RDB
     save 900 1
     save 300 10
