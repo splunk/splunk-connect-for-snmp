@@ -32,20 +32,20 @@ CELERY_TASK_TIMEOUT = int(os.getenv("CELERY_TASK_TIMEOUT", "2400"))
 PREFETCH_COUNT = int(os.getenv("PREFETCH_COUNT", 1))
 
 # Read components
-redis_host = os.getenv("REDIS_HOST", "snmp-redis")
-redis_port = os.getenv("REDIS_PORT", "6379")
-redis_password = os.getenv("REDIS_PASSWORD", "")
-redis_db = os.getenv("REDIS_DB", "1")
-celery_db = os.getenv("CELERY_DB", "0")
+REDIS_HOST = os.getenv("REDIS_HOST", "snmp-redis")
+REDIS_PORT = os.getenv("REDIS_PORT", "6379")
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "")
+REDIS_DB = os.getenv("REDIS_DB", "1")
+CELERY_DB = os.getenv("CELERY_DB", "0")
 
 # Construct redbeat_redis_url
-if redis_password:
-    redis_base = f"redis://:{redis_password}@{redis_host}:{redis_port}"
+if REDIS_PASSWORD:
+    redis_base = f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}"
 else:
-    redis_base = f"redis://{redis_host}:{redis_port}"
+    redis_base = f"redis://{REDIS_HOST}:{REDIS_PORT}"
 
-redbeat_redis_url = f"{redis_db}/{redis_db}"
-broker_url = f"{redis_base}/{celery_db}"
+redbeat_redis_url = f"{redis_base}/{REDIS_DB}"
+broker_url = f"{redis_base}/{CELERY_DB}"
 
 # Fallback to env vars if set (backward compatibility)
 redbeat_redis_url = os.getenv("REDIS_URL", redbeat_redis_url)
