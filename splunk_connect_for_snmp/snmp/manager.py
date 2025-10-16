@@ -881,4 +881,7 @@ class Poller(Task):
         resolved_oid = ObjectIdentity(oid).resolveWithMib(self.mib_view_controller)
         varbind_id = resolved_oid.prettyPrint()
         mib, metric, index = resolved_oid.getMibSymbol()
+        logger.info(
+            f"<==== val={varbind[1]} mib={mib}, metric={metric}, varbind_id={varbind_id}, oid={oid} ====>"
+        )
         return index, metric, mib, oid, varbind_id
