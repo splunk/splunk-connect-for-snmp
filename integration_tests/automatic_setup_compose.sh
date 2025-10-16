@@ -105,6 +105,7 @@ SCHEDULER_CONFIG_FILE="scheduler-config.yaml"
 TRAPS_CONFIG_FILE="traps-config.yaml"
 INVENTORY_FILE="inventory-tests.csv"
 COREFILE="Corefile"
+SECRET_FOLDER="sample_v3_values"
 
 # Get the absolute paths of the files
 SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=$(realpath "$SCHEDULER_CONFIG_FILE")
@@ -113,6 +114,7 @@ INVENTORY_FILE_ABSOLUTE_PATH=$(realpath "$INVENTORY_FILE")
 COREFILE_ABS_PATH=$(realpath "$COREFILE")
 SPLUNK_HEC_HOST=$(hostname -I | cut -d " " -f1)
 SPLUNK_HEC_TOKEN=$(cat hec_token)
+SECRET_FOLDER_PATH=$(realpath "$SECRET_FOLDER")
 
 # Temporary file to store the updated .env content
 TEMP_ENV_FILE=".env.tmp"
@@ -124,6 +126,8 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
     -v corefile_path="$COREFILE_ABS_PATH" \
     -v splunk_hec_host="$SPLUNK_HEC_HOST" \
     -v splunk_hec_token="$SPLUNK_HEC_TOKEN" \
+    -v secret_folder_path="$SECRET_FOLDER_PATH" \
+    -v enable_worker_poller_secrets="true" \
     '
     BEGIN {
         updated["SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH"] = 0;
@@ -132,6 +136,8 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
         updated["COREFILE_ABS_PATH"] = 0;
         updated["SPLUNK_HEC_HOST"] = 0;
         updated["SPLUNK_HEC_TOKEN"] = 0;
+        updated["SECRET_FOLDER_PATH"] = 0;
+        updated["ENABLE_WORKER_POLLER_SECRETS"] = 0;
     }
     {
         if ($1 == "SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=") {
@@ -152,6 +158,12 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
         } else if ($1 == "SPLUNK_HEC_TOKEN=") {
             print "SPLUNK_HEC_TOKEN=" splunk_hec_token;
             updated["SPLUNK_HEC_TOKEN"] = 1;
+        } else if ($1 == "SECRET_FOLDER_PATH=") {
+            print "SECRET_FOLDER_PATH=" secret_folder_path;
+            updated["SECRET_FOLDER_PATH"] = 1;
+        } else if ($1 == "ENABLE_WORKER_POLLER_SECRETS=") {
+            print "ENABLE_WORKER_POLLER_SECRETS=" enable_worker_poller_secrets;
+            updated["ENABLE_WORKER_POLLER_SECRETS"] = 1;
         } else {
             print $0;
         }
@@ -175,23 +187,18 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
         if (updated["SPLUNK_HEC_TOKEN"] == 0) {
             print "SPLUNK_HEC_TOKEN=" splunk_hec_token;
         }
+        if (updated["SECRET_FOLDER_PATH"] == 0) {
+            print "SECRET_FOLDER_PATH=" secret_folder_path;
+        }
+        if (updated["ENABLE_WORKER_POLLER_SECRETS"] == 0) {
+            print "ENABLE_WORKER_POLLER_SECRETS=" enable_worker_poller_secrets;
+        }
     }
     ' .env > "$TEMP_ENV_FILE"
 
 # Replace the old .env file with the updated one
 mv "$TEMP_ENV_FILE" .env
 
-# Create snmpv3 secret
-python3 -m pip install ruamel.yaml
-python3 $(realpath "manage_secrets.py") --path_to_compose $(pwd) \
---secret_name sv3poller \
---userName r-wuser \
---privProtocol AES \
---privKey admin1234 \
---authProtocol SHA \
---authKey admin1234 \
---contextEngineId 8000000903000A397056B8AC \
---traps false
 
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" inventory-tests.csv
 echo $(green "Running SNMP simulators in Docker")

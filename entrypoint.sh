@@ -3,8 +3,12 @@ set -e
 . /app/.venv/bin/activate
 LOG_LEVEL=${LOG_LEVEL:=INFO}
 WORKER_CONCURRENCY=${WORKER_CONCURRENCY:=4}
+ENABLE_TRAPS_SECRETS=${ENABLE_TRAPS_SECRETS:=false}
+ENABLE_WORKER_POLLER_SECRETS=${ENABLE_WORKER_POLLER_SECRETS:=false}
 wait-for-dep "${CELERY_BROKER_URL}" "${REDIS_URL}" "${MONGO_URI}" "${MIB_INDEX}"
-
+if [ "$ENABLE_TRAPS_SECRETS" = "true" ] || [ "$ENABLE_WORKER_POLLER_SECRETS" = "true" ]; then
+    python /app/secrets/manage_secrets.py
+fi
 case $1 in
 
 inventory)
