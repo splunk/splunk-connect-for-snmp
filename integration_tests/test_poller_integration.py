@@ -14,13 +14,17 @@
 #    limitations under the License.
 #   ########################################################################
 import logging
+import os
 import time
+from logging.handlers import RotatingFileHandler
 
 import pytest
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString as dq
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
 from integration_tests.splunk_test_utils import (
+    exec_mongodb_commands,
+    log_poller_pod_logs,
     splunk_single_search,
     update_file_microk8s,
     update_groups_compose,
@@ -129,6 +133,7 @@ class TestProfiles:
         assert metric_count > 0
 
     def test_static_profiles_event(self, setup_splunk):
+        log_poller_pod_logs(logger=logger)
         search_string = """search index=netops sourcetype="sc4snmp:event" "IF-MIB.ifType" AND NOT "IF-MIB.ifAdminStatus" """
         logger.info("Integration test static profile - events")
         result_count, metric_count = run_retried_single_search(
@@ -804,7 +809,7 @@ def setup_groups(request):
 
 
 @pytest.mark.usefixtures("setup_groups")
-@pytest.mark.part3
+@pytest.mark.part33
 class TestGroupsInventory:
     def test_ip_address_inventory(self, setup_splunk):
         time.sleep(20)
@@ -934,7 +939,7 @@ def setup_single_ang_group(request):
 
 
 @pytest.mark.usefixtures("setup_single_ang_group")
-@pytest.mark.part3
+@pytest.mark.part33
 class TestIgnoreSingleIfInGroup:
     def test_host_from_group(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
@@ -980,6 +985,10 @@ def setup_single_gt_and_lt_profiles(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
+        "small_walk_profile": {
+            "condition": {"type": "walk"},
+            "varBinds": [yaml_escape_list(sq("IF-MIB"))],
+        },
         "gt_profile": {
             "frequency": 7,
             "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
@@ -1000,7 +1009,7 @@ def setup_single_gt_and_lt_profiles(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_profile;lt_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1008,7 +1017,9 @@ def setup_single_gt_and_lt_profiles(request):
     else:
         update_profiles_compose(profiles)
         update_inventory_compose(
-            [f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,"]
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_profile;lt_profile,,"
+            ]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1016,14 +1027,16 @@ def setup_single_gt_and_lt_profiles(request):
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_profile;lt_profile,,t",
             ],
             "inventory.yaml",
         )
         upgrade_helm_microk8s(["inventory.yaml"])
     else:
         update_inventory_compose(
-            [f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,t"]
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_profile;lt_profile,,t"
+            ]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1033,6 +1046,8 @@ def setup_single_gt_and_lt_profiles(request):
 @pytest.mark.part3
 class TestSingleGtAndLtCorrectCondition:
     def test_gt_profile(self, request, setup_splunk):
+        exec_mongodb_commands(logger=logger, msg="((((((  test_gt_profile ))))))")
+        log_poller_pod_logs(logger=logger, msg="test_gt_profile", pod="poll")
         time.sleep(20)
         search_string = """| mpreview index=netmetrics | search profiles=gt_profile """
         result_count, metric_count = run_retried_single_search(
@@ -1042,6 +1057,8 @@ class TestSingleGtAndLtCorrectCondition:
         assert metric_count > 0
 
     def test_lt_profile(self, request, setup_splunk):
+        exec_mongodb_commands(logger=logger, msg="(((((( test_lt_profile )))))))")
+        log_poller_pod_logs(logger=logger, msg="test_lt_profile", pod="poll")
         time.sleep(20)
         search_string = """| mpreview index=netmetrics | search profiles=lt_profile """
         result_count, metric_count = run_retried_single_search(
@@ -1321,6 +1338,7 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
 class TestSingleGtAndLtWithNegationCorrectCondition:
     def test_not_gt_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_gt_profile """
         )
@@ -1332,6 +1350,7 @@ class TestSingleGtAndLtWithNegationCorrectCondition:
 
     def test_not_lt_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_lt_profile """
         )
@@ -1521,10 +1540,11 @@ def setup_single_regex_and_options_profiles_with_negation(request):
 
 
 @pytest.mark.usefixtures("setup_single_regex_and_options_profiles_with_negation")
-@pytest.mark.part5
+@pytest.mark.part55
 class TestSingleRegexWithNegationCorrectCondition:
     def test_not_regex_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_regex_profile """
         )
@@ -1536,6 +1556,7 @@ class TestSingleRegexWithNegationCorrectCondition:
 
     def test_not_regex_with_options_profile(self, request, setup_splunk):
         time.sleep(20)
+        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_options_profile """
         )
@@ -1563,6 +1584,10 @@ def setup_multiple_conditions_profiles(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
+        "small_walk_profile": {
+            "condition": {"type": "walk"},
+            "varBinds": [yaml_escape_list(sq("IF-MIB"))],
+        },
         "gt_and_equals_profile": {
             "frequency": 7,
             "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
@@ -1593,7 +1618,7 @@ def setup_multiple_conditions_profiles(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_and_equals_profile;lt_and_in_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1602,16 +1627,16 @@ def setup_multiple_conditions_profiles(request):
         update_profiles_compose(profiles)
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,"
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_and_equals_profile;lt_and_in_profile,,"
             ]
         )
         upgrade_docker_compose()
-    time.sleep(120)
+    time.sleep(200)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_and_equals_profile;lt_and_in_profile,,t",
             ],
             "inventory.yaml",
         )
@@ -1619,18 +1644,25 @@ def setup_multiple_conditions_profiles(request):
     else:
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,t"
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_and_equals_profile;lt_and_in_profile,,t"
             ]
         )
         upgrade_docker_compose()
-    time.sleep(120)
+    time.sleep(200)
 
 
 @pytest.mark.usefixtures("setup_multiple_conditions_profiles")
 @pytest.mark.part5
 class TestMultipleCorrectConditions:
     def test_gt_and_equals_profile(self, request, setup_splunk):
+        log_poller_pod_logs(
+            logger=logger, pod="inventory", msg="test_gt_and_equals_profile"
+        )
         time.sleep(20)
+        exec_mongodb_commands(
+            logger=logger, msg=" (((((( test_gt_and_equals_profile )))))"
+        )
+        log_poller_pod_logs(logger=logger, msg="test_gt_and_equals_profile", pod="poll")
         search_string = (
             """| mpreview index=netmetrics | search profiles=gt_and_equals_profile """
         )
@@ -1641,7 +1673,14 @@ class TestMultipleCorrectConditions:
         assert metric_count > 0
 
     def test_lt_and_in_profile(self, request, setup_splunk):
+        log_poller_pod_logs(
+            logger=logger, pod="inventory", msg="test_lt_and_in_profile"
+        )
         time.sleep(20)
+        exec_mongodb_commands(
+            logger=logger, msg=" ((((((( test_lt_and_in_profile ))))))"
+        )
+        log_poller_pod_logs(logger=logger, msg="test_lt_and_in_profile", pod="poll")
         search_string = (
             """| mpreview index=netmetrics | search profiles=lt_and_in_profile """
         )
@@ -1739,7 +1778,7 @@ def setup_wrong_conditions_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_wrong_conditions_profiles")
-@pytest.mark.part5
+@pytest.mark.part55
 class TestWrongConditions:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)
