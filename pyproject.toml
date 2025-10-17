@@ -21,7 +21,7 @@ testpaths = ["test"]
 python_files = ["test_*.py"]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
+python = ">=3.12,<3.14"
 pymongo = {extras = ["srv"], version = "^4.0.0"}
 requests = {extras = ["crypto"], version = "^2.31.0"}
 celery = {extras = ["tblib"], version = "5.5.3"}
@@ -43,10 +43,12 @@ mongolock = "^1.3.4"
 pika = "^1.2.0"
 JSON-log-formatter ="^1.0.0"
 "ruamel.yaml" = "^0.18.0"
-pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", branch = "main"}
 urllib3 = "^2.0.0"
 jsonschema = "4.24.0"
 flower = "^2.0.1"
+pysnmpcrypto = "0.0.4"
+pysnmp = "7.1.0"
+pysmi = "^1.6.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
@@ -56,6 +58,7 @@ mkdocs = "^1.2.2"
 mkdocs-material = "^9.0.0"
 python-dotenv = "^1.0.0"
 mkdocs-video = "^1.5.0"
+pytest-asyncio = "^1.2.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

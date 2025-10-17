@@ -73,6 +73,7 @@ def inventory_setup_poller(self, work):
     periodic_obj = customtaskmanager.CustomPeriodicTaskManager()
 
     mongo_db = self.mongo_client[MONGO_DB]
+    logger.info(f" === inventory_setup_poller, work={work} ===")
 
     mongo_inventory = mongo_db.inventory
     targets_collection = mongo_db.targets

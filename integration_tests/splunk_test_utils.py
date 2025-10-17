@@ -13,7 +13,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
+import logging
 import os
+import re
 import time
 
 import ruamel
@@ -293,6 +295,123 @@ def wait_for_pod_initialization_microk8s():
     with open("check_for_pods.sh", "w") as fp:
         fp.write(script_body)
     os.system("chmod a+x check_for_pods.sh && ./check_for_pods.sh")
+
+
+def mask_ip_addresses(text):
+    """Mask all IPv4 and IPv6 addresses in a given string."""
+    ipv4_pattern = r"\b\d{1,3}(?:\.\d{1,3}){3}\b"
+    ipv6_pattern = r"\b(?:[A-Fa-f0-9]{0,4}:){2,7}[A-Fa-f0-9]{0,4}\b"
+    masked = re.sub(ipv4_pattern, "[IPv4_MASKED]", text)
+    masked = re.sub(ipv6_pattern, "[IPv6_MASKED]", masked)
+    return masked
+
+
+def log_poller_pod_logs(namespace="sc4snmp", pod="poll", msg=None, logger=None):
+    import subprocess
+
+    """Fetch and echo logs from poller pods (MicroK8s) or containers (Docker Compose)."""
+
+    list_pods_cmd = (
+        f"sudo microk8s kubectl get pods -A | grep {pod} | awk '{{print $2}}'"
+    )
+    os.system(list_pods_cmd)
+
+    logger.info(f"===== STARTING {pod} for {msg} LOGS =====")
+    pods = subprocess.getoutput(list_pods_cmd).splitlines()
+    logger.info(f"total_pods={pods}")
+    if not pods:
+        if logger:
+            logger.info(f"===== No {pod} pods found. =====")
+        return
+
+    for pod in pods:
+        raw_logs = subprocess.getoutput(
+            f"sudo microk8s kubectl logs {pod} -n {namespace}"
+        )
+        masked_logs = mask_ip_addresses(raw_logs)
+
+        print(raw_logs)
+
+        if logger:
+            logger.info(
+                f"----- Logs from: {pod} -----\n{raw_logs}\n----------------------------"
+            )
+
+    if logger:
+        logger.info(f"===== End of {pod} logs =====")
+
+
+def exec_mongodb_commands(
+    namespace="sc4snmp", pod_pattern="mongo", msg=None, logger=None
+):
+    import subprocess
+
+    list_pods_cmd = f"sudo microk8s kubectl get pods -n {namespace} | grep {pod_pattern} | awk '{{print $1}}'"
+    pods = subprocess.getoutput(list_pods_cmd).splitlines()
+
+    if logger:
+        logger.info(f"===== STARTING MongoDB diagnostics for {msg} =====")
+        logger.info(f"Found pods: {pods}")
+
+    if not pods:
+        if logger:
+            logger.info(
+                f"No MongoDB pods found matching pattern '{pod_pattern}' in namespace '{namespace}'"
+            )
+        return
+
+    for pod in pods:
+        if logger:
+            logger.info(
+                f"----- Executing MongoDB diagnostic commands in pod: {pod} -----"
+            )
+
+        mongo_script = r"""cat <<'EOF' | mongosh --quiet
+print("========== MONGODB DIAGNOSTICS START ==========")
+
+print("\n>>> COMMAND: show dbs >>>")
+print("----------------------------------------------")
+printjson(db.adminCommand({ listDatabases: 1 }))
+print("========== END: show dbs ==========\n")
+
+print("\n>>> COMMAND: use sc4snmp >>>")
+print("----------------------------------------------")
+db = db.getSiblingDB("sc4snmp")
+print("Switched to DB: " + db.getName())
+print("========== END: use sc4snmp ==========\n")
+
+print("\n>>> COMMAND: show collections >>>")
+print("----------------------------------------------")
+printjson(db.getCollectionNames())
+print("========== END: show collections ==========\n")
+
+print("\n>>> COMMAND: db.attributes.find() >>>")
+print("----------------------------------------------")
+db.attributes.find().forEach(doc => printjson(doc))
+print("========== END: db.attributes.find() ==========\n")
+
+print("\n>>> COMMAND: db.profiles.find() >>>")
+print("----------------------------------------------")
+db.profiles.find().forEach(doc => printjson(doc))
+print("========== END: db.profiles.find() ==========\n")
+
+print("========== MONGODB DIAGNOSTICS END ==========")
+EOF
+"""
+
+        # Full kubectl exec command
+        cmd = f"sudo microk8s kubectl exec -n {namespace} {pod} -c mongodb -- bash -c '{mongo_script}'"
+
+        try:
+            output = subprocess.getoutput(cmd)
+        except Exception as e:
+            output = f"Error executing MongoDB commands: {e}"
+
+        if logger:
+            logger.info(f"Output from {pod}:\n{output}\n----------------------------")
+
+    if logger:
+        logger.info(f"===== End of MongoDB diagnostics =====")
 
 
 # if __name__ == "__main__":

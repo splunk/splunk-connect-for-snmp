@@ -205,6 +205,7 @@ class Profile:
         )
 
     def __add__(self, other):
+        logger.info(f"--- adding {self.name}.{other.name}")
         new_instance = Profile(f"{self.name}:{other.name}", {})
         new_instance.varbinds_bulk = self.varbinds_bulk + other.varbinds_bulk
         new_instance.varbinds_get = self.varbinds_get + other.varbinds_get
@@ -213,6 +214,18 @@ class Profile:
         )
         new_instance.varbinds_get_mapping = self.add_mappings(
             self.varbinds_get_mapping, other.varbinds_get_mapping
+        )
+        logger.info(
+            f"--- self.varbinds_bulk_mapping={self.varbinds_bulk_mapping}, other.varbinds_bulk_mapping={other.varbinds_bulk_mapping}"
+        )
+        logger.info(
+            f"--- self.varbinds_get_mapping={self.varbinds_get_mapping}, other.varbinds_get_mapping={other.varbinds_get_mapping}"
+        )
+        logger.info(
+            f"--- new_instance.varbinds_get_mapping={new_instance.varbinds_get_mapping} ---"
+        )
+        logger.info(
+            f"--- new_instance.varbinds_bulk_mapping={new_instance.varbinds_bulk_mapping} ---"
         )
         return new_instance
 
@@ -251,45 +264,59 @@ class ProfileCollection:
         profiles = [self.get_profile(name) for name in profiles_names]
         if len(profiles) == 1 or walk:
             return profiles[0]
+        logger.info(f"---- combine_profiles the profiles={profiles} ---")
         return reduce(self.combine_profiles, profiles)
 
     def combine_profiles(self, first_profile, second_profile):
         if isinstance(first_profile, Profile) and isinstance(second_profile, Profile):
+            logger.info(f" --- first_profile and second_profile --- ")
             return first_profile + second_profile
         elif isinstance(first_profile, Profile):
+            logger.info(f"--- first_profile ---")
             return first_profile
         elif isinstance(second_profile, Profile):
+            logger.info(f"--- second_profile ---")
             return second_profile
 
     def update(self, list_of_profiles):
         if self.list_of_profiles_raw == list_of_profiles:
             logger.info("No change in profiles")
         else:
+            logger.info("=== changed in profiles ===")
             self.list_of_profiles_raw = list_of_profiles
             self.process_profiles()
 
     def get_profile(self, profile_name):
         is_profile_conditional = bool("__" in profile_name)
+        logger.info(
+            f"--- profile_name={profile_name} is_profile_conditional={is_profile_conditional} ---"
+        )
+        logger.info(
+            f"--- profile_name={profile_name} in this? => self.list_of_profiles{self.list_of_profiles}"
+        )
         if profile_name in self.list_of_profiles:
+            logger.info(f"--- yes {profile_name} in the list_of_profiles")
             profile = self.list_of_profiles.get(profile_name)
             if (
                 not profile.varbinds
                 and profile.type != "walk"
                 and not is_profile_conditional
             ):
-                logger.warning(
+                logger.info(
                     f"VarBinds section not present inside the profile {profile_name}"
                 )
                 return {}
+            logger.info("-- inside get_profile if ---")
             return self.list_of_profiles.get(profile_name)
         else:
+            logger.info(f"----- get_profile else ----")
             if is_profile_conditional:
                 conditional_profile_name = profile_name.split("__")[0]
-                logger.warning(
+                logger.info(
                     f"Conditional profile {conditional_profile_name} initialization in progress..."
                 )
             else:
-                logger.warning(
+                logger.info(
                     f"There is either profile: {profile_name} missing from the configuration, or varBinds section not "
                     f"present inside the profile"
                 )

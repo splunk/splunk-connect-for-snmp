@@ -14,10 +14,14 @@
 # limitations under the License.
 #
 import typing
+from asyncio import Lock, Queue, QueueEmpty, TaskGroup
+from collections import defaultdict
 from contextlib import suppress
 
 from pysnmp.proto.errind import EmptyResponse
 from pysnmp.smi import error
+from pysnmp.smi.builder import MibBuilder
+from pysnmp.smi.error import SmiError
 from requests import Session
 
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
@@ -38,7 +42,7 @@ from typing import Any, Dict, List, Tuple, Union
 import pymongo
 from celery import Task
 from celery.utils.log import get_task_logger
-from pysnmp.hlapi import SnmpEngine, bulkCmd, getCmd
+from pysnmp.hlapi.asyncio import SnmpEngine, bulkWalkCmd, getCmd
 from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
@@ -65,6 +69,7 @@ UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 3))
 MAX_OID_TO_PROCESS = int(os.getenv("MAX_OID_TO_PROCESS", 70))
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 MAX_REPETITIONS = int(os.getenv("MAX_REPETITIONS", 10))
+MAX_SNMP_BULK_WALK_CONCURRENCY = int(os.getenv("MAX_SNMP_BULK_WALK_CONCURRENCY", 5))
 
 DEFAULT_STANDARD_MIBS = [
     "HOST-RESOURCES-MIB",
@@ -126,15 +131,15 @@ def get_inventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-    error_indication, error_status, error_index, varbinds: list, address, walk
+    error_indication, error_status, error_index, varbinds: tuple, address, walk
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
-    @param error_indication:
-    @param error_status:
-    @param error_index: index of varbind where error appeared
-    @param varbinds: list of varbinds
-    @return: if any failure happened
+    :param error_indication:
+    :param error_status:
+    :param error_index: index of varbind where error appeared
+    :param varbinds: a sequential tuple of varbinds
+    :return: if any failure happened
     """
     if error_indication:
         if isinstance(error_indication, EmptyResponse) and IGNORE_EMPTY_VARBINDS:
@@ -266,6 +271,110 @@ def extract_indexes(index):
     return indexes_to_return
 
 
+def get_max_bulk_walk_concurrency(count: int) -> int:
+    """
+    Return the effective bulk concurrency, Default to 5 if not set.
+
+    :param count: Desired integer number of concurrent SNMP operations (bulk_walk_cmd)
+        (count determined based on the lenght of bulk varbinds)
+
+    :return int: The concurrency to use for SNMP operation
+    """
+    if count < MAX_SNMP_BULK_WALK_CONCURRENCY:
+        return count
+    return MAX_SNMP_BULK_WALK_CONCURRENCY
+
+
+def patch_inet_address_classes(mib_builder: MibBuilder) -> bool:
+    """
+    Adjust InetAddress classes for compatibility with legacy length-prefixed
+    OID index decoding used by earlier PySNMP versions (RFC 4001).
+
+    ## NOTE
+    In current pysmp, the INET-ADDRESS-MIB definitions for
+    InetAddressIPv4, InetAddressIPv6, InetAddressIPv4z, and InetAddressIPv6z
+    include a `fixed_length` attribute, e.g.:
+
+        class InetAddressIPv4(TextualConvention, OctetString):
+            subtypeSpec = OctetString.subtypeSpec + ConstraintsUnion(
+                ValueSizeConstraint(4, 4),
+            )
+            fixed_length = 4
+
+    Older pysnmp releases did **not** define `fixed_length`. When present,
+    the SNMP `setFromName()` method takes the *fixed-length* branch:
+
+        elif obj.is_fixed_length():
+            fixed_length = obj.get_fixed_length()
+            return obj.clone(tuple(value[:fixed_length])), value[fixed_length:]
+
+    instead of the *length-prefixed* branch required by RFC 4001:
+
+        else:
+            return obj.clone(tuple(value[1:value[0]+1])), value[value[0]+1:]
+
+    This changes how address-based table indices (e.g. **IP-MIB::ipAddressTable**)
+    are parsed.
+
+    Example:
+        OID index: 1.3.6.1.2.1.4.34.1.3.1.4.127.0.0.1
+        Expected:  ipAddressIfIndex.ipv4."127.0.0.1"
+
+        Index portion: (1, 4, 127, 0, 0, 1)
+        |---| |-----------|
+        |        |__ Address octets
+        |__ Length prefix (4)
+
+    With `fixed_length = 4`:
+        --> Parsed as (4,127,0,0) + leftover (1)
+        --> Raises “Excessive instance identifier sub-OIDs left …”
+
+    Without `fixed_length`:
+        - Correctly parses (127,0,0,1) as the IPv4 address.
+
+    Fix:
+        This patch disables the `fixed_length` attribute.
+
+    :param mib_builder: MibBuilder that has loaded INET-ADDRESS-MIB.
+    :return: True if patch applied successfully, False otherwise.
+    """
+
+    try:
+        (InetAddressIPv4, InetAddressIPv6, InetAddressIPv4z, InetAddressIPv6z) = (
+            mib_builder.import_symbols(
+                "INET-ADDRESS-MIB",
+                "InetAddressIPv4",
+                "InetAddressIPv6",
+                "InetAddressIPv4z",
+                "InetAddressIPv6z",
+            )
+        )
+
+        logger.info("Applying InetAddress monkey patch for lextudio pysnmp v7.x bug...")
+
+        classes_to_patch = [
+            ("InetAddressIPv4", InetAddressIPv4),
+            ("InetAddressIPv6", InetAddressIPv6),
+            ("InetAddressIPv4z", InetAddressIPv4z),
+            ("InetAddressIPv6z", InetAddressIPv6z),
+        ]
+
+        for class_name, cls in classes_to_patch:
+            cls.fixed_length = None
+            logger.info(f"Removed the problematic fixed_length attribute {class_name}")
+
+        logger.info("All InetAddress classes successfully patched")
+        return True
+
+    except ImportError as e:
+        logger.info(f"Could not import INET-ADDRESS-MIB for patching: {e}")
+        return False
+
+    except Exception as e:
+        logger.info(f"Unexpected error while patching InetAddress classes: {e}")
+        return False
+
+
 class Poller(Task):
     def __init__(self, **kwargs):
         self.standard_mibs = []
@@ -295,6 +404,11 @@ class Poller(Task):
         self.mib_view_controller = view.MibViewController(self.builder)
         compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
 
+        print(f"=== self.profiles={self.profiles} ===")
+        print(
+            f"=== self.profiles_collection.list_of_profiles={self.profiles_collection.list_of_profiles} ==="
+        )
+
         for mib in DEFAULT_STANDARD_MIBS:
             self.standard_mibs.append(mib)
             self.builder.loadModules(mib)
@@ -310,15 +424,32 @@ class Poller(Task):
             logger.debug(f"Loaded {len(self.mib_map.keys())} mib map entries")
         else:
             logger.error(
-                f"Unable to load mib map from index http error {self.mib_response.status_code}"
+                f"Unable to load mib map from index http error {mib_response.status_code}"
             )
 
-    def do_work(
+    async def do_work(
         self,
         ir: InventoryRecord,
         walk: bool = False,
         profiles: Union[List[str], None] = None,
     ):
+        """
+         ## NOTE
+        - When a task arrived at poll queue starts with a fresh SnmpEngine (which has no transport_dispatcher
+          attached), SNMP requests (get_cmd or bulk_walk_cmd or any other) run normally.
+        - if a later task finds that the SnmpEngine already has a transport_dispatcher, it reuse that transport_dispatcher.
+          this causes SNMP requests to hang infinite time.
+        - If this hang occurs, then as per our Celery configuration, any task that
+          remains in the queue longer than the default 2400s will be forcefully
+          hard-timed-out and discarded.
+        - The issue does not always appear on the alternate task but it may happen
+          on the second, third, or any subsequent task, depending on timing and
+          concurrency.
+
+        The only way to eliminate this hang is to create new SnmpEngine for each poll task.
+
+        """
+        snmpEngine = SnmpEngine()
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
         logger.info(f"Preparing task for {ir.address}")
@@ -333,10 +464,10 @@ class Poller(Task):
             address, walk=walk, profiles=profiles
         )
 
-        auth_data = get_auth(logger, ir, self.snmpEngine)
+        auth_data = await get_auth(logger, ir, snmpEngine)
         context_data = get_context_data()
 
-        transport = setup_transport_target(ir)
+        transport = await setup_transport_target(ir)
 
         metrics: Dict[str, Any] = {}
         if not varbinds_get and not varbinds_bulk:
@@ -344,7 +475,7 @@ class Poller(Task):
             return False, {}
 
         if varbinds_bulk:
-            self.run_bulk_request(
+            await self.run_bulk_request(
                 address,
                 auth_data,
                 bulk_mapping,
@@ -357,7 +488,7 @@ class Poller(Task):
             )
 
         if varbinds_get:
-            self.run_get_request(
+            await self.run_get_request(
                 address,
                 auth_data,
                 context_data,
@@ -377,7 +508,7 @@ class Poller(Task):
 
         return retry, metrics
 
-    def run_get_request(
+    async def run_get_request(
         self,
         address,
         auth_data,
@@ -391,25 +522,32 @@ class Poller(Task):
     ):
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
-            for (
+            try:
+                (error_indication, error_status, error_index, varbind_table) = (
+                    await getCmd(
+                        SnmpEngine(),
+                        auth_data,
+                        transport,
+                        context_data,
+                        *varbind_chunk,
+                        lookupMib=True,
+                    )
+                )
+            except Exception as e:
+                logger.exception(f"Error while performing get_cmd: {e}")
+                continue
+
+            if not _any_failure_happened(
                 error_indication,
                 error_status,
                 error_index,
                 varbind_table,
-            ) in getCmd(
-                self.snmpEngine, auth_data, transport, context_data, *varbind_chunk
+                ir.address,
+                walk,
             ):
-                if not _any_failure_happened(
-                    error_indication,
-                    error_status,
-                    error_index,
-                    varbind_table,
-                    ir.address,
-                    walk,
-                ):
-                    self.process_snmp_data(varbind_table, metrics, address, get_mapping)
+                self.process_snmp_data(varbind_table, metrics, address, get_mapping)
 
-    def run_bulk_request(
+    async def run_bulk_request(
         self,
         address,
         auth_data,
@@ -421,38 +559,121 @@ class Poller(Task):
         varbinds_bulk,
         walk,
     ):
-        for (
-            error_indication,
-            error_status,
-            error_index,
-            varbind_table,
-        ) in bulkCmd(
-            self.snmpEngine,
-            auth_data,
-            transport,
-            context_data,
-            0,
-            MAX_REPETITIONS,
-            *varbinds_bulk,
-            lexicographicMode=False,
-            ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
-        ):
-            if not _any_failure_happened(
-                error_indication,
-                error_status,
-                error_index,
-                varbind_table,
-                ir.address,
-                walk,
-            ):
-                _, tmp_mibs, _ = self.process_snmp_data(
-                    varbind_table, metrics, address, bulk_mapping
-                )
-                if tmp_mibs:
-                    self.load_mibs(tmp_mibs)
-                    self.process_snmp_data(
-                        varbind_table, metrics, address, bulk_mapping
+        """
+        Perform asynchronous SNMP BULK requests on multiple varbinds with concurrency control.
+
+        This function uses bulk_walk_cmd to asynchronously walk each SNMP varbind,
+        ensuring that at most `MAX_SNMP_BULK_WALK_CONCURRENCY` walks are running concurrently.
+        It processes the received SNMP data, and handles failure if any.
+
+        :param address: IP address of the SNMP device to query
+        :param auth_data: SNMP authentication data
+        :param bulk_mapping: mapping dictionary to process SNMP metrics
+        :param context_data: SNMP ContextData object
+        :param ir: object containing SNMP device info
+        :param metrics: dictionary to store metrics collected from SNMP responses
+        :param transport: SNMP transport target
+        :param varbinds_bulk: set of SNMP varbinds to query
+        :param walk: boolean flag indicating if it is a walk operation
+
+        :return:
+
+        ## NOTE
+        - The current `bulk_cmd` of PySNMP does not support the `lexicographicMode` option.
+        As a result, the walk is not strictly confined to the requested varBind subtree and may go beyond the requested OID subtree,
+        with a high chance of duplicate OIDs.
+
+        - Used `bulk_walk_cmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
+        but handles only one varBind at a time.
+        """
+        metrics_lock = Lock()
+
+        async def _walk_single_varbind(varbind, wid):
+            """
+            Asynchronously walk a single SNMP varbind and process the results.
+            :param varbind: SNMP ObjectType varbind to be walked
+            :return:
+            """
+            try:
+                async for (
+                    error_indication,
+                    error_status,
+                    error_index,
+                    varbind_table,
+                ) in bulkWalkCmd(
+                    SnmpEngine(),
+                    auth_data,
+                    transport,
+                    context_data,
+                    0,
+                    MAX_REPETITIONS,
+                    varbind,
+                    lexicographicMode=False,
+                    lookupMib=True,
+                    ignoreNonIncreasingOid=is_increasing_oids_ignored(
+                        ir.address, ir.port
+                    ),
+                ):
+                    if not _any_failure_happened(
+                        error_indication,
+                        error_status,
+                        error_index,
+                        varbind_table,
+                        ir.address,
+                        walk,
+                    ):
+                        async with metrics_lock:
+                            _, tmp_mibs, _ = self.process_snmp_data(
+                                varbind_table, metrics, address, bulk_mapping
+                            )
+                            if tmp_mibs:
+                                self.load_mibs(tmp_mibs)
+                                self.process_snmp_data(
+                                    varbind_table, metrics, address, bulk_mapping
+                                )
+            except Exception as e:
+                logger.exception(f"Error while performing bulk_walk_cmd: {e}")
+
+        # Preparing the queue for bulk request
+        bulk_queue: Queue[tuple[int, ObjectType]] = Queue()
+        for _wid, _varbind in enumerate(varbinds_bulk):
+            bulk_queue.put_nowait((_wid, _varbind))
+
+        async def _worker(worker_id: int):
+            """
+            Worker coroutine that continuously fetches tasks from the bulk_queue and
+            executes SNMP walks using _walk_single_varbind.
+            :param worker_id: integer ID of the worker
+
+            :return:
+            """
+            while True:
+                try:
+                    _wid, _varbind = bulk_queue.get_nowait()
+                except QueueEmpty:
+                    # Queue is empty indicating that all the varbinds proceed for the poll/walk task.
+                    logger.debug(
+                        f"BulkQueue worker-{worker_id} found no tasks in the queue and is exiting."
                     )
+                    break
+                except Exception as e:
+                    logger.error(
+                        f"BulkQueue worker-{worker_id} encountered an error: {e}."
+                    )
+                    break
+
+                logger.debug(f"BulkQueue worker-{worker_id} picking up task-{_wid}")
+                await _walk_single_varbind(_varbind, worker_id)
+                bulk_queue.task_done()
+                logger.debug(f"BulkQueue worker-{worker_id} completed task-{_wid}")
+
+        try:
+            async with TaskGroup() as tg:
+                for wid in range(get_max_bulk_walk_concurrency(len(varbinds_bulk))):
+                    tg.create_task(_worker(wid))
+        except ExceptionGroup as eg:
+            for e in eg.exceptions:
+                raise e
 
     def get_varbind_chunk(self, lst, n):
         for i in range(0, len(lst), n):
@@ -485,6 +706,7 @@ class Poller(Task):
         varbinds_get = set()
         get_mapping = {}
         bulk_mapping = {}
+        logger.info(f"=== profiles={profiles} ===")
         if walk and not profiles:
             varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
             return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
@@ -492,21 +714,26 @@ class Poller(Task):
         joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
             profiles, walk
         )
+        logger.info(f"=== joined_profile_object={joined_profile_object} ===")
         if joined_profile_object:
             mib_families = joined_profile_object.get_mib_families()
+            logger.info(f"==== mib_families={mib_families} ====")
             mib_files_to_load = [
                 mib_family
                 for mib_family in mib_families
                 if mib_family not in self.already_loaded_mibs
             ]
+            logger.info(f"=== mib_files_to_load={mib_files_to_load} ===")
             if mib_files_to_load:
                 self.load_mibs(mib_files_to_load)
+
             (
                 varbinds_get,
                 get_mapping,
                 varbinds_bulk,
                 bulk_mapping,
             ) = joined_profile_object.return_mapping_and_varbinds()
+
         logger.debug(f"host={address} varbinds_get={varbinds_get}")
         logger.debug(f"host={address} get_mapping={get_mapping}")
         logger.debug(f"host={address} varbinds_bulk={varbinds_bulk}")
@@ -517,6 +744,7 @@ class Poller(Task):
         retry = False
         remotemibs = []
         for varbind in varbind_table:
+
             index, metric, mib, oid, varbind_id = self.init_snmp_data(varbind)
 
             if is_mib_resolved(varbind_id):
@@ -526,6 +754,9 @@ class Poller(Task):
 
                     metric_type, metric_value = self.set_metrics_index(
                         index, target, varbind
+                    )
+                    logger.info(
+                        f"=== val={varbind[1]}, group_key={group_key}, metric_type={metric_type}, metric_value={metric_value}, metric={metric}, mib={mib}, varbind_id={varbind_id}, oid={oid}, index={index} ===="
                     )
 
                     profile = self.set_profile_name(mapping, metric, mib, varbind_id)
@@ -547,11 +778,15 @@ class Poller(Task):
                         f"Exception processing data from {target} {varbind}"
                     )
             else:
+                logger.info(
+                    f"<=== not resolved varbind_id={varbind_id}, oid={oid} ,metric={metric} index={index}, val={varbind[1]}, mapping={mapping} ===>"
+                )
                 found = self.find_new_mibs(oid, remotemibs, target, varbind_id)
                 if found:
                     retry = True
                     break
 
+        logger.info(f"=====> metrics={metrics}")
         return retry, remotemibs, metrics
 
     def find_new_mibs(self, oid, remotemibs, target, varbind_id):
@@ -629,7 +864,28 @@ class Poller(Task):
                 metrics[group_key]["profiles"] = []
 
     def init_snmp_data(self, varbind):
-        mib, metric, index = varbind[0].getMibSymbol()
-        varbind_id = varbind[0].prettyPrint()
+        """
+        Extract SNMP varbind information in a way that preserves compatibility with
+        older PySNMP behavior while avoiding changes to the underlying library.
+
+        :param varbind: ObjectType
+
+        :return: A resolved index, metric, mib, oid, varbind_id
+
+        ## NOTE
+        - In old fork of pysnmp, calling `getMibSymbol()` and `prettyPrint()` on
+        a varbind returned fully resolved MIB names, variable names, and indices.
+
+        - In lextudio's pysnmp, `get_mib_symbol()` and `prettyPrint()`
+        by default may return partially resolved names as snmp request it self not
+        resolved it fully, unless `resolve_with_mib()` is explicitly called.
+        This is why `metric` and `varbind_id` appear different from older versions.
+        """
         oid = str(varbind[0].getOid())
+        resolved_oid = ObjectIdentity(oid).resolveWithMib(self.mib_view_controller)
+        varbind_id = resolved_oid.prettyPrint()
+        mib, metric, index = resolved_oid.getMibSymbol()
+        logger.info(
+            f"<--- mib={mib}, metric={metric}, varbind_id={varbind_id}, oid={oid}, val={varbind[1]}, index={index} --->"
+        )
         return index, metric, mib, oid, varbind_id

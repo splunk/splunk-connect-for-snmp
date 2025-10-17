@@ -2,6 +2,9 @@ from tokenize import group
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
+from pysnmp.entity.engine import SnmpEngine
+from pysnmp.smi import view
+
 from splunk_connect_for_snmp.snmp.manager import Poller
 
 
@@ -11,10 +14,12 @@ class TestProcessSnmpData(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_indexes")
+    @patch("splunk_connect_for_snmp.snmp.manager.ObjectIdentity.resolveWithMib")
     @patch("time.time")
     def test_multiple_metrics_single_group(
         self,
         m_time,
+        m_resolve_with_mib,
         m_extract_indexes,
         m_extract_index_number,
         m_map_metric_type,
@@ -22,6 +27,9 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
+        poller.snmpEngine = SnmpEngine()
+        poller.builder = poller.snmpEngine.getMibBuilder()
+        poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
         m_get_group_key.return_value = "QWERTYUIOP"
@@ -56,7 +64,7 @@ class TestProcessSnmpData(TestCase):
         mapping = {}
 
         poller.process_snmp_data(varbind_table, metrics, mapping)
-
+        print(f"metric={metrics}")
         self.assertEqual(
             {
                 "QWERTYUIOP": {
@@ -86,10 +94,12 @@ class TestProcessSnmpData(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_indexes")
+    @patch("splunk_connect_for_snmp.snmp.manager.ObjectIdentity.resolveWithMib")
     @patch("time.time")
     def test_multiple_metrics_multiple_groups(
         self,
         m_time,
+        m_resolve_with_mib,
         m_extract_indexes,
         m_extract_index_number,
         m_map_metric_type,
@@ -97,6 +107,9 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
+        poller.snmpEngine = SnmpEngine()
+        poller.builder = poller.snmpEngine.getMibBuilder()
+        poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
         m_get_group_key.side_effect = ["GROUP1", "GROUP2"]
@@ -167,10 +180,12 @@ class TestProcessSnmpData(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_indexes")
+    @patch("splunk_connect_for_snmp.snmp.manager.ObjectIdentity.resolveWithMib")
     @patch("time.time")
     def test_metrics_and_fields(
         self,
         m_time,
+        m_resolve_with_mib,
         m_extract_indexes,
         m_extract_index_number,
         m_map_metric_type,
@@ -178,13 +193,15 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
+        poller.snmpEngine = SnmpEngine()
+        poller.builder = poller.snmpEngine.getMibBuilder()
+        poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
         m_get_group_key.return_value = "GROUP1"
         m_map_metric_type.side_effect = ["g", "r"]
         m_extract_index_number.return_value = 1
         m_extract_indexes.return_value = [7]
-
         m_time.return_value = 1640609779.473053
 
         varbind_mock1_1 = Mock()
@@ -208,9 +225,8 @@ class TestProcessSnmpData(TestCase):
             (varbind_mock1_1, varbind_mock1_2),
             (varbind_mock2_1, varbind_mock2_2),
         ]
-        metrics = {}
-        mapping = {}
 
+        metrics, mapping = {}, {}
         poller.process_snmp_data(varbind_table, metrics, mapping)
 
         self.assertEqual(
@@ -243,10 +259,12 @@ class TestProcessSnmpData(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.map_metric_type")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_index_number")
     @patch("splunk_connect_for_snmp.snmp.manager.extract_indexes")
+    @patch("splunk_connect_for_snmp.snmp.manager.ObjectIdentity.resolveWithMib")
     @patch("time.time")
     def test_metrics_with_profile(
         self,
         m_time,
+        m_resolve_with_mib,
         m_extract_indexes,
         m_extract_index_number,
         m_map_metric_type,
@@ -254,13 +272,15 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
+        poller.snmpEngine = SnmpEngine()
+        poller.builder = poller.snmpEngine.getMibBuilder()
+        poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
         m_get_group_key.return_value = "QWERTYUIOP"
         m_map_metric_type.side_effect = ["g", "g"]
         m_extract_index_number.return_value = 1
         m_extract_indexes.return_value = [6, 7]
-
         m_time.return_value = 1640609779.473053
 
         varbind_mock1_1 = Mock()
