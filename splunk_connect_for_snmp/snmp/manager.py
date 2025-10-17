@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 import typing
-from asyncio import Queue, QueueEmpty, TaskGroup
+from asyncio import Lock, Queue, QueueEmpty, TaskGroup
 from collections import defaultdict
 from contextlib import suppress
 
@@ -586,6 +586,7 @@ class Poller(Task):
         - Used `bulk_walk_cmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
         but handles only one varBind at a time.
         """
+        metrics_lock = Lock()
 
         async def _walk_single_varbind(varbind, wid):
             """
@@ -621,20 +622,21 @@ class Poller(Task):
                         ir.address,
                         walk,
                     ):
-                        _, tmp_mibs, _ = self.process_snmp_data(
-                            varbind_table, metrics, address, bulk_mapping
-                        )
-                        if tmp_mibs:
-                            self.load_mibs(tmp_mibs)
-                            self.process_snmp_data(
+                        async with metrics_lock:
+                            _, tmp_mibs, _ = self.process_snmp_data(
                                 varbind_table, metrics, address, bulk_mapping
                             )
+                            if tmp_mibs:
+                                self.load_mibs(tmp_mibs)
+                                self.process_snmp_data(
+                                    varbind_table, metrics, address, bulk_mapping
+                                )
             except Exception as e:
                 logger.exception(f"Error while performing bulk_walk_cmd: {e}")
 
         # Preparing the queue for bulk request
         bulk_queue: Queue[tuple[int, ObjectType]] = Queue()
-        for _wid, _varbind in enumerate(varbinds_bulk, start=1):
+        for _wid, _varbind in enumerate(varbinds_bulk):
             bulk_queue.put_nowait((_wid, _varbind))
 
         async def _worker(worker_id: int):
@@ -667,9 +669,7 @@ class Poller(Task):
 
         try:
             async with TaskGroup() as tg:
-                for wid in range(
-                    1, get_max_bulk_walk_concurrency(len(varbinds_bulk)) + 1
-                ):
+                for wid in range(get_max_bulk_walk_concurrency(len(varbinds_bulk))):
                     tg.create_task(_worker(wid))
         except ExceptionGroup as eg:
             for e in eg.exceptions:
@@ -755,6 +755,9 @@ class Poller(Task):
                     metric_type, metric_value = self.set_metrics_index(
                         index, target, varbind
                     )
+                    logger.info(
+                        f"=== val={varbind[1]}, group_key={group_key}, metric_type={metric_type}, metric_value={metric_value}, metric={metric}, mib={mib}, varbind_id={varbind_id}, oid={oid}, index={index} ===="
+                    )
 
                     profile = self.set_profile_name(mapping, metric, mib, varbind_id)
                     if metric_value == "No more variables left in this MIB View":
@@ -776,13 +779,14 @@ class Poller(Task):
                     )
             else:
                 logger.info(
-                    f"<=== not resolved varbind_id={varbind_id}, oid={oid} ,metric={metric} index={index}, mapping={mapping} ===>"
+                    f"<=== not resolved varbind_id={varbind_id}, oid={oid} ,metric={metric} index={index}, val={varbind[1]}, mapping={mapping} ===>"
                 )
                 found = self.find_new_mibs(oid, remotemibs, target, varbind_id)
                 if found:
                     retry = True
                     break
 
+        logger.info(f"=====> metrics={metrics}")
         return retry, remotemibs, metrics
 
     def find_new_mibs(self, oid, remotemibs, target, varbind_id):
@@ -882,6 +886,6 @@ class Poller(Task):
         varbind_id = resolved_oid.prettyPrint()
         mib, metric, index = resolved_oid.getMibSymbol()
         logger.info(
-            f"<==== val={varbind[1]} mib={mib}, metric={metric}, varbind_id={varbind_id}, oid={oid} ====>"
+            f"<--- mib={mib}, metric={metric}, varbind_id={varbind_id}, oid={oid}, val={varbind[1]}, index={index} --->"
         )
         return index, metric, mib, oid, varbind_id

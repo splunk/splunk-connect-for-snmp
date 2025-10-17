@@ -1009,7 +1009,7 @@ def setup_single_gt_and_lt_profiles(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,60,small_walk_profile;gt_profile;lt_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_profile;lt_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1018,16 +1018,16 @@ def setup_single_gt_and_lt_profiles(request):
         update_profiles_compose(profiles)
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,60,small_walk_profile;gt_profile;lt_profile,,"
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_profile;lt_profile,,"
             ]
         )
         upgrade_docker_compose()
-    time.sleep(120)
+    time.sleep(160)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,60,small_walk_profile;gt_profile;lt_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_profile;lt_profile,,t",
             ],
             "inventory.yaml",
         )
@@ -1035,11 +1035,11 @@ def setup_single_gt_and_lt_profiles(request):
     else:
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,60,small_walk_profile;gt_profile;lt_profile,,t"
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_profile;lt_profile,,t"
             ]
         )
         upgrade_docker_compose()
-    time.sleep(120)
+    time.sleep(160)
 
 
 @pytest.mark.usefixtures("setup_single_gt_and_lt_profiles")
@@ -1618,7 +1618,7 @@ def setup_multiple_conditions_profiles(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,60,small_walk_profile;gt_and_equals_profile;lt_and_in_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_and_equals_profile;lt_and_in_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1627,7 +1627,7 @@ def setup_multiple_conditions_profiles(request):
         update_profiles_compose(profiles)
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,60,small_walk_profile;gt_and_equals_profile;lt_and_in_profile,,"
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_and_equals_profile;lt_and_in_profile,,"
             ]
         )
         upgrade_docker_compose()
@@ -1636,7 +1636,7 @@ def setup_multiple_conditions_profiles(request):
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,60,small_walk_profile;gt_and_equals_profile;lt_and_in_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_and_equals_profile;lt_and_in_profile,,t",
             ],
             "inventory.yaml",
         )
@@ -1644,7 +1644,7 @@ def setup_multiple_conditions_profiles(request):
     else:
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,60,small_walk_profile;gt_and_equals_profile;lt_and_in_profile,,t"
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk_profile;gt_and_equals_profile;lt_and_in_profile,,t"
             ]
         )
         upgrade_docker_compose()
