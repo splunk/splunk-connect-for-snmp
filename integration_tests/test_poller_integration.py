@@ -1012,7 +1012,9 @@ def setup_single_gt_and_lt_profiles(request):
     else:
         update_profiles_compose(profiles)
         update_inventory_compose(
-            [f"{trap_external_ip},1166,2c,public,,,600,small_walk;gt_profile;lt_profile,,"]
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk;gt_profile;lt_profile,,"
+            ]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1027,7 +1029,9 @@ def setup_single_gt_and_lt_profiles(request):
         upgrade_helm_microk8s(["inventory.yaml"])
     else:
         update_inventory_compose(
-            [f"{trap_external_ip},1166,2c,public,,,600,small_walk;gt_profile;lt_profile,,t"]
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk;gt_profile;lt_profile,,t"
+            ]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1108,7 +1112,9 @@ def setup_single_in_and_equals_profiles(request):
     else:
         update_profiles_compose(profiles)
         update_inventory_compose(
-            [f"{trap_external_ip},1166,2c,public,,,600,small_walk;in_profile;equals_profile,,"]
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk;in_profile;equals_profile,,"
+            ]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1123,7 +1129,9 @@ def setup_single_in_and_equals_profiles(request):
         upgrade_helm_microk8s(["inventory.yaml"])
     else:
         update_inventory_compose(
-            [f"{trap_external_ip},1166,2c,public,,,600,small_walk;in_profile;equals_profile,,t"]
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk;in_profile;equals_profile,,t"
+            ]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1205,7 +1213,9 @@ def setup_single_regex_and_options_profiles(request):
     else:
         update_profiles_compose(profiles)
         update_inventory_compose(
-            [f"{trap_external_ip},1166,2c,public,,,600,small_walk;regex_profile;options_profile,,"]
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk;regex_profile;options_profile,,"
+            ]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1309,7 +1319,9 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
     else:
         update_profiles_compose(profiles)
         update_inventory_compose(
-            [f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_gt_profile;not_lt_profile,,"]
+            [
+                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_gt_profile;not_lt_profile,,"
+            ]
         )
         upgrade_docker_compose()
     time.sleep(120)
