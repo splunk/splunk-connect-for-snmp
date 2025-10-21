@@ -49,6 +49,18 @@ spec:
               value: /app/config/config.yaml
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
+            {{- if .Values.redis.auth.enabled }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.redis.auth.existingSecret }}
+                  name: {{ .Values.redis.auth.existingSecret }}
+                  key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
+                  {{- else }}
+                  name: {{ .Release.Name }}-redis-secret
+                  key: password
+                  {{- end }}
+            {{- end }}
             - name: MIB_SOURCES
               value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/asn1/@mib@"
             - name: MIB_INDEX
