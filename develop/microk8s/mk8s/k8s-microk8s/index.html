@@ -2016,10 +2016,18 @@ redis:
 <span class="w">  </span>global:
 <span class="w">    </span>storageClass:<span class="w"> </span><span class="s2">"openebs-hostpath"</span>
 </code></pre></div>
-<p>Install the DNS server for microk8s and configure the forwarding DNS servers. Replace the IP addressed below (opendns) with
-the allowed values for your network: </p>
+<p>MicroK8s comes with a preinstalled CoreDNS addon. You can check if it is installed and running with:
+</p><div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>kube-system
+</code></pre></div>
+If the CoreDNS pod is not listed, enable it by running the following command (replace the IP addresses with those allowed on your network):
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>dns:208.67.222.222,208.67.220.220
 microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
+</code></pre></div>
+If the CoreDNS addon is already enabled and you want to change its settings, you can either disable and re-enable it:
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>disable<span class="w"> </span>dns
+</code></pre></div>
+Or edit the CoreDNS configuration directly:
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>kube-system<span class="w"> </span>edit<span class="w"> </span>configmap/coredns
 </code></pre></div>
 <h2 id="install-metallb">Install Metallb<a class="headerlink" href="#install-metallb" title="Permanent link">¶</a></h2>
 <p>When installing Metallb, you will be prompted for one or more IPs to use as entry points
