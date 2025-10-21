@@ -184,7 +184,9 @@ def get_group_key(mib, oid, index) -> str:
     return mib + "::" + ";".join(parts)
 
 
-MTYPES_CC = tuple(["Counter32", "Counter64", "TimeTicks", "CounterBasedGauge64", "ZeroBasedCounter64"])
+MTYPES_CC = tuple(
+    ["Counter32", "Counter64", "TimeTicks", "CounterBasedGauge64", "ZeroBasedCounter64"]
+)
 MTYPES_G = tuple(
     ["Gauge32", "Gauge64", "Integer", "Integer32", "Unsigned32", "Unsigned64"]
 )
