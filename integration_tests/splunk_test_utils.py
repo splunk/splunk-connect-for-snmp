@@ -148,11 +148,6 @@ def upgrade_docker_compose():
     os.system("sudo docker compose up -d")
 
 
-def tmp_docker_logs():
-    os.system("sudo docker logs integration_tests-worker-trap-1")
-    os.system("sudo docker logs integration_tests-worker-trap-2")
-
-
 def upgrade_env_compose(variable, new_value, env_path=".env"):
     lines = []
     found = False
