@@ -23,6 +23,7 @@ from integration_tests.splunk_test_utils import (
     create_v3_secrets_compose,
     create_v3_secrets_microk8s,
     splunk_single_search,
+    tmp_docker_logs,
     update_file_microk8s,
     update_traps_secrets_compose,
     upgrade_docker_compose,
@@ -103,7 +104,9 @@ def test_trap_v1(request, setup_splunk):
                      | head 1"""
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
-
+    deployment = request.config.getoption("sc4snmp_deployment")
+    if deployment != "microk8s":
+        tmp_docker_logs()
     assert result_count == 1
 
 
@@ -134,7 +137,9 @@ def test_trap_v2(request, setup_splunk):
                      | head 1"""
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
-
+    deployment = request.config.getoption("sc4snmp_deployment")
+    if deployment != "microk8s":
+        tmp_docker_logs()
     assert result_count == 1
 
 
@@ -158,7 +163,9 @@ def test_added_varbind(request, setup_splunk):
     )
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
-
+    deployment = request.config.getoption("sc4snmp_deployment")
+    if deployment != "microk8s":
+        tmp_docker_logs()
     assert result_count == 1
 
 
