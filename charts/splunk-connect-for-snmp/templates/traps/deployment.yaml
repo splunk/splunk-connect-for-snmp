@@ -49,6 +49,14 @@ spec:
               value: /app/config/config.yaml
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
+            - name: REDIS_HOST
+              value: {{ .Release.Name }}-redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_DB
+              value: "1"
+            - name: CELERY_DB
+              value: "0"
             {{- if .Values.redis.auth.enabled }}
             - name: REDIS_PASSWORD
               valueFrom:
