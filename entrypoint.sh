@@ -4,14 +4,25 @@ set -e
 LOG_LEVEL=${LOG_LEVEL:=INFO}
 WORKER_CONCURRENCY=${WORKER_CONCURRENCY:=4}
 
-if [ -n "$REDIS_PASSWORD" ]; then
-  REDIS_BASE="redis://:${REDIS_PASSWORD}@"
-else
-  REDIS_BASE="redis://"
-fi
+# Only construct if URLs not already set
+if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
+  # Defaults
+  REDIS_HOST="${REDIS_HOST:-snmp-redis}"
+  REDIS_PORT="${REDIS_PORT:-6379}"
 
-export CELERY_BROKER_URL="${REDIS_BASE}${REDIS_HOST}:${REDIS_PORT:-6379}/${CELERY_DB:-0}"
-export REDIS_URL="${REDIS_BASE}${REDIS_HOST}:${REDIS_PORT:-6379}/${REDIS_DB:-1}"
+  # Build base
+  if [ -n "$REDIS_PASSWORD" ]; then
+    BASE="redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}"
+  else
+    BASE="redis://${REDIS_HOST}:${REDIS_PORT}"
+  fi
+
+  # Set if not already set
+  : "${REDIS_URL:=$BASE/${REDIS_DB:-1}}"
+  : "${CELERY_BROKER_URL:=$BASE/${CELERY_DB:-0}}"
+
+  export REDIS_URL CELERY_BROKER_URL
+fi
 
 wait-for-dep "${CELERY_BROKER_URL}" "${REDIS_URL}" "${MONGO_URI}" "${MIB_INDEX}"
 
