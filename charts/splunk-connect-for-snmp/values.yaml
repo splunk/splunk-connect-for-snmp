@@ -23,12 +23,12 @@ UI:
   frontEnd:
     NodePort: 30001
     repository: ghcr.io/splunk/sc4snmp-ui/frontend/container
-    tag: "main"
+    tag: "1.1.1-beta.1"
     pullPolicy: "Always"
   backEnd:
     NodePort: 30002
     repository: ghcr.io/splunk/sc4snmp-ui/backend/container
-    tag: "main"
+    tag: "1.1.1-beta.1"
     pullPolicy: "Always"
   # Base container that sets permissions for folders mounted to UI containers
   init:
