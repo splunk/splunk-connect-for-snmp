@@ -2073,13 +2073,15 @@
 which change dynamically, while textual fields are helpful context to understand what an SNMP object means.</p>
 <p>SC4SNMP classifies the data element as a metric when its type is one of the following:</p>
 <ul>
-<li><code>Unsigned</code></li>
-<li><code>Counter</code></li>
+<li><code>Unsigned32</code>, <code>Unsigned64</code></li>
+<li><code>Counter32</code>, <code>Counter64</code></li>
 <li><code>TimeTicks</code></li>
-<li><code>Gauge</code></li>
-<li><code>Integer</code></li>
+<li><code>Gauge32</code>, <code>Gauge64</code></li>
+<li><code>Integer</code>, <code>Integer32</code></li>
+<li><code>CounterBasedGauge64</code></li>
+<li><code>ZeroBasedCounter64</code>
+Every other type is interpreted as a field value.</li>
 </ul>
-<p>Every other type is interpreted as a field value.</p>
 <p>Sometimes, the MIB file indicates a field as an <code>INTEGER</code>, but there is also some mapping defined. See the following<code>IF-MIB.ifOperStatus</code> example:</p>
 <div class="highlight"><pre><span></span><code>ifOperStatus OBJECT-TYPE
     SYNTAX  INTEGER {
