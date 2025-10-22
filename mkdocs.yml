@@ -56,6 +56,7 @@ nav:
       - Offline installation: "dockercompose/8-offline-installation.md"
       - Sending logs to Splunk: "dockercompose/9-splunk-logging.md"
       - Enable IPv6: "dockercompose/10-enable-ipv6.md"
+      - Protect redis and mongo by password: "dockercompose/11-protect-by-password.md"
   - Getting Started with Microk8s:
       - Installation:
         - Splunk Requirements: "microk8s/splunk-requirements.md"
@@ -81,6 +82,7 @@ nav:
           - SNMPv3 configuration: "microk8s/configuration/snmpv3-configuration.md"
           - Splunk Infrastructure Monitoring: "microk8s/configuration/sim-configuration.md"
           - CoreDNS: "microk8s/configuration/coredns-configuration.md"
+          - Protect redis and mongo by password: "microk8s/configuration/protect-by-password.md"
       - Offline Installation:
           - Install Microk8s: "microk8s/offlineinstallation/offline-microk8s.md"
           - Install Splunk OpenTelemetry Collector for Kubernetes: "microk8s/offlineinstallation/offline-sck.md"
