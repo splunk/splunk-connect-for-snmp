@@ -1,7 +1,6 @@
 # Changelog
 
 ## Unreleased
-- update MongoDB and Redis image sources from bitnami to bitnamilegacy repository to resolve CI/CD "offline-installation" failure
 
 ### Changed
 - add CounterBasedGauge64 and ZeroBasedCounter64 as metrics types
