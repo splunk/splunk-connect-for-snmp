@@ -115,7 +115,10 @@ redis:
     enabled: true
     existingSecret: "prod-redis-secret"
 ```
-
+!!!warning
+    For smoother migration, it's better to create a new secret with the updated values and then update your configuration to reference this new secret, rather than modifying an existing secret in place.
+    
+    When changing the content of a Kubernetes Secret that is already in use, the running pods will not automatically pick up the new values. You must recreate the pods for them to use the updated secret.
 
 ### Migration from Bitnami Redis
 

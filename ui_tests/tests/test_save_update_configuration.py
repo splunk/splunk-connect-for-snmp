@@ -35,7 +35,7 @@ def setup_and_teardown():
     p_header.apply_changes()
     time_to_upgrade = p_header.get_time_to_upgrade()
     p_header.close_configuration_applied_notification_popup()
-    time.sleep(time_to_upgrade + 30)  # wait for upgrade + walk time + polling
+    time.sleep(time_to_upgrade + 60)  # wait for upgrade + walk time + polling
     yield
     # teardown here if needed
 
