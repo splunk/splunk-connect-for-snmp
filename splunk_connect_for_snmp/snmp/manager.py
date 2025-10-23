@@ -438,7 +438,7 @@ class Poller(Task):
         """
          ## NOTE
         - When a task arrived at poll queue starts with a fresh SnmpEngine (which has no transport_dispatcher
-          attached), SNMP requests (get_cmd or bulk_walk_cmd or any other) run normally.
+          attached), SNMP requests (getCmd or bulkWalkCmd or any other) run normally.
         - if a later task finds that the SnmpEngine already has a transport_dispatcher, it reuse that transport_dispatcher.
           this causes SNMP requests to hang infinite time.
         - If this hang occurs, then as per our Celery configuration, any task that
@@ -448,7 +448,7 @@ class Poller(Task):
           on the second, third, or any subsequent task, depending on timing and
           concurrency.
 
-        The only way to eliminate this hang is to create new SnmpEngine for each poll task.
+        The only way to eliminate this hang is to use new SnmpEngine for each snmp request.
 
         """
         snmpEngine = SnmpEngine()
@@ -581,11 +581,11 @@ class Poller(Task):
         :return:
 
         ## NOTE
-        - The current `bulk_cmd` of PySNMP does not support the `lexicographicMode` option.
+        - The current `bulkCmd` of PySNMP does not support the `lexicographicMode` option.
         As a result, the walk is not strictly confined to the requested varBind subtree and may go beyond the requested OID subtree,
         with a high chance of duplicate OIDs.
 
-        - Used `bulk_walk_cmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
+        - Used `bulkWalkCmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
         but handles only one varBind at a time.
         """
 
@@ -771,6 +771,8 @@ class Poller(Task):
                         mib,
                         oid,
                         profile,
+                        varbind,
+                        varbind_id,
                     )
                 except Exception:
                     logger.exception(
@@ -791,9 +793,22 @@ class Poller(Task):
         return found
 
     def handle_metrics(
-        self, group_key, metric, metric_type, metric_value, metrics, mib, oid, profile
+        self,
+        group_key,
+        metric,
+        metric_type,
+        metric_value,
+        metrics,
+        mib,
+        oid,
+        profile,
+        varbind=None,
+        varbind_id=None,
     ):
         if metric_type in MTYPES and (isinstance(metric_value, float)):
+            logger.info(
+                f"val={varbind[1]}, varbind_id={varbind_id}, group_key={group_key}, metric={metric}, metric_type={metric_type}, metric_value={metric_value}, mib={mib}, oid={oid}, profile={profile}"
+            )
             metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
                 "time": time.time(),
                 "type": metric_type,
@@ -868,19 +883,16 @@ class Poller(Task):
         :return: A resolved index, metric, mib, oid, varbind_id
 
         ## NOTE
-        - In old fork of pysnmp, calling `getMibSymbol()` and `prettyPrint()` on
-        a varbind returned fully resolved MIB names, variable names, and indices.
+        - In older forks of PySNMP, varbinds were typically returned with fully
+        resolved MIB names, variable names, and indices.
 
-        - In lextudio's pysnmp, `get_mib_symbol()` and `prettyPrint()`
-        by default may return partially resolved names as snmp request it self not
-        resolved it fully, unless `resolve_with_mib()` is explicitly called.
-        This is why `metric` and `varbind_id` appear different from older versions.
+        - In lextudio's PySNMP, even when `lookupMib=True` is specified in
+        `bulk_walk_cmd`, some varbinds may still be only partially resolved.
+        To ensure complete resolution of MIB information, we must explicitly
+        call `resolveWithMib()` on the varbind object.
         """
         oid = str(varbind[0].getOid())
         resolved_oid = ObjectIdentity(oid).resolveWithMib(self.mib_view_controller)
         varbind_id = resolved_oid.prettyPrint()
         mib, metric, index = resolved_oid.getMibSymbol()
-        logger.info(
-            f"<--- mib={mib}, metric={metric}, varbind_id={varbind_id}, oid={oid}, val={varbind[1]}, index={index} --->"
-        )
         return index, metric, mib, oid, varbind_id
