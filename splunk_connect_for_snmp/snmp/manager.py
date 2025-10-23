@@ -426,7 +426,6 @@ class Poller(Task):
         varbinds_get,
         walk,
     ):
-        self.load_mibs(['IF-MIB'])
         async_lock = Lock()
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
@@ -495,7 +494,6 @@ class Poller(Task):
         - Used `bulkWalkCmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
         but handles only one varBind at a time.
         """
-        self.load_mibs(['IF-MIB'])
 
         async def _walk_single_varbind(varbind, wid):
             """
@@ -779,7 +777,7 @@ class Poller(Task):
 
         :param varbind: ObjectType
 
-        :return: A resolved index, metric, mib, oid, varbind_id
+        :return: A resolved index, metric, mib, oid, varbind_id, resolved_obj
 
         ## NOTE
         - In older forks of PySNMP, varbinds were typically returned with fully
@@ -793,7 +791,9 @@ class Poller(Task):
           value types are correctly interpreted.
         """
         oid = str(varbind[0].getOid())
-        resolved_obj = ObjectType(ObjectIdentity(oid), varbind[1]).resolveWithMib(self.mib_view_controller)
+        resolved_obj = ObjectType(ObjectIdentity(oid), varbind[1]).resolveWithMib(
+            self.mib_view_controller
+        )
         resolved_oid = resolved_obj[0]
         varbind_id = resolved_oid.prettyPrint()
         mib, metric, index = resolved_oid.getMibSymbol()
