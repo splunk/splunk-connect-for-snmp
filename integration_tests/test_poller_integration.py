@@ -23,8 +23,6 @@ from ruamel.yaml.scalarstring import DoubleQuotedScalarString as dq
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
 from integration_tests.splunk_test_utils import (
-    exec_mongodb_commands,
-    log_poller_pod_logs,
     splunk_single_search,
     update_file_microk8s,
     update_groups_compose,
@@ -133,7 +131,6 @@ class TestProfiles:
         assert metric_count > 0
 
     def test_static_profiles_event(self, setup_splunk):
-        log_poller_pod_logs(logger=logger)
         search_string = """search index=netops sourcetype="sc4snmp:event" "IF-MIB.ifType" AND NOT "IF-MIB.ifAdminStatus" """
         logger.info("Integration test static profile - events")
         result_count, metric_count = run_retried_single_search(
@@ -809,7 +806,7 @@ def setup_groups(request):
 
 
 @pytest.mark.usefixtures("setup_groups")
-@pytest.mark.part33
+@pytest.mark.part3
 class TestGroupsInventory:
     def test_ip_address_inventory(self, setup_splunk):
         time.sleep(20)
@@ -939,7 +936,7 @@ def setup_single_ang_group(request):
 
 
 @pytest.mark.usefixtures("setup_single_ang_group")
-@pytest.mark.part33
+@pytest.mark.part3
 class TestIgnoreSingleIfInGroup:
     def test_host_from_group(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
@@ -1022,9 +1019,7 @@ def setup_single_gt_and_lt_profiles(request):
             ]
         )
         upgrade_docker_compose()
-    time.sleep(40)
-    log_poller_pod_logs(logger=logger, msg="fixture logs")
-    time.sleep(80)
+    time.sleep(120)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -1049,7 +1044,6 @@ def setup_single_gt_and_lt_profiles(request):
 class TestSingleGtAndLtCorrectCondition:
     def test_gt_profile(self, request, setup_splunk):
         time.sleep(20)
-        log_poller_pod_logs(logger=logger, msg="test_gt_profile", pod="poll")
         search_string = """| mpreview index=netmetrics | search profiles=gt_profile """
         result_count, metric_count = run_retried_single_search(
             setup_splunk, search_string, 2
@@ -1357,7 +1351,6 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
 class TestSingleGtAndLtWithNegationCorrectCondition:
     def test_not_gt_profile(self, request, setup_splunk):
         time.sleep(20)
-        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_gt_profile """
         )
@@ -1369,7 +1362,6 @@ class TestSingleGtAndLtWithNegationCorrectCondition:
 
     def test_not_lt_profile(self, request, setup_splunk):
         time.sleep(20)
-        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_lt_profile """
         )
@@ -1567,11 +1559,10 @@ def setup_single_regex_and_options_profiles_with_negation(request):
 
 
 @pytest.mark.usefixtures("setup_single_regex_and_options_profiles_with_negation")
-@pytest.mark.part55
+@pytest.mark.part5
 class TestSingleRegexWithNegationCorrectCondition:
     def test_not_regex_profile(self, request, setup_splunk):
         time.sleep(20)
-        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_regex_profile """
         )
@@ -1583,7 +1574,6 @@ class TestSingleRegexWithNegationCorrectCondition:
 
     def test_not_regex_with_options_profile(self, request, setup_splunk):
         time.sleep(20)
-        log_poller_pod_logs(logger=logger)
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_options_profile """
         )
@@ -1658,10 +1648,7 @@ def setup_multiple_conditions_profiles(request):
             ]
         )
         upgrade_docker_compose()
-    time.sleep(40)
-    exec_mongodb_commands(logger=logger, msg=" ---- mongosh ---")
-    log_poller_pod_logs(logger=logger, msg=" -- fixture part5 --- ")
-    time.sleep(80)
+    time.sleep(120)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -1686,7 +1673,6 @@ def setup_multiple_conditions_profiles(request):
 class TestMultipleCorrectConditions:
     def test_gt_and_equals_profile(self, request, setup_splunk):
         time.sleep(20)
-        log_poller_pod_logs(logger=logger, msg="test_gt_and_equals_profile", pod="poll")
         search_string = (
             """| mpreview index=netmetrics | search profiles=gt_and_equals_profile """
         )
@@ -1799,7 +1785,7 @@ def setup_wrong_conditions_profiles(request):
 
 
 @pytest.mark.usefixtures("setup_wrong_conditions_profiles")
-@pytest.mark.part55
+@pytest.mark.part5
 class TestWrongConditions:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)

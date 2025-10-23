@@ -287,96 +287,6 @@ def get_max_bulk_walk_concurrency(count: int) -> int:
     return MAX_SNMP_BULK_WALK_CONCURRENCY
 
 
-def patch_inet_address_classes(mib_builder: MibBuilder) -> bool:
-    """
-    Adjust InetAddress classes for compatibility with legacy length-prefixed
-    OID index decoding used by earlier PySNMP versions (RFC 4001).
-
-    ## NOTE
-    In current pysmp, the INET-ADDRESS-MIB definitions for
-    InetAddressIPv4, InetAddressIPv6, InetAddressIPv4z, and InetAddressIPv6z
-    include a `fixed_length` attribute, e.g.:
-
-        class InetAddressIPv4(TextualConvention, OctetString):
-            subtypeSpec = OctetString.subtypeSpec + ConstraintsUnion(
-                ValueSizeConstraint(4, 4),
-            )
-            fixed_length = 4
-
-    Older pysnmp releases did **not** define `fixed_length`. When present,
-    the SNMP `setFromName()` method takes the *fixed-length* branch:
-
-        elif obj.is_fixed_length():
-            fixed_length = obj.get_fixed_length()
-            return obj.clone(tuple(value[:fixed_length])), value[fixed_length:]
-
-    instead of the *length-prefixed* branch required by RFC 4001:
-
-        else:
-            return obj.clone(tuple(value[1:value[0]+1])), value[value[0]+1:]
-
-    This changes how address-based table indices (e.g. **IP-MIB::ipAddressTable**)
-    are parsed.
-
-    Example:
-        OID index: 1.3.6.1.2.1.4.34.1.3.1.4.127.0.0.1
-        Expected:  ipAddressIfIndex.ipv4."127.0.0.1"
-
-        Index portion: (1, 4, 127, 0, 0, 1)
-        |---| |-----------|
-        |        |__ Address octets
-        |__ Length prefix (4)
-
-    With `fixed_length = 4`:
-        --> Parsed as (4,127,0,0) + leftover (1)
-        --> Raises “Excessive instance identifier sub-OIDs left …”
-
-    Without `fixed_length`:
-        - Correctly parses (127,0,0,1) as the IPv4 address.
-
-    Fix:
-        This patch disables the `fixed_length` attribute.
-
-    :param mib_builder: MibBuilder that has loaded INET-ADDRESS-MIB.
-    :return: True if patch applied successfully, False otherwise.
-    """
-
-    try:
-        (InetAddressIPv4, InetAddressIPv6, InetAddressIPv4z, InetAddressIPv6z) = (
-            mib_builder.import_symbols(
-                "INET-ADDRESS-MIB",
-                "InetAddressIPv4",
-                "InetAddressIPv6",
-                "InetAddressIPv4z",
-                "InetAddressIPv6z",
-            )
-        )
-
-        logger.info("Applying InetAddress monkey patch for lextudio pysnmp v7.x bug...")
-
-        classes_to_patch = [
-            ("InetAddressIPv4", InetAddressIPv4),
-            ("InetAddressIPv6", InetAddressIPv6),
-            ("InetAddressIPv4z", InetAddressIPv4z),
-            ("InetAddressIPv6z", InetAddressIPv6z),
-        ]
-
-        for class_name, cls in classes_to_patch:
-            cls.fixed_length = None
-            logger.info(f"Removed the problematic fixed_length attribute {class_name}")
-
-        logger.info("All InetAddress classes successfully patched")
-        return True
-
-    except ImportError as e:
-        logger.info(f"Could not import INET-ADDRESS-MIB for patching: {e}")
-        return False
-
-    except Exception as e:
-        logger.info(f"Unexpected error while patching InetAddress classes: {e}")
-        return False
-
-
 class Poller(Task):
     def __init__(self, **kwargs):
         self.standard_mibs = []
@@ -405,11 +315,6 @@ class Poller(Task):
         self.builder = self.snmpEngine.getMibBuilder()
         self.mib_view_controller = view.MibViewController(self.builder)
         compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
-
-        print(f"=== self.profiles={self.profiles} ===")
-        print(
-            f"=== self.profiles_collection.list_of_profiles={self.profiles_collection.list_of_profiles} ==="
-        )
 
         for mib in DEFAULT_STANDARD_MIBS:
             self.standard_mibs.append(mib)
@@ -448,10 +353,9 @@ class Poller(Task):
           on the second, third, or any subsequent task, depending on timing and
           concurrency.
 
-        The only way to eliminate this hang is to use new SnmpEngine for each snmp request.
+        The better way to eliminate this hang is to use new SnmpEngine for each snmp request.
 
         """
-        snmpEngine = SnmpEngine()
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
         logger.info(f"Preparing task for {ir.address}")
@@ -466,7 +370,7 @@ class Poller(Task):
             address, walk=walk, profiles=profiles
         )
 
-        auth_data = await get_auth(logger, ir, snmpEngine)
+        auth_data = await get_auth(logger, ir, self.snmpEngine)
         context_data = get_context_data()
 
         transport = await setup_transport_target(ir)
@@ -516,8 +420,8 @@ class Poller(Task):
         auth_data,
         context_data,
         get_mapping,
-        ir,
-        metrics,
+        ir: InventoryRecord,
+        metrics: dict,
         transport,
         varbinds_get,
         walk,
@@ -558,8 +462,8 @@ class Poller(Task):
         auth_data,
         bulk_mapping,
         context_data,
-        ir,
-        metrics,
+        ir: InventoryRecord,
+        metrics: dict,
         transport,
         varbinds_bulk,
         walk,
@@ -714,7 +618,6 @@ class Poller(Task):
         varbinds_get = set()
         get_mapping = {}
         bulk_mapping = {}
-        logger.info(f"=== profiles={profiles} ===")
         if walk and not profiles:
             varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
             return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
@@ -722,16 +625,13 @@ class Poller(Task):
         joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
             profiles, walk
         )
-        logger.info(f"=== joined_profile_object={joined_profile_object} ===")
         if joined_profile_object:
             mib_families = joined_profile_object.get_mib_families()
-            logger.info(f"==== mib_families={mib_families} ====")
             mib_files_to_load = [
                 mib_family
                 for mib_family in mib_families
                 if mib_family not in self.already_loaded_mibs
             ]
-            logger.info(f"=== mib_files_to_load={mib_files_to_load} ===")
             if mib_files_to_load:
                 self.load_mibs(mib_files_to_load)
 
@@ -753,7 +653,7 @@ class Poller(Task):
         remotemibs = []
         for varbind in varbind_table:
 
-            index, metric, mib, oid, varbind_id = self.init_snmp_data(varbind)
+            index, metric, mib, oid, varbind_id, varbind = self.init_snmp_data(varbind)
 
             if is_mib_resolved(varbind_id):
                 group_key = get_group_key(mib, oid, index)
@@ -777,8 +677,6 @@ class Poller(Task):
                         mib,
                         oid,
                         profile,
-                        varbind,
-                        varbind_id,
                     )
                 except Exception:
                     logger.exception(
@@ -808,13 +706,8 @@ class Poller(Task):
         mib,
         oid,
         profile,
-        varbind=None,
-        varbind_id=None,
     ):
         if metric_type in MTYPES and (isinstance(metric_value, float)):
-            logger.info(
-                f"snmp_type={type(varbind[1]).__name__} val={varbind[1]}, varbind_id={varbind_id}, group_key={group_key}, metric={metric}, metric_type={metric_type}, metric_value={metric_value}, mib={mib}, oid={oid}, profile={profile}"
-            )
             metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
                 "time": time.time(),
                 "type": metric_type,
@@ -893,12 +786,15 @@ class Poller(Task):
         resolved MIB names, variable names, and indices.
 
         - In lextudio's PySNMP, even when `lookupMib=True` is specified in
-        `bulk_walk_cmd`, some varbinds may still be only partially resolved.
+        `bulkWalkCmd`, some varbinds may still be only partially resolved.
         To ensure complete resolution of MIB information, we must explicitly
         call `resolveWithMib()` on the varbind object.
+        - The original varbind is replaced by `resolved_obj`, ensuring both OID and
+          value types are correctly interpreted.
         """
         oid = str(varbind[0].getOid())
-        resolved_oid = ObjectIdentity(oid).resolveWithMib(self.mib_view_controller)
+        resolved_obj = ObjectType(ObjectIdentity(oid), varbind[1]).resolveWithMib(self.mib_view_controller)
+        resolved_oid = resolved_obj[0]
         varbind_id = resolved_oid.prettyPrint()
         mib, metric, index = resolved_oid.getMibSymbol()
-        return index, metric, mib, oid, varbind_id
+        return index, metric, mib, oid, varbind_id, resolved_obj
