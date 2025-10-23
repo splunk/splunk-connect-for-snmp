@@ -94,7 +94,7 @@ Create the name of the service account to use
 Whether enable traps
 */}}
 {{- define "splunk-connect-for-snmp.traps.enable" -}}
-{{- if or (and (eq .Values.traps.service.type "LoadBalancer") .Values.traps.loadBalancerIP ) (and (eq .Values.traps.service.type "NodePort") .Values.traps.service.nodePort) }}
+{{- if or (and (eq .Values.traps.service.type "LoadBalancer") .Values.traps.loadBalancerIP ) (and (eq .Values.traps.service.type "NodePort") .Values.traps.service.nodePort ) ( not .Values.traps.service.usemetallb) }}
 {{- printf "true" }}
 {{- else }}
 {{- printf "false" }}

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Changed
+- add CounterBasedGauge64 and ZeroBasedCounter64 as metrics types
+
+### Fixes
+- fix problem with service rendering when `traps.service.usemetallb` is set to false
+
 ## [1.14.1]
 - update mongodb volumePermission image repository to `bitnamileagcy`
 

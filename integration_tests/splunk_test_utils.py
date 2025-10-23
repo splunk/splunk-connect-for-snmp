@@ -319,6 +319,9 @@ def log_poller_pod_logs(namespace="sc4snmp", pod="poll", msg=None, logger=None):
     logger.info(f"===== STARTING {pod} for {msg} LOGS =====")
     pods = subprocess.getoutput(list_pods_cmd).splitlines()
     logger.info(f"total_pods={pods}")
+    output = subprocess.getoutput("snmptranslate -Tp IF-MIB::ifIndex")
+    logger.info(f"snmptranslate: {output}")
+    
     if not pods:
         if logger:
             logger.info(f"===== No {pod} pods found. =====")
