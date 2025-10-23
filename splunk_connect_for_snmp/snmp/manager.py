@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 import typing
-from asyncio import Queue, QueueEmpty, TaskGroup
+from asyncio import Lock, Queue, QueueEmpty, TaskGroup
 from collections import defaultdict
 from contextlib import suppress
 
@@ -522,6 +522,8 @@ class Poller(Task):
         varbinds_get,
         walk,
     ):
+        self.load_mibs(['IF-MIB'])
+        async_lock = Lock()
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
             try:
@@ -547,7 +549,8 @@ class Poller(Task):
                 ir.address,
                 walk,
             ):
-                self.process_snmp_data(varbind_table, metrics, address, get_mapping)
+                async with async_lock:
+                    self.process_snmp_data(varbind_table, metrics, address, get_mapping)
 
     async def run_bulk_request(
         self,
@@ -588,6 +591,7 @@ class Poller(Task):
         - Used `bulkWalkCmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
         but handles only one varBind at a time.
         """
+        self.load_mibs(['IF-MIB'])
 
         async def _walk_single_varbind(varbind, wid):
             """
@@ -595,6 +599,7 @@ class Poller(Task):
             :param varbind: SNMP ObjectType varbind to be walked
             :return:
             """
+            async_lock = Lock()
             try:
                 async for (
                     error_indication,
@@ -623,14 +628,15 @@ class Poller(Task):
                         ir.address,
                         walk,
                     ):
-                        _, tmp_mibs, _ = self.process_snmp_data(
-                            varbind_table, metrics, address, bulk_mapping
-                        )
-                        if tmp_mibs:
-                            self.load_mibs(tmp_mibs)
-                            self.process_snmp_data(
+                        async with async_lock:
+                            _, tmp_mibs, _ = self.process_snmp_data(
                                 varbind_table, metrics, address, bulk_mapping
                             )
+                            if tmp_mibs:
+                                self.load_mibs(tmp_mibs)
+                                self.process_snmp_data(
+                                    varbind_table, metrics, address, bulk_mapping
+                                )
             except Exception as e:
                 logger.exception(f"Error while performing bulk_walk_cmd: {e}")
 
@@ -807,7 +813,7 @@ class Poller(Task):
     ):
         if metric_type in MTYPES and (isinstance(metric_value, float)):
             logger.info(
-                f"val={varbind[1]}, varbind_id={varbind_id}, group_key={group_key}, metric={metric}, metric_type={metric_type}, metric_value={metric_value}, mib={mib}, oid={oid}, profile={profile}"
+                f"snmp_type={type(varbind[1]).__name__} val={varbind[1]}, varbind_id={varbind_id}, group_key={group_key}, metric={metric}, metric_type={metric_type}, metric_value={metric_value}, mib={mib}, oid={oid}, profile={profile}"
             )
             metrics[group_key]["metrics"][f"{mib}.{metric}"] = {
                 "time": time.time(),

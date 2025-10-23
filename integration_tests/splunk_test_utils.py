@@ -315,6 +315,9 @@ def log_poller_pod_logs(namespace="sc4snmp", pod="poll", msg=None, logger=None):
         f"sudo microk8s kubectl get pods -A | grep {pod} | awk '{{print $2}}'"
     )
     os.system(list_pods_cmd)
+    
+    output = subprocess.getoutput("snmptranslate -Tp IF-MIB::ifIndex")
+    logger.info(f"snmptranslate: {output}")
 
     logger.info(f"===== STARTING {pod} for {msg} LOGS =====")
     pods = subprocess.getoutput(list_pods_cmd).splitlines()
