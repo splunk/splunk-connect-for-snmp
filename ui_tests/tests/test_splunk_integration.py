@@ -114,6 +114,7 @@ def test_applying_changes_for_device_that_does_not_exists(setup):
     logger.info("Splunk received %s events in the last minute", len(events))
     assert len(events) == 0
 
+    logger.info("All logs: ", events)
     # delete
     p_inventory.delete_entry_from_list(host)
     is_on_list = p_inventory.check_if_entry_is_on_list(host)
