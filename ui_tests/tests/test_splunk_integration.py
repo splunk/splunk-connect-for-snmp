@@ -77,6 +77,15 @@ def test_applying_changes_for_device_that_does_not_exists(setup):
     p_header.close_configuration_applied_notification_popup()
     time.sleep(time_to_upgrade + 60)  # wait for upgrade
 
+    search_query = f"index={config.LOGS_INDEX} *"
+    logs = check_events_from_splunk(
+        start_time="-3m@m",
+        url=setup["splunkd_url"],
+        user=setup["splunk_user"],
+        query=["search {}".format(search_query)],
+        password=setup["splunk_password"],
+    )
+    logger.info("All logs: %s", logs)
     # check data in Splunk
     # check walk scheduled
     search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};walk"'
@@ -87,7 +96,6 @@ def test_applying_changes_for_device_that_does_not_exists(setup):
         query=["search {}".format(search_query)],
         password=setup["splunk_password"],
     )
-    logger.info("All logs: ", events)
     logger.info("Splunk received %s events in the last minute", len(events))
     assert len(events) == 1
 
