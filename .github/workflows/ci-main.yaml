@@ -175,6 +175,7 @@ jobs:
           sudo snap install microk8s --classic --channel=1.33/stable
           sudo apt-get install snmp -y
           sudo apt-get install python3-dev -y
+          sudo apt-get install snmp-mibs-downloader -y
       - name: run automatic_setup_microk8s.sh
         run: integration_tests/automatic_setup_microk8s.sh integration
       - name: run tests

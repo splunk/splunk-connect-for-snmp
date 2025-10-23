@@ -12,6 +12,8 @@ install_dependencies_on_ubuntu() {
   sudo snap install docker
   sudo apt-get install snmp -y
   sudo apt-get install python3-dev -y
+  sudo apt-get install snmp-mibs-downloader -y
+
 }
 
 install_dependencies_on_centos() {
@@ -24,6 +26,7 @@ install_dependencies_on_centos() {
   sudo snap install docker
   sudo yum install net-snmp net-snmp-utils -y
   sudo yum install python3-devel -y
+  sudo yum install net-snmp-mibs -y
 }
 
 install_dependencies() {

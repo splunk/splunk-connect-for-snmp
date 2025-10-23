@@ -753,7 +753,7 @@ class Poller(Task):
         remotemibs = []
         for varbind in varbind_table:
 
-            index, metric, mib, oid, varbind_id = self.init_snmp_data(varbind)
+            index, metric, mib, oid, varbind_id, varbind = self.init_snmp_data(varbind)
 
             if is_mib_resolved(varbind_id):
                 group_key = get_group_key(mib, oid, index)
@@ -898,7 +898,12 @@ class Poller(Task):
         call `resolveWithMib()` on the varbind object.
         """
         oid = str(varbind[0].getOid())
-        resolved_oid = ObjectIdentity(oid).resolveWithMib(self.mib_view_controller)
+        resolved_obj = ObjectType(ObjectIdentity(oid), varbind[1]).resolveWithMib(self.mib_view_controller)
+        resolved_oid = resolved_obj[0]
+        resolved_value = resolved_obj[1]
+        resolved_type = type(resolved_value).__name__
         varbind_id = resolved_oid.prettyPrint()
         mib, metric, index = resolved_oid.getMibSymbol()
-        return index, metric, mib, oid, varbind_id
+        if metric == "ifIndex":
+            logger.info(f"resolved_typ=={resolved_type}, prev_type={type(varbind[1]).__name__}")
+        return index, metric, mib, oid, varbind_id, resolved_obj
