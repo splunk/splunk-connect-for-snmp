@@ -34,6 +34,9 @@
         }
       }
     },
+    "deploymentUser" : {
+      "type": "string"
+    },
     "imagePullSecrets": {
       "type": "array"
     },
@@ -363,6 +366,9 @@
           "type": "integer"
         },
         "maxRepetitions": {
+          "type": "integer"
+        },
+        "maxSnmpBulkWalkConcurrency": {
           "type": "integer"
         },
         "usernameSecrets": {

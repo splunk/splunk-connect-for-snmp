@@ -125,6 +125,8 @@ Common labels
   value: {{ .Values.poller.maxOidToProcess | default "70" | quote }}
 - name: MAX_REPETITIONS
   value: {{ .Values.poller.maxRepetitions | default "10" | quote }}
+- name: MAX_SNMP_BULK_WALK_CONCURRENCY
+  value: {{ .Values.poller.maxSnmpBulkWalkConcurrency | default "5" | quote }}
 - name: PYSNMP_DEBUG
   value: {{ .Values.pysnmpDebug | default "" | quote }}
 - name: PROFILES_RELOAD_DELAY
