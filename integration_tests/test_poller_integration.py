@@ -23,6 +23,8 @@ from ruamel.yaml.scalarstring import DoubleQuotedScalarString as dq
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
 from integration_tests.splunk_test_utils import (
+    log_poller_pod_logs,
+    exec_mongodb_commands,
     splunk_single_search,
     update_file_microk8s,
     update_groups_compose,
@@ -1648,7 +1650,7 @@ def setup_multiple_conditions_profiles(request):
             ]
         )
         upgrade_docker_compose()
-    time.sleep(120)
+    time.sleep(220)
     yield
     if deployment == "microk8s":
         update_file_microk8s(
@@ -1665,7 +1667,7 @@ def setup_multiple_conditions_profiles(request):
             ]
         )
         upgrade_docker_compose()
-    time.sleep(120)
+    time.sleep(220)
 
 
 @pytest.mark.usefixtures("setup_multiple_conditions_profiles")
@@ -1673,6 +1675,8 @@ def setup_multiple_conditions_profiles(request):
 class TestMultipleCorrectConditions:
     def test_gt_and_equals_profile(self, request, setup_splunk):
         time.sleep(20)
+        exec_mongodb_commands(logger=logger, msg=" mongosh test_gt_and_equals_profile ")
+        log_poller_pod_logs(logger=logger, msg="== test_gt_and_equals_profile ==")
         search_string = (
             """| mpreview index=netmetrics | search profiles=gt_and_equals_profile """
         )
