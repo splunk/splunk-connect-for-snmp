@@ -44,6 +44,14 @@ spec:
           imagePullPolicy: {{ .Values.sim.pullPolicy | default "IfNotPresent" }}
           args: ["--config=/config/otel-collector-config.yaml"]
           env:
+            - name: USER
+              value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
+            - name: LOGNAME
+              value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
+            - name: LNAME
+              value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
+            - name: USERNAME
+              value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
             - name: signalfxToken
               valueFrom:
                 secretKeyRef:

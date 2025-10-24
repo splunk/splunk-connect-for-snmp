@@ -13,11 +13,11 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #   ########################################################################
+import asyncio
 import logging
-import time
 
 import pytest
-from pysnmp.hlapi import *
+from pysnmp.hlapi.v3arch.asyncio import *
 
 from integration_tests.splunk_test_utils import (
     create_v3_secrets_compose,
@@ -34,13 +34,13 @@ from integration_tests.splunk_test_utils import (
 logger = logging.getLogger(__name__)
 
 
-def send_trap(
+async def send_trap(
     host, port, object_identity, mib_to_load, community, mp_model, *var_binds
 ):
-    iterator = sendNotification(
+    error_indication, error_status, error_index, varBinds = await sendNotification(
         SnmpEngine(),
         CommunityData(community, mpModel=mp_model),
-        UdpTransportTarget((host, port)),
+        await UdpTransportTarget.create((host, port)),
         ContextData(),
         "trap",
         NotificationType(ObjectIdentity(object_identity))
@@ -48,44 +48,41 @@ def send_trap(
         .loadMibs(mib_to_load),
     )
 
-    error_indication, error_status, error_index, var_binds = next(iterator)
-
     if error_indication:
         logger.error(f"{error_indication}")
 
 
-def send_v3_trap(host, port, object_identity, *var_binds):
-    iterator = sendNotification(
+async def send_v3_trap(host, port, object_identity, *var_binds):
+    error_indication, error_status, error_index, varBinds = await sendNotification(
         SnmpEngine(OctetString(hexValue="80003a8c04")),
         UsmUserData(
-            "snmp-poller",
-            "PASSWORD1",
-            "PASSWORD1",
+            userName="snmp-poller",
+            authKey="PASSWORD1",
+            privKey="PASSWORD1",
             authProtocol=(1, 3, 6, 1, 6, 3, 10, 1, 1, 3),
             privProtocol=(1, 3, 6, 1, 6, 3, 10, 1, 2, 4),
         ),
-        UdpTransportTarget((host, port)),
+        await UdpTransportTarget.create((host, port)),
         ContextData(),
         "trap",
         NotificationType(ObjectIdentity(object_identity)).addVarBinds(*var_binds),
     )
-
-    error_indication, error_status, error_index, var_binds = next(iterator)
 
     if error_indication:
         logger.error(f"{error_indication}")
 
 
 @pytest.mark.part6
-def test_trap_v1(request, setup_splunk):
+@pytest.mark.asyncio
+async def test_trap_v1(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
 
-    time.sleep(2)
+    await asyncio.sleep(2)
     # send trap
     varbind1 = ("1.3.6.1.6.3.1.1.4.3.0", "1.3.6.1.4.1.20408.4.1.1.2")
     varbind2 = ("1.3.6.1.2.1.1.4.0", OctetString("my contact"))
-    send_trap(
+    await send_trap(
         trap_external_ip,
         162,
         "1.3.6.1.6.3.1.1.5.2",
@@ -97,7 +94,7 @@ def test_trap_v1(request, setup_splunk):
     )
 
     # wait for the message to be processed
-    time.sleep(5)
+    await asyncio.sleep(5)
 
     search_query = """search index="netops" sourcetype="sc4snmp:traps" earliest=-1m
                      | head 1"""
@@ -108,15 +105,16 @@ def test_trap_v1(request, setup_splunk):
 
 
 @pytest.mark.part6
-def test_trap_v2(request, setup_splunk):
+@pytest.mark.asyncio
+async def test_trap_v2(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
 
-    time.sleep(2)
+    await asyncio.sleep(2)
     # send trap
     varbind1 = ("1.3.6.1.6.3.1.1.4.3.0", "1.3.6.1.4.1.20408.4.1.1.2")
     varbind2 = ("1.3.6.1.2.1.1.1.0", OctetString("my system"))
-    send_trap(
+    await send_trap(
         trap_external_ip,
         162,
         "1.3.6.1.6.3.1.1.5.2",
@@ -128,7 +126,7 @@ def test_trap_v2(request, setup_splunk):
     )
 
     # wait for the message to be processed
-    time.sleep(5)
+    await asyncio.sleep(5)
 
     search_query = """search index="netops" sourcetype="sc4snmp:traps" earliest=-1m
                      | head 1"""
@@ -139,19 +137,20 @@ def test_trap_v2(request, setup_splunk):
 
 
 @pytest.mark.part6
-def test_added_varbind(request, setup_splunk):
+@pytest.mark.asyncio
+async def test_added_varbind(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
 
-    time.sleep(2)
+    await asyncio.sleep(2)
     # send trap
     varbind1 = ("1.3.6.1.2.1.1.1.0", OctetString("test_added_varbind"))
-    send_trap(
+    await send_trap(
         trap_external_ip, 162, "1.3.6.1.2.1.2.1", "SNMPv2-MIB", "public", 1, varbind1
     )
 
     # wait for the message to be processed
-    time.sleep(5)
+    await asyncio.sleep(5)
 
     search_query = (
         """search index="netops" "SNMPv2-MIB.sysDescr.value"="test_added_varbind" """
@@ -163,15 +162,16 @@ def test_added_varbind(request, setup_splunk):
 
 
 @pytest.mark.part6
-def test_many_traps(request, setup_splunk):
+@pytest.mark.asyncio
+async def test_many_traps(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
 
-    time.sleep(2)
+    await asyncio.sleep(2)
     # send trap
     varbind1 = ("1.3.6.1.2.1.1.1.0", OctetString("test_many_traps"))
     for _ in range(5):
-        send_trap(
+        await send_trap(
             trap_external_ip,
             162,
             "1.3.6.1.2.1.2.1",
@@ -182,7 +182,7 @@ def test_many_traps(request, setup_splunk):
         )
 
     # wait for the message to be processed
-    time.sleep(2)
+    await asyncio.sleep(5)
 
     search_query = (
         """search index="netops" "SNMPv2-MIB.sysDescr.value"="test_many_traps" """
@@ -194,15 +194,16 @@ def test_many_traps(request, setup_splunk):
 
 
 @pytest.mark.part6
-def test_more_than_one_varbind(request, setup_splunk):
+@pytest.mark.asyncio
+async def test_more_than_one_varbind(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
 
-    time.sleep(2)
+    await asyncio.sleep(2)
     # send trap
     varbind1 = ("1.3.6.1.2.1.1.4.0", OctetString("test_more_than_one_varbind_contact"))
     varbind2 = ("1.3.6.1.2.1.1.1.0", OctetString("test_more_than_one_varbind"))
-    send_trap(
+    await send_trap(
         trap_external_ip,
         162,
         "1.3.6.1.2.1.2.1",
@@ -214,7 +215,7 @@ def test_more_than_one_varbind(request, setup_splunk):
     )
 
     # wait for the message to be processed
-    time.sleep(2)
+    await asyncio.sleep(2)
 
     search_query = """search index="netops" | search "SNMPv2-MIB.sysDescr.value"="test_more_than_one_varbind"
     "SNMPv2-MIB.sysContact.value"=test_more_than_one_varbind_contact """
@@ -225,14 +226,15 @@ def test_more_than_one_varbind(request, setup_splunk):
 
 
 @pytest.mark.part6
-def test_loading_mibs(request, setup_splunk):
+@pytest.mark.asyncio
+async def test_loading_mibs(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
 
-    time.sleep(2)
+    await asyncio.sleep(2)
     # send trap
     varbind1 = ("1.3.6.1.6.3.1.1.4.1.0", "1.3.6.1.4.1.15597.1.1.1.1.0.1")
-    send_trap(
+    await send_trap(
         trap_external_ip,
         162,
         "1.3.6.1.4.1.15597.1.1.1.1",
@@ -243,7 +245,7 @@ def test_loading_mibs(request, setup_splunk):
     )
 
     # wait for the message to be processed
-    time.sleep(2)
+    await asyncio.sleep(2)
 
     search_query = """search index=netops "SNMPv2-MIB.snmpTrapOID.value"="AVAMAR-MCS-MIB::eventTrap"  """
 
@@ -253,7 +255,8 @@ def test_loading_mibs(request, setup_splunk):
 
 
 @pytest.mark.part6
-def test_trap_v3(request, setup_splunk):
+@pytest.mark.asyncio
+async def test_trap_v3(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
     if deployment == "microk8s":
@@ -269,13 +272,13 @@ def test_trap_v3(request, setup_splunk):
         wait_for_pod_initialization_microk8s()
     else:
         wait_for_containers_initialization()
-    time.sleep(15)
+    await asyncio.sleep(20)
     # send trap
     varbind1 = ("1.3.6.1.2.1.1.4.0", OctetString("test_trap_v3"))
-    send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.1.0", varbind1)
+    await send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.1.0", varbind1)
 
     # wait for the message to be processed
-    time.sleep(2)
+    await asyncio.sleep(5)
 
     search_query = (
         """search index=netops "SNMPv2-MIB.sysContact.value"="test_trap_v3"  """

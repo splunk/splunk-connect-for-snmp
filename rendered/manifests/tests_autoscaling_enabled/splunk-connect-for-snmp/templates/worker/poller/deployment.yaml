@@ -41,6 +41,14 @@ spec:
               "celery", "worker-poller",
             ]
           env:
+            - name: USER
+              value: "sc4snmp"
+            - name: LOGNAME
+              value: "sc4snmp"
+            - name: LNAME
+              value: "sc4snmp"
+            - name: USERNAME
+              value: "sc4snmp"
             - name: CONFIG_PATH
               value: /app/config/config.yaml
             - name: REDIS_URL
@@ -69,6 +77,8 @@ spec:
               value: "70"
             - name: MAX_REPETITIONS
               value: "10"
+            - name: MAX_SNMP_BULK_WALK_CONCURRENCY
+              value: "5"
             - name: PYSNMP_DEBUG
               value: ""
             - name: PROFILES_RELOAD_DELAY

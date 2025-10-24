@@ -44,7 +44,7 @@ class TestGetVarbinds(TestCase):
         poller.profiles = profiles
         poller.profiles_collection = ProfileCollection(profiles)
         poller.profiles_collection.process_profiles()
-        poller.already_loaded_mibs = {}
+        poller.already_loaded_mibs = set()
         poller.load_mibs = Mock()
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_varbinds(
             "192.168.0.1", walk=True, profiles=["test1"]
@@ -78,7 +78,7 @@ class TestGetVarbinds(TestCase):
         poller.profiles = profiles
         poller.profiles_collection = ProfileCollection(profiles)
         poller.profiles_collection.process_profiles()
-        poller.already_loaded_mibs = {}
+        poller.already_loaded_mibs = set()
         poller.load_mibs = Mock()
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_varbinds(
             "192.168.0.1", walk=True, profiles=["test1"]
@@ -110,7 +110,7 @@ class TestGetVarbinds(TestCase):
         poller.profiles = profiles
         poller.profiles_collection = ProfileCollection(profiles)
         poller.profiles_collection.process_profiles()
-        poller.already_loaded_mibs = {}
+        poller.already_loaded_mibs = set()
         poller.load_mibs = Mock()
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = poller.get_varbinds(
             "192.168.0.1", walk=True, profiles=["test1"]
