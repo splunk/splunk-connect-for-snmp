@@ -165,24 +165,9 @@ def upgrade_env_compose(variable, new_value, env_path=".env"):
         f.writelines(lines)
 
 
-def create_v3_secrets_compose(
-    secret_name="secretv4",
-    user_name="snmp-poller",
-    auth_key="PASSWORD1",
-    priv_key="PASSWORD1",
-    auth_protocol="SHA",
-    priv_protocol="AES",
-):
-    os.system(
-        f'python3 $(realpath "manage_secrets.py") --path_to_compose $(pwd) \
-    --secret_name {secret_name} \
-    --userName {user_name} \
-    --privProtocol {priv_protocol} \
-    --privKey {priv_key} \
-    --authProtocol {auth_protocol} \
-    --authKey {auth_key} \
-    --contextEngineId 8000000903000A397056B8AC'
-    )
+def create_v3_secrets_compose():
+    upgrade_env_compose("ENABLE_TRAPS_SECRETS", "true")
+    upgrade_env_compose("SECRET_FOLDER_PATH", "../integration_tests/sample_v3_values")
 
 
 def wait_for_containers_initialization():
