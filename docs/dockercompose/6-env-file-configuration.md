@@ -13,6 +13,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose` |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                   |
+| `DEPLOYMENT_USER`                       | A user name to set in the deployment environment. The default value is sc4snmp.                                                   |
 
 
 ## Network configuration
@@ -67,7 +68,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 
 ### General
 | Variable                     | Description                                                                                                                                            |
-|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------| 
+|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `WALK_RETRY_MAX_INTERVAL`    | Maximum time interval between walk attempts                                                                                                            |
 | `WALK_MAX_RETRIES`           | Maximum number of walk retries                                                                                                                         |
 | `METRICS_INDEXING_ENABLED`   | Details can be found in [append oid index part to the metrics](../microk8s/configuration/poller-configuration.md#append-oid-index-part-to-the-metrics) |
@@ -76,6 +77,8 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `WORKER_LOG_LEVEL`           | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                        |
 | `UDP_CONNECTION_TIMEOUT`     | Timeout in seconds for SNMP operations                                                                                                                 |
 | `MAX_OID_TO_PROCESS`         | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS   |
+| `MAX_SNMP_BULK_WALK_CONCURRENCY` | The maximum number of concurrent SNMP bulk walks (bulk_walk_cmd) that can be executed at the same time. Default is 5. Setting this control determines the number of OID subtrees are walked in parallel and helps prevent overwhelming the target device or network. |
+                                                            |
 | `MAX_REPETITIONS`            | The amount of requested next oids in response for each of varbinds in one request sent                                                               |
 
 ### Worker Poller

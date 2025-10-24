@@ -42,6 +42,20 @@ When IPv6 is enabled and device is dual stack, the hostname resolution will try 
 The log level for poller can be set by changing the value for the key `logLevel`. The allowed values are: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` or `FATAL`. 
 The default value is `INFO`.
 
+### Define maxSnmpBulkWalkConcurrency
+The maximum number of concurrent SNMP bulk walks (bulk_walk_cmd) that can be executed at the same time.
+Default is 5.
+
+`maxSnmpBulkWalkConcurrency` Setting this control determines the number of OID subtrees are walked in parallel and helps prevent overwhelming the target device or network.
+
+For example:
+
+The configured variables:
+```yaml
+poller:
+  maxSnmpBulkWalkConcurrency: 2
+```
+
 ### Define maxRepetitions
 The maxRepetitions is a parameter used in SNMP GetBulk call. It is responsible for controlling the
 amount of variables in one request. 

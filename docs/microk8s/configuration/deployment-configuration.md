@@ -11,6 +11,19 @@ microk8s helm3 inspect values splunk-connect-for-snmp/splunk-connect-for-snmp > 
 
 The whole file is divided into the following parts:
 
+To configure `deploymentUser`:
+
+- The `deploymentUser` configuration is kept in the `values.yaml` file as a global (top-level) parameter.
+- `values.yaml` is used during the installation process for configuring Kubernetes values.
+
+- This parameter defines a user name to set in the deployment environment. The default value is sc4snmp.
+
+See the following deploymentUser example configuration:
+
+```yaml
+  deploymentUser: "user1"
+```
+
 To configure the endpoint for sending SNMP data:
 
 - `splunk` - in case you use Splunk Enterprise/Cloud.
