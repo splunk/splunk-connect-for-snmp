@@ -27,4 +27,5 @@ RUN chown 10001:10001 /tmp
 USER 10001:10001
 COPY --from=builder /app/.venv /app/.venv
 COPY entrypoint.sh ./
+COPY construct-redis-url.sh ./
 ENTRYPOINT ["./entrypoint.sh"]

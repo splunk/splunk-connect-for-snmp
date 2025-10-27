@@ -32,30 +32,10 @@ CELERY_TASK_TIMEOUT = int(os.getenv("CELERY_TASK_TIMEOUT", "2400"))
 PREFETCH_COUNT = int(os.getenv("PREFETCH_COUNT", 1))
 
 REDIS_MODE = os.getenv("REDIS_MODE", "standalone")
-
-# Read components
-REDIS_HOST = os.getenv("REDIS_HOST", "snmp-redis")
-REDIS_PORT = os.getenv("REDIS_PORT", "6379")
-REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "")
-REDIS_DB = os.getenv("REDIS_DB", "1")
-CELERY_DB = os.getenv("CELERY_DB", "0")
-
-# Sentinel-specific
-REDIS_SENTINEL_SERVICE = os.getenv("REDIS_SENTINEL_SERVICE", "snmp-redis-sentinel")
-REDIS_SENTINEL_PORT = os.getenv("REDIS_SENTINEL_PORT", "26379")
 REDIS_MASTER_NAME = os.getenv("REDIS_MASTER_NAME", "mymaster")
 
 # Construct URLs based on mode
 if REDIS_MODE == "replication":
-    # Sentinel mode
-    if REDIS_PASSWORD:
-        sentinel_base = f"sentinel://:{REDIS_PASSWORD}@{REDIS_SENTINEL_SERVICE}:{REDIS_SENTINEL_PORT}"
-    else:
-        sentinel_base = f"sentinel://{REDIS_SENTINEL_SERVICE}:{REDIS_SENTINEL_PORT}"
-
-    redbeat_redis_url = f"{sentinel_base}/{REDIS_DB}"
-    broker_url = f"{sentinel_base}/{CELERY_DB}"
-
     # Celery broker options for Sentinel
     broker_transport_options = {
         "master_name": REDIS_MASTER_NAME,
@@ -64,24 +44,15 @@ if REDIS_MODE == "replication":
         "queue_order_strategy": "priority",
     }
 else:
-    # Standalone mode (existing)
-    if REDIS_PASSWORD:
-        redis_base = f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}"
-    else:
-        redis_base = f"redis://{REDIS_HOST}:{REDIS_PORT}"
-
-    redbeat_redis_url = f"{redis_base}/{REDIS_DB}"
-    broker_url = f"{redis_base}/{CELERY_DB}"
-
     broker_transport_options = {
         "priority_steps": list(range(10)),
         "sep": ":",
         "queue_order_strategy": "priority",
     }
 
-# Fallback to env vars if set (backward compatibility)
-redbeat_redis_url = os.getenv("REDIS_URL", redbeat_redis_url)
-broker_url = os.getenv("CELERY_BROKER_URL", broker_url)
+# Should be set by ./construct-redis-url.sh script
+redbeat_redis_url = os.getenv("REDIS_URL")
+broker_url = os.getenv("CELERY_BROKER_URL")
 
 DISABLE_MONGO_DEBUG_LOGGING = human_bool(
     os.getenv("DISABLE_MONGO_DEBUG_LOGGING", "true")
