@@ -596,9 +596,13 @@ mongodb:
       repository: bitnamilegacy/os-shell
     enabled: true
 redis:
-  # Mode selector: "standalone"
-  # TODO: add "replication"
+  # Mode selector: "standalone", "replication"
   architecture: standalone
+
+  # Options for Redis replication
+  replicas: 3
+  sentinel:
+    enabled: false
 
   # Authentication
   auth:
