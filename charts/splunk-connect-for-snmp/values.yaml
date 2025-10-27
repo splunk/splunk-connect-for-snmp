@@ -23,12 +23,12 @@ UI:
   frontEnd:
     NodePort: 30001
     repository: ghcr.io/splunk/sc4snmp-ui/frontend/container
-    tag: "main"
+    tag: "1.1.1"
     pullPolicy: "Always"
   backEnd:
     NodePort: 30002
     repository: ghcr.io/splunk/sc4snmp-ui/backend/container
-    tag: "main"
+    tag: "1.1.1"
     pullPolicy: "Always"
   # Base container that sets permissions for folders mounted to UI containers
   init:
@@ -596,9 +596,46 @@ mongodb:
       repository: bitnamilegacy/os-shell
     enabled: true
 redis:
+  # Mode selector: "standalone"
+  # TODO: add "replication"
   architecture: standalone
+
+  # Authentication
   auth:
     enabled: false
+    password: ""                      # Set if auth.enabled: true
+    existingSecret: ""                # Or reference existing secret
+    existingSecretPasswordKey: "password"
+
+  # Image
   image:
-    repository: bitnamilegacy/redis
+    repository: redis
+    tag: "8.2.2"
+    pullPolicy: IfNotPresent
+
+  # Resources
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # Storage
+  storage:
+    enabled: true
+    storageClassName: microk8s-hostpath
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+  persistence:
+    aof:
+      enabled: true        # Enable AOF
+      fsync: everysec
+  # Security
+  podSecurityContext:
+    runAsUser: 999
+    fsGroup: 999
+
 commonAnnotations: {}
