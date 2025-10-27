@@ -7,8 +7,8 @@ UI:
     pullPolicy: "Always"
   backEnd:
     NodePort: 30002
-    repository: ghcr.io/splunk/sc4snmp-ui/backend/container
-    tag: "1.1.1-beta.2"
+    repository: omrozowicz571/sc4snmp-ui-backend
+    tag: "latest"
     pullPolicy: "Always"
   init:
     image: registry.access.redhat.com/ubi9/ubi
