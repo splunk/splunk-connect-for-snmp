@@ -35,11 +35,5 @@ spec:
       env:
         - name: USER
           value: "sc4snmp"          
-        - name: LOGNAME
-          value: "sc4snmp"          
-        - name: LNAME
-          value: "sc4snmp"          
-        - name: USERNAME
-          value: "sc4snmp"          
         
   restartPolicy: Never

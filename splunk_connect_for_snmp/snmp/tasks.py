@@ -56,7 +56,7 @@ TTL_DNS_CACHE_TRAPS = int(os.getenv("TTL_DNS_CACHE_TRAPS", "1800"))
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 
 
-async def walk_async_wrapper(self, **kwargs):
+async def walk_async_wrapper(self: Poller, **kwargs):
     address = kwargs["address"]
     profile = kwargs.get("profile", [])
     group = kwargs.get("group")
@@ -96,7 +96,7 @@ async def walk_async_wrapper(self, **kwargs):
         SnmpActionError,
     ),
     throws=(
-        SnmpActionError,
+        MongoLockLocked,
         SnmpActionError,
     ),
 )
@@ -104,7 +104,7 @@ def walk(self, **kwargs):
     return run(walk_async_wrapper(self, **kwargs))
 
 
-async def poll_async_wrapper(self, **kwargs):
+async def poll_async_wrapper(self: Poller, **kwargs):
     address = kwargs["address"]
     profiles = kwargs["profiles"]
     group = kwargs.get("group")
@@ -155,7 +155,7 @@ def resolve_address(address: str):
 
 
 @shared_task(bind=True, base=Poller)
-def trap(self, work):
+def trap(self: Poller, work):
     varbind_table, not_translated_oids, remaining_oids, remotemibs = [], [], [], set()
     metrics = {}
     work["host"] = format_ipv4_address(work["host"])

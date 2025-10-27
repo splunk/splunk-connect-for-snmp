@@ -46,12 +46,6 @@ spec:
           env:
             - name: USER
               value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
-            - name: LOGNAME
-              value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
-            - name: LNAME
-              value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
-            - name: USERNAME
-              value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
             {{- include "environmental-variables" . | nindent 12 }}
             {{- include "environmental-variables-sender" . | nindent 12 }}
             {{- if .Values.splunk.mtls.enabled }}
