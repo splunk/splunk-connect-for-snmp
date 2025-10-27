@@ -1238,6 +1238,48 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#use-authentication-for-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use authentication for Redis
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use authentication for Redis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plain-text-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plain text password
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-secret-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kubernetes Secret password
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-from-bitnami-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration from Bitnami Redis
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2002,6 +2044,48 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#use-authentication-for-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use authentication for Redis
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use authentication for Redis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plain-text-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plain text password
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-secret-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      Kubernetes Secret password
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-from-bitnami-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migration from Bitnami Redis
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2019,12 +2103,228 @@
 
 
 <div><h1 id="redis-configuration">Redis configuration<a class="headerlink" href="#redis-configuration" title="Permanent link">¶</a></h1>
-<p>Recently, RabbitMQ was replaced with Redis as a queue service and periodic task database. The reason for this is to increase SC4SNMP performance and protect against bottlenecks.</p>
-<p>Redis both manages periodic tasks and queues the SC4SNMP service. It queues tasks like SNMP Walk and Poll.  </p>
+<p>Redis serves as the message broker and task scheduler for SC4SNMP, managing periodic tasks and queueing operations such as SNMP Walk and Poll. It is a critical component for coordinating work between the scheduler, poller, and sender services.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Previously, Redis in our stack was provided via the Bitnami Helm chart. As Bitnami transitions certain components to a paid model, we have replaced it with our own Kubernetes manifests, implementing the necessary deployment logic in-house.
+This change ensures we maintain full control over configuration, compatibility, and licensing. If you encounter any issues or identify missing configuration options, please open an issue in the project repository so we can address it promptly.</p>
+</div>
 <h3 id="redis-configuration-file">Redis configuration file<a class="headerlink" href="#redis-configuration-file" title="Permanent link">¶</a></h3>
-<p>Redis configuration is kept in the <code>values.yaml</code> file in the <code>redis</code> section.
-<code>values.yaml</code> is used during the installation process to configure Kubernetes values.</p>
-<p>To edit the configuration, see <a href="https://github.com/bitnami/charts/tree/master/bitnami/redis">Redis on Kubernetes</a>.</p></div>
+<p>Redis configuration is maintained in the <code>redis</code> section of <code>values.yaml</code>, which is used during installation to configure Kubernetes resources.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Mode selector: "standalone"</span>
+<span class="w">  </span><span class="nt">architecture</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standalone</span>
+
+<span class="w">  </span><span class="c1"># Authentication</span>
+<span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w">                      </span><span class="c1"># Set if auth.enabled: true</span>
+<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w">                </span><span class="c1"># Or reference existing secret</span>
+<span class="w">    </span><span class="nt">existingSecretPasswordKey</span><span class="p">:</span><span class="w"> </span><span class="s">"password"</span>
+
+<span class="w">  </span><span class="c1"># Image</span>
+<span class="w">  </span><span class="nt">image</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">redis</span>
+<span class="w">    </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="s">"8.2.2"</span>
+<span class="w">    </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+
+<span class="w">  </span><span class="c1"># Resources</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">requests</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250m</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">256Mi</span>
+<span class="w">    </span><span class="nt">limits</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500m</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512Mi</span>
+
+<span class="w">  </span><span class="c1"># Storage</span>
+<span class="w">  </span><span class="nt">storage</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">microk8s-hostpath</span>
+<span class="w">    </span><span class="nt">accessModes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
+<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5Gi</span>
+<span class="w">  </span><span class="nt">persistence</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">aof</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">fsync</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">everysec</span>
+
+<span class="w">  </span><span class="c1"># Security</span>
+<span class="w">  </span><span class="nt">podSecurityContext</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span>
+<span class="w">    </span><span class="nt">fsGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>redis.architecture</td>
+<td>string</td>
+<td><code>standalone</code></td>
+<td>Deployment mode (currently only standalone supported).</td>
+</tr>
+<tr>
+<td>redis.auth.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td>Enable Redis AUTH.</td>
+</tr>
+<tr>
+<td>redis.auth.password</td>
+<td>string</td>
+<td><code>""</code></td>
+<td>Password when AUTH enabled (avoid committing; prefer secret).</td>
+</tr>
+<tr>
+<td>redis.auth.existingSecret</td>
+<td>string</td>
+<td><code>""</code></td>
+<td>Name of existing Kubernetes Secret providing the password.</td>
+</tr>
+<tr>
+<td>redis.auth.existingSecretPasswordKey</td>
+<td>string</td>
+<td><code>password</code></td>
+<td>Key inside the existing secret containing the password.</td>
+</tr>
+<tr>
+<td>redis.image.repository</td>
+<td>string</td>
+<td><code>redis</code></td>
+<td>Container image repository.</td>
+</tr>
+<tr>
+<td>redis.image.tag</td>
+<td>string</td>
+<td><code>8.2.2</code></td>
+<td>Image tag / Redis version.</td>
+</tr>
+<tr>
+<td>redis.image.pullPolicy</td>
+<td>string</td>
+<td><code>IfNotPresent</code></td>
+<td>Image pull policy.</td>
+</tr>
+<tr>
+<td>redis.resources.requests.cpu</td>
+<td>string</td>
+<td><code>250m</code></td>
+<td>Guaranteed minimum CPU.</td>
+</tr>
+<tr>
+<td>redis.resources.requests.memory</td>
+<td>string</td>
+<td><code>256Mi</code></td>
+<td>Guaranteed minimum memory.</td>
+</tr>
+<tr>
+<td>redis.resources.limits.cpu</td>
+<td>string</td>
+<td><code>500m</code></td>
+<td>CPU limit.</td>
+</tr>
+<tr>
+<td>redis.resources.limits.memory</td>
+<td>string</td>
+<td><code>512Mi</code></td>
+<td>Memory limit.</td>
+</tr>
+<tr>
+<td>redis.storage.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td>Create PersistentVolumeClaim.</td>
+</tr>
+<tr>
+<td>redis.storage.storageClassName</td>
+<td>string</td>
+<td><code>microk8s-hostpath</code></td>
+<td>StorageClass for the PVC.</td>
+</tr>
+<tr>
+<td>redis.storage.accessModes</td>
+<td>list</td>
+<td><code>[ReadWriteOnce]</code></td>
+<td>PVC access modes.</td>
+</tr>
+<tr>
+<td>redis.storage.size</td>
+<td>string</td>
+<td><code>5Gi</code></td>
+<td>Requested persistent volume size.</td>
+</tr>
+<tr>
+<td>redis.persistence.aof.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td>Enable Append Only File persistence.</td>
+</tr>
+<tr>
+<td>redis.persistence.aof.fsync</td>
+<td>string</td>
+<td><code>everysec</code></td>
+<td>AOF fsync policy (<code>always</code>, <code>everysec</code>, <code>no</code>). Necessary to migrate from bitnami Redis.</td>
+</tr>
+<tr>
+<td>redis.podSecurityContext.runAsUser</td>
+<td>int</td>
+<td><code>999</code></td>
+<td>UID for the container (non-root hardening).</td>
+</tr>
+<tr>
+<td>redis.podSecurityContext.fsGroup</td>
+<td>int</td>
+<td><code>999</code></td>
+<td>FS group owning mounted volumes.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="use-authentication-for-redis">Use authentication for Redis<a class="headerlink" href="#use-authentication-for-redis" title="Permanent link">¶</a></h3>
+<p>By default, Redis authentication is disabled. To enable it, choose one of the following methods:</p>
+<h4 id="plain-text-password">Plain text password<a class="headerlink" href="#plain-text-password" title="Permanent link">¶</a></h4>
+<p>Set the password directly in <code>values.yaml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">"your_password_here"</span>
+</code></pre></div>
+<h4 id="kubernetes-secret-password">Kubernetes Secret password<a class="headerlink" href="#kubernetes-secret-password" title="Permanent link">¶</a></h4>
+<p>To use a Kubernetes Secret for the Redis password, first create a secret with the desired password:</p>
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>prod-redis-secret<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>--from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="s2">"your_password_here"</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Replace <code>&lt;namespace&gt;</code> with the appropriate namespace where SC4SNMP is deployed.
+<code>--from-literal</code> key is <code>password</code> because it is the default value of <code>existingSecretPasswordKey</code> in <code>values.yaml</code>.
+If you want to use a different key, you can specify it in the <code>values.yaml</code> file by modifying the <code>existingSecretPasswordKey</code> field.</p>
+</div>
+<p>Then, modify the <code>values.yaml</code> file to reference this secret:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">"prod-redis-secret"</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>For smoother migration, it’s better to create a new secret with the updated values and then update your configuration to reference this new secret, rather than modifying an existing secret in place.</p>
+<p>When changing the content of a Kubernetes Secret that is already in use, the running pods will not automatically pick up the new values. You must recreate the pods for them to use the updated secret.</p>
+</div>
+<h3 id="migration-from-bitnami-redis">Migration from Bitnami Redis<a class="headerlink" href="#migration-from-bitnami-redis" title="Permanent link">¶</a></h3>
+<p>The chart automatically detects and migrates data from existing Bitnami Redis deployments:</p>
+<ol>
+<li>Detects Bitnami PVC: <code>redis-data-&lt;release&gt;-redis-master-0</code></li>
+<li>Reuses the PVC if found (preserves data)</li>
+<li>Init container fixes file permissions for compatibility</li>
+<li>If no existing PVC is found, creates a new one</li>
+</ol>
+<p>No manual intervention required — simply upgrade your deployment with the new chart.</p></div>
 
 
 
