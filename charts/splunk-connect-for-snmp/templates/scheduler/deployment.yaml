@@ -45,8 +45,7 @@ spec:
           env:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
-            {{- if .Values.redis.auth.enabled }}
-            {{ include "splunk-connect-for-snmp.redis-env" . | nindent 8 }}
+            {{- include "splunk-connect-for-snmp.redis-env" . | nindent 12 }}
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
             - name: MIB_SOURCES

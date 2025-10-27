@@ -100,7 +100,7 @@ Whether enable polling
 Generate Redis environment variables for application pods
 */ -}}
 {{- define "splunk-connect-for-snmp.redis-env" -}}
-{{- if and (eq .Values.redis.architecture "replication") .Values.redis.sentinel.enabled }}
+{{- if and (eq .Values.redis.architecture "replication") .Values.redis.sentinel.enabled -}}
 - name: REDIS_MODE
   value: "sentinel"
 - name: REDIS_SENTINEL_SERVICE
@@ -109,7 +109,7 @@ Generate Redis environment variables for application pods
   value: "26379"
 - name: REDIS_MASTER_NAME
   value: "mymaster"
-{{- else }}
+{{- else -}}
 - name: REDIS_MODE
   value: "standalone"
 - name: REDIS_HOST
@@ -132,5 +132,5 @@ Generate Redis environment variables for application pods
       name: {{ .Release.Name }}-redis-secret
       key: password
       {{- end }}
-{{- end }}
+{{- end -}}
 {{- end }}

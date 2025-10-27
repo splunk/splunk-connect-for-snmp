@@ -33,7 +33,7 @@ spec:
           env:
           - name: CONFIG_PATH
             value: /app/config/config.yaml
-          {{ include "splunk-connect-for-snmp.redis-env" . | nindent 8 }}
+          {{ include "splunk-connect-for-snmp.redis-env" . | nindent 10 }}
           - name: INVENTORY_PATH
             value: /app/inventory/inventory.csv
           - name: MONGO_URI
