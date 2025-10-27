@@ -44,6 +44,7 @@ spec:
           imagePullPolicy: {{ .Values.sim.pullPolicy | default "IfNotPresent" }}
           args: ["--config=/config/otel-collector-config.yaml"]
           env:
+            {{ include "splunk-connect-for-snmp.redis-env" . | nindent 8 }}
             - name: signalfxToken
               valueFrom:
                 secretKeyRef:

@@ -1,0 +1,17 @@
+{{- if and (eq .Values.redis.architecture "replication") .Values.redis.sentinel.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-redis-sentinel
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-redis-sentinel
+spec:
+  type: ClusterIP
+  ports:
+  - port: 26379
+    targetPort: 26379
+    name: sentinel
+  selector:
+    app: {{ .Release.Name }}-redis-sentinel
+{{- end }}

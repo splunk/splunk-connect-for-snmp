@@ -24,8 +24,9 @@ FROM base AS final
 
 RUN mkdir /.pysnmp && chown 10001:10001 /.pysnmp
 RUN chown 10001:10001 /tmp
-USER 10001:10001
 COPY --from=builder /app/.venv /app/.venv
-COPY entrypoint.sh ./
-COPY construct-redis-url.sh ./
-ENTRYPOINT ["./entrypoint.sh"]
+COPY entrypoint.sh /app/entrypoint.sh
+COPY construct-redis-url.sh /app/construct-redis-url.sh
+RUN chmod +x /app/construct-redis-url.sh /app/entrypoint.sh
+USER 10001:10001
+ENTRYPOINT ["/app/entrypoint.sh"]

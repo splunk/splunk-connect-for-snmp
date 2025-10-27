@@ -1,0 +1,74 @@
+{{- if and (eq .Values.redis.architecture "replication") .Values.redis.sentinel.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-redis-sentinel
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-redis-sentinel
+spec:
+  serviceName: {{ .Release.Name }}-redis-sentinel
+  replicas: {{ .Values.redis.sentinel.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-redis-sentinel
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-redis-sentinel
+    spec:
+      initContainers:
+      - name: wait-for-redis
+        image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+        command:
+        - sh
+        - -c
+        - |
+          until nslookup {{ .Release.Name }}-redis-0.{{ .Release.Name }}-redis-headless; do
+            echo "Waiting for Redis master..."
+            sleep 2
+          done
+      containers:
+      - name: sentinel
+        image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+        imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+        ports:
+        - containerPort: 26379
+          name: sentinel
+        command:
+        - sh
+        - -c
+        args:
+        - |
+          cp /etc/redis/sentinel.conf /data/sentinel.conf
+          {{- if .Values.redis.auth.enabled }}
+          sed -i "s/\${REDIS_PASSWORD}/$REDIS_PASSWORD/g" /data/sentinel.conf
+          {{- end }}
+          exec redis-sentinel /data/sentinel.conf
+        {{- if .Values.redis.auth.enabled }}
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.redis.auth.existingSecret }}
+              name: {{ .Values.redis.auth.existingSecret }}
+              key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
+              {{- else }}
+              name: {{ .Release.Name }}-redis-secret
+              key: password
+              {{- end }}
+        {{- end }}
+        volumeMounts:
+        - name: sentinel-config
+          mountPath: /etc/redis
+        - name: sentinel-data
+          mountPath: /data
+        resources:
+          {{- toYaml .Values.redis.sentinel.resources | nindent 10 }}
+      volumes:
+      - name: sentinel-config
+        configMap:
+          name: {{ .Release.Name }}-redis-sentinel-config
+      - name: sentinel-data
+        emptyDir: {}
+{{- end }}

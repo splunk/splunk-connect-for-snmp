@@ -95,3 +95,42 @@ Whether enable polling
 {{- printf "false" }}
 {{- end -}}
 {{- end }}
+
+{{- /*
+Generate Redis environment variables for application pods
+*/ -}}
+{{- define "splunk-connect-for-snmp.redis-env" -}}
+{{- if and (eq .Values.redis.architecture "replication") .Values.redis.sentinel.enabled }}
+- name: REDIS_MODE
+  value: "sentinel"
+- name: REDIS_SENTINEL_SERVICE
+  value: {{ .Release.Name }}-redis-sentinel
+- name: REDIS_SENTINEL_PORT
+  value: "26379"
+- name: REDIS_MASTER_NAME
+  value: "mymaster"
+{{- else }}
+- name: REDIS_MODE
+  value: "standalone"
+- name: REDIS_HOST
+  value: {{ .Release.Name }}-redis
+- name: REDIS_PORT
+  value: "6379"
+{{- end }}
+- name: REDIS_DB
+  value: "1"
+- name: CELERY_DB
+  value: "0"
+{{- if .Values.redis.auth.enabled }}
+- name: REDIS_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      {{- if .Values.redis.auth.existingSecret }}
+      name: {{ .Values.redis.auth.existingSecret }}
+      key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
+      {{- else }}
+      name: {{ .Release.Name }}-redis-secret
+      key: password
+      {{- end }}
+{{- end }}
+{{- end }}
