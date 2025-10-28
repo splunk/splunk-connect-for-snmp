@@ -91,12 +91,16 @@ Common labels
 {{- define "environmental-variables" -}}
 - name: CONFIG_PATH
   value: /app/config/config.yaml
-- name: REDIS_URL
-  value: {{ include "splunk-connect-for-snmp.redis_url" . }}
+- name: REDIS_HOST
+  value: {{ .Release.Name }}-redis
+- name: REDIS_PORT
+  value: "6379"
+- name: REDIS_DB
+  value: "1"
+- name: CELERY_DB
+  value: "0"
 - name: SC4SNMP_VERSION
   value: {{ .Chart.Version | default "0.0.0" }}
-- name: CELERY_BROKER_URL
-  value: {{ include "splunk-connect-for-snmp.celery_url" . }}
 - name: MONGO_URI
   value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
 - name: WALK_RETRY_MAX_INTERVAL
