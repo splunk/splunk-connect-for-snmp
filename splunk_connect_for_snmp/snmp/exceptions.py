@@ -17,11 +17,11 @@ def summarize_exception_group(eg: ExceptionGroup, context: str | None = None) ->
     """
 
     messages = [
-        f"[{i}] {type(ex).__name__}: {ex}"
-        for i, ex in enumerate(eg.exceptions, start=1)
+        f"[{i}] {type(exception).__name__}: {exception}"
+        for i, exception in enumerate(eg.exceptions, start=1)
     ]
 
-    unique_types = ", ".join({type(e).__name__ for e in eg.exceptions})
+    unique_types = ", ".join({type(exception).__name__ for exception in eg.exceptions})
     base_message = f"{len(eg.exceptions)} error(s) ({unique_types})"
 
     if context:
