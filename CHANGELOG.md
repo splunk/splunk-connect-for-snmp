@@ -3,6 +3,11 @@
 ## Unreleased
 
 ### Changed
+- **Redis Migration**: Replaced Bitnami Redis chart with custom Kubernetes manifests
+  - Updated to official Redis image version 8.2.2 (addresses security vulnerabilities)
+  - Added authentication support (password or Kubernetes Secret)
+  - Implemented automatic data migration from Bitnami deployments (PVC reuse)
+  - Enabled AOF persistence by default for data durability
 - add CounterBasedGauge64 and ZeroBasedCounter64 as metrics types
 
 ### Fixes

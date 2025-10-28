@@ -100,7 +100,6 @@ async def test_trap_v1(request, setup_splunk):
                      | head 1"""
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
-
     assert result_count == 1
 
 
@@ -132,7 +131,6 @@ async def test_trap_v2(request, setup_splunk):
                      | head 1"""
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
-
     assert result_count == 1
 
 
@@ -157,7 +155,6 @@ async def test_added_varbind(request, setup_splunk):
     )
 
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
-
     assert result_count == 1
 
 
