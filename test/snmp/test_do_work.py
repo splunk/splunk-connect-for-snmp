@@ -62,8 +62,8 @@ class TestDoWork(IsolatedAsyncioTestCase):
         "splunk_connect_for_snmp.snmp.manager.setup_transport_target",
         new_callable=AsyncMock,
     )
-    @patch("splunk_connect_for_snmp.snmp.manager.bulkWalkCmd")
-    @patch("splunk_connect_for_snmp.snmp.manager.getCmd", new_callable=AsyncMock)
+    @patch("splunk_connect_for_snmp.snmp.manager.bulk_walk_cmd")
+    @patch("splunk_connect_for_snmp.snmp.manager.get_cmd", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.common.collection_manager.ProfilesManager")
     async def test_do_work_bulk_varbinds(
         self, load_profiles, get_cmd, bulk_walk_cmd, setup_transport_target, get_auth
@@ -117,8 +117,8 @@ class TestDoWork(IsolatedAsyncioTestCase):
         "splunk_connect_for_snmp.snmp.manager.setup_transport_target",
         new_callable=AsyncMock,
     )
-    @patch("splunk_connect_for_snmp.snmp.manager.bulkWalkCmd", new_callable=AsyncMock)
-    @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
+    @patch("splunk_connect_for_snmp.snmp.manager.bulk_walk_cmd", new_callable=AsyncMock)
+    @patch("splunk_connect_for_snmp.snmp.manager.get_cmd")
     @patch(
         "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
     )
@@ -166,8 +166,8 @@ class TestDoWork(IsolatedAsyncioTestCase):
         "splunk_connect_for_snmp.snmp.manager.setup_transport_target",
         new_callable=AsyncMock,
     )
-    @patch("splunk_connect_for_snmp.snmp.manager.bulkWalkCmd", new_callable=AsyncMock)
-    @patch("splunk_connect_for_snmp.snmp.manager.getCmd", new_callable=AsyncMock)
+    @patch("splunk_connect_for_snmp.snmp.manager.bulk_walk_cmd", new_callable=AsyncMock)
+    @patch("splunk_connect_for_snmp.snmp.manager.get_cmd", new_callable=AsyncMock)
     @patch(
         "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
     )

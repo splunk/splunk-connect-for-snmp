@@ -47,7 +47,7 @@ urllib3 = "^2.0.0"
 jsonschema = "4.24.0"
 flower = "^2.0.1"
 pysnmpcrypto = "0.0.4"
-pysnmp = "7.1.0"
+pysnmp = "7.1.8"
 pysmi = "^1.6.2"
 
 [tool.poetry.group.dev.dependencies]

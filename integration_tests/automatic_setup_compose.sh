@@ -44,7 +44,7 @@ deploy_poetry() {
   poetry install
   poetry add --group dev splunk-sdk
   poetry add --group dev splunklib
-  poetry add --group dev pysnmp==7.1.0
+  poetry add --group dev pysnmp==7.1.8
   poetry add --group dev pytest-asyncio
   poetry add --group dev pysnmpcrypto==0.0.4
 }

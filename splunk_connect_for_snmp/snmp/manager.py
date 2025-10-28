@@ -39,7 +39,7 @@ from typing import Any, Dict, List, Tuple, Union
 import pymongo
 from celery import Task
 from celery.utils.log import get_task_logger
-from pysnmp.hlapi.asyncio import SnmpEngine, bulkWalkCmd, getCmd
+from pysnmp.hlapi.asyncio import SnmpEngine, bulk_walk_cmd, get_cmd
 from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
@@ -312,13 +312,13 @@ class Poller(Task):
         self.last_modified = time.time()
         self.snmpEngine = SnmpEngine()
         self.already_loaded_mibs = set()
-        self.builder = self.snmpEngine.getMibBuilder()
+        self.builder = self.snmpEngine.get_mib_builder()
         self.mib_view_controller = view.MibViewController(self.builder)
-        compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
+        compiler.add_mib_compiler(self.builder, sources=[MIB_SOURCES])
 
         for mib in DEFAULT_STANDARD_MIBS:
             self.standard_mibs.append(mib)
-            self.builder.loadModules(mib)
+            self.builder.load_modules(mib)
 
         mib_response = self.session.get(f"{MIB_INDEX}")
         self.mib_map = {}
@@ -343,7 +343,7 @@ class Poller(Task):
         """
          ## NOTE
         - When a task arrived at poll queue starts with a fresh SnmpEngine (which has no transport_dispatcher
-          attached), SNMP requests (getCmd or bulkWalkCmd or any other) run normally.
+          attached), SNMP requests (get_cmd or bulk_walk_cmd or any other) run normally.
         - if a later task finds that the SnmpEngine already has a transport_dispatcher, it reuse that transport_dispatcher.
           this causes SNMP requests to hang infinite time.
         - If this hang occurs, then as per our Celery configuration, any task that
@@ -430,7 +430,7 @@ class Poller(Task):
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
             try:
                 (error_indication, error_status, error_index, varbind_table) = (
-                    await getCmd(
+                    await get_cmd(
                         SnmpEngine(),
                         auth_data,
                         transport,
@@ -468,7 +468,7 @@ class Poller(Task):
         """
         Perform asynchronous SNMP BULK requests on multiple varbinds with concurrency control.
 
-        This function uses bulkWalkCmd to asynchronously walk each SNMP varbind,
+        This function uses bulk_walk_cmd to asynchronously walk each SNMP varbind,
         ensuring that at most `MAX_SNMP_BULK_WALK_CONCURRENCY` walks are running concurrently.
         It processes the received SNMP data, and handles failure if any.
 
@@ -489,7 +489,7 @@ class Poller(Task):
         As a result, the walk is not strictly confined to the requested varBind subtree and may go beyond the requested OID subtree,
         with a high chance of duplicate OIDs.
 
-        - Used `bulkWalkCmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
+        - Used `bulk_walk_cmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
         but handles only one varBind at a time.
         """
 
@@ -504,7 +504,7 @@ class Poller(Task):
                 error_status,
                 error_index,
                 varbind_table,
-            ) in bulkWalkCmd(
+            ) in bulk_walk_cmd(
                 SnmpEngine(),
                 auth_data,
                 transport,
@@ -587,7 +587,7 @@ class Poller(Task):
         for mib in mibs:
             if mib:
                 try:
-                    self.builder.loadModules(mib)
+                    self.builder.load_modules(mib)
                 except Exception as e:
                     logger.warning(f"Error loading mib for {mib}, {e}")
 
@@ -778,17 +778,17 @@ class Poller(Task):
         resolved MIB names, variable names, and indices.
 
         - In lextudio's PySNMP, even when `lookupMib=True` is specified in
-        `bulkWalkCmd`, some varbinds may still be only partially resolved.
+        `bulk_walk_cmd`, some varbinds may still be only partially resolved.
         To ensure complete resolution of MIB information, we must explicitly
-        call `resolveWithMib()` on the varbind object.
+        call `resolve_with_mib()` on the varbind object.
         - The original varbind is replaced by `resolved_obj`, ensuring both OID and
           value types are correctly interpreted.
         """
-        oid = str(varbind[0].getOid())
-        resolved_obj = ObjectType(ObjectIdentity(oid), varbind[1]).resolveWithMib(
+        oid = str(varbind[0].get_oid())
+        resolved_obj = ObjectType(ObjectIdentity(oid), varbind[1]).resolve_with_mib(
             self.mib_view_controller
         )
         resolved_oid = resolved_obj[0]
         varbind_id = resolved_oid.prettyPrint()
-        mib, metric, index = resolved_oid.getMibSymbol()
+        mib, metric, index = resolved_oid.get_mib_symbol()
         return index, metric, mib, oid, varbind_id, resolved_obj

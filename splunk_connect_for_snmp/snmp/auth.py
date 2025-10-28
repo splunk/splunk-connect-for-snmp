@@ -25,7 +25,7 @@ from pysnmp.hlapi.asyncio import (
     Udp6TransportTarget,
     UdpTransportTarget,
     UsmUserData,
-    getCmd,
+    get_cmd,
 )
 from pysnmp.proto.api.v2c import OctetString
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
@@ -63,7 +63,7 @@ async def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpE
 
     # Register a callback to be invoked at specified execution point of
     # SNMP Engine and passed local variables at execution point's local scope
-    snmp_engine.observer.registerObserver(
+    snmp_engine.observer.register_observer(
         lambda e, p, v, c: c.update(securityEngineId=v["securityEngineId"]),
         "rfc3412.prepareDataElements:internal",
         cbCtx=observer_context,
@@ -72,7 +72,7 @@ async def get_security_engine_id(logger, ir: InventoryRecord, snmp_engine: SnmpE
     # Send probe SNMP request with invalid credentials
     auth_data = UsmUserData("non-existing-user")
 
-    error_indication, _, _, _ = await getCmd(
+    error_indication, _, _, _ = await get_cmd(
         snmp_engine,
         auth_data,
         transport_target,

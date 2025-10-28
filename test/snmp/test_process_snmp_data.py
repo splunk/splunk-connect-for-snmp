@@ -30,7 +30,7 @@ class TestProcessSnmpData(TestCase):
     ):
         poller = Poller.__new__(Poller)
         poller.snmpEngine = SnmpEngine()
-        poller.builder = poller.snmpEngine.getMibBuilder()
+        poller.builder = poller.snmpEngine.get_mib_builder()
         poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
@@ -41,24 +41,24 @@ class TestProcessSnmpData(TestCase):
         m_time.return_value = 1640609779.473053
 
         v1 = Mock()
-        v1.getOid.return_value = "1.2.3.4.5.6.7"
+        v1.get_oid.return_value = "1.2.3.4.5.6.7"
         v2 = Mock()
         v2.prettyPrint.return_value = 65
 
         v3 = Mock()
-        v3.getOid.return_value = "9.8.7.6"
+        v3.get_oid.return_value = "9.8.7.6"
         v4 = Mock()
         v4.prettyPrint.return_value = 123
 
         resolved_oid_1 = Mock()
-        resolved_oid_1.getMibSymbol.return_value = ("IF-MIB", "some_metric", 1)
+        resolved_oid_1.get_mib_symbol.return_value = ("IF-MIB", "some_metric", 1)
         resolved_oid_1.prettyPrint.return_value = "IF-MIB::some_metric"
-        resolved_oid_1.getOid.return_value = "1.2.3.4.5.6.7"
+        resolved_oid_1.get_oid.return_value = "1.2.3.4.5.6.7"
 
         resolved_oid_2 = Mock()
-        resolved_oid_2.getMibSymbol.return_value = ("UDP-MIB", "next_metric", 1)
+        resolved_oid_2.get_mib_symbol.return_value = ("UDP-MIB", "next_metric", 1)
         resolved_oid_2.prettyPrint.return_value = "UDP-MIB::next_metric"
-        resolved_oid_2.getOid.return_value = "9.8.7.6"
+        resolved_oid_2.get_oid.return_value = "9.8.7.6"
 
         resolved_obj_1 = Mock()
         resolved_obj_1.__getitem__ = Mock(
@@ -71,7 +71,7 @@ class TestProcessSnmpData(TestCase):
         )
 
         object_type_instance = Mock()
-        object_type_instance.resolveWithMib.side_effect = [
+        object_type_instance.resolve_with_mib.side_effect = [
             resolved_obj_1,
             resolved_obj_2,
         ]
@@ -128,7 +128,7 @@ class TestProcessSnmpData(TestCase):
     ):
         poller = Poller.__new__(Poller)
         poller.snmpEngine = SnmpEngine()
-        poller.builder = poller.snmpEngine.getMibBuilder()
+        poller.builder = poller.snmpEngine.get_mib_builder()
         poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
@@ -139,17 +139,17 @@ class TestProcessSnmpData(TestCase):
         m_time.return_value = 1640609779.473053
 
         varbind_mock1_1 = Mock()
-        varbind_mock1_1.getOid.return_value = "1.2.3.4.5.6.7"
+        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
         varbind_mock1_2 = Mock()
 
         varbind_mock2_1 = Mock()
-        varbind_mock2_1.getOid.return_value = "9.8.7.6"
+        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
         varbind_mock2_2 = Mock()
 
         resolved_oid_1 = Mock()
         resolved_oid_1.prettyPrint.return_value = "IF-MIB::some_metric"
-        resolved_oid_1.getMibSymbol.return_value = ("IF-MIB", "some_metric", 1)
-        resolved_oid_1.getOid.return_value = "1.2.3.4.5.6.7"
+        resolved_oid_1.get_mib_symbol.return_value = ("IF-MIB", "some_metric", 1)
+        resolved_oid_1.get_oid.return_value = "1.2.3.4.5.6.7"
 
         resolved_obj_1 = Mock()
         resolved_obj_1.__getitem__ = Mock(
@@ -158,8 +158,8 @@ class TestProcessSnmpData(TestCase):
 
         resolved_oid_2 = Mock()
         resolved_oid_2.prettyPrint.return_value = "UDP-MIB::next_metric"
-        resolved_oid_2.getMibSymbol.return_value = ("UDP-MIB", "next_metric", 1)
-        resolved_oid_2.getOid.return_value = "9.8.7.6"
+        resolved_oid_2.get_mib_symbol.return_value = ("UDP-MIB", "next_metric", 1)
+        resolved_oid_2.get_oid.return_value = "9.8.7.6"
 
         resolved_obj_2 = Mock()
         resolved_obj_2.__getitem__ = Mock(
@@ -167,7 +167,7 @@ class TestProcessSnmpData(TestCase):
         )
 
         m_object_type_instance = Mock()
-        m_object_type_instance.resolveWithMib.side_effect = [
+        m_object_type_instance.resolve_with_mib.side_effect = [
             resolved_obj_1,
             resolved_obj_2,
         ]
@@ -236,7 +236,7 @@ class TestProcessSnmpData(TestCase):
     ):
         poller = Poller.__new__(Poller)
         poller.snmpEngine = SnmpEngine()
-        poller.builder = poller.snmpEngine.getMibBuilder()
+        poller.builder = poller.snmpEngine.get_mib_builder()
         poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
@@ -247,16 +247,16 @@ class TestProcessSnmpData(TestCase):
         m_time.return_value = 1640609779.473053
 
         varbind_mock1_1 = Mock()
-        varbind_mock1_1.getOid.return_value = "1.2.3.4.5.6.7"
+        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
         varbind_mock1_2 = Mock()
         varbind_mock2_1 = Mock()
-        varbind_mock2_1.getOid.return_value = "9.8.7.6"
+        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
         varbind_mock2_2 = Mock()
 
         resolved_oid_1 = Mock()
         resolved_oid_1.prettyPrint.return_value = "IF-MIB::some_metric"
-        resolved_oid_1.getMibSymbol.return_value = ("IF-MIB", "some_metric", 1)
-        resolved_oid_1.getOid.return_value = "1.2.3.4.5.6.7"
+        resolved_oid_1.get_mib_symbol.return_value = ("IF-MIB", "some_metric", 1)
+        resolved_oid_1.get_oid.return_value = "1.2.3.4.5.6.7"
 
         resolved_obj_1 = Mock()
         resolved_obj_1.__getitem__ = Mock(
@@ -265,8 +265,8 @@ class TestProcessSnmpData(TestCase):
 
         resolved_oid_2 = Mock()
         resolved_oid_2.prettyPrint.return_value = "UDP-MIB::some_field"
-        resolved_oid_2.getMibSymbol.return_value = ("UDP-MIB", "some_field", 1)
-        resolved_oid_2.getOid.return_value = "9.8.7.6"
+        resolved_oid_2.get_mib_symbol.return_value = ("UDP-MIB", "some_field", 1)
+        resolved_oid_2.get_oid.return_value = "9.8.7.6"
 
         resolved_obj_2 = Mock()
         resolved_obj_2.__getitem__ = Mock(
@@ -274,7 +274,7 @@ class TestProcessSnmpData(TestCase):
         )
 
         m_object_type_instance = Mock()
-        m_object_type_instance.resolveWithMib.side_effect = [
+        m_object_type_instance.resolve_with_mib.side_effect = [
             resolved_obj_1,
             resolved_obj_2,
         ]
@@ -337,7 +337,7 @@ class TestProcessSnmpData(TestCase):
     ):
         poller = Poller.__new__(Poller)
         poller.snmpEngine = SnmpEngine()
-        poller.builder = poller.snmpEngine.getMibBuilder()
+        poller.builder = poller.snmpEngine.get_mib_builder()
         poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
@@ -348,17 +348,17 @@ class TestProcessSnmpData(TestCase):
         m_time.return_value = 1640609779.473053
 
         varbind_mock1_1 = Mock()
-        varbind_mock1_1.getOid.return_value = "1.2.3.4.5.6.7"
+        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
         varbind_mock1_2 = Mock()
 
         varbind_mock2_1 = Mock()
-        varbind_mock2_1.getOid.return_value = "9.8.7.6"
+        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
         varbind_mock2_2 = Mock()
 
         resolved_oid_1 = Mock()
         resolved_oid_1.prettyPrint.return_value = "IF-MIB::some_metric"
-        resolved_oid_1.getMibSymbol.return_value = ("IF-MIB", "some_metric", 1)
-        resolved_oid_1.getOid.return_value = "1.2.3.4.5.6.7"
+        resolved_oid_1.get_mib_symbol.return_value = ("IF-MIB", "some_metric", 1)
+        resolved_oid_1.get_oid.return_value = "1.2.3.4.5.6.7"
 
         resolved_obj_1 = Mock()
         resolved_obj_1.__getitem__ = Mock(
@@ -367,8 +367,8 @@ class TestProcessSnmpData(TestCase):
 
         resolved_oid_2 = Mock()
         resolved_oid_2.prettyPrint.return_value = "UDP-MIB::next_metric"
-        resolved_oid_2.getMibSymbol.return_value = ("UDP-MIB", "next_metric", 1)
-        resolved_oid_2.getOid.return_value = "9.8.7.6"
+        resolved_oid_2.get_mib_symbol.return_value = ("UDP-MIB", "next_metric", 1)
+        resolved_oid_2.get_oid.return_value = "9.8.7.6"
 
         resolved_obj_2 = Mock()
         resolved_obj_2.__getitem__ = Mock(
@@ -376,7 +376,7 @@ class TestProcessSnmpData(TestCase):
         )
 
         m_object_type_instance = Mock()
-        m_object_type_instance.resolveWithMib.side_effect = [
+        m_object_type_instance.resolve_with_mib.side_effect = [
             resolved_obj_1,
             resolved_obj_2,
         ]

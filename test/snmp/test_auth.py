@@ -66,7 +66,7 @@ class TestAuth(IsolatedAsyncioTestCase):
         value = get_secret_value("/location", "key", default="default value")
         self.assertEqual("default value", value)
 
-    @patch("splunk_connect_for_snmp.snmp.auth.getCmd", new_callable=AsyncMock)
+    @patch("splunk_connect_for_snmp.snmp.auth.get_cmd", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.snmp.auth.fetch_security_engine_id")
     async def test_get_security_engine_id_not_present(self, m_fetch, m_get_cmd):
         ir2 = InventoryRecord(
@@ -93,12 +93,12 @@ class TestAuth(IsolatedAsyncioTestCase):
         with self.assertRaises(Exception) as e:
             await get_security_engine_id(logger, ir2, snmpEngine)
         self.assertEqual("boom", e.exception.args[0])
-        calls = snmpEngine.observer.registerObserver.call_args_list
+        calls = snmpEngine.observer.register_observer.call_args_list
 
         self.assertEqual("rfc3412.prepareDataElements:internal", calls[0].args[1])
         m_get_cmd.assert_called()
 
-    @patch("splunk_connect_for_snmp.snmp.auth.getCmd", new_callable=AsyncMock)
+    @patch("splunk_connect_for_snmp.snmp.auth.get_cmd", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.snmp.auth.fetch_security_engine_id")
     async def test_get_security_engine_id(self, m_fetch, m_get_cmd):
         ir2 = InventoryRecord(
@@ -118,7 +118,7 @@ class TestAuth(IsolatedAsyncioTestCase):
 
         snmpEngine = Mock()
         snmpEngine.observer = Mock()
-        snmpEngine.observer.registerObserver = Mock()
+        snmpEngine.observer.register_observer = Mock()
 
         logger = Mock()
         m_fetch.return_value = "My test value"
@@ -126,7 +126,7 @@ class TestAuth(IsolatedAsyncioTestCase):
 
         result = await get_security_engine_id(logger, ir2, snmpEngine)
 
-        calls = snmpEngine.observer.registerObserver.call_args_list
+        calls = snmpEngine.observer.register_observer.call_args_list
         self.assertEqual("rfc3412.prepareDataElements:internal", calls[0].args[1])
 
         m_get_cmd.assert_called()
@@ -165,11 +165,11 @@ class TestAuth(IsolatedAsyncioTestCase):
         result = await get_auth_v3(logger, ir, snmpEngine)
         security_engine_result = OctetString(hexValue="80003a8c04")
         self.assertEqual("secret1", result.userName)
-        self.assertEqual("secret2", result.authKey)
-        self.assertEqual("secret3", result.privKey)
-        self.assertEqual("authPriv", result.securityLevel)
-        self.assertEqual(USM_AUTH_HMAC128_SHA224, result.authProtocol)
-        self.assertEqual(USM_PRIV_CFB192_AES_BLUMENTHAL, result.privProtocol)
+        self.assertEqual("secret2", result.authentication_key)
+        self.assertEqual("secret3", result.privacy_key)
+        self.assertEqual("authPriv", result.security_level)
+        self.assertEqual(USM_AUTH_HMAC128_SHA224, result.authentication_protocol)
+        self.assertEqual(USM_PRIV_CFB192_AES_BLUMENTHAL, result.privacy_protocol)
         self.assertEqual(security_engine_result._value, result.securityEngineId._value)
         self.assertEqual("secret1", result.securityName)
         self.assertEqual(1, result.authKeyType)
@@ -215,11 +215,11 @@ class TestAuth(IsolatedAsyncioTestCase):
         m_get_security_engine_id.assert_called()
 
         self.assertEqual("secret1", result.userName)
-        self.assertEqual("secret2", result.authKey)
-        self.assertEqual("secret3", result.privKey)
-        self.assertEqual("authPriv", result.securityLevel)
-        self.assertEqual(USM_AUTH_HMAC128_SHA224, result.authProtocol)
-        self.assertEqual(USM_PRIV_CFB192_AES_BLUMENTHAL, result.privProtocol)
+        self.assertEqual("secret2", result.authentication_key)
+        self.assertEqual("secret3", result.privacy_key)
+        self.assertEqual("authPriv", result.security_level)
+        self.assertEqual(USM_AUTH_HMAC128_SHA224, result.authentication_protocol)
+        self.assertEqual(USM_PRIV_CFB192_AES_BLUMENTHAL, result.privacy_protocol)
         self.assertEqual("ENGINE123", result.securityEngineId)
         self.assertEqual("secret1", result.securityName)
         self.assertEqual(1, result.authKeyType)
@@ -265,11 +265,11 @@ class TestAuth(IsolatedAsyncioTestCase):
         result = await get_auth_v3(logger, ir, snmpEngine)
         security_engine_result = OctetString(hexValue="80003a8c04")
         self.assertEqual("secret1", result.userName)
-        self.assertIsNone(result.authKey)
-        self.assertIsNone(result.privKey)
-        self.assertEqual("noAuthNoPriv", result.securityLevel)
-        self.assertEqual(USM_AUTH_NONE, result.authProtocol)
-        self.assertEqual(USM_PRIV_NONE, result.privProtocol)
+        self.assertIsNone(result.authentication_key)
+        self.assertIsNone(result.privacy_key)
+        self.assertEqual("noAuthNoPriv", result.security_level)
+        self.assertEqual(USM_AUTH_NONE, result.authentication_protocol)
+        self.assertEqual(USM_PRIV_NONE, result.privacy_protocol)
         self.assertEqual(security_engine_result._value, result.securityEngineId._value)
         self.assertEqual("secret1", result.securityName)
         self.assertEqual(1, result.authKeyType)
@@ -294,11 +294,11 @@ class TestAuth(IsolatedAsyncioTestCase):
         result = await get_auth_v3(logger, ir, snmpEngine)
         security_engine_result = OctetString(hexValue="80003a8c04")
         self.assertEqual("secret1", result.userName)
-        self.assertEqual("secret2", result.authKey)
-        self.assertIsNone(result.privKey)
-        self.assertEqual("authNoPriv", result.securityLevel)
-        self.assertEqual(USM_AUTH_HMAC128_SHA224, result.authProtocol)
-        self.assertEqual(USM_PRIV_NONE, result.privProtocol)
+        self.assertEqual("secret2", result.authentication_key)
+        self.assertIsNone(result.privacy_key)
+        self.assertEqual("authNoPriv", result.security_level)
+        self.assertEqual(USM_AUTH_HMAC128_SHA224, result.authentication_protocol)
+        self.assertEqual(USM_PRIV_NONE, result.privacy_protocol)
         self.assertEqual(security_engine_result._value, result.securityEngineId._value)
         self.assertEqual("secret1", result.securityName)
         self.assertEqual(1, result.authKeyType)
@@ -307,12 +307,12 @@ class TestAuth(IsolatedAsyncioTestCase):
     def test_get_auth_v2c(self):
         result = get_auth_v2c(ir)
         self.assertEqual("public", result.communityName)
-        self.assertEqual(1, result.mpModel)
+        self.assertEqual(1, result.message_processing_model)
 
     def test_get_auth_v1(self):
         result = get_auth_v1(ir)
         self.assertEqual("public", result.communityName)
-        self.assertEqual(0, result.mpModel)
+        self.assertEqual(0, result.message_processing_model)
 
     @patch("splunk_connect_for_snmp.snmp.auth.get_auth_v1")
     async def test_get_auth_1(self, m_get_auth):
