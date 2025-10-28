@@ -33,8 +33,6 @@ from typing import Any, Dict
 
 import yaml
 from celery import Celery, chain
-from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
 from pysnmp.carrier.asyncio.dgram import udp, udp6
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
@@ -42,9 +40,6 @@ from pysnmp.entity.rfc3413 import ntfrcv
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.tasks import trap
 from splunk_connect_for_snmp.splunk.tasks import prepare, send
-
-provider = TracerProvider()
-trace.set_tracer_provider(provider)
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
 SECURITY_ENGINE_ID_LIST = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "80003a8c04").split(
