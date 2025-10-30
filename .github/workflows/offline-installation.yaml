@@ -36,7 +36,7 @@ jobs:
           GET_YAML_FIELD_SCRIPT: get_yaml_fields.py
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: /tmp/package/packages
