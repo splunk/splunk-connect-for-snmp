@@ -1,4 +1,4 @@
-{{- if and (eq .Values.redis.architecture "replication") .Values.redis.sentinel.enabled }}
+{{- if and (eq .Values.redis.architecture "replication") (not .Values.redis.sentinel.enabled) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -33,8 +33,10 @@ spec:
         - sh
         - -c
         - |
+          echo "=== Fixing permissions ==="
           chown -R {{ .Values.redis.podSecurityContext.runAsUser }}:{{ .Values.redis.podSecurityContext.fsGroup }} /data
           chmod -R 755 /data
+          echo "=== Done ==="
         volumeMounts:
         - name: redis-data
           mountPath: /data
@@ -69,22 +71,28 @@ spec:
         - -c
         args:
         - |
+          # Copy base config
           cp /etc/redis/redis.conf /tmp/redis.conf
 
           {{- if .Values.redis.auth.enabled }}
+          # Add auth
           echo "requirepass $REDIS_PASSWORD" >> /tmp/redis.conf
           echo "masterauth $REDIS_PASSWORD" >> /tmp/redis.conf
           {{- end }}
 
-          # With Sentinel, all pods start as replicas of pod-0
-          # Sentinel will promote one to master during initial setup
+          # Determine if this is master or replica
           HOSTNAME=$(hostname)
-          if [[ "$HOSTNAME" != *-0 ]]; then
+          if [[ "$HOSTNAME" == *-0 ]]; then
+            echo "=== Starting as MASTER ==="
+          else
+            echo "=== Starting as REPLICA ==="
             echo "replicaof {{ .Release.Name }}-redis-0.{{ .Release.Name }}-redis-headless 6379" >> /tmp/redis.conf
           fi
 
+          # Announce pod IP for proper replication
           echo "replica-announce-ip $POD_IP" >> /tmp/redis.conf
 
+          # Start Redis
           exec redis-server /tmp/redis.conf
         volumeMounts:
         - name: redis-data
@@ -135,5 +143,8 @@ spec:
       resources:
         requests:
           storage: {{ .Values.redis.storage.size }}
+  {{- else }}
+  # Fallback to emptyDir if storage disabled
+  # Note: This means data loss on pod restart
   {{- end }}
 {{- end }}
