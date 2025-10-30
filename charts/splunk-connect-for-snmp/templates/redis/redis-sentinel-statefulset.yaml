@@ -40,6 +40,49 @@ spec:
           mountPath: /data
         securityContext:
           runAsUser: 0
+
+      # NEW: Init container to detect current master from Sentinel
+      - name: init-redis
+        image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+        imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+        command:
+        - sh
+        - -c
+        - |
+          HOSTNAME=$(hostname)
+
+          # Try to query Sentinel for current master
+          echo "Checking Sentinel for current master..."
+          MASTER=$(redis-cli -h {{ .Release.Name }}-redis-sentinel -p 26379 \
+            {{- if .Values.redis.auth.enabled }}
+            -a "$REDIS_PASSWORD" \
+            {{- end }}
+            SENTINEL get-master-addr-by-name mymaster 2>/dev/null | head -n 1)
+
+          if [ -n "$MASTER" ]; then
+            echo "Sentinel reports master at: $MASTER"
+            echo "$MASTER" > /data/master-info
+          else
+            echo "Sentinel not ready, will start as replica of pod-0"
+            echo "{{ .Release.Name }}-redis-0.{{ .Release.Name }}-redis-headless" > /data/master-info
+          fi
+        {{- if .Values.redis.auth.enabled }}
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.redis.auth.existingSecret }}
+              name: {{ .Values.redis.auth.existingSecret }}
+              key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
+              {{- else }}
+              name: {{ .Release.Name }}-redis-secret
+              key: password
+              {{- end }}
+        {{- end }}
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+
       containers:
       - name: redis
         image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
@@ -76,11 +119,28 @@ spec:
           echo "masterauth $REDIS_PASSWORD" >> /tmp/redis.conf
           {{- end }}
 
-          # With Sentinel, all pods start as replicas of pod-0
-          # Sentinel will promote one to master during initial setup
-          HOSTNAME=$(hostname)
-          if [[ "$HOSTNAME" != *-0 ]]; then
-            echo "replicaof {{ .Release.Name }}-redis-0.{{ .Release.Name }}-redis-headless 6379" >> /tmp/redis.conf
+          # Read master from init container discovery
+          if [ -f /data/master-info ]; then
+            MASTER_HOST=$(cat /data/master-info)
+            HOSTNAME=$(hostname)
+            MY_FQDN="$HOSTNAME.{{ .Release.Name }}-redis-headless"
+
+            # If I'm not the master, replicate from it
+            if [ "$MY_FQDN" != "$MASTER_HOST" ]; then
+              echo "=== Starting as REPLICA of $MASTER_HOST ==="
+              echo "replicaof $MASTER_HOST 6379" >> /tmp/redis.conf
+            else
+              echo "=== Starting as MASTER ==="
+            fi
+          else
+            # Fallback: pod-0 is master
+            HOSTNAME=$(hostname)
+            if [[ "$HOSTNAME" != *-0 ]]; then
+              echo "=== Starting as REPLICA of pod-0 ==="
+              echo "replicaof {{ .Release.Name }}-redis-0.{{ .Release.Name }}-redis-headless 6379" >> /tmp/redis.conf
+            else
+              echo "=== Starting as MASTER ==="
+            fi
           fi
 
           echo "replica-announce-ip $POD_IP" >> /tmp/redis.conf
