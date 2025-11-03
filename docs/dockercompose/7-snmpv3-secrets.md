@@ -60,7 +60,7 @@ ENABLE_WORKER_POLLER_SECRETS=true
 ## Creating a new secret
 
 To create a new secret, 
-create secrets.json file inside folder (at SECRET_FOLDER_PATH), add entry for the new secrets with all the details.
+create ``secrets.json`` file inside folder (at SECRET_FOLDER_PATH), add entry for the new secrets with all the details.
 
 Inside `docker_compose` directory run:
 
