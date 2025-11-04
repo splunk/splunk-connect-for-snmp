@@ -18,9 +18,9 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
 
     # Build Sentinel URL
     if [ -n "$REDIS_PASSWORD" ]; then
-      SENTINEL_BASE="sentinel://:${REDIS_PASSWORD}@${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
+      SENTINEL_BASE="redis-sentinel://:${REDIS_PASSWORD}@${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
     else
-      SENTINEL_BASE="sentinel://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
+      SENTINEL_BASE="redis-sentinel://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
     fi
 
     # For wait-for-dep check
