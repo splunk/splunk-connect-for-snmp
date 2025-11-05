@@ -33,13 +33,13 @@ PREFETCH_COUNT = int(os.getenv("PREFETCH_COUNT", 1))
 
 REDIS_MODE = os.getenv("REDIS_MODE", "standalone")
 REDIS_MASTER_NAME = os.getenv("REDIS_MASTER_NAME", "snmp-redis")
-REDIS_SENTINEL_SERVICE = os.getenv("REDIS_MASTER_NAME", "snmp-redis-sentinel")
+REDIS_SENTINEL_SERVICE = os.getenv("REDIS_SENTINEL_SERVICE", "snmp-redis-sentinel")
 
 # Construct URLs based on mode
 if REDIS_MODE == "replication":
     # Celery broker options for Sentinel
     broker_transport_options = {
-        "master_name": REDIS_MASTER_NAME,
+        "master_name": "mymaster",
         "priority_steps": list(range(10)),
         "sep": ":",
         "queue_order_strategy": "priority",
