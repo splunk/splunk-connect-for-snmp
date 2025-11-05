@@ -7,7 +7,7 @@ REDIS_MODE="${REDIS_MODE:-standalone}"
 # Only construct if URLs not already set
 if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
 
-  if [ "$REDIS_MODE" = "replicaset" ]; then
+  if [ "$REDIS_MODE" = "replication" ]; then
     # Sentinel HA mode
     echo "Redis mode: Sentinel HA"
     REDIS_SENTINEL_SERVICE="${REDIS_SENTINEL_SERVICE:-snmp-redis-sentinel}"
