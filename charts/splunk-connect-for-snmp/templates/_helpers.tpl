@@ -102,13 +102,13 @@ Generate Redis environment variables for application pods
 {{- define "splunk-connect-for-snmp.redis-env" -}}
 {{- if and (eq .Values.redis.architecture "replication") .Values.redis.sentinel.enabled -}}
 - name: REDIS_MODE
-  value: "sentinel"
+  value: "replication"
 - name: REDIS_SENTINEL_SERVICE
   value: {{ .Release.Name }}-redis-sentinel
 - name: REDIS_SENTINEL_PORT
   value: "26379"
 - name: REDIS_MASTER_NAME
-  value: "mymaster"
+  value: {{ .Release.Name }}-redis
 {{- else -}}
 - name: REDIS_MODE
   value: "standalone"
