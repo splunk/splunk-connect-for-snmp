@@ -59,6 +59,10 @@ app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-fl
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{- define "splunk-connect-for-snmp.worker.discovery.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-discovery
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
 
 {{/*
 Common labels
@@ -88,19 +92,20 @@ Common labels
 {{ include "splunk-connect-for-snmp.labels" . }}
 {{- end }}
 
+{{- define "splunk-connect-for-snmp.worker.discovery.labels" -}}
+{{ include "splunk-connect-for-snmp.worker.discovery.selectorLabels" . }}
+{{ include "splunk-connect-for-snmp.labels" . }}
+{{- end }}
+
 {{- define "environmental-variables" -}}
 - name: CONFIG_PATH
   value: /app/config/config.yaml
-- name: REDIS_HOST
-  value: {{ .Release.Name }}-redis
-- name: REDIS_PORT
-  value: "6379"
-- name: REDIS_DB
-  value: "1"
-- name: CELERY_DB
-  value: "0"
+- name: REDIS_URL
+  value: {{ include "splunk-connect-for-snmp.redis_url" . }}
 - name: SC4SNMP_VERSION
   value: {{ .Chart.Version | default "0.0.0" }}
+- name: CELERY_BROKER_URL
+  value: {{ include "splunk-connect-for-snmp.celery_url" . }}
 - name: MONGO_URI
   value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
 - name: WALK_RETRY_MAX_INTERVAL
@@ -125,10 +130,10 @@ Common labels
   value: {{ .Values.worker.disableMongoDebugLogging | quote }}
 - name: UDP_CONNECTION_TIMEOUT
   value: {{ .Values.worker.udpConnectionTimeout | default "3" | quote }}
+- name: UDP_CONNECTION_RETRIES
+  value: {{ .Values.worker.udpConnectionRetries | default "5" | quote }}
 - name: MAX_OID_TO_PROCESS
   value: {{ .Values.poller.maxOidToProcess | default "70" | quote }}
-- name: MAX_REPETITIONS
-  value: {{ .Values.poller.maxRepetitions | default "10" | quote }}
 - name: PYSNMP_DEBUG
   value: {{ .Values.pysnmpDebug | default "" | quote }}
 - name: PROFILES_RELOAD_DELAY
@@ -217,4 +222,11 @@ Common labels
   {{ else }}
   value: "false"
   {{- end }}
+{{- end }}
+
+{{- define "environmental-variables-discovery" -}}
+- name: WORKER_CONCURRENCY
+  value: {{ .Values.worker.discovery.concurrency | default "4" | quote }}
+- name: PREFETCH_COUNT
+  value: {{ .Values.worker.discovery.prefetch | default "30" | quote }}
 {{- end }}

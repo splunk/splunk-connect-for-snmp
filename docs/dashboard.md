@@ -21,7 +21,7 @@ show the status of SC4SNMP tasks.
 !!! info
     Dashboard is compatible starting from version **1.11.0** and requires the `logLevel` set at least to **INFO**.
 
-1. [Create metrics index](dockercompose/0-splunk-requirements.md#requirements-for-splunk-enterprise-or-enterprise-cloud) in Splunk.
+1. [Create metrics index](microk8s/splunk-requirements.md#requirements-for-splunk-enterprise-or-enterprise-cloud) in Splunk.
 2. Enable metrics logging for your runtime:
     * For Kubernetes install [Splunk OpenTelemetry Collector for K8S](microk8s/sck-installation.md)
     * For Docker Compose use [Splunk logging driver for docker](dockercompose/9-splunk-logging.md)
@@ -72,6 +72,18 @@ For that we need to go **SNMP trap status** dashboard, if we have only **succeed
 otherwise we will see information with another status.
 
 ![Trap dashboards](images/dashboard/trap_dashboard.png)
+
+#### Discovery dashboards
+
+To check that discovery for your discovery key is working correctly, look at **SNMP schedule of discovery tasks** dashboard.
+With this chart you can understand when SC4SNMP scheduled discovery for your discovery key last time. The process works if it runs regularly.
+
+After double-checking that SC4SNMP scheduled discovery tasks for your discovery key we need to be sure that discovery is working.
+For that look at another dashboard **SNMP discovery status** and if everything is working you will see only **succeeded** status of discovery.
+If something is going wrong you will see another status (like on screenshot), then use [troubleshooting docs 
+for that](troubleshooting/discovery-issues.md).
+
+![Discovery dashboards](images/dashboard/discovery_dashboard.png)
 
 #### Other dashboards
 

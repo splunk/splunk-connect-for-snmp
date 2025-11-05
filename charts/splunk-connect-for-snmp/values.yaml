@@ -23,12 +23,12 @@ UI:
   frontEnd:
     NodePort: 30001
     repository: ghcr.io/splunk/sc4snmp-ui/frontend/container
-    tag: "1.1.1"
+    tag: "main"
     pullPolicy: "Always"
   backEnd:
     NodePort: 30002
     repository: ghcr.io/splunk/sc4snmp-ui/backend/container
-    tag: "1.1.1"
+    tag: "main"
     pullPolicy: "Always"
   # Base container that sets permissions for folders mounted to UI containers
   init:
@@ -105,11 +105,6 @@ splunk:
 
 sim:
   # Enables sending data to Splunk Observability/SignalFx.
-
-  # WARNING:
-  # The Splunk Observability Cloud integration (sim) uses the Splunk OpenTelemetry Collector as an additional component in our pipeline. In this setup, the collector transforms metrics received via Splunk HEC into the SignalFx format for ingestion into Splunk Observability Cloud.
-  # Because this path is primarily a transformation layer rather than a native O11y instrumentation, the resulting metrics may not fully match Splunk Observability Cloud’s data model, naming conventions, or recommended dimensions.
-  # We recommend validating output carefully in a controlled environment before enabling sim.enabled: true broadly, and adjusting SNMP profiles or transformation rules to ensure consistency.
   enabled: false
   # Splunk Observability org access token.
   # Required for Splunk Observability (if `realm` is specified).
@@ -244,13 +239,9 @@ poller:
   # https://github:com/splunk/splunk-connect-for-snmp/blob/main/splunk_connect_for_snmp/profiles/base.yaml
   pollBaseProfiles: true
 
-  # Sometimes SNMP Agent cannot accept more than X OIDs per once for SNMP GetRequest, so if the error "TooBig" is visible in logs,
+  # Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs,
   # decrease the number
   maxOidToProcess: 70
-
-  # maxRepetitions is a number of varbinds requested in response for each of the MIB variables in the request
-  # If this number is too high it can cause issues with SNMP response especially for old SNMP devices.
-  maxRepetitions: 10
 
   # list of kubernetes secrets name that will be used for polling
   # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/#define-usernamesecrets
@@ -351,6 +342,32 @@ worker:
         # the resources requests for sender worker container
       requests:
         cpu: 250m
+
+  # The discovery worker handles auto discovery of snmp enabled devices and create CSV file for it
+  discovery:
+    # number of the discovery replicas when autoscaling is set to false
+    replicaCount: 1
+    # minimum number of threads in a pod
+    concurrency: 4
+    # how many tasks are consumed from the queue at once
+    prefetch: 30
+    autoscaling:
+      # enabling autoscaling for discovery worker pods
+      enabled: false
+      # minimum number of running discovery worker pods when autoscaling is enabled
+      minReplicas: 2
+      # maximum number of running discovery worker pods when autoscaling is enabled
+      maxReplicas: 10
+      # CPU % threshold that must be exceeded on discovery worker pods to spawn another replica
+      targetCPUUtilizationPercentage: 80
+    resources:
+      # the resources limits for discovery worker container
+      limits:
+        cpu: 500m
+        # the resources requests for discovery worker container
+      requests:
+        cpu: 250m
+
   # Liveness probes are used in Kubernetes to know when a pod is alive or dead.
   # A pod can be in a dead state for a number of reasons;
   # the application could be crashed, some error in the application etc.
@@ -403,6 +420,8 @@ worker:
   podAntiAffinity: soft
   # udpConnectionTimeout timeout in seconds for SNMP operations
   udpConnectionTimeout: 3
+  # udpConnectionRetries number of retries for SNMP operations
+  udpConnectionRetries: 5
 
   # in case of seeing "Empty SNMP response message" this variable can be set to true
   ignoreEmptyVarbinds: false
@@ -459,8 +478,8 @@ traps:
     # was introduced to allow using splunk-connect-for-syslog on the same machine
     usemetallb: true
     metallbsharingkey: "splunk-connect"
-    # when using SC4SNMP on a multinode k8s installation, LoadBalancer is a good choice
-    # on a multi-node it's enough to set this as NodePort and configure traps.service.nodePort
+    # when using SC4SNMP on a standalone k8s installation, LoadBalancer is a good choice
+    # on a multi-node it's better to set this as NodePort and configure traps.service.nodePort
     type: LoadBalancer
     port: 162
 
@@ -521,8 +540,6 @@ mongodb:
   initdbScripts:
     setFeatureCompatibilityVersion.js: |
       db.adminCommand({ setFeatureCompatibilityVersion: "6.0" });
-  image:
-    repository: bitnamilegacy/mongodb
 
   ## @section Global parameters
   ## Global Docker image parameters
@@ -573,8 +590,6 @@ mongodb:
     containerPort: 9216
     ## Prometheus Exporter service configuration
     ##
-    image:
-      repository: bitnamilegacy/mongodb-exporter
     service:
       ## @param metrics.service.annotations [object] Annotations for Prometheus Exporter pods. Evaluated as a template.
       ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
@@ -592,50 +607,19 @@ mongodb:
   persistence:
     storageClass: "microk8s-hostpath"
   volumePermissions:
-    image:
-      repository: bitnamilegacy/os-shell
     enabled: true
 redis:
-  # Mode selector: "standalone"
-  # TODO: add "replication"
   architecture: standalone
-
-  # Authentication
   auth:
     enabled: false
-    password: ""                      # Set if auth.enabled: true
-    existingSecret: ""                # Or reference existing secret
-    existingSecretPasswordKey: "password"
-
-  # Image
-  image:
-    repository: redis
-    tag: "8.2.2"
-    pullPolicy: IfNotPresent
-
-  # Resources
-  resources:
-    requests:
-      cpu: 250m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
-
-  # Storage
-  storage:
-    enabled: true
-    storageClassName: microk8s-hostpath
-    accessModes:
-      - ReadWriteOnce
-    size: 5Gi
-  persistence:
-    aof:
-      enabled: true        # Enable AOF
-      fsync: everysec
-  # Security
-  podSecurityContext:
-    runAsUser: 999
-    fsGroup: 999
-
 commonAnnotations: {}
+discovery:
+  # Enables discovering SNMP enabled device and create CSV file.
+  enabled: false
+  # list of kubernetes secrets name that will be used for discovery
+  # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/discovery-configuration/#define-usernamesecrets
+  usernameSecrets: []
+  # Enabled device detection using IPv6 subnet.
+  ipv6Enabled: false
+  # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
+  logLevel: "INFO"

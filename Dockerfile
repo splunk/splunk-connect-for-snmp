@@ -5,12 +5,13 @@ ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1
 RUN apk add -U git sqlite-dev
 RUN pip install --upgrade setuptools pip
+RUN apk add --no-cache nmap
 RUN mkdir /app
 WORKDIR /app
 
 FROM base AS builder
 RUN pip install --upgrade pip ;\
-    pip install poetry
+    pip install poetry 
 
 COPY poetry.lock pyproject.toml /app/
 COPY splunk_connect_for_snmp /app/splunk_connect_for_snmp

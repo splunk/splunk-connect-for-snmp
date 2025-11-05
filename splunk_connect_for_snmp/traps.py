@@ -97,6 +97,7 @@ if PYSNMP_DEBUG:
         )
 
 
+# //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
 
