@@ -18,19 +18,6 @@ spec:
       labels:
         app: {{ .Release.Name }}-redis-sentinel
     spec:
-      initContainers:
-      - name: wait-for-redis
-        image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
-        command:
-        - sh
-        - -c
-        - |
-          echo "Waiting for Redis pods to be available..."
-          until nslookup {{ .Release.Name }}-redis-0.{{ .Release.Name }}-redis-headless; do
-            echo "Waiting for Redis master DNS..."
-            sleep 2
-          done
-          echo "Redis DNS ready"
       containers:
       - name: sentinel
         image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
@@ -47,6 +34,8 @@ spec:
           {{- if .Values.redis.auth.enabled }}
           sed -i "s/\${REDIS_PASSWORD}/$REDIS_PASSWORD/g" /data/sentinel.conf
           {{- end }}
+
+          echo "Starting Redis Sentinel..."
           exec redis-sentinel /data/sentinel.conf
         {{- if .Values.redis.auth.enabled }}
         env:
@@ -82,7 +71,7 @@ spec:
             - sh
             - -c
             - redis-cli -p 26379 ping
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
           periodSeconds: 5
       volumes:
       - name: sentinel-config
