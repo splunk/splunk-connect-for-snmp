@@ -9,25 +9,24 @@ metadata:
 data:
   redis.conf: |
     dir /data
+
+    # Persistence
     save 900 1
     save 300 10
     save 60 10000
 
     {{- if .Values.redis.persistence.aof.enabled }}
     appendonly yes
-    appendfsync {{ .Values.redis.persistence.aof.fsync }}
-    {{- else }}
-    appendonly no
+    appendfsync {{ .Values.redis.persistence.aof.fsync | default "everysec" }}
     {{- end }}
+
+    # Replication
+    min-replicas-to-write 1
+    min-replicas-max-lag 10
 
     loglevel notice
     maxmemory-policy noeviction
     bind 0.0.0.0
     protected-mode no
     port 6379
-
-    # Replication settings
-    replica-announce-port 6379
-    min-replicas-to-write 1
-    min-replicas-max-lag 10
 {{- end }}
