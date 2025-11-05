@@ -15,11 +15,7 @@ spec:
     spec:
       containers:
         - name: mongo-fcv-check
-          image:  {{- if .Values.mongodb.image.registry }}
-                    {{ .Values.mongodb.image.registry }}/{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
-                  {{- else }}
-                    {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
-                  {{- end }}
+          image: {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
           command:
             - /bin/bash
             - -c

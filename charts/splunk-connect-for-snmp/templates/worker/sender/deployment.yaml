@@ -54,18 +54,6 @@ spec:
             - name: SPLUNK_HEC_MTLS_CA_CERT
               value: /app/hec-mtls/cacert.pem
             {{- end }}
-            {{- if .Values.redis.auth.enabled }}
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  {{- if .Values.redis.auth.existingSecret }}
-                  name: {{ .Values.redis.auth.existingSecret }}
-                  key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
-                  {{- else }}
-                  name: {{ .Release.Name }}-redis-secret
-                  key: password
-                  {{- end }}
-            {{- end }}
           {{- if .Values.worker.livenessProbe.enabled }}
           livenessProbe:
             exec:

@@ -45,30 +45,14 @@ spec:
         env:
         - name: MONGO_URI
           value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
-        {{- if .Values.redis.auth.enabled }}
-        - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              {{- if .Values.redis.auth.existingSecret }}
-              name: {{ .Values.redis.auth.existingSecret }}
-              key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
-              {{- else }}
-              name: {{ .Release.Name }}-redis-secret
-              key: password
-              {{- end }}
-        {{- end }}
-        - name: REDIS_HOST
-          value: {{ .Release.Name }}-redis
-        - name: REDIS_PORT
-          value: "6379"
-        - name: REDIS_DB
-          value: "1"
-        - name: CELERY_DB
-          value: "0"
+        - name: REDIS_URL
+          value: {{ include "splunk-connect-for-snmp-ui.redis_url" . }}
         - name: JOB_CONFIG_PATH
           value: /config/job_config.yaml
         - name: JOB_NAMESPACE
           value: sc4snmp
+        - name: CELERY_BROKER_URL
+          value: {{ include "splunk-connect-for-snmp-ui.celery_url" . }}
         - name: VALUES_DIRECTORY
           {{- if .Values.UI.valuesFileDirectory }}
           value: {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }}

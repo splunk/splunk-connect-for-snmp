@@ -67,13 +67,13 @@ class TestSanity:
         assert result_count > 0
         assert metric_count > 0
 
-    # def test_default_profiles_events(self, setup_splunk):
-    #     logger.info("Integration test for sc4snmp:event")
-    #     search_string = """search index=netops | search "IF-MIB.ifAlias" AND "IF-MIB.ifAdminStatus"
-    #     AND "IF-MIB.ifDescr" AND "IF-MIB.ifName" sourcetype="sc4snmp:event" """
-    #     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
-    #     assert result_count > 0
-    #     assert metric_count > 0
+    def test_default_profiles_events(self, setup_splunk):
+        logger.info("Integration test for sc4snmp:event")
+        search_string = """search index=netops | search "IF-MIB.ifAlias" AND "IF-MIB.ifAdminStatus"
+        AND "IF-MIB.ifDescr" AND "IF-MIB.ifName" sourcetype="sc4snmp:event" """
+        result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+        assert result_count > 0
+        assert metric_count > 0
 
 
 @pytest.fixture(scope="class")
@@ -980,10 +980,6 @@ def setup_single_gt_and_lt_profiles(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
-        "small_walk": {
-            "varBinds": [yaml_escape_list(sq("IF-MIB"))],
-            "condition": {"type": "walk"},
-        },
         "gt_profile": {
             "frequency": 7,
             "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
@@ -1004,7 +1000,7 @@ def setup_single_gt_and_lt_profiles(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;gt_profile;lt_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1012,9 +1008,7 @@ def setup_single_gt_and_lt_profiles(request):
     else:
         update_profiles_compose(profiles)
         update_inventory_compose(
-            [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;gt_profile;lt_profile,,"
-            ]
+            [f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,"]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1022,16 +1016,14 @@ def setup_single_gt_and_lt_profiles(request):
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;gt_profile;lt_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,t",
             ],
             "inventory.yaml",
         )
         upgrade_helm_microk8s(["inventory.yaml"])
     else:
         update_inventory_compose(
-            [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;gt_profile;lt_profile,,t"
-            ]
+            [f"{trap_external_ip},1166,2c,public,,,600,gt_profile;lt_profile,,t"]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1072,10 +1064,6 @@ def setup_single_in_and_equals_profiles(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
-        "small_walk": {
-            "varBinds": [yaml_escape_list(sq("IF-MIB"))],
-            "condition": {"type": "walk"},
-        },
         "in_profile": {
             "frequency": 7,
             "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
@@ -1104,7 +1092,7 @@ def setup_single_in_and_equals_profiles(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;in_profile;equals_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1112,9 +1100,7 @@ def setup_single_in_and_equals_profiles(request):
     else:
         update_profiles_compose(profiles)
         update_inventory_compose(
-            [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;in_profile;equals_profile,,"
-            ]
+            [f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,"]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1122,16 +1108,14 @@ def setup_single_in_and_equals_profiles(request):
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;in_profile;equals_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,t",
             ],
             "inventory.yaml",
         )
         upgrade_helm_microk8s(["inventory.yaml"])
     else:
         update_inventory_compose(
-            [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;in_profile;equals_profile,,t"
-            ]
+            [f"{trap_external_ip},1166,2c,public,,,600,in_profile;equals_profile,,t"]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1174,10 +1158,6 @@ def setup_single_regex_and_options_profiles(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
-        "small_walk": {
-            "varBinds": [yaml_escape_list(sq("IF-MIB"))],
-            "condition": {"type": "walk"},
-        },
         "regex_profile": {
             "frequency": 7,
             "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
@@ -1205,7 +1185,7 @@ def setup_single_regex_and_options_profiles(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;regex_profile;options_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1213,9 +1193,7 @@ def setup_single_regex_and_options_profiles(request):
     else:
         update_profiles_compose(profiles)
         update_inventory_compose(
-            [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;regex_profile;options_profile,,"
-            ]
+            [f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,"]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1223,7 +1201,7 @@ def setup_single_regex_and_options_profiles(request):
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;regex_profile;options_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,t",
             ],
             "inventory.yaml",
         )
@@ -1231,7 +1209,7 @@ def setup_single_regex_and_options_profiles(request):
     else:
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;regex_profile;options_profile,,t"
+                f"{trap_external_ip},1166,2c,public,,,600,regex_profile;options_profile,,t"
             ]
         )
         upgrade_docker_compose()
@@ -1277,10 +1255,6 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
-        "small_walk": {
-            "varBinds": [yaml_escape_list(sq("IF-MIB"))],
-            "condition": {"type": "walk"},
-        },
         "not_gt_profile": {
             "frequency": 7,
             "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
@@ -1311,7 +1285,7 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_gt_profile;not_lt_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1319,9 +1293,7 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
     else:
         update_profiles_compose(profiles)
         update_inventory_compose(
-            [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_gt_profile;not_lt_profile,,"
-            ]
+            [f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,"]
         )
         upgrade_docker_compose()
     time.sleep(120)
@@ -1329,7 +1301,7 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_gt_profile;not_lt_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,t",
             ],
             "inventory.yaml",
         )
@@ -1337,7 +1309,7 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
     else:
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_gt_profile;not_lt_profile,,t"
+                f"{trap_external_ip},1166,2c,public,,,600,not_gt_profile;not_lt_profile,,t"
             ]
         )
         upgrade_docker_compose()
@@ -1383,10 +1355,6 @@ def setup_single_in_and_equals_profiles_with_negation(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
-        "small_walk": {
-            "varBinds": [yaml_escape_list(sq("IF-MIB"))],
-            "condition": {"type": "walk"},
-        },
         "not_in_profile": {
             "frequency": 7,
             "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
@@ -1417,7 +1385,7 @@ def setup_single_in_and_equals_profiles_with_negation(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_in_profile;not_equals_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1426,7 +1394,7 @@ def setup_single_in_and_equals_profiles_with_negation(request):
         update_profiles_compose(profiles)
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_in_profile;not_equals_profile,,"
+                f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,"
             ]
         )
         upgrade_docker_compose()
@@ -1435,7 +1403,7 @@ def setup_single_in_and_equals_profiles_with_negation(request):
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_in_profile;not_equals_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,t",
             ],
             "inventory.yaml",
         )
@@ -1443,7 +1411,7 @@ def setup_single_in_and_equals_profiles_with_negation(request):
     else:
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_in_profile;not_equals_profile,,t"
+                f"{trap_external_ip},1166,2c,public,,,600,not_in_profile;not_equals_profile,,t"
             ]
         )
         upgrade_docker_compose()
@@ -1489,10 +1457,6 @@ def setup_single_regex_and_options_profiles_with_negation(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
-        "small_walk": {
-            "varBinds": [yaml_escape_list(sq("IF-MIB"))],
-            "condition": {"type": "walk"},
-        },
         "not_regex_profile": {
             "frequency": 7,
             "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
@@ -1523,7 +1487,7 @@ def setup_single_regex_and_options_profiles_with_negation(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_regex_profile;not_options_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1532,7 +1496,7 @@ def setup_single_regex_and_options_profiles_with_negation(request):
         update_profiles_compose(profiles)
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_regex_profile;not_options_profile,,"
+                f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,"
             ]
         )
         upgrade_docker_compose()
@@ -1541,7 +1505,7 @@ def setup_single_regex_and_options_profiles_with_negation(request):
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_regex_profile;not_options_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,t",
             ],
             "inventory.yaml",
         )
@@ -1549,7 +1513,7 @@ def setup_single_regex_and_options_profiles_with_negation(request):
     else:
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;not_regex_profile;not_options_profile,,t"
+                f"{trap_external_ip},1166,2c,public,,,600,not_regex_profile;not_options_profile,,t"
             ]
         )
         upgrade_docker_compose()
@@ -1599,10 +1563,6 @@ def setup_multiple_conditions_profiles(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
-        "small_walk": {
-            "varBinds": [yaml_escape_list(sq("IF-MIB"))],
-            "condition": {"type": "walk"},
-        },
         "gt_and_equals_profile": {
             "frequency": 7,
             "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
@@ -1633,7 +1593,7 @@ def setup_multiple_conditions_profiles(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;gt_and_equals_profile;lt_and_in_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1642,7 +1602,7 @@ def setup_multiple_conditions_profiles(request):
         update_profiles_compose(profiles)
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;gt_and_equals_profile;lt_and_in_profile,,"
+                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,"
             ]
         )
         upgrade_docker_compose()
@@ -1651,7 +1611,7 @@ def setup_multiple_conditions_profiles(request):
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;gt_and_equals_profile;lt_and_in_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,t",
             ],
             "inventory.yaml",
         )
@@ -1659,7 +1619,7 @@ def setup_multiple_conditions_profiles(request):
     else:
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;gt_and_equals_profile;lt_and_in_profile,,t"
+                f"{trap_external_ip},1166,2c,public,,,600,gt_and_equals_profile;lt_and_in_profile,,t"
             ]
         )
         upgrade_docker_compose()
@@ -1708,10 +1668,6 @@ def setup_wrong_conditions_profiles(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
-        "small_walk": {
-            "varBinds": [yaml_escape_list(sq("IF-MIB"))],
-            "condition": {"type": "walk"},
-        },
         "wrong_gt_and_equals_profile": {
             "frequency": 7,
             "varBinds": [yaml_escape_list(sq("IF-MIB"), sq("ifOutDiscards"))],
@@ -1749,7 +1705,7 @@ def setup_wrong_conditions_profiles(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,",
+                f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1758,7 +1714,7 @@ def setup_wrong_conditions_profiles(request):
         update_profiles_compose(profiles)
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,"
+                f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,"
             ]
         )
         upgrade_docker_compose()
@@ -1767,7 +1723,7 @@ def setup_wrong_conditions_profiles(request):
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,t",
+                f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,t",
             ],
             "inventory.yaml",
         )
@@ -1775,7 +1731,7 @@ def setup_wrong_conditions_profiles(request):
     else:
         update_inventory_compose(
             [
-                f"{trap_external_ip},1166,2c,public,,,600,small_walk;wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,t"
+                f"{trap_external_ip},1166,2c,public,,,600,wrong_gt_and_equals_profile;wrong_lt_and_in_profile;wrong_equals_profile,,t"
             ]
         )
         upgrade_docker_compose()
@@ -1803,10 +1759,6 @@ def setup_misconfigured_profiles(request):
     trap_external_ip = request.config.getoption("trap_external_ip")
     deployment = request.config.getoption("sc4snmp_deployment")
     profiles = {
-        "small_walk": {
-            "varBinds": [yaml_escape_list(sq("IF-MIB"))],
-            "condition": {"type": "walk"},
-        },
         "no_varbinds_profile": {
             "frequency": 7,
             "varBinds": [],
@@ -1853,7 +1805,7 @@ def setup_misconfigured_profiles(request):
         update_profiles_microk8s(profiles)
         update_file_microk8s(
             [
-                f"{trap_external_ip},1165,2c,public,,,600,small_walk;no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,",
+                f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,",
             ],
             "inventory.yaml",
         )
@@ -1862,7 +1814,7 @@ def setup_misconfigured_profiles(request):
         update_profiles_compose(profiles)
         update_inventory_compose(
             [
-                f"{trap_external_ip},1165,2c,public,,,600,small_walk;no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,",
+                f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,",
             ]
         )
         upgrade_docker_compose()
@@ -1871,7 +1823,7 @@ def setup_misconfigured_profiles(request):
     if deployment == "microk8s":
         update_file_microk8s(
             [
-                f"{trap_external_ip},1165,2c,public,,,600,small_walk;no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,t",
+                f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,t",
             ],
             "inventory.yaml",
         )
@@ -1879,7 +1831,7 @@ def setup_misconfigured_profiles(request):
     else:
         update_inventory_compose(
             [
-                f"{trap_external_ip},1165,2c,public,,,600,small_walk;no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,t",
+                f"{trap_external_ip},1165,2c,public,,,600,no_varbinds_profile;no_operation_key_in_condition_profile;no_frequency_profile;no_patterns_profile,,t",
             ]
         )
         upgrade_docker_compose()

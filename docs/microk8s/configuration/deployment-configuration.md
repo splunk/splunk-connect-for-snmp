@@ -25,6 +25,10 @@ For traps receiving purposes:
 
 - `traps` - For more details see [trap configuration](trap-configuration.md).
    
+For SNMP devices discovery purpose:
+
+- `discovery` - For more details see [Discovery configuration](discovery-configuration.md).
+
 Shared components:
 
 - `inventory` - For more details see [inventory configuration](../poller-configuration#configure-inventory).

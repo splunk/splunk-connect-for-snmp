@@ -33,28 +33,12 @@ spec:
           env:
           - name: CONFIG_PATH
             value: /app/config/config.yaml
-          - name: REDIS_HOST
-            value: {{ .Release.Name }}-redis
-          - name: REDIS_PORT
-            value: "6379"
-          - name: REDIS_DB
-            value: "1"
-          - name: CELERY_DB
-            value: "0"
-          {{- if .Values.redis.auth.enabled }}
-          - name: REDIS_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                {{- if .Values.redis.auth.existingSecret }}
-                name: {{ .Values.redis.auth.existingSecret }}
-                key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
-                {{- else }}
-                name: {{ .Release.Name }}-redis-secret
-                key: password
-                {{- end }}
-          {{- end }}
+          - name: REDIS_URL
+            value: {{ include "splunk-connect-for-snmp.redis_url" . }}
           - name: INVENTORY_PATH
             value: /app/inventory/inventory.csv
+          - name: CELERY_BROKER_URL
+            value: {{ include "splunk-connect-for-snmp.celery_url" . }}
           - name: MONGO_URI
             value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
           - name: MIB_SOURCES
@@ -120,6 +104,14 @@ Return full image for thr UI back end.
 */}}
 {{- define "splunk-connect-for-snmp.uiBackImage" -}}
 {{ .Values.UI.backEnd.repository }}:{{ .Values.UI.backEnd.tag | default "latest" }}
+{{- end }}
+
+{{- define "splunk-connect-for-snmp-ui.celery_url" -}}
+{{- printf "redis://%s-redis-master:6379/2" .Release.Name }}
+{{- end }}
+
+{{- define "splunk-connect-for-snmp-ui.redis_url" -}}
+{{- printf "redis://%s-redis-master:6379/3" .Release.Name }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp-ui.hostMountPath" -}}

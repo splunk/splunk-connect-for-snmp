@@ -104,17 +104,15 @@ microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-trap -n
 
 ### Define external gateway for traps
 
-#### Using MetalLB LoadBalancer
-
-If you use SC4SNMP on a multinode setup, configure `loadBalancerIP`.
-`loadBalancerIP` should be an IP assigned from your MetalLB address pool in the same subnet as your cluster nodes can reach.
+If you use SC4SNMP on a single machine, configure `loadBalancerIP`.
+`loadBalancerIP` is the IP address in the metallb pool. 
 See the following example:
 
 ```yaml
 traps:
   loadBalancerIP: 10.202.4.202
 ```
-If you have enabled IPv6 dual‑stack, provide both IPv4 and IPv6 addresses as a comma‑separated list:
+If you have enabled the Ipv6 you need to pass IP addresses for both IPv4 and IPv6.
 See the following example:
 
 ```yaml
@@ -122,9 +120,7 @@ traps:
   loadBalancerIP: 10.202.4.202,2001:0DB8:AC10:FE01:0000:0000:0000:0001
 ```
 
-#### Using NodePort
-
-For single‑node clusters or simple setups without a load balancer, you can expose the traps receiver on a fixed port across all node IPs with `NodePort`:
+If you want to use the SC4SNMP trap receiver in K8S cluster, configure `NodePort` instead. Use the following configuration:
 
 ```yaml
 traps:
@@ -134,28 +130,15 @@ traps:
     nodePort: 30000
 ```
 
-This way the trap receiver will be available on all node IPs on port 30000.
+Using this method, the SNMP trap will always be forwarded to one of the trap receiver pods listening on port 30000 (like in the
+example above, you can configure to any other port). So, it does not matter that IP address of which node you use. 
+Adding nodePort will make it end up in the correct place everytime. 
 
-#### Using Cloud Load Balancer
-
-You can also deploy the traps receiver without MetalLB or NodePort, using Kubernetes Service annotations supported by your cloud platform.
-For example, on AWS EKS you can enable an AWS Network Load Balancer with annotations:
-
-```yaml
-traps:
-  service:
-    usemetallb: false
-    annotations:
-      service.beta.kubernetes.io/aws-load-balancer-type: external
-      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
-      service.beta.kubernetes.io/aws-load-balancer-scheme: internal
-```
-
+A good practice is to create an IP floating address/Anycast pointing to the healthy nodes, so the traffic is forwarded in case of the
+failover. To do this, create an external LoadBalancer that balances the traffic between nodes.
 
 ### Define number of traps server replica
-
 `replicaCount` defines that the number of replicas per trap container should be 2 times the number of nodes.
-
 ```yaml
 traps:
   #For production deployments the value should be at least 2x the number of nodes

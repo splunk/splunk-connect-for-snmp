@@ -10,7 +10,8 @@
     "poller",
     "worker",
     "inventory",
-    "traps"
+    "traps",
+    "discovery"
   ],
   "title": "Values",
   "additionalProperties": false,
@@ -362,9 +363,6 @@
         "maxOidToProcess": {
           "type": "integer"
         },
-        "maxRepetitions": {
-          "type": "integer"
-        },
         "usernameSecrets": {
           "type": "array"
         },
@@ -593,6 +591,69 @@
             }
           }
         },
+        "discovery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "replicaCount": {
+              "type": "integer"
+            },
+            "concurrency": {
+              "type": "integer"
+            },
+            "prefetch": {
+              "type": "integer"
+            },
+            "autoscaling": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "minReplicas": {
+                  "type": "integer"
+                },
+                "maxReplicas": {
+                  "type": "integer"
+                },
+                "targetCPUUtilizationPercentage": {
+                  "type": "integer"
+                }
+              }
+            },
+            "resources": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "limits": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "cpu": {
+                      "type": ["integer", "string"]
+                    },
+                    "memory": {
+                      "type": ["integer", "string"]
+                    }
+                  }
+                },
+                "requests": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "cpu": {
+                      "type": ["integer", "string"]
+                    },
+                    "memory": {
+                      "type": ["integer", "string"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "livenessProbe": {
           "type": "object",
           "additionalProperties": false,
@@ -661,6 +722,9 @@
           "type": "string"
         },
         "udpConnectionTimeout": {
+          "type": "integer"
+        },
+        "udpConnectionRetries": {
           "type": "integer"
         },
         "ignoreEmptyVarbinds": {
@@ -897,6 +961,91 @@
             },
             "tag": {
               "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "ipv6Enabled": {
+          "type": "boolean"
+        },
+        "usernameSecrets": {
+          "type": "array"
+        },
+        "discoveryPath": {
+          "type": "string"
+        },
+        "logLevel": {
+          "type": "string"
+        },
+        "autodiscovery": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^0-9].*": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "frequency": {
+                  "type": "integer"
+                },
+                "skip_active_check": {
+                  "type": "boolean"
+                },
+                "delete_already_discovered": {
+                  "type": "boolean"
+                },
+                "network_address": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string",
+                  "enum": ["1", "2c", "3"]
+                },
+                "secret": {
+                  "type": ["string", "null"]
+                },
+                "community": {
+                  "type": ["string", "null"]
+                },
+                "port": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 65535
+                },
+                "security_engine": {
+                  "type": "string"
+                },
+                "device_rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "patterns": {
+                        "type": "string"
+                      },
+                      "group": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "patterns",
+                      "group"
+                    ]
+                  }
+                }
+              }
             }
           }
         }
