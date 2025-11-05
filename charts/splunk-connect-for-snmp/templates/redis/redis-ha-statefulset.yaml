@@ -23,7 +23,7 @@ spec:
       labels:
         app: {{ .Release.Name }}-redis
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/redis-ha-config.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/redis/redis-ha-config.yaml") . | sha256sum }}
     spec:
       {{- with .Values.redis.podSecurityContext }}
       securityContext:
