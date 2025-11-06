@@ -47,6 +47,7 @@ if REDIS_MODE == "replication":
         "master_name": "mymaster",
         "priority_steps": list(range(10)),
         "sep": ":",
+        "db": 1,
         "queue_order_strategy": "priority",
         "sentinels": sentinels
     }
