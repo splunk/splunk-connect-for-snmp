@@ -31,8 +31,8 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     : "${CELERY_BROKER_URL:=$SENTINEL_BASE/$CELERY_DB#$REDIS_MASTER_NAME}"
 
     # For wait-for-dep checks, can still use normal redis scheme
-    REDIS_CHECK_URL="redis://${REDIS_SENTINEL_SERVICE}-0.snmp-redis-headless:${REDIS_SENTINEL_PORT}"
-    CELERY_CHECK_URL="redis://${REDIS_SENTINEL_SERVICE}-0.snmp-redis-headless:${REDIS_SENTINEL_PORT}"
+    REDIS_CHECK_URL="redis://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
+    CELERY_CHECK_URL="redis://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
 
   else
     # Standalone mode
