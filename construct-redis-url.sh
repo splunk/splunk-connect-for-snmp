@@ -21,16 +21,20 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     SENTINELS="${REDIS_SENTINEL_SERVICE}-0.snmp-redis-headless:${REDIS_SENTINEL_PORT},${REDIS_SENTINEL_SERVICE}-1.snmp-redis-headless:${REDIS_SENTINEL_PORT},${REDIS_SENTINEL_SERVICE}-2.snmp-redis-headless:${REDIS_SENTINEL_PORT}"
 
     if [ -n "$REDIS_PASSWORD" ]; then
-      SENTINEL_BASE="redis-sentinel://:$REDIS_PASSWORD@$SENTINELS"
+      SENTINEL_SCHEME="sentinel://:${REDIS_PASSWORD}@${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
+      REDBEAT_SCHEME="redis-sentinel://:${REDIS_PASSWORD}@${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
     else
-      SENTINEL_BASE="redis-sentinel://$SENTINELS"
+      SENTINEL_SCHEME="sentinel://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
+      REDBEAT_SCHEME="redis-sentinel://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
     fi
 
-    # Final URLs
-    : "${REDIS_URL:=$SENTINEL_BASE/$REDIS_DB#$REDIS_MASTER_NAME}"
-    : "${CELERY_BROKER_URL:=$SENTINEL_BASE/$CELERY_DB#$REDIS_MASTER_NAME}"
+    # Celery broker uses sentinel://
+    : "${CELERY_BROKER_URL:=${SENTINEL_SCHEME}/${CELERY_DB}}"
 
-    # For wait-for-dep checks, can still use normal redis scheme
+    # RedBeat uses redis-sentinel:// with master_name query
+    : "${REDIS_URL:=${REDBEAT_SCHEME}/${REDIS_DB}?master_name=${REDIS_MASTER_NAME}}"
+
+    # For healthcheck / wait-for-dep
     REDIS_CHECK_URL="redis://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
     CELERY_CHECK_URL="redis://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
 
