@@ -43,7 +43,7 @@ if REDIS_MODE == "replication":
     sentinels = [(f'{REDIS_SENTINEL_SERVICE}-{sentinel_n}.{REDIS_SENTINEL_SERVICE}.{NAMESPACE}', 26379) for sentinel_n in range(REDIS_SENTINEL_REPLICAS)]
     # Celery broker options for Sentinel
     broker_transport_options = {
-        "master_name": "mymaster",
+        "service_name": "mymaster",
         "priority_steps": list(range(10)),
         "sep": ":",
         "queue_order_strategy": "priority",
