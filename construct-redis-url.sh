@@ -17,9 +17,6 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     REDIS_DB="${REDIS_DB:-1}"
     CELERY_DB="${CELERY_DB:-0}"
 
-    # Construct list of sentinel hosts (assumes 3 pods)
-    SENTINELS="${REDIS_SENTINEL_SERVICE}-0.snmp-redis-headless:${REDIS_SENTINEL_PORT},${REDIS_SENTINEL_SERVICE}-1.snmp-redis-headless:${REDIS_SENTINEL_PORT},${REDIS_SENTINEL_SERVICE}-2.snmp-redis-headless:${REDIS_SENTINEL_PORT}"
-
     if [ -n "$REDIS_PASSWORD" ]; then
       SENTINEL_SCHEME="sentinel://:${REDIS_PASSWORD}@${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
       REDBEAT_SCHEME="redis-sentinel://:${REDIS_PASSWORD}@${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"

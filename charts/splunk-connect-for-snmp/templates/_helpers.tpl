@@ -105,6 +105,10 @@ Generate Redis environment variables for application pods
   value: "replication"
 - name: REDIS_SENTINEL_SERVICE
   value: {{ .Release.Name }}-redis-sentinel
+- name: NAMESPACE
+  value: {{ .Release.Namespace }}
+- name: REDIS_SENTINEL_REPLICAS
+  value: {{ .Values.redis.sentinel.replicas | quote }}
 - name: REDIS_SENTINEL_PORT
   value: "26379"
 - name: REDIS_MASTER_NAME
