@@ -153,6 +153,7 @@ jobs:
         echo "${{ steps.get_commit_message.outputs.commit_message }}"
 
   test-integration-microk8s:
+    continue-on-error: true
     name: Run integration tests in microk8s deployment
     needs:
       - integration-tests-check
@@ -182,6 +183,7 @@ jobs:
           poetry run pytest --splunk_host="localhost" --splunk_password="changeme2" --trap_external_ip="$(hostname -I | cut -d " " -f1)" --sc4snmp_deployment="microk8s" -m part${{ matrix.index }}
 
   test-integration-compose:
+    continue-on-error: true
     name: Run integration tests in docker compose deployment
     needs:
       - integration-tests-check

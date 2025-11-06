@@ -49,10 +49,8 @@ from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import get_auth, setup_transport_target
 from splunk_connect_for_snmp.snmp.context import get_context_data
-from splunk_connect_for_snmp.snmp.exceptions import (
-    SnmpActionError,
-    summarize_exception_group,
-)
+from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
+from splunk_connect_for_snmp.snmp.multi_bulk_walk_cmd import multi_bulk_walk_cmd
 
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
@@ -334,6 +332,14 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {mib_response.status_code}"
             )
 
+    def get_snmp_engine(self) -> SnmpEngine:
+        """
+        :returns: The SnmpEngine with mibViewController cache attached.
+        """
+        snmp_engine = SnmpEngine()
+        snmp_engine.cache["mibViewController"] = self.mib_view_controller
+        return snmp_engine
+
     async def do_work(
         self,
         ir: InventoryRecord,
@@ -426,12 +432,13 @@ class Poller(Task):
         varbinds_get,
         walk,
     ):
+        snmp_engine = self.get_snmp_engine()
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
             try:
                 (error_indication, error_status, error_index, varbind_table) = (
                     await get_cmd(
-                        SnmpEngine(),
+                        snmp_engine,
                         auth_data,
                         transport,
                         context_data,
@@ -492,91 +499,41 @@ class Poller(Task):
         - Used `bulk_walk_cmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
         but handles only one varBind at a time.
         """
+        snmp_engine = self.get_snmp_engine()
 
-        async def _walk_single_varbind(varbind):
-            """
-            Asynchronously walk a single SNMP varbind and process the results.
-            :param varbind: SNMP ObjectType varbind to be walked
-            :return:
-            """
-            async for (
+        async for (
+            error_indication,
+            error_status,
+            error_index,
+            varbind_table,
+        ) in multi_bulk_walk_cmd(
+            snmp_engine,
+            auth_data,
+            transport,
+            context_data,
+            0,
+            MAX_REPETITIONS,
+            *varbinds_bulk,
+            lexicographicMode=False,
+            lookupMib=True,
+            ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+        ):
+            if not _any_failure_happened(
                 error_indication,
                 error_status,
                 error_index,
                 varbind_table,
-            ) in bulk_walk_cmd(
-                SnmpEngine(),
-                auth_data,
-                transport,
-                context_data,
-                0,
-                MAX_REPETITIONS,
-                varbind,
-                lexicographicMode=False,
-                lookupMib=True,
-                ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+                ir.address,
+                walk,
             ):
-                if not _any_failure_happened(
-                    error_indication,
-                    error_status,
-                    error_index,
-                    varbind_table,
-                    ir.address,
-                    walk,
-                ):
-                    _, tmp_mibs, _ = self.process_snmp_data(
+                _, tmp_mibs, _ = self.process_snmp_data(
+                    varbind_table, metrics, address, bulk_mapping
+                )
+                if tmp_mibs:
+                    self.load_mibs(tmp_mibs)
+                    self.process_snmp_data(
                         varbind_table, metrics, address, bulk_mapping
                     )
-                    if tmp_mibs:
-                        self.load_mibs(tmp_mibs)
-                        self.process_snmp_data(
-                            varbind_table, metrics, address, bulk_mapping
-                        )
-
-        # Preparing the queue for bulk request
-        bulk_queue: Queue[tuple[int, ObjectType]] = Queue()
-        for _wid, _varbind in enumerate(varbinds_bulk, start=1):
-            bulk_queue.put_nowait((_wid, _varbind))
-
-        async def _worker(worker_id: int):
-            """
-            Worker coroutine that continuously fetches tasks from the bulk_queue and
-            executes SNMP walks using _walk_single_varbind.
-            :param worker_id: integer ID of the worker
-
-            :return:
-            """
-            while True:
-                try:
-                    _wid, _varbind = bulk_queue.get_nowait()
-                except QueueEmpty:
-                    # Queue is empty indicating that all the varbinds proceed for the poll/walk task.
-                    logger.debug(
-                        f"BulkQueue worker-{worker_id} found no tasks in the queue and is exiting."
-                    )
-                    break
-                except Exception as e:
-                    logger.error(
-                        f"BulkQueue worker-{worker_id} encountered an error: {e}."
-                    )
-                    break
-
-                logger.debug(f"BulkQueue worker-{worker_id} picking up task-{_wid}")
-                await _walk_single_varbind(_varbind)
-                bulk_queue.task_done()
-                logger.debug(f"BulkQueue worker-{worker_id} completed task-{_wid}")
-
-        try:
-            async with TaskGroup() as tg:
-                for wid in range(
-                    1, get_max_bulk_walk_concurrency(len(varbinds_bulk)) + 1
-                ):
-                    tg.create_task(_worker(wid))
-        except ExceptionGroup as eg:
-            error_message = summarize_exception_group(
-                eg, context=f"Bulk walk failed for {ir.address}"
-            )
-            raise SnmpActionError(error_message)
 
     def get_varbind_chunk(self, lst, n):
         for i in range(0, len(lst), n):
@@ -641,19 +598,7 @@ class Poller(Task):
         retry = False
         remotemibs = []
         for varbind in varbind_table:
-            try:
-                index, metric, mib, oid, varbind_id, varbind = self.init_snmp_data(
-                    varbind
-                )
-            except SmiError as smi:
-                logger.warning(
-                    f"Failed to resolve OID '{varbind[0]}' — skipping, SMI Error: {smi}",
-                )
-                continue
-            except Exception as e:
-                logger.exception(
-                    f"Unexpected error while resolving OID '{varbind[0]}'. Error: {e}",
-                )
+            index, metric, mib, oid, varbind_id = self.init_snmp_data(varbind)
 
             if is_mib_resolved(varbind_id):
                 group_key = get_group_key(mib, oid, index)
@@ -785,10 +730,6 @@ class Poller(Task):
           value types are correctly interpreted.
         """
         oid = str(varbind[0].get_oid())
-        resolved_obj = ObjectType(ObjectIdentity(oid), varbind[1]).resolve_with_mib(
-            self.mib_view_controller
-        )
-        resolved_oid = resolved_obj[0]
-        varbind_id = resolved_oid.prettyPrint()
-        mib, metric, index = resolved_oid.get_mib_symbol()
-        return index, metric, mib, oid, varbind_id, resolved_obj
+        varbind_id = varbind[0].prettyPrint()
+        mib, metric, index = varbind[0].get_mib_symbol()
+        return index, metric, mib, oid, varbind_id
