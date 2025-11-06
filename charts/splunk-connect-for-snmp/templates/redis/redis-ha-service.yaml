@@ -1,32 +1,32 @@
-{{/*{{- if eq .Values.redis.architecture "replication" }}*/}}
-{{/*apiVersion: v1*/}}
-{{/*kind: Service*/}}
-{{/*metadata:*/}}
-{{/*  name: {{ .Release.Name }}-redis*/}}
-{{/*  namespace: {{ .Release.Namespace }}*/}}
-{{/*  labels:*/}}
-{{/*    app: {{ .Release.Name }}-redis*/}}
-{{/*spec:*/}}
-{{/*  type: ClusterIP*/}}
-{{/*  ports:*/}}
-{{/*  - port: 6379*/}}
-{{/*    targetPort: 6379*/}}
-{{/*    name: redis*/}}
-{{/*  selector:*/}}
-{{/*    app: {{ .Release.Name }}-redis*/}}
-{{/*---*/}}
-{{/*apiVersion: v1*/}}
-{{/*kind: Service*/}}
-{{/*metadata:*/}}
-{{/*  name: {{ .Release.Name }}-redis-headless*/}}
-{{/*  namespace: {{ .Release.Namespace }}*/}}
-{{/*  labels:*/}}
-{{/*    app: {{ .Release.Name }}-redis*/}}
-{{/*spec:*/}}
-{{/*  clusterIP: None*/}}
-{{/*  ports:*/}}
-{{/*  - port: 6379*/}}
-{{/*    name: redis*/}}
-{{/*  selector:*/}}
-{{/*    app: {{ .Release.Name }}-redis*/}}
-{{/*{{- end }}*/}}
+{{- if eq .Values.redis.architecture "replication" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-redis
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-redis
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: redis
+  selector:
+    app: {{ .Release.Name }}-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-redis-headless
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-redis
+spec:
+  clusterIP: None
+  ports:
+  - port: 6379
+    name: redis
+  selector:
+    app: {{ .Release.Name }}-redis
+{{- end }}
