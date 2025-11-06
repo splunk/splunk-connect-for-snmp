@@ -70,7 +70,7 @@ spec:
             command:
             - sh
             - -c
-            - redis-cli -p 26379 ping
+            - redis-cli -p 26379 sentinel get-master-addr-by-name mymaster | grep snmp-redis-0
           initialDelaySeconds: 10
           periodSeconds: 5
       volumes:
