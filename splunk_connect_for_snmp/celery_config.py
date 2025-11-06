@@ -44,6 +44,7 @@ if REDIS_MODE == "replication":
     # Celery broker options for Sentinel
     broker_transport_options = {
         "service_name": "mymaster",
+        "master_name": "mymaster",
         "priority_steps": list(range(10)),
         "sep": ":",
         "queue_order_strategy": "priority",
