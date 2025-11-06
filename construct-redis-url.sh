@@ -26,7 +26,7 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     fi
 
     # Celery broker uses sentinel://
-    : "${CELERY_BROKER_URL:=${SENTINEL_SCHEME}/${CELERY_DB}}"
+    : "${CELERY_BROKER_URL:=${SENTINEL_SCHEME}/${CELERY_DB}#master_name=${REDIS_MASTER_NAME}}"
 
     # RedBeat uses redis-sentinel:// with master_name query
     : "${REDIS_URL:=${REDBEAT_SCHEME}/${REDIS_DB}?master_name=${REDIS_MASTER_NAME}}"
