@@ -112,7 +112,7 @@ Generate Redis environment variables for application pods
 - name: REDIS_SENTINEL_PORT
   value: "26379"
 - name: REDIS_MASTER_NAME
-  value: {{ .Release.Name }}-redis
+  value: mymaster
 {{- else -}}
 - name: REDIS_MODE
   value: "standalone"
