@@ -14,11 +14,9 @@
 # limitations under the License.
 #
 import typing
-from asyncio import Queue, QueueEmpty, TaskGroup
 from contextlib import suppress
 
 from pysnmp.proto.errind import EmptyResponse
-from pysnmp.smi.error import SmiError
 from requests import Session
 
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
@@ -39,7 +37,7 @@ from typing import Any, Dict, List, Tuple, Union
 import pymongo
 from celery import Task
 from celery.utils.log import get_task_logger
-from pysnmp.hlapi.asyncio import SnmpEngine, bulk_walk_cmd, get_cmd
+from pysnmp.hlapi.asyncio import SnmpEngine, get_cmd
 from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
@@ -67,7 +65,6 @@ UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 3))
 MAX_OID_TO_PROCESS = int(os.getenv("MAX_OID_TO_PROCESS", 70))
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
 MAX_REPETITIONS = int(os.getenv("MAX_REPETITIONS", 10))
-MAX_SNMP_BULK_WALK_CONCURRENCY = int(os.getenv("MAX_SNMP_BULK_WALK_CONCURRENCY", 5))
 
 DEFAULT_STANDARD_MIBS = [
     "HOST-RESOURCES-MIB",
@@ -271,20 +268,6 @@ def extract_indexes(index):
     return indexes_to_return
 
 
-def get_max_bulk_walk_concurrency(count: int) -> int:
-    """
-    Return the effective bulk concurrency, Default to 5 if not set.
-
-    :param count: Desired integer number of concurrent SNMP operations (bulk_walk_cmd)
-        (count determined based on the lenght of bulk varbinds)
-
-    :return int: The concurrency to use for SNMP operation
-    """
-    if count < MAX_SNMP_BULK_WALK_CONCURRENCY:
-        return count
-    return MAX_SNMP_BULK_WALK_CONCURRENCY
-
-
 class Poller(Task):
     def __init__(self, **kwargs):
         self.standard_mibs = []
@@ -473,11 +456,10 @@ class Poller(Task):
         walk,
     ):
         """
-        Perform asynchronous SNMP BULK requests on multiple varbinds with concurrency control.
+        Perform asynchronous SNMP BULK requests on multiple varbinds simultaneously.
 
-        This function uses bulk_walk_cmd to asynchronously walk each SNMP varbind,
-        ensuring that at most `MAX_SNMP_BULK_WALK_CONCURRENCY` walks are running concurrently.
-        It processes the received SNMP data, and handles failure if any.
+        This function uses multi_bulk_walk_cmd to walk multiple SNMP varbinds in parallel
+        within a single SNMP session, reducing network roundtrips and improving performance.
 
         :param address: IP address of the SNMP device to query
         :param auth_data: SNMP authentication data
@@ -486,18 +468,19 @@ class Poller(Task):
         :param ir: object containing SNMP device info
         :param metrics: dictionary to store metrics collected from SNMP responses
         :param transport: SNMP transport target
-        :param varbinds_bulk: set of SNMP varbinds to query
+        :param varbinds_bulk: set of SNMP varbinds to query in parallel
         :param walk: boolean flag indicating if it is a walk operation
 
-        :return:
+        :return: None
 
         ## NOTE
         - The current `bulkCmd` of PySNMP does not support the `lexicographicMode` option.
-        As a result, the walk is not strictly confined to the requested varBind subtree and may go beyond the requested OID subtree,
-        with a high chance of duplicate OIDs.
-
-        - Used `bulk_walk_cmd` of pysnmp, which supports `lexicographicMode` and walks a subtree correctly,
-        but handles only one varBind at a time.
+          As a result, the walk is not strictly confined to the requested varBind subtree and may go beyond the requested OID subtree,
+          with a high chance of duplicate OIDs.
+        - Uses custom `multi_bulk_walk_cmd` which walks multiple varbinds simultaneously
+        - Each varbind respects `lexicographicMode=False` independently
+        - Each varbind walks only its own OID subtree and stops at its boundary
+        - Prevents walking beyond requested subtrees and eliminates duplicate OIDs
         """
         snmp_engine = self.get_snmp_engine()
 
@@ -711,23 +694,10 @@ class Poller(Task):
 
     def init_snmp_data(self, varbind):
         """
-        Extract SNMP varbind information in a way that preserves compatibility with
-        older PySNMP behavior while avoiding changes to the underlying library.
-
+        Extract SNMP varbind information.
         :param varbind: ObjectType
 
-        :return: A resolved index, metric, mib, oid, varbind_id, resolved_obj
-
-        ## NOTE
-        - In older forks of PySNMP, varbinds were typically returned with fully
-        resolved MIB names, variable names, and indices.
-
-        - In lextudio's PySNMP, even when `lookupMib=True` is specified in
-        `bulk_walk_cmd`, some varbinds may still be only partially resolved.
-        To ensure complete resolution of MIB information, we must explicitly
-        call `resolve_with_mib()` on the varbind object.
-        - The original varbind is replaced by `resolved_obj`, ensuring both OID and
-          value types are correctly interpreted.
+        :return: A index, metric, mib, oid, varbind_id
         """
         oid = str(varbind[0].get_oid())
         varbind_id = varbind[0].prettyPrint()

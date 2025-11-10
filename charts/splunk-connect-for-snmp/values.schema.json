@@ -368,9 +368,6 @@
         "maxRepetitions": {
           "type": "integer"
         },
-        "maxSnmpBulkWalkConcurrency": {
-          "type": "integer"
-        },
         "usernameSecrets": {
           "type": "array"
         },

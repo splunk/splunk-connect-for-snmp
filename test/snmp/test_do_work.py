@@ -1,5 +1,3 @@
-import asyncio
-from queue import Empty
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -41,7 +39,6 @@ class TestDoWork(IsolatedAsyncioTestCase):
         poller.snmpEngine = None
         poller.profiles_manager = MagicMock()
         poller.profiles_collection = MagicMock()
-        poller.refresh_snmp_engine = MagicMock()
         poller.profiles_collection.process_profiles = MagicMock()
         poller.already_loaded_mibs = set()
         varbinds_bulk, varbinds_get = set(), set()
@@ -62,18 +59,23 @@ class TestDoWork(IsolatedAsyncioTestCase):
         "splunk_connect_for_snmp.snmp.manager.setup_transport_target",
         new_callable=AsyncMock,
     )
-    @patch("splunk_connect_for_snmp.snmp.manager.bulk_walk_cmd")
+    @patch("splunk_connect_for_snmp.snmp.manager.multi_bulk_walk_cmd")
     @patch("splunk_connect_for_snmp.snmp.manager.get_cmd", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.common.collection_manager.ProfilesManager")
     async def test_do_work_bulk_varbinds(
-        self, load_profiles, get_cmd, bulk_walk_cmd, setup_transport_target, get_auth
+        self,
+        load_profiles,
+        get_cmd,
+        multi_bulk_walk_cmd,
+        setup_transport_target,
+        get_auth,
     ):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
         poller.builder = MagicMock()
+        poller.mib_view_controller = MagicMock()
         poller.profiles_manager = MagicMock()
-        poller.refresh_snmp_engine = MagicMock()
         poller.process_snmp_data = MagicMock(return_value=(False, [], {}))
 
         requested_profiles = ["profile1", "profile2"]
@@ -88,25 +90,22 @@ class TestDoWork(IsolatedAsyncioTestCase):
         poller.profiles_collection = ProfileCollection(poller.profiles)
         poller.profiles_collection.process_profiles()
 
-        def bulk_walk_cmd_mock(*args, **kwargs):
+        def multi_bulk_walk_cmd_mock(*args, **kwargs):
             async def _gen():
                 yield (None, 0, 0, ["Oid1"])
                 yield (None, 0, 0, ["Oid2"])
-                yield (None, 0, 0, ["Oid3"])
 
             return _gen()
 
-        bulk_walk_cmd.side_effect = bulk_walk_cmd_mock
+        multi_bulk_walk_cmd.side_effect = multi_bulk_walk_cmd_mock
         get_auth.return_value = MagicMock()
         setup_transport_target.return_value = MagicMock()
 
-        # Call the async do_work
         await poller.do_work(inventory_record, profiles=requested_profiles)
 
-        # Assertions
-        self.assertEqual(poller.process_snmp_data.call_count, 9)
+        self.assertEqual(poller.process_snmp_data.call_count, 2)
         get_cmd.assert_not_called()
-        self.assertEqual(bulk_walk_cmd.call_count, 3)
+        self.assertEqual(multi_bulk_walk_cmd.call_count, 1)
 
     @patch("mongolock.MongoLock.__init__", MagicMock())
     @patch("mongolock.MongoLock.lock", MagicMock())
@@ -117,20 +116,28 @@ class TestDoWork(IsolatedAsyncioTestCase):
         "splunk_connect_for_snmp.snmp.manager.setup_transport_target",
         new_callable=AsyncMock,
     )
-    @patch("splunk_connect_for_snmp.snmp.manager.bulk_walk_cmd", new_callable=AsyncMock)
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.multi_bulk_walk_cmd",
+        new_callable=AsyncMock,
+    )
     @patch("splunk_connect_for_snmp.snmp.manager.get_cmd")
     @patch(
         "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
     )
     async def test_do_work_get(
-        self, load_profiles, get_cmd, bulk_walk_cmd, setup_transport_target, get_auth
+        self,
+        load_profiles,
+        get_cmd,
+        multi_bulk_walk_cmd,
+        setup_transport_target,
+        get_auth,
     ):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
         poller.snmpEngine = None
         poller.builder = MagicMock()
+        poller.mib_view_controller = MagicMock()
         poller.process_snmp_data = MagicMock()
-        poller.refresh_snmp_engine = MagicMock()
         poller.profiles_manager = MagicMock()
         requested_profiles = ["profile1", "profile2"]
         poller.profiles = {
@@ -154,7 +161,7 @@ class TestDoWork(IsolatedAsyncioTestCase):
         await poller.do_work(inventory_record, profiles=requested_profiles)
         self.assertEqual(poller.process_snmp_data.call_count, 1)
         self.assertEqual(get_cmd.call_count, 1)
-        self.assertEqual(bulk_walk_cmd.call_count, 0)
+        self.assertEqual(multi_bulk_walk_cmd.call_count, 0)
 
     @patch("pymongo.MongoClient", MagicMock())
     @patch("mongolock.MongoLock.__init__", MagicMock())
@@ -166,7 +173,10 @@ class TestDoWork(IsolatedAsyncioTestCase):
         "splunk_connect_for_snmp.snmp.manager.setup_transport_target",
         new_callable=AsyncMock,
     )
-    @patch("splunk_connect_for_snmp.snmp.manager.bulk_walk_cmd", new_callable=AsyncMock)
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.multi_bulk_walk_cmd",
+        new_callable=AsyncMock,
+    )
     @patch("splunk_connect_for_snmp.snmp.manager.get_cmd", new_callable=AsyncMock)
     @patch(
         "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
@@ -175,7 +185,7 @@ class TestDoWork(IsolatedAsyncioTestCase):
         self,
         load_profiles,
         get_cmd_mock,
-        bulk_walk_cmd_mock,
+        multi_bulk_walk_cmd_mock,
         setup_transport_target,
         get_auth,
     ):
@@ -183,8 +193,8 @@ class TestDoWork(IsolatedAsyncioTestCase):
         poller.last_modified = 1609675634
         poller.snmpEngine = None
         poller.builder = MagicMock()
+        poller.mib_view_controller = MagicMock()
         poller.process_snmp_data = MagicMock()
-        poller.refresh_snmp_engine = MagicMock()
         poller.profiles_manager = MagicMock()
         requested_profiles = ["profile1"]
         poller.profiles = {
@@ -202,4 +212,4 @@ class TestDoWork(IsolatedAsyncioTestCase):
             await poller.do_work(inventory_record, profiles=requested_profiles)
         self.assertEqual(poller.process_snmp_data.call_count, 0)
         self.assertEqual(get_cmd_mock.call_count, 1)
-        self.assertEqual(bulk_walk_cmd_mock.call_count, 0)
+        self.assertEqual(multi_bulk_walk_cmd_mock.call_count, 0)

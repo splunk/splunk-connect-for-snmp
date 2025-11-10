@@ -45,10 +45,16 @@ spec:
               value: "sc4snmp"
             - name: CONFIG_PATH
               value: /app/config/config.yaml
-            - name: CELERY_BROKER_URL
-              value: redis://release-name-redis-master:6379/0
             - name: MONGO_URI
               value: mongodb://release-name-mongodb:27017
+            - name: REDIS_HOST
+              value: release-name-redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_DB
+              value: "1"
+            - name: CELERY_DB
+              value: "0"
             - name: MIB_SOURCES
               value: "http://release-name-mibserver/asn1/@mib@"
             - name: MIB_INDEX
