@@ -1,11 +1,9 @@
+import asyncio
+
 from pysnmp.carrier.asyncio.dgram import udp, udp6
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import cmdrsp, context
 from pysnmp.hlapi.v3arch.asyncio import SnmpEngine
-
-
-import asyncio
-
 
 # Set the port to 1611 instead of 161, because 161 is a
 # privileged port and requires root access
@@ -74,9 +72,7 @@ class AgentContextManager:
         self.enable_table_creation = enable_table_creation
 
     async def __aenter__(self):
-        self.agent = await start_agent(
-            self.enable_ipv6
-        )
+        self.agent = await start_agent(self.enable_ipv6)
         return self.agent
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):

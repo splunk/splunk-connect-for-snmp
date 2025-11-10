@@ -1,8 +1,16 @@
 import pytest
+from pysnmp.hlapi.v3arch.asyncio import (
+    CommunityData,
+    ContextData,
+    ObjectIdentity,
+    ObjectType,
+    SnmpEngine,
+    UdpTransportTarget,
+)
+from pysnmp.proto.errind import RequestTimedOut
 
 from splunk_connect_for_snmp.snmp.multi_bulk_walk_cmd import multi_bulk_walk_cmd
-from pysnmp.hlapi.v3arch.asyncio import CommunityData, SnmpEngine, UdpTransportTarget, ObjectType, ObjectIdentity, ContextData
-from pysnmp.proto.errind import RequestTimedOut
+
 from .agent_context import AGENT_PORT, AgentContextManager
 
 
@@ -255,14 +263,10 @@ async def test_v2c_multi_bulk_walk_0_4_subtree():
                 )
 
             if index == 26:
-                assert (
-                    varBinds[0][0].prettyPrint() == "SNMPv2-MIB::snmpSilentDrops.0"
-                )
+                assert varBinds[0][0].prettyPrint() == "SNMPv2-MIB::snmpSilentDrops.0"
 
             if index == 27:
-                assert (
-                    varBinds[0][0].prettyPrint() == "SNMPv2-MIB::snmpProxyDrops.0"
-                )
+                assert varBinds[0][0].prettyPrint() == "SNMPv2-MIB::snmpProxyDrops.0"
 
             index += 1
 
