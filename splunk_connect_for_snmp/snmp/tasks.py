@@ -156,8 +156,8 @@ def resolve_address(address: str):
 
 @shared_task(bind=True, base=Poller)
 def trap(self: Poller, work):
-    varbind_table, not_translated_oids, remaining_oids, remotemibs = [], [], [], set()
-    metrics = {}
+    varbind_table, not_translated_oids, remaining_oids, remotemibs = [], [], [], set()  # type: ignore
+    metrics = {}  # type: ignore
     work["host"] = format_ipv4_address(work["host"])
 
     _process_work_data(self, work, varbind_table, not_translated_oids)

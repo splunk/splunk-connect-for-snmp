@@ -1,0 +1,112 @@
+---
+# Source: splunk-connect-for-snmp/templates/redis/redis-standalone-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-redis
+  namespace: default
+  labels:
+    app: release-name-redis
+spec:
+  serviceName: release-name-redis
+  replicas: 1
+  selector:
+    matchLabels:
+      app: release-name-redis
+  template:
+    metadata:
+      labels:
+        app: release-name-redis
+      annotations:
+        checksum/config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
+    spec:
+      securityContext:
+        runAsUser: 999
+        fsGroup: 999
+      initContainers:
+      - name: fix-permissions
+        image: redis:8.2.2
+        imagePullPolicy: IfNotPresent
+        command:
+        - sh
+        - -c
+        - |
+          echo "=== Redis Init: Fixing Permissions ==="
+          echo "Current ownership:"
+          ls -ln /data
+          echo ""
+          echo "Fixing ownership to 999:999..."
+          chown -R 999:999 /data
+          chmod -R 755 /data
+          echo ""
+          echo "New ownership:"
+          ls -ln /data
+          echo "=== Permissions Fixed ==="
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        securityContext:
+          runAsUser: 0  # Must run as root to chown
+      containers:
+      - name: redis
+        image: redis:8.2.2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 6379
+          name: redis
+        command:
+        - sh
+        - -c
+        args:
+        - |
+          # Copy config to writable location
+          cp /etc/redis/redis.conf /tmp/redis.conf
+
+          # Start Redis
+          exec redis-server /tmp/redis.conf
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        - name: redis-config
+          mountPath: /etc/redis
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - |
+              redis-cli ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - |
+              redis-cli ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      # Storage enabled but no existing PVC - use volumeClaimTemplates below
+      volumes:
+      - name: redis-config
+        configMap:
+          name: release-name-redis-config
+  # No existing PVC found, create new one via volumeClaimTemplates
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-data
+    spec:
+      accessModes: 
+        - ReadWriteOnce
+      storageClassName: microk8s-hostpath
+      resources:
+        requests:
+          storage: 5Gi

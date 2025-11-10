@@ -1,5 +1,3 @@
-import asyncio
-import warnings
 from typing import AsyncGenerator
 
 from pysnmp.entity.engine import SnmpEngine
