@@ -15,6 +15,7 @@
 #
 import logging
 import re
+from asyncio import run
 from contextlib import suppress
 
 from pysnmp.smi.error import SmiError
@@ -55,22 +56,7 @@ TTL_DNS_CACHE_TRAPS = int(os.getenv("TTL_DNS_CACHE_TRAPS", "1800"))
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 
 
-@shared_task(
-    bind=True,
-    base=Poller,
-    retry_backoff=30,
-    retry_backoff_max=WALK_RETRY_MAX_INTERVAL,
-    max_retries=WALK_MAX_RETRIES,
-    autoretry_for=(
-        MongoLockLocked,
-        SnmpActionError,
-    ),
-    throws=(
-        SnmpActionError,
-        SnmpActionError,
-    ),
-)
-def walk(self, **kwargs):
+async def walk_async_wrapper(self: Poller, **kwargs):
     address = kwargs["address"]
     profile = kwargs.get("profile", [])
     group = kwargs.get("group")
@@ -84,7 +70,7 @@ def walk(self, **kwargs):
     ir = get_inventory(mongo_inventory, address)
     retry = True
     while retry:
-        retry, result = self.do_work(ir, walk=True, profiles=profile)
+        retry, result = await self.do_work(ir, walk=True, profiles=profile)
 
     # After a Walk tell schedule to recalc
     work = {
@@ -92,6 +78,50 @@ def walk(self, **kwargs):
         "address": address,
         "result": result,
         "chain_of_tasks_expiry_time": chain_of_tasks_expiry_time,
+    }
+    if group:
+        work["group"] = group
+
+    return work
+
+
+@shared_task(
+    bind=True,
+    base=Poller,
+    retry_backoff=30,
+    retry_backoff_max=WALK_RETRY_MAX_INTERVAL,
+    max_retries=WALK_MAX_RETRIES,
+    autoretry_for=(
+        MongoLockLocked,
+        SnmpActionError,
+    ),
+    throws=(
+        MongoLockLocked,
+        SnmpActionError,
+    ),
+)
+def walk(self, **kwargs):
+    return run(walk_async_wrapper(self, **kwargs))
+
+
+async def poll_async_wrapper(self: Poller, **kwargs):
+    address = kwargs["address"]
+    profiles = kwargs["profiles"]
+    group = kwargs.get("group")
+    mongo_client = pymongo.MongoClient(MONGO_URI)
+    mongo_db = mongo_client[MONGO_DB]
+    mongo_inventory = mongo_db.inventory
+
+    ir = get_inventory(mongo_inventory, address)
+    _, result = await self.do_work(ir, profiles=profiles)
+
+    # After a Walk tell schedule to recalc
+    work = {
+        "time": time.time(),
+        "address": address,
+        "result": result,
+        "detectchange": False,
+        "frequency": kwargs["frequency"],
     }
     if group:
         work["group"] = group
@@ -110,29 +140,7 @@ def walk(self, **kwargs):
     expires=30,
 )
 def poll(self, **kwargs):
-
-    address = kwargs["address"]
-    profiles = kwargs["profiles"]
-    group = kwargs.get("group")
-    mongo_client = pymongo.MongoClient(MONGO_URI)
-    mongo_db = mongo_client[MONGO_DB]
-    mongo_inventory = mongo_db.inventory
-
-    ir = get_inventory(mongo_inventory, address)
-    _, result = self.do_work(ir, profiles=profiles)
-
-    # After a Walk tell schedule to recalc
-    work = {
-        "time": time.time(),
-        "address": address,
-        "result": result,
-        "detectchange": False,
-        "frequency": kwargs["frequency"],
-    }
-    if group:
-        work["group"] = group
-
-    return work
+    return run(poll_async_wrapper(self, **kwargs))
 
 
 @ttl_lru_cache(maxsize=MAX_DNS_CACHE_SIZE_TRAPS, ttl=TTL_DNS_CACHE_TRAPS)
@@ -147,9 +155,9 @@ def resolve_address(address: str):
 
 
 @shared_task(bind=True, base=Poller)
-def trap(self, work):
-    varbind_table, not_translated_oids, remaining_oids, remotemibs = [], [], [], set()
-    metrics = {}
+def trap(self: Poller, work):
+    varbind_table, not_translated_oids, remaining_oids, remotemibs = [], [], [], set()  # type: ignore
+    metrics = {}  # type: ignore
     work["host"] = format_ipv4_address(work["host"])
 
     _process_work_data(self, work, varbind_table, not_translated_oids)
@@ -169,7 +177,7 @@ def trap(self, work):
     return _build_result(result, work["host"], fields)
 
 
-def _process_work_data(self, work, varbind_table, not_translated_oids):
+def _process_work_data(self: Poller, work, varbind_table, not_translated_oids):
     """Process the data in work to populate varbinds."""
     for w in work["data"]:
         if OID_VALIDATOR.match(w[1]):
@@ -177,7 +185,7 @@ def _process_work_data(self, work, varbind_table, not_translated_oids):
 
         try:
             varbind_table.append(
-                ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
+                ObjectType(ObjectIdentity(w[0]), w[1]).resolve_with_mib(
                     self.mib_view_controller
                 )
             )
@@ -185,7 +193,7 @@ def _process_work_data(self, work, varbind_table, not_translated_oids):
             not_translated_oids.append((w[0], w[1]))
 
 
-def _load_mib_if_needed(self, oid, host):
+def _load_mib_if_needed(self: Poller, oid, host):
     """Load the MIB if it is known and not already loaded."""
     with suppress(Exception):
         found, mib = self.is_mib_known(oid, oid, host)
@@ -195,7 +203,7 @@ def _load_mib_if_needed(self, oid, host):
 
 
 def _process_remaining_oids(
-    self, not_translated_oids, remotemibs, remaining_oids, host, varbind_table
+    self: Poller, not_translated_oids, remotemibs, remaining_oids, host, varbind_table
 ):
     """Process OIDs that could not be translated and add them to other oids."""
     for oid in not_translated_oids:
@@ -210,12 +218,12 @@ def _process_remaining_oids(
         _resolve_remaining_oids(self, remaining_oids, varbind_table)
 
 
-def _resolve_remaining_oids(self, remaining_oids, varbind_table):
+def _resolve_remaining_oids(self: Poller, remaining_oids, varbind_table):
     """Resolve remaining OIDs."""
     for w in remaining_oids:
         try:
             varbind_table.append(
-                ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
+                ObjectType(ObjectIdentity(w[0]), w[1]).resolve_with_mib(
                     self.mib_view_controller
                 )
             )

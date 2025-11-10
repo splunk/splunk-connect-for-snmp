@@ -15,6 +15,7 @@
 #
 import logging
 import sys
+from asyncio import run
 from csv import DictReader
 
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
@@ -30,7 +31,7 @@ handler.setLevel(log_level)
 logger.addHandler(handler)
 
 
-def run_walk():
+async def run_walk():
     poller = Poller(no_mongo=True)
 
     with open("inventory.csv", encoding="utf-8") as csv_file:
@@ -44,11 +45,11 @@ def run_walk():
                 ir = InventoryRecord(**source_record)
                 retry = True
                 while retry:
-                    retry, result = poller.do_work(ir, walk=True)
+                    retry, result = await poller.do_work(ir, walk=True)
                     logger.debug(result)
             except Exception as e:
                 logger.exception(e)
 
 
 if __name__ == "__main__":
-    run_walk()
+    run(run_walk())
