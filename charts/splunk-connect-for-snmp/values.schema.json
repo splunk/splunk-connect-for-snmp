@@ -996,9 +996,6 @@
                 "frequency": {
                   "type": "integer"
                 },
-                "skip_active_check": {
-                  "type": "boolean"
-                },
                 "delete_already_discovered": {
                   "type": "boolean"
                 },

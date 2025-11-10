@@ -20,7 +20,6 @@ data:
         frequency: 21600
         network_address: 54.82.41.24/28
         port: 161
-        skip_active_check: false
         version: 2c
     discoveryPath: /home/devuser/discovery
     enabled: true

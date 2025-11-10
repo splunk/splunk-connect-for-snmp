@@ -8,7 +8,6 @@ ipv6Enabled:
 autodiscovery:
   discovery_key:
       frequency: 
-      skip_active_check: 
       delete_already_discovered: 
       network_address: 
       version: 
@@ -38,7 +37,6 @@ ipv6Enabled: true
 autodiscovery:
   discovery_version2c:
     frequency: 86400
-    skip_active_check: false
     delete_already_discovered: true
     network_address: 10.202.4.200/30
     version: "2c"
@@ -51,7 +49,6 @@ autodiscovery:
 
   discovery_version3:
     frequency: 43200
-    skip_active_check: false
     delete_already_discovered: false
     network_address: 10.202.4.200/30
     version: "3"

@@ -39,11 +39,6 @@ worker:
 
 Discovery tasks may take longer to complete due to unnecessary SNMP requests or long wait times when scanning large subnets. Below are few ways to optimize performance:
 
-### Enable Active Device Check
-
-Set the `skip_active_check` flag to `false` so that SNMP requests are sent **only** to devices that are active in the given subnet.  
-This reduces the total number of SNMP requests and speeds up the discovery process.
-
 ### Adjust Timeout and Retries
   
 If the subnet has very few SNMP-enabled devices, high timeout and retry values can significantly slow down the process.  
@@ -71,6 +66,5 @@ After running a discovery task, no entries are written to the `discovery_devices
 
 **Resolution:**
 - Double-check the IP range or subnet provided in the discovery config.
-- Validate that the target devices have SNMP enabled and are reachable from the container.
-- Ensure firewall rules or network policies allow NMAP scan or enable `skip_active_check` to skip the NMAP scan. 
+- Validate that the target devices have SNMP enabled and are reachable from the container. 
 - Verify SNMP credentials (community string or SNMPv3 credentials) for correctness.

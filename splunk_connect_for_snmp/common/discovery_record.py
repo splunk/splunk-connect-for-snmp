@@ -37,9 +37,7 @@ class DiscoveryRecord(BaseModel):
     security_engine: DiscoveryStr = ""
     frequency: DiscoveryInt
     delete_already_discovered: DiscoveryBool
-    skip_active_check: DiscoveryBool
     device_rules: DiscoveryList
-    is_ipv6: DiscoveryBool
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -97,8 +95,8 @@ class DiscoveryRecord(BaseModel):
             return None
         return value
 
-    @validator("delete_already_discovered", "skip_active_check", pre=True)
-    def delete_already_discovered_skip_active_check_validator(cls, value):
+    @validator("delete_already_discovered", pre=True)
+    def delete_already_discovered_validator(cls, value):
         if value is None:
             return False
         return human_bool(value)

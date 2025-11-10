@@ -45,7 +45,6 @@ discovery:
   autodiscovery:
     discovery_version2c:
       frequency: 21600
-      skip_active_check: false
       delete_already_discovered: false
       network_address: 54.82.41.24/28
       version: "2c"

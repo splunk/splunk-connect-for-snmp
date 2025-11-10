@@ -71,7 +71,6 @@ def load():
             is_ipv6 = check_ipv6(value["network_address"])
             if not is_ipv6 or (is_ipv6 and ipv6_enabled):
                 logger.info(f"Adding the task for {key}")
-                discovery_record.is_ipv6 = is_ipv6
                 task_config = autodiscovery_task_definition(
                     discovery_record=discovery_record, app=app
                 )

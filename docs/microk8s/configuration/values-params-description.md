@@ -201,7 +201,6 @@ Detailed documentation about configuring discovery can be found in [Discovery](d
 | `logLevel`                                      | Log level for a discovery pod                                                                                                   | `INFO`           |
 | `discoveryPath`                                 | Absolute path where discovery_devices.csv will be stored                                                                        |                  |
 | `autodiscovery.x.frequency`                     | Time interval (in minutes) between each run of the discovery task                                                               | `86400`          |
-| `autodiscovery.x.skip_active_check`             | Skips namp check and assumes all IPs are alive                                                                                  | `false`          |
 | `autodiscovery.x.delete_already_discovered`     | Deletes old entries of a particular discovery key before writing new ones.                                                      | `false`          |
 | `autodiscovery.x.network_address`               | Subnet in CIDR notation to scan.                                                                                                |                  |
 | `autodiscovery.x.version`                       | SNMP version to use                                                                                                             | `2c`             |

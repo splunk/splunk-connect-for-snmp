@@ -8,7 +8,6 @@ discovery:
   autodiscovery:
     discovery_version2c:
       frequency: 21600
-      skip_active_check: false
       delete_already_discovered: false
       network_address: 4.91.99.113/28
       version: "2c"
@@ -23,7 +22,6 @@ discovery:
           group: "centos_group"
     discovery_version3:
       frequency: 21600
-      skip_active_check: false
       delete_already_discovered: false
       network_address: 4.91.99.113/28
       version: "3"

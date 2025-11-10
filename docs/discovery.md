@@ -17,16 +17,6 @@ The discovery process consists of two main steps:
 ### 1. Active Device Detection
 To begin, the system performs a network scan to identify active devices within the defined subnet. This step leverages the nmap tool to quickly detect hosts that are reachable.
 
-Optionally, users can skip this check for active devices using Nmap and directly probe every IP in the subnet by enabling the `skip_active_check` flag.
-
-
-!!! info
-    Nmap detects active hosts in a subnet using various probing methods. The following command is used for scanning hosts in a subnet:
-    
-    nmap -sn -T4 <target-subnet>
-
-    This command sends SYN packets (using a connect call) to ports 80 and 443 on the target to determine if the host is up.
-    [Reference: Nmap Host Discovery](https://nmap.org/book/man-host-discovery.html) 
 
 ### 2. SNMP Probing
 Once the list of active devices is identified:

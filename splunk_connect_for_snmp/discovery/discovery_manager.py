@@ -27,26 +27,11 @@ class Discovery(Task):
     def __init__(self):
         self.snmp_engine = SnmpEngine()
 
-    def discover_active_hosts(self, subnet, is_ipv6):
-        """Scan subnet for active host using nmap"""
-        nm = nmap.PortScanner()
+    def get_host_list(self, subnet):
+        """Get host list"""
         try:
-            nm.scan(hosts=subnet, arguments=("-6 " if is_ipv6 else "") + "-sn -T4")
-            return nm.all_hosts()
-        except Exception as e:
-            logger.error(f"Error occured running nmap scan: {e}")
-            raise
-
-    def get_host_list(self, subnet, skip_active_check, is_ipv6):
-        """Get host list based on the active check flag"""
-        try:
-            logger.debug(f"Skip active check : {skip_active_check}")
-            if skip_active_check:
-                network = ipaddress.ip_network(subnet, strict=False)
-                return list(str(ip) for ip in network.hosts())
-            else:
-                hosts = self.discover_active_hosts(subnet, is_ipv6)
-                return hosts
+            network = ipaddress.ip_network(subnet, strict=False)
+            return list(str(ip) for ip in network.hosts())
         except Exception as e:
             logger.error(f"Error occured while finding active hosts: {e}")
             raise
@@ -134,8 +119,6 @@ class Discovery(Task):
         try:
             host_list = self.get_host_list(
                 discovery_record.network_address,
-                discovery_record.skip_active_check,
-                discovery_record.is_ipv6,
             )
             logger.debug(f"Number of Active hosts: {len(host_list)}")
             snmp_devices_detail = self.discover_snmp_devices_details(
