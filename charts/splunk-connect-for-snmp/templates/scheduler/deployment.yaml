@@ -43,6 +43,8 @@ spec:
               "celery", "beat",
             ]          
           env:
+            - name: USER
+              value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
             - name: CONFIG_PATH
               value: /app/config/config.yaml
             {{- if .Values.redis.auth.enabled }}

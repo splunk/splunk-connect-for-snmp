@@ -511,6 +511,8 @@ serviceAccount:
 # This parameter allows to use SC4SNMP for older version of Kubernetes that doesn't support autoscaling/v2
 useDeprecatedAPI: false
 
+# A user name to set in the deployment environment.
+deploymentUser: "sc4snmp"
 #############################################################################
 ### Please do not modify below values, unless you know what you're doing! ###
 #############################################################################

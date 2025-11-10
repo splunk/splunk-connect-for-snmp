@@ -44,14 +44,18 @@ spec:
         env:
         - name: MONGO_URI
           value: mongodb://release-name-mongodb:27017
-        - name: REDIS_URL
-          value: redis://release-name-redis-master:6379/3
+        - name: REDIS_HOST
+          value: release-name-redis
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_DB
+          value: "1"
+        - name: CELERY_DB
+          value: "0"
         - name: JOB_CONFIG_PATH
           value: /config/job_config.yaml
         - name: JOB_NAMESPACE
           value: sc4snmp
-        - name: CELERY_BROKER_URL
-          value: redis://release-name-redis-master:6379/2
         - name: VALUES_DIRECTORY
           value: /var/values_dir
         - name: VALUES_FILE

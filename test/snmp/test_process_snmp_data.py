@@ -2,6 +2,9 @@ from tokenize import group
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
+from pysnmp.entity.engine import SnmpEngine
+from pysnmp.smi import view
+
 from splunk_connect_for_snmp.snmp.manager import Poller
 
 
@@ -22,6 +25,9 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
+        poller.snmpEngine = SnmpEngine()
+        poller.builder = poller.snmpEngine.get_mib_builder()
+        poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
         m_get_group_key.return_value = "QWERTYUIOP"
@@ -36,15 +42,15 @@ class TestProcessSnmpData(TestCase):
         varbind_mock2_1 = Mock()
         varbind_mock2_2 = Mock()
 
-        varbind_mock1_1.getMibSymbol.return_value = "IF-MIB", "some_metric", 1
+        varbind_mock1_1.get_mib_symbol.return_value = "IF-MIB", "some_metric", 1
         varbind_mock1_1.prettyPrint.return_value = "some text"
-        varbind_mock1_1.getOid.return_value = "1.2.3.4.5.6.7"
+        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
 
         varbind_mock1_2.prettyPrint.return_value = 65
 
-        varbind_mock2_1.getMibSymbol.return_value = "UDP-MIB", "next_metric", 1
+        varbind_mock2_1.get_mib_symbol.return_value = "UDP-MIB", "next_metric", 1
         varbind_mock2_1.prettyPrint.return_value = "some text2"
-        varbind_mock2_1.getOid.return_value = "9.8.7.6"
+        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
 
         varbind_mock2_2.prettyPrint.return_value = 123
 
@@ -97,6 +103,9 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
+        poller.snmpEngine = SnmpEngine()
+        poller.builder = poller.snmpEngine.get_mib_builder()
+        poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
         m_get_group_key.side_effect = ["GROUP1", "GROUP2"]
@@ -111,15 +120,15 @@ class TestProcessSnmpData(TestCase):
         varbind_mock2_1 = Mock()
         varbind_mock2_2 = Mock()
 
-        varbind_mock1_1.getMibSymbol.return_value = "IF-MIB", "some_metric", 1
+        varbind_mock1_1.get_mib_symbol.return_value = "IF-MIB", "some_metric", 1
         varbind_mock1_1.prettyPrint.return_value = "some text"
-        varbind_mock1_1.getOid.return_value = "1.2.3.4.5.6.7"
+        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
 
         varbind_mock1_2.prettyPrint.return_value = 65
 
-        varbind_mock2_1.getMibSymbol.return_value = "UDP-MIB", "next_metric", 1
+        varbind_mock2_1.get_mib_symbol.return_value = "UDP-MIB", "next_metric", 1
         varbind_mock2_1.prettyPrint.return_value = "some text2"
-        varbind_mock2_1.getOid.return_value = "9.8.7.6"
+        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
 
         varbind_mock2_2.prettyPrint.return_value = 123
 
@@ -192,15 +201,15 @@ class TestProcessSnmpData(TestCase):
         varbind_mock2_1 = Mock()
         varbind_mock2_2 = Mock()
 
-        varbind_mock1_1.getMibSymbol.return_value = "IF-MIB", "some_metric", 1
+        varbind_mock1_1.get_mib_symbol.return_value = "IF-MIB", "some_metric", 1
         varbind_mock1_1.prettyPrint.return_value = "some text"
-        varbind_mock1_1.getOid.return_value = "1.2.3.4.5.6.7"
+        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
 
         varbind_mock1_2.prettyPrint.return_value = 65
 
-        varbind_mock2_1.getMibSymbol.return_value = "UDP-MIB", "some_field", 1
+        varbind_mock2_1.get_mib_symbol.return_value = "UDP-MIB", "some_field", 1
         varbind_mock2_1.prettyPrint.return_value = "some text2"
-        varbind_mock2_1.getOid.return_value = "9.8.7.6"
+        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
 
         varbind_mock2_2.prettyPrint.return_value = "up and running"
 
@@ -254,6 +263,9 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
+        poller.snmpEngine = SnmpEngine()
+        poller.builder = poller.snmpEngine.get_mib_builder()
+        poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
         m_get_group_key.return_value = "QWERTYUIOP"
@@ -268,15 +280,15 @@ class TestProcessSnmpData(TestCase):
         varbind_mock2_1 = Mock()
         varbind_mock2_2 = Mock()
 
-        varbind_mock1_1.getMibSymbol.return_value = "IF-MIB", "some_metric", 1
+        varbind_mock1_1.get_mib_symbol.return_value = "IF-MIB", "some_metric", 1
         varbind_mock1_1.prettyPrint.return_value = "some text"
-        varbind_mock1_1.getOid.return_value = "1.2.3.4.5.6.7"
+        varbind_mock1_1.get_oid.return_value = "1.2.3.4.5.6.7"
 
         varbind_mock1_2.prettyPrint.return_value = 65
 
-        varbind_mock2_1.getMibSymbol.return_value = "UDP-MIB", "next_metric", 1
+        varbind_mock2_1.get_mib_symbol.return_value = "UDP-MIB", "next_metric", 1
         varbind_mock2_1.prettyPrint.return_value = "some text2"
-        varbind_mock2_1.getOid.return_value = "9.8.7.6"
+        varbind_mock2_1.get_oid.return_value = "9.8.7.6"
 
         varbind_mock2_2.prettyPrint.return_value = 123
 

@@ -13,6 +13,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose` |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                   |
+| `DEPLOYMENT_USER`                       | A user name to set in the deployment environment. The default value is sc4snmp.                                                   |
 
 
 ## Network configuration
@@ -67,7 +68,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 
 ### General
 | Variable                     | Description                                                                                                                                            |
-|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------| 
+|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `WALK_RETRY_MAX_INTERVAL`    | Maximum time interval between walk attempts                                                                                                            |
 | `WALK_MAX_RETRIES`           | Maximum number of walk retries                                                                                                                         |
 | `METRICS_INDEXING_ENABLED`   | Details can be found in [append oid index part to the metrics](../microk8s/configuration/poller-configuration.md#append-oid-index-part-to-the-metrics) |
