@@ -5,6 +5,7 @@ ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1
 RUN apk add -U git sqlite-dev
 RUN pip install --upgrade setuptools pip
+RUN apk add --no-cache nmap
 RUN mkdir /app
 WORKDIR /app
 

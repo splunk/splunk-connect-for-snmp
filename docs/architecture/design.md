@@ -25,6 +25,7 @@ Diagram above present high level architecture of Splunk Connector for SNMP, it c
 - **Trap** - responsible for listening and receiving trap notifications from SNMP agents. The listener is always 
   waiting for the messages coming on the specified port and passing them to the trap worker for further 
   processing.
+- **Discovery** - responsible for detecting SNMP-enabled devices within a given subnet. Celery is used to schedule and execute the discovery tasks, with Redis acting as the message broker.
 - **MIB Server** - responsible for serving MIBs to SNMP Workers and translating oids to varbinds.
 - **MongoDB** - used for storing configuration and state of the SC4SNMP.
 - **Inventory** - job used for updating the information about SC4SNMP configuration. It is run after every update to 

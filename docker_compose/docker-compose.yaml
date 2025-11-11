@@ -35,6 +35,7 @@ x-workers_general_setup: &workers_general_setup
   LOG_LEVEL: ${WORKER_LOG_LEVEL:-INFO}
   DISABLE_MONGO_DEBUG_LOGGING: ${WORKER_DISABLE_MONGO_DEBUG_LOGGING:-true}
   UDP_CONNECTION_TIMEOUT: ${UDP_CONNECTION_TIMEOUT:-3}
+  UDP_CONNECTION_RETRIES: ${UDP_CONNECTION_RETRIES:-5}
   MAX_OID_TO_PROCESS: ${MAX_OID_TO_PROCESS:-70}
   MAX_REPETITIONS: ${MAX_REPETITIONS:-10}
   PROFILES_RELOAD_DELAY: ${PROFILES_RELOAD_DELAY:-60}
@@ -257,6 +258,52 @@ services:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
     - worker-flower-pysnmp-cache-volume:/.pysnmp/:rw
     - worker-flower-tmp:/tmp/:rw
+  discovery:
+    <<: [ *dns_and_networks, *dependency_and_restart_policy ]
+    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    container_name: sc4snmp-discovery
+    command: [ discovery ]
+    environment:
+      <<: *general_sc4snmp_data
+      LOG_LEVEL: ${DISCOVERY_LOG_LEVEL:-INFO}
+      CHAIN_OF_TASKS_EXPIRY_TIME: ${CHAIN_OF_TASKS_EXPIRY_TIME:-500}
+      CELERY_TASK_TIMEOUT: ${CELERY_TASK_TIMEOUT:-2400}
+      DISCOVERY_CONFIG_PATH: /app/discovery/discovery-config.yaml
+    volumes:
+      - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
+      - ${DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH}:/app/discovery/discovery-config.yaml:ro
+      - discovery-pysnmp-cache-volume:/.pysnmp/:rw
+      - discovery-tmp:/tmp/:rw
+  worker-discovery:
+    <<: [ *dns_and_networks, *dependency_and_restart_policy ]
+    image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    command:
+      - celery
+      - worker-discovery
+    deploy:
+      mode: replicated
+      replicas: ${WORKER_DISCOVERY_REPLICAS:-1}
+      resources:
+        limits:
+          cpus: ${WORKER_DISCOVERY_CPU_LIMIT:-0.50}
+          memory: ${WORKER_DISCOVERY_MEMORY_LIMIT:-500M}
+        reservations:
+          cpus: ${WORKER_DISCOVERY_CPU_RESERVATIONS:-0.25}
+          memory: ${WORKER_DISCOVERY_MEMORY_RESERVATIONS:-250M}
+    environment:
+      <<: [ *general_sc4snmp_data, *pysnmp_debug, *ipv6 ]
+      SC4SNMP_VERSION: ${SC4SNMP_VERSION:-latest}
+      LOG_LEVEL: ${WORKER_LOG_LEVEL:-INFO}
+      UDP_CONNECTION_TIMEOUT: ${UDP_CONNECTION_TIMEOUT:-3}
+      UDP_CONNECTION_RETRIES: ${UDP_CONNECTION_RETRIES:-5}
+      WORKER_CONCURRENCY: ${WORKER_DISCOVERY_CONCURRENCY:-1}
+      PREFETCH_COUNT: ${PREFETCH_SENDER_COUNT:-1}
+      DISCOVERY_FOLDER_PATH: /app/discovery
+    volumes:
+      - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
+      - ${DISCOVERY_PATH}:/app/discovery/:rw
+      - worker-discovery-pysnmp-cache-volume:/.pysnmp/:rw
+      - worker-discovery-tmp:/tmp/:rw
 volumes:
   snmp-mibserver-tmp:
   inventory-tmp:
@@ -273,3 +320,8 @@ volumes:
   worker-trap-pysnmp-cache-volume:
   worker-flower-tmp:
   worker-flower-pysnmp-cache-volume:
+  discovery-pysnmp-cache-volume:
+  discovery-tmp:
+  worker-discovery-pysnmp-cache-volume:
+  worker-discovery-tmp:
+  worker-discovery-volume:

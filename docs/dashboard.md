@@ -73,6 +73,18 @@ otherwise we will see information with another status.
 
 ![Trap dashboards](images/dashboard/trap_dashboard.png)
 
+#### Discovery dashboards
+
+To check that discovery for your discovery key is working correctly, look at **SNMP schedule of discovery tasks** dashboard.
+With this chart you can understand when SC4SNMP scheduled discovery for your discovery key last time. The process works if it runs regularly.
+
+After double-checking that SC4SNMP scheduled discovery tasks for your discovery key we need to be sure that discovery is working.
+For that look at another dashboard **SNMP discovery status** and if everything is working you will see only **succeeded** status of discovery.
+If something is going wrong you will see another status (like on screenshot), then use [troubleshooting docs 
+for that](troubleshooting/discovery-issues.md).
+
+![Discovery dashboards](images/dashboard/discovery_dashboard.png)
+
 #### Other dashboards
 
 We also have tasks that will be a callback for walk and poll. For example **send** will publish result in Splunk. 

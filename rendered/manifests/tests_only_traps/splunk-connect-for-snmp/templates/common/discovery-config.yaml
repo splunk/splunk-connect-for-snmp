@@ -1,0 +1,12 @@
+---
+# Source: splunk-connect-for-snmp/templates/common/discovery-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: splunk-connect-for-snmp-discovery-config
+data:
+  discovery-config.yaml: |
+    enabled: false
+    ipv6Enabled: false
+    logLevel: INFO
+    usernameSecrets: []

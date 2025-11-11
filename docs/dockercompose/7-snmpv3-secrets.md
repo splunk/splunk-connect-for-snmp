@@ -14,18 +14,19 @@ pip3 install ruamel.yaml
 
 To create a new secret, `manage_secrets.py` must be run with the following flags:
 
-| Flag                | Description                                                                    |
-|---------------------|--------------------------------------------------------------------------------| 
-| `--secret_name`     | New secret name                                                                |
-| `--path_to_compose` | Absolute path to directory with docker compose files                           |
-| `--worker_poller`   | \[OPTIONAL\] Add new secrets to worker poller. Default value is set to 'true'. |
-| `--traps`           | \[OPTIONAL\] Add new secrets to traps server. Default value is set to 'true'.  |
-| `--userName`        | SNMPv3 userName                                                                |
-| `--privProtocol`    | SNMPv3 privProtocol                                                            |
-| `--privKey`         | SNMPv3 privKey                                                                 |
-| `--authProtocol`    | SNMPv3 authProtocol                                                            |
-| `--authKey`         | SNMPv3 authKey                                                                 |
-| `--contextEngineId` | \[OPTIONAL\] SNMPv3 engine id                                                  |  
+| Flag                | Description                                                                       |
+|---------------------|-----------------------------------------------------------------------------------| 
+| `--secret_name`     | New secret name                                                                   |
+| `--path_to_compose` | Absolute path to directory with docker compose files                              |
+| `--worker_poller`   | \[OPTIONAL\] Add new secrets to worker poller. Default value is set to 'true'.    |
+| `--worker_discovery`| \[OPTIONAL\] Add new secrets to worker discovery. Default value is set to 'true'. |
+| `--traps`           | \[OPTIONAL\] Add new secrets to traps server. Default value is set to 'true'.     |
+| `--userName`        | SNMPv3 userName                                                                   |
+| `--privProtocol`    | SNMPv3 privProtocol                                                               |
+| `--privKey`         | SNMPv3 privKey                                                                    |
+| `--authProtocol`    | SNMPv3 authProtocol                                                               |
+| `--authKey`         | SNMPv3 authKey                                                                    |
+| `--contextEngineId` | \[OPTIONAL\] SNMPv3 engine id                                                     |  
 
  
 This script, apart from updating configuration files, creates environmental variables with values of the secret at the 
