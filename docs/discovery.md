@@ -14,12 +14,11 @@ The SNMP Discovery feature in Splunk Connect for SNMP provides an automated way 
 ## How It Works
 The discovery process consists of two main steps:
 
-### 1. Active Device Detection
-To begin, the system performs a network scan to identify active devices within the defined subnet. This step leverages the nmap tool to quickly detect hosts that are reachable.
-
+### 1. List devices
+To begin, the system identifies all the devices within the defined subnet.
 
 ### 2. SNMP Probing
-Once the list of active devices is identified:
+Once the list of devices is identified:
 
 - The system sends SNMP requests to each device using the credentials specified in the configuration (e.g., community strings or SNMPv3 secrets).
 - If the device responds successfully to an SNMP poll, the IP is considered SNMP-enabled.
