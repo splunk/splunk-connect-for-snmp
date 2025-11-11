@@ -1,0 +1,28 @@
+---
+# Source: splunk-connect-for-snmp/templates/traps/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-splunk-connect-for-snmp-trap
+  labels:
+    app.kubernetes.io/name: splunk-connect-for-snmp-trap
+    app.kubernetes.io/instance: release-name
+    helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
+    app.kubernetes.io/version: "CURRENT-VERSION"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+    - port: 162
+      targetPort: 2162
+      protocol: UDP
+      name: snmp-udp
+  selector:
+    app.kubernetes.io/name: splunk-connect-for-snmp-trap
+    app.kubernetes.io/instance: release-name

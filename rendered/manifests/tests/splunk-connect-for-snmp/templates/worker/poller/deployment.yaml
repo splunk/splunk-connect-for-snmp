@@ -70,6 +70,8 @@ spec:
               value: "5"
             - name: MAX_OID_TO_PROCESS
               value: "70"
+            - name: MAX_REPETITIONS
+              value: "10"
             - name: PYSNMP_DEBUG
               value: ""
             - name: PROFILES_RELOAD_DELAY

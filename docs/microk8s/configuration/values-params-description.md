@@ -47,6 +47,12 @@ Detailed documentation about configuring UI can be found in [Enable GUI](../gui/
 
 Detailed documentation about configuring sim can be found in [Splunk Infrastructure Monitoring](sim-configuration.md).
 
+!!!warning 
+  The Splunk Observability Cloud integration (sim) uses the Splunk OpenTelemetry Collector as an additional component in our pipeline. In this setup, the collector transforms metrics received via Splunk HEC into the SignalFx format for ingestion into Splunk Observability Cloud.
+  Because this path is primarily a transformation layer rather than a native O11y instrumentation, the resulting metrics may not fully match Splunk Observability Cloud’s data model, naming conventions, or recommended dimensions.
+  We recommend validating output carefully in a controlled environment before enabling sim.enabled: true broadly, and adjusting SNMP profiles or transformation rules to ensure consistency.
+
+
 | Variable                                        | Description                                                                                                                     | Default |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|---------|
 | `enabled`                                       | Enables sending data to Splunk Observability Cloud/ SignalFx                                                                    | `false` |
@@ -102,6 +108,7 @@ Detailed documentation about configuring poller can be found in [Poller](poller-
 | `enableFullWalk`                     | Enables full walk of OIDs from device                                                                           | `false` |
 | `usernameSecrets`                    | List of kubernetes secrets name that will be used for polling                                                   |         |
 | `inventory`                          | List of configuration for polling                                                                               |         |
+| `maxRepetitions`                     | the amount of requested next oids in response for each of varbinds in one request sent                          | `10`    |
 | `logLevel`                           | Log level for a poller pod                                                                                      | `INFO`  |
 
 ## Worker

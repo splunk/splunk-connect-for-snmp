@@ -45,6 +45,7 @@ nav:
       - High-level design: "architecture/design.md"
       - Infrastructure Planning: "architecture/planning.md"
   - Getting Started with Docker Compose:
+      - Splunk Requirements: "dockercompose/0-splunk-requirements.md"
       - Install Docker: "dockercompose/1-install-docker.md"
       - Download package: "dockercompose/2-download-package.md"
       - Inventory configuration: "dockercompose/3-inventory-configuration.md"
@@ -94,7 +95,6 @@ nav:
           - Apply changes: "microk8s/gui/apply-changes.md"
       - Upgrade SC4SNMP: "microk8s/upgrade.md"
   - High Availability: "ha.md"
-  - Improved polling performance: "improved-polling.md"
   - Lightweight installation: "small-environment.md"
   - Splunk dashboards: "dashboard.md"
   - Discovery: "discovery.md"

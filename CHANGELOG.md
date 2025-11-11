@@ -3,13 +3,33 @@
 ## Unreleased
 
 ### Changed
+- **Redis Migration**: Replaced Bitnami Redis chart with custom Kubernetes manifests
+  - Updated to official Redis image version 8.2.2 (addresses security vulnerabilities)
+  - Added authentication support (password or Kubernetes Secret)
+  - Implemented automatic data migration from Bitnami deployments (PVC reuse)
+  - Enabled AOF persistence by default for data durability
+- add CounterBasedGauge64 and ZeroBasedCounter64 as metrics types
+- add SNMP-enabled device discovery feature
+
+### Fixes
+- fix problem with service rendering when `traps.service.usemetallb` is set to false
+
+## [1.14.1]
+- update mongodb volumePermission image repository to `bitnamileagcy`
+
+## [1.14.0]
+- change bulkWalk `nonRepeater` to 0 and allow user to set `MAX_REPETITIONS` to achieve better polling performance
+- update bitnami image repository to `bitnamileagcy`
+
+## [1.13.0]
+
+### Changed
 - implemented mTLS for Splunk 10
 - update default microk8s to 1.33
 - introduce `splunkMetricNameHyphenToUnderscore` parameter to make metric names follow Splunk schema
 - change default walk to get only SNMPv2-MIB
 - add `disableMongoDebugLogging` parameter to disable extensive pymnogo logs while `logLevel` is set to `DEBUG`
 - add `includeSecurityContextId` parameter to control whether to add the `context_engine_id` field to v3 trap events
-- added SNMP-enabled device discovery feature
 
 ### Fixed
 - fix text SNMP values with numbers and 'E' being interpreted as scientific notation

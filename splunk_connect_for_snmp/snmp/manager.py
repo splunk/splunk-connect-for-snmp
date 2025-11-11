@@ -64,6 +64,7 @@ PROFILES_RELOAD_DELAY = int(os.getenv("PROFILES_RELOAD_DELAY", "60"))
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 3))
 MAX_OID_TO_PROCESS = int(os.getenv("MAX_OID_TO_PROCESS", 70))
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
+MAX_REPETITIONS = int(os.getenv("MAX_REPETITIONS", 10))
 
 DEFAULT_STANDARD_MIBS = [
     "HOST-RESOURCES-MIB",
@@ -183,7 +184,9 @@ def get_group_key(mib, oid, index) -> str:
     return mib + "::" + ";".join(parts)
 
 
-MTYPES_CC = tuple(["Counter32", "Counter64", "TimeTicks"])
+MTYPES_CC = tuple(
+    ["Counter32", "Counter64", "TimeTicks", "CounterBasedGauge64", "ZeroBasedCounter64"]
+)
 MTYPES_G = tuple(
     ["Gauge32", "Gauge64", "Integer", "Integer32", "Unsigned32", "Unsigned64"]
 )
@@ -430,8 +433,8 @@ class Poller(Task):
             auth_data,
             transport,
             context_data,
-            1,
-            10,
+            0,
+            MAX_REPETITIONS,
             *varbinds_bulk,
             lexicographicMode=False,
             ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
