@@ -23,7 +23,6 @@ spec:
         env:
         - name: MONGO_URI
           value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
-        {{- if .Values.redis.auth.enabled }}
         {{ include "splunk-connect-for-snmp.redis-env" . | nindent 8 }}
         - name: JOB_CONFIG_PATH
           value: /config/job_config.yaml
