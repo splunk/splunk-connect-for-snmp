@@ -92,7 +92,7 @@ spec:
           # Start Redis
           # Sentinel will handle promotion - all start as replicas initially
           HOSTNAME=$(hostname)
-          MASTER_NAME="{{ .Release.Name }}-redis-0"
+          MASTER_NAME="{{ .Release.Name }}-redis-ha-0"
           MASTER_HOST="$MASTER_NAME.{{ .Release.Name }}-redis-headless"
 
           if [ "$HOSTNAME" = "$MASTER_NAME" ]; then
