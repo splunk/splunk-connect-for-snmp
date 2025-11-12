@@ -48,18 +48,6 @@ spec:
           env:
             {{- include "environmental-variables" . | nindent 12 }}
             {{- include "environmental-variables-trap" . | nindent 12 }}
-            {{- if .Values.redis.auth.enabled }}
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  {{- if .Values.redis.auth.existingSecret }}
-                  name: {{ .Values.redis.auth.existingSecret }}
-                  key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
-                  {{- else }}
-                  name: {{ .Release.Name }}-redis-secret
-                  key: password
-                  {{- end }}
-            {{- end }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"
