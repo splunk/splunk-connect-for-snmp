@@ -602,7 +602,6 @@ redis:
   # Options for Redis replication
   replicas: 3
   sentinel:
-    enabled: false
     replicas: 3
     quorum: 2
     resources:
