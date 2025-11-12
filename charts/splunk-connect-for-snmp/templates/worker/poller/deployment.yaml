@@ -47,7 +47,6 @@ spec:
           env:
             {{- include "environmental-variables" . | nindent 12 }}
             {{- include "environmental-variables-poller" . | nindent 12 }}
-            {{- if .Values.redis.auth.enabled }}
             {{ include "splunk-connect-for-snmp.redis-env" . | nindent 12 }}
           {{- if .Values.worker.livenessProbe.enabled }}
           livenessProbe:
