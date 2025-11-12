@@ -12,7 +12,7 @@ data:
     dir /data
     sentinel resolve-hostnames yes
     sentinel announce-hostnames yes
-    sentinel monitor mymaster {{ .Release.Name }}-redis-0.{{ .Release.Name }}-redis-headless 6379 {{ .Values.redis.sentinel.quorum }}
+    sentinel monitor mymaster {{ .Release.Name }}-redis-ha-0.{{ .Release.Name }}-redis-headless 6379 {{ .Values.redis.sentinel.quorum }}
     {{- if .Values.redis.auth.enabled }}
     sentinel auth-pass mymaster ${REDIS_PASSWORD}
     {{- end }}
