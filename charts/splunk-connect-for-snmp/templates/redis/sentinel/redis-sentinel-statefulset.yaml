@@ -17,6 +17,9 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-redis-sentinel
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/redis/redis-ha-config.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/redis/redis-ha-config.yaml") . | sha256sum }}
     spec:
       containers:
       - name: sentinel
