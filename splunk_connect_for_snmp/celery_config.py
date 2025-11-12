@@ -57,7 +57,8 @@ if REDIS_MODE == "replication":
         "sep": ":",
         "db": 1,
         "queue_order_strategy": "priority",
-        "sentinels": sentinels
+        "sentinels": sentinels,
+        "password": os.getenv("REDIS_PASSWORD", None)
     }
 else:
     broker_transport_options = {
