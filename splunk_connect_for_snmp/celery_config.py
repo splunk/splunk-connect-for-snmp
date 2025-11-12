@@ -39,8 +39,6 @@ NAMESPACE = os.getenv("NAMESPACE", "sc4snmp")
 
 # Construct URLs based on mode
 if REDIS_MODE == "replication":
-
-    sentinels = [(f'{REDIS_SENTINEL_SERVICE}-{sentinel_n}.{REDIS_SENTINEL_SERVICE}.{NAMESPACE}', 26379) for sentinel_n in range(REDIS_SENTINEL_REPLICAS)]
     # Celery broker options for Sentinel
     broker_transport_options = {
         "service_name": "mymaster",
@@ -57,7 +55,7 @@ if REDIS_MODE == "replication":
         "sep": ":",
         "db": 1,
         "queue_order_strategy": "priority",
-        "sentinels": sentinels,
+        "sentinels": [(REDIS_SENTINEL_SERVICE, 26379)],
         "password": os.getenv("REDIS_PASSWORD", None)
     }
 else:
