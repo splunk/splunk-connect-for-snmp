@@ -9,11 +9,11 @@ spec:
   ttlSecondsAfterFinished: 300
   template:
     metadata:
-      {{- with .Values.inventory.podAnnotations }}
-      annotations:      
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-
+      annotations:
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 -}}
+        {{- with .Values.inventory.podAnnotations }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
       labels:
         {{- include "splunk-connect-for-snmp.inventory.selectorLabels" . | nindent 8 }}
     spec:

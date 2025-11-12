@@ -14,10 +14,11 @@ spec:
       {{- include "splunk-connect-for-snmp.worker.poller.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.worker.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 -}}
+        {{- with .Values.worker.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "splunk-connect-for-snmp.worker.poller.selectorLabels" . | nindent 8 }}
     spec:
@@ -47,7 +48,6 @@ spec:
           env:
             {{- include "environmental-variables" . | nindent 12 }}
             {{- include "environmental-variables-poller" . | nindent 12 }}
-            {{ include "splunk-connect-for-snmp.redis-env" . | nindent 12 }}
           {{- if .Values.worker.livenessProbe.enabled }}
           livenessProbe:
             exec:

@@ -138,3 +138,17 @@ Generate Redis environment variables for application pods
       {{- end }}
 {{- end -}}
 {{- end }}
+
+{{- /*
+Generate Redis environment variables for application pods
+*/ -}}
+{{- define "splunk-connect-for-snmp.redis-annotations" -}}
+{{- if eq .Values.redis.architecture "replication" }}
+checksum/redis-config: {{ include (print $.Template.BasePath "/redis/redis-ha-config.yaml") . | sha256sum }}
+{{- else -}}
+checksum/redis-config: {{ include (print $.Template.BasePath "/redis/redis-config.yaml") . | sha256sum }}
+{{- end }}
+{{- if eq ( .Values.redis.auth.enabled | quote ) "true" }}
+checksum/redis-secret: {{ include (print $.Template.BasePath "/redis/redis-secret.yaml") . | sha256sum }}
+{{- end }}
+{{- end }}

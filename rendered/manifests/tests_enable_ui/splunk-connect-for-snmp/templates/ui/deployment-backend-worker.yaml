@@ -15,6 +15,8 @@ spec:
     metadata:
       labels:
         app: ui-backend-worker
+      annotations:
+        checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
     spec:
       containers:
       - name: ui-backend-worker
@@ -24,6 +26,9 @@ spec:
         env:
         - name: MONGO_URI
           value: mongodb://release-name-mongodb:27017
+        
+        - name: REDIS_MODE
+          value: "standalone"
         - name: REDIS_HOST
           value: release-name-redis
         - name: REDIS_PORT

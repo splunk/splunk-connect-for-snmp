@@ -19,7 +19,7 @@ spec:
       labels:
         app: {{ .Release.Name }}-redis
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/redis/redis-config.yaml") . | sha256sum }}
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 }}
     spec:
       {{- with .Values.redis.podSecurityContext }}
       securityContext:
@@ -92,6 +92,7 @@ spec:
           mountPath: /etc/redis
         resources:
           {{- toYaml .Values.redis.resources | nindent 10 }}
+        {{- if .Values.redis.livenessProbe.enabled | default true }}
         livenessProbe:
           exec:
             command:
@@ -105,6 +106,8 @@ spec:
               {{- end }}
           initialDelaySeconds: 30
           periodSeconds: 10
+        {{- end }}
+        {{- if .Values.redis.readinessProbe.enabled | default true }}
         readinessProbe:
           exec:
             command:
@@ -118,6 +121,7 @@ spec:
               {{- end }}
           initialDelaySeconds: 5
           periodSeconds: 5
+        {{- end }}
       {{- if and .Values.redis.storage.enabled $existingPVC }}
       # Reuse existing Bitnami PVC
       volumes:

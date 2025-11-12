@@ -432,6 +432,7 @@ inventory:
 
   nodeSelector: {}
   tolerations: []
+  podAnnotations: {}
 
 traps:
   # this is a simple server that can handle SNMP traps sent by SNMP devices like routers or switches.
@@ -649,5 +650,10 @@ redis:
   podSecurityContext:
     runAsUser: 999
     fsGroup: 999
+
+  livenessProbe:
+    enabled: true
+  readinessProbe:
+      enabled: true
 
 commonAnnotations: {}

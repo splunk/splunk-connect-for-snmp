@@ -14,10 +14,11 @@ spec:
       {{- include "splunk-connect-for-snmp.traps.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.traps.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 -}}
+        {{- with .Values.traps.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "splunk-connect-for-snmp.traps.selectorLabels" . | nindent 8 }}
     spec:
@@ -49,7 +50,7 @@ spec:
               value: /app/config/config.yaml
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
-            {{ include "splunk-connect-for-snmp.redis-env" . | nindent 12 }}
+            {{- include "splunk-connect-for-snmp.redis-env" . | nindent 12 }}
             - name: MIB_SOURCES
               value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/asn1/@mib@"
             - name: MIB_INDEX

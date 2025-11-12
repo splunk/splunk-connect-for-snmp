@@ -14,6 +14,8 @@ spec:
     metadata:
       labels:
         app: ui-backend
+      annotations:
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 }}
     spec:
       securityContext:
         runAsUser: 10000

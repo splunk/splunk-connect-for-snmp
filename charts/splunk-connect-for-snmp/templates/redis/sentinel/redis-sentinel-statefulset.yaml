@@ -18,8 +18,7 @@ spec:
       labels:
         app: {{ .Release.Name }}-redis-sentinel
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/redis/redis-ha-config.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/redis/redis-ha-config.yaml") . | sha256sum }}
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 }}
     spec:
       containers:
       - name: sentinel
