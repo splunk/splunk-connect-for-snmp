@@ -4,7 +4,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-redis
+  name: {{ .Release.Name }}-redis-standalone
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ .Release.Name }}-redis
