@@ -37,6 +37,9 @@ poller:
   inventory: |
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
     54.82.41.24,,2c,public,,,1800,IF_profile,false,
+inventory:
+  podAnnotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
 redis:
   architecture: replication
   replicas: 3

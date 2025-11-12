@@ -12,7 +12,7 @@ spec:
       annotations:
         {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 -}}
         {{- with .Values.inventory.podAnnotations }}
-          {{- toYaml . | nindent 10 }}
+          {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
         {{- include "splunk-connect-for-snmp.inventory.selectorLabels" . | nindent 8 }}

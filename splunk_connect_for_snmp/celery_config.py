@@ -34,7 +34,6 @@ PREFETCH_COUNT = int(os.getenv("PREFETCH_COUNT", 1))
 REDIS_MODE = os.getenv("REDIS_MODE", "standalone")
 REDIS_MASTER_NAME = os.getenv("REDIS_MASTER_NAME", "snmp-redis")
 REDIS_SENTINEL_SERVICE = os.getenv("REDIS_SENTINEL_SERVICE", "snmp-redis-sentinel")
-REDIS_SENTINEL_REPLICAS = int(os.getenv("REDIS_SENTINEL_REPLICAS", "3"))
 NAMESPACE = os.getenv("NAMESPACE", "sc4snmp")
 
 # Construct URLs based on mode
