@@ -1,30 +1,15 @@
 #!/usr/bin/env sh
 set -e
 . /app/.venv/bin/activate
+. /app/construct-redis-url.sh
 LOG_LEVEL=${LOG_LEVEL:=INFO}
 WORKER_CONCURRENCY=${WORKER_CONCURRENCY:=4}
 
-# Only construct if URLs not already set
-if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
-  # Defaults
-  REDIS_HOST="${REDIS_HOST:-snmp-redis}"
-  REDIS_PORT="${REDIS_PORT:-6379}"
+# Use REDIS_CHECK_URL for dependency waiting in Sentinel mode
+REDIS_WAIT_URL="${REDIS_CHECK_URL}"
+CELERY_WAIT_URL="${CELERY_CHECK_URL}"
 
-  # Build base
-  if [ -n "$REDIS_PASSWORD" ]; then
-    BASE="redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}"
-  else
-    BASE="redis://${REDIS_HOST}:${REDIS_PORT}"
-  fi
-
-  # Set if not already set
-  : "${REDIS_URL:=$BASE/${REDIS_DB:-1}}"
-  : "${CELERY_BROKER_URL:=$BASE/${CELERY_DB:-0}}"
-
-  export REDIS_URL CELERY_BROKER_URL
-fi
-
-wait-for-dep "${CELERY_BROKER_URL}" "${REDIS_URL}" "${MONGO_URI}" "${MIB_INDEX}"
+wait-for-dep "${CELERY_WAIT_URL}" "${REDIS_WAIT_URL}" "${MONGO_URI}" "${MIB_INDEX}"
 
 case $1 in
 

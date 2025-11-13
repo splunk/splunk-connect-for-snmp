@@ -432,6 +432,7 @@ inventory:
 
   nodeSelector: {}
   tolerations: []
+  podAnnotations: {}
 
 traps:
   # this is a simple server that can handle SNMP traps sent by SNMP devices like routers or switches.
@@ -596,9 +597,21 @@ mongodb:
       repository: bitnamilegacy/os-shell
     enabled: true
 redis:
-  # Mode selector: "standalone"
-  # TODO: add "replication"
+  # Mode selector: "standalone", "replication"
   architecture: standalone
+
+  # Options for Redis replication
+  replicas: 3
+  sentinel:
+    replicas: 3
+    quorum: 2
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
 
   # Authentication
   auth:
@@ -637,5 +650,10 @@ redis:
   podSecurityContext:
     runAsUser: 999
     fsGroup: 999
+
+  livenessProbe:
+    enabled: true
+  readinessProbe:
+      enabled: true
 
 commonAnnotations: {}

@@ -33,26 +33,7 @@ spec:
           env:
           - name: CONFIG_PATH
             value: /app/config/config.yaml
-          - name: REDIS_HOST
-            value: {{ .Release.Name }}-redis
-          - name: REDIS_PORT
-            value: "6379"
-          - name: REDIS_DB
-            value: "1"
-          - name: CELERY_DB
-            value: "0"
-          {{- if .Values.redis.auth.enabled }}
-          - name: REDIS_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                {{- if .Values.redis.auth.existingSecret }}
-                name: {{ .Values.redis.auth.existingSecret }}
-                key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
-                {{- else }}
-                name: {{ .Release.Name }}-redis-secret
-                key: password
-                {{- end }}
-          {{- end }}
+          {{ include "splunk-connect-for-snmp.redis-env" . | nindent 10 }}
           - name: INVENTORY_PATH
             value: /app/inventory/inventory.csv
           - name: MONGO_URI

@@ -12,10 +12,11 @@ spec:
       {{- include "splunk-connect-for-snmp.scheduler.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.scheduler.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 -}}
+        {{- with .Values.scheduler.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "splunk-connect-for-snmp.scheduler.selectorLabels" . | nindent 8 }}
     spec:
@@ -45,26 +46,7 @@ spec:
           env:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
-            {{- if .Values.redis.auth.enabled }}
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  {{- if .Values.redis.auth.existingSecret }}
-                  name: {{ .Values.redis.auth.existingSecret }}
-                  key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
-                  {{- else }}
-                  name: {{ .Release.Name }}-redis-secret
-                  key: password
-                  {{- end }}
-            {{- end }}
-            - name: REDIS_HOST
-              value: {{ .Release.Name }}-redis
-            - name: REDIS_PORT
-              value: "6379"
-            - name: REDIS_DB
-              value: "1"
-            - name: CELERY_DB
-              value: "0"
+            {{- include "splunk-connect-for-snmp.redis-env" . | nindent 12 }}
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
             - name: MIB_SOURCES
