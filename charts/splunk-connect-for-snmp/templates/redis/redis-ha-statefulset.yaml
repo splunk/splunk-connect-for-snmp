@@ -1,6 +1,8 @@
 {{- if eq .Values.redis.architecture "replication" }}
-{{- $bitnamiPVC := printf "redis-data-%s-redis-master-0" .Release.Name }}
-{{- $existingPVC := lookup "v1" "PersistentVolumeClaim" .Release.Namespace $bitnamiPVC }}
+{{- $existingBitnamiPVC := printf "redis-data-%s-redis-master-0" .Release.Name }}
+{{- $standalonePVC := printf "redis-data-%s-redis-standalone-0" .Release.Name }}
+{{- $existingStandalonePVC := lookup "v1" "PersistentVolumeClaim" .Release.Namespace $standalonePVC }}
+{{- $existingPVC := $existingStandalonePVC | default $existingBitnamiPVC }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
