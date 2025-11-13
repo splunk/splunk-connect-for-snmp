@@ -1,8 +1,4 @@
 {{- if eq .Values.redis.architecture "replication" }}
-{{- $existingBitnamiPVC := printf "redis-data-%s-redis-master-0" .Release.Name }}
-{{- $standalonePVC := printf "redis-data-%s-redis-standalone-0" .Release.Name }}
-{{- $existingStandalonePVC := lookup "v1" "PersistentVolumeClaim" .Release.Namespace $standalonePVC }}
-{{- $existingPVC := $existingStandalonePVC | default $existingBitnamiPVC }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -92,18 +88,7 @@ spec:
           echo "replica-announce-port 6379" >> /tmp/redis.conf
 
           # Start Redis
-          # Sentinel will handle promotion - all start as replicas initially
-          HOSTNAME=$(hostname)
-          MASTER_NAME="{{ .Release.Name }}-redis-ha-0"
-          MASTER_HOST="$MASTER_NAME.{{ .Release.Name }}-redis-headless"
-
-          if [ "$HOSTNAME" = "$MASTER_NAME" ]; then
-            echo "Starting as master"
-          else
-            echo "replicaof $MASTER_HOST 6379" >> /tmp/redis.conf
-            echo "Starting as replica of $MASTER_HOST"
-          fi
-
+          # Sentinel will handle role assignment
           exec redis-server /tmp/redis.conf
         volumeMounts:
         {{- if .Values.redis.storage.enabled }}
@@ -126,8 +111,10 @@ spec:
               {{- else }}
               redis-cli ping
               {{- end }}
-          initialDelaySeconds: 30
-          periodSeconds: 10
+          initialDelaySeconds: {{ .Values.redis.livenessProbe.initialDelaySeconds | default 30 }}
+          periodSeconds: {{ .Values.redis.livenessProbe.periodSeconds | default 10 }}
+          timeoutSeconds: {{ .Values.redis.livenessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.redis.livenessProbe.failureThreshold | default 3 }}
         {{- end }}
         {{- if .Values.redis.readinessProbe.enabled | default true }}
         readinessProbe:
@@ -141,23 +128,20 @@ spec:
               {{- else }}
               redis-cli ping
               {{- end }}
-          initialDelaySeconds: 5
-          periodSeconds: 5
+          initialDelaySeconds: {{ .Values.redis.readinessProbe.initialDelaySeconds | default 5 }}
+          periodSeconds: {{ .Values.redis.readinessProbe.periodSeconds | default 5 }}
+          timeoutSeconds: {{ .Values.redis.readinessProbe.timeoutSeconds | default 3 }}
+          failureThreshold: {{ .Values.redis.readinessProbe.failureThreshold | default 3 }}
         {{- end }}
       volumes:
       - name: redis-config
         configMap:
           name: {{ .Release.Name }}-redis-config
-      {{- if and .Values.redis.storage.enabled $existingPVC }}
-      # Migration: reuse first pod's PVC from Bitnami
-      - name: redis-data
-        persistentVolumeClaim:
-          claimName: {{ $existingPVC }}
-      {{- else if not .Values.redis.storage.enabled }}
+      {{- if not .Values.redis.storage.enabled }}
       - name: redis-data
         emptyDir: {}
       {{- end }}
-  {{- if and .Values.redis.storage.enabled (not $existingPVC) }}
+  {{- if .Values.redis.storage.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: redis-data
