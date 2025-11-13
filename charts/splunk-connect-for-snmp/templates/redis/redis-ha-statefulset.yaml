@@ -152,7 +152,7 @@ spec:
       # Migration: reuse first pod's PVC from Bitnami
       - name: redis-data
         persistentVolumeClaim:
-          claimName: {{ $bitnamiPVC }}
+          claimName: {{ $existingPVC }}
       {{- else if not .Values.redis.storage.enabled }}
       - name: redis-data
         emptyDir: {}
