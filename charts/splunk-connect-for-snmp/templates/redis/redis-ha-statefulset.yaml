@@ -88,7 +88,18 @@ spec:
           echo "replica-announce-port 6379" >> /tmp/redis.conf
 
           # Start Redis
-          # Sentinel will handle role assignment
+          # Sentinel will handle promotion - all start as replicas initially
+          HOSTNAME=$(hostname)
+          MASTER_NAME="{{ .Release.Name }}-redis-ha-0"
+          MASTER_HOST="$MASTER_NAME.{{ .Release.Name }}-redis-headless"
+
+          if [ "$HOSTNAME" = "$MASTER_NAME" ]; then
+            echo "Starting as master"
+          else
+            echo "replicaof $MASTER_HOST 6379" >> /tmp/redis.conf
+            echo "Starting as replica of $MASTER_HOST"
+          fi
+
           exec redis-server /tmp/redis.conf
         volumeMounts:
         {{- if .Values.redis.storage.enabled }}
