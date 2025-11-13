@@ -1,6 +1,4 @@
 {{- if eq .Values.redis.architecture "standalone" }}
-{{- $bitnamiPVC := printf "redis-data-%s-redis-master-0" .Release.Name }}
-{{- $existingPVC := lookup "v1" "PersistentVolumeClaim" .Release.Namespace $bitnamiPVC }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -122,22 +120,7 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 5
         {{- end }}
-      {{- if and .Values.redis.storage.enabled $existingPVC }}
-      # Reuse existing Bitnami PVC
-      volumes:
-      - name: redis-data
-        persistentVolumeClaim:
-          claimName: {{ $bitnamiPVC }}
-      - name: redis-config
-        configMap:
-          name: {{ .Release.Name }}-redis-config
-      {{- else if .Values.redis.storage.enabled }}
-      # Storage enabled but no existing PVC - use volumeClaimTemplates below
-      volumes:
-      - name: redis-config
-        configMap:
-          name: {{ .Release.Name }}-redis-config
-      {{- else }}
+      {{- if .Values.redis.storage.enabled }}
       # Storage disabled - use emptyDir (ephemeral)
       volumes:
       - name: redis-data
@@ -145,8 +128,6 @@ spec:
       - name: redis-config
         configMap:
           name: {{ .Release.Name }}-redis-config
-      {{- end }}
-  {{- if and .Values.redis.storage.enabled (not $existingPVC) }}
   # No existing PVC found, create new one via volumeClaimTemplates
   volumeClaimTemplates:
   - metadata:
