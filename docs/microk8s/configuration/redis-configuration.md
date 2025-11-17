@@ -86,6 +86,65 @@ redis:
 | redis.podSecurityContext.fsGroup         | int    | `999`               | FS group owning mounted volumes.                                                        |
 
 
+### Architecture modes
+
+#### Standalone mode (default)
+
+**Architecture**:
+
+* Single Redis pod
+* Simple deployment
+* Minimal resource overhead
+
+Use cases:
+
+* Single-node environments
+* Non-critical workloads
+
+Characteristics:
+
+* Resources: 1 Redis pod
+* Complexity: Low
+* Recovery time: ~30-60 seconds (Kubernetes reschedules pod on node failure)
+
+##### Configuration
+
+```yaml
+redis:
+  architecture: standalone
+```
+
+#### Replication mode
+
+Architecture:
+
+* 3 Redis pods (1 master + 2 replicas)
+* 3 Redis Sentinel pods (monitoring and automatic failover)
+* Automatic master promotion on failure
+
+Use cases:
+
+* Production deployments
+* Multi-node Kubernetes clusters
+* Critical workloads requiring high availability
+
+Characteristics:
+
+* Recovery time: ~5-10 seconds (Sentinel automatic failover)
+* Resources: 6 pods total (3 Redis + 3 Sentinel)
+* Complexity: Medium
+
+##### Configuration
+
+```yaml
+redis:
+  architecture: replication
+  replicas: 3
+  sentinel:
+    replicas: 3
+    quorum: 2
+```
+
 ### Use authentication for Redis
 
 By default, Redis authentication is disabled. To enable it, choose one of the following methods:
@@ -138,3 +197,5 @@ The chart automatically detects and migrates data from existing Bitnami Redis de
 
 No manual intervention required — simply upgrade your deployment with the new chart.
 
+!!!note
+   Migration between Bitnami Redis and the new chart is 

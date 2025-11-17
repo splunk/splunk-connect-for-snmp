@@ -12,7 +12,9 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     echo "Redis mode: Sentinel HA"
 
     REDIS_SENTINEL_SERVICE="${REDIS_SENTINEL_SERVICE:-snmp-redis-sentinel}"
+    REDIS_HEADLESS_SERVICE="${REDIS_HEADLESS_SERVICE:-snmp-redis-headless}"
     REDIS_SENTINEL_PORT="${REDIS_SENTINEL_PORT:-26379}"
+    REDIS_PORT="${REDIS_PORT:-6379}"
     REDIS_MASTER_NAME="${REDIS_MASTER_NAME:-mymaster}"
     REDIS_DB="${REDIS_DB:-1}"
     CELERY_DB="${CELERY_DB:-0}"
@@ -32,7 +34,7 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     : "${REDIS_URL:=${REDBEAT_SCHEME}/${REDIS_DB}#master_name=${REDIS_MASTER_NAME}}"
 
     # For healthcheck / wait-for-dep
-    REDIS_CHECK_URL="redis://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
+    REDIS_CHECK_URL="redis://${REDIS_URL}:${REDIS_PORT}"
     CELERY_CHECK_URL="redis://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
 
   else
