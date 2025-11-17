@@ -46,16 +46,16 @@ if REDIS_MODE == "replication":
         "retry_on_timeout": True,
         "socket_timeout": 5,
         "retry_policy": {
-            'max_retries': 100,
-            'interval_start': 0,
-            'interval_step': 2,
-            'interval_max': 5,
+            "max_retries": 100,
+            "interval_start": 0,
+            "interval_step": 2,
+            "interval_max": 5,
         },
         "sep": ":",
         "db": 1,
         "queue_order_strategy": "priority",
         "sentinels": [(REDIS_SENTINEL_SERVICE, 26379)],
-        "password": os.getenv("REDIS_PASSWORD", None)
+        "password": os.getenv("REDIS_PASSWORD", None),
     }
 else:
     broker_transport_options = {
