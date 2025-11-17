@@ -579,7 +579,7 @@ class Poller(Task):
 
     def process_snmp_data(self, varbind_table, metrics, target, mapping={}):
         retry = False
-        remotemibs = []
+        remotemibs = set()
         for varbind in varbind_table:
             index, metric, mib, oid, varbind_id = self.init_snmp_data(varbind)
 
@@ -616,12 +616,12 @@ class Poller(Task):
                     retry = True
                     break
 
-        return retry, remotemibs, metrics
+        return retry, list(remotemibs), metrics
 
     def find_new_mibs(self, oid, remotemibs, target, varbind_id):
         found, mib = self.is_mib_known(varbind_id, oid, target)
-        if mib and mib not in remotemibs:
-            remotemibs.append(mib)
+        if found and mib:
+            remotemibs.add(mib)
         return found
 
     def handle_metrics(
