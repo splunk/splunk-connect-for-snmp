@@ -1,11 +1,11 @@
-from unittest import TestCase
-from unittest.mock import MagicMock, Mock, mock_open, patch
+from unittest import IsolatedAsyncioTestCase
+from unittest.mock import AsyncMock, Mock, mock_open, patch
 
 from pysnmp.entity.config import (
-    usmAesBlumenthalCfb192Protocol,
-    usmHMAC128SHA224AuthProtocol,
-    usmNoAuthProtocol,
-    usmNoPrivProtocol,
+    USM_AUTH_HMAC128_SHA224,
+    USM_AUTH_NONE,
+    USM_PRIV_CFB192_AES_BLUMENTHAL,
+    USM_PRIV_NONE,
 )
 from pysnmp.proto.rfc1902 import OctetString
 
@@ -41,7 +41,7 @@ ir = InventoryRecord(
 )
 
 
-class TestAuth(TestCase):
+class TestAuth(IsolatedAsyncioTestCase):
     @patch("builtins.open", new_callable=mock_open, read_data=mock_value)
     @patch("os.path.exists")
     def test_get_secret_value_exists(self, m_exists, m_open):
@@ -66,9 +66,9 @@ class TestAuth(TestCase):
         value = get_secret_value("/location", "key", default="default value")
         self.assertEqual("default value", value)
 
-    @patch("splunk_connect_for_snmp.snmp.auth.getCmd")
+    @patch("splunk_connect_for_snmp.snmp.auth.get_cmd", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.snmp.auth.fetch_security_engine_id")
-    def test_get_security_engine_id_not_present(self, m_fetch, m_get_cmd):
+    async def test_get_security_engine_id_not_present(self, m_fetch, m_get_cmd):
         ir2 = InventoryRecord(
             **{
                 "address": "192.168.0.1",
@@ -87,24 +87,20 @@ class TestAuth(TestCase):
         snmpEngine = Mock()
         logger = Mock()
 
-        m_get_cmd.return_value = iter(
-            [(None, 0, 0, "Oid1"), (None, 0, 0, "Oid2"), (None, 0, 0, "Oid3")]
-        )
+        m_get_cmd.return_value = (None, 0, 0, ["Oid1", "Oid2", "Oid3"])
         m_fetch.side_effect = Exception("boom")
 
         with self.assertRaises(Exception) as e:
-            get_security_engine_id(logger, ir2, snmpEngine)
+            await get_security_engine_id(logger, ir2, snmpEngine)
         self.assertEqual("boom", e.exception.args[0])
-
-        calls = snmpEngine.observer.registerObserver.call_args_list
+        calls = snmpEngine.observer.register_observer.call_args_list
 
         self.assertEqual("rfc3412.prepareDataElements:internal", calls[0].args[1])
-
         m_get_cmd.assert_called()
 
-    @patch("splunk_connect_for_snmp.snmp.auth.getCmd")
+    @patch("splunk_connect_for_snmp.snmp.auth.get_cmd", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.snmp.auth.fetch_security_engine_id")
-    def test_get_security_engine_id(self, m_fetch, m_get_cmd):
+    async def test_get_security_engine_id(self, m_fetch, m_get_cmd):
         ir2 = InventoryRecord(
             **{
                 "address": "192.168.0.1",
@@ -121,17 +117,16 @@ class TestAuth(TestCase):
         )
 
         snmpEngine = Mock()
+        snmpEngine.observer = Mock()
+        snmpEngine.observer.register_observer = Mock()
+
         logger = Mock()
         m_fetch.return_value = "My test value"
+        m_get_cmd.return_value = (None, 0, 0, ["Oid1", "Oid2", "Oid3"])
 
-        m_get_cmd.return_value = iter(
-            [(None, 0, 0, "Oid1"), (None, 0, 0, "Oid2"), (None, 0, 0, "Oid3")]
-        )
+        result = await get_security_engine_id(logger, ir2, snmpEngine)
 
-        result = get_security_engine_id(logger, ir2, snmpEngine)
-
-        calls = snmpEngine.observer.registerObserver.call_args_list
-
+        calls = snmpEngine.observer.register_observer.call_args_list
         self.assertEqual("rfc3412.prepareDataElements:internal", calls[0].args[1])
 
         m_get_cmd.assert_called()
@@ -153,7 +148,7 @@ class TestAuth(TestCase):
 
     @patch("os.path.exists")
     @patch("splunk_connect_for_snmp.snmp.auth.get_secret_value")
-    def test_get_auth_v3(self, m_get_secret_value, m_exists):
+    async def test_get_auth_v3(self, m_get_secret_value, m_exists):
         m_exists.return_value = True
         m_get_secret_value.side_effect = [
             "secret1",
@@ -167,14 +162,14 @@ class TestAuth(TestCase):
         logger = Mock()
         snmpEngine = Mock()
 
-        result = get_auth_v3(logger, ir, snmpEngine)
+        result = await get_auth_v3(logger, ir, snmpEngine)
         security_engine_result = OctetString(hexValue="80003a8c04")
         self.assertEqual("secret1", result.userName)
-        self.assertEqual("secret2", result.authKey)
-        self.assertEqual("secret3", result.privKey)
-        self.assertEqual("authPriv", result.securityLevel)
-        self.assertEqual(usmHMAC128SHA224AuthProtocol, result.authProtocol)
-        self.assertEqual(usmAesBlumenthalCfb192Protocol, result.privProtocol)
+        self.assertEqual("secret2", result.authentication_key)
+        self.assertEqual("secret3", result.privacy_key)
+        self.assertEqual("authPriv", result.security_level)
+        self.assertEqual(USM_AUTH_HMAC128_SHA224, result.authentication_protocol)
+        self.assertEqual(USM_PRIV_CFB192_AES_BLUMENTHAL, result.privacy_protocol)
         self.assertEqual(security_engine_result._value, result.securityEngineId._value)
         self.assertEqual("secret1", result.securityName)
         self.assertEqual(1, result.authKeyType)
@@ -183,7 +178,7 @@ class TestAuth(TestCase):
     @patch("os.path.exists")
     @patch("splunk_connect_for_snmp.snmp.auth.get_secret_value")
     @patch("splunk_connect_for_snmp.snmp.auth.get_security_engine_id")
-    def test_get_auth_v3_security_engine_not_str(
+    async def test_get_auth_v3_security_engine_not_str(
         self, m_get_security_engine_id, m_get_secret_value, m_exists
     ):
         m_exists.return_value = True
@@ -215,16 +210,16 @@ class TestAuth(TestCase):
             }
         )
 
-        result = get_auth_v3(logger, ir2, snmpEngine)
+        result = await get_auth_v3(logger, ir2, snmpEngine)
 
         m_get_security_engine_id.assert_called()
 
         self.assertEqual("secret1", result.userName)
-        self.assertEqual("secret2", result.authKey)
-        self.assertEqual("secret3", result.privKey)
-        self.assertEqual("authPriv", result.securityLevel)
-        self.assertEqual(usmHMAC128SHA224AuthProtocol, result.authProtocol)
-        self.assertEqual(usmAesBlumenthalCfb192Protocol, result.privProtocol)
+        self.assertEqual("secret2", result.authentication_key)
+        self.assertEqual("secret3", result.privacy_key)
+        self.assertEqual("authPriv", result.security_level)
+        self.assertEqual(USM_AUTH_HMAC128_SHA224, result.authentication_protocol)
+        self.assertEqual(USM_PRIV_CFB192_AES_BLUMENTHAL, result.privacy_protocol)
         self.assertEqual("ENGINE123", result.securityEngineId)
         self.assertEqual("secret1", result.securityName)
         self.assertEqual(1, result.authKeyType)
@@ -232,7 +227,7 @@ class TestAuth(TestCase):
 
     @patch("os.path.exists")
     @patch("splunk_connect_for_snmp.snmp.auth.get_secret_value")
-    def test_get_auth_v3_exception(self, m_get_secret_value, m_exists):
+    async def test_get_auth_v3_exception(self, m_get_secret_value, m_exists):
         m_exists.return_value = False
         m_get_secret_value.side_effect = [
             "secret1",
@@ -248,12 +243,12 @@ class TestAuth(TestCase):
         snmpEngine = Mock()
 
         with self.assertRaises(Exception) as e:
-            get_auth_v3(logger, ir, snmpEngine)
+            await get_auth_v3(logger, ir, snmpEngine)
         self.assertEqual("invalid username from secret secret_ir", e.exception.args[0])
 
     @patch("os.path.exists")
     @patch("splunk_connect_for_snmp.snmp.auth.get_secret_value")
-    def test_get_auth_v3_noauthnopriv(self, m_get_secret_value, m_exists):
+    async def test_get_auth_v3_noauthnopriv(self, m_get_secret_value, m_exists):
         m_exists.return_value = True
         m_get_secret_value.side_effect = [
             "secret1",
@@ -267,14 +262,14 @@ class TestAuth(TestCase):
         logger = Mock()
         snmpEngine = Mock()
 
-        result = get_auth_v3(logger, ir, snmpEngine)
+        result = await get_auth_v3(logger, ir, snmpEngine)
         security_engine_result = OctetString(hexValue="80003a8c04")
         self.assertEqual("secret1", result.userName)
-        self.assertIsNone(result.authKey)
-        self.assertIsNone(result.privKey)
-        self.assertEqual("noAuthNoPriv", result.securityLevel)
-        self.assertEqual(usmNoAuthProtocol, result.authProtocol)
-        self.assertEqual(usmNoPrivProtocol, result.privProtocol)
+        self.assertIsNone(result.authentication_key)
+        self.assertIsNone(result.privacy_key)
+        self.assertEqual("noAuthNoPriv", result.security_level)
+        self.assertEqual(USM_AUTH_NONE, result.authentication_protocol)
+        self.assertEqual(USM_PRIV_NONE, result.privacy_protocol)
         self.assertEqual(security_engine_result._value, result.securityEngineId._value)
         self.assertEqual("secret1", result.securityName)
         self.assertEqual(1, result.authKeyType)
@@ -282,7 +277,7 @@ class TestAuth(TestCase):
 
     @patch("os.path.exists")
     @patch("splunk_connect_for_snmp.snmp.auth.get_secret_value")
-    def test_get_auth_v3_authnopriv(self, m_get_secret_value, m_exists):
+    async def test_get_auth_v3_authnopriv(self, m_get_secret_value, m_exists):
         m_exists.return_value = True
         m_get_secret_value.side_effect = [
             "secret1",
@@ -296,14 +291,14 @@ class TestAuth(TestCase):
         logger = Mock()
         snmpEngine = Mock()
 
-        result = get_auth_v3(logger, ir, snmpEngine)
+        result = await get_auth_v3(logger, ir, snmpEngine)
         security_engine_result = OctetString(hexValue="80003a8c04")
         self.assertEqual("secret1", result.userName)
-        self.assertEqual("secret2", result.authKey)
-        self.assertIsNone(result.privKey)
-        self.assertEqual("authNoPriv", result.securityLevel)
-        self.assertEqual(usmHMAC128SHA224AuthProtocol, result.authProtocol)
-        self.assertEqual(usmNoPrivProtocol, result.privProtocol)
+        self.assertEqual("secret2", result.authentication_key)
+        self.assertIsNone(result.privacy_key)
+        self.assertEqual("authNoPriv", result.security_level)
+        self.assertEqual(USM_AUTH_HMAC128_SHA224, result.authentication_protocol)
+        self.assertEqual(USM_PRIV_NONE, result.privacy_protocol)
         self.assertEqual(security_engine_result._value, result.securityEngineId._value)
         self.assertEqual("secret1", result.securityName)
         self.assertEqual(1, result.authKeyType)
@@ -312,53 +307,62 @@ class TestAuth(TestCase):
     def test_get_auth_v2c(self):
         result = get_auth_v2c(ir)
         self.assertEqual("public", result.communityName)
-        self.assertEqual(1, result.mpModel)
+        self.assertEqual(1, result.message_processing_model)
 
     def test_get_auth_v1(self):
         result = get_auth_v1(ir)
         self.assertEqual("public", result.communityName)
-        self.assertEqual(0, result.mpModel)
+        self.assertEqual(0, result.message_processing_model)
 
     @patch("splunk_connect_for_snmp.snmp.auth.get_auth_v1")
-    def test_get_auth_1(self, m_get_auth):
+    async def test_get_auth_1(self, m_get_auth):
         ir.version = "1"
-        get_auth(Mock(), ir, Mock())
+        await get_auth(Mock(), ir, Mock())
         m_get_auth.assert_called()
 
     @patch("splunk_connect_for_snmp.snmp.auth.get_auth_v2c")
-    def test_get_auth_2c(self, m_get_auth):
+    async def test_get_auth_2c(self, m_get_auth):
         ir.version = "2c"
-        get_auth(Mock(), ir, Mock())
+        await get_auth(Mock(), ir, Mock())
         m_get_auth.assert_called()
 
     @patch("splunk_connect_for_snmp.snmp.auth.get_auth_v3")
-    def test_get_auth_3(self, m_get_auth):
+    async def test_get_auth_3(self, m_get_auth):
         ir.version = "3"
-        get_auth(Mock(), ir, Mock())
+        await get_auth(Mock(), ir, Mock())
         m_get_auth.assert_called()
 
-    @patch("splunk_connect_for_snmp.snmp.auth.Udp6TransportTarget")
-    @patch("splunk_connect_for_snmp.snmp.auth.UdpTransportTarget")
-    def test_setup_transport_target_ipv4(
-        self, m_setup_udp_transport_target, m_setup_udp6_transport_target
-    ):
+    @patch(
+        "splunk_connect_for_snmp.snmp.auth.UdpTransportTarget.create",
+        new_callable=AsyncMock,
+    )
+    @patch(
+        "splunk_connect_for_snmp.snmp.auth.Udp6TransportTarget.create",
+        new_callable=AsyncMock,
+    )
+    async def test_setup_transport_target_ipv4(self, m_udp6_create, m_udp_create):
         ir.address = "127.0.0.1"
         ir.port = 161
-        m_setup_udp_transport_target.return_value = "UDP4"
-        m_setup_udp6_transport_target.return_value = "UDP6"
-        transport = setup_transport_target(ir)
+
+        m_udp_create.return_value = "UDP4"
+        m_udp6_create.return_value = "UDP6"
+
+        transport = await setup_transport_target(ir)
         self.assertEqual("UDP4", transport)
 
-    @patch("splunk_connect_for_snmp.snmp.auth.IPv6_ENABLED")
-    @patch("splunk_connect_for_snmp.snmp.auth.Udp6TransportTarget")
-    @patch("splunk_connect_for_snmp.snmp.auth.UdpTransportTarget")
-    def test_setup_transport_target_ipv6(
-        self, m_setup_udp_transport_target, m_setup_udp6_transport_target, ipv6_enabled
-    ):
-        ipv6_enabled.return_value = True
+    @patch("splunk_connect_for_snmp.snmp.auth.IPv6_ENABLED", True)
+    @patch(
+        "splunk_connect_for_snmp.snmp.auth.UdpTransportTarget.create",
+        new_callable=AsyncMock,
+    )
+    @patch(
+        "splunk_connect_for_snmp.snmp.auth.Udp6TransportTarget.create",
+        new_callable=AsyncMock,
+    )
+    async def test_setup_transport_target_ipv6(self, m_udp6_create, m_udp_create):
         ir.address = "2001:0db8:ac10:fe01::0001"
         ir.port = 161
-        m_setup_udp_transport_target.return_value = "UDP4"
-        m_setup_udp6_transport_target.return_value = "UDP6"
-        transport = setup_transport_target(ir)
+        m_udp_create.return_value = "UDP4"
+        m_udp6_create.return_value = "UDP6"
+        transport = await setup_transport_target(ir)
         self.assertEqual("UDP6", transport)

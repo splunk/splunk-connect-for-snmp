@@ -31,5 +31,9 @@ spec:
           memory: 128Mi
         requests:
           cpu: 100m
-          memory: 128Mi            
+          memory: 128Mi
+      env:
+        - name: USER
+          value: "sc4snmp"          
+        
   restartPolicy: Never
