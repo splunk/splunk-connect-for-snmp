@@ -5,11 +5,7 @@ set -e
 LOG_LEVEL=${LOG_LEVEL:=INFO}
 WORKER_CONCURRENCY=${WORKER_CONCURRENCY:=4}
 
-# Use REDIS_CHECK_URL for dependency waiting in Sentinel mode
-REDIS_WAIT_URL="${REDIS_CHECK_URL}"
-CELERY_WAIT_URL="${CELERY_CHECK_URL}"
-
-wait-for-dep "${CELERY_WAIT_URL}" "${REDIS_WAIT_URL}" "${MONGO_URI}" "${MIB_INDEX}"
+wait-for-dep ${REDIS_DEPENDENCIES} "${MONGO_URI}" "${MIB_INDEX}"
 
 case $1 in
 

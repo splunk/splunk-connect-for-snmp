@@ -22,11 +22,13 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     if [ -n "$REDIS_PASSWORD" ]; then
       SENTINEL_SCHEME="sentinel://:${REDIS_PASSWORD}@${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
       REDBEAT_SCHEME="redis-sentinel://:${REDIS_PASSWORD}@${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
-      CHECK_BASE="redis://:${REDIS_PASSWORD}@${REDIS_HEADLESS_SERVICE}:${REDIS_PORT}"
+      REDIS_HA_CHECK="redis://:${REDIS_PASSWORD}@${REDIS_HEADLESS_SERVICE}:${REDIS_PORT}"
+      SENTINEL_CHECK="redis://:${REDIS_PASSWORD}@${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
     else
       SENTINEL_SCHEME="sentinel://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
       REDBEAT_SCHEME="redis-sentinel://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
-      CHECK_BASE="redis://${REDIS_HEADLESS_SERVICE}:${REDIS_PORT}"
+      REDIS_HA_CHECK="redis://${REDIS_HEADLESS_SERVICE}:${REDIS_PORT}"
+      SENTINEL_CHECK="redis://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
     fi
 
     # Celery broker uses sentinel://
@@ -35,9 +37,8 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     # RedBeat uses redis-sentinel:// with master_name query
     : "${REDIS_URL:=${REDBEAT_SCHEME}/${REDIS_DB}#master_name=${REDIS_MASTER_NAME}}"
 
-    # For healthcheck / wait-for-dep
-    REDIS_CHECK_URL="${CHECK_BASE}"
-    CELERY_CHECK_URL="redis://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
+    # For healthcheck / wait-for-dep - space-separated list
+    REDIS_DEPENDENCIES="${SENTINEL_CHECK} ${REDIS_HA_CHECK}"
 
   else
     # Standalone mode
@@ -54,13 +55,12 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     : "${REDIS_URL:=$BASE/${REDIS_DB:-1}}"
     : "${CELERY_BROKER_URL:=$BASE/${CELERY_DB:-0}}"
 
-    REDIS_CHECK_URL="${REDIS_URL}"
-    CELERY_CHECK_URL="${CELERY_BROKER_URL}"
+    # For healthcheck / wait-for-dep - space-separated list
+    REDIS_DEPENDENCIES="${REDIS_URL} ${CELERY_BROKER_URL}"
   fi
 
   export REDIS_URL
   export CELERY_BROKER_URL
-  export REDIS_CHECK_URL
-  export CELERY_CHECK_URL
+  export REDIS_DEPENDENCIES
   export REDIS_MODE
 fi
