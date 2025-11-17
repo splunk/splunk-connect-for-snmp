@@ -29,7 +29,7 @@ spec:
         - name: JOB_CONFIG_PATH
           value: /config/job_config.yaml
         - name: JOB_NAMESPACE
-          value: sc4snmp
+          value: {{ .Release.Namespace | quote }}
         - name: VALUES_DIRECTORY
           {{- if .Values.UI.valuesFileDirectory }}
           value: {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }}
