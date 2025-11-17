@@ -36,7 +36,7 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     : "${REDIS_URL:=${REDBEAT_SCHEME}/${REDIS_DB}#master_name=${REDIS_MASTER_NAME}}"
 
     # For healthcheck / wait-for-dep
-    REDIS_CHECK_URL="redis://${REDIS_HEADLESS_SERVICE}:${REDIS_PORT}"
+    REDIS_CHECK_URL="${CHECK_BASE}"
     CELERY_CHECK_URL="redis://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
 
   else
