@@ -58,8 +58,6 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     CELERY_CHECK_URL="${CELERY_BROKER_URL}"
   fi
 
-  echo "  REDIS_CHECK_URL=${REDIS_CHECK_URL}"
-  echo "  CELERY_CHECK_URL=${CELERY_CHECK_URL}"
   export REDIS_URL
   export CELERY_BROKER_URL
   export REDIS_CHECK_URL
