@@ -150,7 +150,7 @@ checksum/redis-config: {{ include (print $.Template.BasePath "/redis/redis-ha-co
 {{- else -}}
 checksum/redis-config: {{ include (print $.Template.BasePath "/redis/redis-config.yaml") . | sha256sum }}
 {{- end }}
-{{- if eq ( .Values.redis.auth.enabled | quote ) "true" }}
+{{- if .Values.redis.auth.enabled }}
 checksum/redis-secret: {{ include (print $.Template.BasePath "/redis/redis-secret.yaml") . | sha256sum }}
 {{- end }}
 {{- end }}
