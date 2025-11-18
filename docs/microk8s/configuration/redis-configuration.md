@@ -132,7 +132,6 @@ Characteristics:
 
 * Recovery time: ~5-10 seconds (Sentinel automatic failover)
 * Resources: 6 pods total (3 Redis + 3 Sentinel)
-* Complexity: Medium
 
 ##### Configuration
 
@@ -144,6 +143,45 @@ redis:
     replicas: 3
     quorum: 2
 ```
+
+##### Storage considerations
+
+For true high availability with pod rescheduling across nodes, you must use network-attached storage. Node-local storage (like `microk8s-hostpath`) prevents failed pods from rejoining the cluster on different nodes.
+This is the example of using redis in replication mode with NFS storage:
+
+```yaml
+redis:
+  architecture: replication
+  replicas: 3
+  storage:
+    enabled: true
+    storageClassName: nfs
+    accessModes:
+      - ReadWriteMany
+    size: 3Gi
+```
+
+!!!note
+    The `storageClassName` must point to a `StorageClass` that supports network-attached volumes with `ReadWriteMany` (or `ReadWriteOnce` with cross-node support). Examples: NFS, Ceph, EBS, GCP Persistent Disk, Azure Disk.
+
+For MicrokK8s on Ubuntu, you can enable NFS this way:
+
+1. Enable NFS client on ALL nodes:
+    ```bash
+    sudo apt update
+    sudo apt install -y nfs-common
+    ```
+
+2. Enable NFS StorageClass:
+    ```bash
+    microk8s enable nfs
+    ```
+3. Verify StorageClass exists
+    ```bash
+   microk8s kubectl get storageclass nfs
+    ```
+
+The solution might differ depending on the platform and Kubernetes distribution.
 
 ### Use authentication for Redis
 
@@ -196,4 +234,4 @@ The chart automatically detects and migrates data from existing Bitnami Redis de
 No manual intervention required — simply upgrade your deployment with the new chart.
 
 !!!note
-   Migration between Bitnami Redis and the new chart is 
+   Migration between Bitnami Redis and the new chart is possible only to `standalone` architecture mode. For using `replication` please [reinstall SC4SNMP](../sc4snmp-installation.md#reinstall-splunk-connect-for-snmp).
