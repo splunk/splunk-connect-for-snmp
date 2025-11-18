@@ -26,7 +26,7 @@ spec:
         env:
         - name: MONGO_URI
           value: mongodb://release-name-mongodb:27017
-        
+
         - name: REDIS_MODE
           value: "standalone"
         - name: REDIS_HOST

@@ -94,8 +94,7 @@ Common labels
 - name: SC4SNMP_VERSION
   value: {{ .Chart.Version | default "0.0.0" }}
 {{ include "splunk-connect-for-snmp.redis-env" . }}
-- name: MONGO_URI
-  value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
+{{ include "splunk-connect-for-snmp.mongodb-env" . }}
 - name: WALK_RETRY_MAX_INTERVAL
   value: {{ .Values.worker.walkRetryMaxInterval | default "180" | quote }}
 - name: WALK_MAX_RETRIES
