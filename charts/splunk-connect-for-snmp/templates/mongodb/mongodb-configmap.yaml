@@ -1,0 +1,18 @@
+{{- if and .Values.auth.enabled (eq .Values.mode "standalone") }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-mongodb-init
+  labels:
+    app: {{ .Release.Name }}-mongodb
+data:
+  init-user.js: |
+    db = db.getSiblingDB('{{ .Values.auth.database }}');
+    db.createUser({
+      user: '{{ .Values.auth.username }}',
+      pwd: process.env.MONGODB_USER_PASSWORD || '{{ .Values.auth.password }}',
+      roles: [
+        { role: 'readWrite', db: '{{ .Values.auth.database }}' }
+      ]
+    });
+{{- end }}

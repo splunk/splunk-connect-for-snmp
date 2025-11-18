@@ -514,87 +514,46 @@ useDeprecatedAPI: false
 #############################################################################
 ### Please do not modify below values, unless you know what you're doing! ###
 #############################################################################
+# Default values for mongodb-ha
+
+## MongoDB image configuration
+# MongoDB image
 mongodb:
-  architecture: "standalone"
-  updateStrategy:
-    type: Recreate
-  initdbScripts:
-    setFeatureCompatibilityVersion.js: |
-      db.adminCommand({ setFeatureCompatibilityVersion: "6.0" });
+  # MongoDB image
   image:
-    repository: bitnamilegacy/mongodb
+    repository: mongo
+    tag: "7.0"
 
-  ## @section Global parameters
-  ## Global Docker image parameters
-  ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
-  ## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
+  # Mode: standalone or replicaset
+  mode: standalone  # or "replicaset"
 
-  ## @section Common parameters
-  ##
+  # Replica set (only used when mode=replicaset)
+  replicaSet:
+    replicas: 3
+    name: rs0
 
-  ## @param clusterDomain Default Kubernetes cluster domain
-  ##
-  clusterDomain: cluster.local
-
-  ##
+  # Authentication
   auth:
-    ## @param auth.enabled Enable authentication
-    ## ref: https://docs.mongodb.com/manual/tutorial/enable-authentication/
-    ##
-    enabled: false
-
-  ## MongoDB&reg; containers' resource requests and limits.
-  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## We usually recommend not to specify default resources and to leave this as a conscious
-  ## choice for the user. This also increases chances charts run on environments with little
-  ## resources, such as Minikube. If you do want to specify resources, uncomment the following
-  ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  ## @param resources.limits The resources limits for MongoDB&reg; containers
-  ## @param resources.requests The requested resources for MongoDB&reg; containers
-  ##
-  rbac:
-    create: true
-  resources: {}
-    # limits:
-    #   cpu: 1000m
-    #   memory: 768Mi
-    # requests:
-    #   cpu: 250m
-    #   memory: 512Mi
-
-  ## @section Volume Permissions parameters
-
-  ## @section Metrics parameters
-
-  metrics:
-    ## @param metrics.enabled Enable using a sidecar Prometheus exporter
-    ##
     enabled: true
-    containerPort: 9216
-    ## Prometheus Exporter service configuration
-    ##
-    image:
-      repository: bitnamilegacy/mongodb-exporter
-    service:
-      ## @param metrics.service.annotations [object] Annotations for Prometheus Exporter pods. Evaluated as a template.
-      ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
-      ##
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9216"
-  pdb:
-    create: true
+    rootPassword: ""
+    username: "appuser"
+    password: ""
+    database: "appdb"
+    existingSecret: ""
 
-  ## In MicroK8s there is an addon providing PersistentVolumes.
-  ## "microk8s-hostpath" is the default storageClassName ref: https://microk8s.io/docs/addon-hostpath-storage.
-  ## If something else than MicroK8s is used, then persistence.storageClass needs to be adjusted accordingly:
-  ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#class-1
-  persistence:
-    storageClass: "microk8s-hostpath"
-  volumePermissions:
-    image:
-      repository: bitnamilegacy/os-shell
-    enabled: true
+  # Storage
+  storage:
+    size: 10Gi
+    storageClass: ""
+
+  # Resources
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
 redis:
   # Mode selector: "standalone"
   # TODO: add "replication"

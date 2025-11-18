@@ -1,0 +1,134 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-mongodb
+  labels:
+    app: {{ .Release.Name }}-mongodb
+spec:
+  serviceName: {{ .Release.Name }}-mongodb
+  replicas: {{ if eq .Values.mode "replicaset" }}{{ .Values.replicaSet.replicas }}{{ else }}1{{ end }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-mongodb
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-mongodb
+    spec:
+      {{- if eq .Values.mode "replicaset" }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: {{ .Release.Name }}-mongodb
+              topologyKey: kubernetes.io/hostname
+      {{- end }}
+      containers:
+      - name: mongodb
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        command:
+        - mongod
+        {{- if eq .Values.mode "replicaset" }}
+        - --replSet
+        - {{ .Values.replicaSet.name }}
+        {{- end }}
+        - --bind_ip_all
+        {{- if .Values.auth.enabled }}
+        - --auth
+        {{- if eq .Values.mode "replicaset" }}
+        - --keyFile
+        - /etc/keyfile/replica-key
+        {{- end }}
+        {{- end }}
+        ports:
+        - containerPort: 27017
+          name: mongodb
+        env:
+        {{- if .Values.auth.enabled }}
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: root
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
+              key: root-password
+        - name: MONGO_INITDB_DATABASE
+          value: {{ .Values.auth.database }}
+        {{- end }}
+        volumeMounts:
+        - name: data
+          mountPath: /data/db
+        {{- if and .Values.auth.enabled (eq .Values.mode "replicaset") }}
+        - name: keyfile
+          mountPath: /etc/keyfile
+          readOnly: true
+        {{- end }}
+        {{- if and .Values.auth.enabled (eq .Values.mode "standalone") }}
+        - name: init-script
+          mountPath: /docker-entrypoint-initdb.d
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        livenessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      {{- if and .Values.auth.enabled (eq .Values.mode "replicaset") }}
+      initContainers:
+      - name: keyfile-setup
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          cp /tmp/keyfile/replica-key /keyfile/replica-key
+          chmod 400 /keyfile/replica-key
+          chown 999:999 /keyfile/replica-key
+        volumeMounts:
+        - name: keyfile-tmp
+          mountPath: /tmp/keyfile
+        - name: keyfile
+          mountPath: /keyfile
+      {{- end }}
+      volumes:
+      {{- if and .Values.auth.enabled (eq .Values.mode "replicaset") }}
+      - name: keyfile-tmp
+        secret:
+          secretName: {{ .Values.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
+          items:
+          - key: replica-key
+            path: replica-key
+      - name: keyfile
+        emptyDir: {}
+      {{- end }}
+      {{- if and .Values.auth.enabled (eq .Values.mode "standalone") }}
+      - name: init-script
+        configMap:
+          name: {{ .Release.Name }}-mongodb-init
+      {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      {{- if .Values.storage.storageClass }}
+      storageClassName: {{ .Values.storage.storageClass }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.storage.size }}

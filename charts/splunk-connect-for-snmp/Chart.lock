@@ -1,9 +1,6 @@
 dependencies:
-- name: mongodb
-  repository: https://charts.bitnami.com/bitnami
-  version: 15.6.26
 - name: mibserver
   repository: https://pysnmp.github.io/mibs/charts/
-  version: 1.15.25
-digest: sha256:747fcedec83bf0d80600166a021b35436d8d2ea877b60e9a43044ed2140cf1c5
-generated: "2025-10-13T12:15:04.255986+02:00"
+  version: 1.15.29
+digest: sha256:30add0440089c1ba64f803f322a36e8731cb7b39aa47631596472327247e7501
+generated: "2025-11-18T14:42:20.357132+01:00"
