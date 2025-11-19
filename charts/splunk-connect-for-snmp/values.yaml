@@ -519,7 +519,6 @@ useDeprecatedAPI: false
 ## MongoDB image configuration
 # MongoDB image
 mongodb:
-  # MongoDB image
   image:
     repository: mongo
     tag: "7.0"
@@ -534,16 +533,14 @@ mongodb:
 
   # Authentication
   auth:
-    enabled: true
-    rootPassword: ""
-    username: "appuser"
-    password: ""
-    database: "appdb"
-    existingSecret: ""
+    enabled: false
+    password: ""                      # Set if auth.enabled: true
+    existingSecret: ""                # Or reference existing secret
+    existingSecretPasswordKey: "password"
 
   # Storage
   storage:
-    size: 10Gi
+    size: 5Gi
     storageClass: ""
 
   # Resources

@@ -46,17 +46,15 @@ spec:
         ports:
         - containerPort: 27017
           name: mongodb
-        env:
         {{- if .Values.auth.enabled }}
+        env:
         - name: MONGO_INITDB_ROOT_USERNAME
           value: root
         - name: MONGO_INITDB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ .Values.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
-              key: root-password
-        - name: MONGO_INITDB_DATABASE
-          value: {{ .Values.auth.database }}
+              key: {{ .Values.auth.existingSecretPasswordKey | default "password" }}
         {{- end }}
         volumeMounts:
         - name: data
@@ -65,10 +63,6 @@ spec:
         - name: keyfile
           mountPath: /etc/keyfile
           readOnly: true
-        {{- end }}
-        {{- if and .Values.auth.enabled (eq .Values.mode "standalone") }}
-        - name: init-script
-          mountPath: /docker-entrypoint-initdb.d
         {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
@@ -80,6 +74,8 @@ spec:
             - "db.adminCommand('ping')"
           initialDelaySeconds: 30
           periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
         readinessProbe:
           exec:
             command:
@@ -88,6 +84,8 @@ spec:
             - "db.adminCommand('ping')"
           initialDelaySeconds: 5
           periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
       {{- if and .Values.auth.enabled (eq .Values.mode "replicaset") }}
       initContainers:
       - name: keyfile-setup
@@ -115,11 +113,6 @@ spec:
             path: replica-key
       - name: keyfile
         emptyDir: {}
-      {{- end }}
-      {{- if and .Values.auth.enabled (eq .Values.mode "standalone") }}
-      - name: init-script
-        configMap:
-          name: {{ .Release.Name }}-mongodb-init
       {{- end }}
   volumeClaimTemplates:
   - metadata:
