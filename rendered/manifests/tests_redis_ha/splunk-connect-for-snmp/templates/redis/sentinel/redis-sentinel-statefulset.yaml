@@ -41,11 +41,29 @@ spec:
           echo "Starting Redis Sentinel..."
           exec redis-sentinel /data/sentinel.conf
         env:
-        - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: release-name-redis-secret
-              key: password
+          - name: REDIS_MODE
+            value: "replication"
+          - name: REDIS_SENTINEL_SERVICE
+            value: release-name-redis-sentinel
+          - name: REDIS_HEADLESS_SERVICE
+            value: release-name-redis-headless
+          - name: NAMESPACE
+            value: default
+          - name: REDIS_SENTINEL_REPLICAS
+            value: "3"
+          - name: REDIS_SENTINEL_PORT
+            value: "26379"
+          - name: REDIS_MASTER_NAME
+            value: mymaster
+          - name: REDIS_DB
+            value: "1"
+          - name: CELERY_DB
+            value: "0"
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: release-name-redis-secret
+                key: password
         volumeMounts:
         - name: sentinel-config
           mountPath: /etc/redis
