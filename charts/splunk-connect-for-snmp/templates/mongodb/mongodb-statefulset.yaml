@@ -15,6 +15,20 @@ spec:
       labels:
         app: {{ .Release.Name }}-mongodb
     spec:
+      {{- if .Values.mongodb.podSecurityContext.enabled }}
+      securityContext:
+        fsGroup: {{ .Values.mongodb.podSecurityContext.fsGroup }}
+        {{- if .Values.mongodb.podSecurityContext.fsGroupChangePolicy }}
+        fsGroupChangePolicy: {{ .Values.mongodb.podSecurityContext.fsGroupChangePolicy }}
+        {{- end }}
+        {{- if .Values.mongodb.podSecurityContext.runAsUser }}
+        runAsUser: {{ .Values.mongodb.podSecurityContext.runAsUser }}
+        {{- end }}
+        {{- if .Values.mongodb.podSecurityContext.runAsNonRoot }}
+        runAsNonRoot: {{ .Values.mongodb.podSecurityContext.runAsNonRoot }}
+        {{- end }}
+      {{- end }}
+
       {{- if eq .Values.mongodb.mode "replicaset" }}
       affinity:
         podAntiAffinity:
@@ -26,9 +40,76 @@ spec:
                   app: {{ .Release.Name }}-mongodb
               topologyKey: kubernetes.io/hostname
       {{- end }}
+
+      initContainers:
+      {{- if .Values.mongodb.initPermissions.enabled }}
+      - name: init-permissions
+        image: {{ .Values.mongodb.initPermissions.image.repository }}:{{ .Values.mongodb.initPermissions.image.tag }}
+        command:
+        - sh
+        - -c
+        - |
+          echo "Checking /data/db permissions..."
+          ls -la /data/db || true
+
+          # Create directory if it doesn't exist
+          mkdir -p /data/db/journal
+
+          # Fix ownership
+          chown -R {{ .Values.mongodb.initPermissions.uid }}:{{ .Values.mongodb.initPermissions.gid }} /data/db
+          chmod -R 755 /data/db
+
+          echo "Permissions fixed:"
+          ls -la /data/db
+        volumeMounts:
+        - name: data
+          mountPath: /data/db
+        securityContext:
+          runAsUser: 0
+        {{- with .Values.mongodb.initPermissions.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- end }}
+
+      {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
+      - name: keyfile-setup
+        image: {{ .Values.mongodb.initPermissions.image.repository }}:{{ .Values.mongodb.initPermissions.image.tag }}
+        command:
+        - sh
+        - -c
+        - |
+          cp /tmp/keyfile/replica-key /keyfile/replica-key
+          chmod 400 /keyfile/replica-key
+          chown {{ .Values.mongodb.containerSecurityContext.runAsUser }}:{{ .Values.mongodb.containerSecurityContext.runAsGroup }} /keyfile/replica-key
+        volumeMounts:
+        - name: keyfile-tmp
+          mountPath: /tmp/keyfile
+        - name: keyfile
+          mountPath: /keyfile
+        securityContext:
+          runAsUser: 0
+      {{- end }}
+
       containers:
       - name: mongodb
         image: {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
+
+        {{- if .Values.mongodb.containerSecurityContext.enabled }}
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.mongodb.containerSecurityContext.allowPrivilegeEscalation }}
+          runAsUser: {{ .Values.mongodb.containerSecurityContext.runAsUser }}
+          runAsGroup: {{ .Values.mongodb.containerSecurityContext.runAsGroup }}
+          runAsNonRoot: {{ .Values.mongodb.containerSecurityContext.runAsNonRoot }}
+          {{- if .Values.mongodb.containerSecurityContext.capabilities }}
+          capabilities:
+            {{- toYaml .Values.mongodb.containerSecurityContext.capabilities | nindent 12 }}
+          {{- end }}
+          {{- if .Values.mongodb.containerSecurityContext.readOnlyRootFilesystem }}
+          readOnlyRootFilesystem: {{ .Values.mongodb.containerSecurityContext.readOnlyRootFilesystem }}
+          {{- end }}
+        {{- end }}
+
         command:
         - mongod
         {{- if eq .Values.mongodb.mode "replicaset" }}
@@ -43,9 +124,11 @@ spec:
         - /etc/keyfile/replica-key
         {{- end }}
         {{- end }}
+
         ports:
         - containerPort: 27017
           name: mongodb
+
         {{- if .Values.mongodb.auth.enabled }}
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
@@ -56,6 +139,7 @@ spec:
               name: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
               key: {{ .Values.mongodb.auth.existingSecretPasswordKey | default "password" }}
         {{- end }}
+
         volumeMounts:
         - name: data
           mountPath: /data/db
@@ -64,45 +148,36 @@ spec:
           mountPath: /etc/keyfile
           readOnly: true
         {{- end }}
+
         resources:
           {{- toYaml .Values.mongodb.resources | nindent 10 }}
+
+        {{- if .Values.mongodb.livenessProbe.enabled }}
         livenessProbe:
           exec:
             command:
             - mongosh
             - --eval
             - "db.adminCommand('ping')"
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
+          initialDelaySeconds: {{ .Values.mongodb.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.mongodb.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.mongodb.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.mongodb.livenessProbe.failureThreshold }}
+        {{- end }}
+
+        {{- if .Values.mongodb.readinessProbe.enabled }}
         readinessProbe:
           exec:
             command:
             - mongosh
             - --eval
             - "db.adminCommand('ping')"
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-      {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
-      initContainers:
-      - name: keyfile-setup
-        image: busybox
-        command:
-        - sh
-        - -c
-        - |
-          cp /tmp/keyfile/replica-key /keyfile/replica-key
-          chmod 400 /keyfile/replica-key
-          chown 999:999 /keyfile/replica-key
-        volumeMounts:
-        - name: keyfile-tmp
-          mountPath: /tmp/keyfile
-        - name: keyfile
-          mountPath: /keyfile
-      {{- end }}
+          initialDelaySeconds: {{ .Values.mongodb.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.mongodb.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.mongodb.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.mongodb.readinessProbe.failureThreshold }}
+        {{- end }}
+
       volumes:
       {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
       - name: keyfile-tmp
@@ -114,6 +189,7 @@ spec:
       - name: keyfile
         emptyDir: {}
       {{- end }}
+
   volumeClaimTemplates:
   - metadata:
       name: data

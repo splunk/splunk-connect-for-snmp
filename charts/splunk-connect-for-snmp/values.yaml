@@ -519,28 +519,29 @@ useDeprecatedAPI: false
 ## MongoDB image configuration
 # MongoDB image
 mongodb:
+  # MongoDB image
   image:
     repository: mongo
     tag: "7.0"
 
   # Mode: standalone or replicaset
-  mode: standalone  # or "replicaset"
+  mode: standalone
 
-  # Replica set (only used when mode=replicaset)
+  # Replica set configuration
   replicaSet:
     replicas: 3
     name: rs0
 
   # Authentication
   auth:
-    enabled: false
-    password: ""                      # Set if auth.enabled: true
-    existingSecret: ""                # Or reference existing secret
+    enabled: true
+    password: ""
+    existingSecret: ""
     existingSecretPasswordKey: "password"
 
   # Storage
   storage:
-    size: 5Gi
+    size: 10Gi
     storageClass: ""
 
   # Resources
@@ -551,6 +552,58 @@ mongodb:
     limits:
       memory: "1Gi"
       cpu: "500m"
+
+  # Pod-level security context
+  podSecurityContext:
+    enabled: true
+    fsGroup: 999
+    fsGroupChangePolicy: "OnRootMismatch"  # "Always" or "OnRootMismatch"
+    runAsUser: null                         # Optional: set if needed
+    runAsNonRoot: false                     # Set to true if runAsUser is set
+
+  # Container-level security context
+  containerSecurityContext:
+    enabled: true
+    allowPrivilegeEscalation: false
+    runAsUser: 999
+    runAsGroup: 999
+    runAsNonRoot: true
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop:
+      - ALL
+
+  # Init container to fix permissions
+  initPermissions:
+    enabled: true
+    image:
+      repository: busybox
+      tag: "1.36"
+    uid: 999
+    gid: 999
+    resources: {}
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 50m
+      #   memory: 64Mi
+
+  # Liveness probe
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  # Readiness probe
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
 redis:
   # Mode selector: "standalone"
   # TODO: add "replication"
