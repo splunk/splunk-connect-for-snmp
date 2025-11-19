@@ -100,7 +100,7 @@ Whether enable polling
 Generate Redis environment variables for application pods
 */ -}}
 {{- define "splunk-connect-for-snmp.redis-env" -}}
-{{- if eq .Values.redis.architecture "replication" }}
+{{- if eq .Values.redis.architecture "replication" -}}
 - name: REDIS_MODE
   value: "replication"
 - name: REDIS_SENTINEL_SERVICE
@@ -139,18 +139,18 @@ Generate Redis environment variables for application pods
       key: password
       {{- end }}
 {{- end -}}
-{{- end }}
+{{- end -}}
 
 {{- /*
 Generate Redis environment variables for application pods
 */ -}}
 {{- define "splunk-connect-for-snmp.redis-annotations" -}}
-{{- if eq .Values.redis.architecture "replication" }}
+{{- if eq .Values.redis.architecture "replication" -}}
 checksum/redis-config: {{ include (print $.Template.BasePath "/redis/redis-ha-config.yaml") . | sha256sum }}
 {{- else -}}
 checksum/redis-config: {{ include (print $.Template.BasePath "/redis/redis-config.yaml") . | sha256sum }}
-{{- end }}
+{{- end -}}
 {{- if .Values.redis.auth.enabled }}
 checksum/redis-secret: {{ include (print $.Template.BasePath "/redis/redis-secret.yaml") . | sha256sum }}
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}

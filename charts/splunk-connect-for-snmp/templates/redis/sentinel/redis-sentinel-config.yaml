@@ -12,11 +12,11 @@ data:
     dir /data
     sentinel resolve-hostnames yes
     sentinel announce-hostnames yes
-    sentinel monitor mymaster {{ .Release.Name }}-redis-ha-0.{{ .Release.Name }}-redis-headless 6379 {{ .Values.redis.sentinel.quorum }}
+    sentinel monitor ${REDIS_MASTER_NAME} {{ .Release.Name }}-redis-ha-0.{{ .Release.Name }}-redis-headless 6379 {{ .Values.redis.sentinel.quorum }}
     {{- if .Values.redis.auth.enabled }}
-    sentinel auth-pass mymaster ${REDIS_PASSWORD}
+    sentinel auth-pass ${REDIS_MASTER_NAME} ${REDIS_PASSWORD}
     {{- end }}
-    sentinel down-after-milliseconds mymaster 5000
-    sentinel parallel-syncs mymaster 1
-    sentinel failover-timeout mymaster 10000
+    sentinel down-after-milliseconds ${REDIS_MASTER_NAME} 5000
+    sentinel parallel-syncs ${REDIS_MASTER_NAME} 1
+    sentinel failover-timeout ${REDIS_MASTER_NAME} 10000
 {{- end }}

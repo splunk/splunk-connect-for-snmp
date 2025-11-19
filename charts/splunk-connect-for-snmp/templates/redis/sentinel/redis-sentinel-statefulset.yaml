@@ -33,6 +33,7 @@ spec:
         args:
         - |
           cp /etc/redis/sentinel.conf /data/sentinel.conf
+          sed -i "s/\${REDIS_MASTER_NAME}/$REDIS_MASTER_NAME/g" /data/sentinel.conf
           {{- if .Values.redis.auth.enabled }}
           sed -i "s/\${REDIS_PASSWORD}/$REDIS_PASSWORD/g" /data/sentinel.conf
           {{- end }}
@@ -72,7 +73,7 @@ spec:
             command:
             - sh
             - -c
-            - redis-cli -p 26379 sentinel get-master-addr-by-name mymaster | grep snmp-redis-ha-0
+            - redis-cli -p 26379 sentinel get-master-addr-by-name ${REDIS_MASTER_NAME}
           initialDelaySeconds: 10
           periodSeconds: 5
       volumes:
