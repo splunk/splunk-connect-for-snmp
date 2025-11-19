@@ -6,7 +6,7 @@ metadata:
     app: {{ .Release.Name }}-mongodb
 spec:
   serviceName: {{ .Release.Name }}-mongodb
-  replicas: {{ if eq .Values.mode "replicaset" }}{{ .Values.replicaSet.replicas }}{{ else }}1{{ end }}
+  replicas: {{ if eq .Values.mongodb.mode "replicaset" }}{{ .Values.mongodb.replicaSet.replicas }}{{ else }}1{{ end }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}-mongodb
@@ -15,7 +15,7 @@ spec:
       labels:
         app: {{ .Release.Name }}-mongodb
     spec:
-      {{- if eq .Values.mode "replicaset" }}
+      {{- if eq .Values.mongodb.mode "replicaset" }}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -28,17 +28,17 @@ spec:
       {{- end }}
       containers:
       - name: mongodb
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
         command:
         - mongod
-        {{- if eq .Values.mode "replicaset" }}
+        {{- if eq .Values.mongodb.mode "replicaset" }}
         - --replSet
-        - {{ .Values.replicaSet.name }}
+        - {{ .Values.mongodb.replicaSet.name }}
         {{- end }}
         - --bind_ip_all
-        {{- if .Values.auth.enabled }}
+        {{- if .Values.mongodb.auth.enabled }}
         - --auth
-        {{- if eq .Values.mode "replicaset" }}
+        {{- if eq .Values.mongodb.mode "replicaset" }}
         - --keyFile
         - /etc/keyfile/replica-key
         {{- end }}
@@ -46,26 +46,26 @@ spec:
         ports:
         - containerPort: 27017
           name: mongodb
-        {{- if .Values.auth.enabled }}
+        {{- if .Values.mongodb.auth.enabled }}
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
           value: root
         - name: MONGO_INITDB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
-              key: {{ .Values.auth.existingSecretPasswordKey | default "password" }}
+              name: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
+              key: {{ .Values.mongodb.auth.existingSecretPasswordKey | default "password" }}
         {{- end }}
         volumeMounts:
         - name: data
           mountPath: /data/db
-        {{- if and .Values.auth.enabled (eq .Values.mode "replicaset") }}
+        {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
         - name: keyfile
           mountPath: /etc/keyfile
           readOnly: true
         {{- end }}
         resources:
-          {{- toYaml .Values.resources | nindent 10 }}
+          {{- toYaml .Values.mongodb.resources | nindent 10 }}
         livenessProbe:
           exec:
             command:
@@ -86,7 +86,7 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
-      {{- if and .Values.auth.enabled (eq .Values.mode "replicaset") }}
+      {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
       initContainers:
       - name: keyfile-setup
         image: busybox
@@ -104,10 +104,10 @@ spec:
           mountPath: /keyfile
       {{- end }}
       volumes:
-      {{- if and .Values.auth.enabled (eq .Values.mode "replicaset") }}
+      {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
       - name: keyfile-tmp
         secret:
-          secretName: {{ .Values.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
+          secretName: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
           items:
           - key: replica-key
             path: replica-key
@@ -119,9 +119,9 @@ spec:
       name: data
     spec:
       accessModes: ["ReadWriteOnce"]
-      {{- if .Values.storage.storageClass }}
-      storageClassName: {{ .Values.storage.storageClass }}
+      {{- if .Values.mongodb.storage.storageClass }}
+      storageClassName: {{ .Values.mongodb.storage.storageClass }}
       {{- end }}
       resources:
         requests:
-          storage: {{ .Values.storage.size }}
+          storage: {{ .Values.mongodb.storage.size }}
