@@ -1,0 +1,82 @@
+---
+# Source: splunk-connect-for-snmp/templates/redis/sentinel/redis-sentinel-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-redis-sentinel
+  namespace: default
+  labels:
+    app: release-name-redis-sentinel
+    app.kubernetes.io/component: sentinel
+spec:
+  serviceName: release-name-redis-sentinel
+  replicas: 3
+  selector:
+    matchLabels:
+      app: release-name-redis-sentinel
+  template:
+    metadata:
+      labels:
+        app: release-name-redis-sentinel
+      annotations:
+        checksum/redis-config: 52233e7984ec9733ee5d72c255220b5f26923d0723b6a2dd9d645205d3bf81d5
+        checksum/redis-secret: 908cbead70ef3a415f7509bf2922a7eb195dd8dc27ba5735ecde8c7794bb4b74
+    spec:
+      containers:
+      - name: sentinel
+        image: redis:8.2.2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 26379
+          name: sentinel
+        command:
+        - sh
+        - -c
+        args:
+        - |
+          cp /etc/redis/sentinel.conf /data/sentinel.conf
+          sed -i "s/\${REDIS_MASTER_NAME}/$REDIS_MASTER_NAME/g" /data/sentinel.conf
+          sed -i "s/\${REDIS_PASSWORD}/$REDIS_PASSWORD/g" /data/sentinel.conf
+
+          echo "Starting Redis Sentinel..."
+          exec redis-sentinel /data/sentinel.conf
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: release-name-redis-secret
+              key: password
+        volumeMounts:
+        - name: sentinel-config
+          mountPath: /etc/redis
+        - name: sentinel-data
+          mountPath: /data
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - redis-cli -p 26379 ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - redis-cli -p 26379 sentinel get-master-addr-by-name ${REDIS_MASTER_NAME}
+          initialDelaySeconds: 10
+          periodSeconds: 5
+      volumes:
+      - name: sentinel-config
+        configMap:
+          name: release-name-redis-sentinel-config
+      - name: sentinel-data
+        emptyDir: {}

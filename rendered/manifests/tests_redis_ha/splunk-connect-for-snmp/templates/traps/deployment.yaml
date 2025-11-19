@@ -1,0 +1,146 @@
+---
+# Source: splunk-connect-for-snmp/templates/traps/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-splunk-connect-for-snmp-trap
+  labels:
+    app.kubernetes.io/name: splunk-connect-for-snmp-trap
+    app.kubernetes.io/instance: release-name
+    helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
+    app.kubernetes.io/version: "CURRENT-VERSION"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: splunk-connect-for-snmp-trap
+      app.kubernetes.io/instance: release-name
+  template:
+    metadata:
+      annotations:
+        checksum/redis-config: 52233e7984ec9733ee5d72c255220b5f26923d0723b6a2dd9d645205d3bf81d5
+        checksum/redis-secret: 908cbead70ef3a415f7509bf2922a7eb195dd8dc27ba5735ecde8c7794bb4b74
+      labels:
+        app.kubernetes.io/name: splunk-connect-for-snmp-trap
+        app.kubernetes.io/instance: release-name
+    spec:
+      serviceAccountName: release-name-splunk-connect-for-snmp-user
+      securityContext:
+        fsGroup: 10001
+      containers:
+        - name: splunk-connect-for-snmp-traps
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+          image: "ghcr.io/splunk/splunk-connect-for-snmp/container:CURRENT-VERSION"
+          imagePullPolicy: Always
+          args:
+            [
+              "trap"
+            ] 
+          env:
+            - name: CONFIG_PATH
+              value: /app/config/config.yaml
+            - name: MONGO_URI
+              value: mongodb://release-name-mongodb:27017
+            - name: REDIS_MODE
+              value: "replication"
+            - name: REDIS_SENTINEL_SERVICE
+              value: release-name-redis-sentinel
+            - name: REDIS_HEADLESS_SERVICE
+              value: release-name-redis-headless
+            - name: NAMESPACE
+              value: default
+            - name: REDIS_SENTINEL_REPLICAS
+              value: "3"
+            - name: REDIS_SENTINEL_PORT
+              value: "26379"
+            - name: REDIS_MASTER_NAME
+              value: mymaster
+            - name: REDIS_DB
+              value: "1"
+            - name: CELERY_DB
+              value: "0"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-redis-secret
+                  key: password
+            - name: MIB_SOURCES
+              value: "http://release-name-mibserver/asn1/@mib@"
+            - name: MIB_INDEX
+              value: "http://release-name-mibserver/index.csv"
+            - name: MIB_STANDARD
+              value: "http://release-name-mibserver/standard.txt"
+            - name: LOG_LEVEL
+              value: INFO
+            - name: DISABLE_MONGO_DEBUG_LOGGING
+              value: "true"
+            - name: PYSNMP_DEBUG
+              value: ""
+            - name: SPLUNK_HEC_SCHEME
+              value: "https"
+            - name: SPLUNK_HEC_HOST
+              value: "10.202.18.152"
+            - name: SPLUNK_HEC_PORT
+              value: "8088"
+            - name: SPLUNK_HEC_INSECURESSL
+              value: "true"
+            - name: INCLUDE_SECURITY_CONTEXT_ID
+              value: "false"
+            - name: SNMP_V3_SECURITY_ENGINE_ID
+              value: 80003a8c04
+            - name: SPLUNK_HEC_TOKEN
+              valueFrom:
+                  secretKeyRef:
+                    name: splunk-connect-for-snmp-splunk
+                    key: hec_token
+            - name: IPv6_ENABLED
+              value: "false"
+          ports:
+            - name: snmp-udp
+              containerPort: 2162
+              protocol: UDP
+          volumeMounts:
+            - name: config
+              mountPath: "/app/config"
+              readOnly: true
+            - name: pysnmp-cache-volume
+              mountPath: "/.pysnmp/"
+              readOnly: false                
+            - name: tmp
+              mountPath: "/tmp/"
+              readOnly: false                    
+
+          resources:
+            {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                      app.kubernetes.io/name: splunk-connect-for-snmp-trap
+                      app.kubernetes.io/instance: release-name
+      volumes:
+        # You set volumes at the Pod level, then mount them into containers inside that Pod
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: splunk-connect-for-snmp-traps
+            # An array of keys from the ConfigMap to create as files
+            items:
+              - key: "config.yaml"
+                path: "config.yaml"
+        - name: pysnmp-cache-volume
+          emptyDir: {}    
+        - name: tmp
+          emptyDir: {}

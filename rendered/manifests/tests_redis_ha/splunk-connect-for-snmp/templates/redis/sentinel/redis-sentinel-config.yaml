@@ -1,0 +1,20 @@
+---
+# Source: splunk-connect-for-snmp/templates/redis/sentinel/redis-sentinel-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-redis-sentinel-config
+  namespace: default
+  labels:
+    app: release-name-redis-sentinel
+data:
+  sentinel.conf: |
+    port 26379
+    dir /data
+    sentinel resolve-hostnames yes
+    sentinel announce-hostnames yes
+    sentinel monitor ${REDIS_MASTER_NAME} release-name-redis-ha-0.release-name-redis-headless 6379 2
+    sentinel auth-pass ${REDIS_MASTER_NAME} ${REDIS_PASSWORD}
+    sentinel down-after-milliseconds ${REDIS_MASTER_NAME} 5000
+    sentinel parallel-syncs ${REDIS_MASTER_NAME} 1
+    sentinel failover-timeout ${REDIS_MASTER_NAME} 10000
