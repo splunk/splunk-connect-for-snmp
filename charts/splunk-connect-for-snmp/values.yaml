@@ -627,13 +627,17 @@ redis:
     pullPolicy: IfNotPresent
 
   # Resources
-  resources:
-    requests:
-      cpu: 250m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
+  resources: {}
+  #  **Quick sizing:**
+  #  - Cache only: Set `redis.resources.limits.memory` to 1.5× expected data size
+  #  - With persistence: Set to 2.5-3× expected data size
+  #  resources:
+  #    requests:
+  #      cpu: 500m
+  #      memory: 1Gi
+  #    limits:
+  #      cpu: 1000m
+  #      memory: 2Gi
 
   # Storage
   storage:

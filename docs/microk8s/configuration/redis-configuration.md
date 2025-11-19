@@ -29,13 +29,17 @@ redis:
     pullPolicy: IfNotPresent
 
   # Resources
-  resources:
-    requests:
-      cpu: 250m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
+  resources: {}
+  #  **Quick sizing:**
+  #  - Cache only: Set `redis.resources.limits.memory` to 1.5× expected data size
+  #  - With persistence: Set to 2.5-3× expected data size
+  #  resources:
+  #    requests:
+  #      cpu: 500m
+  #      memory: 1Gi
+  #    limits:
+  #      cpu: 1000m
+  #      memory: 2Gi
 
   # Storage
   storage:
@@ -72,10 +76,10 @@ redis:
 | redis.image.repository                   | string | `redis`             | Container image repository.                                                             |
 | redis.image.tag                          | string | `8.2.2`             | Image tag / Redis version.                                                              |
 | redis.image.pullPolicy                   | string | `IfNotPresent`      | Image pull policy.                                                                      |
-| redis.resources.requests.cpu             | string | `250m`              | Guaranteed minimum CPU.                                                                 |
-| redis.resources.requests.memory          | string | `256Mi`             | Guaranteed minimum memory.                                                              |
-| redis.resources.limits.cpu               | string | `500m`              | CPU limit.                                                                              |
-| redis.resources.limits.memory            | string | `512Mi`             | Memory limit.                                                                           |
+| redis.resources.requests.cpu             | string | `""`                | Guaranteed minimum CPU.                                                                 |
+| redis.resources.requests.memory          | string | `""`                | Guaranteed minimum memory.                                                              |
+| redis.resources.limits.cpu               | string | `""`                | CPU limit.                                                                              |
+| redis.resources.limits.memory            | string | `""`                | Memory limit.                                                                           |
 | redis.storage.enabled                    | bool   | `true`              | Create PersistentVolumeClaim.                                                           |
 | redis.storage.storageClassName           | string | `microk8s-hostpath` | StorageClass for the PVC.                                                               |
 | redis.storage.accessModes                | list   | `[ReadWriteOnce]`   | PVC access modes.                                                                       |
@@ -182,6 +186,28 @@ For MicrokK8s on Ubuntu, you can enable NFS this way:
     ```
 
 The solution might differ depending on the platform and Kubernetes distribution.
+
+### Resource Requirements
+
+Redis memory limits depend on your data size and persistence strategy.
+
+**Quick sizing:**
+
+- Cache only: Set `redis.resources.limits.memory` to 1.5× expected data size
+- With persistence: Set to 2.5-3× expected data size
+
+**Examples:**
+```yaml
+redis:
+  limits:
+    memory: "4Gi"
+    cpu: "1000m"
+  requests:
+    memory: "1Gi"
+    cpu: "500m"
+```
+
+By default no resource limits our set. You can define them in the `values.yaml` file as shown above.
 
 ### Use authentication for Redis
 
