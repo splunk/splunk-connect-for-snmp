@@ -60,7 +60,7 @@ spec:
         - name: JOB_CONFIG_PATH
           value: /config/job_config.yaml
         - name: JOB_NAMESPACE
-          value: sc4snmp
+          value: "default"
         - name: VALUES_DIRECTORY
           value: /var/values_dir
         - name: VALUES_FILE
