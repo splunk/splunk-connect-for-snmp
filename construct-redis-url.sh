@@ -21,14 +21,13 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
 
     if [ -n "$REDIS_PASSWORD" ]; then
       SENTINEL_SCHEME="sentinel://:${REDIS_PASSWORD}@${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
-      REDBEAT_SCHEME="redis-sentinel://:${REDIS_PASSWORD}@${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
       REDIS_HA_CHECK="redis://:${REDIS_PASSWORD}@${REDIS_HEADLESS_SERVICE}:${REDIS_PORT}"
     else
       SENTINEL_SCHEME="sentinel://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
-      REDBEAT_SCHEME="redis-sentinel://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
       REDIS_HA_CHECK="redis://${REDIS_HEADLESS_SERVICE}:${REDIS_PORT}"
-
     fi
+
+    REDBEAT_SCHEME="redis-sentinel://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
 
     # Celery broker uses sentinel://
     : "${CELERY_BROKER_URL:=${SENTINEL_SCHEME}/${CELERY_DB}#master_name=${REDIS_MASTER_NAME}}"
@@ -36,8 +35,12 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     # RedBeat uses redis-sentinel:// with master_name query
     : "${REDIS_URL:=${REDBEAT_SCHEME}/${REDIS_DB}#master_name=${REDIS_MASTER_NAME}}"
     SENTINEL_CHECK="redis://${REDIS_SENTINEL_SERVICE}:${REDIS_SENTINEL_PORT}"
+
+    # Checking specific databases
+    REDIS_HA_DB_0="${REDIS_HA_CHECK}/${REDIS_DB}"
+    REDIS_HA_DB_1="${REDIS_HA_CHECK}/${CELERY_DB}"
     # For healthcheck / wait-for-dep - space-separated list
-    REDIS_DEPENDENCIES="${SENTINEL_CHECK} ${REDIS_HA_CHECK}"
+    REDIS_DEPENDENCIES="${SENTINEL_CHECK} ${REDIS_HA_CHECK} ${REDIS_HA_DB_0} ${REDIS_HA_DB_1}"
 
   else
     # Standalone mode
