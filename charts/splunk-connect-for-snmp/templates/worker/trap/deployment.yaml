@@ -14,10 +14,11 @@ spec:
       {{- include "splunk-connect-for-snmp.worker.trap.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.worker.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 -}}
+        {{- with .Values.worker.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "splunk-connect-for-snmp.worker.trap.selectorLabels" . | nindent 8 }}
     spec:
@@ -47,18 +48,6 @@ spec:
           env:
             {{- include "environmental-variables" . | nindent 12 }}
             {{- include "environmental-variables-trap" . | nindent 12 }}
-            {{- if .Values.redis.auth.enabled }}
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  {{- if .Values.redis.auth.existingSecret }}
-                  name: {{ .Values.redis.auth.existingSecret }}
-                  key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
-                  {{- else }}
-                  name: {{ .Release.Name }}-redis-secret
-                  key: password
-                  {{- end }}
-            {{- end }}
           volumeMounts:
             - name: config
               mountPath: "/app/config"

@@ -1,0 +1,22 @@
+{{- if eq .Values.redis.architecture "replication" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-redis-sentinel-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-redis-sentinel
+data:
+  sentinel.conf: |
+    port 26379
+    dir /data
+    sentinel resolve-hostnames yes
+    sentinel announce-hostnames yes
+    sentinel monitor ${REDIS_MASTER_NAME} {{ .Release.Name }}-redis-ha-0.{{ .Release.Name }}-redis-headless 6379 {{ .Values.redis.sentinel.quorum }}
+    {{- if .Values.redis.auth.enabled }}
+    sentinel auth-pass ${REDIS_MASTER_NAME} ${REDIS_PASSWORD}
+    {{- end }}
+    sentinel down-after-milliseconds ${REDIS_MASTER_NAME} 5000
+    sentinel parallel-syncs ${REDIS_MASTER_NAME} 1
+    sentinel failover-timeout ${REDIS_MASTER_NAME} 10000
+{{- end }}

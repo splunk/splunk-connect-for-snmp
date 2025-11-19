@@ -3,11 +3,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: job-robot
-  namespace: sc4snmp
+  namespace: {{ .Release.Namespace | quote }}
 subjects:
 - kind: ServiceAccount
   name: job-robot # Name of the ServiceAccount
-  namespace: sc4snmp
+  namespace: {{ .Release.Namespace | quote }}
 roleRef:
   kind: Role # This must be Role or ClusterRole
   name: job-robot # This must match the name of the Role or ClusterRole you wish to bind to

@@ -1,0 +1,29 @@
+---
+# Source: splunk-connect-for-snmp/templates/redis/redis-ha-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-redis-config
+  namespace: default
+  labels:
+    app: release-name-redis
+data:
+  redis.conf: |
+    dir /data
+
+    # Persistence
+    save 900 1
+    save 300 10
+    save 60 10000
+    appendonly yes
+    appendfsync everysec
+
+    # Replication
+    min-replicas-to-write 1
+    min-replicas-max-lag 10
+
+    loglevel notice
+    maxmemory-policy noeviction
+    bind 0.0.0.0
+    protected-mode no
+    port 6379
