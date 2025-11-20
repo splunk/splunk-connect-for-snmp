@@ -99,13 +99,37 @@ spec:
 
         {{- if .Values.mongodb.auth.enabled }}
         env:
-        - name: MONGO_INITDB_ROOT_USERNAME
-          value: root
-        - name: MONGO_INITDB_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
-              key: {{ .Values.mongodb.auth.existingSecretPasswordKey | default "password" }}
+          - name: MONGODB_USERNAME
+            value: "root"
+          - name: MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
+                key: {{ .Values.mongodb.auth.existingSecretPasswordKey | default "password" }}
+          - name: MONGODB_HOST
+            value: "{{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb"
+          - name: MONGODB_PORT
+            value: "27017"
+          - name: MONGODB_DATABASE
+            value: {{ .Values.app.mongodb.database | default "snmpdb" | quote }}
+          - name: MONGODB_AUTH_SOURCE
+            value: "admin"
+          - name: MONGODB_URI
+            value: >-
+              {{- if eq .Values.mongodb.mode "replicaset" }}
+              mongodb://root:$(MONGODB_PASSWORD)@{{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb:27017,{{ .Release.Name }}-mongodb-1.{{ .Release.Name }}-mongodb:27017,{{ .Release.Name }}-mongodb-2.{{ .Release.Name }}-mongodb:27017/{{ .Values.app.mongodb.database | default "snmpdb" }}?replicaSet={{ .Values.mongodb.replicaSet.name }}&authSource=admin
+              {{- else }}
+              mongodb://root:$(MONGODB_PASSWORD)@{{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb:27017/{{ .Values.app.mongodb.database | default "snmpdb" }}?authSource=admin
+              {{- end }}
+
+          {{- else }}
+          - name: MONGODB_URI
+            value: >-
+              {{- if eq .Values.mongodb.mode "replicaset" }}
+              mongodb://{{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb:27017,{{ .Release.Name }}-mongodb-1.{{ .Release.Name }}-mongodb:27017,{{ .Release.Name }}-mongodb-2.{{ .Release.Name }}-mongodb:27017/{{ .Values.app.mongodb.database | default "snmpdb" }}?replicaSet={{ .Values.mongodb.replicaSet.name }}
+              {{- else }}
+              mongodb://{{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb:27017/{{ .Values.app.mongodb.database | default "snmpdb" }}
+              {{- end }}
         {{- end }}
 
         volumeMounts:
