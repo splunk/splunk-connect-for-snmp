@@ -4,7 +4,7 @@ from typing import Union
 
 import ruamel.yaml
 
-SERVICE_SECRETS = ["worker-poller", "traps"]
+SERVICE_SECRETS = ["worker-poller", "traps", "worker-discovery"]
 DOCKER_COMPOSE = "docker-compose.yaml"
 
 
@@ -60,6 +60,7 @@ def create_secrets(
     secret_name: str,
     make_change_in_worker_poller: bool,
     make_change_in_traps: bool,
+    make_change_in_worker_discovery: bool,
 ):
     """
     Function to create secrets in .env and docker-compose.yaml files
@@ -68,6 +69,7 @@ def create_secrets(
     @param secret_name: name of the secret
     @param make_change_in_worker_poller: flag indicating whether to add secrets to worker poller service
     @param make_change_in_traps: flag indicating whether to add secrets to traps service
+    @param make_change_in_worker_discovery: flag indicating whether to add secrets to discovery service
     """
     for k, v in variables.items():
         if k != "contextEngineId" and not v:
@@ -107,6 +109,13 @@ def create_secrets(
         else:
             traps_ready = True
 
+        if make_change_in_worker_discovery:
+            yaml_file, worker_discovery_ready = load_compose_worker_discovery(
+                new_secrets_in_workers, yaml_file
+            )
+        else:
+            worker_discovery_ready = True
+
         save_to_compose_files(
             path_to_compose_files,
             secret_name,
@@ -115,6 +124,7 @@ def create_secrets(
             traps_ready,
             variables,
             worker_poller_ready,
+            worker_discovery_ready,
         )
     except Exception as e:
         print(f"Problem with adding secrets. Error: {e}")
@@ -128,8 +138,9 @@ def save_to_compose_files(
     traps_ready,
     variables,
     worker_poller_ready,
+    worker_discovery_ready,
 ):
-    if secrets_ready and worker_poller_ready and traps_ready:
+    if secrets_ready and worker_poller_ready and traps_ready and worker_discovery_ready:
         # If all three files were loaded into dictionary and updated successfully,
         # save the latest configuration to files.
         with open(os.path.join(path_to_compose_files, ".env"), "a") as file:
@@ -155,6 +166,23 @@ def load_compose_traps(new_secrets_in_workers, yaml_file):
         yaml_file = {}
         traps_ready = False
     return yaml_file, traps_ready
+
+
+def load_compose_worker_discovery(new_secrets_in_workers, yaml_file):
+    # If the secret should be added to worker discovery, load docker-compose-worker-discovery.yaml to a dictionary and
+    # update "secrets" section.
+    try:
+        if "secrets" not in yaml_file["services"]["worker-discovery"]:
+            yaml_file["services"]["worker-discovery"]["secrets"] = []
+        yaml_file["services"]["worker-discovery"]["secrets"].extend(
+            new_secrets_in_workers
+        )
+        worker_discovery_ready = True
+    except Exception as e:
+        print(f"Problem with editing worker-discovery. Secret not added. Error {e}")
+        yaml_file = {}
+        worker_discovery_ready = False
+    return yaml_file, worker_discovery_ready
 
 
 def load_compose_worker_poller(new_secrets_in_workers, yaml_file):
@@ -200,6 +228,7 @@ def delete_secrets(
     secret_name: str,
     make_change_in_worker_poller: bool,
     make_change_in_traps: bool,
+    make_change_in_worker_discovery: bool,
 ):
     """
     Function to delete secrets from .env and docker-compose.yaml files
@@ -208,6 +237,7 @@ def delete_secrets(
     @param secret_name: name of the secret
     @param make_change_in_worker_poller: flag indicating whether to delete secrets from worker poller service
     @param make_change_in_traps: flag indicating whether to delete secrets from traps service
+    @param make_change_in_worker_discovery: flag indicating whether to delete secrets from worker discovery service
     """
     secrets = []
     for key in variables.keys():
@@ -237,6 +267,16 @@ def delete_secrets(
                 filter(
                     lambda el: el["source"] not in secrets,
                     yaml_file["services"]["traps"]["secrets"],
+                )
+            )
+
+        if make_change_in_worker_discovery:
+            # filter out secrets destined for deletion
+
+            yaml_file["services"]["worker-discovery"]["secrets"] = list(
+                filter(
+                    lambda el: el["source"] not in secrets,
+                    yaml_file["services"]["worker-discovery"]["secrets"],
                 )
             )
 
@@ -290,6 +330,9 @@ def main():
     parser.add_argument(
         "--worker_poller", default="true", help="Add secret to worker poller"
     )
+    parser.add_argument(
+        "--worker_discovery", default="true", help="Add secret to worker discovery"
+    )
     parser.add_argument("--traps", default="true", help="Add secret to traps")
     parser.add_argument("--userName", default="", help="SNMPV3 username")
     parser.add_argument("--privProtocol", default="", help="SNMPV3 privProtocol")
@@ -306,6 +349,7 @@ def main():
     path_to_compose_files = args.path_to_compose
     make_change_in_worker_poller = human_bool(args.worker_poller)
     make_change_in_traps = human_bool(args.traps)
+    make_change_in_worker_discovery = human_bool(args.worker_discovery)
 
     # variables dictionary maps variables names stored inside a secret to their values
     variables = {
@@ -332,6 +376,7 @@ def main():
                 secret_name,
                 make_change_in_worker_poller,
                 make_change_in_traps,
+                make_change_in_worker_discovery,
             )
         except ValueError as e:
             print(e)
@@ -342,6 +387,7 @@ def main():
             secret_name,
             make_change_in_worker_poller,
             make_change_in_traps,
+            make_change_in_worker_discovery,
         )
 
 

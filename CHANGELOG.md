@@ -9,6 +9,7 @@
   - Implemented automatic data migration from Bitnami deployments (PVC reuse)
   - Enabled AOF persistence by default for data durability
 - add CounterBasedGauge64 and ZeroBasedCounter64 as metrics types
+- add SNMP-enabled device discovery feature
 
 ### Fixes
 - fix problem with service rendering when `traps.service.usemetallb` is set to false

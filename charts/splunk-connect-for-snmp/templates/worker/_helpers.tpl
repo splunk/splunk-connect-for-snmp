@@ -59,6 +59,10 @@ app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-fl
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{- define "splunk-connect-for-snmp.worker.discovery.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-discovery
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
 
 {{/*
 Common labels
@@ -85,6 +89,11 @@ Common labels
 
 {{- define "splunk-connect-for-snmp.worker.flower.labels" -}}
 {{ include "splunk-connect-for-snmp.worker.flower.selectorLabels" . }}
+{{ include "splunk-connect-for-snmp.labels" . }}
+{{- end }}
+
+{{- define "splunk-connect-for-snmp.worker.discovery.labels" -}}
+{{ include "splunk-connect-for-snmp.worker.discovery.selectorLabels" . }}
 {{ include "splunk-connect-for-snmp.labels" . }}
 {{- end }}
 
@@ -125,6 +134,8 @@ Common labels
   value: {{ .Values.worker.disableMongoDebugLogging | quote }}
 - name: UDP_CONNECTION_TIMEOUT
   value: {{ .Values.worker.udpConnectionTimeout | default "3" | quote }}
+- name: UDP_CONNECTION_RETRIES
+  value: {{ .Values.worker.udpConnectionRetries | default "5" | quote }}
 - name: MAX_OID_TO_PROCESS
   value: {{ .Values.poller.maxOidToProcess | default "70" | quote }}
 - name: MAX_REPETITIONS
@@ -217,4 +228,11 @@ Common labels
   {{ else }}
   value: "false"
   {{- end }}
+{{- end }}
+
+{{- define "environmental-variables-discovery" -}}
+- name: WORKER_CONCURRENCY
+  value: {{ .Values.worker.discovery.concurrency | default "4" | quote }}
+- name: PREFETCH_COUNT
+  value: {{ .Values.worker.discovery.prefetch | default "30" | quote }}
 {{- end }}
