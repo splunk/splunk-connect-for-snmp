@@ -95,3 +95,47 @@ Whether enable polling
 {{- printf "false" }}
 {{- end -}}
 {{- end }}
+
+{{/*
+MongoDB environment variables - one helper to rule them all
+*/}}
+{{- define "mongodb.env" -}}
+{{- if .Values.mongodb.auth.enabled }}
+- name: MONGODB_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Release.Name }}-mongodb-auth
+      key: root-user
+- name: MONGODB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Release.Name }}-mongodb-auth
+      key: root-password
+- name: MONGODB_AUTH_SOURCE
+  value: "admin"
+{{- end }}
+- name: MONGODB_DATABASE
+  value: {{ .Values.mongodb.database | default "sc4snmp" | quote }}
+{{- if eq .Values.mongodb.mode "replicaset" }}
+- name: MONGODB_HOST
+  value: {{ include "mongodb.replicaset.hosts" . | quote }}
+- name: MONGODB_REPLICA_SET
+  value: {{ .Values.mongodb.replicaSetName | default "rs0" | quote }}
+{{- else }}
+- name: MONGODB_HOST
+  value: {{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb
+- name: MONGODB_PORT
+  value: "27017"
+{{- end }}
+{{- end -}}
+
+{{/*
+MongoDB replica set hosts (comma-separated)
+*/}}
+{{- define "mongodb.replicaset.hosts" -}}
+{{- $hosts := list -}}
+{{- range $i := until (int (.Values.mongodb.replicaCount | default 3)) -}}
+  {{- $hosts = append $hosts (printf "%s-mongodb-%d.%s-mongodb:27017" $.Release.Name $i $.Release.Name) -}}
+{{- end -}}
+{{- join "," $hosts -}}
+{{- end -}}

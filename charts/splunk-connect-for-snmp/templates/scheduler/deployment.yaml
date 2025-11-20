@@ -45,6 +45,7 @@ spec:
           env:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
+            {{- include "mongodb.env" . | nindent 8 }}
             {{- if .Values.redis.auth.enabled }}
             - name: REDIS_PASSWORD
               valueFrom:
