@@ -6,7 +6,7 @@ metadata:
     app: {{ .Release.Name }}-mongodb
 spec:
   serviceName: {{ .Release.Name }}-mongodb
-  replicas: {{ if eq .Values.mongodb.mode "replicaset" }}{{ .Values.mongodb.replicaSet.replicas }}{{ else }}1{{ end }}
+  replicas: {{ if eq (.Values.mongodb.mode | default "standalone") "replicaset" }}{{ .Values.mongodb.replicaSet.replicas | default 3 }}{{ else }}1{{ end }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}-mongodb
@@ -15,21 +15,12 @@ spec:
       labels:
         app: {{ .Release.Name }}-mongodb
     spec:
-      {{- if .Values.mongodb.podSecurityContext.enabled }}
+      {{- with .Values.mongodb.podSecurityContext }}
       securityContext:
-        fsGroup: {{ .Values.mongodb.podSecurityContext.fsGroup }}
-        {{- if .Values.mongodb.podSecurityContext.fsGroupChangePolicy }}
-        fsGroupChangePolicy: {{ .Values.mongodb.podSecurityContext.fsGroupChangePolicy }}
-        {{- end }}
-        {{- if .Values.mongodb.podSecurityContext.runAsUser }}
-        runAsUser: {{ .Values.mongodb.podSecurityContext.runAsUser }}
-        {{- end }}
-        {{- if .Values.mongodb.podSecurityContext.runAsNonRoot }}
-        runAsNonRoot: {{ .Values.mongodb.podSecurityContext.runAsNonRoot }}
-        {{- end }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
 
-      {{- if eq .Values.mongodb.mode "replicaset" }}
+      {{- if eq (.Values.mongodb.mode | default "standalone") "replicaset" }}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -41,47 +32,33 @@ spec:
               topologyKey: kubernetes.io/hostname
       {{- end }}
 
+      {{- if .Values.mongodb.initPermissions }}
       initContainers:
-      {{- if .Values.mongodb.initPermissions.enabled }}
       - name: init-permissions
-        image: {{ .Values.mongodb.initPermissions.image.repository }}:{{ .Values.mongodb.initPermissions.image.tag }}
+        image: busybox:1.36
         command:
         - sh
         - -c
         - |
-          echo "Checking /data/db permissions..."
-          ls -la /data/db || true
-
-          # Create directory if it doesn't exist
           mkdir -p /data/db/journal
-
-          # Fix ownership
-          chown -R {{ .Values.mongodb.initPermissions.uid }}:{{ .Values.mongodb.initPermissions.gid }} /data/db
+          chown -R 999:999 /data/db
           chmod -R 755 /data/db
-
-          echo "Permissions fixed:"
-          ls -la /data/db
         volumeMounts:
         - name: data
           mountPath: /data/db
         securityContext:
           runAsUser: 0
-        {{- with .Values.mongodb.initPermissions.resources }}
-        resources:
-          {{- toYaml . | nindent 10 }}
-        {{- end }}
-      {{- end }}
 
-      {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
+      {{- if and (.Values.mongodb.auth.enabled | default false) (eq (.Values.mongodb.mode | default "standalone") "replicaset") }}
       - name: keyfile-setup
-        image: {{ .Values.mongodb.initPermissions.image.repository }}:{{ .Values.mongodb.initPermissions.image.tag }}
+        image: busybox:1.36
         command:
         - sh
         - -c
         - |
           cp /tmp/keyfile/replica-key /keyfile/replica-key
           chmod 400 /keyfile/replica-key
-          chown {{ .Values.mongodb.containerSecurityContext.runAsUser }}:{{ .Values.mongodb.containerSecurityContext.runAsGroup }} /keyfile/replica-key
+          chown 999:999 /keyfile/replica-key
         volumeMounts:
         - name: keyfile-tmp
           mountPath: /tmp/keyfile
@@ -90,36 +67,27 @@ spec:
         securityContext:
           runAsUser: 0
       {{- end }}
+      {{- end }}
 
       containers:
       - name: mongodb
-        image: {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
+        image: {{ .Values.mongodb.image.repository | default "mongo" }}:{{ .Values.mongodb.image.tag | default "7.0" }}
 
-        {{- if .Values.mongodb.containerSecurityContext.enabled }}
+        {{- with .Values.mongodb.containerSecurityContext }}
         securityContext:
-          allowPrivilegeEscalation: {{ .Values.mongodb.containerSecurityContext.allowPrivilegeEscalation }}
-          runAsUser: {{ .Values.mongodb.containerSecurityContext.runAsUser }}
-          runAsGroup: {{ .Values.mongodb.containerSecurityContext.runAsGroup }}
-          runAsNonRoot: {{ .Values.mongodb.containerSecurityContext.runAsNonRoot }}
-          {{- if .Values.mongodb.containerSecurityContext.capabilities }}
-          capabilities:
-            {{- toYaml .Values.mongodb.containerSecurityContext.capabilities | nindent 12 }}
-          {{- end }}
-          {{- if .Values.mongodb.containerSecurityContext.readOnlyRootFilesystem }}
-          readOnlyRootFilesystem: {{ .Values.mongodb.containerSecurityContext.readOnlyRootFilesystem }}
-          {{- end }}
+          {{- toYaml . | nindent 10 }}
         {{- end }}
 
         command:
         - mongod
-        {{- if eq .Values.mongodb.mode "replicaset" }}
+        {{- if eq (.Values.mongodb.mode | default "standalone") "replicaset" }}
         - --replSet
-        - {{ .Values.mongodb.replicaSet.name }}
+        - {{ .Values.mongodb.replicaSet.name | default "rs0" }}
         {{- end }}
         - --bind_ip_all
         {{- if .Values.mongodb.auth.enabled }}
         - --auth
-        {{- if eq .Values.mongodb.mode "replicaset" }}
+        {{- if eq (.Values.mongodb.mode | default "standalone") "replicaset" }}
         - --keyFile
         - /etc/keyfile/replica-key
         {{- end }}
@@ -143,43 +111,45 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /data/db
-        {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
+        {{- if and (.Values.mongodb.auth.enabled | default false) (eq (.Values.mongodb.mode | default "standalone") "replicaset") }}
         - name: keyfile
           mountPath: /etc/keyfile
           readOnly: true
         {{- end }}
 
+        {{- with .Values.mongodb.resources }}
         resources:
-          {{- toYaml .Values.mongodb.resources | nindent 10 }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
 
-        {{- if .Values.mongodb.livenessProbe.enabled }}
+        {{- if .Values.mongodb.livenessProbe }}
         livenessProbe:
           exec:
             command:
             - mongosh
             - --eval
             - "db.adminCommand('ping')"
-          initialDelaySeconds: {{ .Values.mongodb.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.mongodb.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.mongodb.livenessProbe.timeoutSeconds }}
-          failureThreshold: {{ .Values.mongodb.livenessProbe.failureThreshold }}
+          initialDelaySeconds: {{ .Values.mongodb.livenessProbe.initialDelaySeconds | default 30 }}
+          periodSeconds: {{ .Values.mongodb.livenessProbe.periodSeconds | default 10 }}
+          timeoutSeconds: {{ .Values.mongodb.livenessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.mongodb.livenessProbe.failureThreshold | default 3 }}
         {{- end }}
 
-        {{- if .Values.mongodb.readinessProbe.enabled }}
+        {{- if .Values.mongodb.readinessProbe }}
         readinessProbe:
           exec:
             command:
             - mongosh
             - --eval
             - "db.adminCommand('ping')"
-          initialDelaySeconds: {{ .Values.mongodb.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.mongodb.readinessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.mongodb.readinessProbe.timeoutSeconds }}
-          failureThreshold: {{ .Values.mongodb.readinessProbe.failureThreshold }}
+          initialDelaySeconds: {{ .Values.mongodb.readinessProbe.initialDelaySeconds | default 5 }}
+          periodSeconds: {{ .Values.mongodb.readinessProbe.periodSeconds | default 10 }}
+          timeoutSeconds: {{ .Values.mongodb.readinessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.mongodb.readinessProbe.failureThreshold | default 3 }}
         {{- end }}
 
+      {{- if and (.Values.mongodb.auth.enabled | default false) (eq (.Values.mongodb.mode | default "standalone") "replicaset") }}
       volumes:
-      {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
       - name: keyfile-tmp
         secret:
           secretName: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
@@ -200,4 +170,4 @@ spec:
       {{- end }}
       resources:
         requests:
-          storage: {{ .Values.mongodb.storage.size }}
+          storage: {{ .Values.mongodb.storage.size | default "10Gi" }}
