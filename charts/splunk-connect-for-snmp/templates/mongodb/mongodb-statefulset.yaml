@@ -7,7 +7,6 @@ metadata:
 spec:
   serviceName: {{ .Release.Name }}-mongodb
   replicas: {{ if eq .Values.mongodb.mode "standalone" }}1{{ else }}{{ .Values.mongodb.replicaCount | default 3 }}{{ end }}
-
   selector:
     matchLabels:
       app: {{ .Release.Name }}-mongodb

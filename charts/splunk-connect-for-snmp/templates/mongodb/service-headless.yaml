@@ -1,0 +1,13 @@
+{{- if eq .Values.mongodb.mode "replicaset" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-mongodb-headless
+spec:
+  clusterIP: None
+  ports:
+    - name: mongodb
+      port: {{ .Values.mongodb.service.port }}
+  selector:
+    app: {{ .Release.Name }}-mongodb
+{{- end }}
