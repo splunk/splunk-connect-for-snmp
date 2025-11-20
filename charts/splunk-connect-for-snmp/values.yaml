@@ -519,77 +519,30 @@ useDeprecatedAPI: false
 ## MongoDB image configuration
 # MongoDB image
 mongodb:
-  # MongoDB image
+  mode: standalone     # options: standalone | replicaset
+
+  replicaCount: 3      # used only when mode = "replicaset"
+
   image:
     repository: mongo
     tag: "7.0"
+    pullPolicy: IfNotPresent
 
-  # Mode: standalone or replicaset
-  mode: standalone
-
-  # Replica set configuration
-  replicaSet:
-    replicas: 3
-    name: rs0
-
-  # Authentication
   auth:
     enabled: true
-    password: ""
-    existingSecret: ""
-    existingSecretPasswordKey: "password"
+    rootUser: admin
+    rootPassword: "ChangeMe123"
+    replicaSetName: rs0
 
-  # Storage
-  storage:
-    size: 10Gi
-    storageClass: ""
-
-  # Resources
-  resources:
-    requests:
-      memory: "512Mi"
-      cpu: "250m"
-    limits:
-      memory: "1Gi"
-      cpu: "500m"
-
-  # Pod-level security context
-  podSecurityContext:
+  persistence:
     enabled: true
-    fsGroup: 999
-    fsGroupChangePolicy: "OnRootMismatch"  # "Always" or "OnRootMismatch"
-    runAsUser: null                         # Optional: set if needed
-    runAsNonRoot: false                     # Set to true if runAsUser is set
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    storageClassName: "microk8s-hostpath"
 
-  # Container-level security context
-  containerSecurityContext:
-    enabled: true
-    allowPrivilegeEscalation: false
-    runAsUser: 999
-    runAsGroup: 999
-    runAsNonRoot: true
-    readOnlyRootFilesystem: false
-    capabilities:
-      drop:
-      - ALL
+  service:
+    port: 27017
 
-  # Init container to fix permissions
-  initPermissions:
-    enabled: true
-    image:
-      repository: busybox
-      tag: "1.36"
-    uid: 999
-    gid: 999
-    resources: {}
-      # limits:
-      #   cpu: 100m
-      #   memory: 128Mi
-      # requests:
-      #   cpu: 50m
-      #   memory: 64Mi
-
-  # Liveness probe
   livenessProbe:
     enabled: true
     initialDelaySeconds: 30

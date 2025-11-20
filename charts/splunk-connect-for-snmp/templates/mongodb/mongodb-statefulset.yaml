@@ -6,10 +6,12 @@ metadata:
     app: {{ .Release.Name }}-mongodb
 spec:
   serviceName: {{ .Release.Name }}-mongodb
-  replicas: {{ if eq (.Values.mongodb.mode | default "standalone") "replicaset" }}{{ .Values.mongodb.replicaSet.replicas | default 3 }}{{ else }}1{{ end }}
+  replicas: {{ if eq .Values.mongodb.mode "standalone" }}1{{ else }}{{ .Values.mongodb.replicaCount | default 3 }}{{ end }}
+
   selector:
     matchLabels:
       app: {{ .Release.Name }}-mongodb
+
   template:
     metadata:
       labels:
@@ -20,7 +22,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
-      {{- if eq (.Values.mongodb.mode | default "standalone") "replicaset" }}
+      {{- if eq .Values.mongodb.mode "replicaset" }}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -32,15 +34,15 @@ spec:
               topologyKey: kubernetes.io/hostname
       {{- end }}
 
-      {{- if .Values.mongodb.initPermissions }}
       initContainers:
+      {{- if .Values.mongodb.initPermissions }}
       - name: init-permissions
         image: busybox:1.36
         command:
         - sh
         - -c
         - |
-          mkdir -p /data/db/journal
+          mkdir -p /data/db
           chown -R 999:999 /data/db
           chmod -R 755 /data/db
         volumeMounts:
@@ -48,8 +50,9 @@ spec:
           mountPath: /data/db
         securityContext:
           runAsUser: 0
+      {{- end }}
 
-      {{- if and (.Values.mongodb.auth.enabled | default false) (eq (.Values.mongodb.mode | default "standalone") "replicaset") }}
+      {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
       - name: keyfile-setup
         image: busybox:1.36
         command:
@@ -67,30 +70,15 @@ spec:
         securityContext:
           runAsUser: 0
       {{- end }}
-      {{- end }}
 
       containers:
       - name: mongodb
-        image: {{ .Values.mongodb.image.repository | default "mongo" }}:{{ .Values.mongodb.image.tag | default "7.0" }}
+        image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"
+        imagePullPolicy: {{ .Values.mongodb.image.pullPolicy | default "IfNotPresent" }}
 
         {{- with .Values.mongodb.containerSecurityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
-        {{- end }}
-
-        command:
-        - mongod
-        {{- if eq (.Values.mongodb.mode | default "standalone") "replicaset" }}
-        - --replSet
-        - {{ .Values.mongodb.replicaSet.name | default "rs0" }}
-        {{- end }}
-        - --bind_ip_all
-        {{- if .Values.mongodb.auth.enabled }}
-        - --auth
-        {{- if eq (.Values.mongodb.mode | default "standalone") "replicaset" }}
-        - --keyFile
-        - /etc/keyfile/replica-key
-        {{- end }}
         {{- end }}
 
         ports:
@@ -99,43 +87,22 @@ spec:
 
         {{- if .Values.mongodb.auth.enabled }}
         env:
-          - name: MONGODB_USERNAME
-            value: "root"
-          - name: MONGODB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
-                key: {{ .Values.mongodb.auth.existingSecretPasswordKey | default "password" }}
-          - name: MONGODB_HOST
-            value: "{{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb"
-          - name: MONGODB_PORT
-            value: "27017"
-          - name: MONGODB_DATABASE
-            value: {{ .Values.app.mongodb.database | default "snmpdb" | quote }}
-          - name: MONGODB_AUTH_SOURCE
-            value: "admin"
-          - name: MONGODB_URI
-            value: >-
-              {{- if eq .Values.mongodb.mode "replicaset" }}
-              mongodb://root:$(MONGODB_PASSWORD)@{{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb:27017,{{ .Release.Name }}-mongodb-1.{{ .Release.Name }}-mongodb:27017,{{ .Release.Name }}-mongodb-2.{{ .Release.Name }}-mongodb:27017/{{ .Values.app.mongodb.database | default "snmpdb" }}?replicaSet={{ .Values.mongodb.replicaSet.name }}&authSource=admin
-              {{- else }}
-              mongodb://root:$(MONGODB_PASSWORD)@{{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb:27017/{{ .Values.app.mongodb.database | default "snmpdb" }}?authSource=admin
-              {{- end }}
-
-          {{- else }}
-          - name: MONGODB_URI
-            value: >-
-              {{- if eq .Values.mongodb.mode "replicaset" }}
-              mongodb://{{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb:27017,{{ .Release.Name }}-mongodb-1.{{ .Release.Name }}-mongodb:27017,{{ .Release.Name }}-mongodb-2.{{ .Release.Name }}-mongodb:27017/{{ .Values.app.mongodb.database | default "snmpdb" }}?replicaSet={{ .Values.mongodb.replicaSet.name }}
-              {{- else }}
-              mongodb://{{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb:27017/{{ .Values.app.mongodb.database | default "snmpdb" }}
-              {{- end }}
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb-auth" .Release.Name) }}
+              key: {{ .Values.mongodb.auth.rootUserKey | default "root-user" }}
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb-auth" .Release.Name) }}
+              key: {{ .Values.mongodb.auth.rootPasswordKey | default "root-password" }}
         {{- end }}
 
         volumeMounts:
         - name: data
           mountPath: /data/db
-        {{- if and (.Values.mongodb.auth.enabled | default false) (eq (.Values.mongodb.mode | default "standalone") "replicaset") }}
+        {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
         - name: keyfile
           mountPath: /etc/keyfile
           readOnly: true
@@ -146,7 +113,7 @@ spec:
           {{- toYaml . | nindent 10 }}
         {{- end }}
 
-        {{- if .Values.mongodb.livenessProbe }}
+        {{- if .Values.mongodb.livenessProbe.enabled }}
         livenessProbe:
           exec:
             command:
@@ -159,7 +126,7 @@ spec:
           failureThreshold: {{ .Values.mongodb.livenessProbe.failureThreshold | default 3 }}
         {{- end }}
 
-        {{- if .Values.mongodb.readinessProbe }}
+        {{- if .Values.mongodb.readinessProbe.enabled }}
         readinessProbe:
           exec:
             command:
@@ -172,26 +139,29 @@ spec:
           failureThreshold: {{ .Values.mongodb.readinessProbe.failureThreshold | default 3 }}
         {{- end }}
 
-      {{- if and (.Values.mongodb.auth.enabled | default false) (eq (.Values.mongodb.mode | default "standalone") "replicaset") }}
       volumes:
+      {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
       - name: keyfile-tmp
         secret:
-          secretName: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
+          secretName: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb-auth" .Release.Name) }}
           items:
-          - key: replica-key
+          - key: {{ .Values.mongodb.auth.replicaKeyKey | default "replica-key" }}
             path: replica-key
       - name: keyfile
         emptyDir: {}
       {{- end }}
 
+  {{- if .Values.mongodb.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: data
     spec:
-      accessModes: ["ReadWriteOnce"]
-      {{- if .Values.mongodb.storage.storageClass }}
-      storageClassName: {{ .Values.mongodb.storage.storageClass }}
+      accessModes:
+      - {{ .Values.mongodb.persistence.accessMode | default "ReadWriteOnce" }}
+      {{- if .Values.mongodb.persistence.storageClassName }}
+      storageClassName: {{ .Values.mongodb.persistence.storageClassName }}
       {{- end }}
       resources:
         requests:
-          storage: {{ .Values.mongodb.storage.size | default "10Gi" }}
+          storage: {{ .Values.mongodb.persistence.size | default "10Gi" }}
+  {{- end }}
