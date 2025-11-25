@@ -168,7 +168,7 @@ redis:
 !!!note
     The `storageClassName` must point to a `StorageClass` that supports network-attached volumes with `ReadWriteMany` (or `ReadWriteOnce` with cross-node support). Examples: NFS, Ceph, EBS, GCP Persistent Disk, Azure Disk.
 
-For MicrokK8s on Ubuntu, you can enable NFS this way:
+EXAMPLE: For MicroK8s on Ubuntu, you can enable NFS this way:
 
 1. Enable NFS client on ALL nodes:
     ```bash
