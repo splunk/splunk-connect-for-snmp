@@ -61,8 +61,28 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     REDIS_DEPENDENCIES="${REDIS_URL} ${CELERY_BROKER_URL}"
   fi
 
+  # Build MongoDB URI from environment variables
+  if [ -n "$MONGODB_USERNAME" ] && [ -n "$MONGODB_PASSWORD" ]; then
+    # With authentication
+    if [ "$MONGODB_MODE" = "replicaset" ]; then
+      # Replica set
+      export MONGODB_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}?replicaSet=${MONGODB_REPLICA_SET}&authSource=${MONGODB_AUTH_SOURCE:-admin}"
+    else
+      # Standalone
+      export MONGODB_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=${MONGODB_AUTH_SOURCE:-admin}"
+    fi
+  else
+    # Without authentication
+    if [ -n "$MONGODB_REPLICA_SET" ]; then
+      export MONGODB_URI="mongodb://${MONGODB_HOST}/${MONGODB_DATABASE}?replicaSet=${MONGODB_REPLICA_SET}"
+    else
+      export MONGODB_URI="mongodb://${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}"
+    fi
+  fi
+
   export REDIS_URL
   export CELERY_BROKER_URL
   export REDIS_DEPENDENCIES
   export REDIS_MODE
+  export MONGODB_URI
 fi

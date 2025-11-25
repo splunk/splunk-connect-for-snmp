@@ -523,7 +523,7 @@ mongodb:
   mode: standalone     # options: standalone | replicaset
 
   replicaCount: 3      # used only when mode = "replicaset"
-
+  replicaSetName: rs0
   image:
     repository: mongo
     tag: "7.0"
@@ -533,7 +533,6 @@ mongodb:
     enabled: true
     rootUser: admin
     rootPassword: "ChangeMe123"
-    replicaSetName: rs0
 
   persistence:
     enabled: true

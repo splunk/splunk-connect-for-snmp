@@ -1,0 +1,133 @@
+{{- if eq .Values.mongodb.mode "replicaset" }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-mongodb-init-rs
+  labels:
+    app: {{ .Release.Name }}-mongodb-init
+spec:
+  backoffLimit: 5
+  ttlSecondsAfterFinished: 600
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: init-replicaset
+        image: {{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}
+        command:
+        - bash
+        - -c
+        - |
+          set -e
+
+          echo "═══════════════════════════════════════════"
+          echo "  MongoDB Replica Set Initialization"
+          echo "  Auth: {{ .Values.mongodb.auth.enabled }}"
+          echo "═══════════════════════════════════════════"
+          echo ""
+
+          echo "⏳ Waiting for MongoDB pods..."
+          {{- range $i := until (int .Values.mongodb.replicaCount) }}
+          RETRIES=0
+          until mongosh --host {{ $.Release.Name }}-mongodb-{{ $i }}.{{ $.Release.Name }}-mongodb:27017 \
+            {{- if $.Values.mongodb.auth.enabled }}
+            -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASSWORD" \
+            --authenticationDatabase admin \
+            {{- end }}
+            --eval "db.adminCommand('ping')" &>/dev/null; do
+            RETRIES=$((RETRIES+1))
+            if [ $RETRIES -gt 60 ]; then
+              echo "  ❌ Timeout waiting for pod {{ $i }}"
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "  ✅ {{ $.Release.Name }}-mongodb-{{ $i }} ready"
+          {{- end }}
+
+          echo ""
+          echo "🔍 Checking if replica set exists..."
+
+          RS_CHECK=$(mongosh --host {{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb:27017 \
+            {{- if .Values.mongodb.auth.enabled }}
+            -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASSWORD" \
+            --authenticationDatabase admin \
+            {{- end }}
+            --quiet --eval "try { rs.status().ok } catch(e) { 0 }" 2>/dev/null | grep -E '^[01]$' | head -1 || echo "0")
+
+          if [ "$RS_CHECK" = "1" ]; then
+            echo "✅ Replica set already initialized!"
+            echo ""
+            mongosh --host {{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb:27017 \
+              {{- if .Values.mongodb.auth.enabled }}
+              -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASSWORD" \
+              --authenticationDatabase admin \
+              {{- end }}
+              --quiet --eval "rs.status().members.forEach(m => print('  ' + m.name + ': ' + m.stateStr))"
+            exit 0
+          fi
+
+          echo "🚀 Initializing replica set..."
+
+          INIT_RESULT=$(mongosh --host {{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb:27017 \
+            {{- if .Values.mongodb.auth.enabled }}
+            -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASSWORD" \
+            --authenticationDatabase admin \
+            {{- end }}
+            --eval "
+              rs.initiate({
+                _id: '{{ .Values.mongodb.replicaSetName }}',
+                members: [
+                  {{- range $i := until (int .Values.mongodb.replicaCount) }}
+                  {_id: {{ $i }}, host: '{{ $.Release.Name }}-mongodb-{{ $i }}.{{ $.Release.Name }}-mongodb:27017'}{{ if ne $i (sub (int $.Values.mongodb.replicaCount) 1) }},{{ end }}
+                  {{- end }}
+                ]
+              })
+            " 2>&1 || true)
+
+          if echo "$INIT_RESULT" | grep -Eq '"ok"[[:space:]]*:[[:space:]]*1|ok:[[:space:]]*1|already initialized'; then            echo ""
+            echo "✅ Initialization successful!"
+            echo ""
+            echo "⏳ Waiting for primary election..."
+            sleep 15
+
+            echo ""
+            echo "Final status:"
+            mongosh --host {{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb:27017 \
+              {{- if .Values.mongodb.auth.enabled }}
+              -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASSWORD" \
+              --authenticationDatabase admin \
+              {{- end }}
+              --quiet --eval "rs.status().members.forEach(m => print('  ' + m.name + ': ' + m.stateStr))" || true
+
+            echo ""
+            echo "═══════════════════════════════════════════"
+            exit 0
+          else
+            echo "⚠️ Unexpected result:"
+            echo "$INIT_RESULT"
+            exit 0
+          fi
+
+        {{- if .Values.mongodb.auth.enabled }}
+        env:
+        - name: MONGO_ROOT_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-mongodb-auth
+              key: root-user
+        - name: MONGO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-mongodb-auth
+              key: root-password
+        {{- end }}
+
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+{{- end }}

@@ -185,6 +185,8 @@ MongoDB environment variables - one helper to rule them all
   value: {{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb
 - name: MONGODB_PORT
   value: "27017"
+- name: MONGODB_MODE
+  value: {{ .Values.mongodb.mode | default "standalone" | quote }}
 {{- end }}
 {{- end -}}
 

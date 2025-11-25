@@ -81,6 +81,16 @@ spec:
           {{- toYaml . | nindent 10 }}
         {{- end }}
 
+        {{- if eq .Values.mongodb.mode "replicaset" }}
+        args:
+        - --replSet
+        - {{ .Values.mongodb.replicaSetName | default "rs0" }}
+        {{- if .Values.mongodb.auth.enabled }}
+        - --keyFile
+        - /etc/keyfile/replica-key
+        {{- end }}
+        {{- end }}
+
         ports:
         - containerPort: 27017
           name: mongodb
