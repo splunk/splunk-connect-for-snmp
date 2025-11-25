@@ -1,0 +1,33 @@
+---
+# Source: splunk-connect-for-snmp/templates/redis/redis-ha-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-redis
+  namespace: default
+  labels:
+    app: release-name-redis
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    name: redis
+  selector:
+    app: release-name-redis
+---
+# Source: splunk-connect-for-snmp/templates/redis/redis-ha-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-redis-headless
+  namespace: default
+  labels:
+    app: release-name-redis
+spec:
+  clusterIP: None
+  ports:
+  - port: 6379
+    name: redis
+  selector:
+    app: release-name-redis

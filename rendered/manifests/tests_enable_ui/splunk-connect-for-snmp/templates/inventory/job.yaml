@@ -14,7 +14,8 @@ spec:
   ttlSecondsAfterFinished: 300
   template:
     metadata:
-
+      annotations:
+        checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
       labels:
         app.kubernetes.io/name: splunk-connect-for-snmp-inventory
         app.kubernetes.io/instance: release-name
@@ -28,12 +29,18 @@ spec:
           env:
           - name: CONFIG_PATH
             value: /app/config/config.yaml
-          - name: REDIS_URL
-            value: redis://release-name-redis-master:6379/1
+          - name: REDIS_MODE
+            value: "standalone"
+          - name: REDIS_HOST
+            value: release-name-redis
+          - name: REDIS_PORT
+            value: "6379"
+          - name: REDIS_DB
+            value: "1"
+          - name: CELERY_DB
+            value: "0"
           - name: INVENTORY_PATH
             value: /app/inventory/inventory.csv
-          - name: CELERY_BROKER_URL
-            value: redis://release-name-redis-master:6379/0
           - name: MONGO_URI
             value: mongodb://release-name-mongodb:27017
           - name: MIB_SOURCES

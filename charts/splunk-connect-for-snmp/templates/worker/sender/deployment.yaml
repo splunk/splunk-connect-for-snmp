@@ -13,10 +13,11 @@ spec:
       {{- include "splunk-connect-for-snmp.worker.sender.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.worker.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 -}}
+        {{- with .Values.worker.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "splunk-connect-for-snmp.worker.sender.selectorLabels" . | nindent 8 }}
     spec:
@@ -53,18 +54,6 @@ spec:
               value: /app/hec-mtls/tls.key
             - name: SPLUNK_HEC_MTLS_CA_CERT
               value: /app/hec-mtls/cacert.pem
-            {{- end }}
-            {{- if .Values.redis.auth.enabled }}
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  {{- if .Values.redis.auth.existingSecret }}
-                  name: {{ .Values.redis.auth.existingSecret }}
-                  key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
-                  {{- else }}
-                  name: {{ .Release.Name }}-redis-secret
-                  key: password
-                  {{- end }}
             {{- end }}
           {{- if .Values.worker.livenessProbe.enabled }}
           livenessProbe:
