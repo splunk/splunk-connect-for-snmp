@@ -158,7 +158,7 @@ checksum/redis-secret: {{ include (print $.Template.BasePath "/redis/redis-secre
 {{/*
 MongoDB environment variables - one helper to rule them all
 */}}
-{{- define "mongodb.env" -}}
+{{- define "splunk-connect-for-snmp.mongodb-env" -}}
 {{- if .Values.mongodb.auth.enabled }}
 - name: MONGODB_USERNAME
   valueFrom:
@@ -193,7 +193,7 @@ MongoDB environment variables - one helper to rule them all
 {{/*
 MongoDB replica set hosts (comma-separated)
 */}}
-{{- define "mongodb.replicaset.hosts" -}}
+{{- define "splunk-connect-for-snmp.mongodb.replicaset.hosts" -}}
 {{- $hosts := list -}}
 {{- range $i := until (int (.Values.mongodb.replicaCount | default 3)) -}}
   {{- $hosts = append $hosts (printf "%s-mongodb-%d.%s-mongodb:27017" $.Release.Name $i $.Release.Name) -}}
