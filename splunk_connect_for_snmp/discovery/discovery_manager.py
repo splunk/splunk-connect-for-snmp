@@ -92,8 +92,12 @@ class Discovery(Task):
                     result = future.result()
                     if result:
                         devices_detail.append(result)
-                        logger.debug(
+                        logger.info(
                             f"SNMP device found: {result}. Device is from discovery: {discovery_record.discovery_name}"
+                        )
+                    else: 
+                        logger.info(
+                            f"SNMP not enabled on the device: {ip}"
                         )
                 except Exception as e:
                     logger.error(
@@ -118,7 +122,7 @@ class Discovery(Task):
             host_list = self.get_host_list(
                 discovery_record.network_address,
             )
-            logger.debug(f"Number of Active hosts: {len(host_list)}")
+            logger.info(f"Number of Active hosts: {len(host_list)}")
             snmp_devices_detail = self.discover_snmp_devices_details(
                 host_list, discovery_record, max_threads=10
             )
