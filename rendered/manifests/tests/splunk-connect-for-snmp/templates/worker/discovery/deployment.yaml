@@ -44,12 +44,16 @@ spec:
           env:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
-            - name: REDIS_URL
-              value: redis://release-name-redis-master:6379/1
+            - name: REDIS_HOST
+              value: release-name-redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_DB
+              value: "1"
+            - name: CELERY_DB
+              value: "0"
             - name: SC4SNMP_VERSION
               value: CURRENT-VERSION
-            - name: CELERY_BROKER_URL
-              value: redis://release-name-redis-master:6379/0
             - name: MONGO_URI
               value: mongodb://release-name-mongodb:27017
             - name: WALK_RETRY_MAX_INTERVAL
@@ -62,12 +66,16 @@ spec:
               value: "true"
             - name: LOG_LEVEL
               value: INFO
+            - name: DISABLE_MONGO_DEBUG_LOGGING
+              value: "true"
             - name: UDP_CONNECTION_TIMEOUT
               value: "3"
             - name: UDP_CONNECTION_RETRIES
               value: "5"
             - name: MAX_OID_TO_PROCESS
               value: "70"
+            - name: MAX_REPETITIONS
+              value: "10"
             - name: PYSNMP_DEBUG
               value: ""
             - name: PROFILES_RELOAD_DELAY
@@ -89,6 +97,8 @@ spec:
             - name: SPLUNK_HEC_INSECURESSL
               value: "true"
             - name: SPLUNK_AGGREGATE_TRAPS_EVENTS
+              value: "false"
+            - name: SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE
               value: "false"
             - name: SPLUNK_HEC_TOKEN
               valueFrom:
