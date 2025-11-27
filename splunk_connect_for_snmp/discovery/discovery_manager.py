@@ -5,7 +5,6 @@ import os
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-import nmap
 from celery import Task
 from celery.utils.log import get_task_logger
 from filelock import FileLock
@@ -13,7 +12,6 @@ from pysnmp.hlapi import ContextData, ObjectIdentity, ObjectType, SnmpEngine, ge
 
 from splunk_connect_for_snmp.common.csv_record_manager import CSVRecordManager
 from splunk_connect_for_snmp.common.discovery_record import DiscoveryRecord
-from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.snmp.auth import get_auth, setup_transport_target
 
 logger = get_task_logger(__name__)
