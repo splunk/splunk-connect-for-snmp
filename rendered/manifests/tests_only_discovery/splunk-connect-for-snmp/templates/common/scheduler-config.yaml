@@ -1,0 +1,21 @@
+---
+# Source: splunk-connect-for-snmp/templates/common/scheduler-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: splunk-connect-for-snmp-config
+  labels:
+    app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
+    app.kubernetes.io/instance: release-name
+    helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
+    app.kubernetes.io/version: "CURRENT-VERSION"
+    app.kubernetes.io/managed-by: Helm
+data:
+  config.yaml: |-
+      communities:
+        public:
+          communityIndex:
+          contextEngineId:
+          contextName:
+          tag:
+          securityName:

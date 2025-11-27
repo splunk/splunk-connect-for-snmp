@@ -95,3 +95,14 @@ Whether enable polling
 {{- printf "false" }}
 {{- end -}}
 {{- end }}
+
+{{/*
+Whether enable discovery
+*/}}
+{{- define "splunk-connect-for-snmp.discovery.enable" -}}
+{{- if .Values.discovery.enabled }}
+{{- printf "true" }}
+{{- else }}
+{{- printf "false" }}
+{{- end -}}
+{{- end }}

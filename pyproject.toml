@@ -10,6 +10,7 @@ include = ["splunk_connect_for_snmp/profiles/*.yaml"]
 [tool.poetry.scripts]
 traps = 'splunk_connect_for_snmp.traps:main'
 inventory-loader = 'splunk_connect_for_snmp.inventory.loader:load'
+discovery-loader = 'splunk_connect_for_snmp.discovery.loader:load'
 run-walk = 'splunk_connect_for_snmp.walk:run_walk'
 
 [tool.pytest.ini_options]
@@ -46,6 +47,7 @@ JSON-log-formatter ="^1.0.0"
 urllib3 = "^2.0.0"
 jsonschema = "4.24.0"
 flower = "^2.0.1"
+filelock = "^3.18.0"
 pysnmpcrypto = "0.0.4"
 pysnmp = "7.1.8"
 pysmi = "^1.6.2"
