@@ -104,15 +104,19 @@ cp ../docker_compose/* .
 SCHEDULER_CONFIG_FILE="scheduler-config.yaml"
 TRAPS_CONFIG_FILE="traps-config.yaml"
 INVENTORY_FILE="inventory-tests.csv"
+DISCOVERY_CONFIG_FILE="discovery-config.yaml"
 COREFILE="Corefile"
+DISCOVERY_FOLDER="discovery"
 
 # Get the absolute paths of the files
 SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=$(realpath "$SCHEDULER_CONFIG_FILE")
 TRAPS_CONFIG_FILE_ABSOLUTE_PATH=$(realpath "$TRAPS_CONFIG_FILE")
+DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH=$(realpath "$DISCOVERY_CONFIG_FILE")
 INVENTORY_FILE_ABSOLUTE_PATH=$(realpath "$INVENTORY_FILE")
 COREFILE_ABS_PATH=$(realpath "$COREFILE")
 SPLUNK_HEC_HOST=$(hostname -I | cut -d " " -f1)
 SPLUNK_HEC_TOKEN=$(cat hec_token)
+DISCOVERY_PATH=$(realpath "$DISCOVERY_FOLDER")
 
 # Temporary file to store the updated .env content
 TEMP_ENV_FILE=".env.tmp"
@@ -120,16 +124,20 @@ TEMP_ENV_FILE=".env.tmp"
 # Update or add the variables in the .env file
 awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
     -v traps_path="$TRAPS_CONFIG_FILE_ABSOLUTE_PATH" \
+    -v discovery_config_path="$DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH" \
     -v inventory_path="$INVENTORY_FILE_ABSOLUTE_PATH" \
     -v corefile_path="$COREFILE_ABS_PATH" \
+    -v discovery_path="$DISCOVERY_PATH" \
     -v splunk_hec_host="$SPLUNK_HEC_HOST" \
     -v splunk_hec_token="$SPLUNK_HEC_TOKEN" \
     '
     BEGIN {
         updated["SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH"] = 0;
-        updated["TRAPS_CONFIG_FILE_ABSOLUTE_PATH"] = 0;
+        updated["TRAPS_CONFIG_FILE_ABSOLUTE_PATH"] = 0
+        updated["DICOVERY_CONFIG_FILE_ABSOLUTE_PATH"] = 0;
         updated["INVENTORY_FILE_ABSOLUTE_PATH"] = 0;
         updated["COREFILE_ABS_PATH"] = 0;
+        updated["DISCOVERY_PATH"] = 0;
         updated["SPLUNK_HEC_HOST"] = 0;
         updated["SPLUNK_HEC_TOKEN"] = 0;
     }
@@ -140,12 +148,18 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
         } else if ($1 == "TRAPS_CONFIG_FILE_ABSOLUTE_PATH=") {
             print "TRAPS_CONFIG_FILE_ABSOLUTE_PATH=" traps_path;
             updated["TRAPS_CONFIG_FILE_ABSOLUTE_PATH"] = 1;
+        } else if ($1 == "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH=") {
+            print "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH=" discovery_config_path;
+            updated["DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH"] = 1;
         } else if ($1 == "INVENTORY_FILE_ABSOLUTE_PATH=") {
             print "INVENTORY_FILE_ABSOLUTE_PATH=" inventory_path;
             updated["INVENTORY_FILE_ABSOLUTE_PATH"] = 1;
         } else if ($1 == "COREFILE_ABS_PATH=") {
             print "COREFILE_ABS_PATH=" corefile_path;
             updated["COREFILE_ABS_PATH"] = 1;
+        } else if ($1 == "DISCOVERY_PATH=") {
+            print "DISCOVERY_PATH=" discovery_path;
+            updated["DISCOVERY_PATH"] = 1;
         } else if ($1 == "SPLUNK_HEC_HOST=") {
             print "SPLUNK_HEC_HOST=" splunk_hec_host;
             updated["SPLUNK_HEC_HOST"] = 1;
@@ -163,11 +177,17 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
         if (updated["TRAPS_CONFIG_FILE_ABSOLUTE_PATH"] == 0) {
             print "TRAPS_CONFIG_FILE_ABSOLUTE_PATH=" traps_path;
         }
+        if (updated["DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH"] == 0) {
+            print "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH=" discovery_config_path;
+        }
         if (updated["INVENTORY_FILE_ABSOLUTE_PATH"] == 0) {
             print "INVENTORY_FILE_ABSOLUTE_PATH=" inventory_path;
         }
         if (updated["COREFILE_ABS_PATH"] == 0) {
             print "COREFILE_ABS_PATH=" corefile_path;
+        }
+        if (updated["DISCOVERY_PATH"] == 0) {
+            print "DISCOVERY_PATH=" discovery_path;
         }
         if (updated["SPLUNK_HEC_HOST"] == 0) {
             print "SPLUNK_HEC_HOST=" splunk_hec_host;
