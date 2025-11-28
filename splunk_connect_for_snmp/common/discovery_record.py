@@ -16,8 +16,9 @@
 from ipaddress import ip_network
 from typing import List, Union
 
-from pydantic import BaseModel, validator
+from pydantic import validator
 
+from splunk_connect_for_snmp.common.base_record import BaseRecord
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 
 DiscoveryStr = Union[None, str]
@@ -26,15 +27,9 @@ DiscoveryBool = Union[None, bool]
 DiscoveryList = Union[None, List[dict]]
 
 
-class DiscoveryRecord(BaseModel):
+class DiscoveryRecord(BaseRecord):
     discovery_name: DiscoveryStr
     network_address: DiscoveryStr
-    address: DiscoveryStr
-    port: DiscoveryInt = 161
-    version: DiscoveryStr
-    community: DiscoveryStr
-    secret: DiscoveryStr
-    security_engine: DiscoveryStr = ""
     frequency: DiscoveryInt
     delete_already_discovered: DiscoveryBool
     device_rules: DiscoveryList
@@ -53,32 +48,6 @@ class DiscoveryRecord(BaseModel):
                 raise ValueError(f"field network address must be an valid subnet")
 
             return value
-
-    @validator("port", pre=True)
-    def port_validator(cls, value):
-        if value is None:
-            return 161
-        if isinstance(value, int) and value >= 1 or value <= 65535:
-            return value
-        else:
-            raise ValueError("field port must be an integer between 1 and 65535")
-
-    @validator("version", pre=True)
-    def version_validator(cls, value):
-        if value is None or value.strip() == "":
-            return "2c"
-        else:
-            if value not in ("1", "2c", "3"):
-                raise ValueError(
-                    f"version out of range {value} accepted is 1 or 2c or 3"
-                )
-            return value
-
-    @validator("community", "secret", "security_engine", pre=True)
-    def community_secret_security_engine_validator(cls, value):
-        if value is None or (isinstance(value, str) and value.strip() == ""):
-            return None
-        return value
 
     @validator("frequency", pre=True)
     def frequency_validator(cls, value):
@@ -100,6 +69,3 @@ class DiscoveryRecord(BaseModel):
         if value is None:
             return False
         return human_bool(value)
-
-    def asdict(self) -> dict:
-        return self.dict()

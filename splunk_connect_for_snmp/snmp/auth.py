@@ -30,18 +30,14 @@ from pysnmp.hlapi.asyncio import (
 from pysnmp.proto.api.v2c import OctetString
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
-from splunk_connect_for_snmp.common.discovery_record import DiscoveryRecord
+from splunk_connect_for_snmp.common.base_record import BaseRecord
 from splunk_connect_for_snmp.common.hummanbool import human_bool
-from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
 UDP_CONNECTION_TIMEOUT = int(os.getenv("UDP_CONNECTION_TIMEOUT", 1))
 UDP_CONNECTION_RETRIES = int(os.getenv("UDP_CONNECTION_RETRIES", 5))
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
-
-
-RecordType = Union[DiscoveryRecord, InventoryRecord]
 
 
 def get_secret_value(
@@ -61,10 +57,10 @@ def get_secret_value(
 # To discover remote SNMP EngineID we will tap on SNMP engine inner workings
 # by setting up execution point observer setup on INTERNAL class PDU processing
 #
-async def get_security_engine_id(logger, rt: RecordType, snmp_engine: SnmpEngine):
+async def get_security_engine_id(logger, br: BaseRecord, snmp_engine: SnmpEngine):
     observer_context: Dict[Any, Any] = {}
 
-    transport_target = await setup_transport_target(rt)
+    transport_target = await setup_transport_target(br)
 
     # Register a callback to be invoked at specified execution point of
     # SNMP Engine and passed local variables at execution point's local scope
@@ -87,33 +83,33 @@ async def get_security_engine_id(logger, rt: RecordType, snmp_engine: SnmpEngine
 
     # See if our SNMP engine received REPORT PDU containing securityEngineId
     security_engine_id = fetch_security_engine_id(
-        observer_context, error_indication, rt.address
+        observer_context, error_indication, br.address
     )
-    logger.debug(f"securityEngineId={security_engine_id} for device {rt.address}")
+    logger.debug(f"securityEngineId={security_engine_id} for device {br.address}")
     return security_engine_id
 
 
-async def setup_transport_target(rt: RecordType):
-    ip = get_ip_from_socket(rt) if IPv6_ENABLED else rt.address
+async def setup_transport_target(br: BaseRecord):
+    ip = get_ip_from_socket(br) if IPv6_ENABLED else br.address
     if IPv6_ENABLED and ip_address(ip).version == 6:
         return await Udp6TransportTarget.create(
-            (rt.address, rt.port),
+            (br.address, br.port),
             timeout=UDP_CONNECTION_TIMEOUT,
             retries=UDP_CONNECTION_RETRIES,
         )
 
     return await UdpTransportTarget.create(
-        (rt.address, rt.port),
+        (br.address, br.port),
         timeout=UDP_CONNECTION_TIMEOUT,
         retries=UDP_CONNECTION_RETRIES,
     )
 
 
-def get_ip_from_socket(rt: RecordType):
+def get_ip_from_socket(br: BaseRecord):
     # Example of response from getaddrinfo
     # [(< AddressFamily.AF_INET6: 10 >, < SocketKind.SOCK_STREAM: 1 >, 6, '', ('2607:f8b0:4004:c09::64', 161, 0, 0)),
     # (< AddressFamily.AF_INET: 2 >, < SocketKind.SOCK_STREAM: 1 >, 6, '', ('142.251.16.139', 161))]
-    return socket.getaddrinfo(rt.address, rt.port)[0][4][0]
+    return socket.getaddrinfo(br.address, br.port)[0][4][0]
 
 
 def fetch_security_engine_id(observer_context, error_indication, ipaddress):
@@ -125,8 +121,8 @@ def fetch_security_engine_id(observer_context, error_indication, ipaddress):
         )
 
 
-async def get_auth_v3(logger, rt: RecordType, snmp_engine: SnmpEngine) -> UsmUserData:
-    location = os.path.join("secrets/snmpv3", rt.secret)  # type: ignore
+async def get_auth_v3(logger, br: BaseRecord, snmp_engine: SnmpEngine) -> UsmUserData:
+    location = os.path.join("secrets/snmpv3", br.secret)  # type: ignore
     if os.path.exists(location):
         username = get_secret_value(location, "userName", required=True)
 
@@ -149,14 +145,14 @@ async def get_auth_v3(logger, rt: RecordType, snmp_engine: SnmpEngine) -> UsmUse
             get_secret_value(location, "privKeyType", required=False, default="0")
         )
         if (
-            isinstance(rt.security_engine, str)
-            and rt.security_engine != ""
-            and not rt.security_engine.isdigit()
+            isinstance(br.security_engine, str)
+            and br.security_engine != ""
+            and not br.security_engine.isdigit()
         ):
-            security_engine_id = OctetString(hexValue=rt.security_engine)
+            security_engine_id = OctetString(hexValue=br.security_engine)
             logger.debug(f"Security eng from profile {security_engine_id}")
         else:
-            security_engine_id = await get_security_engine_id(logger, rt, snmp_engine)
+            security_engine_id = await get_security_engine_id(logger, br, snmp_engine)
             logger.debug(f"Security eng dynamic {security_engine_id}")
 
         security_name = None
@@ -176,23 +172,23 @@ async def get_auth_v3(logger, rt: RecordType, snmp_engine: SnmpEngine) -> UsmUse
         )
 
     else:
-        raise FileNotFoundError(f"invalid username from secret {rt.secret}")
+        raise FileNotFoundError(f"invalid username from secret {br.secret}")
 
 
-def get_auth_v2c(rt: RecordType) -> CommunityData:
-    return CommunityData(rt.community, mpModel=1)
+def get_auth_v2c(br: BaseRecord) -> CommunityData:
+    return CommunityData(br.community, mpModel=1)
 
 
-def get_auth_v1(rt: RecordType) -> CommunityData:
-    return CommunityData(rt.community, mpModel=0)
+def get_auth_v1(br: BaseRecord) -> CommunityData:
+    return CommunityData(br.community, mpModel=0)
 
 
 async def get_auth(
-    logger, rt: RecordType, snmp_engine: SnmpEngine
+    logger, br: BaseRecord, snmp_engine: SnmpEngine
 ) -> Union[UsmUserData, CommunityData]:
-    if rt.version == "1":
-        return get_auth_v1(rt)
-    elif rt.version == "2c":
-        return get_auth_v2c(rt)
+    if br.version == "1":
+        return get_auth_v1(br)
+    elif br.version == "2c":
+        return get_auth_v2c(br)
     else:
-        return await get_auth_v3(logger, rt, snmp_engine)
+        return await get_auth_v3(logger, br, snmp_engine)
