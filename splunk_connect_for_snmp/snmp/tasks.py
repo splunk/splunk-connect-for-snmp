@@ -70,7 +70,7 @@ async def walk_async_wrapper(self: Poller, **kwargs):
     ir = get_inventory(mongo_inventory, address)
     retry = True
     while retry:
-        retry, result = await self.do_work(ir, walk=True, profiles=profile)
+        retry, result = await self.do_work(ir, is_walk=True, profiles=profile)
 
     # After a Walk tell schedule to recalc
     work = {

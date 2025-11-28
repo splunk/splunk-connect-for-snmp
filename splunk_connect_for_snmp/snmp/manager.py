@@ -126,21 +126,23 @@ def get_inventory(mongo_inventory, address):
 
 
 def _any_failure_happened(
-    error_indication, error_status, error_index, varbinds: tuple, address, walk
+    error_indication, error_status, error_index, varbinds: tuple, address, is_walk
 ) -> bool:
     """
     This function checks if any failure happened during GET or BULK operation.
-    :param error_indication:
-    :param error_status:
-    :param error_index: index of varbind where error appeared
+    :param error_indication: True value indicates SNMP engine error.
+    :param error_status: True value indicates SNMP PDU error.
+    :param error_index: Non-zero value refers to varBinds[errorIndex-1].
     :param varbinds: a sequential tuple of varbinds
+    :param address: IP address.
+    :param is_walk: A bool indicating whether walk is True or False
     :return: if any failure happened
     """
     if error_indication:
         if isinstance(error_indication, EmptyResponse) and IGNORE_EMPTY_VARBINDS:
             return False
         raise SnmpActionError(
-            f"An error of SNMP isWalk={walk} for a host {address} occurred: {error_indication}"
+            f"An error of SNMP isWalk={is_walk} for a host {address} occurred: {error_indication}"
         )
     elif error_status:
         result = "{} at {}".format(
@@ -148,7 +150,7 @@ def _any_failure_happened(
             error_index and varbinds[int(error_index) - 1][0] or "?",
         )
         raise SnmpActionError(
-            f"An error of SNMP isWalk={walk} for a host {address} occurred: {result}"
+            f"An error of SNMP isWalk={is_walk} for a host {address} occurred: {result}"
         )
     return False
 
@@ -326,7 +328,7 @@ class Poller(Task):
     async def do_work(
         self,
         ir: InventoryRecord,
-        walk: bool = False,
+        is_walk: bool = False,
         profiles: Union[List[str], None] = None,
     ):
         """
@@ -349,14 +351,14 @@ class Poller(Task):
         address = transform_address_to_key(ir.address, ir.port)
         logger.info(f"Preparing task for {ir.address}")
 
-        if time.time() - self.last_modified > PROFILES_RELOAD_DELAY or walk:
+        if time.time() - self.last_modified > PROFILES_RELOAD_DELAY or is_walk:
             self.profiles = self.profiles_manager.return_collection()
             self.profiles_collection.update(self.profiles)
             self.last_modified = time.time()
             logger.debug("Profiles reloaded")
 
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_varbinds(
-            address, walk=walk, profiles=profiles
+            address, is_walk=is_walk, profiles=profiles
         )
 
         auth_data = await get_auth(logger, ir, self.snmpEngine)
@@ -379,7 +381,7 @@ class Poller(Task):
                 metrics,
                 transport,
                 varbinds_bulk,
-                walk,
+                is_walk,
             )
 
         if varbinds_get:
@@ -392,7 +394,7 @@ class Poller(Task):
                 metrics,
                 transport,
                 varbinds_get,
-                walk,
+                is_walk,
             )
 
         for group_key, metric in metrics.items():
@@ -413,7 +415,7 @@ class Poller(Task):
         metrics: dict,
         transport,
         varbinds_get,
-        walk,
+        is_walk,
     ):
         snmp_engine = self.get_snmp_engine()
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
@@ -439,7 +441,7 @@ class Poller(Task):
                 error_index,
                 varbind_table,
                 ir.address,
-                walk,
+                is_walk,
             ):
                 self.process_snmp_data(varbind_table, metrics, address, get_mapping)
 
@@ -453,7 +455,7 @@ class Poller(Task):
         metrics: dict,
         transport,
         varbinds_bulk,
-        walk,
+        is_walk,
     ):
         """
         Perform asynchronous SNMP BULK requests on multiple varbinds simultaneously.
@@ -469,7 +471,7 @@ class Poller(Task):
         :param metrics: dictionary to store metrics collected from SNMP responses
         :param transport: SNMP transport target
         :param varbinds_bulk: set of SNMP varbinds to query in parallel
-        :param walk: boolean flag indicating if it is a walk operation
+        :param is_walk: boolean flag indicating if it is a walk operation
 
         :return: None
 
@@ -507,7 +509,7 @@ class Poller(Task):
                 error_index,
                 varbind_table,
                 ir.address,
-                walk,
+                is_walk,
             ):
                 _, tmp_mibs, _ = self.process_snmp_data(
                     varbind_table, metrics, address, bulk_mapping
@@ -544,17 +546,17 @@ class Poller(Task):
         logger.warning(f"no mib found {id} based on {oid} from {target}")
         return False, ""
 
-    def get_varbinds(self, address, walk=False, profiles=[]):
+    def get_varbinds(self, address, is_walk=False, profiles=[]):
         varbinds_bulk = set()
         varbinds_get = set()
         get_mapping = {}
         bulk_mapping = {}
-        if walk and not profiles:
+        if is_walk and not profiles:
             varbinds_bulk.add(ObjectType(ObjectIdentity("1.3.6")))
             return varbinds_get, get_mapping, varbinds_bulk, bulk_mapping
 
         joined_profile_object = self.profiles_collection.get_polling_info_from_profiles(
-            profiles, walk
+            profiles, is_walk
         )
         if joined_profile_object:
             mib_families = joined_profile_object.get_mib_families()
@@ -579,7 +581,7 @@ class Poller(Task):
 
     def process_snmp_data(self, varbind_table, metrics, target, mapping={}):
         retry = False
-        remotemibs = set()
+        remotemibs = []
         for varbind in varbind_table:
             index, metric, mib, oid, varbind_id = self.init_snmp_data(varbind)
 
@@ -616,12 +618,12 @@ class Poller(Task):
                     retry = True
                     break
 
-        return retry, list(remotemibs), metrics
+        return retry, remotemibs, metrics
 
     def find_new_mibs(self, oid, remotemibs, target, varbind_id):
         found, mib = self.is_mib_known(varbind_id, oid, target)
-        if found and mib:
-            remotemibs.add(mib)
+        if mib and mib not in remotemibs:
+            remotemibs.append(mib)
         return found
 
     def handle_metrics(
