@@ -247,9 +247,9 @@ class ProfileCollection:
             current_profile.process()
             self.list_of_profiles[profile_name] = current_profile
 
-    def get_polling_info_from_profiles(self, profiles_names, walk=False) -> Profile:
+    def get_polling_info_from_profiles(self, profiles_names, is_walk=False) -> Profile:
         profiles = [self.get_profile(name) for name in profiles_names]
-        if len(profiles) == 1 or walk:
+        if len(profiles) == 1 or is_walk:
             return profiles[0]
         return reduce(self.combine_profiles, profiles)
 
