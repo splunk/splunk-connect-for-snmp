@@ -95,10 +95,8 @@ class Discovery(Task):
                         logger.info(
                             f"SNMP device found: {result}. Device is from discovery: {discovery_record.discovery_name}"
                         )
-                    else: 
-                        logger.info(
-                            f"SNMP not enabled on the device: {ip}"
-                        )
+                    else:
+                        logger.info(f"SNMP not enabled on the device: {ip}")
                 except Exception as e:
                     logger.error(
                         f"Snmp check for device {ip} generated an exception : {e}"
