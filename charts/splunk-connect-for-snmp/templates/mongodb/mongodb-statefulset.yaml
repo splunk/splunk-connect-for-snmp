@@ -5,7 +5,7 @@ metadata:
   labels:
     app: {{ .Release.Name }}-mongodb
 spec:
-  serviceName: {{ .Release.Name }}-mongodb
+  serviceName: {{ .Release.Name }}-mongodb-headless
   replicas: {{ if eq .Values.mongodb.mode "standalone" }}1{{ else }}{{ .Values.mongodb.replicaCount | default 3 }}{{ end }}
 
   selector:

@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import logging
-
 # Support use of .env file for developers
 from contextlib import suppress
+from splunk_connect_for_snmp.common.hummanbool import wait_for_mongodb_replicaset
 
 with suppress(ImportError, OSError):
     from dotenv import load_dotenv
@@ -36,10 +35,11 @@ provider = TracerProvider()
 trace.set_tracer_provider(provider)
 
 logger = get_task_logger(__name__)
-# //using rabbitmq as the message broker
+
+
+wait_for_mongodb_replicaset(logger)
 app = Celery("sc4snmp_poller")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
-# app.conf.update(**config)
 
 INVENTORY_PATH = os.getenv("INVENTORY_PATH", "/app/inventory/inventory.csv")
 

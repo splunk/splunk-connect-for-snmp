@@ -160,6 +160,8 @@ MongoDB environment variables - one helper to rule them all
 */}}
 {{- define "splunk-connect-for-snmp.mongodb-env" -}}
 {{- if .Values.mongodb.auth.enabled }}
+- name: MONGODB_MODE
+  value: {{ .Values.mongodb.mode | default "standalone" | quote }}
 - name: MONGODB_USERNAME
   valueFrom:
     secretKeyRef:
@@ -177,7 +179,7 @@ MongoDB environment variables - one helper to rule them all
   value: {{ .Values.mongodb.database | default "sc4snmp" | quote }}
 {{- if eq .Values.mongodb.mode "replicaset" }}
 - name: MONGODB_HOST
-  value: {{ include "mongodb.replicaset.hosts" . | quote }}
+  value: {{ include "splunk-connect-for-snmp.mongodb.replicaset.hosts" . | quote }}
 - name: MONGODB_REPLICA_SET
   value: {{ .Values.mongodb.replicaSetName | default "rs0" | quote }}
 {{- else }}
@@ -185,8 +187,6 @@ MongoDB environment variables - one helper to rule them all
   value: {{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb
 - name: MONGODB_PORT
   value: "27017"
-- name: MONGODB_MODE
-  value: {{ .Values.mongodb.mode | default "standalone" | quote }}
 {{- end }}
 {{- end -}}
 
@@ -196,7 +196,7 @@ MongoDB replica set hosts (comma-separated)
 {{- define "splunk-connect-for-snmp.mongodb.replicaset.hosts" -}}
 {{- $hosts := list -}}
 {{- range $i := until (int (.Values.mongodb.replicaCount | default 3)) -}}
-  {{- $hosts = append $hosts (printf "%s-mongodb-%d.%s-mongodb:27017" $.Release.Name $i $.Release.Name) -}}
+  {{- $hosts = append $hosts (printf "%s-mongodb-%d.%s-mongodb-headless.%s.svc.cluster.local:27017" $.Release.Name $i $.Release.Name $.Release.Namespace ) -}}
 {{- end -}}
 {{- join "," $hosts -}}
 {{- end -}}
