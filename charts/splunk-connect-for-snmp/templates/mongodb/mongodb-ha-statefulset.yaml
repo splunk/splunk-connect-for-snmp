@@ -140,7 +140,7 @@ spec:
       {{- if .Values.mongodb.auth.enabled }}
       - name: keyfile-tmp
         secret:
-          secretName: {{ .Release.Name }}-mongodb-auth
+          secretName: {{ .Release.Name }}-mongodb-replicakey
           items:
           - key: replica-key
             path: replica-key

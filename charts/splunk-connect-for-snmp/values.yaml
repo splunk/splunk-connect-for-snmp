@@ -533,6 +533,7 @@ mongodb:
     enabled: true
     rootUser: admin
     rootPassword: "ChangeMe123"
+    existingReplicaKeySecret: ""
 
   persistence:
     enabled: true
