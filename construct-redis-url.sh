@@ -66,10 +66,10 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     # With authentication
     if [ "$MONGODB_MODE" = "replicaset" ]; then
       # Replica set
-      export MONGO_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}?replicaSet=${MONGODB_REPLICA_SET}&authSource=${MONGODB_AUTH_SOURCE:-admin}&authSource=admin&readPreference=primary"
+      export MONGO_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}?replicaSet=${MONGODB_REPLICA_SET}&authSource=${MONGODB_AUTH_SOURCE:-admin}&readPreference=primary"
     else
       # Standalone
-      export MONGO_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=${MONGODB_AUTH_SOURCE:-admin}"
+      export MONGO_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}"
     fi
   else
     # Without authentication
@@ -81,7 +81,7 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
   fi
 
   if [ -n "$MONGODB_REPLICA_SET" ]; then
-    export MONGO_WAIT_URI="${MONGO_URI}&directConnection=false&serverSelectionTimeoutMS=30000&connectTimeoutMS=30000"
+    export MONGO_WAIT_URI="${MONGO_URI}"
   else
     export MONGO_WAIT_URI="${MONGO_URI}"
   fi

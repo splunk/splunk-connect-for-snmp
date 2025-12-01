@@ -14,26 +14,25 @@ spec:
       serviceAccountName: {{ .Release.Name }}-mongodb-init-sa
       containers:
       - name: init-replicaset
-        image: registry.k8s.io/kubectl:v1.31.3
+        image: alpine/k8s:1.31.3
         command:
-        - bash
+        - sh
         - -c
         - |
           set -e
 
           echo "=========================================="
-          echo " MongoDB Replica Set Auto-Initialization"
+          echo " MongoDB Replica Set Initialization"
           echo "=========================================="
           echo ""
 
-          # Wait for all pods to be ready
-          echo "Step 1: Waiting for MongoDB pods..."
-          kubectl wait --for=condition=ready pod -l app={{ .Release.Name }}-mongodb --timeout=600s
-          echo "✅ All pods ready"
-          echo ""
+          echo "Waiting for all {{ .Values.mongodb.replicaCount }} pods to be ready..."
+          {{- range $i := until (int .Values.mongodb.replicaCount) }}
+          kubectl wait --for=condition=ready pod/{{ $.Release.Name }}-mongodb-{{ $i }} --timeout=600s
+          echo "  ✅ Pod {{ $i }} ready"
+          {{- end }}
 
-          # Check if already initialized
-          echo "Step 2: Checking if replica set exists..."
+          echo "Checking replica set status..."
           RS_STATUS=$(kubectl exec {{ .Release.Name }}-mongodb-0 -- mongosh \
             {{- if .Values.mongodb.auth.enabled }}
             -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin \
@@ -41,56 +40,30 @@ spec:
             --quiet --eval "try { rs.status().ok } catch(e) { 0 }" 2>/dev/null | tail -1)
 
           if [ "$RS_STATUS" = "1" ]; then
-            echo "✅ Replica set already initialized"
-            echo ""
-            kubectl exec {{ .Release.Name }}-mongodb-0 -- mongosh \
-              {{- if .Values.mongodb.auth.enabled }}
-              -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin \
-              {{- end }}
-              --quiet --eval "rs.status().members.forEach(m => print('  ' + m.name + ': ' + m.stateStr))"
+            echo "✅ Already initialized"
             exit 0
           fi
 
-          # Initialize replica set
-          echo "Step 3: Initializing replica set..."
+          echo "Initializing replica set..."
           kubectl exec {{ .Release.Name }}-mongodb-0 -- mongosh \
             {{- if .Values.mongodb.auth.enabled }}
             -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin \
             {{- end }}
-            --eval "
-              rs.initiate({
-                _id: '{{ .Values.mongodb.replicaSetName }}',
-                members: [
-                  {{- range $i := until (int .Values.mongodb.replicaCount) }}
-                  { _id: {{ $i }}, host: '{{ $.Release.Name }}-mongodb-{{ $i }}.{{ $.Release.Name }}-mongodb-headless:27017' }{{ if ne $i (sub (int $.Values.mongodb.replicaCount) 1) }},{{ end }}
-                  {{- end }}
-                ]
-              })
-            " 2>&1 | tee /tmp/init-output.txt
-
-          # Check result
-          if grep -Eq '"ok".*1|already initialized' /tmp/init-output.txt; then
-            echo "✅ Initialization successful"
-          else
-            echo "⚠️  Init command completed with warnings"
-          fi
+            --eval "rs.initiate({_id:'{{ .Values.mongodb.replicaSetName }}',members:[{{- range $i := until (int .Values.mongodb.replicaCount) }}{_id:{{ $i }},host:'{{ $.Release.Name }}-mongodb-{{ $i }}.{{ $.Release.Name }}-mongodb-headless:27017'}{{ if ne $i (sub (int $.Values.mongodb.replicaCount) 1) }},{{- end }}{{- end }}]})" || echo "Init completed"
 
           echo ""
-          echo "Step 4: Waiting for PRIMARY election (15 seconds)..."
+          echo "Waiting 15s for PRIMARY election..."
           sleep 15
 
           echo ""
-          echo "Step 5: Final status:"
           kubectl exec {{ .Release.Name }}-mongodb-0 -- mongosh \
             {{- if .Values.mongodb.auth.enabled }}
             -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin \
             {{- end }}
-            --quiet --eval "rs.status().members.forEach(m => print('  ' + m.name + ': ' + m.stateStr))"
+            --quiet --eval "rs.status().members.forEach(m => print(m.name + ': ' + m.stateStr))" || true
 
           echo ""
-          echo "=========================================="
-          echo " ✅ MongoDB Replica Set Ready"
-          echo "=========================================="
+          echo "✅ Initialization complete"
 
         {{- if .Values.mongodb.auth.enabled }}
         env:
