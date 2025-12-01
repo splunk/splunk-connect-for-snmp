@@ -74,6 +74,11 @@ def wait_for_mongodb_replicaset(logger, max_retries=120, retry_interval=5):
     Wait for MongoDB to be ready before starting the application.
     For replica sets, waits for PRIMARY to be elected.
     """
+    mongo_mode = os.getenv('MONGO_MODE', 'standalone').lower()
+    if mongo_mode == "standalone":
+        logger.info("MongoDB is in standalone mode, skipping ReplicaSet wait")
+        return
+
     mongo_uri = os.getenv('MONGO_URI')
 
     if not mongo_uri:
