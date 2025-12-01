@@ -1,12 +1,14 @@
+{{- if eq .Values.mongodb.mode "replicaset" }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-mongodb
   labels:
     app: {{ .Release.Name }}-mongodb
+    mode: replicaset
 spec:
   serviceName: {{ .Release.Name }}-mongodb-headless
-  replicas: {{ if eq .Values.mongodb.mode "standalone" }}1{{ else }}{{ .Values.mongodb.replicaCount | default 3 }}{{ end }}
+  replicas: {{ .Values.mongodb.replicaCount | default 3 }}
 
   selector:
     matchLabels:
@@ -16,13 +18,13 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-mongodb
+        mode: replicaset
     spec:
       {{- with .Values.mongodb.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
-      {{- if eq .Values.mongodb.mode "replicaset" }}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -32,19 +34,12 @@ spec:
                 matchLabels:
                   app: {{ .Release.Name }}-mongodb
               topologyKey: kubernetes.io/hostname
-      {{- end }}
 
       initContainers:
       {{- if .Values.mongodb.initPermissions }}
       - name: init-permissions
         image: busybox:1.36
-        command:
-        - sh
-        - -c
-        - |
-          mkdir -p /data/db
-          chown -R 999:999 /data/db
-          chmod -R 755 /data/db
+        command: ["sh", "-c", "mkdir -p /data/db && chown -R 999:999 /data/db && chmod -R 755 /data/db"]
         volumeMounts:
         - name: data
           mountPath: /data/db
@@ -52,16 +47,10 @@ spec:
           runAsUser: 0
       {{- end }}
 
-      {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
+      {{- if .Values.mongodb.auth.enabled }}
       - name: keyfile-setup
         image: busybox:1.36
-        command:
-        - sh
-        - -c
-        - |
-          cp /tmp/keyfile/replica-key /keyfile/replica-key
-          chmod 400 /keyfile/replica-key
-          chown 999:999 /keyfile/replica-key
+        command: ["sh", "-c", "cp /tmp/keyfile/replica-key /keyfile/replica-key && chmod 400 /keyfile/replica-key && chown 999:999 /keyfile/replica-key"]
         volumeMounts:
         - name: keyfile-tmp
           mountPath: /tmp/keyfile
@@ -81,14 +70,12 @@ spec:
           {{- toYaml . | nindent 10 }}
         {{- end }}
 
-        {{- if eq .Values.mongodb.mode "replicaset" }}
         args:
         - --replSet
         - {{ .Values.mongodb.replicaSetName | default "rs0" }}
         {{- if .Values.mongodb.auth.enabled }}
         - --keyFile
         - /etc/keyfile/replica-key
-        {{- end }}
         {{- end }}
 
         ports:
@@ -100,19 +87,19 @@ spec:
         - name: MONGO_INITDB_ROOT_USERNAME
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb-auth" .Release.Name) }}
-              key: {{ .Values.mongodb.auth.rootUserKey | default "root-user" }}
+              name: {{ .Release.Name }}-mongodb-auth
+              key: root-user
         - name: MONGO_INITDB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb-auth" .Release.Name) }}
-              key: {{ .Values.mongodb.auth.rootPasswordKey | default "root-password" }}
+              name: {{ .Release.Name }}-mongodb-auth
+              key: root-password
         {{- end }}
 
         volumeMounts:
         - name: data
           mountPath: /data/db
-        {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
+        {{- if .Values.mongodb.auth.enabled }}
         - name: keyfile
           mountPath: /etc/keyfile
           readOnly: true
@@ -150,12 +137,12 @@ spec:
         {{- end }}
 
       volumes:
-      {{- if and .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replicaset") }}
+      {{- if .Values.mongodb.auth.enabled }}
       - name: keyfile-tmp
         secret:
-          secretName: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb-auth" .Release.Name) }}
+          secretName: {{ .Release.Name }}-mongodb-auth
           items:
-          - key: {{ .Values.mongodb.auth.replicaKeyKey | default "replica-key" }}
+          - key: replica-key
             path: replica-key
       - name: keyfile
         emptyDir: {}
@@ -175,3 +162,4 @@ spec:
         requests:
           storage: {{ .Values.mongodb.persistence.size | default "10Gi" }}
   {{- end }}
+{{- end }}
