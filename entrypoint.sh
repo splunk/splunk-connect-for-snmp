@@ -9,6 +9,10 @@ wait-for-dep ${REDIS_DEPENDENCIES} "${MONGO_URI}" "${MIB_INDEX}"
 
 case $1 in
 
+discovery)
+    discovery-loader
+    ;;
+
 inventory)
     inventory-loader
     ;;
@@ -17,6 +21,9 @@ celery)
     case $2 in
     beat)
         celery -A splunk_connect_for_snmp.poller beat -l "$LOG_LEVEL" --max-interval=10
+        ;;
+    worker-discovery)
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q discovery --autoscale=8,"$WORKER_CONCURRENCY"
         ;;
     worker-trap)
         celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q traps --autoscale=8,"$WORKER_CONCURRENCY"

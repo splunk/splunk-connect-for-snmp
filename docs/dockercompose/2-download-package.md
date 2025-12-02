@@ -5,7 +5,7 @@ Package with docker compose configuration files (`docker_compose.zip`) can be do
 
 ## Configuration
 To configure the deployment, follow the instructions in [Inventory configuration](./3-inventory-configuration.md), 
-[Scheduler configuration](./4-scheduler-configuration.md), [Traps configuration](./5-traps-configuration.md),
+[Scheduler configuration](./4-scheduler-configuration.md), [Traps configuration](./5-traps-configuration.md), [Discovery configuration](./11-discovery-configuration.md),
 [.env file configuration](./6-env-file-configuration.md), [SNMPv3 secrets](./7-snmpv3-secrets.md).
 
 ## Deploying the app

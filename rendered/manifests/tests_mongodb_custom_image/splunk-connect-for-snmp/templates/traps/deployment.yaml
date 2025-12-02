@@ -44,6 +44,8 @@ spec:
               "trap"
             ] 
           env:
+            - name: USER
+              value: "sc4snmp"
             - name: CONFIG_PATH
               value: /app/config/config.yaml
             - name: MONGO_URI

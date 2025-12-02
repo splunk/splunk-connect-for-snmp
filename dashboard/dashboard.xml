@@ -187,6 +187,81 @@
   </row>
   <row>
     <panel>
+      <title>SNMP discovery status</title>
+      <input type="dropdown" token="discovery_status_key" searchWhenChanged="true">
+        <label>Discovery Key</label>
+        <choice value="*">all</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>key</fieldForLabel>
+        <fieldForValue>key</fieldForValue>
+        <search>
+          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;discovery" | rex field=_raw "Sending due task sc4snmp;(?&lt;key&gt;.+);discovery" | stats count by key</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+      </input>
+      <chart>
+        <title>In case of unsuccessful discovery status, please copy SPL query from this chart and find failed tasks. Explanation of error log messages you can find at
+          https://splunk.github.io/splunk-connect-for-snmp/main/troubleshooting/discovery-issues/</title>
+        <search>
+          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.discovery.tasks.discovery "$discovery_status_key$" | rex field=_raw "Task splunk_connect_for_snmp.*\[*\] (?&lt;status&gt;\w+)" | where status != "received" | timechart count by status</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="height">331</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <drilldown>
+          <link target="_blank">search?q=index%3D*%20sourcetype%3D%22*%3Acontainer%3Asplunk-connect-for-snmp-*%22%20splunk_connect_for_snmp.discovery.tasks.discovery%20%22$discovery_status_key$%22%20%7C%20rex%20field%3D_raw%20%22Task%20splunk_connect_for_snmp.*%5C%5B*%5C%5D%20(%3F%3Cstatus%3E%5Cw%2B)%22%20%7C%20where%20status%20!%3D%20%22received%22&amp;earliest=-24h@h&amp;latest=now</link>
+        </drilldown>
+      </chart>
+    </panel>
+    <panel>
+      <title>SNMP schedule of discovery tasks</title>
+      <input type="dropdown" token="discovery_key" searchWhenChanged="true">
+        <label>Discovery Key</label>
+        <choice value="*">all</choice>
+        <default>*</default>
+        <initialValue>*</initialValue>
+        <fieldForLabel>key</fieldForLabel>
+        <fieldForValue>key</fieldForValue>
+        <search>
+          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;discovery" | rex field=_raw "Sending due task sc4snmp;(?&lt;key&gt;.+);discovery" | stats count by key</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+      </input>
+      <chart>
+        <title>Using this chart you can understand when SC4SNMP scheduled discovery for your Discovery Key last time. The process works if it runs regularly.</title>
+        <search>
+          <query>index=* sourcetype="*:container:splunk-connect-for-snmp-*" Scheduler: Sending due task sc4snmp;*;discovery "$discovery_key$" | timechart count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">all</option>
+        <option name="height">331</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">search?q=index%3D*%20sourcetype%3D%22*%3Acontainer%3Asplunk-connect-for-snmp-*%22%20Scheduler%3A%20Sending%20due%20task%20sc4snmp%3B*%3Bdiscovery%20%22$discovery_key$%22&amp;earliest=-24h@h&amp;latest=now</link>
+        </drilldown>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
       <title>SNMP send to Splunk status</title>
       <chart>
         <title>In case of unsuccessful enrich status, please copy spl query from this chart and find failed tasks. Explanation of error log messages you can find at the https://splunk.github.io/splunk-connect-for-snmp/main/bestpractices/</title>

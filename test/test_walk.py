@@ -1,5 +1,5 @@
-from unittest import TestCase
-from unittest.mock import mock_open, patch
+from unittest import IsolatedAsyncioTestCase
+from unittest.mock import AsyncMock, mock_open, patch
 
 from splunk_connect_for_snmp.walk import run_walk
 
@@ -9,18 +9,20 @@ localhost,,2c,public,,,1804,test_1,True,False
 192.178.0.1,,2c,public,,,1804,test_1,True,False"""
 
 
-class TestWalk(TestCase):
+class TestWalk(IsolatedAsyncioTestCase):
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.Poller.do_work", new_callable=AsyncMock
+    )
     @patch(
         "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
     )
-    def test_run_walk(self, m_load_profiles, m_do_work, m_init, m_open):
+    async def test_run_walk(self, m_load_profiles, m_do_work, m_init, m_open):
         m_init.return_value = None
         m_do_work.return_value = (False, {})
 
-        run_walk()
+        await run_walk()
 
         calls = m_do_work.call_args_list
 
@@ -34,15 +36,17 @@ class TestWalk(TestCase):
 
     @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
+    @patch(
+        "splunk_connect_for_snmp.snmp.manager.Poller.do_work", new_callable=AsyncMock
+    )
     @patch(
         "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
     )
-    def test_run_walk_exception(self, m_load_profiles, m_do_work, m_init, m_open):
+    async def test_run_walk_exception(self, m_load_profiles, m_do_work, m_init, m_open):
         m_init.return_value = None
         m_do_work.side_effect = (Exception("Boom!"), (False, {}))
 
-        run_walk()
+        await run_walk()
 
         calls = m_do_work.call_args_list
 

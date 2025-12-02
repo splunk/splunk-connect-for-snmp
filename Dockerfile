@@ -1,10 +1,11 @@
-FROM python:3.10-alpine AS base
+FROM python:3.13-alpine AS base
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
     PYTHONUNBUFFERED=1
 RUN apk add -U git sqlite-dev
 RUN pip install --upgrade setuptools pip
+RUN apk add --no-cache nmap
 RUN mkdir /app
 WORKDIR /app
 
