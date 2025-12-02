@@ -12,14 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import inspect
-import json
-import socket
-from ipaddress import ip_address
 from typing import List, Union
 
-from pydantic import BaseModel, validator
+from pydantic import validator
 
+from splunk_connect_for_snmp.common.base_record import BaseRecord
 from splunk_connect_for_snmp.common.hummanbool import human_bool
 
 InventoryStr = Union[None, str]
@@ -32,13 +29,7 @@ ALTERNATIVE_FIELDS = {
 }
 
 
-class InventoryRecord(BaseModel):
-    port: InventoryInt = 161
-    address: InventoryStr
-    version: InventoryStr
-    community: InventoryStr
-    secret: InventoryStr
-    security_engine: InventoryStr = ""
+class InventoryRecord(BaseRecord):
     walk_interval: InventoryInt = 42000
     profiles: List
     smart_profiles: InventoryBool
@@ -51,55 +42,6 @@ class InventoryRecord(BaseModel):
                 kwargs[current] = kwargs.get(old)
                 kwargs.pop(old, None)
         super().__init__(*args, **kwargs)
-
-    @validator("address", pre=True)
-    def address_validator(cls, value, values):
-        if value is None:
-            raise ValueError("field address cannot be null")
-        if value.startswith("#"):
-            raise ValueError("field address cannot be commented")
-        else:
-            try:
-                ip_address(value)
-            except ValueError:
-                try:
-                    socket.getaddrinfo(value, values["port"])
-                except socket.gaierror:
-                    raise ValueError(
-                        f"field address must be an IP or a resolvable hostname {value}"
-                    )
-
-            return value
-
-    @validator("port", pre=True)
-    def port_validator(cls, value):
-        if value is None or (isinstance(value, str) and value.strip() == ""):
-            return 161
-        else:
-            if not isinstance(value, int):
-                value = int(value)
-
-            if value < 1 or value > 65535:
-                raise ValueError(f"Port out of range {value}")
-            return value
-
-    @validator("version", pre=True)
-    def version_validator(cls, value):
-        if value is None or value.strip() == "":
-            return "2c"
-        else:
-            if value not in ("1", "2c", "3"):
-                raise ValueError(
-                    f"version out of range {value} accepted is 1 or 2c or 3"
-                )
-            return value
-
-    @validator("community", "secret", "security_engine", pre=True)
-    def community_secret_security_engine_validator(cls, value):
-        if value is None or (isinstance(value, str) and value.strip() == ""):
-            return None
-        else:
-            return value
 
     @validator("walk_interval", pre=True)
     def walk_interval_validator(cls, value):
@@ -142,6 +84,3 @@ class InventoryRecord(BaseModel):
             return False
         else:
             return value
-
-    def asdict(self) -> dict:
-        return self.dict()
