@@ -223,7 +223,7 @@ snmp-splunk-connect-for-snmp-trap-684d57dc8d-722tv            1/1     Terminatin
 snmp-splunk-connect-for-snmp-trap-684d57dc8d-z68lb            1/1     Terminating   1 (5h21m ago)   22h
 ```
 
-## Restart Splunk Connect for SNMP
+## Reinstall Splunk Connect for SNMP
 First run the command to uninstall SC4SNMP, wait until all pods are removed, then use the command to install sc4snmp again.
 
 ```

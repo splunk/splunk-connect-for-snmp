@@ -1,0 +1,168 @@
+{{- if eq .Values.redis.architecture "replication" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-redis-ha
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-redis
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: database
+spec:
+  serviceName: {{ .Release.Name }}-redis-headless
+  replicas: {{ .Values.redis.replicas | default 3 }}
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-redis
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-redis
+      annotations:
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 }}
+    spec:
+      {{- with .Values.redis.podSecurityContext }}
+      securityContext:
+        runAsUser: {{ .runAsUser }}
+        fsGroup: {{ .fsGroup }}
+      {{- end }}
+      {{- if .Values.redis.storage.enabled }}
+      initContainers:
+      - name: fix-permissions
+        image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+        imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+        command:
+        - sh
+        - -c
+        - |
+          echo "Fixing permissions on /data..."
+          chown -R {{ .Values.redis.podSecurityContext.runAsUser }}:{{ .Values.redis.podSecurityContext.fsGroup }} /data
+          chmod -R 755 /data
+          ls -ln /data
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        securityContext:
+          runAsUser: 0
+      {{- end }}
+      containers:
+      - name: redis
+        image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+        imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+        ports:
+        - containerPort: 6379
+          name: redis
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        {{- if .Values.redis.auth.enabled }}
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              {{- if .Values.redis.auth.existingSecret }}
+              name: {{ .Values.redis.auth.existingSecret }}
+              key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
+              {{- else }}
+              name: {{ .Release.Name }}-redis-secret
+              key: password
+              {{- end }}
+        {{- end }}
+        command:
+        - sh
+        - -c
+        args:
+        - |
+          cp /etc/redis/redis.conf /tmp/redis.conf
+
+          {{- if .Values.redis.auth.enabled }}
+          echo "requirepass $REDIS_PASSWORD" >> /tmp/redis.conf
+          echo "masterauth $REDIS_PASSWORD" >> /tmp/redis.conf
+          {{- end }}
+
+          # Announce pod IP for Sentinel
+          echo "replica-announce-ip $POD_IP" >> /tmp/redis.conf
+          echo "replica-announce-port 6379" >> /tmp/redis.conf
+
+          # Start Redis
+          # Sentinel will handle promotion - all start as replicas initially
+          HOSTNAME=$(hostname)
+          MASTER_NAME="{{ .Release.Name }}-redis-ha-0"
+          MASTER_HOST="$MASTER_NAME.{{ .Release.Name }}-redis-headless"
+
+          if [ "$HOSTNAME" = "$MASTER_NAME" ]; then
+            echo "Starting as master"
+          else
+            echo "replicaof $MASTER_HOST 6379" >> /tmp/redis.conf
+            echo "Starting as replica of $MASTER_HOST"
+          fi
+
+          exec redis-server /tmp/redis.conf
+        volumeMounts:
+        {{- if .Values.redis.storage.enabled }}
+        - name: redis-data
+          mountPath: /data
+        {{- end }}
+        - name: redis-config
+          mountPath: /etc/redis
+        resources:
+          {{- toYaml .Values.redis.resources | nindent 10 }}
+        {{- if .Values.redis.livenessProbe.enabled | default true }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - |
+              {{- if .Values.redis.auth.enabled }}
+              redis-cli -a "$REDIS_PASSWORD" ping
+              {{- else }}
+              redis-cli ping
+              {{- end }}
+          initialDelaySeconds: {{ .Values.redis.livenessProbe.initialDelaySeconds | default 30 }}
+          periodSeconds: {{ .Values.redis.livenessProbe.periodSeconds | default 10 }}
+          timeoutSeconds: {{ .Values.redis.livenessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.redis.livenessProbe.failureThreshold | default 3 }}
+        {{- end }}
+        {{- if .Values.redis.readinessProbe.enabled | default true }}
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - |
+              {{- if .Values.redis.auth.enabled }}
+              redis-cli -a "$REDIS_PASSWORD" ping
+              {{- else }}
+              redis-cli ping
+              {{- end }}
+          initialDelaySeconds: {{ .Values.redis.readinessProbe.initialDelaySeconds | default 5 }}
+          periodSeconds: {{ .Values.redis.readinessProbe.periodSeconds | default 5 }}
+          timeoutSeconds: {{ .Values.redis.readinessProbe.timeoutSeconds | default 3 }}
+          failureThreshold: {{ .Values.redis.readinessProbe.failureThreshold | default 3 }}
+        {{- end }}
+      volumes:
+      - name: redis-config
+        configMap:
+          name: {{ .Release.Name }}-redis-config
+      {{- if not .Values.redis.storage.enabled }}
+      - name: redis-data
+        emptyDir: {}
+      {{- end }}
+  {{- if .Values.redis.storage.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-data
+    spec:
+      accessModes: {{ toYaml .Values.redis.storage.accessModes | nindent 8 }}
+      {{- if .Values.redis.storage.storageClassName }}
+      storageClassName: {{ .Values.redis.storage.storageClassName }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.redis.storage.size }}
+  {{- end }}
+{{- end }}
