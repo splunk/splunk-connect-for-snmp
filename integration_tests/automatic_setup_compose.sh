@@ -135,7 +135,7 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
     '
     BEGIN {
         updated["SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH"] = 0;
-        updated["TRAPS_CONFIG_FILE_ABSOLUTE_PATH"] = 0
+        updated["TRAPS_CONFIG_FILE_ABSOLUTE_PATH"] = 0;
         updated["DICOVERY_CONFIG_FILE_ABSOLUTE_PATH"] = 0;
         updated["INVENTORY_FILE_ABSOLUTE_PATH"] = 0;
         updated["COREFILE_ABS_PATH"] = 0;
