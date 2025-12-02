@@ -84,16 +84,29 @@ spec:
 
         {{- if .Values.mongodb.auth.enabled }}
         env:
-        - name: MONGO_INITDB_ROOT_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mongodb-auth
-              key: root-user
-        - name: MONGO_INITDB_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mongodb-auth
-              key: root-password
+          {{- if .Values.mongodb.auth.existingSecret }}
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.mongodb.auth.existingSecret }}
+                key: root-user
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.mongodb.auth.existingSecret }}
+                key: root-password
+          {{- else }}
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-mongodb-auth
+                key: root-user
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-mongodb-auth
+                key: root-password
+        {{- end }}
         {{- end }}
 
         volumeMounts:
