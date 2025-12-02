@@ -1239,6 +1239,87 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#architecture-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture modes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standalone-mode-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      Standalone mode (default)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Standalone mode (default)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replication-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Replication mode
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Replication mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage considerations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resource Requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#use-authentication-for-redis" class="md-nav__link">
     <span class="md-ellipsis">
       Use authentication for Redis
@@ -2045,6 +2126,87 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#architecture-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture modes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standalone-mode-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      Standalone mode (default)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Standalone mode (default)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replication-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Replication mode
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Replication mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage considerations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resource Requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#use-authentication-for-redis" class="md-nav__link">
     <span class="md-ellipsis">
       Use authentication for Redis
@@ -2112,7 +2274,7 @@ This change ensures we maintain full control over configuration, compatibility, 
 <h3 id="redis-configuration-file">Redis configuration file<a class="headerlink" href="#redis-configuration-file" title="Permanent link">¶</a></h3>
 <p>Redis configuration is maintained in the <code>redis</code> section of <code>values.yaml</code>, which is used during installation to configure Kubernetes resources.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
-<span class="w">  </span><span class="c1"># Mode selector: "standalone"</span>
+<span class="w">  </span><span class="c1"># Mode selector: "standalone", "replication"</span>
 <span class="w">  </span><span class="nt">architecture</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standalone</span>
 
 <span class="w">  </span><span class="c1"># Authentication</span>
@@ -2129,13 +2291,17 @@ This change ensures we maintain full control over configuration, compatibility, 
 <span class="w">    </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
 
 <span class="w">  </span><span class="c1"># Resources</span>
-<span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">requests</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250m</span>
-<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">256Mi</span>
-<span class="w">    </span><span class="nt">limits</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500m</span>
-<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512Mi</span>
+<span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="c1">#  **Quick sizing:**</span>
+<span class="w">  </span><span class="c1">#  - Cache only: Set `redis.resources.limits.memory` to 1.5× expected data size</span>
+<span class="w">  </span><span class="c1">#  - With persistence: Set to 2.5-3× expected data size</span>
+<span class="w">  </span><span class="c1">#  resources:</span>
+<span class="w">  </span><span class="c1">#    requests:</span>
+<span class="w">  </span><span class="c1">#      cpu: 500m</span>
+<span class="w">  </span><span class="c1">#      memory: 1Gi</span>
+<span class="w">  </span><span class="c1">#    limits:</span>
+<span class="w">  </span><span class="c1">#      cpu: 1000m</span>
+<span class="w">  </span><span class="c1">#      memory: 2Gi</span>
 
 <span class="w">  </span><span class="c1"># Storage</span>
 <span class="w">  </span><span class="nt">storage</span><span class="p">:</span>
@@ -2168,7 +2334,49 @@ This change ensures we maintain full control over configuration, compatibility, 
 <td>redis.architecture</td>
 <td>string</td>
 <td><code>standalone</code></td>
-<td>Deployment mode (currently only standalone supported).</td>
+<td>Deployment mode (standalone or replication).</td>
+</tr>
+<tr>
+<td>redis.replicas</td>
+<td>int</td>
+<td><code>3</code></td>
+<td>Data pod count (used only in replication mode).</td>
+</tr>
+<tr>
+<td>redis.sentinel.replicas</td>
+<td>int</td>
+<td><code>3</code></td>
+<td>Sentinel pod count (odd recommended).</td>
+</tr>
+<tr>
+<td>redis.sentinel.quorum</td>
+<td>int</td>
+<td><code>2</code></td>
+<td>Required Sentinel votes for failover.</td>
+</tr>
+<tr>
+<td>redis.sentinel.resources.requests.cpu</td>
+<td>string</td>
+<td><code>50m</code></td>
+<td>Guaranteed Sentinel minimum CPU.</td>
+</tr>
+<tr>
+<td>redis.sentinel.resources.requests.memory</td>
+<td>string</td>
+<td><code>64Mi</code></td>
+<td>Guaranteed Sentinel minimum memory.</td>
+</tr>
+<tr>
+<td>redis.sentinel.resources.limits.cpu</td>
+<td>string</td>
+<td><code>100m</code></td>
+<td>Guaranteed Sentinel minimum CPU.</td>
+</tr>
+<tr>
+<td>redis.sentinel.resources.limits.memory</td>
+<td>string</td>
+<td><code>128Mi</code></td>
+<td>Guaranteed Sentinel minimum memory.</td>
 </tr>
 <tr>
 <td>redis.auth.enabled</td>
@@ -2215,25 +2423,25 @@ This change ensures we maintain full control over configuration, compatibility, 
 <tr>
 <td>redis.resources.requests.cpu</td>
 <td>string</td>
-<td><code>250m</code></td>
+<td><code>""</code></td>
 <td>Guaranteed minimum CPU.</td>
 </tr>
 <tr>
 <td>redis.resources.requests.memory</td>
 <td>string</td>
-<td><code>256Mi</code></td>
+<td><code>""</code></td>
 <td>Guaranteed minimum memory.</td>
 </tr>
 <tr>
 <td>redis.resources.limits.cpu</td>
 <td>string</td>
-<td><code>500m</code></td>
+<td><code>""</code></td>
 <td>CPU limit.</td>
 </tr>
 <tr>
 <td>redis.resources.limits.memory</td>
 <td>string</td>
-<td><code>512Mi</code></td>
+<td><code>""</code></td>
 <td>Memory limit.</td>
 </tr>
 <tr>
@@ -2286,6 +2494,107 @@ This change ensures we maintain full control over configuration, compatibility, 
 </tr>
 </tbody>
 </table>
+<h3 id="architecture-modes">Architecture modes<a class="headerlink" href="#architecture-modes" title="Permanent link">¶</a></h3>
+<h4 id="standalone-mode-default">Standalone mode (default)<a class="headerlink" href="#standalone-mode-default" title="Permanent link">¶</a></h4>
+<p><strong>Architecture</strong>:</p>
+<ul>
+<li>Single Redis pod</li>
+<li>Simple deployment</li>
+<li>Minimal resource overhead</li>
+</ul>
+<p>Use cases:</p>
+<ul>
+<li>Single-node environments</li>
+<li>Non-critical workloads</li>
+</ul>
+<p>Characteristics:</p>
+<ul>
+<li>Resources: 1 Redis pod</li>
+<li>Complexity: Low</li>
+<li>Recovery time: ~30-60 seconds (Kubernetes reschedules pod on node failure)</li>
+</ul>
+<h5 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h5>
+<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">architecture</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standalone</span>
+</code></pre></div>
+<h4 id="replication-mode">Replication mode<a class="headerlink" href="#replication-mode" title="Permanent link">¶</a></h4>
+<p>Architecture:</p>
+<ul>
+<li>3 Redis pods (1 master + 2 replicas)</li>
+<li>3 Redis Sentinel pods (monitoring and automatic failover)</li>
+<li>Automatic master promotion on failure</li>
+</ul>
+<p>Use cases:</p>
+<ul>
+<li>Production deployments</li>
+<li>Multi-node Kubernetes clusters</li>
+<li>Critical workloads requiring high availability</li>
+</ul>
+<p>Characteristics:</p>
+<ul>
+<li>Recovery time: ~5-10 seconds (Sentinel automatic failover)</li>
+<li>Resources: 6 pods total (3 Redis + 3 Sentinel)</li>
+</ul>
+<h5 id="configuration_1">Configuration<a class="headerlink" href="#configuration_1" title="Permanent link">¶</a></h5>
+<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">architecture</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">replication</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">sentinel</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">    </span><span class="nt">quorum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</code></pre></div>
+<h5 id="storage-considerations">Storage considerations<a class="headerlink" href="#storage-considerations" title="Permanent link">¶</a></h5>
+<p>For true high availability with pod rescheduling across nodes, you must use network-attached storage. Node-local storage (like <code>microk8s-hostpath</code>) prevents failed pods from rejoining the cluster on different nodes.
+This is the example of using redis in replication mode with NFS storage:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">architecture</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">replication</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">storage</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nfs</span>
+<span class="w">    </span><span class="nt">accessModes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteMany</span>
+<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3Gi</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>storageClassName</code> must point to a <code>StorageClass</code> that supports network-attached volumes with <code>ReadWriteMany</code> (or <code>ReadWriteOnce</code> with cross-node support). Examples: NFS, Ceph, EBS, GCP Persistent Disk, Azure Disk.</p>
+</div>
+<p>EXAMPLE: For MicroK8s on Ubuntu, you can enable NFS this way:</p>
+<ol>
+<li>
+<p>Enable NFS client on ALL nodes:
+    </p><div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>nfs-common
+</code></pre></div>
+</li>
+<li>
+<p>Enable NFS StorageClass:
+    </p><div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>nfs
+</code></pre></div>
+</li>
+<li>Verify StorageClass exists
+    <code>bash
+   microk8s kubectl get storageclass nfs</code></li>
+</ol>
+<p>The solution might differ depending on the platform and Kubernetes distribution.</p>
+<h3 id="resource-requirements">Resource Requirements<a class="headerlink" href="#resource-requirements" title="Permanent link">¶</a></h3>
+<p>Redis memory limits depend on your data size and persistence strategy.</p>
+<p><strong>Quick sizing:</strong></p>
+<ul>
+<li>Cache only: Set <code>redis.resources.limits.memory</code> to 1.5× expected data size</li>
+<li>With persistence: Set to 2.5-3× expected data size</li>
+</ul>
+<p><strong>Examples:</strong>
+</p><div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">"4Gi"</span>
+<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">"1000m"</span>
+<span class="w">  </span><span class="nt">requests</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">"1Gi"</span>
+<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">"500m"</span>
+</code></pre></div>
+<p>By default no resource limits our set. You can define them in the <code>values.yaml</code> file as shown above.</p>
 <h3 id="use-authentication-for-redis">Use authentication for Redis<a class="headerlink" href="#use-authentication-for-redis" title="Permanent link">¶</a></h3>
 <p>By default, Redis authentication is disabled. To enable it, choose one of the following methods:</p>
 <h4 id="plain-text-password">Plain text password<a class="headerlink" href="#plain-text-password" title="Permanent link">¶</a></h4>
@@ -2314,7 +2623,6 @@ If you want to use a different key, you can specify it in the <code>values.yaml<
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>For smoother migration, it’s better to create a new secret with the updated values and then update your configuration to reference this new secret, rather than modifying an existing secret in place.</p>
-<p>When changing the content of a Kubernetes Secret that is already in use, the running pods will not automatically pick up the new values. You must recreate the pods for them to use the updated secret.</p>
 </div>
 <h3 id="migration-from-bitnami-redis">Migration from Bitnami Redis<a class="headerlink" href="#migration-from-bitnami-redis" title="Permanent link">¶</a></h3>
 <p>The chart automatically detects and migrates data from existing Bitnami Redis deployments:</p>
@@ -2324,7 +2632,11 @@ If you want to use a different key, you can specify it in the <code>values.yaml<
 <li>Init container fixes file permissions for compatibility</li>
 <li>If no existing PVC is found, creates a new one</li>
 </ol>
-<p>No manual intervention required — simply upgrade your deployment with the new chart.</p></div>
+<p>No manual intervention required — simply upgrade your deployment with the new chart.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>Migration between Bitnami Redis and the new chart is possible only to <code>standalone</code> architecture mode. For using <code>replication</code> please <a href="../../sc4snmp-installation/#reinstall-splunk-connect-for-snmp">reinstall SC4SNMP</a>.</p></div>
 
 
 

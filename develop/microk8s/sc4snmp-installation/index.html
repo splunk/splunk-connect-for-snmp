@@ -942,9 +942,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#restart-splunk-connect-for-snmp" class="md-nav__link">
+  <a href="#reinstall-splunk-connect-for-snmp" class="md-nav__link">
     <span class="md-ellipsis">
-      Restart Splunk Connect for SNMP
+      Reinstall Splunk Connect for SNMP
     </span>
   </a>
   
@@ -2246,9 +2246,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#restart-splunk-connect-for-snmp" class="md-nav__link">
+  <a href="#reinstall-splunk-connect-for-snmp" class="md-nav__link">
     <span class="md-ellipsis">
-      Restart Splunk Connect for SNMP
+      Reinstall Splunk Connect for SNMP
     </span>
   </a>
   
@@ -2444,7 +2444,7 @@ snmp-splunk-connect-for-snmp-worker-trap-dfcc487c-5z5sq       1/1     Terminatin
 snmp-splunk-connect-for-snmp-trap-684d57dc8d-722tv            1/1     Terminating   1 (5h21m ago)   22h
 snmp-splunk-connect-for-snmp-trap-684d57dc8d-z68lb            1/1     Terminating   1 (5h21m ago)   22h
 </code></pre></div>
-<h2 id="restart-splunk-connect-for-snmp">Restart Splunk Connect for SNMP<a class="headerlink" href="#restart-splunk-connect-for-snmp" title="Permanent link">¶</a></h2>
+<h2 id="reinstall-splunk-connect-for-snmp">Reinstall Splunk Connect for SNMP<a class="headerlink" href="#reinstall-splunk-connect-for-snmp" title="Permanent link">¶</a></h2>
 <p>First run the command to uninstall SC4SNMP, wait until all pods are removed, then use the command to install sc4snmp again.</p>
 <div class="highlight"><pre><span></span><code> microk8s helm3 uninstall snmp -n sc4snmp
  microk8s kubectl delete pvc --all -n sc4snmp
