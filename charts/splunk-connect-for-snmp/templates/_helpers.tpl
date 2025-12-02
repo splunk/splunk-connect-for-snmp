@@ -160,27 +160,27 @@ MongoDB environment variables - one helper to rule them all
 */}}
 {{- define "splunk-connect-for-snmp.mongodb-env" -}}
 {{- if .Values.mongodb.auth.existingSecret }}
-  - name: MONGODB_USERNAME
-    valueFrom:
-      secretKeyRef:
-        name: {{ .Values.mongodb.auth.existingSecret }}
-        key: root-user
-  - name: MONGODB_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: {{ .Values.mongodb.auth.existingSecret }}
-        key: root-password
-  {{- else }}
-  - name: MONGODB_USERNAME
-    valueFrom:
-      secretKeyRef:
-        name: {{ .Release.Name }}-mongodb-auth
-        key: root-user
-  - name: MONGODB_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: {{ .Release.Name }}-mongodb-auth
-        key: root-password
+- name: MONGODB_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.mongodb.auth.existingSecret }}
+      key: root-user
+- name: MONGODB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.mongodb.auth.existingSecret }}
+      key: root-password
+{{- else }}
+- name: MONGODB_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Release.Name }}-mongodb-auth
+      key: root-user
+- name: MONGODB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Release.Name }}-mongodb-auth
+      key: root-password
 {{- end }}
 - name: MONGODB_MODE
   value: {{ .Values.mongodb.mode | default "standalone" | quote }}
