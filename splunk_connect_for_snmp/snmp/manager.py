@@ -315,7 +315,7 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
 
-    def get_snmp_engine(self, version = "", create_new = False) -> SnmpEngine:
+    def get_snmp_engine(self, version="", create_new=False) -> SnmpEngine:
         """
         :returns: The new SnmpEngine with mibViewController cache attached if snmp version is 3,
         else it reuses already defined snmp poller.
@@ -415,7 +415,7 @@ class Poller(Task):
                 auth_data,
                 transport,
                 context_data,
-                *varbind_chunk
+                *varbind_chunk,
             ):
                 if not _any_failure_happened(
                     error_indication,
