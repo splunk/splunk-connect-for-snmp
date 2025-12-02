@@ -19,6 +19,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/common/sim-secret.yaml") . | sha256sum }}
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 -}}
       labels:
         {{- include "splunk-connect-for-snmp.sim.selectorLabels" . | nindent 8 }}
     spec:
@@ -46,6 +47,7 @@ spec:
           env:
             - name: USER
               value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
+            {{- include "splunk-connect-for-snmp.redis-env" . | nindent 12 }}
             - name: signalfxToken
               valueFrom:
                 secretKeyRef:

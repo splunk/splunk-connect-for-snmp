@@ -1,0 +1,18 @@
+---
+# Source: splunk-connect-for-snmp/templates/common/traps-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: splunk-connect-for-snmp-traps
+  labels:
+    app.kubernetes.io/name: splunk-connect-for-snmp-scheduler
+    app.kubernetes.io/instance: release-name
+    helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
+    app.kubernetes.io/version: "CURRENT-VERSION"
+    app.kubernetes.io/managed-by: Helm
+data:
+  config.yaml: |-
+      communities:
+        2c:
+        - public
+        - homelab

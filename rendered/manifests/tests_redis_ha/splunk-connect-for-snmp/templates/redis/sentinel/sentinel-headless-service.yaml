@@ -1,0 +1,19 @@
+---
+# Source: splunk-connect-for-snmp/templates/redis/sentinel/sentinel-headless-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-redis-sentinel
+  namespace: default
+  labels:
+    app: release-name-redis-sentinel
+spec:
+  type: ClusterIP
+  clusterIP: None  # Headless - required by StatefulSet
+  publishNotReadyAddresses: true  # Allow Sentinel discovery before ready
+  ports:
+  - port: 26379
+    targetPort: 26379
+    name: sentinel
+  selector:
+    app: release-name-redis-sentinel

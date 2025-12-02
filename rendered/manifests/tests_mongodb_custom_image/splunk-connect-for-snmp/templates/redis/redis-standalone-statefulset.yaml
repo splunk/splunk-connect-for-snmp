@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: release-name-redis
+  name: release-name-redis-standalone
   namespace: default
   labels:
     app: release-name-redis
@@ -18,7 +18,7 @@ spec:
       labels:
         app: release-name-redis
       annotations:
-        checksum/config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
+        checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
     spec:
       securityContext:
         runAsUser: 999
@@ -70,12 +70,7 @@ spec:
         - name: redis-config
           mountPath: /etc/redis
         resources:
-          limits:
-            cpu: 500m
-            memory: 512Mi
-          requests:
-            cpu: 250m
-            memory: 256Mi
+          {}
         livenessProbe:
           exec:
             command:
