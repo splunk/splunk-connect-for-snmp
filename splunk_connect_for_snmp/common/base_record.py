@@ -25,8 +25,8 @@ RecordInt = Union[None, int]
 class BaseRecord(BaseModel):
     """Base class for common SNMP record fields"""
 
-    address: RecordStr
     port: RecordInt = 161
+    address: RecordStr
     version: RecordStr
     community: RecordStr
     secret: RecordStr
