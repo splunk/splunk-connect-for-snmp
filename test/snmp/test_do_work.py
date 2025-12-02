@@ -33,7 +33,7 @@ class TestDoWork(TestCase):
     def test_do_work_no_work_to_do(self):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
-        poller.snmpEngine = None
+        poller.snmp_engine = None
         poller.profiles_manager = MagicMock()
         poller.profiles_collection = MagicMock()
         poller.profiles_collection.process_profiles = MagicMock()
@@ -57,6 +57,7 @@ class TestDoWork(TestCase):
     @patch("mongolock.MongoLock.release", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.auth.get_auth", None)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.get_snmp_engine", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.setup_transport_target", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
     @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
@@ -64,7 +65,7 @@ class TestDoWork(TestCase):
     def test_do_work_bulk(self, load_profiles, getCmd, bulkCmd):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
-        poller.snmpEngine = None
+        poller.snmp_engine = None
         poller.builder = MagicMock()
         poller.profiles_manager = MagicMock()
         m_process_data = MagicMock()
@@ -93,6 +94,7 @@ class TestDoWork(TestCase):
     @patch("mongolock.MongoLock.release", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.auth.get_auth", None)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.get_snmp_engine", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.setup_transport_target", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
     @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
@@ -102,7 +104,7 @@ class TestDoWork(TestCase):
     def test_do_work_get(self, load_profiles, getCmd, bulkCmd):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
-        poller.snmpEngine = None
+        poller.snmp_engine = None
         poller.builder = MagicMock()
         poller.process_snmp_data = MagicMock()
         poller.profiles_manager = MagicMock()
@@ -136,6 +138,7 @@ class TestDoWork(TestCase):
     @patch("mongolock.MongoLock.release", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.auth.get_auth", None)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.get_snmp_engine", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.setup_transport_target", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.bulkCmd")
     @patch("splunk_connect_for_snmp.snmp.manager.getCmd")
@@ -145,7 +148,7 @@ class TestDoWork(TestCase):
     def test_do_work_errors(self, load_profiles, getCmd, bulkCmd):
         poller = Poller.__new__(Poller)
         poller.last_modified = 1609675634
-        poller.snmpEngine = None
+        poller.snmp_engine = None
         poller.builder = MagicMock()
         poller.process_snmp_data = MagicMock()
         poller.profiles_manager = MagicMock()
