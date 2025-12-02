@@ -155,10 +155,8 @@ checksum/redis-secret: {{ include (print $.Template.BasePath "/redis/redis-secre
 {{- end -}}
 {{- end -}}
 
-{{/*
-MongoDB environment variables - one helper to rule them all
-*/}}
-{{- define "splunk-connect-for-snmp.mongodb-env" -}}
+
+{{- define "splunk-connect-for-snmp.mongodb-auth" -}}
 {{- if .Values.mongodb.auth.existingSecret }}
 - name: MONGODB_USERNAME
   valueFrom:
@@ -181,6 +179,16 @@ MongoDB environment variables - one helper to rule them all
     secretKeyRef:
       name: {{ .Release.Name }}-mongodb-auth
       key: root-password
+{{- end }}
+{{- end }}
+
+
+{{/*
+MongoDB environment variables - one helper to rule them all
+*/}}
+{{- define "splunk-connect-for-snmp.mongodb-env" -}}
+{{- if .Values.mongodb.auth.enabled }}
+{{ include "splunk-connect-for-snmp.mongodb-auth" . }}
 {{- end }}
 - name: MONGODB_MODE
   value: {{ .Values.mongodb.mode | default "standalone" | quote }}

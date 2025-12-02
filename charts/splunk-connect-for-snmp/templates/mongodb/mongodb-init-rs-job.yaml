@@ -67,16 +67,7 @@ spec:
 
         {{- if .Values.mongodb.auth.enabled }}
         env:
-        - name: MONGO_ROOT_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mongodb-auth
-              key: root-user
-        - name: MONGO_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Release.Name }}-mongodb-auth
-              key: root-password
+          {{ include "splunk-connect-for-snmp.mongodb-auth" . | nindent 10}}
         {{- end }}
 
         resources:
