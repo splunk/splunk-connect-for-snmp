@@ -69,50 +69,53 @@ def disable_mongo_logging():
     logging.getLogger("mongo").setLevel(logging.CRITICAL)
     logging.getLogger("pymongo").setLevel(logging.CRITICAL)
 
-
 def wait_for_mongodb_replicaset(logger, max_retries=120, retry_interval=5):
+    """
+    Wait for MongoDB to be ready before starting the application.
+    For replica sets, waits for PRIMARY to be elected.
+    """
     mongo_mode = os.getenv('MONGODB_MODE', 'standalone').lower()
     if mongo_mode == "standalone":
-        logger.info("MongoDB standalone: no ReplicaSet waiting needed.")
+        logger.info("MongoDB is in standalone mode, skipping ReplicaSet wait")
         return
 
     mongo_uri = os.getenv('MONGO_URI')
+
     if not mongo_uri:
-        logger.error("MONGO_URI not set!")
+        logger.warning("⚠️  MONGO_URI not set, exiting application")
         sys.exit(1)
 
-    # URI without credentials for topology discovery
-    noauth_uri = mongo_uri.split("@")[-1]
-    noauth_uri = "mongodb://" + noauth_uri
-
-    logger.info("Waiting for MongoDB ReplicaSet PRIMARY...")
+    logger.info(f"Waiting for MongoDB ReplicaSet to be ready and elect the primary...")
 
     for attempt in range(1, max_retries + 1):
         try:
-            # First try with credentials (works after user exists)
-            try:
-                client = MongoClient(mongo_uri, serverSelectionTimeoutMS=4000)
-                client.admin.command("ping")
-                if client.primary:
-                    logger.info(f"PRIMARY found (auth): {client.primary}")
-                    return
-            except Exception:
-                pass  # ignore and retry no-auth method
+            # Try to connect
+            client = MongoClient(
+                mongo_uri,
+                serverSelectionTimeoutMS=5000,
+                connectTimeoutMS=5000
+            )
 
-            # Now try WITHOUT auth to detect PRIMARY (works earlier)
-            client = MongoClient(noauth_uri, serverSelectionTimeoutMS=4000)
-            primary = client.primary
-            if primary:
-                logger.info(f"PRIMARY detected (no-auth): {primary}")
-                # Give time for user-creation job
-                time.sleep(5)
-                return
+            # Execute a simple operation to verify PRIMARY exists
+            client.admin.command('ping')
 
-        except Exception as e:
-            if attempt == max_retries:
-                logger.error(f"MongoDB Replicaset not ready: {e}")
+            # For replica sets, verify PRIMARY exists
+            if 'replicaSet=' in mongo_uri:
+                if client.primary is None:
+                    raise Exception("No PRIMARY elected yet")
+                logger.info(f"  ✅ PRIMARY found: {client.primary}")
+
+            client.close()
+            logger.info("✅ MongoDB is ready")
+            return
+
+        except (ServerSelectionTimeoutError, ConnectionFailure, Exception) as e:
+            if attempt >= max_retries:
+                logger.info(f"❌ MongoDB not ready after {max_retries * retry_interval}s")
+                logger.info(f"   Error: {e}")
                 sys.exit(1)
 
-        time.sleep(retry_interval)
-        if attempt % 6 == 0:
-            logger.info(f"Still waiting... ({attempt}/{max_retries})")
+            if attempt % 6 == 0:  # Print every 30 seconds
+                logger.info(f"  Still waiting... ({attempt}/{max_retries}) - {e.__class__.__name__}")
+
+            time.sleep(retry_interval)

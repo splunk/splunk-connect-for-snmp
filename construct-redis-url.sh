@@ -80,6 +80,13 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     fi
   fi
 
+  if [ -n "$MONGODB_REPLICA_SET" ]; then
+    export MONGO_WAIT="mongodb://${MONGODB_HOST}/${MONGODB_DATABASE}?replicaSet=${MONGODB_REPLICA_SET}&authSource=admin&retryWrites=false"
+  else
+    export MONGO_WAIT="mongodb://${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin"
+  fi
+
+  export MONGO_WAIT
   export MONGO_URI
   export REDIS_URL
   export CELERY_BROKER_URL

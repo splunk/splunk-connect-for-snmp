@@ -32,10 +32,27 @@ spec:
           echo "  ✅ Pod {{ $i }} ready"
           {{- end }}
 
+          {{- range $i := until (int .Values.mongodb.replicaCount) }}
+          echo "Waiting for DNS entry for pod {{ $i }}..."
+          for retry in $(seq 1 30); do
+            if getent hosts {{ $.Release.Name }}-mongodb-{{ $i }}.{{ $.Release.Name }}-mongodb-headless >/dev/null 2>&1; then
+              echo "  DNS resolved for pod {{ $i }}"
+              break
+            fi
+
+            if [ "$retry" -eq 30 ]; then
+              echo "❌ DNS still not ready for pod {{ $i }}"
+              exit 1
+            fi
+
+            sleep 2
+          done
+          {{- end }}
+
           echo "Checking replica set status..."
           RS_STATUS=$(kubectl exec {{ .Release.Name }}-mongodb-0 -- mongosh \
             {{- if .Values.mongodb.auth.enabled }}
-            -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin \
+            -u "$MONGODB_USERNAME" -p "$MONGODB_PASSWORD" --authenticationDatabase admin \
             {{- end }}
             --quiet --eval "try { rs.status().ok } catch(e) { 0 }" 2>/dev/null | tail -1)
 
@@ -47,7 +64,7 @@ spec:
           echo "Initializing replica set..."
           kubectl exec {{ .Release.Name }}-mongodb-0 -- mongosh \
             {{- if .Values.mongodb.auth.enabled }}
-            -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin \
+            -u "$MONGODB_USERNAME" -p "$MONGODB_PASSWORD" --authenticationDatabase admin \
             {{- end }}
             --eval "rs.initiate({_id:'{{ .Values.mongodb.replicaSetName }}',members:[{{- range $i := until (int .Values.mongodb.replicaCount) }}{_id:{{ $i }},host:'{{ $.Release.Name }}-mongodb-{{ $i }}.{{ $.Release.Name }}-mongodb-headless:27017'}{{ if ne $i (sub (int $.Values.mongodb.replicaCount) 1) }},{{- end }}{{- end }}]})" || echo "Init completed"
 
@@ -58,7 +75,7 @@ spec:
           echo ""
           kubectl exec {{ .Release.Name }}-mongodb-0 -- mongosh \
             {{- if .Values.mongodb.auth.enabled }}
-            -u "$MONGO_ROOT_USER" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin \
+            -u "$MONGODB_USERNAME" -p "$MONGODB_PASSWORD" --authenticationDatabase admin \
             {{- end }}
             --quiet --eval "rs.status().members.forEach(m => print(m.name + ': ' + m.stateStr))" || true
 
