@@ -61,19 +61,19 @@ class TestSanity:
         logger.info("Integration test for enrichment")
         search_string = """| mpreview index=netmetrics | search sourcetype="sc4snmp:metric"
         | search "metric_name:sc4snmp.IF-MIB*if"
-        | search "ifDescr" AND "ifAdminStatus" AND "ifOperStatus" AND "ifPhysAddress" AND "ifIndex" """
+        | search "ifDescr" AND "ifAdminStatus" AND "ifName" AND "ifAlias" """
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
 
         assert result_count > 0
         assert metric_count > 0
 
-    # def test_default_profiles_events(self, setup_splunk):
-    #     logger.info("Integration test for sc4snmp:event")
-    #     search_string = """search index=netops | search "IF-MIB.ifAlias" AND "IF-MIB.ifAdminStatus"
-    #     AND "IF-MIB.ifDescr" AND "IF-MIB.ifName" sourcetype="sc4snmp:event" """
-    #     result_count, metric_count = splunk_single_search(setup_splunk, search_string)
-    #     assert result_count > 0
-    #     assert metric_count > 0
+    def test_default_profiles_events(self, setup_splunk):
+        logger.info("Integration test for sc4snmp:event")
+        search_string = """search index=netops | search "IF-MIB.ifAlias" AND "IF-MIB.ifAdminStatus"
+        AND "IF-MIB.ifDescr" AND "IF-MIB.ifName" sourcetype="sc4snmp:event" """
+        result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+        assert result_count > 0
+        assert metric_count > 0
 
 
 @pytest.fixture(scope="class")

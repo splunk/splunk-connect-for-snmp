@@ -13,9 +13,10 @@
 - add CounterBasedGauge64 and ZeroBasedCounter64 as metrics types
 - manage snmpv3 secrets for docker compose from docker entrypoint
 
-### Fixes
+### Fixed
 - fix problem with service rendering when `traps.service.usemetallb` is set to false
 - fix setting snmpv3 to be able to set secret without privProtocol and privKey
+- fix reusing the snmp engine for snmpv3 calls
 
 ## [1.14.1]
 - update mongodb volumePermission image repository to `bitnamileagcy`
