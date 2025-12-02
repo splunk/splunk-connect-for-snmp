@@ -291,9 +291,9 @@ class Poller(Task):
         self.profiles_collection = ProfileCollection(self.profiles)
         self.profiles_collection.process_profiles()
         self.last_modified = time.time()
-        self.snmpEngine = SnmpEngine()
+        self.snmp_engine = SnmpEngine()
         self.already_loaded_mibs = set()
-        self.builder = self.snmpEngine.getMibBuilder()
+        self.builder = self.snmp_engine.getMibBuilder()
         self.mib_view_controller = view.MibViewController(self.builder)
         compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
 
@@ -315,6 +315,18 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
 
+    def get_snmp_engine(self, version = "", create_new = False) -> SnmpEngine:
+        """
+        :returns: The new SnmpEngine with mibViewController cache attached if snmp version is 3,
+        else it reuses already defined snmp poller.
+        """
+        if version == "3" or create_new:
+            snmp_engine = SnmpEngine()
+            snmp_engine.cache["mibViewController"] = self.mib_view_controller
+            return snmp_engine
+        else:
+            return self.snmp_engine
+
     def do_work(
         self,
         ir: InventoryRecord,
@@ -335,7 +347,7 @@ class Poller(Task):
             address, walk=walk, profiles=profiles
         )
 
-        auth_data = get_auth(logger, ir, self.snmpEngine)
+        auth_data = get_auth(logger, ir, self.get_snmp_engine(ir.version))
         context_data = get_context_data()
 
         transport = setup_transport_target(ir)
@@ -399,7 +411,11 @@ class Poller(Task):
                 error_index,
                 varbind_table,
             ) in getCmd(
-                self.snmpEngine, auth_data, transport, context_data, *varbind_chunk
+                self.get_snmp_engine(create_new=True),
+                auth_data,
+                transport,
+                context_data,
+                *varbind_chunk
             ):
                 if not _any_failure_happened(
                     error_indication,
@@ -429,7 +445,7 @@ class Poller(Task):
             error_index,
             varbind_table,
         ) in bulkCmd(
-            self.snmpEngine,
+            self.get_snmp_engine(create_new=True),
             auth_data,
             transport,
             context_data,
