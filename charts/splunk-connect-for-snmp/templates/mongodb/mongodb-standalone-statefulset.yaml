@@ -15,9 +15,11 @@ metadata:
 spec:
   serviceName: {{ .Release.Name }}-mongodb
   replicas: 1
+
   selector:
     matchLabels:
       {{- include "splunk-connect-for-snmp.mongodb.selectorLabels" . | nindent 6 }}
+
   template:
     metadata:
       labels:

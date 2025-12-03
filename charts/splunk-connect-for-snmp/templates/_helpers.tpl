@@ -219,19 +219,3 @@ MongoDB replica set hosts (comma-separated)
 {{- end -}}
 {{- join "," $hosts -}}
 {{- end -}}
-
-{{/*
-Selector labels
-*/}}
-{{- define "splunk-connect-for-snmp.mongodb.selectorLabels" -}}
-app.kubernetes.io/name: {{ .Release.Name }}-mongodb
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/*
-Common labels
-*/}}
-{{- define "splunk-connect-for-snmp.mongodb.labels" -}}
-{{ include "splunk-connect-for-snmp.mongodb.selectorLabels" . }}
-{{ include "splunk-connect-for-snmp.labels" . }}
-{{- end }}

@@ -9,9 +9,11 @@ metadata:
 spec:
   serviceName: {{ .Release.Name }}-mongodb-headless
   replicas: {{ .Values.mongodb.replicaCount | default 3 }}
+
   selector:
     matchLabels:
-      {{- include "splunk-connect-for-snmp.mongodb.selectorLabels" . | nindent 6 }}
+      app: {{ .Release.Name }}-mongodb
+
   template:
     metadata:
       labels:

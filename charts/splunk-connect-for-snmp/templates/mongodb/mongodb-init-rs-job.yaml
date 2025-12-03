@@ -4,8 +4,7 @@ kind: Job
 metadata:
   name: {{ .Release.Name }}-mongodb-init-rs
   labels:
-    {{- include "splunk-connect-for-snmp.labels" . | nindent 4 }}
-    app.kubernetes.io/name: {{ .Release.Name }}-mongodb-init
+    app: {{ .Release.Name }}-mongodb-init
 spec:
   backoffLimit: 10
   ttlSecondsAfterFinished: 600
