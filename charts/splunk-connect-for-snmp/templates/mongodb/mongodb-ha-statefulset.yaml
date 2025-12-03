@@ -4,16 +4,14 @@ kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-mongodb
   labels:
-    {{- include "splunk-connect-for-snmp.labels" . | nindent 4 }}
-    app.kubernetes.io/name: {{ .Release.Name }}-mongodb
+    app: {{ .Release.Name }}-mongodb
+    mode: replication
 spec:
   serviceName: {{ .Release.Name }}-mongodb-headless
   replicas: {{ .Values.mongodb.replicaCount | default 3 }}
-
   selector:
     matchLabels:
       app: {{ .Release.Name }}-mongodb
-
   template:
     metadata:
       labels:
