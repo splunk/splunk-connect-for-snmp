@@ -5,17 +5,16 @@ kind: StatefulSet
 metadata:
   name: release-name-mongodb
   labels:
-    helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
-    app.kubernetes.io/version: "CURRENT-VERSION"
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: release-name-mongodb
+    app: release-name-mongodb
+    mode: standalone
 spec:
   serviceName: release-name-mongodb
   replicas: 1
+
   selector:
     matchLabels:
-      app.kubernetes.io/name: release-name-mongodb
-      app.kubernetes.io/instance: release-name
+      app: release-name-mongodb
+
   template:
     metadata:
       labels:

@@ -49,12 +49,12 @@ spec:
             - name: MONGODB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: release-name-mongodb-auth
+                  name: release-name-mongodb-secret
                   key: root-user
             - name: MONGODB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: release-name-mongodb-auth
+                  name: release-name-mongodb-secret
                   key: root-password
             - name: MONGODB_MODE
               value: "standalone"
