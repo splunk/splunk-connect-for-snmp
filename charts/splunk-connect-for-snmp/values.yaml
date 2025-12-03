@@ -524,6 +524,12 @@ mongodb:
 
   replicaCount: 3      # used only when mode = "replicaset"
   replicaSetName: rs0
+  replicaInitJob:
+    image:
+      repository: "alpine/kubectl"
+      tag: "1.34.2"
+    # MongoDB replicas pod initialisation timeout in seconds
+    timeout: 600
   image:
     repository: mongo
     tag: "7.0"
