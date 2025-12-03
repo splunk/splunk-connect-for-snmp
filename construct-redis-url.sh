@@ -64,7 +64,7 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
   # Build MongoDB URI from environment variables
   if [ -n "$MONGODB_PASSWORD" ]; then
     # With authentication
-    if [ "$MONGODB_MODE" = "replicaset" ]; then
+    if [ -n "$MONGODB_REPLICA_SET" ]; then
       # Replica set
       export MONGO_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}?replicaSet=${MONGODB_REPLICA_SET}&authSource=${MONGODB_AUTH_SOURCE:-admin}&readPreference=primary"
     else
