@@ -21,7 +21,7 @@ import typing
 from typing import Union
 
 from pymongo import MongoClient
-from pymongo.errors import ServerSelectionTimeoutError, ConnectionFailure
+from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
@@ -69,17 +69,18 @@ def disable_mongo_logging():
     logging.getLogger("mongo").setLevel(logging.CRITICAL)
     logging.getLogger("pymongo").setLevel(logging.CRITICAL)
 
+
 def wait_for_mongodb_replicaset(logger, max_retries=120, retry_interval=5):
     """
     Wait for MongoDB to be ready before starting the application.
     For replica sets, waits for PRIMARY to be elected.
     """
-    mongo_mode = os.getenv('MONGODB_MODE', 'standalone').lower()
+    mongo_mode = os.getenv("MONGODB_MODE", "standalone").lower()
     if mongo_mode == "standalone":
         logger.info("MongoDB is in standalone mode, skipping ReplicaSet wait")
         return
 
-    mongo_uri = os.getenv('MONGO_URI')
+    mongo_uri = os.getenv("MONGO_URI")
 
     if not mongo_uri:
         logger.warning("⚠️  MONGO_URI not set, exiting application")
@@ -91,16 +92,14 @@ def wait_for_mongodb_replicaset(logger, max_retries=120, retry_interval=5):
         try:
             # Try to connect
             client = MongoClient(
-                mongo_uri,
-                serverSelectionTimeoutMS=5000,
-                connectTimeoutMS=5000
+                mongo_uri, serverSelectionTimeoutMS=5000, connectTimeoutMS=5000
             )
 
             # Execute a simple operation to verify PRIMARY exists
-            client.admin.command('ping')
+            client.admin.command("ping")
 
             # For replica sets, verify PRIMARY exists
-            if 'replicaSet=' in mongo_uri:
+            if "replicaSet=" in mongo_uri:
                 if client.primary is None:
                     raise Exception("No PRIMARY elected yet")
                 logger.info(f"  ✅ PRIMARY found: {client.primary}")
@@ -111,11 +110,15 @@ def wait_for_mongodb_replicaset(logger, max_retries=120, retry_interval=5):
 
         except (ServerSelectionTimeoutError, ConnectionFailure, Exception) as e:
             if attempt >= max_retries:
-                logger.info(f"❌ MongoDB not ready after {max_retries * retry_interval}s")
+                logger.info(
+                    f"❌ MongoDB not ready after {max_retries * retry_interval}s"
+                )
                 logger.info(f"   Error: {e}")
                 sys.exit(1)
 
             if attempt % 6 == 0:  # Print every 30 seconds
-                logger.info(f"  Still waiting... ({attempt}/{max_retries}) - {e.__class__.__name__}")
+                logger.info(
+                    f"  Still waiting... ({attempt}/{max_retries}) - {e.__class__.__name__}"
+                )
 
             time.sleep(retry_interval)

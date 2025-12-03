@@ -15,6 +15,7 @@
 #
 # Support use of .env file for developers
 from contextlib import suppress
+
 from splunk_connect_for_snmp.common.hummanbool import wait_for_mongodb_replicaset
 
 with suppress(ImportError, OSError):
