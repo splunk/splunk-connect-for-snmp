@@ -1,24 +1,22 @@
-{{- if eq .Values.mongodb.mode "replicaset" }}
+{{- if eq .Values.mongodb.mode "replication" }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-mongodb
   labels:
-    app: {{ .Release.Name }}-mongodb
-    mode: replicaset
+    {{- include "splunk-connect-for-snmp.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ .Release.Name }}-mongodb
 spec:
   serviceName: {{ .Release.Name }}-mongodb-headless
   replicas: {{ .Values.mongodb.replicaCount | default 3 }}
-
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-mongodb
-
+      {{- include "splunk-connect-for-snmp.mongodb.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
         app: {{ .Release.Name }}-mongodb
-        mode: replicaset
+        mode: replication
     spec:
       {{- with .Values.mongodb.podSecurityContext }}
       securityContext:
@@ -99,12 +97,12 @@ spec:
           - name: MONGO_INITDB_ROOT_USERNAME
             valueFrom:
               secretKeyRef:
-                name: {{ .Release.Name }}-mongodb-auth
+                name: {{ .Release.Name }}-mongodb-secret
                 key: root-user
           - name: MONGO_INITDB_ROOT_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ .Release.Name }}-mongodb-auth
+                name: {{ .Release.Name }}-mongodb-secret
                 key: root-password
         {{- end }}
         {{- end }}

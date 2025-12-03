@@ -2,6 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}-mongodb
+  labels:
+    {{- include "splunk-connect-for-snmp.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ .Release.Name }}-mongodb
 spec:
   type: ClusterIP
   ports:

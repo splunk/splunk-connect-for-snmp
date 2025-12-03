@@ -1,10 +1,11 @@
-{{- if eq .Values.mongodb.mode "replicaset" }}
+{{- if eq .Values.mongodb.mode "replication" }}
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ .Release.Name }}-mongodb-init-rs
   labels:
-    app: {{ .Release.Name }}-mongodb-init
+    {{- include "splunk-connect-for-snmp.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ .Release.Name }}-mongodb-init
 spec:
   backoffLimit: 10
   ttlSecondsAfterFinished: 600

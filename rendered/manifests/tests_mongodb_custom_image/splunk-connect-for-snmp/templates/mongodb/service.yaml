@@ -1,0 +1,18 @@
+---
+# Source: splunk-connect-for-snmp/templates/mongodb/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-mongodb
+  labels:
+    helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
+    app.kubernetes.io/version: "CURRENT-VERSION"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: release-name-mongodb
+spec:
+  type: ClusterIP
+  ports:
+    - port: 27017
+      targetPort: 27017
+  selector:
+    app: release-name-mongodb

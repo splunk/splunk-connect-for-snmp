@@ -10,16 +10,14 @@ kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-mongodb
   labels:
-    app: {{ .Release.Name }}-mongodb
-    mode: standalone
+    {{- include "splunk-connect-for-snmp.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ .Release.Name }}-mongodb
 spec:
   serviceName: {{ .Release.Name }}-mongodb
   replicas: 1
-
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-mongodb
-
+      {{- include "splunk-connect-for-snmp.mongodb.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
@@ -74,12 +72,12 @@ spec:
           - name: MONGO_INITDB_ROOT_USERNAME
             valueFrom:
               secretKeyRef:
-                name: {{ .Release.Name }}-mongodb-auth
+                name: {{ .Release.Name }}-mongodb-secret
                 key: root-user
           - name: MONGO_INITDB_ROOT_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ .Release.Name }}-mongodb-auth
+                name: {{ .Release.Name }}-mongodb-secret
                 key: root-password
         {{- end }}
         {{- end }}

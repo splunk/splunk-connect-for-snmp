@@ -520,9 +520,9 @@ useDeprecatedAPI: false
 ## MongoDB image configuration
 # MongoDB image
 mongodb:
-  mode: standalone     # options: standalone | replicaset
+  mode: standalone     # options: standalone | replication
 
-  replicaCount: 3      # used only when mode = "replicaset"
+  replicaCount: 3      # used only when mode = "replication"
   replicaSetName: rs0
   replicaInitJob:
     image:
@@ -570,9 +570,9 @@ redis:
   architecture: standalone
 
   # Options for Redis replication
-  replicas: 3
+  replicaCount: 3
   sentinel:
-    replicas: 3
+    replicaCount: 3
     quorum: 2
     resources:
       requests:

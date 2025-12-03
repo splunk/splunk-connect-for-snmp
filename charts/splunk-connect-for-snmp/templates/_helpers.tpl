@@ -1,5 +1,5 @@
 {{- define "splunk-connect-for-snmp.mongo_uri" -}}
-{{- if eq .Values.mongodb.architecture "replicaset" }}
+{{- if eq .Values.mongodb.architecture "replication" }}
 {{- printf "mongodb+srv://%s-mongodb-headless.%s.svc.%s/?tls=false&ssl=false&replicaSet=rs0" .Release.Name .Release.Namespace .Values.mongodb.clusterDomain}}
 {{- else }}
 {{- printf "mongodb://%s-mongodb:27017" .Release.Name }}
@@ -110,7 +110,7 @@ Generate Redis environment variables for application pods
 - name: NAMESPACE
   value: {{ .Release.Namespace }}
 - name: REDIS_SENTINEL_REPLICAS
-  value: {{ .Values.redis.sentinel.replicas | quote }}
+  value: {{ .Values.redis.sentinel.replicaCount | quote }}
 - name: REDIS_SENTINEL_PORT
   value: "26379"
 - name: REDIS_MASTER_NAME
@@ -168,7 +168,7 @@ checksum/redis-secret: {{ include (print $.Template.BasePath "/redis/redis-secre
     secretKeyRef:
       name: {{ .Values.mongodb.auth.existingSecret }}
       key: root-password
-{{- else }}
+{{- else -}}
 - name: MONGODB_USERNAME
   valueFrom:
     secretKeyRef:
@@ -179,8 +179,8 @@ checksum/redis-secret: {{ include (print $.Template.BasePath "/redis/redis-secre
     secretKeyRef:
       name: {{ .Release.Name }}-mongodb-auth
       key: root-password
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
 
 
 {{/*
@@ -188,7 +188,7 @@ MongoDB environment variables - one helper to rule them all
 */}}
 {{- define "splunk-connect-for-snmp.mongodb-env" -}}
 {{- if .Values.mongodb.auth.enabled }}
-{{ include "splunk-connect-for-snmp.mongodb-auth" . }}
+{{- include "splunk-connect-for-snmp.mongodb-auth" . -}}
 {{- end }}
 - name: MONGODB_MODE
   value: {{ .Values.mongodb.mode | default "standalone" | quote }}
@@ -196,9 +196,9 @@ MongoDB environment variables - one helper to rule them all
   value: "admin"
 - name: MONGODB_DATABASE
   value: {{ .Values.mongodb.database | default "sc4snmp" | quote }}
-{{- if eq .Values.mongodb.mode "replicaset" }}
+{{- if eq .Values.mongodb.mode "replication" }}
 - name: MONGODB_HOST
-  value: {{ include "splunk-connect-for-snmp.mongodb.replicaset.hosts" . | quote }}
+  value: {{ include "splunk-connect-for-snmp.mongodb.replication.hosts" . | quote }}
 - name: MONGODB_REPLICA_SET
   value: {{ .Values.mongodb.replicaSetName | default "rs0" | quote }}
 {{- else }}
@@ -206,16 +206,32 @@ MongoDB environment variables - one helper to rule them all
   value: {{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb
 - name: MONGODB_PORT
   value: "27017"
-{{- end }}
+{{- end -}}
 {{- end -}}
 
 {{/*
 MongoDB replica set hosts (comma-separated)
 */}}
-{{- define "splunk-connect-for-snmp.mongodb.replicaset.hosts" -}}
+{{- define "splunk-connect-for-snmp.mongodb.replication.hosts" -}}
 {{- $hosts := list -}}
 {{- range $i := until (int (.Values.mongodb.replicaCount | default 3)) -}}
   {{- $hosts = append $hosts (printf "%s-mongodb-%d.%s-mongodb-headless.%s.svc.cluster.local:27017" $.Release.Name $i $.Release.Name $.Release.Namespace ) -}}
 {{- end -}}
 {{- join "," $hosts -}}
 {{- end -}}
+
+{{/*
+Selector labels
+*/}}
+{{- define "splunk-connect-for-snmp.mongodb.selectorLabels" -}}
+app.kubernetes.io/name: {{ .Release.Name }}-mongodb
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Common labels
+*/}}
+{{- define "splunk-connect-for-snmp.mongodb.labels" -}}
+{{ include "splunk-connect-for-snmp.mongodb.selectorLabels" . }}
+{{ include "splunk-connect-for-snmp.labels" . }}
+{{- end }}
