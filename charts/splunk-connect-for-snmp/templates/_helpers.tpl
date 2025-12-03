@@ -219,3 +219,13 @@ MongoDB replica set hosts (comma-separated)
 {{- end -}}
 {{- join "," $hosts -}}
 {{- end -}}
+
+
+{{- /*
+Generate Redis environment variables for application pods
+*/ -}}
+{{- define "splunk-connect-for-snmp.mongodb-annotations" -}}
+{{- if .Values.mongodb.auth.enabled }}
+checksum/redis-secret: {{ include (print $.Template.BasePath "/mongodb/mongodb-secret.yaml") . | sha256sum }}
+{{- end -}}
+{{- end -}}

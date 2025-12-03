@@ -19,6 +19,7 @@ spec:
         app: {{ .Release.Name }}-redis-sentinel
       annotations:
         {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 }}
+        {{- include "splunk-connect-for-snmp.mongodb-annotations" . | nindent 8 }}
     spec:
       containers:
       - name: sentinel
