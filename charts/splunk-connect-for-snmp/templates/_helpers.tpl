@@ -162,12 +162,12 @@ checksum/redis-secret: {{ include (print $.Template.BasePath "/redis/redis-secre
   valueFrom:
     secretKeyRef:
       name: {{ .Values.mongodb.auth.existingSecret }}
-      key: root-user
+      key: {{ .Values.mongodb.auth.rootUserKey | quote | default "root-user" }}
 - name: MONGODB_PASSWORD
   valueFrom:
     secretKeyRef:
       name: {{ .Values.mongodb.auth.existingSecret }}
-      key: root-password
+      key: {{ .Values.mongodb.auth.rootPasswordKey | quote | default "root-password" }}
 {{- else -}}
 - name: MONGODB_USERNAME
   valueFrom:

@@ -539,6 +539,8 @@ mongodb:
     enabled: true
     rootUser: admin
     rootPassword: "ChangeMe123"
+    rootUserKey: "root-user"
+    rootPasswordKey: "root-password"
     existingSecret: ""
     existingReplicaKeySecret: ""
 
