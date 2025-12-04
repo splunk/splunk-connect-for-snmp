@@ -15,7 +15,6 @@ spec:
     metadata:
       annotations:
         {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 -}}
-        {{- include "splunk-connect-for-snmp.mongodb-annotations" . | nindent 8 }}
         {{- with .Values.worker.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
