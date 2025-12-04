@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- add support for Redis HA with Sentinel integration
 - **Redis Migration**: Replaced Bitnami Redis chart with custom Kubernetes manifests
   - Updated to official Redis image version 8.2.2 (addresses security vulnerabilities)
   - Added authentication support (password or Kubernetes Secret)
