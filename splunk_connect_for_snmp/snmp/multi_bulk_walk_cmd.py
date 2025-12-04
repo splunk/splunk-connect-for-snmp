@@ -24,6 +24,7 @@ from pysnmp.hlapi.v3arch.asyncio.transport import AbstractTransportTarget
 from pysnmp.proto import errind
 from pysnmp.proto.rfc1902 import Integer32, Null
 from pysnmp.proto.rfc1905 import EndOfMibView, endOfMibView
+from pysnmp.smi import view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
 VB_PROCESSOR = varbinds.CommandGeneratorVarBinds()
@@ -147,6 +148,9 @@ async def multi_bulk_walk_cmd(
     ignoreNonIncreasingOid = options.get("ignoreNonIncreasingOid", False)
     maxRows = options.get("maxRows", 0)
     maxCalls = options.get("maxCalls", 0)
+    mib_view_controller = options.get(
+        "mibViewController", view.MibViewController(snmpEngine.get_mib_builder())
+    )
 
     initialVars = [x[0] for x in VB_PROCESSOR.make_varbinds(snmpEngine.cache, varBinds)]
     num_varbinds = len(initialVars)
@@ -191,7 +195,7 @@ async def multi_bulk_walk_cmd(
             ]
 
             errorIndication, errorStatus, errorIndex, varBindTable = await bulk_cmd(
-                snmpEngine,
+                get_snmp_engine(mib_view_controller),
                 authData,
                 transportTarget,
                 contextData,
@@ -326,3 +330,10 @@ async def multi_bulk_walk_cmd(
 
         if all(completed):
             return
+
+
+def get_snmp_engine(mib_view_controller):
+    """ """
+    snmp_engine = SnmpEngine()
+    snmp_engine.cache["mibViewController"] = mib_view_controller
+    return snmp_engine

@@ -417,13 +417,12 @@ class Poller(Task):
         varbinds_get,
         is_walk,
     ):
-        snmp_engine = self.get_snmp_engine()
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
             try:
                 (error_indication, error_status, error_index, varbind_table) = (
                     await get_cmd(
-                        snmp_engine,
+                        self.get_snmp_engine(),
                         auth_data,
                         transport,
                         context_data,
@@ -484,7 +483,6 @@ class Poller(Task):
         - Each varbind walks only its own OID subtree and stops at its boundary
         - Prevents walking beyond requested subtrees and eliminates duplicate OIDs
         """
-        snmp_engine = self.get_snmp_engine()
 
         async for (
             error_indication,
@@ -492,7 +490,7 @@ class Poller(Task):
             error_index,
             varbind_table,
         ) in multi_bulk_walk_cmd(
-            snmp_engine,
+            self.get_snmp_engine(),
             auth_data,
             transport,
             context_data,
@@ -502,6 +500,7 @@ class Poller(Task):
             lexicographicMode=False,
             lookupMib=True,
             ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+            mibViewController=self.mib_view_controller,
         ):
             if not _any_failure_happened(
                 error_indication,
