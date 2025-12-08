@@ -11,8 +11,9 @@
   - Enabled AOF persistence by default for data durability
 - add CounterBasedGauge64 and ZeroBasedCounter64 as metrics types
 
-### Fixes
+### Fixed
 - fix problem with service rendering when `traps.service.usemetallb` is set to false
+- fix reusing the snmp engine for snmpv3 calls
 
 ## [1.14.1]
 - update mongodb volumePermission image repository to `bitnamileagcy`

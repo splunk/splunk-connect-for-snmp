@@ -185,5 +185,7 @@ def get_auth(
         return get_auth_v1(ir)
     elif ir.version == "2c":
         return get_auth_v2c(ir)
-    else:
+    elif ir.version == "3":
         return get_auth_v3(logger, ir, snmp_engine)
+    else:
+        raise SnmpActionError(f"Wrong SNMP version {ir.version}")
