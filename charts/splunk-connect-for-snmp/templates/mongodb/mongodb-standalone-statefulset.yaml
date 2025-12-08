@@ -64,12 +64,12 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.mongodb.auth.existingSecret }}
-                key: {{ .Values.mongodb.auth.rootUserKey | quote | default "root-user" }}
+                key: {{ .Values.mongodb.auth.rootUserKey | default "root-user" | quote }}
           - name: MONGO_INITDB_ROOT_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.mongodb.auth.existingSecret }}
-                key: {{ .Values.mongodb.auth.rootPasswordKey | quote | default "root-password" }}
+                key: {{ .Values.mongodb.auth.rootPasswordKey | default "root-password" | quote }}
           {{- else }}
           - name: MONGO_INITDB_ROOT_USERNAME
             valueFrom:
