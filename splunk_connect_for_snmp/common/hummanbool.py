@@ -83,7 +83,7 @@ def wait_for_mongodb_replicaset(logger, max_retries=120, retry_interval=5):
     mongo_uri = os.getenv("MONGO_URI")
 
     if not mongo_uri:
-        logger.warning("⚠️  MONGO_URI not set, exiting application")
+        logger.warning("MONGO_URI not set, exiting application")
         sys.exit(1)
 
     logger.info(f"Waiting for MongoDB ReplicaSet to be ready and elect the primary...")
@@ -102,16 +102,16 @@ def wait_for_mongodb_replicaset(logger, max_retries=120, retry_interval=5):
             if "replicaSet=" in mongo_uri:
                 if client.primary is None:
                     raise Exception("No PRIMARY elected yet")
-                logger.info(f"  ✅ PRIMARY found: {client.primary}")
+                logger.info(f"PRIMARY found: {client.primary}")
 
             client.close()
-            logger.info("✅ MongoDB is ready")
+            logger.info("MongoDB is ready")
             return
 
         except (ServerSelectionTimeoutError, ConnectionFailure, Exception) as e:
             if attempt >= max_retries:
                 logger.info(
-                    f"❌ MongoDB not ready after {max_retries * retry_interval}s"
+                    f"MongoDB not ready after {max_retries * retry_interval}s"
                 )
                 logger.info(f"   Error: {e}")
                 sys.exit(1)
