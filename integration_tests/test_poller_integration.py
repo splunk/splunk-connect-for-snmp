@@ -59,7 +59,7 @@ class TestSanity:
 
     def test_enrich_works_for_IFMIB(self, setup_splunk):
         logger.info("Integration test for enrichment")
-        time.sleep(300)
+        time.sleep(30)
         search_string = """| mpreview index=netmetrics | search sourcetype="sc4snmp:metric"
         | search "metric_name:sc4snmp.IF-MIB*if"
         | search "ifDescr" AND "ifAdminStatus" AND "ifName" AND "ifAlias" """
