@@ -110,9 +110,7 @@ def wait_for_mongodb_replicaset(logger, max_retries=120, retry_interval=5):
 
         except (ServerSelectionTimeoutError, ConnectionFailure, Exception) as e:
             if attempt >= max_retries:
-                logger.info(
-                    f"MongoDB not ready after {max_retries * retry_interval}s"
-                )
+                logger.info(f"MongoDB not ready after {max_retries * retry_interval}s")
                 logger.info(f"   Error: {e}")
                 sys.exit(1)
 
