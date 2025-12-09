@@ -64,7 +64,7 @@ else:
         "queue_order_strategy": "priority",
     }
 
-# Should be set by ./construct-redis-url.sh script
+# Should be set by ./construct-connection-strings.sh script
 redbeat_redis_url = os.getenv("REDIS_URL")
 broker_url = os.getenv("CELERY_BROKER_URL")
 

@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
-# Constructs REDIS_URL and CELERY_BROKER_URL from components if not already set
+# Constructs Redis and MongoDB connection strings based on environment variables
+
+############################
+       ### REDIS ###
+############################
 
 # Detect mode
 REDIS_MODE="${REDIS_MODE:-standalone}"
@@ -60,6 +64,10 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     # For healthcheck / wait-for-dep - space-separated list
     REDIS_DEPENDENCIES="${REDIS_URL} ${CELERY_BROKER_URL}"
   fi
+
+############################
+      ### MongoDB ###
+############################
 
   # Build MongoDB URI from environment variables
   if [ -n "$MONGODB_PASSWORD" ]; then
