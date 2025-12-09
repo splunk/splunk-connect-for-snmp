@@ -11,6 +11,7 @@
   - Implemented automatic data migration from Bitnami deployments (PVC reuse)
   - Enabled AOF persistence by default for data durability
 - add CounterBasedGauge64 and ZeroBasedCounter64 as metrics types
+- manage snmpv3 secrets for docker compose from docker entrypoint
 
 ### Fixes
 - fix problem with service rendering when `traps.service.usemetallb` is set to false

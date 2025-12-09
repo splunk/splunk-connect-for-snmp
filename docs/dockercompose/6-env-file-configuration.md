@@ -13,6 +13,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                                                          |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose`                                           |
 | `LOCAL_MIBS_PATH`                     | Absolute path to the directory containing [local MIB files](../mib-request.md#configuring-path-to-local-mibs-for-docker-compose-installation). |
+| `SECRET_FOLDER_PATH`           | Absolute path to [secrets.json](./7-snmpv3-secrets.md) file |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                                                             |
 
 
@@ -114,6 +115,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `WORKER_TRAP_MEMORY_LIMIT`        | Limit of memory that worker trap container can use                                               |
 | `WORKER_TRAP_CPU_RESERVATIONS`    | Dedicated cpu resources for worker trap container                                                |
 | `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
+| `ENABLE_WORKER_POLLER_SECRETS` | Enable usage of secrets for poller                          |
 
 ## Inventory
 
@@ -129,6 +131,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | `SNMP_V3_SECURITY_ENGINE_ID` | SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table of the TRAP receiving application for each USM user, for example: SNMP_V3_SECURITY_ENGINE_ID=80003a8c04,aab123456 |
 | `INCLUDE_SECURITY_CONTEXT_ID` | Controls whether to add the context_engine_id field to v3 trap events                                                                                                                                                           |
 | `TRAPS_PORT`                 | External port exposed for traps server                                                                                                                                                                                          |
+| `ENABLE_TRAPS_SECRET`          | Enable usage of secrets for traps                           |
 
 ## Scheduler
 
