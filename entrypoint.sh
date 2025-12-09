@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -e
 . /app/.venv/bin/activate
-. /app/construct-redis-url.sh
+. /app/construct-connection-strings.sh
 LOG_LEVEL=${LOG_LEVEL:=INFO}
 WORKER_CONCURRENCY=${WORKER_CONCURRENCY:=4}
 
