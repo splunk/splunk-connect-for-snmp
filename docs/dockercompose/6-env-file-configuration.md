@@ -4,16 +4,16 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 
 ## Deployment
 
-| Variable                              | Description                                                                                                                                                                                                                               |
-|---------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
-| `SC4SNMP_IMAGE`                       | The registry and name of the SC4SNMP image to pull                                                                                                                                                                                        |
-| `SC4SNMP_TAG`                         | SC4SNMP image tag to pull                                                                                                                                                                                                                 |
-| `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to [scheduler-config.yaml](./4-scheduler-configuration.md) file                                                                                                                                                             |
-| `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`     | Absolute path to [traps-config.yaml](./5-traps-configuration.md) file                                                                                                                                                                     |
-| `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                                                                                                                                                     |
-| `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose`                                                                                                                                      |
-| `LOCAL_MIBS_PATH`                     | Absolute path to the directory containing [local MIB files](../mib-request.md#configuring-path-to-local-mibs-for-docker-compose-installation). By default, it points to the `local_mibs` directory hosted with the Docker Compose package. |
-| `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                                                                                                                                                        |
+| Variable                              | Description                                                                                                                                    |
+|---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------| 
+| `SC4SNMP_IMAGE`                       | The registry and name of the SC4SNMP image to pull                                                                                             |
+| `SC4SNMP_TAG`                         | SC4SNMP image tag to pull                                                                                                                      |
+| `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to [scheduler-config.yaml](./4-scheduler-configuration.md) file                                                                  |
+| `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`     | Absolute path to [traps-config.yaml](./5-traps-configuration.md) file                                                                          |
+| `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                                                          |
+| `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose`                                           |
+| `LOCAL_MIBS_PATH`                     | Absolute path to the directory containing [local MIB files](../mib-request.md#configuring-path-to-local-mibs-for-docker-compose-installation). |
+| `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                                                             |
 
 
 ## Network configuration
