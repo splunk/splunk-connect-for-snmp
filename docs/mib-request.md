@@ -101,17 +101,14 @@ when the Node with the mapped hostPath fails, you will have to access the MIB fi
 
 ### Configuring path to local mibs for docker-compose installation
 
-There is a `local_mibs` directory hosted with the docker compose package. It is mapped to be the MIB server's directory in `.env` file as follows:
+To point to the directory with your local MIBs, set the `LOCAL_MIBS_PATH` variable in the `.env` file located in the `docker_compose` directory:
 
 ```yaml
 LOCAL_MIBS_PATH="./local_mibs"
 ```
 
+By default, it is set to be `./local_mibs`, which means such directory will be created anyway in the `docker_compose` directory if the variable remains unchanged.
 You can put your MIB files there, following the same structure as described above.
-If you want to use a different directory, you can change the mapping in the `docker-compose.yaml` file and set an absolute path to your directory.
-
-!!!note
-    It is a good practice to update `LOCAL_MIBS_PATH` to be an absolute path to `local_mibs` directory. For example `LOCAL_MIBS_PATH=/home/user/local_mibs`.
 
 Whenever you add new MIB files, restart MIB service to compile them again, using the following command:
 
@@ -124,3 +121,8 @@ To verify that the process of compilation was completed successfully, check the 
 ```bash
 sudo docker logs snmp-mibserver
 ```
+
+If you want to use a different directory, you can change the mapping in the `docker-compose.yaml` file and set an absolute path to your directory.
+
+!!!note
+    It is a good practice to update `LOCAL_MIBS_PATH` to be an absolute path to `local_mibs` directory. For example `LOCAL_MIBS_PATH=/home/user/local_mibs`.
