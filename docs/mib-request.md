@@ -85,8 +85,9 @@ microk8s kubectl logs -f deployments/snmp-mibserver -n sc4snmp
 ```
 
 This creates a Kubernetes pvc with MIB files inside and maps it to the MIB server pod.
-Also, you can change the storageClass and size of persistence according to the `mibserver` schema, see https://github.com/pysnmp/mibs/blob/main/charts/mibserver/values.yaml.
+Also, you can change the storageClass and size of persistence according to the `mibserver` schema, see [values.yaml of the mibserver](https://github.com/pysnmp/mibs/blob/main/charts/mibserver/values.yaml).
 The default persistence size is 1 Gibibyte, so consider reducing or expanding it to the amount you actually need.
+
 Whenever you add new MIB files, rollout restart MIB server pods to compile them again, using the following command:
 
 ```bash
@@ -99,11 +100,18 @@ using `persistence.existingClaim`. If you go with the `localMibs.pathToMibs` sol
 when the Node with the mapped hostPath fails, you will have to access the MIB files on another node.
 
 ### Configuring path to local mibs for docker-compose installation
-Add the following to the `.env`:
 
+There is a `local_mibs` directory hosted with the docker compose package. It is mapped to be the MIB server's directory in `.env` file as follows:
+
+```yaml
+LOCAL_MIBS_PATH="./local_mibs"
 ```
-LOCAL_MIBS_PATH=/home/user/local_mibs
-```
+
+You can put your MIB files there, following the same structure as described above.
+If you want to use a different directory, you can change the mapping in the `docker-compose.yaml` file and set an absolute path to your directory.
+
+!!!note
+    It is a good practice to update `LOCAL_MIBS_PATH` to be an absolute path to `local_mibs` directory. For example `LOCAL_MIBS_PATH=/home/user/local_mibs`.
 
 Whenever you add new MIB files, restart MIB service to compile them again, using the following command:
 
