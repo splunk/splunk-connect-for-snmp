@@ -571,7 +571,7 @@ mongodb:
     enabled: true
     accessMode: ReadWriteOnce
     size: 5Gi
-    storageClassName: "microk8s-hostpath"
+    storageClassName: ""
 
   service:
     port: 27017
@@ -636,7 +636,7 @@ redis:
   # Storage
   storage:
     enabled: true
-    storageClassName: microk8s-hostpath
+    storageClassName: ""
     accessModes:
       - ReadWriteOnce
     size: 5Gi
