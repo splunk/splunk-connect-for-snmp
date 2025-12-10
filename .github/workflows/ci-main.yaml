@@ -160,6 +160,7 @@ jobs:
     if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]') || github.ref_name == 'develop'"
     timeout-minutes: 120
     strategy:
+      fail-fast: false
       matrix:
         index: [1, 2, 3, 4, 5, 6]
     steps:
@@ -189,6 +190,7 @@ jobs:
     if: "contains(needs.integration-tests-check.outputs.commit_message, '[run-int-tests]') || github.ref_name == 'develop'"
     timeout-minutes: 120
     strategy:
+      fail-fast: false
       matrix:
         index: [ 1, 2, 3, 4, 5, 6 ]
     steps:

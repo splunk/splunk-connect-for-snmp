@@ -23,7 +23,7 @@ import time
 import requests
 from exceptions_tests import UiTestsException
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+from urllib3.util.retry import Retry
 
 TIMEROUT = 500
 
