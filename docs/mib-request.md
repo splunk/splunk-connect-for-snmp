@@ -110,6 +110,9 @@ LOCAL_MIBS_PATH="./local_mibs"
 By default, it is set to be `./local_mibs`, which means such directory will be created anyway in the `docker_compose` directory if the variable remains unchanged.
 You can put your MIB files there, following the same structure as described above.
 
+!!!warning
+    Make sure that the user running docker has read and write permissions to the `LOCAL_MIBS_PATH` directory. Assign the user with permissions if necessary.
+
 Whenever you add new MIB files, restart MIB service to compile them again, using the following command:
 
 ```bash
