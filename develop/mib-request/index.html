@@ -1738,11 +1738,35 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#beta-use-mib-server-with-local-mibs" class="md-nav__link">
+  <a href="#use-mib-server-with-local-mibs" class="md-nav__link">
     <span class="md-ellipsis">
-      Beta: use MIB server with local MIBs
+      Use MIB server with local MIBs
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Use MIB server with local MIBs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuring-path-to-local-mibs-for-k8s-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring path to local MIBs for k8s installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-path-to-local-mibs-for-docker-compose-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring path to local mibs for docker-compose installation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2026,11 +2050,35 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#beta-use-mib-server-with-local-mibs" class="md-nav__link">
+  <a href="#use-mib-server-with-local-mibs" class="md-nav__link">
     <span class="md-ellipsis">
-      Beta: use MIB server with local MIBs
+      Use MIB server with local MIBs
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Use MIB server with local MIBs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuring-path-to-local-mibs-for-k8s-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring path to local MIBs for k8s installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-path-to-local-mibs-for-docker-compose-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring path to local mibs for docker-compose installation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2103,7 +2151,7 @@ Check all the MIB server releases in https://github.com/pysnmp/mibs/releases.
 <div class="highlight"><pre><span></span><code>microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-trap -n sc4snmp
 microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-poller -n sc4snmp
 </code></pre></div>
-<h2 id="beta-use-mib-server-with-local-mibs">Beta: use MIB server with local MIBs<a class="headerlink" href="#beta-use-mib-server-with-local-mibs" title="Permanent link">¶</a></h2>
+<h2 id="use-mib-server-with-local-mibs">Use MIB server with local MIBs<a class="headerlink" href="#use-mib-server-with-local-mibs" title="Permanent link">¶</a></h2>
 <p>From the <code>1.15.0</code> version of the MIB server, there is a way to use local MIB files. This may be useful when your MIB 
 files are proprietary, or you use SC4SNMP offline. This way, you can update necessary MIBs by yourself, without having to
 go through the MIB request procedure.</p>
@@ -2116,8 +2164,9 @@ vendor names will not make compilation fail, this is more for the logging purpos
 troubleshooting easier.</li>
 <li>MIB files should be named the same as the contained MIB module. The MIB module name is specified at the beginning of
 the MIB file before <code>::= BEGIN</code> keyword.</li>
-<li>Add the following to the <code>values.yaml</code>:</li>
 </ol>
+<h3 id="configuring-path-to-local-mibs-for-k8s-installation">Configuring path to local MIBs for k8s installation<a class="headerlink" href="#configuring-path-to-local-mibs-for-k8s-installation" title="Permanent link">¶</a></h3>
+<p>Add the following to the <code>values.yaml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">mibserver</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">localMibs</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">pathToMibs</span><span class="p">:</span><span class="w"> </span><span class="s">"/home/user/local_mibs"</span>
@@ -2126,15 +2175,36 @@ the MIB file before <code>::= BEGIN</code> keyword.</li>
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>deployments/snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
 <p>This creates a Kubernetes pvc with MIB files inside and maps it to the MIB server pod.
-Also, you can change the storageClass and size of persistence according to the <code>mibserver</code> schema, see https://github.com/pysnmp/mibs/blob/main/charts/mibserver/values.yaml.
-The default persistence size is 1 Gibibyte, so consider reducing or expanding it to the amount you actually need.
-Whenever you add new MIB files, rollout restart MIB server pods to compile them again, using the following command:</p>
+Also, you can change the storageClass and size of persistence according to the <code>mibserver</code> schema, see <a href="https://github.com/pysnmp/mibs/blob/main/charts/mibserver/values.yaml">values.yaml of the mibserver</a>.
+The default persistence size is 1 Gibibyte, so consider reducing or expanding it to the amount you actually need.</p>
+<p>Whenever you add new MIB files, rollout restart MIB server pods to compile them again, using the following command:</p>
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
 <p>For a multi-node Kubernetes installation, create pvc beforehand, copy files onto it, and add it to the MIB server
 using <code>persistence.existingClaim</code>. If you go with the <code>localMibs.pathToMibs</code> solution for a multi-node installation
 (with <code>nodeSelector</code> set up to schedule MIB server pods on the same node where the MIB files are),
-when the Node with the mapped hostPath fails, you will have to access the MIB files on another node.</p></div>
+when the Node with the mapped hostPath fails, you will have to access the MIB files on another node.</p>
+<h3 id="configuring-path-to-local-mibs-for-docker-compose-installation">Configuring path to local mibs for docker-compose installation<a class="headerlink" href="#configuring-path-to-local-mibs-for-docker-compose-installation" title="Permanent link">¶</a></h3>
+<p>To point to the directory with your local MIBs, set the <code>LOCAL_MIBS_PATH</code> variable in the <code>.env</code> file located in the <code>docker_compose</code> directory:</p>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">LOCAL_MIBS_PATH="./local_mibs"</span>
+</code></pre></div>
+<p>By default, it is set to be <code>./local_mibs</code>, which means such directory will be created anyway in the <code>docker_compose</code> directory if the variable remains unchanged.
+You can put your MIB files there, following the same structure as described above.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Make sure that the user running docker has read and write permissions to the <code>LOCAL_MIBS_PATH</code> directory. Assign the user with permissions if necessary.</p>
+</div>
+<p>Whenever you add new MIB files, restart MIB service to compile them again, using the following command:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>restart<span class="w"> </span>snmp-mibserver
+</code></pre></div>
+<p>To verify that the process of compilation was completed successfully, check the mibserver logs using the following command:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>logs<span class="w"> </span>snmp-mibserver
+</code></pre></div>
+<p>If you want to use a different directory, you can change the mapping in the <code>docker-compose.yaml</code> file and set an absolute path to your directory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is a good practice to update <code>LOCAL_MIBS_PATH</code> to be an absolute path to <code>local_mibs</code> directory. For example <code>LOCAL_MIBS_PATH=/home/user/local_mibs</code>.</p>
+</div></div>
 
 
 
