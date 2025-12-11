@@ -241,10 +241,22 @@ def fill_empty_value(index_number, metric_value, target):
 def extract_index_number(index):
     if not index:
         return 0
-    index_number = index[0]._value
-    if isinstance(index_number, typing.Tuple):
-        index_number = index_number[0]
-    return index_number
+    try:
+        index_number = index[0]._value
+        if isinstance(index_number, typing.Tuple):
+            if not index_number:
+                logger.warning("Empty tuple encountered in index_number")
+                return 0
+            index_number = index_number[0]
+
+        return index_number
+
+    except IndexError as e:
+        logger.error(f"IndexError: {e}. Index: {index}. Index number: {index_number}")
+        return 0
+    except AttributeError as e:
+        logger.error(f"AttributeError: {e}. Index object may not have _value attribute")
+        return 0
 
 
 def extract_indexes(index):
