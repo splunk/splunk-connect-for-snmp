@@ -26,7 +26,6 @@ with suppress(ImportError, OSError):
 import os
 
 from celery import Celery
-from celery.utils.log import get_task_logger
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 
@@ -35,10 +34,8 @@ from splunk_connect_for_snmp.celery_signals_handlers import *
 provider = TracerProvider()
 trace.set_tracer_provider(provider)
 
-logger = get_task_logger(__name__)
+wait_for_mongodb_replicaset()
 
-
-wait_for_mongodb_replicaset(logger)
 app = Celery("sc4snmp_poller")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
 

@@ -82,7 +82,7 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
   else
     # Without authentication
     if [ -n "$MONGODB_REPLICA_SET" ]; then
-      export MONGO_URI="mongodb://${MONGODB_HOST}/${MONGODB_DATABASE}?replicaSet=${MONGODB_REPLICA_SET}&authSource=admin&retryWrites=false"
+      export MONGO_URI="mongodb://${MONGODB_HOST}/${MONGODB_DATABASE}?replicaSet=${MONGODB_REPLICA_SET}&authSource=admin&retryWrites=false&readPreference=primary"
     else
       export MONGO_URI="mongodb://${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin"
     fi

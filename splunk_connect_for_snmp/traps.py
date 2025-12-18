@@ -80,6 +80,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+wait_for_mongodb_replicaset(logger)
 
 if DISABLE_MONGO_DEBUG_LOGGING:
     disable_mongo_logging()
