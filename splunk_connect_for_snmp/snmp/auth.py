@@ -30,7 +30,7 @@ from pysnmp.hlapi import (
 from pysnmp.proto.api.v2c import OctetString
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
-from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.common import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError

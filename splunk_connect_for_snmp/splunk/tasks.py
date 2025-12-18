@@ -33,7 +33,7 @@ from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 from requests import ConnectionError, ConnectTimeout, ReadTimeout, Session, Timeout
 
-from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.common import human_bool
 
 SPLUNK_HEC_SCHEME = os.getenv("SPLUNK_HEC_SCHEME", "https")
 SPLUNK_HEC_HOST = os.getenv("SPLUNK_HEC_HOST", "127.0.0.1")

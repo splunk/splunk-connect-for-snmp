@@ -18,7 +18,7 @@ from contextlib import suppress
 
 from kombu import Queue
 
-from splunk_connect_for_snmp.common.hummanbool import disable_mongo_logging, human_bool
+from splunk_connect_for_snmp.common.common import disable_mongo_logging, human_bool
 
 with suppress(ImportError, OSError):
     from dotenv import load_dotenv

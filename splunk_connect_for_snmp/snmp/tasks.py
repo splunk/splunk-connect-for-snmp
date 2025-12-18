@@ -36,8 +36,8 @@ from celery.utils.log import get_task_logger
 from mongolock import MongoLock, MongoLockLocked
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
+from splunk_connect_for_snmp.common.common import human_bool
 from splunk_connect_for_snmp.common.custom_cache import ttl_lru_cache
-from splunk_connect_for_snmp.common.hummanbool import human_bool
 from splunk_connect_for_snmp.snmp.manager import Poller, get_inventory
 
 logger = get_task_logger(__name__)

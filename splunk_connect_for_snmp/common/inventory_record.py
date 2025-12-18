@@ -20,7 +20,7 @@ from typing import List, Union
 
 from pydantic import BaseModel, validator
 
-from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.common import human_bool
 
 InventoryStr = Union[None, str]
 InventoryInt = Union[None, int]
