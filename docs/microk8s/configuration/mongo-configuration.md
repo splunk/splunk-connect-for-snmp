@@ -9,11 +9,12 @@ MongoDB serves as the persistent data store for SC4SNMP, storing device profiles
 ### MongoDB configuration file
 
 MongoDB configuration is maintained in the `mongodb` section of `values.yaml`, which is used during installation to configure Kubernetes resources.
+This is the snippet of MongoDB's configuration with all available options, filled with example values:
 
 ```yaml
 mongodb:
   # Mode selector: "standalone", "replication"
-  mode: standalone
+  mode: replication
 
   # Replica set configuration (used only when mode = "replication")
   replicaCount: 3
@@ -21,7 +22,7 @@ mongodb:
 
   # Authentication
   auth:
-    enabled: true
+    enabled: false
     rootUser: "admin"
     rootPassword: ""                  # Set if auth.enabled: true
     existingUserSecret: ""            # Or reference existing secret
@@ -162,7 +163,14 @@ For true high availability with pod rescheduling across nodes, you must use netw
 
 Example using block storage in replication mode:
 
-#TODO
+```yaml
+mongodb:
+  persistence:
+    enabled: true
+    storageClassName: openebs-jiva-csi-default
+    size: 5Gi
+    accessMode: ReadWriteOnce
+```
 
 !!!note
     The storageClassName must point to a StorageClass that supports block storage with ReadWriteOnce access mode. Examples: AWS EBS (gp3), GCP Persistent Disk (pd-ssd), Azure Disk, Ceph RBD, Longhorn.
@@ -241,7 +249,7 @@ mongodb:
 
 ### Migration from Bitnami MongoDB
 
-The chart automatically detects and migrates data from existing Bitnami MongoDB deployments in standalone mode only:
+The chart automatically detects and migrates data from existing Bitnami MongoDB deployments only in standalone mode:
 
 1. Detects Bitnami PVC: datadir-<release>-mongodb-0
 2. Reuses the PVC if found (preserves data)
