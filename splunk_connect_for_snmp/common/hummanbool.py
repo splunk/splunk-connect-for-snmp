@@ -70,11 +70,25 @@ def disable_mongo_logging():
     logging.getLogger("pymongo").setLevel(logging.CRITICAL)
 
 
-def wait_for_mongodb_replicaset(logger, max_retries=120, retry_interval=5):
+def wait_for_mongodb_replicaset(logger=None, max_retries=120, retry_interval=5):
     """
     Wait for MongoDB to be ready before starting the application.
     For replica sets, waits for PRIMARY to be elected.
     """
+    if logger is None:
+        logger = logging.getLogger("splunk_connect_for_snmp.wait_for_mongodb_replicaset")
+        logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
+        if not logger.handlers:
+            handler = logging.StreamHandler()
+            handler.setFormatter(
+                logging.Formatter(
+                    "[%(asctime)s: %(levelname)s] %(message)s",
+                    "%Y-%m-%d %H:%M:%S",
+                )
+            )
+            logger.addHandler(handler)
+            logger.propagate = False
+
     mongo_mode = os.getenv("MONGODB_MODE", "standalone").lower()
     if mongo_mode == "standalone":
         logger.info("MongoDB is in standalone mode, skipping ReplicaSet wait")
@@ -89,6 +103,8 @@ def wait_for_mongodb_replicaset(logger, max_retries=120, retry_interval=5):
     logger.info(f"Waiting for MongoDB ReplicaSet to be ready and elect the primary...")
 
     for attempt in range(1, max_retries + 1):
+        if attempt != 1:
+            time.sleep(retry_interval)
         try:
             # Try to connect
             client = MongoClient(
@@ -101,7 +117,7 @@ def wait_for_mongodb_replicaset(logger, max_retries=120, retry_interval=5):
             # For replica sets, verify PRIMARY exists
             if "replicaSet=" in mongo_uri:
                 if client.primary is None:
-                    raise Exception("No PRIMARY elected yet")
+                    continue
                 logger.info(f"PRIMARY found: {client.primary}")
 
             client.close()
@@ -114,9 +130,4 @@ def wait_for_mongodb_replicaset(logger, max_retries=120, retry_interval=5):
                 logger.info(f"   Error: {e}")
                 sys.exit(1)
 
-            if attempt % 6 == 0:  # Print every 30 seconds
-                logger.info(
-                    f"  Still waiting... ({attempt}/{max_retries}) - {e.__class__.__name__}"
-                )
-
-            time.sleep(retry_interval)
+        logger.info(f"  Still waiting... ({attempt}/{max_retries})")

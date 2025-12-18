@@ -29,7 +29,7 @@ spec:
           echo "Waiting for all {{ .Values.mongodb.replicaCount }} pods to be ready..."
           {{- range $i := until (int .Values.mongodb.replicaCount) }}
           kubectl wait --for=condition=ready pod/{{ $.Release.Name }}-mongodb-{{ $i }} --timeout={{ $.Values.mongodb.replicaInitJob.timeout | quote }}s
-          echo "  ✅ Pod {{ $i }} ready"
+          echo "  Pod {{ $i }} ready"
           {{- end }}
 
           {{- range $i := until (int .Values.mongodb.replicaCount) }}
@@ -41,7 +41,7 @@ spec:
             fi
 
             if [ "$retry" -eq 30 ]; then
-              echo "❌ DNS still not ready for pod {{ $i }}"
+              echo "DNS still not ready for pod {{ $i }}"
               exit 1
             fi
 
@@ -57,7 +57,7 @@ spec:
             --quiet --eval "try { rs.status().ok } catch(e) { 0 }" 2>/dev/null | tail -1)
 
           if [ "$RS_STATUS" = "1" ]; then
-            echo "✅ Already initialized"
+            echo "Already initialized"
             exit 0
           fi
 
@@ -80,7 +80,7 @@ spec:
             --quiet --eval "rs.status().members.forEach(m => print(m.name + ': ' + m.stateStr))" || true
 
           echo ""
-          echo "✅ Initialization complete"
+          echo "Initialization complete"
 
         {{- if .Values.mongodb.auth.enabled }}
         env:

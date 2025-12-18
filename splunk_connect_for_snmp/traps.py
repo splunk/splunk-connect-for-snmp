@@ -76,6 +76,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+wait_for_mongodb_replicaset(logger)
 
 if DISABLE_MONGO_DEBUG_LOGGING:
     disable_mongo_logging()
@@ -100,7 +101,6 @@ if PYSNMP_DEBUG:
             debug.Debug(*enabled_debug_flags, options={"loggerName": logger})
         )
 
-wait_for_mongodb_replicaset(logger)
 app = Celery("sc4snmp_traps")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
 
