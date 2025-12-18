@@ -9,7 +9,7 @@ from typing import List
 import pymongo
 
 from splunk_connect_for_snmp.common.collection_manager import GroupsManager
-from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.common import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.task_generator import WalkTaskGenerator
 from splunk_connect_for_snmp.poller import app

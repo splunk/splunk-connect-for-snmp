@@ -31,7 +31,7 @@ mongodb:
   # Image
   image:
     repository: mongo
-    tag: "7.0"
+    tag: "8.2.2"
     pullPolicy: IfNotPresent
 
   # Resources
@@ -77,7 +77,7 @@ mongodb:
 | mongodb.auth.rootUserKey                   | string | root-user      | Key inside existing secret containing the username.              |
 | mongodb.auth.rootPasswordKey               | string | root-password  | Key inside existing secret containing the password.              |
 | mongodb.image.repository                   | string | mongo          | Container image repository.                                      |
-| mongodb.image.tag                          | string | 7.0            | Image tag / MongoDB version.                                     |
+| mongodb.image.tag                          | string | 8.2.2          | Image tag / MongoDB version.                                     |
 | mongodb.image.pullPolicy                   | string | IfNotPresent   | Image pull policy.                                               |
 | mongodb.resources.requests.cpu             | string | ""             | Guaranteed minimum CPU.                                          |
 | mongodb.resources.requests.memory          | string | ""             | Guaranteed minimum memory.                                       |
@@ -133,16 +133,16 @@ mongodb:
 
 Use cases:
 
-* Single-node environments
-* Development and testing
-* Non-critical workloads
+* Production deployments
+* Multi-node Kubernetes clusters
+* Critical workloads requiring high availability
 
 Characteristics:
 
-* Resources: 1 MongoDB pod
-* Complexity: Low
-* Recovery time: ~30-60 seconds (Kubernetes reschedules pod on node failure)
-* No automatic failover
+* Recovery time: ~10-15 seconds (automatic PRIMARY election)
+* Resources: 3 MongoDB pods + 1 init job
+* Automatic failover when PRIMARY fails
+* Read scaling via SECONDARY members
 
 ##### Configuration
 
@@ -213,7 +213,7 @@ mongodb:
 To use an existing Kubernetes Secret, first create it:
 
 ```yaml
-kubectl create secret generic prod-mongodb-secret \
+kubectl create secret generic prod-mongodb-secret -n <namespace> \
   --from-literal=root-user='admin' \
   --from-literal=root-password='your_secure_password_here'
 ```
@@ -250,7 +250,7 @@ The chart automatically detects and migrates data from existing Bitnami MongoDB 
 
 No manual intervention required — simply upgrade your deployment with the new chart.
 
-!!!note
+!!!warning
     Migration between Bitnami MongoDB and the new chart is possible only to standalone mode. For using replication mode, please reinstall SC4SNMP with a fresh MongoDB deployment.
 
 ### Replica Set Initialization
@@ -260,7 +260,7 @@ When deploying in replication mode, the chart automatically:
 1. Deploys a headless service for stable pod DNS
 2. Creates all MongoDB pods with replica set configuration
 3. Runs a Kubernetes Job to initialize the replica set
-4.Waits for PRIMARY election (typically 10-15 seconds)
+4. Waits for PRIMARY election (typically 10-15 seconds)
 
 The initialization job:
 
@@ -270,8 +270,9 @@ The initialization job:
 4. Is idempotent (safe to re-run)
 
 You can monitor initialization progress:
+
 ```bash
-kubectl logs -f job/<release-name>-mongodb-init-rs
+kubectl logs -f job/<release-name>-mongodb-init-rs -n <namespace>
 ```
 
 #### Adjusting the timeout:

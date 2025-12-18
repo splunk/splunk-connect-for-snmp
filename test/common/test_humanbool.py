@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from splunk_connect_for_snmp.common.hummanbool import (
+from splunk_connect_for_snmp.common.common import (
     BadlyFormattedFieldError,
     convert_to_float,
     human_bool,

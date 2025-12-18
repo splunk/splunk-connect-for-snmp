@@ -21,7 +21,7 @@ from pyasn1.error import PyAsn1Error
 from pyasn1.type import univ
 from pysnmp.proto.api import v2c
 
-from splunk_connect_for_snmp.common.hummanbool import (
+from splunk_connect_for_snmp.common.common import (
     disable_mongo_logging,
     human_bool,
     wait_for_mongodb_replicaset,
