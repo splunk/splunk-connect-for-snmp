@@ -76,7 +76,9 @@ def wait_for_mongodb_replicaset(logger=None, max_retries=120, retry_interval=5):
     For replica sets, waits for PRIMARY to be elected.
     """
     if logger is None:
-        logger = logging.getLogger("splunk_connect_for_snmp.wait_for_mongodb_replicaset")
+        logger = logging.getLogger(
+            "splunk_connect_for_snmp.wait_for_mongodb_replicaset"
+        )
         logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
         if not logger.handlers:
             handler = logging.StreamHandler()
