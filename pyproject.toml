@@ -49,7 +49,7 @@ jsonschema = "4.24.0"
 flower = "^2.0.1"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.0.0"
+pytest = "^9.0.0"
 pytest-cov = "^7.0.0"
 mike = "^2.0.0"
 mkdocs = "^1.2.2"
