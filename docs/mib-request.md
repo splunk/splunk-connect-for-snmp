@@ -12,31 +12,17 @@ is downloading, that means the MIB file exists in the MIB server.
 
 ## Submit new MIB file
 
-In case you want to add a new MIB file to the MIB server, see the following steps:
-
-1. Create a fork of the [https://github.com/pysnmp/mibs](https://github.com/pysnmp/mibs) repository.
-   
-2. Put one or more MIB files under `src/vendor/@vendor_name@` where `@vendor_name@` is the name of the MIB file's vendor. 
-If there is currently no directory of vendors that you need, create it yourself.
-   
-3. Create a pull request to a `develop` branch.
-   
-4. Name the pull request the following way: 
-   - for new vendor `feat: add @vendor_name@ MIB files` 
-   - for existing vendor `fix: add @vendor_name@ MIB files`
-
-
-An alternative way of adding MIBs to the MIB server is to create an issue in the
+In case you want to add a new MIB file to the MIB server, create an issue in the
 [https://github.com/pysnmp/mibs](https://github.com/pysnmp/mibs) repository, attaching the files and information about 
 the vendor.
 
 ## Update your instance of SC4SNMP with the newest MIB server
 
 Usually SC4SNMP is released with the newest version of MIB server every time the new MIB files are added.
-But, if you want to use the newest MIB server right after it is released, you can do it manually using the `values.
-yaml` file:
+But, if you want to use the newest MIB server right after it is released, you can do it manually using the configuration file.
 
-1. Append `mibserver` configuration to the values.yaml, with the `mibserver.image.tag` of a value of the newest `mibserver`, for example:
+/// tab | microk8s
+1. Append `mibserver` configuration to the `values.yaml`, with the `mibserver.image.tag` of a value of the newest `mibserver`, for example:
 ```
 mibserver:
   image:
@@ -52,6 +38,20 @@ Check all the MIB server releases in https://github.com/pysnmp/mibs/releases.
 microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-trap -n sc4snmp
 microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-poller -n sc4snmp
 ```
+///
+
+/// tab | docker-compose
+1. Append `mibserver` configuration to the `.env`, with the `MIBSERVER_TAG` of a value of the newest `mibserver`, for example:
+```
+MIBSERVER_TAG=1.15.29
+```
+Check all the MIB server releases in https://github.com/pysnmp/mibs/releases. 
+
+2. Remove the container with old mibserver version and start the new one with commands:
+`docker compose down snmp-mibserver`.
+`docker compose up -d snmp-mibserver`.
+
+///
 
 ## Use MIB server with local MIBs
 
@@ -69,6 +69,7 @@ troubleshooting easier.
 3. MIB files should be named the same as the contained MIB module. The MIB module name is specified at the beginning of
 the MIB file before `::= BEGIN` keyword.
 
+/// tab | microk8s
 ### Configuring path to local MIBs for k8s installation
 Add the following to the `values.yaml`:
 
@@ -98,7 +99,9 @@ For a multi-node Kubernetes installation, create pvc beforehand, copy files onto
 using `persistence.existingClaim`. If you go with the `localMibs.pathToMibs` solution for a multi-node installation
 (with `nodeSelector` set up to schedule MIB server pods on the same node where the MIB files are),
 when the Node with the mapped hostPath fails, you will have to access the MIB files on another node.
+///
 
+/// tab | docker-compose
 ### Configuring path to local mibs for docker-compose installation
 
 To point to the directory with your local MIBs, set the `LOCAL_MIBS_PATH` variable in the `.env` file located in the `docker_compose` directory:
@@ -116,16 +119,18 @@ You can put your MIB files there, following the same structure as described abov
 Whenever you add new MIB files, restart MIB service to compile them again, using the following command:
 
 ```bash
-sudo docker compose restart snmp-mibserver
+docker compose restart snmp-mibserver
 ```
 
 To verify that the process of compilation was completed successfully, check the mibserver logs using the following command:
 
 ```bash
-sudo docker logs snmp-mibserver
+docker logs snmp-mibserver
 ```
 
 If you want to use a different directory, you can change the mapping in the `docker-compose.yaml` file and set an absolute path to your directory.
 
 !!!note
     It is a good practice to update `LOCAL_MIBS_PATH` to be an absolute path to `local_mibs` directory. For example `LOCAL_MIBS_PATH=/home/user/local_mibs`.
+
+///
