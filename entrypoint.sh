@@ -7,6 +7,12 @@ WORKER_CONCURRENCY=${WORKER_CONCURRENCY:=4}
 
 wait-for-dep ${REDIS_DEPENDENCIES} "${MONGO_URI}" "${MIB_INDEX}"
 
+ENABLE_TRAPS_SECRETS=${ENABLE_TRAPS_SECRETS:=false}
+ENABLE_WORKER_POLLER_SECRETS=${ENABLE_WORKER_POLLER_SECRETS:=false}
+wait-for-dep "${REDIS_DEPENDENCIES}" "${MONGO_URI}" "${MIB_INDEX}"
+if [ "$ENABLE_TRAPS_SECRETS" = "true" ] || [ "$ENABLE_WORKER_POLLER_SECRETS" = "true" ]; then
+    python /app/secrets/manage_secrets.py
+fi
 case $1 in
 
 inventory)
