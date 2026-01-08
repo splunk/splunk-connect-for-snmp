@@ -2688,6 +2688,10 @@
 <td>Absolute path to the directory containing <a href="../../mib-request/#configuring-path-to-local-mibs-for-docker-compose-installation">local MIB files</a>.</td>
 </tr>
 <tr>
+<td><code>SECRET_FOLDER_PATH</code></td>
+<td>Absolute path to <a href="../7-snmpv3-secrets/">secrets.json</a> file</td>
+</tr>
+<tr>
 <td><code>SC4SNMP_VERSION</code></td>
 <td>Version of SC4SNMP</td>
 </tr>
@@ -3025,6 +3029,10 @@
 <td><code>WORKER_TRAP_MEMORY_RESERVATIONS</code></td>
 <td>Dedicated memory resources for worker trap container</td>
 </tr>
+<tr>
+<td><code>ENABLE_WORKER_POLLER_SECRETS</code></td>
+<td>Enable usage of secrets for poller</td>
+</tr>
 </tbody>
 </table>
 <h2 id="inventory">Inventory<a class="headerlink" href="#inventory" title="Permanent link">¶</a></h2>
@@ -3066,6 +3074,10 @@
 <tr>
 <td><code>TRAPS_PORT</code></td>
 <td>External port exposed for traps server</td>
+</tr>
+<tr>
+<td><code>ENABLE_TRAPS_SECRET</code></td>
+<td>Enable usage of secrets for traps</td>
 </tr>
 </tbody>
 </table>
