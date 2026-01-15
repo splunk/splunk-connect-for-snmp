@@ -246,8 +246,12 @@ def main():
                 location, "userName", required=True, default=None
             )
 
-            auth_key = get_secret_value(location, "authKey", required=False)
-            priv_key = get_secret_value(location, "privKey", required=False)
+            auth_key = get_secret_value(
+                location, "authKey", required=False, default=None
+            )
+            priv_key = get_secret_value(
+                location, "privKey", required=False, default=None
+            )
 
             auth_protocol = get_secret_value(location, "authProtocol", required=False)
             logger.debug(f"authProtocol: {auth_protocol}")
@@ -270,8 +274,8 @@ def main():
                     securityEngineId=v2c.OctetString(hexValue=security_engine_id),
                 )
                 logger.debug(
-                    f"V3 users: {username} auth {auth_protocol} authkey {len(auth_key)*'*'} privprotocol {priv_protocol} "
-                    f"privkey {len(priv_key)*'*'} securityEngineId {len(security_engine_id)*'*'}"
+                    f"V3 users: {username} auth {auth_protocol} authkey {len(str(auth_key))*'*'} privprotocol {priv_protocol} "
+                    f"privkey {len(str(priv_key))*'*'} securityEngineId {len(security_engine_id)*'*'}"
                 )
 
     # Register SNMP Application at the SNMP engine

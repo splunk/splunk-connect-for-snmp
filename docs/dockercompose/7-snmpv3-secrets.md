@@ -42,7 +42,7 @@ Inside this folder, create a secrets.json file that contains all SNMPv3 secrets.
 }
 ```
 
-> **_NOTE:_** The name of json file should be secrets.json and secrets should have non-empty fields (except contextengineid).
+> **_NOTE:_** The name of json file should be secrets.json. Username, authprotocol and authkey are mandatory parameters.
 
 ## Configuration
 In the .env file, set the path to the local folder containing the secrets.json:
