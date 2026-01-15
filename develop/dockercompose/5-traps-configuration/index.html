@@ -600,6 +600,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#prerequisites-for-snmpv3-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites for SNMPv3 Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prerequisites for SNMPv3 Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-the-snmpv3-secret-in-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create the SNMPv3 Secret in Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-the-security-engine-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure the Security Engine ID
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2371,6 +2410,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#prerequisites-for-snmpv3-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites for SNMPv3 Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prerequisites for SNMPv3 Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-the-snmpv3-secret-in-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create the SNMPv3 Secret in Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-the-security-engine-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure the Security Engine ID
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2393,30 +2471,26 @@
 <div><p>Traps configuration is stored in the <code>traps-config.yaml</code> file. This file has the following sections:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">2c</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">public</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">communityIndex</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">contextEngineId</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">contextName</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">tag</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">securityName</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
 <span class="nt">usernameSecrets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
 </code></pre></div>
 <ul>
 <li><code>communities</code>: communities used for version <code>1</code> and <code>2c</code> of the snmp. The default one is <code>public</code>.</li>
-<li><code>usernameSecrets</code>: names of the secrets configured in docker used for <code>snmp v3</code> traps .</li>
+<li><code>usernameSecrets</code>: names of the secrets configured in docker used for <code>snmpv3</code> traps. </li>
 </ul>
 <h2 id="example-of-the-configuration">Example of the configuration<a class="headerlink" href="#example-of-the-configuration" title="Permanent link">¶</a></h2>
 <div class="highlight"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">2c</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">public</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">communityIndex</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">contextEngineId</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">contextName</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">tag</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">securityName</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
 <span class="nt">usernameSecrets</span><span class="p">:</span><span class="w"> </span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_secret</span>
-</code></pre></div></div>
+</code></pre></div>
+<h2 id="prerequisites-for-snmpv3-configuration">Prerequisites for SNMPv3 Configuration<a class="headerlink" href="#prerequisites-for-snmpv3-configuration" title="Permanent link">¶</a></h2>
+<h3 id="create-the-snmpv3-secret-in-docker">Create the SNMPv3 Secret in Docker<a class="headerlink" href="#create-the-snmpv3-secret-in-docker" title="Permanent link">¶</a></h3>
+<p>Before using SNMPv3, you must create the required secret within Docker. For detailed instructions, refer to <a href="../7-snmpv3-secrets/">SNMPv3 secrets</a>.</p>
+<h3 id="configure-the-security-engine-id">Configure the Security Engine ID<a class="headerlink" href="#configure-the-security-engine-id" title="Permanent link">¶</a></h3>
+<p>To enable SNMPv3 functionality, the Security Engine ID must be specified. Please follow the guidelines in the 
+<a href="../6-env-file-configuration/#traps">Traps Section of the .env File Configuration</a> for instructions on setting this value.</p></div>
 
 
 
