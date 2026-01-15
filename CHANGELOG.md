@@ -15,6 +15,7 @@
 
 ### Fixes
 - fix problem with service rendering when `traps.service.usemetallb` is set to false
+- fix setting snmpv3 to be able to set secret without privProtocol and privKey
 
 ## [1.14.1]
 - update mongodb volumePermission image repository to `bitnamileagcy`
