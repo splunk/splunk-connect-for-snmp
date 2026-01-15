@@ -9,7 +9,7 @@ usernameSecrets: []
 ```
 
 - `communities`: communities used for version `1` and `2c` of the snmp. The default one is `public`.
-- `usernameSecrets`: names of the secrets configured in docker used for `snmp v3` traps. 
+- `usernameSecrets`: names of the secrets configured in docker used for `snmpv3` traps. 
 
 ## Example of the configuration
 
