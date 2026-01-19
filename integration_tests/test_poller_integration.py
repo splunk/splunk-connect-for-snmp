@@ -113,7 +113,7 @@ def capture_logs(component="worker-poller", lines=100, deployment="microk8s"):
     """Capture logs from Docker Compose containers or microk8s pods
 
     Args:
-        component: Component name (worker-poller, worker-trap, scheduler, etc.)
+        component: Component name (worker-poller, worker-sender, scheduler, etc.)
         lines: Number of log lines to capture
         deployment: Either "microk8s" or other value for Docker Compose
     """
@@ -127,7 +127,7 @@ def capture_logs(component="worker-poller", lines=100, deployment="microk8s"):
             # Get pod name
             result = subprocess.run(
                 ["microk8s", "kubectl", "get", "pods", "-n", "sc4snmp", "-l",
-                 f"app.kubernetes.io/component={component}", "-o", "name"],
+                 f"app.kubernetes.io/name=splunk-connect-for-snmp-{component}", "-o", "name"],
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -214,7 +214,7 @@ def debug_search(test_name, search_string, result_count, metric_count, capture_l
         print(f"\n  TEST FAILING - Capturing diagnostic information...\n")
         check_deployment_status(deployment)
         capture_logs("worker-poller", lines=200, deployment=deployment)
-        capture_logs("worker-trap", lines=100, deployment=deployment)
+        capture_logs("worker-sender", lines=100, deployment=deployment)
         capture_logs("scheduler", lines=100, deployment=deployment)
 
     print(f"{'=' * 80}\n")
@@ -2173,7 +2173,7 @@ def run_retried_single_search(setup_splunk, search_string, retries, deployment="
             print(f"\n All {retries} retries exhausted - Capturing diagnostic information...\n")
             check_deployment_status(deployment)
             capture_logs("worker-poller", lines=300, deployment=deployment)
-            capture_logs("worker-trap", lines=150, deployment=deployment)
+            capture_logs("worker-sender", lines=150, deployment=deployment)
             capture_logs("scheduler", lines=150, deployment=deployment)
 
         time.sleep(2)
