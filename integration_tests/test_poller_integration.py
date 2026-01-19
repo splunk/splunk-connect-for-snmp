@@ -33,47 +33,239 @@ from integration_tests.splunk_test_utils import (
     upgrade_helm_microk8s,
     yaml_escape_list,
 )
+import subprocess
+import os
 
 logger = logging.getLogger(__name__)
 
 
+# =============================================================================
+# DEBUGGING HELPERS FOR INTEGRATION TESTS
+# =============================================================================
+# These functions capture logs and status from Docker Compose or microk8s
+# to help diagnose test failures, both locally and in CI/CD pipelines.
+#
+# Note: Uses Docker Compose V2 command: "docker compose" (not "docker-compose")
+#
+# The deployment type is passed via pytest's --sc4snmp_deployment option
+# (default: "microk8s", see conftest.py)
+# =============================================================================
+
+
+def check_deployment_status(deployment="microk8s"):
+    """Check status of all components (Docker Compose containers or K8s pods)
+
+    Args:
+        deployment: Either "microk8s" or other value for Docker Compose
+    """
+    print(f"\n{'=' * 80}")
+    print(f"CHECKING DEPLOYMENT STATUS: {deployment}")
+    print(f"{'=' * 80}\n")
+
+    try:
+        if deployment == "microk8s":
+            result = subprocess.run(
+                ["microk8s", "kubectl", "get", "pods", "-n", "sc4snmp", "-o", "wide"],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            if result.returncode == 0:
+                print(result.stdout)
+            else:
+                print(f"Error getting pod status: {result.stderr}")
+        else:
+            # Docker Compose V2 - find docker-compose.yaml location
+            compose_dirs = [
+                os.getenv("COMPOSE_DIR"),
+                "/app",
+                "docker_compose",
+                os.path.join(os.getcwd(), "docker_compose"),
+            ]
+            compose_dir = None
+            for d in compose_dirs:
+                if d and os.path.exists(os.path.join(d, "docker-compose.yaml")):
+                    compose_dir = d
+                    break
+
+            # Use Docker Compose V2 command: "docker compose" (not "docker-compose")
+            result = subprocess.run(
+                ["docker", "compose", "ps"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+                cwd=compose_dir
+            )
+            if result.returncode == 0:
+                print(result.stdout)
+            else:
+                print(f"Error getting container status: {result.stderr}")
+                if compose_dir:
+                    print(f"Working directory: {compose_dir}")
+                print("Note: Using 'docker compose' (V2). If using docker-compose (V1), update the command.")
+    except Exception as e:
+        print(f"Exception while checking status: {e}")
+
+    print(f"{'=' * 80}\n")
+
+
+def capture_logs(component="worker-poller", lines=100, deployment="microk8s"):
+    """Capture logs from Docker Compose containers or microk8s pods
+
+    Args:
+        component: Component name (worker-poller, worker-trap, scheduler, etc.)
+        lines: Number of log lines to capture
+        deployment: Either "microk8s" or other value for Docker Compose
+    """
+    print(f"\n{'=' * 80}")
+    print(f"CAPTURING LOGS FROM: {component}")
+    print(f"DEPLOYMENT: {deployment}")
+    print(f"{'=' * 80}\n")
+
+    try:
+        if deployment == "microk8s":
+            # Get pod name
+            result = subprocess.run(
+                ["microk8s", "kubectl", "get", "pods", "-n", "sc4snmp", "-l",
+                 f"app.kubernetes.io/component={component}", "-o", "name"],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            if result.returncode == 0 and result.stdout:
+                pod_name = result.stdout.strip().split("/")[-1]
+                print(f"Pod: {pod_name}\n")
+
+                # Get logs
+                log_result = subprocess.run(
+                    ["microk8s", "kubectl", "logs", "-n", "sc4snmp", pod_name, "--tail", str(lines)],
+                    capture_output=True,
+                    text=True,
+                    timeout=30
+                )
+                if log_result.returncode == 0:
+                    print(log_result.stdout)
+                else:
+                    print(f"Error getting logs: {log_result.stderr}")
+            else:
+                print(f"Could not find pod for component {component}")
+                print(f"Error: {result.stderr}")
+        else:
+            # Docker Compose V2 - find docker-compose.yaml location
+            compose_dirs = [
+                os.getenv("COMPOSE_DIR"),
+                "/app",
+                "docker_compose",
+                os.path.join(os.getcwd(), "docker_compose"),
+            ]
+            compose_dir = None
+            for d in compose_dirs:
+                if d and os.path.exists(os.path.join(d, "docker-compose.yaml")):
+                    compose_dir = d
+                    break
+
+            if compose_dir:
+                print(f"Using Docker Compose from: {compose_dir}\n")
+
+            # Use Docker Compose V2 command: "docker compose logs" (not "docker-compose logs")
+            result = subprocess.run(
+                ["docker", "compose", "logs", "--tail", str(lines), component],
+                capture_output=True,
+                text=True,
+                timeout=30,
+                cwd=compose_dir
+            )
+            if result.returncode == 0:
+                print(result.stdout)
+            else:
+                print(f"Error getting logs: {result.stderr}")
+                if not compose_dir:
+                    print("Could not find docker-compose.yaml. Tried directories:", compose_dirs)
+                print("Note: Using 'docker compose' (V2). If using docker-compose (V1), update the command.")
+    except subprocess.TimeoutExpired:
+        print(f"Timeout while capturing logs from {component}")
+    except Exception as e:
+        print(f"Exception while capturing logs: {e}")
+
+    print(f"{'=' * 80}\n")
+
+
+def debug_search(test_name, search_string, result_count, metric_count, capture_logs_on_failure=True,
+                 deployment="microk8s"):
+    """Print debug information for a search query and optionally capture logs
+
+    Args:
+        test_name: Name of the test
+        search_string: Splunk search query
+        result_count: Number of results returned
+        metric_count: Number of metrics returned
+        capture_logs_on_failure: Whether to capture logs if test is failing
+        deployment: Deployment type from pytest config ("microk8s" or other)
+    """
+    print(f"\n{'=' * 80}")
+    print(f"TEST: {test_name}")
+    print(f"{'=' * 80}")
+    print(f"SEARCH QUERY:\n{search_string}")
+    print(f"{'-' * 80}")
+    print(f"RESULTS: result_count={result_count}, metric_count={metric_count}")
+
+    # If test is failing, capture logs and status
+    if capture_logs_on_failure and (result_count == 0 or metric_count == 0):
+        print(f"\n  TEST FAILING - Capturing diagnostic information...\n")
+        check_deployment_status(deployment)
+        capture_logs("worker-poller", lines=200, deployment=deployment)
+        capture_logs("worker-trap", lines=100, deployment=deployment)
+        capture_logs("scheduler", lines=100, deployment=deployment)
+
+    print(f"{'=' * 80}\n")
+
+
 @pytest.mark.part1
 class TestSanity:
-    def test_poller_integration_event(self, setup_splunk):
+    def test_poller_integration_event(self, request, setup_splunk):
         logger.info("Integration test for poller event")
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """search index="netops" sourcetype="sc4snmp:event" earliest=-5m"""
         )
         result_count, events_count = splunk_single_search(setup_splunk, search_string)
+        debug_search("test_poller_integration_event", search_string, result_count, events_count, deployment=deployment)
 
-        assert result_count > 0
-        assert events_count > 0
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert events_count > 0, f"Expected events_count > 0, got {events_count}"
 
-    def test_poller_integration_metric(self, setup_splunk):
+    def test_poller_integration_metric(self, request, setup_splunk):
         logger.info("Integration test for poller metric")
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = "| mcatalog values(metric_name) where index=netmetrics AND metric_name=sc4snmp.* earliest=-5m"
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+        debug_search("test_poller_integration_metric", search_string, result_count, metric_count, deployment=deployment)
 
-        assert result_count > 0
-        assert metric_count > 0
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
-    def test_enrich_works_for_IFMIB(self, setup_splunk):
+    def test_enrich_works_for_IFMIB(self, request, setup_splunk):
         logger.info("Integration test for enrichment")
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics | search sourcetype="sc4snmp:metric"
         | search "metric_name:sc4snmp.IF-MIB*if"
         | search "ifDescr" AND "ifAdminStatus" AND "ifName" AND "ifAlias" """
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+        debug_search("test_enrich_works_for_IFMIB", search_string, result_count, metric_count, deployment=deployment)
 
-        assert result_count > 0
-        assert metric_count > 0
+        assert result_count > 0, f"Expected enriched IF-MIB metrics with result_count > 0, got {result_count}. Check if enrichment is working."
+        assert metric_count > 0, f"Expected enriched IF-MIB metrics with metric_count > 0, got {metric_count}. Check if ifDescr, ifAdminStatus, ifName, ifAlias fields are present."
 
-    def test_default_profiles_events(self, setup_splunk):
+    def test_default_profiles_events(self, request, setup_splunk):
         logger.info("Integration test for sc4snmp:event")
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """search index=netops | search "IF-MIB.ifAlias" AND "IF-MIB.ifAdminStatus"
         AND "IF-MIB.ifDescr" AND "IF-MIB.ifName" sourcetype="sc4snmp:event" """
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
-        assert result_count > 0
-        assert metric_count > 0
+        debug_search("test_default_profiles_events", search_string, result_count, metric_count, deployment=deployment)
+
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -119,23 +311,27 @@ def setup_profile(request):
 @pytest.mark.usefixtures("setup_profile")
 @pytest.mark.part1
 class TestProfiles:
-    def test_static_profiles_metrics(self, setup_splunk):
+    def test_static_profiles_metrics(self, request, setup_splunk):
+        deployment = request.config.getoption("sc4snmp_deployment")
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch
         | search "TCP-MIB" """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
+            setup_splunk, search_string, 2, deployment
         )
-        assert result_count > 0
-        assert metric_count > 0
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
-    def test_static_profiles_event(self, setup_splunk):
+    def test_static_profiles_event(self, request, setup_splunk):
+        deployment = request.config.getoption("sc4snmp_deployment")
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """search index=netops sourcetype="sc4snmp:event" "IF-MIB.ifType" AND NOT "IF-MIB.ifAdminStatus" """
         logger.info("Integration test static profile - events")
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
+            setup_splunk, search_string, 2, deployment
         )
-        assert result_count > 0
-        assert metric_count > 0
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -181,13 +377,15 @@ def setup_profiles(request):
 @pytest.mark.usefixtures("setup_profiles")
 @pytest.mark.part1
 class TestProfilesWorkflow:
-    def test_add_new_profile_and_reload(self, setup_splunk):
+    def test_add_new_profile_and_reload(self, request, setup_splunk):
+        deployment = request.config.getoption("sc4snmp_deployment")
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=new_profile """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
+            setup_splunk, search_string, 2, deployment
         )
-        assert result_count > 0
-        assert metric_count > 0
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
     def test_disable_one_profile_and_reload(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
@@ -214,10 +412,10 @@ class TestProfilesWorkflow:
         time.sleep(70)
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=generic_switch earliest=-20s """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
+            setup_splunk, search_string, 2, deployment
         )
-        assert result_count == 0
-        assert metric_count == 0
+        assert result_count == 0, f"Expected result_count == 0, got {result_count}"
+        assert metric_count == 0, f"Expected metric_count == 0, got {metric_count}"
 
     def test_delete_inventory_line(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
@@ -237,10 +435,10 @@ class TestProfilesWorkflow:
         time.sleep(40)
         search_string = """| mpreview index=netmetrics earliest=-20s """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
+            setup_splunk, search_string, 2, deployment
         )
-        assert result_count == 0
-        assert metric_count == 0
+        assert result_count == 0, f"Expected result_count == 0, got {result_count}"
+        assert metric_count == 0, f"Expected metric_count == 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -288,26 +486,32 @@ def setup_smart_profiles(request):
 @pytest.mark.usefixtures("setup_smart_profiles")
 @pytest.mark.part1
 class TestSmartProfiles:
-    def test_smart_profiles_field(self, setup_splunk):
+    def test_smart_profiles_field(self, request, setup_splunk):
+        deployment = request.config.getoption("sc4snmp_deployment")
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field | search icmpOutDestUnreachs """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
+            setup_splunk, search_string, 2, deployment
         )
-        assert result_count > 0
-        assert metric_count > 0
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
-    def test_smart_profiles_custom_translations(self, setup_splunk):
+    def test_smart_profiles_custom_translations(self, request, setup_splunk):
+        deployment = request.config.getoption("sc4snmp_deployment")
+        deployment = request.config.getoption("sc4snmp_deployment")
         logger.info(
             "Integration test for fields base smart profiles with custom translations"
         )
         search_string_base = """| mpreview index=netmetrics| spath profiles | search profiles=smart_profile_field | search myCustomName1 """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string_base, 2
+            setup_splunk, search_string_base, 2, deployment
         )
-        assert result_count > 0
-        assert metric_count > 0
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
-    def test_smart_profiles_base(self, setup_splunk):
+    def test_smart_profiles_base(self, request, setup_splunk):
+        deployment = request.config.getoption("sc4snmp_deployment")
+        deployment = request.config.getoption("sc4snmp_deployment")
         logger.info("Integration test for fields base smart profiles")
         time.sleep(300)
         search_string_baseIF = (
@@ -317,13 +521,17 @@ class TestSmartProfiles:
         result_count, metric_count = splunk_single_search(
             setup_splunk, search_string_baseIF
         )
-        assert result_count > 0
-        assert metric_count > 0
+        debug_search("test_smart_profiles_base (BaseIF)", search_string_baseIF, result_count, metric_count,
+                     deployment=deployment)
+        assert result_count > 0, f"Expected BaseIF result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected BaseIF metric_count > 0, got {metric_count}"
         result_count, metric_count = splunk_single_search(
             setup_splunk, search_string_baseUpTime
         )
-        assert result_count > 0
-        assert metric_count > 0
+        debug_search("test_smart_profiles_base (BaseUpTime)", search_string_baseUpTime, result_count, metric_count,
+                     deployment=deployment)
+        assert result_count > 0, f"Expected BaseUpTime result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected BaseUpTime metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture
@@ -366,13 +574,15 @@ def setup_modify_profile(request):
 @pytest.mark.usefixtures("setup_modify_profile")
 @pytest.mark.part2
 class TestModifyProfilesFrequency:
-    def test_sanity_frequency_field(self, setup_splunk):
+    def test_sanity_frequency_field(self, request, setup_splunk):
+        deployment = request.config.getoption("sc4snmp_deployment")
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics earliest=-30s | search profiles=test_modify frequency=5 """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 3
+            setup_splunk, search_string, 3, deployment
         )
-        assert result_count > 0
-        assert metric_count > 0
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
     def test_modify_frequency_field(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
@@ -414,22 +624,21 @@ class TestModifyProfilesFrequency:
         time.sleep(30)
         search_string = """| mpreview index=netmetrics earliest=-30s | search profiles=test_modify frequency=7 """
         result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 8
+            setup_splunk, search_string, 8, deployment
         )
-        assert result_count > 0
-        assert metric_count > 0
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.mark.usefixtures("setup_modify_profile")
 @pytest.mark.part2
 class TestModifyProfilesVarBinds:
-    def test_sanity_varBinds_field(self, setup_splunk):
+    def test_sanity_varBinds_field(self, request, setup_splunk):
         search_string = """| mpreview index=netmetrics earliest=-30s | search profiles=test_modify UDP-MIB"""
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        deployment = request.config.getoption("sc4snmp_deployment")
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
     def test_modify_varBinds_field(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
@@ -474,21 +683,15 @@ class TestModifyProfilesVarBinds:
 
         time.sleep(20)
         search_string = """| mpreview index=netmetrics earliest=-15s | search profiles=test_modify TCP-MIB """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
         search_string = """| mpreview index=netmetrics  earliest=-15s | search profiles=test_modify | search icmpOutDestUnreachs """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
         search_string = """| mpreview index=netmetrics earliest=-20s | search  laIndex | dedup metric_name:sc4snmp.UCD-SNMP-MIB.laIndex """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
         assert result_count == 3
         assert metric_count == 3
 
@@ -535,24 +738,21 @@ def setup_small_walk(request):
 @pytest.mark.usefixtures("setup_small_walk")
 @pytest.mark.part2
 class TestSmallWalk:
-    def test_check_if_walk_scope_was_smaller(self, setup_splunk):
+    def test_check_if_walk_scope_was_smaller(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 1
-        )
-        assert result_count == 0
-        assert metric_count == 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 1, deployment)
+        assert result_count == 0, f"Expected result_count == 0, got {result_count}"
+        assert metric_count == 0, f"Expected metric_count == 0, got {metric_count}"
         search_string = (
             """| mpreview index=netmetrics earliest=-20s | search "IP-MIB" """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture
@@ -592,24 +792,21 @@ def setup_small_walk_with_full_walk_enabled(request):
 @pytest.mark.usefixtures("setup_small_walk_with_full_walk_enabled")
 @pytest.mark.part2
 class TestSmallWalkWithFullWalkEnabled:
-    def test_check_if_full_walk_is_done_with_profile_set(self, setup_splunk):
+    def test_check_if_full_walk_is_done_with_profile_set(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics earliest=-40s | search "TCP-MIB" """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 1
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 1, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
         search_string = (
             """| mpreview index=netmetrics earliest=-40s | search "IP-MIB" """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture
@@ -643,32 +840,27 @@ def setup_partial_walk(request):
 @pytest.mark.usefixtures("setup_partial_walk")
 @pytest.mark.part2
 class TestPartialWalk:
-    def test_check_if_partial_walk_is_done(self, setup_splunk):
+    def test_check_if_partial_walk_is_done(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics earliest=-20s | search "TCP-MIB" """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 1
-        )
-        assert result_count == 0
-        assert metric_count == 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 1, deployment)
+        assert result_count == 0, f"Expected result_count == 0, got {result_count}"
+        assert metric_count == 0, f"Expected metric_count == 0, got {metric_count}"
         search_string = (
             """| mpreview index=netmetrics earliest=-20s | search "IP-MIB" """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count == 0
-        assert metric_count == 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count == 0, f"Expected result_count == 0, got {result_count}"
+        assert metric_count == 0, f"Expected metric_count == 0, got {metric_count}"
         search_string = (
             """| mpreview index=netmetrics earliest=-20s | search "SNMPv2-MIB" """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture()
@@ -716,14 +908,13 @@ def setup_v3_connection(request):
 @pytest.mark.usefixtures("setup_v3_connection")
 @pytest.mark.part2
 class TestSNMPv3Connection:
-    def test_snmpv3_walk(self, setup_splunk):
+    def test_snmpv3_walk(self, request, setup_splunk):
         time.sleep(200)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics | search profiles=v3profile"""
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -806,32 +997,31 @@ def setup_groups(request):
 @pytest.mark.usefixtures("setup_groups")
 @pytest.mark.part3
 class TestGroupsInventory:
-    def test_ip_address_inventory(self, setup_splunk):
+    def test_ip_address_inventory(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=single_profile"""
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
-    def test_switches_group(self, setup_splunk):
+    def test_switches_group(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=switches_profile"""
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
-    def test_routers_group(self, setup_splunk):
+    def test_routers_group(self, request, setup_splunk):
         time.sleep(30)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics | search profiles=routers_profile | stats dc(event) by host"""
-        result_count, _ = run_retried_single_search(setup_splunk, search_string, 2)
+        result_count, _ = run_retried_single_search(setup_splunk, search_string, 2, deployment)
         assert result_count == 2
 
     def test_edit_routers_group(self, request, setup_splunk):
@@ -853,11 +1043,9 @@ class TestGroupsInventory:
 
         time.sleep(60)
         search_string = f"""| mpreview index=netmetrics earliest=-20s | search profiles=routers_profile host="{trap_external_ip}:1163" """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 1
-        )
-        assert result_count == 0
-        assert metric_count == 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 1, deployment)
+        assert result_count == 0, f"Expected result_count == 0, got {result_count}"
+        assert metric_count == 0, f"Expected metric_count == 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -938,33 +1126,30 @@ def setup_single_ang_group(request):
 class TestIgnoreSingleIfInGroup:
     def test_host_from_group(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
+        deployment = request.config.getoption("sc4snmp_deployment")
         time.sleep(20)
         search_string = f"""| mpreview index=netmetrics | search profiles=switches_profile AND host="{trap_external_ip}:1162" """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
     def test_inline_host_not_present_in_group(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
+        deployment = request.config.getoption("sc4snmp_deployment")
         time.sleep(20)
         search_string = f"""| mpreview index=netmetrics | search profiles=single_profile_1 AND host="{trap_external_ip}:1165" """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
     def test_inline_host_present_in_group(self, request, setup_splunk):
         trap_external_ip = request.config.getoption("trap_external_ip")
+        deployment = request.config.getoption("sc4snmp_deployment")
         time.sleep(20)
         search_string = f"""| mpreview index=netmetrics | search profiles=single_profile_2 AND host="{trap_external_ip}:1162" """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 1
-        )
-        assert result_count == 0
-        assert metric_count == 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 1, deployment)
+        assert result_count == 0, f"Expected result_count == 0, got {result_count}"
+        assert metric_count == 0, f"Expected metric_count == 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -1042,21 +1227,19 @@ def setup_single_gt_and_lt_profiles(request):
 class TestSingleGtAndLtCorrectCondition:
     def test_gt_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics | search profiles=gt_profile """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
     def test_lt_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics | search profiles=lt_profile """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -1142,23 +1325,21 @@ def setup_single_in_and_equals_profiles(request):
 class TestSingleInAndEqualsCorrectCondition:
     def test_in_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics | search profiles=in_profile """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
     def test_equals_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=equals_profile """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -1243,25 +1424,23 @@ def setup_single_regex_and_options_profiles(request):
 class TestSingleRegexCorrectCondition:
     def test_regex_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=regex_profile """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
     def test_regex_with_options_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=options_profile """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -1349,25 +1528,23 @@ def setup_single_gt_and_lt_profiles_with_negation(request):
 class TestSingleGtAndLtWithNegationCorrectCondition:
     def test_not_gt_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_gt_profile """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
     def test_not_lt_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_lt_profile """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -1455,25 +1632,23 @@ def setup_single_in_and_equals_profiles_with_negation(request):
 class TestSingleInAndEqualsWithNegationCorrectCondition:
     def test_not_in_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_in_profile """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
     def test_not_equals_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_equals_profile """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -1561,25 +1736,23 @@ def setup_single_regex_and_options_profiles_with_negation(request):
 class TestSingleRegexWithNegationCorrectCondition:
     def test_not_regex_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_regex_profile """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
     def test_not_regex_with_options_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=not_options_profile """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -1671,25 +1844,23 @@ def setup_multiple_conditions_profiles(request):
 class TestMultipleCorrectConditions:
     def test_gt_and_equals_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=gt_and_equals_profile """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
     def test_lt_and_in_profile(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = (
             """| mpreview index=netmetrics | search profiles=lt_and_in_profile """
         )
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count > 0
-        assert metric_count > 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count > 0, f"Expected result_count > 0, got {result_count}"
+        assert metric_count > 0, f"Expected metric_count > 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -1787,12 +1958,11 @@ def setup_wrong_conditions_profiles(request):
 class TestWrongConditions:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics | search profiles=wrong_gt_and_equals_profile OR profiles=wrong_lt_and_in_profile OR profiles=wrong_equals_profile """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count == 0
-        assert metric_count == 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count == 0, f"Expected result_count == 0, got {result_count}"
+        assert metric_count == 0, f"Expected metric_count == 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -1891,12 +2061,11 @@ def setup_misconfigured_profiles(request):
 class TestMisconfiguredProfiles:
     def test_wrong_profiles(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics | search profiles=no_varbinds_profile OR profiles=no_operation_key_in_condition_profile OR profiles=no_frequency_profile OR profiles=no_patterns_profile """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count == 0
-        assert metric_count == 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count == 0, f"Expected result_count == 0, got {result_count}"
+        assert metric_count == 0, f"Expected metric_count == 0, got {metric_count}"
 
 
 @pytest.fixture(scope="class")
@@ -1975,19 +2144,37 @@ def setup_misconfigured_groups(request):
 class TestMisconfiguredGroups:
     def test_wrong_groups(self, request, setup_splunk):
         time.sleep(20)
+        deployment = request.config.getoption("sc4snmp_deployment")
         search_string = """| mpreview index=netmetrics | search profiles=routers_wrong_group_profile OR profiles=routers_wrong_group_profile """
-        result_count, metric_count = run_retried_single_search(
-            setup_splunk, search_string, 2
-        )
-        assert result_count == 0
-        assert metric_count == 0
+        result_count, metric_count = run_retried_single_search(setup_splunk, search_string, 2, deployment)
+        assert result_count == 0, f"Expected result_count == 0, got {result_count}"
+        assert metric_count == 0, f"Expected metric_count == 0, got {metric_count}"
 
 
-def run_retried_single_search(setup_splunk, search_string, retries):
-    for _ in range(retries):
+def run_retried_single_search(setup_splunk, search_string, retries, deployment="microk8s"):
+    """Run a Splunk search with retries, capturing logs on final failure
+
+    Args:
+        setup_splunk: Splunk connection fixture
+        search_string: Search query to execute
+        retries: Number of retry attempts
+        deployment: Deployment type from pytest config ("microk8s" or other)
+    """
+    for attempt in range(retries):
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         if result_count or metric_count:
             return result_count, metric_count
-        logger.info("No results returned from search. Retrying in 2 seconds...")
+
+        logger.info(f"No results returned from search (attempt {attempt + 1}/{retries}). Retrying in 2 seconds...")
+        print(f"\n  Retry {attempt + 1}/{retries} - No results yet for query:\n{search_string[:100]}...")
+
+        # On last retry, capture logs and status to help debug
+        if attempt == retries - 1:
+            print(f"\n All {retries} retries exhausted - Capturing diagnostic information...\n")
+            check_deployment_status(deployment)
+            capture_logs("worker-poller", lines=300, deployment=deployment)
+            capture_logs("worker-trap", lines=150, deployment=deployment)
+            capture_logs("scheduler", lines=150, deployment=deployment)
+
         time.sleep(2)
     return 0, 0
