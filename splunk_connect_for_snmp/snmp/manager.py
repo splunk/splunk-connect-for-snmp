@@ -346,16 +346,18 @@ class Poller(Task):
         varbinds_get, get_mapping, varbinds_bulk, bulk_mapping = self.get_varbinds(
             address, walk=walk, profiles=profiles
         )
-
-        auth_data = get_auth(logger, ir, self.get_snmp_engine(ir.version))
-        context_data = get_context_data()
-
-        transport = setup_transport_target(ir)
-
         metrics: Dict[str, Any] = {}
         if not varbinds_get and not varbinds_bulk:
             logger.info(f"No work to do for {address}")
             return False, {}
+
+        # Create a new engine per task to avoid "timing parameters not in windows of trust"
+        # Use the SAME engine for both auth discovery and all requests (critical for SNMPv3)
+        task_snmp_engine = self.get_snmp_engine(ir.version, create_new=True)
+        auth_data = get_auth(logger, ir, task_snmp_engine)
+        context_data = get_context_data()
+
+        transport = setup_transport_target(ir)
 
         if varbinds_bulk:
             self.run_bulk_request(
@@ -368,6 +370,7 @@ class Poller(Task):
                 transport,
                 varbinds_bulk,
                 walk,
+                task_snmp_engine,
             )
 
         if varbinds_get:
@@ -381,6 +384,7 @@ class Poller(Task):
                 transport,
                 varbinds_get,
                 walk,
+                task_snmp_engine,
             )
 
         for group_key, metric in metrics.items():
@@ -402,6 +406,7 @@ class Poller(Task):
         transport,
         varbinds_get,
         walk,
+        snmp_engine,
     ):
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
@@ -411,7 +416,7 @@ class Poller(Task):
                 error_index,
                 varbind_table,
             ) in getCmd(
-                self.get_snmp_engine(create_new=True),
+                snmp_engine,
                 auth_data,
                 transport,
                 context_data,
@@ -438,6 +443,7 @@ class Poller(Task):
         transport,
         varbinds_bulk,
         walk,
+        snmp_engine,
     ):
         for (
             error_indication,
@@ -445,7 +451,7 @@ class Poller(Task):
             error_index,
             varbind_table,
         ) in bulkCmd(
-            self.get_snmp_engine(create_new=True),
+            snmp_engine,
             auth_data,
             transport,
             context_data,
