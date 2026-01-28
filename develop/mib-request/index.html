@@ -2055,6 +2055,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mib-error-handling-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MIB Error Handling Policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MIB Error Handling Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recommended-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#update-your-instance-of-sc4snmp-with-the-newest-mib-server" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2426,6 +2454,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mib-error-handling-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MIB Error Handling Policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MIB Error Handling Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recommended-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#update-your-instance-of-sc4snmp-with-the-newest-mib-server" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2502,8 +2558,18 @@ They are stored in the MIB server, which is one of the components of SC4SNMP.</p
 is downloading, that means the MIB file exists in the MIB server.</p>
 <h2 id="submit-new-mib-file">Submit new MIB file<a class="headerlink" href="#submit-new-mib-file" title="Permanent link">¶</a></h2>
 <p>In case you want to add a new MIB file to the MIB server, create an issue in the
-<a href="https://github.com/pysnmp/mibs">https://github.com/pysnmp/mibs</a> repository, attaching the files and information about 
+<a href="https://github.com/pysnmp/mibs">Mibserver</a> repository, attaching the files and information about 
 the vendor.</p>
+<h2 id="mib-error-handling-policy">MIB Error Handling Policy<a class="headerlink" href="#mib-error-handling-policy" title="Permanent link">¶</a></h2>
+<p>In cases where errors are present within a MIB, such as incorrect MIB imports, missing type definitions, 
+or improperly defined data types, responsibility for resolving these issues rests with the MIB vendor. 
+We do not provide support for correcting the MIB files itself.</p>
+<h3 id="recommended-actions">Recommended Actions<a class="headerlink" href="#recommended-actions" title="Permanent link">¶</a></h3>
+<p>Contact the vendor to request a resolution or inquire about newer versions of the affected MIBs.
+If official updates are available from the vendor, you may open an <a href="https://github.com/pysnmp/mibs/issues">issue on GitHub</a> and attach the updated files. 
+We will review and, if appropriate, replace the files in our repository.</p>
+<p>If vendor fixes are unavailable, you may attempt to resolve the issues using AI-assisted tools 
+and <a href="#Use-MIB-server-with-local-MIBs">import the corrected MIB as a local file</a>.</p>
 <h2 id="update-your-instance-of-sc4snmp-with-the-newest-mib-server">Update your instance of SC4SNMP with the newest MIB server<a class="headerlink" href="#update-your-instance-of-sc4snmp-with-the-newest-mib-server" title="Permanent link">¶</a></h2>
 <p>Usually SC4SNMP is released with the newest version of MIB server every time the new MIB files are added.
 But, if you want to use the newest MIB server right after it is released, you can do it manually using the configuration file.</p>
