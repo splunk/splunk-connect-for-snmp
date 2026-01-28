@@ -13,8 +13,24 @@ is downloading, that means the MIB file exists in the MIB server.
 ## Submit new MIB file
 
 In case you want to add a new MIB file to the MIB server, create an issue in the
-[https://github.com/pysnmp/mibs](https://github.com/pysnmp/mibs) repository, attaching the files and information about 
+[Mibserver](https://github.com/pysnmp/mibs) repository, attaching the files and information about 
 the vendor.
+
+## MIB Error Handling Policy
+
+In cases where errors are present within a MIB, such as incorrect MIB imports, missing type definitions, 
+or improperly defined data types, responsibility for resolving these issues rests with the MIB vendor. 
+We do not provide support for correcting the MIB files itself.
+
+### Recommended Actions
+
+Contact the vendor to request a resolution or inquire about newer versions of the affected MIBs.
+If official updates are available from the vendor, you may open an [issue on GitHub](https://github.com/pysnmp/mibs/issues) and attach the updated files. 
+We will review and, if appropriate, replace the files in our repository.
+
+If vendor fixes are unavailable, you may attempt to resolve the issues using AI-assisted tools 
+and [import the corrected MIB as a local file](#Use-MIB-server-with-local-MIBs).
+
 
 ## Update your instance of SC4SNMP with the newest MIB server
 
