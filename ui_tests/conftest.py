@@ -1,3 +1,6 @@
+import os
+from datetime import datetime
+
 import pytest
 from logger.logger import Logger
 from webdriver.webriver_factory import WebDriverFactory
@@ -30,3 +33,34 @@ def setup(request):
 def pytest_unconfigure():
     logger.info("Closing Web Driver")
     WebDriverFactory.close_driver()
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_call(item):
+    outcome = yield
+
+    if outcome.excinfo is not None:
+        print("\n========== UI TEST FAILURE DEBUG ==========")
+        print(f"Test failed: {item.nodeid}")
+
+        # Print Python exception
+        exc_type, exc_value, _ = outcome.excinfo
+        print(f"Exception type: {exc_type.__name__}")
+        print(f"Exception message: {exc_value}")
+
+        # Try to collect browser info (if Selenium is running)
+        try:
+            from webdriver.webriver_factory import WebDriverFactory
+
+            driver = WebDriverFactory.get_driver()
+
+            print("Current URL:", driver.current_url)
+            print("Page title:", driver.title)
+
+            if "login" in driver.title.lower():
+                print("Reason: Redirected to login page (session/auth issue)")
+
+        except Exception as e:
+            print("Browser info not available:", e)
+
+        print("==========================================\n")

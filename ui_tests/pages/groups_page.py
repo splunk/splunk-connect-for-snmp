@@ -12,7 +12,7 @@ driver = WebDriverFactory.get_driver()
 class GroupsPage:
     def check_if_groups_table_is_displayed(self):
         logger.info("Check if groups page is displayed")
-        groups_table_xpath = "//div[@data-test='sc4snmp:group-table']"
+        groups_table_xpath = "//div[@data-test='sc4snmp:group---table']"
         groups_container = driver.find_element(By.XPATH, groups_table_xpath)
         return groups_container.is_displayed()
 
