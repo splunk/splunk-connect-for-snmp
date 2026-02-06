@@ -14,12 +14,94 @@
 #    limitations under the License.
 #   ########################################################################
 import logging
+import subprocess
+import sys
 import time
 
 import pytest
 import splunklib.client as client
 
 logger = logging.getLogger(__name__)
+
+
+def dump_docker_logs():
+    containers = [
+        "docker_compose-worker-poller-1",
+        "docker_compose-worker-sender-1",
+        "docker_compose-worker-trap-1",
+        "sc4snmp-scheduler",
+    ]
+
+    sys.stdout.write("\n" + "=" * 60 + "\n")
+    sys.stdout.write("DOCKER ERROR / WARNING LOGS (last 100 lines)\n")
+    sys.stdout.write("=" * 60 + "\n")
+    sys.stdout.flush()
+
+    for container in containers:
+        sys.stdout.write(f"\nContainer: {container}\n")
+        sys.stdout.write("-" * 60 + "\n")
+        sys.stdout.flush()
+
+        # Get last 100 lines and filter ERROR / WARNING
+        result = subprocess.run(
+            ["docker", "logs", "--tail", "100", container],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            check=False,
+        )
+
+        for line in result.stdout.splitlines():
+            # if "ERROR" in line or "WARNING" in line:
+            #     sys.stdout.write(line + "\n"). #test to print all logs
+            sys.stdout.write(
+                line + "\n"
+            )  # test to print all logs git action  latter remove the comment and print only error and warning logs
+
+        sys.stdout.flush()
+
+    sys.stdout.write("\n" + "=" * 60 + "\n")
+    sys.stdout.write("END OF ERROR LOGS\n")
+    sys.stdout.write("=" * 60 + "\n")
+    sys.stdout.flush()
+
+
+def dump_kubernetes_logs():
+    """Dump Kubernetes pod logs for debugging failed tests"""
+    print("\n" + "=" * 60)
+    print("KUBERNETES POD LOGS (Last 50 lines)")
+    print("=" * 60)
+
+    try:
+        result = subprocess.run(
+            ["kubectl", "get", "pods", "-n", "sc4snmp", "-o", "name"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        if result.returncode != 0:
+            print(f"Could not get pods: {result.stderr}")
+            return
+
+        pod_names = result.stdout.strip().split("\n")
+
+        for pod_name in pod_names:
+            if pod_name:
+                pod_name = pod_name.replace("pod/", "")
+                print(f"\n{'─' * 60}")
+                print(f"Pod: {pod_name}")
+                print(f"{'─' * 60}")
+                subprocess.run(
+                    ["kubectl", "logs", "--tail=50", pod_name, "-n", "sc4snmp"],
+                    check=False,
+                )
+    except Exception as e:
+        print(f"Error getting K8s logs: {e}")
+
+    print("\n" + "=" * 60)
+    print("END OF KUBERNETES LOGS")
+    print("=" * 60 + "\n")
 
 
 def pytest_addoption(parser):
@@ -87,3 +169,28 @@ def setup_splunk(request):
                 raise
             time.sleep(1)
     return service
+
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_runtest_makereport(item, call):
+    """Auto dump logs when any test fails"""
+    if call.when != "call":
+        return
+
+    if call.excinfo is not None:
+        sys.stdout.write("\n" + "!" * 60 + "\n")
+        sys.stdout.write("TEST FAILED - DUMPING LOGS\n")
+        sys.stdout.write("!" * 60 + "\n")
+        sys.stdout.flush()
+
+        try:
+            deployment = item.config.getoption("sc4snmp_deployment")
+
+            if str(deployment) == "microk8s":
+                dump_kubernetes_logs()
+            else:
+                dump_docker_logs()
+        except Exception as e:
+            sys.stdout.write(f"Could not determine deployment: {e}\n")
+            sys.stdout.flush()
+            dump_docker_logs()
