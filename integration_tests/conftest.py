@@ -24,46 +24,60 @@ import splunklib.client as client
 logger = logging.getLogger(__name__)
 
 
-def dump_docker_logs():
-    containers = [
-        "docker_compose-worker-poller-1",
-        "docker_compose-worker-sender-1",
-        "docker_compose-worker-trap-1",
-        "sc4snmp-scheduler",
-    ]
+import subprocess
+from collections import deque
 
-    sys.stdout.write("\n" + "=" * 60 + "\n")
-    sys.stdout.write("DOCKER ERROR / WARNING LOGS (last 100 lines)\n")
-    sys.stdout.write("=" * 60 + "\n")
-    sys.stdout.flush()
+
+def dump_all_docker_error_logs():
+    print("\n" + "=" * 60)
+    print("DOCKER ERROR / WARNING LOGS (last 60 lines)")
+    print("=" * 60)
+
+    # Get all running container names
+    result = subprocess.run(
+        ["docker", "ps", "--format", "{{.Names}}"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+    containers = result.stdout.splitlines()
+
+    if not containers:
+        print("No running containers found")
+        return
 
     for container in containers:
-        sys.stdout.write(f"\nContainer: {container}\n")
-        sys.stdout.write("-" * 60 + "\n")
-        sys.stdout.flush()
+        print(f"\nContainer: {container}")
+        print("-" * 60)
 
-        # Get last 100 lines and filter ERROR / WARNING
-        result = subprocess.run(
-            ["docker", "logs", "--tail", "100", container],
+        logs = subprocess.run(
+            ["docker", "logs", container],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
             check=False,
         )
 
-        for line in result.stdout.splitlines():
-            # if "ERROR" in line or "WARNING" in line:
-            #     sys.stdout.write(line + "\n"). #test to print all logs
-            sys.stdout.write(
-                line + "\n"
-            )  # test to print all logs git action  latter remove the comment and print only error and warning logs
+        # Keep only last 60 ERROR/WARNING lines
+        error_lines = deque(maxlen=60)
 
-        sys.stdout.flush()
+        for line in logs.stdout.splitlines():
+            if "ERROR" in line or "WARNING" in line:
+                error_lines.append(line)
 
-    sys.stdout.write("\n" + "=" * 60 + "\n")
-    sys.stdout.write("END OF ERROR LOGS\n")
-    sys.stdout.write("=" * 60 + "\n")
-    sys.stdout.flush()
+        if error_lines:
+            for line in error_lines:
+                print(line)
+        else:
+            print(" No ERROR / WARNING logs found")
+
+    print("\n" + "=" * 60)
+    print("END OF ERROR LOGS")
+    print("=" * 60)
+
+
+
 
 
 def dump_kubernetes_logs():
