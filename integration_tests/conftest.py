@@ -77,9 +77,6 @@ def dump_all_docker_error_logs():
     print("=" * 60)
 
 
-
-
-
 def dump_kubernetes_logs():
     """Dump Kubernetes pod logs for debugging failed tests"""
     print("\n" + "=" * 60)
@@ -203,8 +200,8 @@ def pytest_runtest_makereport(item, call):
             if str(deployment) == "microk8s":
                 dump_kubernetes_logs()
             else:
-                dump_docker_logs()
+                dump_all_docker_error_logs()
         except Exception as e:
             sys.stdout.write(f"Could not determine deployment: {e}\n")
             sys.stdout.flush()
-            dump_docker_logs()
+            dump_all_docker_error_logs()
