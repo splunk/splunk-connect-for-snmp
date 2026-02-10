@@ -7,35 +7,33 @@ import splunklib.results as results
 from logger.logger import Logger
 from webdriver.webriver_factory import WebDriverFactory
 
+from splunk_search import check_events_from_splunk
+
 logger = Logger().get_logger()
 
 
-def read_splunk_log_file(lines=50):
+def get_splunk_internal_logs(setup, minutes=5):
     """
-    Read last N lines from Splunk splunkd.log
-    Assumes Splunk is started from project root with:
-    -v <project_root>/splunk-data:/opt/splunk/var
+    Fetch Splunk internal ERROR/WARN logs for debugging
+    Works in CI, Docker, Kubernetes
     """
-    project_root = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..")
-    )
-
-    log_file = os.path.join(
-        project_root,
-        "splunk-data",
-        "log",
-        "splunk",
-        "splunkd.log",
+    query = (
+        'search index=_internal '
+        '(log_level=ERROR OR log_level=WARN)'
     )
 
     try:
-        if os.path.exists(log_file):
-            with open(log_file, "r") as f:
-                return f.readlines()[-lines:]
-        else:
-            return [f"splunkd.log not found at {log_file}"]
+        events = check_events_from_splunk(
+            start_time=f"-{minutes}m@m",
+            url=setup["splunkd_url"],
+            user=setup["splunk_user"],
+            password=setup["splunk_password"],
+            query=query,
+        )
+        return events
     except Exception as e:
-        return [f"Failed to read splunkd.log: {e}"]
+        return [{"error": str(e)}]
+
 
 
 def pytest_addoption(parser):
@@ -92,12 +90,19 @@ def pytest_runtest_call(item):
 
         except Exception as e:
             print("Browser info not available:", e)
-
         try:
-            print("\n--- Splunk splunkd.log (last 50 lines) ---")
-            for line in read_splunk_log_file(50):
-                print(line.rstrip())
-        except Exception as e:
-            print("Splunk log capture failed:", e)
+            print("\n--- Splunk _internal ERROR/WARN logs (last 10 min) ---")
 
-        print("==========================================\n")
+            logs = get_splunk_internal_logs(
+                setup=item.funcargs["setup"],
+                minutes=10,
+            )
+
+            if not logs:
+                print("No ERROR/WARN logs found in index=_internal")
+            else:
+                for event in logs[:10]:  # limit output
+                    print(event)
+
+        except Exception as e:
+            print("Splunk internal log capture failed:", e)
