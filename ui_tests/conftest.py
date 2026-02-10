@@ -11,19 +11,19 @@ from splunk_search import check_events_from_splunk
 
 logger = Logger().get_logger()
 
-def get_splunk_internal_logs(setup, minutes=5):
+def get_splunk_internal_logs( minutes=5):
     """
     Fetch Splunk internal ERROR/WARN logs safely.
     Never crashes test execution.
     """
 
-    REQUIRED_KEYS = ("splunkd_url", "splunk_user", "splunk_password")
+    # REQUIRED_KEYS = ("splunkd_url", "splunk_user", "splunk_password")
 
-    # 🛑 If setup is missing or incomplete, skip cleanly
-    if not setup or not all(k in setup for k in REQUIRED_KEYS):
-        return [{
-            "warning": "Splunk setup not available for this test"
-        }]
+    # # 🛑 If setup is missing or incomplete, skip cleanly
+    # if not setup or not all(k in setup for k in REQUIRED_KEYS):
+    #     return [{
+    #         "warning": "Splunk setup not available for this test"
+    #     }]
 
     query = (
         'search index=_internal '
@@ -33,9 +33,9 @@ def get_splunk_internal_logs(setup, minutes=5):
     try:
         return check_events_from_splunk(
             start_time=f"-{minutes}m@m",
-            url=setup["splunkd_url"],
-            user=setup["splunk_user"],
-            password=setup["splunk_password"],
+            url="https://localhost:8089",
+            user="admin",
+            password="changeme2",
             query=query,
         )
     except Exception as e:
@@ -87,7 +87,7 @@ def pytest_runtest_call(item):
 
         # Try to collect browser info (if Selenium is running)
         try:
-            from webdriver.webriver_factory import WebDriverFactory
+            #from webdriver.webriver_factory import WebDriverFactory
 
             driver = WebDriverFactory.get_driver()
 
@@ -99,17 +99,16 @@ def pytest_runtest_call(item):
 
         except Exception as e:
             print("Browser info not available:", e)
-            
+
         try:
             print("\n--- Splunk _internal ERROR/WARN logs (last 10 min) ---")
 
             logs = get_splunk_internal_logs(
-                item.funcargs.get("setup"),
-                minutes=10,
+                minutes=10
             )
 
             if not logs:
-                print("ℹ️ No Splunk ERROR/WARN logs found")
+                print("ℹ️ No Splunk ERROR/WARN logs found",logs)
             else:
                 for log in logs:
                     if "error" in log:
