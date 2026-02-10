@@ -99,26 +99,28 @@ def pytest_runtest_call(item):
 
         except Exception as e:
             print("Browser info not available:", e)
-       
- 
+            
+        try:
+            print("\n--- Splunk _internal ERROR/WARN logs (last 10 min) ---")
 
-            setup_cfg = item.funcargs.get("setup")
+            logs = get_splunk_internal_logs(
+                item.funcargs.get("setup"),
+                minutes=10,
+            )
 
-            logs = get_splunk_internal_logs(setup_cfg, minutes=10)
-
-            if logs and "warning" in logs[0]:
-                print("ℹ️", logs[0]["warning"])
-
-            elif logs and "error" in logs[0]:
-                print("❌", logs[0]["error"])
-
-            elif not logs:
-                print("ℹ️ No Splunk ERROR/WARN logs in the last 10 minutes")
-
+            if not logs:
+                print("ℹ️ No Splunk ERROR/WARN logs found")
             else:
-                print("Splunk ERROR/WARN logs:")
-                for log in logs[:10]:
-                    timestamp = log.get("_time", "N/A")
-                    source = log.get("source", "N/A")
-                    message = log.get("_raw", "N/A")
-                    print(f"{timestamp} | {source} | {message}")
+                for log in logs:
+                    if "error" in log:
+                        print(f"❌ Error fetching logs: {log['error']}")
+                    elif "warning" in log:
+                        print(f"⚠️ {log['warning']}")
+                    else:
+                        timestamp = log.get("_time", "N/A")
+                        source = log.get("source", "N/A")
+                        message = log.get("_raw", "N/A")
+                        print(f"{timestamp} | {source} | {message}")
+
+        except Exception as e:
+            print("❌ Splunk internal log capture failed:", e)
