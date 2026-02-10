@@ -51,6 +51,7 @@ def dump_all_docker_error_logs():
         print(f"\nContainer: {container}")
         print("-" * 60)
 
+
         logs = subprocess.run(
             ["docker", "logs", container],
             stdout=subprocess.PIPE,
@@ -63,7 +64,7 @@ def dump_all_docker_error_logs():
         error_lines = deque(maxlen=60)
 
         for line in logs.stdout.splitlines():
-            if "ERROR" in line or "WARNING" in line:
+            if "ERROR" in line : #need to capture both ERROR but testing perpose only capturing only sucessfull logs  if asset failled but coniner side sucussfull then we can capture warning logs for debugging
                 error_lines.append(line)
 
         if error_lines:

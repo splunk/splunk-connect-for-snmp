@@ -3,9 +3,35 @@ from datetime import datetime
 
 import pytest
 from logger.logger import Logger
+import splunklib.client as client
+import splunklib.results as results
 from webdriver.webriver_factory import WebDriverFactory
 
 logger = Logger().get_logger()
+
+
+def read_splunk_log_file(lines=50):
+    """
+    Read last N lines from Splunk splunkd.log
+    Works for Docker-based Splunk with volume mount:
+    $PWD/splunk-data:/opt/splunk/var
+    """
+    log_file = os.path.join(
+        os.getcwd(),
+        "splunk-data",
+        "log",
+        "splunk",
+        "splunkd.log",
+    )
+
+    try:
+        if os.path.exists(log_file):
+            with open(log_file, "r") as f:
+                return f.readlines()[-lines:]
+        else:
+            return [f"splunkd.log not found at {log_file}"]
+    except Exception as e:
+        return [f"Failed to read splunkd.log: {e}"]
 
 
 def pytest_addoption(parser):
@@ -62,5 +88,14 @@ def pytest_runtest_call(item):
 
         except Exception as e:
             print("Browser info not available:", e)
+
+
+        try:
+            print("\n--- Splunk splunkd.log (last 50 lines) ---")
+            for line in read_splunk_log_file(50):
+                print(line.rstrip())
+        except Exception as e:
+            print("Splunk log capture failed:", e)
+
 
         print("==========================================\n")
