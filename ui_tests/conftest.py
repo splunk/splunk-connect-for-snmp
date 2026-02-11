@@ -108,17 +108,22 @@ def pytest_runtest_makereport(item, call):
         print("\n========== UI TEST FAILURE DEBUG ==========")
         print(f"Test failed: {item.nodeid}")
 
-        # 🔥 NOW fixture is available
-        setup_data = item.funcargs.get("setup", None)
-
-        if not setup_data:
-            print("⚠ setup fixture not available",setup_data)
-            return
-
         try:
-            url = setup_data.get("splunkd_url")
-            user = setup_data.get("splunk_user")
-            password = setup_data.get("splunk_password")
+            # 🔥 FIX: Get config directly from pytest, not from fixture
+            print("item",item)
+
+            config = item.config
+            
+            # Check if required options are available
+            if not config.getoption("--splunk-host", default=None):
+                print("⚠ Splunk configuration not provided (use --splunk-host, --splunk-user, --splunk-password)")
+                return
+
+            # Build Splunk connection details
+            host = config.getoption("--splunk-host")
+            url = f"https://{host}:8089"
+            user = config.getoption("--splunk-user")
+            password = config.getoption("--splunk-password")
 
             print("\n--- Splunk _internal ERROR/WARN logs (last 10 min) ---")
 
@@ -137,7 +142,6 @@ def pytest_runtest_makereport(item, call):
 
         except Exception as e:
             print("❌ Splunk internal log capture failed:", e)
-
 
 
 # @pytest.hookimpl(hookwrapper=True)
