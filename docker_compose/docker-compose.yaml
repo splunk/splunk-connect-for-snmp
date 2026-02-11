@@ -124,7 +124,7 @@ services:
     volumes:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
     - ${INVENTORY_FILE_ABSOLUTE_PATH}:/app/inventory/inventory.csv:ro
-    - inventory-pysnmp-cache-volume:/.pysnmp/:rw
+    - inventory-pysnmp-cache-volume:/app/.pysnmp/:rw
     - inventory-tmp:/tmp/:rw
   scheduler:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
@@ -136,7 +136,7 @@ services:
       LOG_LEVEL: ${SCHEDULER_LOG_LEVEL:-INFO}
     volumes:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
-    - scheduler-pysnmp-cache-volume:/.pysnmp/:rw
+    - scheduler-pysnmp-cache-volume:/app/.pysnmp/:rw
     - scheduler-tmp:/tmp/:rw
   traps:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
@@ -157,7 +157,7 @@ services:
       target: 2162
     volumes:
     - ${TRAPS_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
-    - traps-pysnmp-cache-volume:/.pysnmp/:rw
+    - traps-pysnmp-cache-volume:/app/.pysnmp/:rw
     - traps-tmp:/tmp/:rw
     - ${SECRET_FOLDER_PATH}:/app/secrets/tmp:ro
   worker-poller:
@@ -184,7 +184,7 @@ services:
       ENABLE_WORKER_POLLER_SECRETS: ${ENABLE_WORKER_POLLER_SECRETS:-false}
     volumes:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
-    - worker-poller-pysnmp-cache-volume:/.pysnmp/:rw
+    - worker-poller-pysnmp-cache-volume:/app/.pysnmp/:rw
     - worker-poller-tmp:/tmp/:rw
     - ${SECRET_FOLDER_PATH}:/app/secrets/tmp:ro
   worker-sender:
@@ -200,7 +200,7 @@ services:
       PREFETCH_COUNT: ${PREFETCH_SENDER_COUNT:-1}
     volumes:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
-    - worker-sender-pysnmp-cache-volume:/.pysnmp/:rw
+    - worker-sender-pysnmp-cache-volume:/app/.pysnmp/:rw
     - worker-sender-tmp:/tmp/:rw
     deploy:
       mode: replicated
@@ -228,7 +228,7 @@ services:
       TTL_DNS_CACHE_TRAPS: ${TTL_DNS_CACHE_TRAPS:-1800}
     volumes:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
-    - worker-trap-pysnmp-cache-volume:/.pysnmp/:rw
+    - worker-trap-pysnmp-cache-volume:/app/.pysnmp/:rw
     - worker-trap-tmp:/tmp/:rw
     deploy:
       mode: replicated
@@ -260,7 +260,7 @@ services:
       target: 5555
     volumes:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
-    - worker-flower-pysnmp-cache-volume:/.pysnmp/:rw
+    - worker-flower-pysnmp-cache-volume:/app/.pysnmp/:rw
     - worker-flower-tmp:/tmp/:rw
 volumes:
   snmp-mibserver-tmp:
