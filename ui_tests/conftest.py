@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-import json
 
 import pytest
 import splunklib.client as client
@@ -11,6 +10,7 @@ from webdriver.webriver_factory import WebDriverFactory
 from splunk_search import check_events_from_splunk
 
 logger = Logger().get_logger()
+
 
 
 def get_splunk_internal_logs(url, user, password, minutes=5):
@@ -33,51 +33,39 @@ def get_splunk_internal_logs(url, user, password, minutes=5):
         }]
 
 
-def filter_and_format_logs(logs):
-    """
-    Filter repetitive logs and format for readability.
-    Shows: All ERRORS + unique WARNs (grouped)
-    """
-    if not logs:
-        return []
-    
-    errors = []
-    warn_groups = {}
-    
-    for log in logs:
-        # Handle error responses
-        if "error" in log and "Splunk query failed" in str(log.get("error", "")):
-            return [log]
-        
-        log_level = log.get('log_level', 'UNKNOWN')
-        
-        # 🔥 ALWAYS show ERRORs
-        if log_level == 'ERROR':
-            errors.append(log)
-        
-        # 🔥 Group WARNs by message type
-        elif log_level == 'WARN':
-            try:
-                raw = log.get('_raw', '')
-                if raw:
-                    data = json.loads(raw)
-                    message = data.get('message', 'Unknown')
-                    
-                    # Group similar warnings
-                    if message not in warn_groups:
-                        warn_groups[message] = {
-                            'count': 0,
-                            'first_log': log,
-                            'message': message
-                        }
-                    warn_groups[message]['count'] += 1
-            except:
-                # If parsing fails, show the raw log
-                if 'Unknown' not in warn_groups:
-                    warn_groups['Unknown'] = {'count': 0, 'first_log': log, 'message': 'Unknown'}
-                warn_groups['Unknown']['count'] += 1
-    
-    return errors, warn_groups
+
+# def get_splunk_internal_logs( minutes=5):
+#     """
+#     Fetch Splunk internal ERROR/WARN logs safely.
+#     Never crashes test execution.
+#     """
+
+#     # REQUIRED_KEYS = ("splunkd_url", "splunk_user", "splunk_password")
+
+#     # # 🛑 If setup is missing or incomplete, skip cleanly
+#     # if not setup or not all(k in setup for k in REQUIRED_KEYS):
+#     #     return [{
+#     #         "warning": "Splunk setup not available for this test"
+#     #     }]
+
+#     query = (
+#         'search index=_internal '
+#         '(log_level=ERROR OR log_level=WARN)'
+#     )
+
+#     try:
+#         return check_events_from_splunk(
+#             start_time=f"-{minutes}m@m",
+#             url="https://localhost:8089",
+#             user="admin",
+#             password="changeme2",
+#             query=query,
+#         )
+#     except Exception as e:
+#         return [{
+#             "error": f"Splunk query failed: {str(e)}"
+#         }]
+
 
 
 def pytest_addoption(parser):
@@ -107,6 +95,7 @@ def pytest_unconfigure():
     WebDriverFactory.close_driver()
 
 
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
@@ -120,18 +109,23 @@ def pytest_runtest_makereport(item, call):
         print(f"Test failed: {item.nodeid}")
 
         try:
+            # 🔥 FIX: Get config directly from pytest, not from fixture
+            print("item",item)
+
             config = item.config
             
+            # Check if required options are available
             if not config.getoption("--splunk-host", default=None):
-                print("⚠ Splunk configuration not provided")
+                print("⚠ Splunk configuration not provided (use --splunk-host, --splunk-user, --splunk-password)")
                 return
 
+            # Build Splunk connection details
             host = config.getoption("--splunk-host")
             url = f"https://{host}:8089"
             user = config.getoption("--splunk-user")
             password = config.getoption("--splunk-password")
 
-            print("\n--- Splunk _internal Logs (last 10 min) ---")
+            print("\n--- Splunk _internal ERROR/WARN logs (last 10 min) ---")
 
             logs = get_splunk_internal_logs(
                 url=url,
@@ -142,38 +136,62 @@ def pytest_runtest_makereport(item, call):
 
             if not logs:
                 print("ℹ️ No Splunk ERROR/WARN logs found")
-                return
-            
-            # 🔥 FILTER AND FORMAT LOGS
-            result = filter_and_format_logs(logs)
-            
-            # Handle error case
-            if isinstance(result, list) and len(result) == 1 and "error" in result[0]:
-                print(f"❌ {result[0]['error']}")
-                return
-            
-            errors, warn_groups = result
-            
-            # 🔥 SHOW ERRORS (full detail)
-            if errors:
-                print(f"\n🔴 ERRORS ({len(errors)} found):")
-                for err in errors:
-                    try:
-                        raw = json.loads(err.get('_raw', '{}'))
-                        print(f"  • {raw.get('time', 'N/A')} - {raw.get('message', 'No message')}")
-                        if 'error' in raw:
-                            print(f"    Error: {raw['error']}")
-                    except:
-                        print(f"  • {err.get('_time', 'N/A')} - {err.get('_raw', 'Unknown error')[:100]}")
-            
-            # 🔥 SHOW WARNINGS (grouped summary)
-            if warn_groups:
-                print(f"\n⚠️  WARNINGS (grouped, {sum(g['count'] for g in warn_groups.values())} total):")
-                for msg, group in sorted(warn_groups.items(), key=lambda x: x[1]['count'], reverse=True):
-                    print(f"  • [{group['count']}x] {msg[:80]}")
-            
-            if not errors and not warn_groups:
-                print("ℹ️ No significant logs found")
+            else:
+                for log in logs:
+                    print(log)
+                    
 
         except Exception as e:
-            print(f"❌ Splunk internal log capture failed: {e}")
+            print("❌ Splunk internal log capture failed:", e)
+
+
+# @pytest.hookimpl(hookwrapper=True)
+# def pytest_runtest_call(item):
+#     outcome = yield
+
+#     if outcome.excinfo is not None:
+#         print("\n========== UI TEST FAILURE DEBUG ==========")
+#         print(f"Test failed: {item.nodeid}")
+
+#         # Print Python exception
+#         exc_type, exc_value, _ = outcome.excinfo
+#         print(f"Exception type: {exc_type.__name__}")
+#         print(f"Exception message: {exc_value}")
+
+#         # Try to collect browser info (if Selenium is running)
+#         #try:
+#             #from webdriver.webriver_factory import WebDriverFactory
+
+#         #     driver = WebDriverFactory.get_driver()
+
+#         #     print("Current URL:", driver.current_url)
+#         #     print("Page title:", driver.title)
+
+#         #     if "login" in driver.title.lower():
+#         #         print("Reason: Redirected to login page (session/auth issue)")
+
+#         # except Exception as e:
+#         #     print("Browser info not available:", e)
+
+#         try:
+#             print("\n--- Splunk _internal ERROR/WARN logs (last 10 min) ---")
+
+#             logs = get_splunk_internal_logs(
+#                 minutes=10
+#             )
+
+#             if not logs:
+#                 print("ℹ️ No Splunk ERROR/WARN logs found",logs)
+#             else:
+#                 for log in logs:
+#                     if "error" in log:
+#                         print(f"❌ Error fetching logs: {log['error']}")
+
+                        
+#         except Exception as e:
+#             print("❌ Splunk internal log capture failed:", e)
+
+
+
+
+
