@@ -12,13 +12,13 @@ driver = WebDriverFactory.get_driver()
 class GroupsPage:
     def check_if_groups_table_is_displayed(self):
         logger.info("Check if groups page is displayed")
-        groups_table_xpath = "//div[@data-test='sc4snmp:group---table']"  # wrongly added ---table to make test fail and check if logs are printed correctly in git action, latter remove ---table from xpath
+        groups_table_xpath = "//div[@data-test='sc4snmp:group-table']"  # wrongly added ---table to make test fail and check if logs are printed correctly in git action, latter remove ---table from xpath
         groups_container = driver.find_element(By.XPATH, groups_table_xpath)
         return groups_container.is_displayed()
 
     def click_add_new_group_button(self):
         logger.info("Click add new group button")
-        add_group_button_xpath = "//button[@data-test='sc4snmp:new-item-button']//--ßspan"  # wrongly added //span to make test fail and check if logs are printed correctly in git action, latter remove //span from xpath
+        add_group_button_xpath = "//button[@data-test='sc4snmp:new-item-button']//span"  # wrongly added //span to make test fail and check if logs are printed correctly in git action, latter remove //span from xpath
         add_grp_btn = driver.find_element(By.XPATH, add_group_button_xpath)
         add_grp_btn.click()
         time.sleep(1)

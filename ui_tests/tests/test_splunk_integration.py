@@ -323,6 +323,8 @@ def test_setting_host_in_inventory(setup):
     logger.info("Splunk received %s events in the last minute", len(events))
     assert len(events) == 1
 
+   
+
     # check profiles polling
     time.sleep(60)  # wait to be sure that profile are being polled
     search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};10;poll"'
