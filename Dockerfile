@@ -22,6 +22,8 @@ RUN poetry config virtualenvs.in-project true ;\
 
 FROM base AS final
 
+RUN mkdir -p /app/.pysnmp/mibs && \
+    chown -R 10001:10001 /app
 RUN mkdir /.pysnmp && chown 10001:10001 /.pysnmp
 COPY docker_scripts/manage_secrets.py /app/secrets/
 RUN chown 10001:10001 /app/secrets/
