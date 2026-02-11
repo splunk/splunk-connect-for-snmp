@@ -106,12 +106,10 @@ def pytest_runtest_makereport(item, call):
 
     if report.failed:
         print("\n========== UI TEST FAILURE DEBUG ==========")
-        print(f"Test failed: {item.nodeid}")
+        #print(f"Test failed: {item.nodeid}")
 
         try:
-            # 🔥 FIX: Get config directly from pytest, not from fixture
-            print("item",item)
-
+           
             config = item.config
             
             # Check if required options are available
@@ -143,55 +141,4 @@ def pytest_runtest_makereport(item, call):
 
         except Exception as e:
             print("❌ Splunk internal log capture failed:", e)
-
-
-# @pytest.hookimpl(hookwrapper=True)
-# def pytest_runtest_call(item):
-#     outcome = yield
-
-#     if outcome.excinfo is not None:
-#         print("\n========== UI TEST FAILURE DEBUG ==========")
-#         print(f"Test failed: {item.nodeid}")
-
-#         # Print Python exception
-#         exc_type, exc_value, _ = outcome.excinfo
-#         print(f"Exception type: {exc_type.__name__}")
-#         print(f"Exception message: {exc_value}")
-
-#         # Try to collect browser info (if Selenium is running)
-#         #try:
-#             #from webdriver.webriver_factory import WebDriverFactory
-
-#         #     driver = WebDriverFactory.get_driver()
-
-#         #     print("Current URL:", driver.current_url)
-#         #     print("Page title:", driver.title)
-
-#         #     if "login" in driver.title.lower():
-#         #         print("Reason: Redirected to login page (session/auth issue)")
-
-#         # except Exception as e:
-#         #     print("Browser info not available:", e)
-
-#         try:
-#             print("\n--- Splunk _internal ERROR/WARN logs (last 10 min) ---")
-
-#             logs = get_splunk_internal_logs(
-#                 minutes=10
-#             )
-
-#             if not logs:
-#                 print("ℹ️ No Splunk ERROR/WARN logs found",logs)
-#             else:
-#                 for log in logs:
-#                     if "error" in log:
-#                         print(f"❌ Error fetching logs: {log['error']}")
-
-                        
-#         except Exception as e:
-#             print("❌ Splunk internal log capture failed:", e)
-
-
-
-
 
