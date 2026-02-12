@@ -68,20 +68,20 @@ def dump_all_docker_logs(tail_lines: int = 60):
 
 
 def dump_kubernetes_logs():
-    logger.info("\n" + "=" * 60)
+    logger.info("=" * 60)
     logger.info("KUBERNETES POD LOGS (Last 50 lines)")
     logger.info("=" * 60)
 
     try:
         result = subprocess.run(
-            ["kubectl", "get", "pods", "-n", "sc4snmp", "-o", "name"],
+            ["sudo", "microk8s", "kubectl", "get", "pods", "-n", "sc4snmp", "-o", "name"],
             capture_output=True,
             text=True,
             check=False,
         )
 
         if result.returncode != 0:
-            print(f"Could not get pods: {result.stderr}")
+            logger.error("Could not get pods: %s", result.stderr)
             return
 
         pod_names = result.stdout.strip().split("\n")
@@ -89,19 +89,38 @@ def dump_kubernetes_logs():
         for pod_name in pod_names:
             if pod_name:
                 pod_name = pod_name.replace("pod/", "")
-                print(f"\n{'─' * 60}")
-                print(f"Pod: {pod_name}")
-                print(f"{'─' * 60}")
-                subprocess.run(
-                    ["kubectl", "logs", "--tail=50", pod_name, "-n", "sc4snmp"],
+                logger.info("-" * 60)
+                logger.info("Pod: %s", pod_name)
+                logger.info("-" * 60)
+
+                logs = subprocess.run(
+                    [
+                        "sudo",
+                        "microk8s",
+                        "kubectl",
+                        "logs",
+                        "--tail=50",
+                        pod_name,
+                        "-n",
+                        "sc4snmp",
+                    ],
+                    capture_output=True,
+                    text=True,
                     check=False,
                 )
-    except Exception as e:
-        logger.error(f"Error getting K8s logs: {e}")
 
-    logger.info("\n" + "=" * 60)
+                if logs.stdout:
+                    logger.info("\n%s", logs.stdout)
+                else:
+                    logger.info("No logs for pod %s", pod_name)
+
+    except Exception as e:
+        logger.exception("Error getting K8s logs: %s", e)
+
+    logger.info("=" * 60)
     logger.info("END OF KUBERNETES LOGS")
-    logger.info("=" * 60 + "\n")
+    logger.info("=" * 60)
+
 
 
 def pytest_addoption(parser):
