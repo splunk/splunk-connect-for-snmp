@@ -28,12 +28,12 @@ import subprocess
 from collections import deque
 
 
-def dump_all_docker_error_logs():
-    print("\n" + "=" * 60)
-    print("DOCKER LOGS (last 60 lines)")
-    print("=" * 60)
+def dump_all_docker_logs(tail_lines: int = 60):
+    """Dump last N lines from all running Docker containers"""
+    logger.info("=" * 60)
+    logger.info("DOCKER LOGS (last %s lines)", tail_lines)
+    logger.info("=" * 60)
 
-    # Get all running container names
     result = subprocess.run(
         ["docker", "ps", "--format", "{{.Names}}"],
         stdout=subprocess.PIPE,
@@ -44,46 +44,37 @@ def dump_all_docker_error_logs():
     containers = result.stdout.splitlines()
 
     if not containers:
-        print("No running containers found")
+        logger.info("No running containers found")
         return
 
     for container in containers:
-        print(f"\nContainer: {container}")
-        print("-" * 60)
+        logger.info("")
+        logger.info("Container: %s", container)
+        logger.info("-" * 60)
 
         logs = subprocess.run(
-            ["docker", "logs", container],
+            ["docker", "logs", "--tail", str(tail_lines), container],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
             check=False,
         )
 
-        # Keep only last 60 ERROR/WARNING lines
-        error_lines = deque(maxlen=60)
-
-        for line in logs.stdout.splitlines():
-            if (
-                "ERROR" in line
-            ):  # need to capture both ERROR but testing perpose only capturing only sucessfull logs  if asset failled but coniner side sucussfull then we can capture warning logs for debugging
-                error_lines.append(line)
-
-        if error_lines:
-            for line in error_lines:
-                print(line)
+        if logs.stdout:
+            for line in logs.stdout.splitlines():
+                logger.info(line)
         else:
-            print(" No ERROR / WARNING logs found")
+            logger.info("No logs available")
 
-    print("\n" + "=" * 60)
-    print("END OF ERROR LOGS")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("END OF DOCKER LOGS")
+    logger.info("=" * 60)
 
 
 def dump_kubernetes_logs():
-    """Dump Kubernetes pod logs for debugging failed tests"""
-    print("\n" + "=" * 60)
-    print("KUBERNETES POD LOGS (Last 50 lines)")
-    print("=" * 60)
+    logger.info("\n" + "=" * 60)
+    logger.info("KUBERNETES POD LOGS (Last 50 lines)")
+    logger.info("=" * 60)
 
     try:
         result = subprocess.run(
@@ -110,11 +101,11 @@ def dump_kubernetes_logs():
                     check=False,
                 )
     except Exception as e:
-        print(f"Error getting K8s logs: {e}")
+        logger.error(f"Error getting K8s logs: {e}")
 
-    print("\n" + "=" * 60)
-    print("END OF KUBERNETES LOGS")
-    print("=" * 60 + "\n")
+    logger.info("\n" + "=" * 60)
+    logger.info("END OF KUBERNETES LOGS")
+    logger.info("=" * 60 + "\n")
 
 
 def pytest_addoption(parser):
@@ -191,10 +182,9 @@ def pytest_runtest_makereport(item, call):
         return
 
     if call.excinfo is not None:
-        sys.stdout.write("\n" + "!" * 60 + "\n")
-        sys.stdout.write("TEST FAILED - DUMPING LOGS\n")
-        sys.stdout.write("!" * 60 + "\n")
-        sys.stdout.flush()
+        logger.error("\n" + "!" * 60)
+        logger.error("TEST FAILED - DUMPING LOGS")
+        logger.error("!" * 60)
 
         try:
             deployment = item.config.getoption("sc4snmp_deployment")
@@ -202,8 +192,8 @@ def pytest_runtest_makereport(item, call):
             if str(deployment) == "microk8s":
                 dump_kubernetes_logs()
             else:
-                dump_all_docker_error_logs()
+                dump_all_docker_logs()
+
         except Exception as e:
-            sys.stdout.write(f"Could not determine deployment: {e}\n")
-            sys.stdout.flush()
-            dump_all_docker_error_logs()
+            logger.exception("Could not determine deployment: %s", e)
+            dump_all_docker_logs()
