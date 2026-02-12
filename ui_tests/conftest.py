@@ -41,7 +41,7 @@ def pytest_unconfigure():
 # -----------------------------------------------------------
 # Fetch latest workflow logs (not only ERROR/WARN)
 # -----------------------------------------------------------
-def get_recent_splunk_logs(url, user, password, minutes=10, limit=50):
+def get_recent_splunk_logs(url, user, password, minutes=10, limit=5):
     """
     Fetch latest N logs from important SC4SNMP components
     to understand application workflow.
@@ -59,13 +59,23 @@ def get_recent_splunk_logs(url, user, password, minutes=10, limit=50):
     #     | head {limit}
     # """
 
+    # query = f"""
+    #     | multisearch 
+    #         [ search earliest=-{minutes}m@m (index=_internal OR index=netops OR index=em_logs) ]
+    #         [ mpreview index=netmetrics ]
+    #     | sort - _time
+    #     | head {limit}
+    # """
     query = f"""
-        | multisearch 
-            [ search earliest=-{minutes}m@m (index=_internal OR index=netops OR index=em_logs) ]
-            [ mpreview index=netmetrics ]
-        | sort - _time
-        | head {limit}
-    """
+            | multisearch 
+                [ search earliest=-{minutes}m@m index=_internal | sort - _time | head {limit} ]
+                [ search earliest=-{minutes}m@m index=netops | sort - _time | head {limit} ]
+                [ search earliest=-{minutes}m@m index=em_logs | sort - _time | head {limit} ]
+                [ | mpreview index=netmetrics | head {limit} ]
+            | sort - _time
+            | table _time index source _raw
+            """
+
 
     try:
         logger.debug(f"Executing Splunk query: {query[:100]}...")
