@@ -85,18 +85,18 @@ def get_recent_splunk_logs(url, user, password, minutes=10, limit=50):
         return []
 
 
-def format_log_output(log):
-    """Format log for readable output (similar to kubectl logs style)"""
-    timestamp = log.get("_time", "N/A")
-    index = log.get("index", "unknown")
-    source = log.get("source", "unknown")
-    raw = log.get("_raw", str(log))
+# def format_log_output(log):
+#     """Format log for readable output (similar to kubectl logs style)"""
+#     timestamp = log.get("_time", "N/A")
+#     index = log.get("index", "unknown")
+#     source = log.get("source", "unknown")
+#     raw = log.get("_raw", str(log))
 
-    # Truncate very long logs
-    if len(raw) > 200:
-        raw = raw[:200] + "..."
+#     # Truncate very long logs
+#     if len(raw) > 200:
+#         raw = raw[:200] + "..."
 
-    return f"[{index}] {timestamp} | {source} | {raw}"
+#     return f"[{index}] {timestamp} | {source} | {raw}"
 
 
 def dump_splunk_workflow_logs(url, user, password, minutes=10, limit=50):
@@ -121,10 +121,10 @@ def dump_splunk_workflow_logs(url, user, password, minutes=10, limit=50):
         else:
             logger.info(f"Found {len(logs)} events:")
             logger.info("")  # Empty line for readability
+            logger.info(f"Found  events:{logs}")
 
             for i, log in enumerate(logs, 1):
-                formatted_log = format_log_output(log)
-                logger.info(f"{i:3d}. {formatted_log}")
+                logger.info(f"EVENT {i}: {log}")
 
         logger.info("")  # Empty line
         logger.info("=" * 60)
