@@ -48,13 +48,21 @@ def get_recent_splunk_logs(url, user, password, minutes=10, limit=50):
     """
     logger.info(f"Fetching Splunk logs: last {minutes} minutes, limit {limit}")
 
+    # query = f"""
+    #     search earliest=-{minutes}m@m
+    #     (
+    #         index=_internal
+    #         OR index=netops
+    #         OR index=em_logs
+    #     )
+    #     | sort - _time
+    #     | head {limit}
+    # """
+
     query = f"""
-        search earliest=-{minutes}m@m
-        (
-            index=_internal
-            OR index=netops
-            OR index=em_logs
-        )
+        | multisearch 
+            [ search earliest=-{minutes}m@m (index=_internal OR index=netops OR index=em_logs) ]
+            [ mpreview index=netmetrics ]
         | sort - _time
         | head {limit}
     """

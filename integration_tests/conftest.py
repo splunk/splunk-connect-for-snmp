@@ -74,7 +74,17 @@ def dump_kubernetes_logs():
 
     try:
         result = subprocess.run(
-            ["sudo", "microk8s", "kubectl", "get", "pods", "-n", "sc4snmp", "-o", "name"],
+            [
+                "sudo",
+                "microk8s",
+                "kubectl",
+                "get",
+                "pods",
+                "-n",
+                "sc4snmp",
+                "-o",
+                "name",
+            ],
             capture_output=True,
             text=True,
             check=False,
@@ -120,7 +130,6 @@ def dump_kubernetes_logs():
     logger.info("=" * 60)
     logger.info("END OF KUBERNETES LOGS")
     logger.info("=" * 60)
-
 
 
 def pytest_addoption(parser):
