@@ -1,9 +1,6 @@
-import os
-from datetime import datetime
-
+import time
+import functools
 import pytest
-import splunklib.client as client
-import splunklib.results as results
 from logger.logger import Logger
 from splunk_search import check_events_from_splunk
 from webdriver.webriver_factory import WebDriverFactory
@@ -17,20 +14,9 @@ def pytest_addoption(parser):
         action="store",
         dest="device-simulator",
         default="127.0.0.1",
-        help="Device Simulator external IP, basically external IP of VM",
+        help="Device Simulator external IP",
     )
 
-
-@pytest.fixture(scope="function")
-def setup(request):
-    config = {}
-    host = request.config.getoption("--splunk-host")
-    config["splunkd_url"] = "https://" + host + ":8089"
-    config["splunk_user"] = request.config.getoption("--splunk-user")
-    config["splunk_password"] = request.config.getoption("--splunk-password")
-    config["device_simulator"] = request.config.getoption("device-simulator")
-
-    return config
 
 
 def pytest_unconfigure():
@@ -39,45 +25,48 @@ def pytest_unconfigure():
 
 
 # -----------------------------------------------------------
-# Fetch latest workflow logs (not only ERROR/WARN)
+# Wait decorator (CI safe)
+# -----------------------------------------------------------
+def wait_for_splunk_data(timeout=60, interval=5):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+
+            url = kwargs.get("url")
+            user = kwargs.get("user")
+            password = kwargs.get("password")
+
+            start = time.time()
+
+            while time.time() - start < timeout:
+                logs = get_recent_splunk_logs(
+                    url=url,
+                    user=user,
+                    password=password,
+                    minutes=5,
+                    limit=5,
+                )
+
+                if logs:
+                    logger.info("Splunk data detected ✅")
+                    break
+
+                logger.info("Waiting for Splunk data...")
+                time.sleep(interval)
+            else:
+                logger.warning("Timeout waiting for Splunk data ❌")
+
+            return func(*args, **kwargs)
+
+        return wrapper
+    return decorator
+
+
+# -----------------------------------------------------------
+# Fetch workflow logs
 # -----------------------------------------------------------
 def get_recent_splunk_logs(url, user, password, minutes=10, limit=5):
-    """
-    Fetch latest N logs from important SC4SNMP components
-    to understand application workflow.
-    """
-    logger.info(f"Fetching Splunk logs: last {minutes} minutes, limit {limit}")
 
-    # query = f"""
-    #     search earliest=-{minutes}m@m
-    #     (
-    #         index=_internal
-    #         OR index=netops
-    #         OR index=em_logs
-    #     )
-    #     | sort - _time
-    #     | head {limit}
-    # """
-
-    # query = f"""
-    #     | multisearch 
-    #         [ search earliest=-{minutes}m@m (index=_internal OR index=netops OR index=em_logs) ]
-    #         [ mpreview index=netmetrics ]
-    #     | sort - _time
-    #     | head {limit}
-    # """
-    # query = f"""
-    #         | multisearch 
-    #             [ search earliest=-{minutes}m@m index=_internal | sort - _time | head {limit} ]
-    #             [ search earliest=-{minutes}m@m index=netops | sort - _time | head {limit} ]
-    #             [ search earliest=-{minutes}m@m index=em_logs | sort - _time | head {limit} ]
-    #             [ | mpreview index=netmetrics | head {limit} ]
-    #         | sort - _time
-    #         | table _time index source _raw
-    #         """
-
-    #limit = 5  # As per your requirement for 5 per index
-  
     query = f"""
         | union 
             [ search earliest=-{minutes}m@m index=_internal | sort - _time | head {limit} ]
@@ -91,9 +80,7 @@ def get_recent_splunk_logs(url, user, password, minutes=10, limit=5):
         | sort - _time
     """
 
-
     try:
-        logger.debug(f"Executing Splunk query: {query[:100]}...")
         logs = check_events_from_splunk(
             start_time=f"-{minutes}m@m",
             url=url,
@@ -101,71 +88,49 @@ def get_recent_splunk_logs(url, user, password, minutes=10, limit=5):
             password=password,
             query=query,
         )
-        logger.info(
-            f"Successfully retrieved {len(logs) if logs else 0} logs from Splunk"
-        )
-        return logs
+        return logs or []
     except Exception as e:
         logger.error(f"Splunk query failed: {e}", exc_info=True)
         return []
 
 
-# def format_log_output(log):
-#     """Format log for readable output (similar to kubectl logs style)"""
-#     timestamp = log.get("_time", "N/A")
-#     index = log.get("index", "unknown")
-#     source = log.get("source", "unknown")
-#     raw = log.get("_raw", str(log))
 
-#     # Truncate very long logs
-#     if len(raw) > 200:
-#         raw = raw[:200] + "..."
+# -----------------------------------------------------------
+# Dump workflow logs
+# -----------------------------------------------------------
+@wait_for_splunk_data(timeout=60, interval=5)
+def dump_splunk_workflow_logs(url, user, password, minutes=10, limit=5):
 
-#     return f"[{index}] {timestamp} | {source} | {raw}"
-
-
-def dump_splunk_workflow_logs(url, user, password, minutes=10, limit=50):
-    """
-    Dump Splunk workflow logs using logger (similar to dump_kubernetes_logs).
-    """
     logger.info("=" * 60)
-    logger.info("SPLUNK WORKFLOW LOGS (Last 10 minutes, Latest 50 events)")
+    logger.info("SPLUNK WORKFLOW LOGS")
     logger.info("=" * 60)
 
-    try:
-        logs = get_recent_splunk_logs(
-            url=url,
-            user=user,
-            password=password,
-            minutes=minutes,
-            limit=limit,
-        )
+    logs = get_recent_splunk_logs(
+        url=url,
+        user=user,
+        password=password,
+        minutes=minutes,
+        limit=limit,
+    )
 
-        if not logs:
-            logger.warning("No recent Splunk logs found")
-        else:
-            logger.info(f"Found {len(logs)} events:")
-            logger.info("")  # Empty line for readability
-            logger.info(f"Found  events:{logs}")
+    if not logs:
+        logger.warning("No Splunk logs found")
+    else:
+        for i, log in enumerate(logs, 1):
+            logger.info(f"{i}. {log}")
 
-            for i, log in enumerate(logs, 1):
-                logger.info(f"EVENT {i}: {log}")
 
-        logger.info("")  # Empty line
-        logger.info("=" * 60)
-        logger.info("END OF WORKFLOW LOGS")
-        logger.info("=" * 60)
-
-    except Exception as e:
-        logger.error(f"Error during Splunk workflow log dump: {e}", exc_info=True)
+    logger.info("=" * 60)
+    logger.info("END OF WORKFLOW LOGS")
+    logger.info("=" * 60)
 
 
 # -----------------------------------------------------------
-# Auto dump logs when test fails
+# Auto dump on test failure
 # -----------------------------------------------------------
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """Auto dump workflow logs when UI test fails"""
+
     outcome = yield
     report = outcome.get_result()
 
@@ -174,35 +139,24 @@ def pytest_runtest_makereport(item, call):
 
     if report.failed:
         logger.warning("!" * 60)
-        logger.warning("UI TEST FAILED - DUMPING WORKFLOW LOGS")
+        logger.warning("UI TEST FAILED - DUMPING SPLUNK WORKFLOW LOGS")
         logger.warning(f"Test: {item.nodeid}")
         logger.warning("!" * 60)
 
-        try:
-            config = item.config
+        host = item.config.getoption("--splunk-host", default=None)
+        user = item.config.getoption("--splunk-user", default=None)
+        password = item.config.getoption("--splunk-password", default=None)
 
-            host = config.getoption("--splunk-host", default=None)
-            user = config.getoption("--splunk-user", default=None)
-            password = config.getoption("--splunk-password", default=None)
+        if not host or not user or not password:
+            logger.warning("Splunk credentials not provided")
+            return
 
-            if not host or not user or not password:
-                logger.warning(
-                    "Splunk configuration not provided. "
-                    "Use --splunk-host, --splunk-user, --splunk-password"
-                )
-                return
+        url = f"https://{host}:8089"
 
-            url = f"https://{host}:8089"
-            logger.info(f"Connecting to Splunk at {url}")
-
-            # Dump workflow logs
-            dump_splunk_workflow_logs(
-                url=url,
-                user=user,
-                password=password,
-                minutes=10,
-                limit=50,
-            )
-
-        except Exception as e:
-            logger.error(f"Splunk log capture failed: {e}", exc_info=True)
+        dump_splunk_workflow_logs(
+            url=url,
+            user=user,
+            password=password,
+            minutes=10,
+            limit=5,
+        )
