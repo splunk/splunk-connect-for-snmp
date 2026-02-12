@@ -24,10 +24,6 @@ import splunklib.client as client
 logger = logging.getLogger(__name__)
 
 
-import subprocess
-from collections import deque
-
-
 def dump_all_docker_logs(tail_lines: int = 60):
     """Dump last N lines from all running Docker containers"""
     logger.info("=" * 60)
