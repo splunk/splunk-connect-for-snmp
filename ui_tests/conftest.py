@@ -66,15 +66,30 @@ def get_recent_splunk_logs(url, user, password, minutes=10, limit=5):
     #     | sort - _time
     #     | head {limit}
     # """
+    # query = f"""
+    #         | multisearch 
+    #             [ search earliest=-{minutes}m@m index=_internal | sort - _time | head {limit} ]
+    #             [ search earliest=-{minutes}m@m index=netops | sort - _time | head {limit} ]
+    #             [ search earliest=-{minutes}m@m index=em_logs | sort - _time | head {limit} ]
+    #             [ | mpreview index=netmetrics | head {limit} ]
+    #         | sort - _time
+    #         | table _time index source _raw
+    #         """
+
+    #limit = 5  # As per your requirement for 5 per index
+  
     query = f"""
-            | multisearch 
-                [ search earliest=-{minutes}m@m index=_internal | sort - _time | head {limit} ]
-                [ search earliest=-{minutes}m@m index=netops | sort - _time | head {limit} ]
-                [ search earliest=-{minutes}m@m index=em_logs | sort - _time | head {limit} ]
-                [ | mpreview index=netmetrics | head {limit} ]
-            | sort - _time
-            | table _time index source _raw
-            """
+        | union 
+            [ search earliest=-{minutes}m@m index=_internal | sort - _time | head {limit} ]
+            [ search earliest=-{minutes}m@m index=netops | sort - _time | head {limit} ]
+            [ search earliest=-{minutes}m@m index=em_logs | sort - _time | head {limit} ]
+            [ | mpreview index=netmetrics earliest=-{minutes}m@m 
+              | head {limit} 
+              | eval _raw="Metric: " + metric_name + "=" + tostring(_value) + " (host=" + coalesce(host, "unknown") + ")", 
+                     source="mpreview", 
+                     index="netmetrics" ]
+        | sort - _time
+    """
 
 
     try:
