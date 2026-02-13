@@ -1,5 +1,6 @@
-import time
 import functools
+import time
+
 import pytest
 from logger.logger import Logger
 from splunk_search import check_events_from_splunk
@@ -16,7 +17,6 @@ def pytest_addoption(parser):
         default="127.0.0.1",
         help="Device Simulator external IP",
     )
-
 
 
 def pytest_unconfigure():
@@ -59,6 +59,7 @@ def wait_for_splunk_data(timeout=60, interval=5):
             return func(*args, **kwargs)
 
         return wrapper
+
     return decorator
 
 
@@ -94,7 +95,6 @@ def get_recent_splunk_logs(url, user, password, minutes=10, limit=5):
         return []
 
 
-
 # -----------------------------------------------------------
 # Dump workflow logs
 # -----------------------------------------------------------
@@ -118,7 +118,6 @@ def dump_splunk_workflow_logs(url, user, password, minutes=10, limit=5):
     else:
         for i, log in enumerate(logs, 1):
             logger.info(f"{i}. {log}")
-
 
     logger.info("=" * 60)
     logger.info("END OF WORKFLOW LOGS")
