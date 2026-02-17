@@ -59,13 +59,13 @@ def wait_for_splunk_data(timeout=60, interval=5):
                 )
 
                 if logs:
-                    logger.info("Splunk data detected ✅")
+                    logger.info("Splunk data detected ")
                     break
 
                 logger.info("Waiting for Splunk data...")
                 time.sleep(interval)
             else:
-                logger.warning("Timeout waiting for Splunk data ❌")
+                logger.warning("Timeout waiting for Splunk data ")
 
             return func(*args, **kwargs)
 

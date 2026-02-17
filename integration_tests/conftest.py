@@ -44,8 +44,7 @@ def dump_all_docker_logs(tail_lines: int = 60):
         return
 
     for container in containers:
-        logger.info("")
-        logger.info("Container: %s", container)
+        logger.info("\nContainer: %s", container)
         logger.info("-" * 60)
 
         logs = subprocess.run(
