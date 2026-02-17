@@ -46,7 +46,6 @@ def wait_for_splunk_data(timeout=60, interval=5):
             url = kwargs.get("url")
             user = kwargs.get("user")
             password = kwargs.get("password")
-
             start = time.time()
 
             while time.time() - start < timeout:
