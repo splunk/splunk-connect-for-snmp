@@ -15,7 +15,7 @@ class GroupsPage:
         groups_table_xpath = "//div[@data-test='sc4snmp:group-table']"
         groups_container = driver.find_element(By.XPATH, groups_table_xpath)
         return groups_container.is_displayed()
-    
+
     def click_add_new_group_button(self):
         logger.info("Click add new group button")
         add_group_button_xpath = "//button[@data-test='sc4snmp:new-item-button']//span"
