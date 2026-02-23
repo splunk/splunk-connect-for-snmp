@@ -7,10 +7,12 @@ from contextlib import suppress
 import yaml
 from celery.utils.log import get_task_logger
 from jsonschema import ValidationError, validate
+from pymongo import ASCENDING
 
 from splunk_connect_for_snmp.common.collections_schemas import (
     get_all_group_schemas,
     get_all_profile_schemas,
+    get_engine_id_record_schema,
 )
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
@@ -217,3 +219,44 @@ class ProfilesManager(CollectionManager):
             key = list(pr.keys())[0]
             profile = pr[key]
             self.assign_profiles_to_dict(active_profiles, key, profile)
+
+
+class EngineIdManager:
+    COLLECTION_NAME = "engine_id_records"
+
+    def __init__(self, mongo):
+        self.collection = mongo.sc4snmp[self.COLLECTION_NAME]
+        self._ensure_indexes()
+        self._cached_engine_ids = set(self.collection.distinct("security_engine_id"))
+
+    def _ensure_indexes(self):
+        self.collection.create_index(
+            "security_engine_id",
+            unique=True,
+        )
+
+    def save_engine_id(self, host, security_engine_id):
+        if security_engine_id in self._cached_engine_ids:
+            return
+        record = {"host": host, "security_engine_id": security_engine_id}
+        schema = get_engine_id_record_schema()
+        try:
+            validate(record, schema)
+        except ValidationError as e:
+            logger.error(f"Invalid engine ID record for host {host}: {e.message}")
+            return
+        existing = self.collection.find_one(
+            {"security_engine_id": security_engine_id}, {"_id": 1}
+        )
+        if existing is None:
+            self.collection.insert_one(record)
+        self._cached_engine_ids.add(security_engine_id)
+
+    def get_engine_ids_for_host(self, host):
+        return list(self.collection.find({"host": host}, {"_id": 0}))
+
+    def get_all_engine_ids(self):
+        return list(self.collection.find({}, {"_id": 0}))
+
+    def get_unique_engine_ids(self):
+        return set(self._cached_engine_ids)

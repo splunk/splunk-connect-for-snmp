@@ -755,6 +755,9 @@
         "includeSecurityContextId": {
           "type": ["string", "boolean"]
         },
+        "discoverEngineId": {
+          "type": ["string", "boolean"]
+        },
         "communities": {
           "type": "object"
         },

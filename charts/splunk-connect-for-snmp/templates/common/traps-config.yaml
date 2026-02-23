@@ -14,5 +14,9 @@ data:
 {{- if .Values.traps.usernameSecrets }}
       usernameSecrets:
 {{- toYaml .Values.traps.usernameSecrets | nindent 8 }}
+{{  end }}
+{{- if .Values.traps.securityEngineId}}
+      securityEngineId:
+{{- toYaml .Values.traps.securityEngineId | nindent 8 }}
 {{ end }}
 {{- end -}}
