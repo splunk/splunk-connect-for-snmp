@@ -24,16 +24,16 @@ python_files = ["test_*.py"]
 python = ">=3.10,<3.12"
 pymongo = {extras = ["srv"], version = "^4.0.0"}
 requests = {extras = ["crypto"], version = "^2.31.0"}
-celery = {extras = ["tblib"], version = "5.5.3"}
+celery = {extras = ["tblib"], version = "5.6.2"}
 pydantic = "^1.9.0"
 opentelemetry-api = "^1.6.2"
 opentelemetry-sdk = "^1.6.2"
 opentelemetry-instrumentation-celery = "*"
 opentelemetry-instrumentation-logging = "*"
 opentelemetry-exporter-jaeger-thrift = "^1.10.0"
-pyrate-limiter = "^2.10.0"
-requests-cache = "^1.0.0"
-requests-ratelimiter = "^0.8.0"
+pyrate-limiter = "^4.0.0"
+requests-cache = "^1.3.0"
+requests-ratelimiter = "^0.9.0"
 mongoengine = "^0.29.0"
 celery-redbeat = {git = "https://github.com/splunk/redbeat", branch = "main"}
 PyYAML = "^6.0"
