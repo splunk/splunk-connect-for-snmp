@@ -123,26 +123,27 @@ class InventoryProcessor:
                     logger.info(f"Loading inventory from {INVENTORY_PATH}")
                     ir_reader = list(DictReader(csv_file))
 
-                for inventory_line in ir_reader:
-                    self.process_line(inventory_line)
-                for source_record in self.single_hosts:
-                    address = source_record["address"]
-                    port = source_record.get("port")
-                    host = transform_address_to_key(address, port)
-                    was_present = self.hosts_from_groups.get(host, None)
-                    if was_present is None:
-                        self.inventory_records.append(source_record)
-                    else:
-                        logger.warning(
-                            f"Record: {host} has been already configured in group. Skipping..."
-                        )
             except IsADirectoryError:
                 logger.error(
                     f"Inventory file {INVENTORY_PATH} not correctly created in the deployment.",
                     exc_info=True,
                 )
-            finally:
-                return self.inventory_records, self.inventory_group_port_mapping
+                return [], {}
+
+            for inventory_line in ir_reader:
+                self.process_line(inventory_line)
+            for source_record in self.single_hosts:
+                address = source_record["address"]
+                port = source_record.get("port")
+                host = transform_address_to_key(address, port)
+                was_present = self.hosts_from_groups.get(host, None)
+                if was_present is None:
+                    self.inventory_records.append(source_record)
+                else:
+                    logger.warning(
+                        f"Record: {host} has been already configured in group. Skipping..."
+                    )
+        return self.inventory_records, self.inventory_group_port_mapping
 
     def process_line(self, source_record):
         address = source_record["address"]
