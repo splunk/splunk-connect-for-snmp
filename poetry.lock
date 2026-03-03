@@ -2013,14 +2013,14 @@ yaml = ["pyyaml (>=6.0.1)"]
 
 [[package]]
 name = "requests-ratelimiter"
-version = "0.9.1"
+version = "0.9.2"
 description = "Rate-limiting for the requests library"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "requests_ratelimiter-0.9.1-py3-none-any.whl", hash = "sha256:1246fac2ab307385a6170e9b321241e7b42e28c627f45b4f590371a66e1e05bd"},
-    {file = "requests_ratelimiter-0.9.1.tar.gz", hash = "sha256:1b43baa57734b4ed29817df7d536e22724cd3e2a30fdefcc800da570838fdd64"},
+    {file = "requests_ratelimiter-0.9.2-py3-none-any.whl", hash = "sha256:2daafc607f4f9cdbea4e2c7a89d09756145105edb23ca98a217e86ca05f6653c"},
+    {file = "requests_ratelimiter-0.9.2.tar.gz", hash = "sha256:1d9ede92dd4bebd0d5d449ec4a779dda08d50e424e4a051349263bfc42afad97"},
 ]
 
 [package.dependencies]
