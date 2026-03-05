@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 # Color
@@ -5,6 +6,19 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
+
+
+# ===== PATHS =====
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INT_TEST_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+REPO_ROOT="$(cd "${INT_TEST_DIR}/.." && pwd)"
+CONFIG_DIR="${INT_TEST_DIR}/configs"
+echo "SCRIPT_DIR: $SCRIPT_DIR"
+echo "INT_TEST_DIR: $INT_TEST_DIR"
+echo "REPO_ROOT: $REPO_ROOT"
+
+
+cd "$REPO_ROOT"
 
 function red {
     printf "${RED}$@${NC}\n"
@@ -93,24 +107,35 @@ sudo docker run -d -p 8000:8000 -p 8088:8088 -p 8089:8089 -e SPLUNK_GENERAL_TERM
 
 wait_for_splunk
 
-cd integration_tests
-chmod u+x ./prepare_splunk.sh
-echo $(green "Preparing Splunk instance")
-./prepare_splunk.sh
+cd "$INT_TEST_DIR"
+# chmod u+x ./prepare_splunk.sh
+# echo $(green "Preparing Splunk instance")
+# ./prepare_splunk.sh
 
+
+chmod u+x "$SCRIPT_DIR/prepare_splunk.sh"
+"$SCRIPT_DIR/prepare_splunk.sh"
 echo $(green "Setting up docker compose configuration")
 cp ../docker_compose/* .
+
 # Define the filenames for the variables
-SCHEDULER_CONFIG_FILE="scheduler-config.yaml"
-TRAPS_CONFIG_FILE="traps-config.yaml"
-INVENTORY_FILE="inventory-tests.csv"
+#SCHEDULER_CONFIG_FILE="scheduler-config.yaml"
+#TRAPS_CONFIG_FILE="traps-config.yaml"
+#INVENTORY_FILE="inventory-tests.csv"
 COREFILE="Corefile"
 SECRET_FOLDER="sample_v3_values"
 
 # Get the absolute paths of the files
+
+SCHEDULER_CONFIG_FILE="$CONFIG_DIR/scheduler-config.yaml"
+TRAPS_CONFIG_FILE="$CONFIG_DIR/traps-config.yaml"
+INVENTORY_FILE="$CONFIG_DIR/inventory-tests.csv"
+
 SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=$(realpath "$SCHEDULER_CONFIG_FILE")
 TRAPS_CONFIG_FILE_ABSOLUTE_PATH=$(realpath "$TRAPS_CONFIG_FILE")
 INVENTORY_FILE_ABSOLUTE_PATH=$(realpath "$INVENTORY_FILE")
+
+
 COREFILE_ABS_PATH=$(realpath "$COREFILE")
 SPLUNK_HEC_HOST=$(hostname -I | cut -d " " -f1)
 SPLUNK_HEC_TOKEN=$(cat hec_token)
@@ -200,7 +225,8 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
 mv "$TEMP_ENV_FILE" .env
 
 
-sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" inventory-tests.csv
+#sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" inventory-tests.csv
+sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" $INVENTORY_FILE
 echo $(green "Running SNMP simulators in Docker")
 sudo docker run -d -p 161:161/udp tandrup/snmpsim
 sudo docker run -d -p 1162:161/udp tandrup/snmpsim

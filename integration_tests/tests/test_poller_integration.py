@@ -20,7 +20,7 @@ import pytest
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString as dq
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
-from integration_tests.splunk_test_utils import (
+from integration_tests.utils.splunk_test_utils import (
     splunk_single_search,
     update_file_microk8s,
     update_groups_compose,
@@ -98,18 +98,16 @@ def setup_profile(request):
     else:
         update_profiles_compose(profile)
         update_inventory_compose(
-            [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"]
+            [f"{trap_external_ip},,2c,public,,,60,generic_switch,,"]
         )
         upgrade_docker_compose()
     time.sleep(30)
     yield
     if str(deployment) == "microk8s":
-        upgrade_helm_microk8s(
-            [f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"]
-        )
+        upgrade_helm_microk8s([f"{trap_external_ip},,2c,public,,,60,generic_switch,,t"])
     else:
         update_inventory_compose(
-            [f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"]
+            [f"{trap_external_ip},,2c,public,,,60,generic_switch,,t"]
         )
         upgrade_docker_compose()
     time.sleep(20)
@@ -1934,11 +1932,22 @@ class TestMisconfiguredGroups:
         assert metric_count == 0
 
 
-def run_retried_single_search(setup_splunk, search_string, retries):
-    for _ in range(retries):
+# def run_retried_single_search(setup_splunk, search_string, retries):
+#     for _ in range(retries):
+#         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
+#         if result_count or metric_count:
+#             return result_count, metric_count
+#         logger.info("No results returned from search. Retrying in 2 seconds...")
+#         time.sleep(2)
+#     return 0, 0
+
+
+# FIX — retry every 15 seconds, up to the retries count
+def run_retried_single_search(setup_splunk, search_string, retries, wait=20):
+    for attempt in range(retries + 1):
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         if result_count or metric_count:
             return result_count, metric_count
-        logger.info("No results returned from search. Retrying in 2 seconds...")
-        time.sleep(2)
+        logger.info(f"Attempt {attempt+1}/{retries}: no results. Waiting {wait}s...")
+        time.sleep(wait)
     return 0, 0

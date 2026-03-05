@@ -19,7 +19,7 @@ import time
 import pytest
 from pysnmp.hlapi import *
 
-from integration_tests.splunk_test_utils import (
+from integration_tests.utils.splunk_test_utils import (
     create_v3_secrets_compose,
     create_v3_secrets_microk8s,
     splunk_single_search,
@@ -97,7 +97,7 @@ def test_trap_v1(request, setup_splunk):
     )
 
     # wait for the message to be processed
-    time.sleep(5)
+    time.sleep(15)
 
     search_query = """search index="netops" sourcetype="sc4snmp:traps" earliest=-1m
                      | head 1"""
