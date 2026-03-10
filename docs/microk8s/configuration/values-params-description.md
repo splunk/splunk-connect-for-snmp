@@ -46,9 +46,9 @@ Detailed documentation about configuring UI can be found in [Enable GUI](../gui/
 
 ### Using a Kubernetes secret for the HEC token
 
-Instead of putting the HEC token in plaintext in `splunk.token`, you can reference an existing Kubernetes Secret. This is recommended for production and when using a secrets manager (e.g. HashiCorp Vault, External Secrets Operator, Sealed Secrets).
+Instead of putting the HEC token in plaintext in `splunk.token`, you can reference an existing Kubernetes Secret. This is recommended for production and when using a secrets manager.
 
-**Behavior:** The chart provides the token to the application as the environment variable `SPLUNK_HEC_TOKEN` from a Secret via `secretKeyRef`. Any system that creates or syncs a normal Kubernetes Secret will work (External Secrets Operator, Sealed Secrets, Vault via ESO, CSI Secrets Store, or CI/CD). The Secret must be in the **same namespace** as the release.
+**Behavior:** The chart provides the token to the application as the environment variable `SPLUNK_HEC_TOKEN` from a Secret via `secretKeyRef`. Any system that creates or syncs a normal Kubernetes Secret will work. The Secret must be in the **same namespace** as the release.
 
 1. **Create the Secret** in the same namespace as the release, with the token under the key `hec_token` (or another key you specify):
 
