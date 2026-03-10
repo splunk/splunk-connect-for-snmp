@@ -35,13 +35,47 @@ Detailed documentation about configuring UI can be found in [Enable GUI](../gui/
 | `port`                     | The port of the HEC endpoint                                                | `8088`                                 |
 | `host`                     | IP address or a domain name of a Splunk instance                            |                                        |
 | `path`                     | URN to Splunk collector                                                     | `/services/collector`                  | 
-| `token`                    | Splunk HTTP Event Collector token                                           | `00000000-0000-0000-0000-000000000000` |
+| `token`                    | Splunk HTTP Event Collector token (plaintext). Omit when using `tokenSecretRef`. | `00000000-0000-0000-0000-000000000000` |
+| `tokenSecretRef`           | Reference to an existing Kubernetes Secret containing the HEC token (alternative to plaintext `token`). When set, the chart does not create a Secret from `token`. See [Using a Kubernetes secret for the HEC token](#using-a-kubernetes-secret-for-the-hec-token) below. | `name: ""`, `key: "hec_token"` |
 | `insecureSSL`              | Checks for the certificate of the HEC endpoint when sending data over HTTPS | `false`                                |
 | `sourcetypeTraps`          | Source type for trap events                                                 | `sc4snmp:traps`                        |
 | `sourcetypePollingEvents`  | Source type for non-metric polling event                                    | `sc4snmp:event`                        |
 | `sourcetypePollingMetrics` | Source type for metric polling event                                        | `sc4snmp:metric`                       |
 | `eventIndex`               | Name of the event index                                                     | `netops`                               |
 | `metricsIndex`             | Name of the metrics index                                                   | `netmetrics`                           |
+
+### Using a Kubernetes secret for the HEC token
+
+Instead of putting the HEC token in plaintext in `splunk.token`, you can reference an existing Kubernetes Secret. This is recommended for production and when using a secrets manager (e.g. HashiCorp Vault, External Secrets Operator, Sealed Secrets).
+
+**Behavior:** The chart provides the token to the application as the environment variable `SPLUNK_HEC_TOKEN` from a Secret via `secretKeyRef`. Any system that creates or syncs a normal Kubernetes Secret will work (External Secrets Operator, Sealed Secrets, Vault via ESO, CSI Secrets Store, or CI/CD). The Secret must be in the **same namespace** as the release.
+
+1. **Create the Secret** in the same namespace as the release, with the token under the key `hec_token` (or another key you specify):
+
+```bash
+kubectl create secret generic my-splunk-hec-secret \
+  --from-literal=hec_token='YOUR_HEC_TOKEN' \
+  -n sc4snmp
+```
+
+2. **Configure the chart** — leave `splunk.token` empty and set `splunk.tokenSecretRef`:
+
+```yaml
+splunk:
+  enabled: true
+  host: "splunk.example.com"
+  protocol: "https"
+  port: "8088"
+  tokenSecretRef:
+    name: my-splunk-hec-secret   # name of your Secret
+    key: hec_token               # optional; default is hec_token
+```
+
+If both `token` and `tokenSecretRef.name` are set, `tokenSecretRef` takes precedence and the chart does not create a Secret from `token`.
+
+**Startup:** Pods will stay in `CreateContainerConfigError` until the referenced Secret exists. With External Secrets or similar, ensure the Secret is synced before or with the Helm release.
+
+**Rotation:** The token is read at pod start. After rotating the token in the vault and updating the Secret, restart the relevant deployments (e.g. worker, traps) to pick up the new value.
 
 ## Sim section
 
