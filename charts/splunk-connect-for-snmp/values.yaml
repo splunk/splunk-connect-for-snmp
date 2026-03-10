@@ -71,9 +71,18 @@ splunk:
   # according to the pattern: {{protocol}}://{{host}}:{{port}}/services/collector
   # for ex. https://splunk-endpoint:8088/services/collector
 
-  # Required for Splunk Enterprise/Cloud (if `enabled` is set to true). Splunk
-  # HTTP Event Collector token.
+  # Required for Splunk Enterprise/Cloud (if `enabled` is set to true). Provide
+  # either a plaintext token here OR use tokenSecretRef to reference an existing
+  # secret. If both are set, tokenSecretRef takes precedence.
   token: 00000000-0000-0000-0000-000000000000
+  # Reference to an existing secret containing the HEC token (alternative to
+  # plaintext token). When set, the chart will not create a secret from
+  # splunk.token. The secret must contain the token under the given key.
+  tokenSecretRef:
+    # Name of the existing Kubernetes secret.
+    name: ""
+    # Key within the secret that holds the HEC token (default: hec_token).
+    key: "hec_token"
   # Whether to skip checking the certificate of the HEC endpoint when sending
   # data over HTTPS.
   insecureSSL: "false"

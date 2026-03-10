@@ -86,8 +86,8 @@ spec:
             - name: SPLUNK_HEC_TOKEN
               valueFrom:
                   secretKeyRef:
-                    name: {{ include "splunk-connect-for-snmp.name" . }}-splunk
-                    key: hec_token
+                    name: {{ include "splunk-connect-for-snmp.splunkHecTokenSecretName" . }}
+                    key: {{ include "splunk-connect-for-snmp.splunkHecTokenSecretKey" . }}
             - name: IPv6_ENABLED
               {{- if has "IPv6" .Values.traps.ipFamilies}}
               value: "true"

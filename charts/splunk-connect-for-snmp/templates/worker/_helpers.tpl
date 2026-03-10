@@ -158,8 +158,8 @@ Common labels
 - name: SPLUNK_HEC_TOKEN
   valueFrom:
     secretKeyRef:
-      name: {{ include "splunk-connect-for-snmp.name" . }}-splunk
-      key: hec_token
+      name: {{ include "splunk-connect-for-snmp.splunkHecTokenSecretName" . }}
+      key: {{ include "splunk-connect-for-snmp.splunkHecTokenSecretKey" . }}
 {{- if .Values.splunk.eventIndex }}
 - name: SPLUNK_HEC_INDEX_EVENTS
   value: {{ .Values.splunk.eventIndex | default "netops" }}
