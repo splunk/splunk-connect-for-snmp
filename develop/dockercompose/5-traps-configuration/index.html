@@ -632,6 +632,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configure the Security Engine ID">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#engine-id-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine ID Discovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -2442,6 +2459,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configure the Security Engine ID">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#engine-id-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine ID Discovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -2489,8 +2523,18 @@
 <h3 id="create-the-snmpv3-secret-in-docker">Create the SNMPv3 Secret in Docker<a class="headerlink" href="#create-the-snmpv3-secret-in-docker" title="Permanent link">¶</a></h3>
 <p>Before using SNMPv3, you must create the required secret within Docker. For detailed instructions, refer to <a href="../7-snmpv3-secrets/">SNMPv3 secrets</a>.</p>
 <h3 id="configure-the-security-engine-id">Configure the Security Engine ID<a class="headerlink" href="#configure-the-security-engine-id" title="Permanent link">¶</a></h3>
-<p>To enable SNMPv3 functionality, the Security Engine ID must be specified. Please follow the guidelines in the 
-<a href="../6-env-file-configuration/#traps">Traps Section of the .env File Configuration</a> for instructions on setting this value.</p></div>
+<p>In SNMPv3, every trap receiver must know the Security Engine ID of each sending device in advance. The receiver uses this ID together with the USM username, auth key, and priv key to authenticate incoming traps. Without the correct engine ID pre-registered, pysnmp rejects the trap before it even checks credentials.</p>
+<p>Please follow the guidelines in the <a href="../6-env-file-configuration/#traps">Traps Section of the .env File Configuration</a> for instructions on setting this value manually.</p>
+<h4 id="engine-id-discovery">Engine ID Discovery<a class="headerlink" href="#engine-id-discovery" title="Permanent link">¶</a></h4>
+<p>If you are managing a large amount of traps agents it is possible to enable engine id discovery mode. The Engine ID Discovery feature automatically extracts the engine ID from each incoming SNMPv3 raw datagram and dynamically registers it with the SNMP engine, so the trap can be authenticated on the fly.
+The engine ID is only registered if the username matches a known user and stored in database.</p>
+<p>This feature can be enabled by setting in <code>.env</code>: </p>
+<div class="highlight"><pre><span></span><code>DISCOVER_ENGINE_ID=true
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>It is recommended to enable this feature only during the initial setup of the traps receiver. Once the engine IDs for all required devices in the network have been collected, disable the feature to prevent unwanted engine ID registration and to improve trap processing efficiency by eliminating the overhead of extracting the engine ID from every incoming message.</p>
+</div></div>
 
 
 
