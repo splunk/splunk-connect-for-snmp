@@ -63,7 +63,9 @@ x-dependend_on_core_dns: &dependend_on_core_dns
   depends_on:
   - coredns
 
-secrets: {}
+secrets:
+  splunk_hec_token:
+    file: ${SPLUNK_HEC_TOKEN_SECRET_FILE:-/dev/null}
 
 networks:
   sc4snmp_network:
@@ -191,9 +193,13 @@ services:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
     command: [celery, worker-sender]
+    secrets:
+    - splunk_hec_token
     environment:
       <<: [*general_sc4snmp_data, *splunk_general_setup, *splunk_extended_setup, *workers_general_setup,
         *pysnmp_debug]
+      # Token from secret file; app reads SPLUNK_HEC_TOKEN_FILE, token not in env
+      SPLUNK_HEC_TOKEN_FILE: /run/secrets/splunk_hec_token
       # OTEL_METRICS_URL:  #If sim enabled
       # Workers configuration
       WORKER_CONCURRENCY: ${WORKER_SENDER_CONCURRENCY:-2}

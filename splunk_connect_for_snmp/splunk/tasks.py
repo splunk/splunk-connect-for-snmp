@@ -26,7 +26,7 @@ with suppress(ImportError, OSError):
 
 import json
 import os
-from typing import Union
+from typing import Optional, Union
 from urllib.parse import urlunsplit
 
 from celery import Task, shared_task
@@ -69,8 +69,21 @@ SPLUNK_HEC_URI = urlunsplit(
     )
 )
 
+def _read_hec_token() -> Optional[str]:
+    """Read token from SPLUNK_HEC_TOKEN_FILE if set and readable, else from SPLUNK_HEC_TOKEN env."""
+    token_file = os.getenv("SPLUNK_HEC_TOKEN_FILE")
+    if token_file and os.path.isfile(token_file):
+        try:
+            with open(token_file, encoding="utf-8") as f:
+                token = f.read().strip()
+                if token:
+                    return token
+        except OSError:
+            pass
+    return os.getenv("SPLUNK_HEC_TOKEN", None)
 
-SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN", None)
+
+SPLUNK_HEC_TOKEN = _read_hec_token()
 SPLUNK_HEC_INDEX_EVENTS = os.getenv("SPLUNK_HEC_INDEX_EVENTS", "netops")
 SPLUNK_HEC_INDEX_METRICS = os.getenv("SPLUNK_HEC_INDEX_METRICS", "netmetrics")
 SPLUNK_SOURCETYPE_TRAPS = os.getenv("SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")

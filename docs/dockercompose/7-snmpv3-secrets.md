@@ -38,7 +38,7 @@ Inside this folder, create a secrets.json file that contains all SNMPv3 secrets.
     "authprotocol": "SHA",
     "authkey": "authkey1",
     "contextengineid": "engineid1"
-  },
+  }
 }
 ```
 
@@ -65,7 +65,7 @@ create ``secrets.json`` file inside folder (at SECRET_FOLDER_PATH), add entry fo
 Inside `docker_compose` directory run:
 
 ```shell
-<!-- sudo docker compose up -d -->
+sudo docker compose up -d
 ```
 
 ## Updating existing secret
@@ -75,7 +75,7 @@ update the required fields (e.g., keys, protocols, username) for any existing se
 
 Inside `docker_compose` directory run:
 ```shell
-<!-- docker-compose up -d --force-recreate <service_name> -->
+docker-compose up -d --force-recreate <service_name>
 ```
 
 ## Deleting a secret
@@ -85,5 +85,18 @@ delete its entry from the secrets.json file.
 
 Inside `docker_compose` directory run:
 ```shell
-<!-- docker-compose up -d --force-recreate <service_name> -->
+docker-compose up -d --force-recreate <service_name>
 ```
+
+## Splunk HEC token secret
+
+To keep the HEC token out of `.env` and out of `docker inspect` (so it is not visible in the container’s environment), use a **Docker Compose secret**. The app supports the `SPLUNK_HEC_TOKEN_FILE` convention: when set, the token is read from that path instead of from the `SPLUNK_HEC_TOKEN` env var. Only the path is in the environment, not the token.
+
+1. Create a file that contains only the token (e.g. `./secrets/splunk_hec_token`). Do not commit it.
+
+2. In `.env`, set the path to that file and leave `SPLUNK_HEC_TOKEN` unset or empty:
+   ```
+   SPLUNK_HEC_TOKEN_SECRET_FILE=./secrets/splunk_hec_token
+   ```
+
+3. Recreate the worker-sender service. The compose file mounts the secret at `/run/secrets/splunk_hec_token` and sets `SPLUNK_HEC_TOKEN_FILE` to that path. The app reads the token from the file; the token itself never appears in `docker inspect` or `docker compose config`.
