@@ -89,6 +89,20 @@ The following is an example of an SNMPv3 trap:
 snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 '' 1.3.6.1.2.1.2.2.1.1.1
 ```
 
+### Engine ID Discovery
+If you are managing a large amount of traps agents it is possible to enable engine id discovery mode. The Engine ID Discovery feature automatically extracts the engine ID from each incoming SNMPv3 raw datagram and dynamically registers it with the SNMP engine, so the trap can be authenticated on the fly.
+The engine ID is only registered if the username matches a known user and stored in database.
+
+This feature can be enabled by setting in configuration file: 
+
+```yaml
+traps:
+  discoverEngineId: "true"  
+```
+
+!!! info
+    It is recommended to enable this feature only during the initial setup of the traps receiver. Once the engine IDs for all required devices in the network have been collected, disable the feature to prevent unwanted engine ID registration and to improve trap processing efficiency by eliminating the overhead of extracting the engine ID from every incoming message.
+
 ### Updating trap configuration
 If you need to update part of the traps configuration, you can do it by editing the `values.yaml` and then running the following command to restart the pod deployment:
 ```

@@ -12,6 +12,9 @@
   - Enabled AOF persistence by default for data durability
 - add CounterBasedGauge64 and ZeroBasedCounter64 as metrics types
 - manage snmpv3 secrets for docker compose from docker entrypoint
+- **Engine Id discovery**: Add engine id discovery for traps
+  - Discover engine id from incoming traps
+  - Store engine id in mongoDB
 
 ### Fixes
 - fix problem with service rendering when `traps.service.usemetallb` is set to false

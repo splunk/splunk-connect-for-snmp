@@ -450,6 +450,8 @@ traps:
   aggregateTrapsEvents: "false"
   # controls whether to add the context_engine_id field to v3 trap events
   includeSecurityContextId: "false"
+  # controls whether to extract the engine ID from the raw message
+  discoverEngineId: "false"
 
   # communities define a version of SNMP protocol and SNMP community string, which should be used
   communities: {}
