@@ -168,6 +168,14 @@ class PrepareTask(Task):
     retry_jitter=True,
 )
 def send(self, data):
+    has_splunk_data = bool(data.get("events") or data.get("metrics"))
+    if has_splunk_data and not SPLUNK_HEC_TOKEN:
+        msg = (
+            "Splunk HEC token is not configured; cannot send data to Splunk. "
+            "Set SPLUNK_HEC_TOKEN or SPLUNK_HEC_TOKEN_FILE (and ensure the file is readable)."
+        )
+        logger.error(msg)
+        raise ValueError(msg)
     if SPLUNK_HEC_TOKEN:
         do_send(data["events"], SPLUNK_HEC_URI, self)
         do_send(data["metrics"], SPLUNK_HEC_URI, self)
