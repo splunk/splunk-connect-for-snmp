@@ -69,6 +69,7 @@ SPLUNK_HEC_URI = urlunsplit(
     )
 )
 
+
 def _read_hec_token() -> Optional[str]:
     """Read token from SPLUNK_HEC_TOKEN_FILE if set and readable, else from SPLUNK_HEC_TOKEN env."""
     token_file = os.getenv("SPLUNK_HEC_TOKEN_FILE")

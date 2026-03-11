@@ -71,9 +71,7 @@ class TestReadHecToken(TestCase):
 
     @patch("splunk_connect_for_snmp.splunk.tasks.os.path.isfile")
     @patch("splunk_connect_for_snmp.splunk.tasks.os.getenv")
-    def test_falls_back_to_env_when_file_empty(
-        self, mock_getenv, mock_isfile
-    ):
+    def test_falls_back_to_env_when_file_empty(self, mock_getenv, mock_isfile):
         def getenv(key, default=None):
             if key == "SPLUNK_HEC_TOKEN_FILE":
                 return "/run/secrets/splunk_hec_token"
@@ -92,9 +90,7 @@ class TestReadHecToken(TestCase):
 
     @patch("splunk_connect_for_snmp.splunk.tasks.os.path.isfile")
     @patch("splunk_connect_for_snmp.splunk.tasks.os.getenv")
-    def test_falls_back_to_env_when_file_does_not_exist(
-        self, mock_getenv, mock_isfile
-    ):
+    def test_falls_back_to_env_when_file_does_not_exist(self, mock_getenv, mock_isfile):
         def getenv(key, default=None):
             if key == "SPLUNK_HEC_TOKEN_FILE":
                 return "/nonexistent/path"
@@ -109,9 +105,7 @@ class TestReadHecToken(TestCase):
 
     @patch("splunk_connect_for_snmp.splunk.tasks.os.path.isfile")
     @patch("splunk_connect_for_snmp.splunk.tasks.os.getenv")
-    def test_falls_back_to_env_on_oserror_reading_file(
-        self, mock_getenv, mock_isfile
-    ):
+    def test_falls_back_to_env_on_oserror_reading_file(self, mock_getenv, mock_isfile):
         def getenv(key, default=None):
             if key == "SPLUNK_HEC_TOKEN_FILE":
                 return "/run/secrets/splunk_hec_token"
@@ -151,9 +145,7 @@ class TestReadHecToken(TestCase):
 
     @patch("splunk_connect_for_snmp.splunk.tasks.os.path.isfile")
     @patch("splunk_connect_for_snmp.splunk.tasks.os.getenv")
-    def test_file_token_takes_precedence_over_env(
-        self, mock_getenv, mock_isfile
-    ):
+    def test_file_token_takes_precedence_over_env(self, mock_getenv, mock_isfile):
         def getenv(key, default=None):
             if key == "SPLUNK_HEC_TOKEN_FILE":
                 return "/run/secrets/splunk_hec_token"
