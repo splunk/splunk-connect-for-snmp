@@ -22,7 +22,7 @@ Inside the directory with the docker compose files, there is a `.env`. Variables
 | Variable               | Description                                                              |
 |------------------------|--------------------------------------------------------------------------| 
 | `COREDNS_ADDRESS`      | IP address of the coredns inside docker network. Should not be changed   |
-| `COREDNS_ADDRESS_IPv6` | IPv6 address of the coredns inside docker network. Should not be changed |
+| `COREDNS_ADDRESS_IPv6` | IPv6 address of the coredns container. Default empty (IPv6 disabled). When [enabling IPv6](10-enable-ipv6.md), set to an address within `IPAM_SUBNET_IPv6` (e.g. `fd02::1`). |
 | `IPv6_ENABLED`         | Enable receiving traps and polling from IPv6 devices                     |
 | `IPAM_SUBNET`          | Subnet in CIDR format that represents a network segment                  |
 | `IPAM_GATEWAY`         | IPv4 gateway for the master subnet                                       |
