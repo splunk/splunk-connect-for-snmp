@@ -66,6 +66,7 @@ nav:
         - Scaling with Microk8s: "microk8s/mk8s/k8s-microk8s-scaling.md"
       - Configuration:
           - Deployment: "microk8s/configuration/deployment-configuration.md"
+          - Splunk configuration: "microk8s/configuration/splunk-configuration.md"
           - Configurable values: "microk8s/configuration/values-params-description.md"
           - Polling:
               - Poller: "microk8s/configuration/poller-configuration.md"
