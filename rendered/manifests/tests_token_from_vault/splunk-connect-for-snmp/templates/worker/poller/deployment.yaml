@@ -20,9 +20,6 @@ spec:
     metadata:
       annotations:
         checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
-        vault.hashicorp.com/agent-inject: "true"
-        vault.hashicorp.com/agent-inject-secret-splunk-hec-token: secret/data/splunk
-        vault.hashicorp.com/role: sc4snmp
       labels:
         app.kubernetes.io/name: splunk-connect-for-snmp-worker-poller
         app.kubernetes.io/instance: release-name
@@ -91,32 +88,6 @@ spec:
               value: "http://release-name-mibserver/index.csv"
             - name: MIB_STANDARD
               value: "http://release-name-mibserver/standard.txt"
-            - name: SPLUNK_HEC_SCHEME
-              value: "https"
-            - name: SPLUNK_HEC_HOST
-              value: "splunk.example.com"
-            - name: IGNORE_EMPTY_VARBINDS
-              value: "false"
-            - name: SPLUNK_HEC_PORT
-              value: "8088"
-            - name: SPLUNK_HEC_INSECURESSL
-              value: "false"
-            - name: SPLUNK_AGGREGATE_TRAPS_EVENTS
-              value: "false"
-            - name: SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE
-              value: "false"
-            - name: SPLUNK_HEC_TOKEN_FILE
-              value: "/vault/secrets/splunk-hec-token"
-            - name: SPLUNK_HEC_INDEX_EVENTS
-              value: netops
-            - name: SPLUNK_HEC_INDEX_METRICS
-              value: netmetrics
-            - name: SPLUNK_SOURCETYPE_TRAPS
-              value: "sc4snmp:traps"
-            - name: SPLUNK_SOURCETYPE_POLLING_EVENTS
-              value: "sc4snmp:event"
-            - name: SPLUNK_SOURCETYPE_POLLING_METRICS
-              value: "sc4snmp:metric"
             - name: WORKER_CONCURRENCY
               value: "4"
             - name: PREFETCH_COUNT

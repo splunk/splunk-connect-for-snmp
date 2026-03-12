@@ -1,8 +1,11 @@
-# HEC token from a file injected by Vault Agent Injector.
-# 1. Store the token in Vault: vault kv put secret/sc4snmp/hec-token token="YOUR_HEC_TOKEN"
+# HEC token from a file injected by a secret manager (e.g. Vault Agent Injector).
+# The pod annotations below are provider-specific; adjust them to match your secret
+# manager.
+#
+# Example using HashiCorp Vault Agent Injector (KV v2):
+# 1. Store the token in Vault: vault kv put secret/sc4snmp/hec-token token="###SPLUNK_TOKEN###"
 # 2. tokenFilePath must match the injector output: annotation agent-inject-secret-<name> -> file at /vault/secrets/<name>
 # 3. The template ensures the file contains only the token value, not JSON.
-# 4. If traps are enabled, add the same annotations under traps.podAnnotations.
 splunk:
   enabled: true
   protocol: https
@@ -11,14 +14,15 @@ splunk:
   insecureSSL: "false"
   tokenFilePath: /vault/secrets/hec-token
 worker:
-  podAnnotations:
-    vault.hashicorp.com/agent-inject: "true"
-    vault.hashicorp.com/role: sc4snmp-hec-role
-    vault.hashicorp.com/agent-inject-secret-hec-token: "secret/data/sc4snmp/hec-token"
-    vault.hashicorp.com/agent-inject-template-hec-token: |
-      {{- with secret "secret/data/sc4snmp/hec-token" -}}
-      {{ .Data.data.token }}
-      {{- end }}
+  sender:
+    podAnnotations:
+      vault.hashicorp.com/agent-inject: "true"
+      vault.hashicorp.com/role: sc4snmp-hec-role
+      vault.hashicorp.com/agent-inject-secret-hec-token: "secret/data/sc4snmp/hec-token"
+      vault.hashicorp.com/agent-inject-template-hec-token: |
+        {{- with secret "secret/data/sc4snmp/hec-token" -}}
+        {{ .Data.data.token }}
+        {{- end }}
 scheduler:
   profiles: |
     generic_switch:

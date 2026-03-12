@@ -6,10 +6,11 @@ splunk:
   tokenFilePath: /vault/secrets/splunk-hec-token
 
 worker:
-  podAnnotations:
-    vault.hashicorp.com/agent-inject: "true"
-    vault.hashicorp.com/role: "sc4snmp"
-    vault.hashicorp.com/agent-inject-secret-splunk-hec-token: "secret/data/splunk"
+  sender:
+    podAnnotations:
+      vault.hashicorp.com/agent-inject: "true"
+      vault.hashicorp.com/role: "sc4snmp"
+      vault.hashicorp.com/agent-inject-secret-splunk-hec-token: "secret/data/splunk"
 scheduler:
   profiles: |
     IF_profile:

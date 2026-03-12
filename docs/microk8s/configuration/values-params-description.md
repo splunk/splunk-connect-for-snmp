@@ -39,7 +39,7 @@ For the full list of Splunk options and how to use a Kubernetes Secret or a file
 | `path`                     | URN to Splunk collector                                                     | `/services/collector`                  |
 | `token`                    | HEC token (plaintext). Omit when using `tokenSecretRef` or `tokenFilePath`.  | `00000000-0000-0000-0000-000000000000` |
 | `tokenSecretRef`           | Reference to an existing Secret for the HEC token. See [Splunk configuration](splunk-configuration.md#using-a-kubernetes-secret-for-the-hec-token). | `name: ""`, `key: "hec_token"` |
-| `tokenFilePath`            | Path to a file containing the HEC token (e.g. Vault injector). See [Splunk configuration](splunk-configuration.md#token-from-file-eg-vault-injector). | `""` |
+| `tokenFilePath`            | Path to a file containing the HEC token (e.g. Vault injector). Set only on sender. Use `worker.sender.podAnnotations` for injector annotations. See [Splunk configuration](splunk-configuration.md#token-from-file-eg-vault-injector). | `""` |
 | `insecureSSL`              | Skip certificate verification for the HEC endpoint when using HTTPS          | `false`                                |
 | `sourcetypeTraps`          | Source type for trap events                                                 | `sc4snmp:traps`                        |
 | `sourcetypePollingEvents`  | Source type for non-metric polling event                                    | `sc4snmp:event`                        |

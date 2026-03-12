@@ -56,9 +56,7 @@ If both `token` and `tokenSecretRef.name` are set, `tokenSecretRef` takes preced
 
 ## Token from file (e.g. Vault injector)
 
-You can provide the HEC token via a **file** (e.g. injected by Vault Agent Injector or another provider). Set `splunk.tokenFilePath` to the path where the token file is mounted. The chart sets `SPLUNK_HEC_TOKEN_FILE` and does not set `SPLUNK_HEC_TOKEN` from a Secret. The application reads the token from that file.
-
-Add injector annotations for your provider (Vault or other) via `worker.podAnnotations`.
+You can provide the HEC token via a **file** (e.g. injected by Vault Agent Injector or another provider). Set `splunk.tokenFilePath` to the path where the token file is mounted. The chart sets `SPLUNK_HEC_TOKEN_FILE` only on the **sender** deployment (the only component that sends data to Splunk HEC). Add injector annotations only on the sender: `worker.sender.podAnnotations`. Do not use `worker.podAnnotations` for the token so other worker types and traps are not injected unnecessarily.
 
 **Important:** The file must contain only the token value (not JSON). Use an inject template so the mounted file has just the token.
 
@@ -73,14 +71,15 @@ splunk:
   tokenFilePath: /vault/secrets/splunk-hec-token
 
 worker:
-  podAnnotations:
-    vault.hashicorp.com/agent-inject: "true"
-    vault.hashicorp.com/role: "sc4snmp"
-    vault.hashicorp.com/agent-inject-secret-splunk-hec-token: "secret/data/splunk"
-    vault.hashicorp.com/agent-inject-template-splunk-hec-token: |
-      {{- with secret "secret/data/splunk" -}}
-      {{ .Data.data.token }}
-      {{- end }}
+  sender:
+    podAnnotations:
+      vault.hashicorp.com/agent-inject: "true"
+      vault.hashicorp.com/role: "sc4snmp"
+      vault.hashicorp.com/agent-inject-secret-splunk-hec-token: "secret/data/splunk"
+      vault.hashicorp.com/agent-inject-template-splunk-hec-token: |
+        {{- with secret "secret/data/splunk" -}}
+        {{ .Data.data.token }}
+        {{- end }}
 ```
 
 `tokenFilePath` must match where the injector writes the file: the annotation `agent-inject-secret-<name>` uses `<name>` as the filename under `/vault/secrets/`, so the path is `/vault/secrets/<name>` (e.g. `/vault/secrets/splunk-hec-token`). Adjust the template key (e.g. `{{ .Data.data.token }}`) if your Vault secret uses a different field name.

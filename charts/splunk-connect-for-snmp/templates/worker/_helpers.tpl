@@ -132,11 +132,12 @@ Common labels
   value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/index.csv"
 - name: MIB_STANDARD
   value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/standard.txt"
+{{- end }}
+
+{{- define "environmental-variables-splunk-hec" -}}
 {{- if .Values.splunk.enabled }}
-{{- if .Values.splunk.protocol }}
 - name: SPLUNK_HEC_SCHEME
   value: {{ .Values.splunk.protocol | default "https" | quote }}
-{{- end}}
 - name: SPLUNK_HEC_HOST
   value: {{ .Values.splunk.host | quote }}
 - name: IGNORE_EMPTY_VARBINDS
@@ -144,11 +145,11 @@ Common labels
 {{- if .Values.splunk.port }}
 - name: SPLUNK_HEC_PORT
   value: {{ .Values.splunk.port | default "" | quote }}
-{{- end}}
+{{- end }}
 {{- if .Values.splunk.path }}
 - name: SPLUNK_HEC_PATH
   value: {{ .Values.splunk.path | default "/services/collector" | quote }}
-{{- end}}
+{{- end }}
 - name: SPLUNK_HEC_INSECURESSL
   value: {{ .Values.splunk.insecureSSL | default "false" | quote }}
 - name: SPLUNK_AGGREGATE_TRAPS_EVENTS
@@ -168,18 +169,18 @@ Common labels
 {{- if .Values.splunk.eventIndex }}
 - name: SPLUNK_HEC_INDEX_EVENTS
   value: {{ .Values.splunk.eventIndex | default "netops" }}
-{{- end}}
+{{- end }}
 {{- if .Values.splunk.metricsIndex }}
 - name: SPLUNK_HEC_INDEX_METRICS
   value: {{ .Values.splunk.metricsIndex | default "netmetrics" }}
-{{- end}}
+{{- end }}
 - name: SPLUNK_SOURCETYPE_TRAPS
   value: {{ .Values.splunk.sourcetypeTraps | default "sc4snmp:traps" | quote }}
 - name: SPLUNK_SOURCETYPE_POLLING_EVENTS
   value: {{ .Values.splunk.sourcetypePollingEvents | default "sc4snmp:event" | quote }}
 - name: SPLUNK_SOURCETYPE_POLLING_METRICS
   value: {{ .Values.splunk.sourcetypePollingMetrics | default "sc4snmp:metric" | quote }}
-{{- end}}
+{{- end }}
 {{- end }}
 
 {{- define "environmental-variables-poller" -}}
