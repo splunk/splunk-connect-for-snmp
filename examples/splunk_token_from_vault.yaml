@@ -19,15 +19,6 @@ worker:
       {{- with secret "secret/data/sc4snmp/hec-token" -}}
       {{ .Data.data.token }}
       {{- end }}
-traps:
-  podAnnotations:
-    vault.hashicorp.com/agent-inject: "true"
-    vault.hashicorp.com/role: sc4snmp-hec-role
-    vault.hashicorp.com/agent-inject-secret-hec-token: "secret/data/sc4snmp/hec-token"
-    vault.hashicorp.com/agent-inject-template-hec-token: |
-      {{- with secret "secret/data/sc4snmp/hec-token" -}}
-      {{ .Data.data.token }}
-      {{- end }}
 scheduler:
   profiles: |
     generic_switch:
