@@ -108,13 +108,6 @@ true
 {{- end }}
 
 {{/*
-Path to the file containing the HEC token (tokenFilePath).
-*/}}
-{{- define "splunk-connect-for-snmp.splunkHecTokenFilePath" -}}
-{{- .Values.splunk.tokenFilePath -}}
-{{- end }}
-
-{{/*
 Whether enable traps
 */}}
 {{- define "splunk-connect-for-snmp.traps.enable" -}}

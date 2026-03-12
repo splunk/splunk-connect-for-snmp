@@ -157,7 +157,7 @@ Common labels
   value: {{ .Values.poller.splunkMetricNameHyphenToUnderscore | default "false" | quote }}
 {{- if eq (include "splunk-connect-for-snmp.splunkHecTokenFromFile" .) "true" }}
 - name: SPLUNK_HEC_TOKEN_FILE
-  value: {{ include "splunk-connect-for-snmp.splunkHecTokenFilePath" . | quote }}
+  value: {{ .Values.splunk.tokenFilePath | quote }}
 {{- else }}
 - name: SPLUNK_HEC_TOKEN
   valueFrom:
