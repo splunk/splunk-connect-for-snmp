@@ -113,13 +113,7 @@ chmod +x "$SCRIPT_DIR/install_sck.sh"
 
 "$SCRIPT_DIR/prepare_splunk.sh"
 "$SCRIPT_DIR/install_sck.sh"
-# chmod u+x prepare_splunk.sh
-# echo $(green "Preparing Splunk instance")
-# ./prepare_splunk.sh
-# ./install_sck.sh
 
-# sed -i "s/###SPLUNK_TOKEN###/$(cat hec_token)/" values.yaml
-# sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" values.yaml
 
 VALUES_FILE="$INT_TEST_DIR/values.yaml"
 
@@ -143,9 +137,6 @@ sudo systemctl enable iscsid
 yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
 sudo microk8s status --wait-ready
 
-# cd ../charts/splunk-connect-for-snmp
-# sudo microk8s helm3 dep update
-# cd ../../integration_tests
 
 cd "$CHART_DIR"
 sudo microk8s helm3 dep update

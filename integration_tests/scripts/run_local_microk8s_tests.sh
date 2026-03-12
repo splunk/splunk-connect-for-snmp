@@ -2,6 +2,7 @@
 set -eo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INT_TEST_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Color
 RED='\033[0;31m'
@@ -21,35 +22,76 @@ function yellow { printf "${YELLOW}$@${NC}\n"; }
 
 
 # ===== CHECK DOCKER =====
-if ! command -v docker &> /dev/null; then
- # Remove the Ubuntu package version
-  sudo apt-get remove -y docker.io docker-compose 2>/dev/null || true
 
-  # Install Docker's official repo
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+install_docker() {
+  set -euo pipefail
 
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
-    https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
-    | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  # Prevent interactive prompts (exported so sudo -E uses them)
+  export DEBIAN_FRONTEND=noninteractive
+  export NEEDRESTART_MODE=a
 
-  sudo apt-get update
+  # Helper loggers
+  info() { printf "\033[1;34m[INFO]\033[0m %s\n" "$*"; }
+  step() { printf "\n\033[1;32m==>\033[0m %s\n" "$*"; }
 
-  # Check available versions
-  apt-cache madison docker-ce | grep "29.2.1"
-
-  # Install exact version
-  sudo apt-get install -y \
-    docker-ce=5:29.2.1-1~ubuntu.22.04~jammy \
-    docker-ce-cli=5:29.2.1-1~ubuntu.22.04~jammy \
-    containerd.io
-
-  # Verify
-  if ! sudo systemctl is-active --quiet docker; then
-    echo "Starting Docker daemon..."
-    sudo systemctl start docker
+  # If Docker already exists, show versions and return
+  if command -v docker >/dev/null 2>&1; then
+    info "Docker already installed"
+    docker --version || true
+    docker compose version 2>/dev/null || true
+    return 0
   fi
 
-fi
+  step "Configuring system for non-interactive apt/dpkg/needrestart"
+
+  # Make apt/dpkg non-interactive (and avoid config prompts)
+  APT_OPTS=(-y -q
+    -o "Dpkg::Options::=--force-confdef"
+    -o "Dpkg::Options::=--force-confold"
+  )
+
+  # Ensure needrestart never prompts
+  sudo -E mkdir -p /etc/needrestart/conf.d
+  # Always auto-restart services during unattended upgrades/installs
+  echo '$nrconf{restart} = "a";' | sudo -E tee /etc/needrestart/conf.d/99-noninteractive.conf >/dev/null || true
+
+  step "Installing prerequisites"
+  sudo -E apt-get update -y -q
+  sudo -E apt-get install "${APT_OPTS[@]}" ca-certificates curl gnupg lsb-release
+
+  step "Adding Docker's official GPG key"
+  sudo -E install -m 0755 -d /etc/apt/keyrings
+  # Remove old key to avoid overwrite prompts
+  sudo -E rm -f /etc/apt/keyrings/docker.gpg
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+    | sudo -E gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  sudo -E chmod a+r /etc/apt/keyrings/docker.gpg
+
+  step "Adding Docker APT repository"
+  codename="$(lsb_release -cs)"
+  arch="$(dpkg --print-architecture)"
+  echo "deb [arch=${arch} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu ${codename} stable" \
+    | sudo -E tee /etc/apt/sources.list.d/docker.list >/dev/null
+
+  step "Updating package index"
+  sudo -E apt-get update -y -q
+
+  step "Installing Docker Engine, CLI, Buildx, Compose"
+  sudo -E apt-get install "${APT_OPTS[@]}" \
+    docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  step "Enabling and starting Docker service"
+  sudo -E systemctl enable docker
+  sudo -E systemctl start docker
+
+  # Add current user to docker group (ignore error if already added)
+  sudo -E usermod -aG docker "$USER" || true
+
+  info "Docker installed successfully"
+  docker --version || true
+  docker compose version || true
+
+}
 
 # ===== DEFAULTS =====
 SPLUNK_HOST="localhost"
@@ -207,24 +249,6 @@ wait_for_sc4snmp_pods_to_be_up() {
   done
 }
 
-start_splunk() {
-  step "STEP 3: START SPLUNK"
-  if sudo lsof -i :8000 >/dev/null 2>&1; then
-    info "External Splunk detected on port 8000 "
-  else
-    info "Starting Splunk in Docker..."
-    mkdir -p "$PWD/splunk-data"
-    sudo docker run -d \
-      -p 8000:8000 \
-      -p 8088:8088 \
-      -p 8089:8089 \
-      -e SPLUNK_GENERAL_TERMS="--accept-sgt-current-at-splunk-com" \
-      -e SPLUNK_START_ARGS="--accept-license" \
-      -e SPLUNK_PASSWORD="changeme2" \
-      -v "$PWD/splunk-data:/opt/splunk/var" \
-      splunk/splunk:latest
-  fi
-}
 
 check_splunk() {
   step "Checking Splunk connection"
@@ -403,8 +427,6 @@ sudo microk8s status --wait-ready
 sudo microk8s ctr image import snmp-local.tar
 mkdir -p "$PWD/splunk-data"
 
-
-start_splunk
 check_splunk
 create_indexes
 [[ "$CLEAN_INDEXES" == true ]] && clean_indexes

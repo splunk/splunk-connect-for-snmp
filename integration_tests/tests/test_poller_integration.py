@@ -15,7 +15,6 @@
 #   ########################################################################
 import logging
 import time
-
 import pytest
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString as dq
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
@@ -1930,17 +1929,6 @@ class TestMisconfiguredGroups:
         )
         assert result_count == 0
         assert metric_count == 0
-
-
-# def run_retried_single_search(setup_splunk, search_string, retries):
-#     for _ in range(retries):
-#         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
-#         if result_count or metric_count:
-#             return result_count, metric_count
-#         logger.info("No results returned from search. Retrying in 2 seconds...")
-#         time.sleep(2)
-#     return 0, 0
-
 
 # FIX — retry every 15 seconds, up to the retries count
 def run_retried_single_search(setup_splunk, search_string, retries, wait=20):

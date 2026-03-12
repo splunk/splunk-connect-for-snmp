@@ -28,33 +28,78 @@ TEST_FILTER="tests/"
 
 
 # ===== INSTALL DOCKER + DOCKER COMPOSE =====
+
+
 install_docker() {
+  set -euo pipefail
 
-if ! command -v docker >/dev/null 2>&1; then
-    step "Installing Docker"
+  # Prevent interactive prompts (exported so sudo -E uses them)
+  export DEBIAN_FRONTEND=noninteractive
+  export NEEDRESTART_MODE=a
 
-    sudo apt-get update
-    sudo apt-get install -y docker.io curl
+  # Helper loggers
+  info() { printf "\033[1;34m[INFO]\033[0m %s\n" "$*"; }
+  step() { printf "\n\033[1;32m==>\033[0m %s\n" "$*"; }
 
-    sudo systemctl start docker
-    sudo systemctl enable docker
+  # If Docker already exists, show versions and return
+  if command -v docker >/dev/null 2>&1; then
+    info "Docker already installed"
+    docker --version || true
+    docker compose version 2>/dev/null || true
+    return 0
+  fi
 
-    info "Docker installed "
-fi
+  step "Configuring system for non-interactive apt/dpkg/needrestart"
 
-if ! command -v docker-compose >/dev/null 2>&1; then
-    step "Installing docker-compose"
+  # Make apt/dpkg non-interactive (and avoid config prompts)
+  APT_OPTS=(-y -q
+    -o "Dpkg::Options::=--force-confdef"
+    -o "Dpkg::Options::=--force-confold"
+  )
 
-    sudo curl -L \
-      "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
-      -o /usr/local/bin/docker-compose
+  # Ensure needrestart never prompts
+  sudo -E mkdir -p /etc/needrestart/conf.d
+  # Always auto-restart services during unattended upgrades/installs
+  echo '$nrconf{restart} = "a";' | sudo -E tee /etc/needrestart/conf.d/99-noninteractive.conf >/dev/null || true
 
-    sudo chmod +x /usr/local/bin/docker-compose
+  step "Installing prerequisites"
+  sudo -E apt-get update -y -q
+  sudo -E apt-get install "${APT_OPTS[@]}" ca-certificates curl gnupg lsb-release
 
-    info "docker-compose installed "
-fi
+  step "Adding Docker's official GPG key"
+  sudo -E install -m 0755 -d /etc/apt/keyrings
+  # Remove old key to avoid overwrite prompts
+  sudo -E rm -f /etc/apt/keyrings/docker.gpg
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+    | sudo -E gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  sudo -E chmod a+r /etc/apt/keyrings/docker.gpg
+
+  step "Adding Docker APT repository"
+  codename="$(lsb_release -cs)"
+  arch="$(dpkg --print-architecture)"
+  echo "deb [arch=${arch} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu ${codename} stable" \
+    | sudo -E tee /etc/apt/sources.list.d/docker.list >/dev/null
+
+  step "Updating package index"
+  sudo -E apt-get update -y -q
+
+  step "Installing Docker Engine, CLI, Buildx, Compose"
+  sudo -E apt-get install "${APT_OPTS[@]}" \
+    docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  step "Enabling and starting Docker service"
+  sudo -E systemctl enable docker
+  sudo -E systemctl start docker
+
+  # Add current user to docker group (ignore error if already added)
+  sudo -E usermod -aG docker "$USER" || true
+
+  info "Docker installed successfully"
+  docker --version || true
+  docker compose version || true
+
+  
 }
-
 install_docker
 
 
@@ -157,7 +202,6 @@ check_splunk() {
 # ===== CREATE INDEXES =====
 create_indexes() {
   step "Creating Splunk indexes"
-  # FIX 2: Use exact index names the tests search against
   declare -A INDEXES=(
     [netmetrics]="metric"
     [em_metrics]="metric"
@@ -303,7 +347,7 @@ start_compose() {
 
   cd "${REPO_ROOT}"
 
-  COMPOSE="sudo docker-compose"
+  COMPOSE="sudo docker compose"
 
   # Stop old containers
   info "Tearing down existing stack..."
@@ -333,7 +377,7 @@ start_compose() {
     running=$(sudo docker ps --format '{{.Names}}' | grep -c worker-poller || true)
 
     if [[ "$running" -gt 0 ]]; then
-      info "Containers up "
+      info "Containers up"
       break
     fi
 
@@ -344,9 +388,7 @@ start_compose() {
     fi
 
     sleep 5
-
   done
-
 
   # Wait for first poll cycle
   step "Waiting for first poll cycle (up to 3 minutes)"
@@ -362,7 +404,7 @@ start_compose() {
       | grep -c "<s:key name=\"count\">" || echo 0)
 
     if [[ "$count" -gt 0 ]]; then
-      info "Data confirmed in Splunk after ${waited}s "
+      info "Data confirmed in Splunk after ${waited}s"
       break
     fi
 
@@ -370,7 +412,6 @@ start_compose() {
 
     sleep 20
     (( waited += 20 ))
-
   done
 
   [[ $waited -ge 180 ]] && warn "Timeout waiting for data — running tests anyway"

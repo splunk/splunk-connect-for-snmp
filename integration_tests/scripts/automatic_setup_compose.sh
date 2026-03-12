@@ -108,9 +108,6 @@ sudo docker run -d -p 8000:8000 -p 8088:8088 -p 8089:8089 -e SPLUNK_GENERAL_TERM
 wait_for_splunk
 
 cd "$INT_TEST_DIR"
-# chmod u+x ./prepare_splunk.sh
-# echo $(green "Preparing Splunk instance")
-# ./prepare_splunk.sh
 
 
 chmod u+x "$SCRIPT_DIR/prepare_splunk.sh"
@@ -118,10 +115,7 @@ chmod u+x "$SCRIPT_DIR/prepare_splunk.sh"
 echo $(green "Setting up docker compose configuration")
 cp ../docker_compose/* .
 
-# Define the filenames for the variables
-#SCHEDULER_CONFIG_FILE="scheduler-config.yaml"
-#TRAPS_CONFIG_FILE="traps-config.yaml"
-#INVENTORY_FILE="inventory-tests.csv"
+
 COREFILE="Corefile"
 SECRET_FOLDER="sample_v3_values"
 
@@ -225,7 +219,6 @@ awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
 mv "$TEMP_ENV_FILE" .env
 
 
-#sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" inventory-tests.csv
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" $INVENTORY_FILE
 echo $(green "Running SNMP simulators in Docker")
 sudo docker run -d -p 161:161/udp tandrup/snmpsim
