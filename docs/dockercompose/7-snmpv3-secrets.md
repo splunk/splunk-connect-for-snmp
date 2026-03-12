@@ -92,7 +92,7 @@ docker-compose up -d --force-recreate <service_name>
 
 To keep the HEC token out of `.env` and out of `docker inspect` (so it is not visible in the container’s environment), use a **Docker Compose secret**. The app supports the `SPLUNK_HEC_TOKEN_FILE` convention: when set, the token is read from that path instead of from the `SPLUNK_HEC_TOKEN` env var. Only the path is in the environment, not the token.
 
-1. Create a file that contains only the token (e.g. `./secrets/splunk_hec_token`). Do not commit it.
+1. Create a file that contains only the token (e.g. `./secrets/splunk_hec_token`).
 
 2. In `.env`, set the path to that file and leave `SPLUNK_HEC_TOKEN` unset or empty:
    ```
