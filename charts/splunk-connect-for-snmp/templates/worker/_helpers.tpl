@@ -155,11 +155,16 @@ Common labels
   value: {{ .Values.traps.aggregateTrapsEvents | default "false" | quote }}
 - name: SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE
   value: {{ .Values.poller.splunkMetricNameHyphenToUnderscore | default "false" | quote }}
+{{- if eq (include "splunk-connect-for-snmp.splunkHecTokenFromFile" .) "true" }}
+- name: SPLUNK_HEC_TOKEN_FILE
+  value: {{ include "splunk-connect-for-snmp.splunkHecTokenFilePath" . | quote }}
+{{- else }}
 - name: SPLUNK_HEC_TOKEN
   valueFrom:
     secretKeyRef:
       name: {{ include "splunk-connect-for-snmp.splunkHecTokenSecretName" . }}
       key: {{ include "splunk-connect-for-snmp.splunkHecTokenSecretKey" . }}
+{{- end }}
 {{- if .Values.splunk.eventIndex }}
 - name: SPLUNK_HEC_INDEX_EVENTS
   value: {{ .Values.splunk.eventIndex | default "netops" }}

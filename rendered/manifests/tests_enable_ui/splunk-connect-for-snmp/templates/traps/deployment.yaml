@@ -84,9 +84,9 @@ spec:
               value: 80003a8c04
             - name: SPLUNK_HEC_TOKEN
               valueFrom:
-                  secretKeyRef:
-                    name: splunk-connect-for-snmp-splunk
-                    key: hec_token
+                secretKeyRef:
+                  name: splunk-connect-for-snmp-splunk
+                  key: hec_token
             - name: IPv6_ENABLED
               value: "false"
           ports:

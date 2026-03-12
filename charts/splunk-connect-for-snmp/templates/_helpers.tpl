@@ -97,6 +97,22 @@ hec_token
 {{- end -}}
 {{- end }}
 
+{{/*
+Whether the HEC token is provided via a file (tokenFilePath set).
+When true, set SPLUNK_HEC_TOKEN_FILE and do not set SPLUNK_HEC_TOKEN from secretKeyRef.
+*/}}
+{{- define "splunk-connect-for-snmp.splunkHecTokenFromFile" -}}
+{{- if .Values.splunk.tokenFilePath -}}
+true
+{{- end -}}
+{{- end }}
+
+{{/*
+Path to the file containing the HEC token (tokenFilePath).
+*/}}
+{{- define "splunk-connect-for-snmp.splunkHecTokenFilePath" -}}
+{{- .Values.splunk.tokenFilePath -}}
+{{- end }}
 
 {{/*
 Whether enable traps

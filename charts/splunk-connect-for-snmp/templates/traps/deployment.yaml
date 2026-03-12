@@ -83,11 +83,16 @@ spec:
               value: {{ .Values.traps.includeSecurityContextId | default "false" | quote }}
             - name: SNMP_V3_SECURITY_ENGINE_ID
               value: {{ join "," .Values.traps.securityEngineId }}
+            {{- if eq (include "splunk-connect-for-snmp.splunkHecTokenFromFile" .) "true" }}
+            - name: SPLUNK_HEC_TOKEN_FILE
+              value: {{ include "splunk-connect-for-snmp.splunkHecTokenFilePath" . | quote }}
+            {{- else }}
             - name: SPLUNK_HEC_TOKEN
               valueFrom:
-                  secretKeyRef:
-                    name: {{ include "splunk-connect-for-snmp.splunkHecTokenSecretName" . }}
-                    key: {{ include "splunk-connect-for-snmp.splunkHecTokenSecretKey" . }}
+                secretKeyRef:
+                  name: {{ include "splunk-connect-for-snmp.splunkHecTokenSecretName" . }}
+                  key: {{ include "splunk-connect-for-snmp.splunkHecTokenSecretKey" . }}
+            {{- end }}
             - name: IPv6_ENABLED
               {{- if has "IPv6" .Values.traps.ipFamilies}}
               value: "true"

@@ -184,6 +184,10 @@
             }
           }
         },
+        "tokenFilePath": {
+          "type": "string",
+          "description": "Path to file containing HEC token (e.g. /vault/secrets/splunk-hec-token). When set, SPLUNK_HEC_TOKEN_FILE is used and SPLUNK_HEC_TOKEN is not set from a Secret."
+        },
         "insecureSSL": {
           "type": "string"
         },
@@ -683,6 +687,9 @@
           "type": "boolean"
         },
         "nodeSelector": {
+          "type": "object"
+        },
+        "podAnnotations": {
           "type": "object"
         }
       }

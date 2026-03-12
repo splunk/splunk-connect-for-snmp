@@ -83,6 +83,11 @@ splunk:
     name: ""
     # Key within the secret that holds the HEC token (default: hec_token).
     key: "hec_token"
+  # Path to a file containing the HEC token (e.g. /vault/secrets/splunk-hec-token from
+  # Vault Agent Injector). When set, SPLUNK_HEC_TOKEN_FILE is used and SPLUNK_HEC_TOKEN
+  # is not set from a Secret. Add injector annotations via worker.podAnnotations and
+  # traps.podAnnotations.
+  tokenFilePath: ""
   # Whether to skip checking the certificate of the HEC endpoint when sending
   # data over HTTPS.
   insecureSSL: "false"
@@ -417,6 +422,7 @@ worker:
   ignoreEmptyVarbinds: false
 
   nodeSelector: {}
+  podAnnotations: {}
 
 inventory:
   secret:
