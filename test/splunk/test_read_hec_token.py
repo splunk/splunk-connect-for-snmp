@@ -69,9 +69,12 @@ class TestReadHecToken(TestCase):
             result = _read_hec_token()
         self.assertEqual(result, "file-token-456")
 
+    @patch("splunk_connect_for_snmp.splunk.tasks.logger")
     @patch("splunk_connect_for_snmp.splunk.tasks.os.path.isfile")
     @patch("splunk_connect_for_snmp.splunk.tasks.os.getenv")
-    def test_falls_back_to_env_when_file_empty(self, mock_getenv, mock_isfile):
+    def test_falls_back_to_env_when_file_empty(
+        self, mock_getenv, mock_isfile, mock_logger
+    ):
         def getenv(key, default=None):
             if key == "SPLUNK_HEC_TOKEN_FILE":
                 return "/run/secrets/splunk_hec_token"
@@ -87,6 +90,9 @@ class TestReadHecToken(TestCase):
         ):
             result = _read_hec_token()
         self.assertEqual(result, "env-token")
+        mock_logger.warning.assert_called_once()
+        self.assertIn("file is empty", mock_logger.warning.call_args[0][0])
+        self.assertIn("SPLUNK_HEC_TOKEN_FILE", mock_logger.warning.call_args[0][0])
 
     @patch("splunk_connect_for_snmp.splunk.tasks.os.path.isfile")
     @patch("splunk_connect_for_snmp.splunk.tasks.os.getenv")
@@ -122,10 +128,11 @@ class TestReadHecToken(TestCase):
             result = _read_hec_token()
         self.assertEqual(result, "env-fallback")
 
+    @patch("splunk_connect_for_snmp.splunk.tasks.logger")
     @patch("splunk_connect_for_snmp.splunk.tasks.os.path.isfile")
     @patch("splunk_connect_for_snmp.splunk.tasks.os.getenv")
     def test_returns_none_when_file_empty_and_no_env_token(
-        self, mock_getenv, mock_isfile
+        self, mock_getenv, mock_isfile, mock_logger
     ):
         def getenv(key, default=None):
             if key == "SPLUNK_HEC_TOKEN_FILE":
@@ -142,6 +149,8 @@ class TestReadHecToken(TestCase):
         ):
             result = _read_hec_token()
         self.assertIsNone(result)
+        mock_logger.warning.assert_called_once()
+        self.assertIn("file is empty", mock_logger.warning.call_args[0][0])
 
     @patch("splunk_connect_for_snmp.splunk.tasks.os.path.isfile")
     @patch("splunk_connect_for_snmp.splunk.tasks.os.getenv")
