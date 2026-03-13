@@ -30,6 +30,7 @@ ALLOWED_KEYS_VALUES = [
     "version",
     "security_engine",
     "securityEngine",
+    "max_oid_to_process",
 ]
 
 ENABLE_FULL_WALK = human_bool(os.getenv("ENABLE_FULL_WALK", "false").lower())

@@ -157,6 +157,12 @@ def assign_inventory_values(inventory_ui_collection):
                 if int(inventory_line["walk_interval"]) >= 1800
                 else 1800
             )
+            max_oid_raw = inventory_line.get("max_oid_to_process")
+            if max_oid_raw and str(max_oid_raw).strip():
+                inventory_line["max_oid_to_process"] = int(max_oid_raw)
+            else:
+                inventory_line["max_oid_to_process"] = None
+
             inventory_line["port"] = port
             inventory_line["walk_interval"] = walk_interval
             if not inventory_line["address"].startswith("#"):
