@@ -409,7 +409,9 @@ class Poller(Task):
         max_oid_to_process,
     ):
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, max_oid_to_process):
-            logger.info(f"Running get request for {address} with max_oid_to_process {max_oid_to_process} with varbinds {varbind_chunk}")
+            logger.info(
+                f"Running get request for {address} with max_oid_to_process {max_oid_to_process} with varbinds {varbind_chunk}"
+            )
             for (
                 error_indication,
                 error_status,
@@ -448,7 +450,9 @@ class Poller(Task):
         for varbind_chunk in self.get_varbind_chunk(
             list(varbinds_bulk), max_oid_to_process
         ):
-            logger.info(f"Running bulk request for {address} with max_oid_to_process {max_oid_to_process} with varbinds {varbind_chunk}")
+            logger.info(
+                f"Running bulk request for {address} with max_oid_to_process {max_oid_to_process} with varbinds {varbind_chunk}"
+            )
             for (
                 error_indication,
                 error_status,
@@ -463,9 +467,7 @@ class Poller(Task):
                 MAX_REPETITIONS,
                 *varbind_chunk,
                 lexicographicMode=False,
-                ignoreNonIncreasingOid=is_increasing_oids_ignored(
-                    ir.address, ir.port
-                ),
+                ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
             ):
                 if not _any_failure_happened(
                     error_indication,
