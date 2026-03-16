@@ -167,7 +167,7 @@ replacing the IP address `10.0.101.22` with the server IP address where the snmp
 ``` bash
 poller:
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
     10.0.101.22,,2c,public,,,42000,,,,
 ```
 

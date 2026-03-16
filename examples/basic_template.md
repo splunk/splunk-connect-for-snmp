@@ -27,7 +27,7 @@ scheduler:
         - ['IF-MIB']
 poller:
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
     ###POLLED_DEVICE_IP###,,2c,public,,,3000,generic_switch,,,
 ```
 
@@ -52,7 +52,7 @@ scheduler:
         - ['IF-MIB']
 poller:
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
     ###POLLED_DEVICE_IP###,,2c,public,,,3000,generic_switch,,,
 ```
 
