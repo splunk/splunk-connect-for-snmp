@@ -21,5 +21,5 @@ scheduler:
         - ['UCD-SNMP-MIB']
 poller:
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    switch_group,,2c,public,,,2000,switch_profile,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process
+    switch_group,,2c,public,,,2000,switch_profile,,,

@@ -167,8 +167,8 @@ replacing the IP address `10.0.101.22` with the server IP address where the snmp
 ``` bash
 poller:
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    10.0.101.22,,2c,public,,,42000,,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process
+    10.0.101.22,,2c,public,,,42000,,,,
 ```
 
 3. Load `values.yaml` file into SC4SNMP using the following command: 

@@ -25,12 +25,12 @@ poller:
   logLevel: "WARN"
   enableFullWalk: false
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    10.202.4.202,,2c,public,,,2000,,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process
+    10.202.4.202,,2c,public,,,2000,,,,
 ```
 
 !!! info
-    The header's line (`address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete`) is necessary for the correct execution of SC4SNMP. Do not remove it.
+    The header's line (`address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process`) is necessary for the correct execution of SC4SNMP. Do not remove it.
 
 ### Default walk scope
 The default walk profile is polling only `SNMPv2-MIB`. If the full oid tree walk is required it can be enabled by changing `enableFullWalk` flag to true.
@@ -187,15 +187,16 @@ The `inventory` section in `poller` has the following fields to configure:
 | `walk_interval`   | The interval in seconds for SNMP walk. This value needs to be between `1800` and `604800`.                                                                                                                                              | `42000` | NO       |
 | `profiles`        | A list of SNMP profiles used for the device. More than one profile can be added by a semicolon separation, for example, `profile1;profile2`. For more information about profiles, see [Profile Configuration](../configuring-profiles). |         | NO       |
 | `smart_profiles`  | Enables smart profiles. Its allowed values are `true` or `false`.                                                                                                                                                                       | `true`  | NO       |
-| `delete`          | A flag that defines if the inventory should be deleted from the scheduled tasks for WALKs and GETs. Its allowed value are `true`or `false`. The default value is `false`.                                                               | `false` | NO       |
+| `delete`          | A flag that defines if the inventory should be deleted from the scheduled tasks for WALKs and GETs. Its allowed value are `true`or `false`.  | `false` | NO       |
+| `max_oid_to_process`          | Maximum number of OIDs requested from SNMP Agent at once.                                                  | `70` | NO       |
 
 See the following example:
 ```yaml
 poller:
     inventory: |
-      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-      10.202.4.202,,2c,public,,,2000,my_profile1,,
-      example_group_1,,2c,public,,,2000,my_profile2;my_profile3,,
+      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process
+      10.202.4.202,,2c,public,,,2000,my_profile1,,,
+      example_group_1,,2c,public,,,2000,my_profile2;my_profile3,,,
 ```
 
 
@@ -241,8 +242,8 @@ using `--set-file poller.inventory=<path_to_file>`.
 See the following example of an CSV file configuration:
 
 ```csv
-address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-10.202.4.202,,2c,public,,,3000,my_profile,,
+address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process
+10.202.4.202,,2c,public,,,3000,my_profile,,,
 ```
 
 See the following example of an upgrade command with a CSV file:

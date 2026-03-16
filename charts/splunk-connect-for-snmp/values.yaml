@@ -277,8 +277,8 @@ poller:
   # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/poller-configuration/
 
   #inventory: |
-  #  address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-  #  example_group_1,,2c,public,,,3000,static_profile,t,
+  #  address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process
+  #  example_group_1,,2c,public,,,3000,static_profile,t,70
   logLevel: "INFO"
 
   ipv6Enabled: false

@@ -27,5 +27,5 @@ poller:
   usernameSecrets:
     - sc4snmp-hlab-sha-aes
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    54.82.4.248,,3,public,sc4snmp-hlab-sha-aes,,2000,switch_profile,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process
+    54.82.4.248,,3,public,sc4snmp-hlab-sha-aes,,2000,switch_profile,,,

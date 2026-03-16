@@ -27,8 +27,8 @@ scheduler:
         - ['IF-MIB']
 poller:
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    ###POLLED_DEVICE_IP###,,2c,public,,,3000,generic_switch,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process
+    ###POLLED_DEVICE_IP###,,2c,public,,,3000,generic_switch,,,
 ```
 
 Example 2: Polling functionality enabled, sending data to SIM:
@@ -52,8 +52,8 @@ scheduler:
         - ['IF-MIB']
 poller:
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    ###POLLED_DEVICE_IP###,,2c,public,,,3000,generic_switch,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete,max_oid_to_process
+    ###POLLED_DEVICE_IP###,,2c,public,,,3000,generic_switch,,,
 ```
 
 Splunk related placeholders to fill:
