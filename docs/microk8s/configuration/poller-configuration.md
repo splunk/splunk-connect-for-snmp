@@ -32,6 +32,9 @@ poller:
 !!! info
     The header's line (`address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete`) is necessary for the correct execution of SC4SNMP. Do not remove it.
 
+!!! info
+    Starting with version 1.15.0, the max_oid_to_process field has been introduced as an optional addition to the inventory header. This update is backward compatible, and existing inventory headers remain fully supported.
+
 ### Default walk scope
 The default walk profile is polling only `SNMPv2-MIB`. If the full oid tree walk is required it can be enabled by changing `enableFullWalk` flag to true.
 
