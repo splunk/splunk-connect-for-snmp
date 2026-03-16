@@ -188,7 +188,7 @@ The `inventory` section in `poller` has the following fields to configure:
 | `profiles`        | A list of SNMP profiles used for the device. More than one profile can be added by a semicolon separation, for example, `profile1;profile2`. For more information about profiles, see [Profile Configuration](../configuring-profiles). |         | NO       |
 | `smart_profiles`  | Enables smart profiles. Its allowed values are `true` or `false`.                                                                                                                                                                       | `true`  | NO       |
 | `delete`          | A flag that defines if the inventory should be deleted from the scheduled tasks for WALKs and GETs. Its allowed value are `true`or `false`.  | `false` | NO       |
-| `max_oid_to_process`          | Maximum number of OIDs requested from SNMP Agent at once.                                                  | `70` | NO       |
+| `max_oid_to_process`          | Maximum number of OIDs requested from SNMP Agent at once. Can be also set globally to all devices by setting [poller.maxOidToProcess](values-params-description.md#poller)         | `70` | NO       |
 
 See the following example:
 ```yaml
