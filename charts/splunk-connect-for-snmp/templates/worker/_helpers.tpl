@@ -35,27 +35,32 @@ Create chart name and version as used by the chart label.
 Selector labels
 */}}
 {{- define "splunk-connect-for-snmp.worker.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/component: worker
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.worker.poller.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-poller
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/component: worker-poller
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.worker.sender.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-sender
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/component: worker-sender
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.worker.trap.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-trap
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/component: worker-trap
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{- define "splunk-connect-for-snmp.worker.flower.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.worker.name" . }}-flower
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/component: worker-flower
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
