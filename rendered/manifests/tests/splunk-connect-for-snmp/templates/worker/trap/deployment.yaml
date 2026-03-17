@@ -5,7 +5,8 @@ kind: Deployment
 metadata:
   name: release-name-splunk-connect-for-snmp-worker-trap
   labels:
-    app.kubernetes.io/name: splunk-connect-for-snmp-worker-trap
+    app.kubernetes.io/name: splunk-connect-for-snmp
+    app.kubernetes.io/component: worker-trap
     app.kubernetes.io/instance: release-name
     helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
     app.kubernetes.io/version: "CURRENT-VERSION"
@@ -14,14 +15,16 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app.kubernetes.io/name: splunk-connect-for-snmp-worker-trap
+      app.kubernetes.io/name: splunk-connect-for-snmp
+      app.kubernetes.io/component: worker-trap
       app.kubernetes.io/instance: release-name
   template:
     metadata:
       annotations:
         checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
       labels:
-        app.kubernetes.io/name: splunk-connect-for-snmp-worker-trap
+        app.kubernetes.io/name: splunk-connect-for-snmp
+        app.kubernetes.io/component: worker-trap
         app.kubernetes.io/instance: release-name
     spec:
       serviceAccountName: release-name-splunk-connect-for-snmp-user
@@ -152,7 +155,8 @@ spec:
                 topologyKey: kubernetes.io/hostname
                 labelSelector:
                   matchLabels:
-                      app.kubernetes.io/name: splunk-connect-for-snmp-worker-trap
+                      app.kubernetes.io/name: splunk-connect-for-snmp
+                      app.kubernetes.io/component: worker-trap
                       app.kubernetes.io/instance: release-name
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
