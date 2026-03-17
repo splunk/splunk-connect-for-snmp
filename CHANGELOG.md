@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- add support for providing token as a secret in both kubernetes and docker compose deployments, add support for vault in kubernetes
 - add support for local MIB files in docker compose deployment
 - add support for Redis HA with Sentinel integration
 - **Redis Migration**: Replaced Bitnami Redis chart with custom Kubernetes manifests
