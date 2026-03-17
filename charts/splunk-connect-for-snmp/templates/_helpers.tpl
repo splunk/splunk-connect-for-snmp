@@ -73,6 +73,39 @@ Create the name of the service account to use
 {{- default (printf "%s" .Chart.Name ) .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
+{{/*
+Name of the secret containing the Splunk HEC token. Uses tokenSecretRef.name
+when set, otherwise the chart-created secret (requires splunk.token to be set).
+*/}}
+{{- define "splunk-connect-for-snmp.splunkHecTokenSecretName" -}}
+{{- if .Values.splunk.tokenSecretRef.name -}}
+{{- .Values.splunk.tokenSecretRef.name -}}
+{{- else -}}
+{{- printf "%s-splunk" (include "splunk-connect-for-snmp.name" .) -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Key within the secret for the Splunk HEC token. Uses tokenSecretRef.key when
+tokenSecretRef.name is set, otherwise "hec_token".
+*/}}
+{{- define "splunk-connect-for-snmp.splunkHecTokenSecretKey" -}}
+{{- if .Values.splunk.tokenSecretRef.name -}}
+{{- .Values.splunk.tokenSecretRef.key | default "hec_token" -}}
+{{- else -}}
+hec_token
+{{- end -}}
+{{- end }}
+
+{{/*
+Whether the HEC token is provided via a file (tokenFilePath set).
+When true, set SPLUNK_HEC_TOKEN_FILE and do not set SPLUNK_HEC_TOKEN from secretKeyRef.
+*/}}
+{{- define "splunk-connect-for-snmp.splunkHecTokenFromFile" -}}
+{{- if .Values.splunk.tokenFilePath -}}
+true
+{{- end -}}
+{{- end }}
 
 {{/*
 Whether enable traps

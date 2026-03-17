@@ -71,9 +71,23 @@ splunk:
   # according to the pattern: {{protocol}}://{{host}}:{{port}}/services/collector
   # for ex. https://splunk-endpoint:8088/services/collector
 
-  # Required for Splunk Enterprise/Cloud (if `enabled` is set to true). Splunk
-  # HTTP Event Collector token.
+  # Required for Splunk Enterprise/Cloud (if `enabled` is set to true). Provide
+  # either a plaintext token here OR use tokenSecretRef to reference an existing
+  # secret. If both are set, tokenSecretRef takes precedence.
   token: 00000000-0000-0000-0000-000000000000
+  # Reference to an existing secret containing the HEC token (alternative to
+  # plaintext token). When set, the chart will not create a secret from
+  # splunk.token. The secret must contain the token under the given key.
+  tokenSecretRef:
+    # Name of the existing Kubernetes secret.
+    name: ""
+    # Key within the secret that holds the HEC token (default: hec_token).
+    key: "hec_token"
+  # Path to a file containing the HEC token (e.g. /vault/secrets/splunk-hec-token from
+  # Vault Agent Injector). When set, SPLUNK_HEC_TOKEN_FILE is used and SPLUNK_HEC_TOKEN
+  # is not set from a Secret. Add injector annotations via worker.sender.podAnnotations
+  # do not use worker.podAnnotations for the token so other worker types are not injected unnecessarily.
+  tokenFilePath: ""
   # Whether to skip checking the certificate of the HEC endpoint when sending
   # data over HTTPS.
   insecureSSL: "false"
@@ -274,6 +288,8 @@ worker:
 
   # The poller worker consumes all the tasks related to polling
   poller:
+    # Pod annotations (e.g. for Vault injector). Applied only to poller pods; use worker.podAnnotations for all workers.
+    podAnnotations: {}
     # number of the poller replicas when autoscaling is set to false
     replicaCount: 2
     # minimum number of threads in a pod
@@ -300,6 +316,8 @@ worker:
 
   # The trap worker consumes all the trap related tasks produced by the trap pod
   trap:
+    # Pod annotations (e.g. for Vault injector). Applied only to trap worker pods; use worker.podAnnotations for all workers.
+    podAnnotations: {}
     # number of the trap replicas when autoscaling is set to false
     replicaCount: 2
     # Use reverse dns lookup of trap ip address and send the hostname to splunk
@@ -327,8 +345,10 @@ worker:
       requests:
         # the resources requests for trap worker container
         cpu: 250m
-  # The sender worker handles sending data to Splunk
+  # The sender worker handles sending data to Splunk (only sender and traps deployment need the HEC token).
   sender:
+    # Pod annotations (e.g. Vault injector for HEC token). Applied only to sender pods; use worker.podAnnotations for all workers.
+    podAnnotations: {}
     # number of the sender replicas when autoscaling is set to false
     replicaCount: 1
     # minimum number of threads in a pod
@@ -408,6 +428,7 @@ worker:
   ignoreEmptyVarbinds: false
 
   nodeSelector: {}
+  podAnnotations: {}
 
 inventory:
   secret:

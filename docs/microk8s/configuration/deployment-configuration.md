@@ -13,7 +13,7 @@ The whole file is divided into the following parts:
 
 To configure the endpoint for sending SNMP data:
 
-- `splunk` - in case you use Splunk Enterprise/Cloud.
+- `splunk` - in case you use Splunk Enterprise/Cloud. For more details see [Splunk configuration](splunk-configuration.md).
 - `sim` - in case you use Splunk Observability Cloud. For more details see [sim configuration](sim-configuration.md).
 
 For polling purposes:

@@ -16,7 +16,10 @@ spec:
       annotations:
         {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 -}}
         {{- with .Values.worker.podAnnotations }}
-          {{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.worker.sender.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
         {{- include "splunk-connect-for-snmp.worker.sender.selectorLabels" . | nindent 8 }}
@@ -46,6 +49,7 @@ spec:
             ]
           env:
             {{- include "environmental-variables" . | nindent 12 }}
+            {{- include "environmental-variables-splunk-hec" . | nindent 12 }}
             {{- include "environmental-variables-sender" . | nindent 12 }}
             {{- if .Values.splunk.mtls.enabled }}
             - name: SPLUNK_HEC_MTLS_CLIENT_CERT
