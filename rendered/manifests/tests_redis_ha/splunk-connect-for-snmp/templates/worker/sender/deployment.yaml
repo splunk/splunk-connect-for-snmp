@@ -102,6 +102,7 @@ spec:
               value: "http://release-name-mibserver/index.csv"
             - name: MIB_STANDARD
               value: "http://release-name-mibserver/standard.txt"
+            
             - name: SPLUNK_HEC_SCHEME
               value: "https"
             - name: SPLUNK_HEC_HOST

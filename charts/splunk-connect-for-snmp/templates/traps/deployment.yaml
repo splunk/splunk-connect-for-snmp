@@ -85,11 +85,6 @@ spec:
               value: {{ .Values.traps.discoverEngineId | default "false" | quote }}
             - name: SNMP_V3_SECURITY_ENGINE_ID
               value: {{ join "," .Values.traps.securityEngineId }}
-            - name: SPLUNK_HEC_TOKEN
-              valueFrom:
-                  secretKeyRef:
-                    name: {{ include "splunk-connect-for-snmp.name" . }}-splunk
-                    key: hec_token
             - name: IPv6_ENABLED
               {{- if has "IPv6" .Values.traps.ipFamilies}}
               value: "true"
