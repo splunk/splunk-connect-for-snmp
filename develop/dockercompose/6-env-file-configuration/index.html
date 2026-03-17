@@ -1239,6 +1239,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../microk8s/configuration/splunk-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Splunk configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../microk8s/configuration/values-params-description/" class="md-nav__link">
         
   
@@ -1275,10 +1303,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_2_3" id="__nav_4_2_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_2_4" id="__nav_4_2_4_label" tabindex="0">
             
   
   
@@ -1296,8 +1324,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_2_3">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2712,7 +2740,7 @@
 </tr>
 <tr>
 <td><code>COREDNS_ADDRESS_IPv6</code></td>
-<td>IPv6 address of the coredns inside docker network. Should not be changed</td>
+<td>IPv6 address of the coredns container. Default empty (IPv6 disabled). When <a href="../10-enable-ipv6/">enabling IPv6</a>, set to an address within <code>IPAM_SUBNET_IPv6</code> (e.g. <code>fd02::1</code>).</td>
 </tr>
 <tr>
 <td><code>IPv6_ENABLED</code></td>
@@ -2806,7 +2834,11 @@
 </tr>
 <tr>
 <td><code>SPLUNK_HEC_TOKEN</code></td>
-<td>Splunk HTTP Event Collector token</td>
+<td>Splunk HTTP Event Collector token. To keep it out of <code>.env</code> and <code>docker inspect</code>, use a <a href="../7-snmpv3-secrets/#splunk-hec-token-secret">Docker secret</a>; the app then reads the token from the file path in <code>SPLUNK_HEC_TOKEN_FILE</code>.</td>
+</tr>
+<tr>
+<td><code>SPLUNK_HEC_TOKEN_SECRET_FILE</code></td>
+<td>Path on the host to the file used as the Docker secret for the HEC token (worker-sender only). The app reads the token from the mounted file; only the path is in the container env.</td>
 </tr>
 <tr>
 <td><code>SPLUNK_HEC_INSECURESSL</code></td>

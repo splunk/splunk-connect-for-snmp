@@ -1112,6 +1112,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../microk8s/configuration/splunk-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Splunk configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../microk8s/configuration/values-params-description/" class="md-nav__link">
         
   
@@ -1148,10 +1176,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_2_3" id="__nav_4_2_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_2_4" id="__nav_4_2_4_label" tabindex="0">
             
   
   
@@ -1169,8 +1197,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_2_3">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2398,12 +2426,24 @@
 <p>Default installation of SC4SNMP does not support polling or receiving trap notifications from IPv6 addresses. 
 To enable IPv6, follow instruction below.</p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">¶</a></h2>
-<p>Older versions of Docker do not support IPv6 or have know issues with IPv6 configuration. 
-To avoid any problem with configuring the network, it is recommended to use the latest version of Docker. </p>
-<p>To enable IPv6 for SC4SNMP, set <code>IPv6_ENABLED</code> variable to <code>true</code> in <code>.env</code> file.
-The default subnet used for SC4SNMP network in docker is <code>fd02::/64</code>, this configuration can be changed in <code>.env</code> file under <code>Network configuration</code> section.
-In case of configuring more than one IPv4 and IPv6 subnet in IPAM, <code>networks</code> section of <code>docker-compose.yaml</code> should be edited.</p>
-<p>For more information about IPv6 networking in docker, you can check the <a href="https://docs.docker.com/engine/daemon/ipv6/">official Docker documentation</a>.</p></div>
+<p>Older versions of Docker do not support IPv6 or have known issues with IPv6 configuration. 
+To avoid problems with the network, use the latest version of Docker. </p>
+<p>To enable IPv6 for SC4SNMP:</p>
+<ol>
+<li>Set <code>IPv6_ENABLED=true</code> in your <code>.env</code> file.</li>
+<li>Set <strong><code>COREDNS_ADDRESS_IPv6</code></strong> to an IPv6 address that lies <strong>inside</strong> your <code>IPAM_SUBNET_IPv6</code>.<br>
+   If this is unset or points outside the configured subnet, Docker can fail with errors like<br>
+<code>no configured subnet contains IP address fd02::...</code>.</li>
+</ol>
+<p>With the default subnet <code>fd02::/64</code> and gateway <code>fd02::1</code>, use an address from that range, for example:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">COREDNS_ADDRESS_IPv6</span><span class="o">=</span>fd02::1
+</code></pre></div>
+<p>If you use a different <code>IPAM_SUBNET_IPv6</code> / <code>IPAM_GATEWAY_IPv6</code>, pick an address from that subnet (e.g. the gateway or another host address).</p>
+<ol start="3">
+<li>The default IPv6 subnet is <code>fd02::/64</code>; you can change it in <code>.env</code> under the <strong>Network configuration</strong> section (<code>IPAM_SUBNET_IPv6</code>, <code>IPAM_GATEWAY_IPv6</code>).</li>
+</ol>
+<p>If you configure more than one IPv4 and IPv6 subnet in IPAM, edit the <code>networks</code> section of <code>docker-compose.yaml</code> accordingly.</p>
+<p>For more information about IPv6 networking in Docker, see the <a href="https://docs.docker.com/engine/daemon/ipv6/">official Docker documentation</a>.</p></div>
 
 
 

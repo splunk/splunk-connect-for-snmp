@@ -760,6 +760,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#splunk-hec-token-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Splunk HEC token secret
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1212,6 +1223,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../microk8s/configuration/splunk-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Splunk configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../microk8s/configuration/values-params-description/" class="md-nav__link">
         
   
@@ -1248,10 +1287,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_2_3" id="__nav_4_2_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_2_4" id="__nav_4_2_4_label" tabindex="0">
             
   
   
@@ -1269,8 +1308,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_2_3">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2577,6 +2616,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#splunk-hec-token-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Splunk HEC token secret
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2640,7 +2690,7 @@ Inside this folder, create a secrets.json file that contains all SNMPv3 secrets.
 <span class="w">    </span><span class="nt">"authprotocol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SHA"</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">"authkey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"authkey1"</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">"contextengineid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"engineid1"</span>
-<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
 <blockquote>
@@ -2658,20 +2708,35 @@ ENABLE_WORKER_POLLER_SECRETS=true
 <p>To create a new secret, 
 create <code>secrets.json</code> file inside folder (at SECRET_FOLDER_PATH), add entry for the new secrets with all the details.</p>
 <p>Inside <code>docker_compose</code> directory run:</p>
-<div class="highlight"><pre><span></span><code>&lt;!--<span class="w"> </span>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--&gt;
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
 <h2 id="updating-existing-secret">Updating existing secret<a class="headerlink" href="#updating-existing-secret" title="Permanent link">¶</a></h2>
 <p>To update any secret, 
 update the required fields (e.g., keys, protocols, username) for any existing secret inside secrets.json file.</p>
 <p>Inside <code>docker_compose</code> directory run:
-</p><div class="highlight"><pre><span></span><code>&lt;!--<span class="w"> </span>docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>&lt;service_name&gt;<span class="w"> </span>--&gt;
+</p><div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>&lt;service_name&gt;
 </code></pre></div>
 <h2 id="deleting-a-secret">Deleting a secret<a class="headerlink" href="#deleting-a-secret" title="Permanent link">¶</a></h2>
 <p>To delete a secret,
 delete its entry from the secrets.json file.</p>
 <p>Inside <code>docker_compose</code> directory run:
-</p><div class="highlight"><pre><span></span><code>&lt;!--<span class="w"> </span>docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>&lt;service_name&gt;<span class="w"> </span>--&gt;
-</code></pre></div></div>
+</p><div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>&lt;service_name&gt;
+</code></pre></div>
+<h2 id="splunk-hec-token-secret">Splunk HEC token secret<a class="headerlink" href="#splunk-hec-token-secret" title="Permanent link">¶</a></h2>
+<p>To keep the HEC token out of <code>.env</code> and out of <code>docker inspect</code> (so it is not visible in the container’s environment), use a <strong>Docker Compose secret</strong>. The app supports the <code>SPLUNK_HEC_TOKEN_FILE</code> convention: when set, the token is read from that path instead of from the <code>SPLUNK_HEC_TOKEN</code> env var. Only the path is in the environment, not the token.</p>
+<ol>
+<li>
+<p>Create a file that contains only the token (e.g. <code>./secrets/splunk_hec_token</code>).</p>
+</li>
+<li>
+<p>In <code>.env</code>, set the path to that file and leave <code>SPLUNK_HEC_TOKEN</code> unset or empty:
+   </p><div class="highlight"><pre><span></span><code>SPLUNK_HEC_TOKEN_SECRET_FILE=./secrets/splunk_hec_token
+</code></pre></div>
+</li>
+<li>
+<p>Recreate the worker-sender service. The compose file mounts the secret at <code>/run/secrets/splunk_hec_token</code> and sets <code>SPLUNK_HEC_TOKEN_FILE</code> to that path. The app reads the token from the file; the token itself never appears in <code>docker inspect</code> or <code>docker compose config</code>.</p>
+</li>
+</ol></div>
 
 
 
