@@ -58,7 +58,7 @@ If both `token` and `tokenSecretRef.name` are set, `tokenSecretRef` takes preced
 
 You can provide the HEC token via a **file** (e.g. injected by Vault Agent Injector or another provider). Set `splunk.tokenFilePath` to the path where the token file is mounted. The chart sets `SPLUNK_HEC_TOKEN_FILE` only on the **sender** deployment (the only component that sends data to Splunk HEC). Add injector annotations only on the sender: `worker.sender.podAnnotations`. Do not use `worker.podAnnotations` for the token so other worker types and traps are not injected unnecessarily.
 
-**Important:** The file must contain only the token value (not JSON). Use an inject template so the mounted file has just the token.
+**Important:** The file must contain only the token value. Use an inject template so the mounted file has just the token.
 
 **Example:**
 
