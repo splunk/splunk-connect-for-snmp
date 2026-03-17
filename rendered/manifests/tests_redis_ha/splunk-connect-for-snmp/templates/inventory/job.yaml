@@ -5,7 +5,8 @@ kind: Job
 metadata:
   name: release-name-splunk-connect-for-snmp-inventory
   labels:
-    app.kubernetes.io/name: splunk-connect-for-snmp-inventory
+    app.kubernetes.io/name: splunk-connect-for-snmp
+    app.kubernetes.io/component: inventory
     app.kubernetes.io/instance: release-name
     helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
     app.kubernetes.io/version: "CURRENT-VERSION"
@@ -19,7 +20,8 @@ spec:
         checksum/redis-secret: 908cbead70ef3a415f7509bf2922a7eb195dd8dc27ba5735ecde8c7794bb4b74
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
       labels:
-        app.kubernetes.io/name: splunk-connect-for-snmp-inventory
+        app.kubernetes.io/name: splunk-connect-for-snmp
+        app.kubernetes.io/component: inventory
         app.kubernetes.io/instance: release-name
     spec:
       containers:

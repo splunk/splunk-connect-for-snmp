@@ -18,6 +18,10 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-redis
+        app.kubernetes.io/name: {{ .Chart.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: redis
+        {{- include "splunk-connect-for-snmp.labels" . | nindent 8 }}
       annotations:
         {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 }}
     spec:

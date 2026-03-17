@@ -34,7 +34,8 @@ Create chart name and version as used by the chart label.
 Selector labels
 */}}
 {{- define "splunk-connect-for-snmp.traps.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.traps.name" . }}
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/component: trap
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 

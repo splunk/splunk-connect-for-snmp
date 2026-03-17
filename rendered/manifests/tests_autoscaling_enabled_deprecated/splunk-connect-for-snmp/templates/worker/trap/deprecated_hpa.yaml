@@ -5,7 +5,8 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: release-name-splunk-connect-for-snmp-worker-trap
   labels:
-    app.kubernetes.io/name: splunk-connect-for-snmp-worker-trap
+    app.kubernetes.io/name: splunk-connect-for-snmp
+    app.kubernetes.io/component: worker-trap
     app.kubernetes.io/instance: release-name
     helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
     app.kubernetes.io/version: "CURRENT-VERSION"
