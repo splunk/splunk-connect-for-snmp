@@ -3,12 +3,12 @@
 ## Unreleased
 
 ### Changed
-- add support for local MIB files in docker compose deployment
-- add support for Redis HA with Sentinel integration
 - **Kubernetes Labels Unification**: Standardized labels across all SC4SNMP components
   - Applied standard Kubernetes label scheme: `app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/component`, `app.kubernetes.io/managed-by`
   - Enables consistent pod filtering and querying across SC4SNMP components (trap, scheduler, worker-poller, worker-sender, worker-trap, redis, mongodb)
   - Subcharts (mibserver, mongodb) maintain their own chart names
+- add support for local MIB files in docker compose deployment
+- add support for Redis HA with Sentinel integration
 - **Redis Migration**: Replaced Bitnami Redis chart with custom Kubernetes manifests
   - Updated to official Redis image version 8.2.2 (addresses security vulnerabilities)
   - Added authentication support (password or Kubernetes Secret)
