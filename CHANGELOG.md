@@ -6,7 +6,7 @@
 
 ### Fixed
 
-[1.15.0]
+## [1.15.0]
 
 ### Changed
 - **Kubernetes Labels Unification**: Standardized labels across all SC4SNMP components
