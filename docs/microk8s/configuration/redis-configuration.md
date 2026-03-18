@@ -70,7 +70,7 @@ redis:
 | redis.sentinel.resources.limits.cpu      | string | `100m`              | Guaranteed Sentinel minimum CPU.                                                        |
 | redis.sentinel.resources.limits.memory   | string | `128Mi`             | Guaranteed Sentinel minimum memory.                                                     |
 | redis.auth.enabled                       | bool   | `false`             | Enable Redis AUTH.                                                                      |
-| redis.auth.password                      | string | `""`                | Password when AUTH enabled (avoid committing; prefer secret).                           |
+| redis.auth.password                      | string | `""`                | Password when AUTH enabled (prefer secret).                                             |
 | redis.auth.existingSecret                | string | `""`                | Name of existing Kubernetes Secret providing the password.                              |
 | redis.auth.existingSecretPasswordKey     | string | `password`          | Key inside the existing secret containing the password.                                 |
 | redis.image.repository                   | string | `redis`             | Container image repository.                                                             |
@@ -231,6 +231,8 @@ To use a Kubernetes Secret for the Redis password, first create a secret with th
 ```bash
 microk8s kubectl create secret generic prod-redis-secret -n <namespace> --from-literal=password="your_password_here"
 ```
+
+It is advised to use strong randomized passwords (min. 32 characters).
 
 !!!note
     Replace `<namespace>` with the appropriate namespace where SC4SNMP is deployed.
