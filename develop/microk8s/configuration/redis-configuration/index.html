@@ -2838,7 +2838,7 @@ This change ensures we maintain full control over configuration, compatibility, 
 <td>redis.auth.password</td>
 <td>string</td>
 <td><code>""</code></td>
-<td>Password when AUTH enabled (avoid committing; prefer secret).</td>
+<td>Password when AUTH enabled (prefer secret).</td>
 </tr>
 <tr>
 <td>redis.auth.existingSecret</td>
@@ -3058,6 +3058,7 @@ sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> <
 <p>To use a Kubernetes Secret for the Redis password, first create a secret with the desired password:</p>
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>prod-redis-secret<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>--from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="s2">"your_password_here"</span>
 </code></pre></div>
+<p>It is advised to use strong randomized passwords (min. 32 characters).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Replace <code>&lt;namespace&gt;</code> with the appropriate namespace where SC4SNMP is deployed.
