@@ -3,6 +3,12 @@
 ## Unreleased
 
 ### Changed
+
+### Fixed
+
+[1.15.0]
+
+### Changed
 - **Kubernetes Labels Unification**: Standardized labels across all SC4SNMP components
   - Applied standard Kubernetes label scheme: `app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/component`, `app.kubernetes.io/managed-by`
   - Enables consistent pod filtering and querying across SC4SNMP components (trap, scheduler, worker-poller, worker-sender, worker-trap, redis, mongodb)
@@ -21,7 +27,7 @@
   - Discover engine id from incoming traps
   - Store engine id in mongoDB
 
-### Fixes
+### Fixed
 - fix problem with service rendering when `traps.service.usemetallb` is set to false
 - fix setting snmpv3 to be able to set secret without privProtocol and privKey
 - fix add error handling for inventory.csv misconfigured as dir
