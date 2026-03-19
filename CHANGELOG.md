@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- add max_oid_to_process configuration per device
 
 ### Fixed
 - fix reusing the snmp engine for snmpv3 calls
@@ -27,7 +28,6 @@
 - **Engine Id discovery**: Add engine id discovery for traps
   - Discover engine id from incoming traps
   - Store engine id in mongoDB
-- add max_oid_to_process configuration per device
 
 ### Fixed
 - fix problem with service rendering when `traps.service.usemetallb` is set to false
