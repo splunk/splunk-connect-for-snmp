@@ -1,6 +1,6 @@
 # .env file configuration
 
-Inside the directory with the docker compose files, there is a `.env`. Variables in it can be divided into few sections.
+The `.env` file lives inside the `docker_compose` directory (the same directory extracted from `docker_compose.zip`). It controls all environment variables for the deployment — paths to configuration files, Splunk connection settings, image versions, and tuning parameters. Edit this file before running `docker compose up`. Variables in it can be divided into few sections.
 
 ## Deployment
 

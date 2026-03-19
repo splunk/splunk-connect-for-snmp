@@ -17,7 +17,7 @@ List of available debug modes:
 * all
 
 
-## docker-compose
+## docker compose
 
 Add on `.env` file `PYSNMP_DEBUG` variable and specify debug modes in comma-separated format:
 

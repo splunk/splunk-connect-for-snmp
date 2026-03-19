@@ -21,6 +21,9 @@ groups:
 - `profiles`: configuration of the profiles. Configuration of this section looks the same as in the `values.yaml` in `scheduler.profiles` section, which can be checked in the documentation of [profiles configuration](../microk8s/configuration/configuring-profiles.md).
 - `groups`: configuration of the groups. Configuration of this section looks the same as in the `values.yaml` in `scheduler.groups` section, which can be checked in the documentation of [groups configuration](../microk8s/configuration/configuring-groups.md).
 
+!!! note
+    The `profiles`, `groups`, and `customTranslations` configuration syntax is shared between the Docker Compose and Microk8s deployment models. The linked pages above apply equally to Docker Compose users.
+
 ## Example of the configuration
 
 ```yaml

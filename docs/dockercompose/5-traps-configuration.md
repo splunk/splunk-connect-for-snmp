@@ -1,3 +1,4 @@
+# Traps configuration
 
 Traps configuration is stored in the `traps-config.yaml` file. This file has the following sections:
 

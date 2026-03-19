@@ -48,14 +48,17 @@ nav:
       - Splunk Requirements: "dockercompose/0-splunk-requirements.md"
       - Install Docker: "dockercompose/1-install-docker.md"
       - Download package: "dockercompose/2-download-package.md"
-      - Inventory configuration: "dockercompose/3-inventory-configuration.md"
-      - Scheduler configuration: "dockercompose/4-scheduler-configuration.md"
-      - Traps configuration: "dockercompose/5-traps-configuration.md"
-      - .env file configuration: "dockercompose/6-env-file-configuration.md"
-      - SNMPv3 secrets configuration: "dockercompose/7-snmpv3-secrets.md"
-      - Offline installation: "dockercompose/8-offline-installation.md"
-      - Sending logs to Splunk: "dockercompose/9-splunk-logging.md"
-      - Enable IPv6: "dockercompose/10-enable-ipv6.md"
+      - Configuration:
+          - .env file configuration: "dockercompose/6-env-file-configuration.md"
+          - Inventory configuration: "dockercompose/3-inventory-configuration.md"
+          - Scheduler configuration: "dockercompose/4-scheduler-configuration.md"
+          - Traps configuration: "dockercompose/5-traps-configuration.md"
+          - SNMPv3 secrets configuration: "dockercompose/7-snmpv3-secrets.md"
+      - Deploy the app: "dockercompose/11-deploy-and-run.md"
+      - Advanced:
+          - Offline installation: "dockercompose/8-offline-installation.md"
+          - Sending logs to Splunk: "dockercompose/9-splunk-logging.md"
+          - Enable IPv6: "dockercompose/10-enable-ipv6.md"
   - Getting Started with Microk8s:
       - Installation:
         - Splunk Requirements: "microk8s/splunk-requirements.md"
