@@ -55,7 +55,7 @@ update the required fields (e.g., keys, protocols, username) for any existing se
 
 Inside `docker_compose` directory run:
 ```shell
-docker-compose up -d --force-recreate <service_name>
+docker compose up -d --force-recreate <service_name>
 ```
 
 ## Deleting a secret
@@ -65,7 +65,7 @@ delete its entry from the secrets.json file.
 
 Inside `docker_compose` directory run:
 ```shell
-docker-compose up -d --force-recreate <service_name>
+docker compose up -d --force-recreate <service_name>
 ```
 
 ## Splunk HEC token secret
