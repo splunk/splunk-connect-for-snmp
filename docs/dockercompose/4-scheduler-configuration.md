@@ -2,6 +2,8 @@
 
 Scheduler configuration is stored in the `scheduler-config.yaml` file. This file has the following sections:
 
+## Configuration
+
 ```yaml
 communities:
   2c:

@@ -2,17 +2,28 @@
 
 The `.env` file lives inside the `docker_compose` directory (the same directory extracted from `docker_compose.zip`). It controls all environment variables for the deployment — paths to configuration files, Splunk connection settings, image versions, and tuning parameters. Edit this file before running `docker compose up`. Variables in it can be divided into few sections.
 
-## Deployment
+## Overview
 
 !!! warning "Required variables"
     The following variables must be set before running `docker compose up`:
+
+    **File paths:**
 
     - **`SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH`** — absolute path to your `scheduler-config.yaml`
     - **`TRAPS_CONFIG_FILE_ABSOLUTE_PATH`** — absolute path to your `traps-config.yaml`
     - **`INVENTORY_FILE_ABSOLUTE_PATH`** — absolute path to your `inventory.csv`
     - **`COREFILE_ABS_PATH`** — absolute path to the `Corefile` (a default `Corefile` is shipped inside the `docker_compose` package)
 
-    See the [Splunk instance](#splunk-instance) section below for the required Splunk connection variables.
+    **Splunk connection:**
+
+    - **`SPLUNK_HEC_HOST`** — IP address or domain name of your Splunk instance
+    - **`SPLUNK_HEC_PROTOCOL`** — `https` or `http`
+    - **`SPLUNK_HEC_PORT`** — port of the HEC endpoint
+    - **`SPLUNK_HEC_TOKEN`** or **`SPLUNK_HEC_TOKEN_SECRET_FILE`** — HEC token, or path to a file containing the token
+
+## Configuration
+
+### Deployment
 
 | Variable                              | Description                                                                                                                                    |
 |---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -27,7 +38,7 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                                                             |
 
 
-## Network configuration
+### Network configuration
 
 | Variable               | Description                                                              |
 |------------------------|--------------------------------------------------------------------------| 
@@ -42,7 +53,7 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 !!! info
     In case of configuring more than one IPv4 and IPv6 subnet in IPAM, docker compose file should be edited.
 
-## Images of dependencies 
+### Images of dependencies 
 
 | Variable          | Description                          |
 |-------------------|--------------------------------------| 
@@ -55,10 +66,7 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 | `MONGO_IMAGE`     | Registry and name of MongoDB image   |
 | `MONGO_TAG`       | MongoDB image tag to pull            |
 
-## Splunk instance
-
-!!! warning "Required variables"
-    `SPLUNK_HEC_HOST`, `SPLUNK_HEC_PROTOCOL`, `SPLUNK_HEC_PORT`, and either `SPLUNK_HEC_TOKEN` or `SPLUNK_HEC_TOKEN_SECRET_FILE` must be set for SC4SNMP to send any data to Splunk.
+### Splunk instance
 
 | Variable                                  | Description                                                                                                                           |
 |-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
@@ -79,9 +87,11 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 | `IGNORE_EMPTY_VARBINDS`                   | Details can be found in [empty snmp response message issue](../troubleshooting/polling-issues.md#empty-snmp-response-message-problem) |
 | `SPLUNK_LOG_INDEX`                        | Event index in Splunk where logs from docker containers would be sent                                                                 |
 
-## Workers
+## Advanced configuration
 
-### General
+### Workers
+
+#### General
 | Variable                     | Description                                                                                                                                            |
 |------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------| 
 | `WALK_RETRY_MAX_INTERVAL`    | Maximum time interval between walk attempts                                                                                                            |
@@ -94,7 +104,7 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 | `MAX_OID_TO_PROCESS`         | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS   |
 | `MAX_REPETITIONS`            | The amount of requested next oids in response for each of varbinds in one request sent                                                               |
 
-### Worker Poller
+#### Worker Poller
 | Variable                            | Description                                                                |
 |-------------------------------------|----------------------------------------------------------------------------| 
 | `WORKER_POLLER_CONCURRENCY`         | Minimum number of threads in the poller container                          |
@@ -105,7 +115,7 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 | `WORKER_POLLER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker poller container                        |
 | `WORKER_POLLER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker poller container                     |
 
-### Worker Sender
+#### Worker Sender
 | Variable                            | Description                                                                |
 |-------------------------------------|----------------------------------------------------------------------------| 
 | `WORKER_SENDER_CONCURRENCY`         | Minimum number of threads in the sender container                          |
@@ -116,7 +126,7 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 | `WORKER_SENDER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker sender container                        |
 | `WORKER_SENDER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker sender container                     |
 
-### Worker Trap
+#### Worker Trap
 | Variable                          | Description                                                                                      |
 |-----------------------------------|--------------------------------------------------------------------------------------------------| 
 | `WORKER_TRAP_CONCURRENCY`         | Minimum number of threads in the trap container                                                  |
@@ -131,14 +141,14 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 | `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
 | `ENABLE_WORKER_POLLER_SECRETS` | Enable usage of secrets for poller                          |
 
-## Inventory
+### Inventory
 
 | Variable                     | Description                                                                                       |
 |------------------------------|---------------------------------------------------------------------------------------------------| 
 | `INVENTORY_LOG_LEVEL`        | Logging level of the inventory, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL |
 | `CHAIN_OF_TASKS_EXPIRY_TIME` | Tasks expirations time in seconds                                                                 |
 
-## Traps
+### Traps
 
 | Variable                     | Description                                                                                                                                                                                                                     |
 |------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
@@ -147,7 +157,7 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 | `TRAPS_PORT`                 | External port exposed for traps server                                                                                                                                                                                          |
 | `ENABLE_TRAPS_SECRET`          | Enable usage of secrets for traps                           |
 
-## Scheduler
+### Scheduler
 
 | Variable              | Description                                                                                       |
 |-----------------------|---------------------------------------------------------------------------------------------------| 
