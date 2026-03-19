@@ -6,8 +6,7 @@ See the following prerequisites for the Splunk Connect for SNMP.
 
 1. Manually create the following indexes in Splunk:
    
-   * Indexes to store Splunk Connect for SNMP logs and metrics: 
-       * em_metrics (metrics type)
+   * Index to store Splunk Connect for SNMP logs:
        * em_logs (event type)
    * Destination indexes for forwarding SNMP data: 
        * netmetrics (metrics type)

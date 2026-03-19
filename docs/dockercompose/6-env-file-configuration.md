@@ -4,8 +4,18 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 
 ## Deployment
 
+!!! warning "Required variables"
+    The following variables must be set before running `docker compose up`:
+
+    - **`SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH`** — absolute path to your `scheduler-config.yaml`
+    - **`TRAPS_CONFIG_FILE_ABSOLUTE_PATH`** — absolute path to your `traps-config.yaml`
+    - **`INVENTORY_FILE_ABSOLUTE_PATH`** — absolute path to your `inventory.csv`
+    - **`COREFILE_ABS_PATH`** — absolute path to the `Corefile` (a default `Corefile` is shipped inside the `docker_compose` package)
+
+    See the [Splunk instance](#splunk-instance) section below for the required Splunk connection variables.
+
 | Variable                              | Description                                                                                                                                    |
-|---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------| 
+|---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
 | `SC4SNMP_IMAGE`                       | The registry and name of the SC4SNMP image to pull                                                                                             |
 | `SC4SNMP_TAG`                         | SC4SNMP image tag to pull                                                                                                                      |
 | `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to [scheduler-config.yaml](./4-scheduler-configuration.md) file                                                                  |
@@ -13,7 +23,7 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                                                          |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose`                                           |
 | `LOCAL_MIBS_PATH`                     | Absolute path to the directory containing [local MIB files](../mib-request.md#configuring-path-to-local-mibs-for-docker-compose-installation). |
-| `SECRET_FOLDER_PATH`           | Absolute path to [secrets.json](./7-snmpv3-secrets.md) file |
+| `SECRET_FOLDER_PATH`                  | Absolute path to [secrets.json](./7-snmpv3-secrets.md) file                                                                                    |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                                                             |
 
 
@@ -47,8 +57,11 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 
 ## Splunk instance
 
+!!! warning "Required variables"
+    `SPLUNK_HEC_HOST`, `SPLUNK_HEC_PROTOCOL`, `SPLUNK_HEC_PORT`, and either `SPLUNK_HEC_TOKEN` or `SPLUNK_HEC_TOKEN_SECRET_FILE` must be set for SC4SNMP to send any data to Splunk.
+
 | Variable                                  | Description                                                                                                                           |
-|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------| 
+|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
 | `SPLUNK_HEC_HOST`                         | IP address or a domain name of a Splunk instance to send data to                                                                      |
 | `SPLUNK_HEC_PROTOCOL`                     | The protocol of the HEC endpoint: `https` or `http`                                                                                   |
 | `SPLUNK_HEC_PORT`                         | The port of the HEC endpoint                                                                                                          |
