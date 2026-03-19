@@ -14,10 +14,11 @@ spec:
       {{- include "splunk-connect-for-snmp.traps.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.traps.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 -}}
+        {{- with .Values.traps.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "splunk-connect-for-snmp.traps.selectorLabels" . | nindent 8 }}
     spec:
@@ -47,10 +48,9 @@ spec:
           env:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
-            - name: CELERY_BROKER_URL
-              value: {{ include "splunk-connect-for-snmp.celery_url" . }}
             - name: MONGO_URI
               value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
+            {{- include "splunk-connect-for-snmp.redis-env" . | nindent 12 }}
             - name: MIB_SOURCES
               value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/asn1/@mib@"
             - name: MIB_INDEX
@@ -81,13 +81,10 @@ spec:
               value: {{ .Values.splunk.insecureSSL | default "false" | quote }}
             - name: INCLUDE_SECURITY_CONTEXT_ID
               value: {{ .Values.traps.includeSecurityContextId | default "false" | quote }}
+            - name: DISCOVER_ENGINE_ID
+              value: {{ .Values.traps.discoverEngineId | default "false" | quote }}
             - name: SNMP_V3_SECURITY_ENGINE_ID
               value: {{ join "," .Values.traps.securityEngineId }}
-            - name: SPLUNK_HEC_TOKEN
-              valueFrom:
-                  secretKeyRef:
-                    name: {{ include "splunk-connect-for-snmp.name" . }}-splunk
-                    key: hec_token
             - name: IPv6_ENABLED
               {{- if has "IPv6" .Values.traps.ipFamilies}}
               value: "true"

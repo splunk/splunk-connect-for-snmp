@@ -1,12 +1,265 @@
 # Redis configuration
 
-Recently, RabbitMQ was replaced with Redis as a queue service and periodic task database. The reason for this is to increase SC4SNMP performance and protect against bottlenecks.
+Redis serves as the message broker and task scheduler for SC4SNMP, managing periodic tasks and queueing operations such as SNMP Walk and Poll. It is a critical component for coordinating work between the scheduler, poller, and sender services.
 
-Redis both manages periodic tasks and queues the SC4SNMP service. It queues tasks like SNMP Walk and Poll.  
+!!!note
+    Previously, Redis in our stack was provided via the Bitnami Helm chart. As Bitnami transitions certain components to a paid model, we have replaced it with our own Kubernetes manifests, implementing the necessary deployment logic in-house.
+    This change ensures we maintain full control over configuration, compatibility, and licensing. If you encounter any issues or identify missing configuration options, please open an issue in the project repository so we can address it promptly.
 
 ### Redis configuration file
 
-Redis configuration is kept in the `values.yaml` file in the `redis` section.
-`values.yaml` is used during the installation process to configure Kubernetes values.
+Redis configuration is maintained in the `redis` section of `values.yaml`, which is used during installation to configure Kubernetes resources.
 
-To edit the configuration, see [Redis on Kubernetes](https://github.com/bitnami/charts/tree/master/bitnami/redis).
+```yaml
+redis:
+  # Mode selector: "standalone", "replication"
+  architecture: standalone
+
+  # Authentication
+  auth:
+    enabled: false
+    password: ""                      # Set if auth.enabled: true
+    existingSecret: ""                # Or reference existing secret
+    existingSecretPasswordKey: "password"
+
+  # Image
+  image:
+    repository: redis
+    tag: "8.2.2"
+    pullPolicy: IfNotPresent
+
+  # Resources
+  resources: {}
+  #  **Quick sizing:**
+  #  - Cache only: Set `redis.resources.limits.memory` to 1.5× expected data size
+  #  - With persistence: Set to 2.5-3× expected data size
+  #  resources:
+  #    requests:
+  #      cpu: 500m
+  #      memory: 1Gi
+  #    limits:
+  #      cpu: 1000m
+  #      memory: 2Gi
+
+  # Storage
+  storage:
+    enabled: true
+    storageClassName: microk8s-hostpath
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+  persistence:
+    aof:
+      enabled: true
+      fsync: everysec
+      
+  # Security
+  podSecurityContext:
+    runAsUser: 999
+    fsGroup: 999
+```
+
+| Key                                      | Type   | Default             | Description                                                                             |
+|------------------------------------------|--------|---------------------|-----------------------------------------------------------------------------------------|
+| redis.architecture                       | string | `standalone`        | Deployment mode (standalone or replication).                                            |
+| redis.replicas                           | int    | `3`                 | Data pod count (used only in replication mode).                                         |
+| redis.sentinel.replicas                  | int    | `3`                 | Sentinel pod count (odd recommended).                                                   |
+| redis.sentinel.quorum                    | int    | `2`                 | Required Sentinel votes for failover.                                                   |
+| redis.sentinel.resources.requests.cpu    | string | `50m`               | Guaranteed Sentinel minimum CPU.                                                        |
+| redis.sentinel.resources.requests.memory | string | `64Mi`              | Guaranteed Sentinel minimum memory.                                                     |
+| redis.sentinel.resources.limits.cpu      | string | `100m`              | Guaranteed Sentinel minimum CPU.                                                        |
+| redis.sentinel.resources.limits.memory   | string | `128Mi`             | Guaranteed Sentinel minimum memory.                                                     |
+| redis.auth.enabled                       | bool   | `false`             | Enable Redis AUTH.                                                                      |
+| redis.auth.password                      | string | `""`                | Password when AUTH enabled (prefer secret).                                             |
+| redis.auth.existingSecret                | string | `""`                | Name of existing Kubernetes Secret providing the password.                              |
+| redis.auth.existingSecretPasswordKey     | string | `password`          | Key inside the existing secret containing the password.                                 |
+| redis.image.repository                   | string | `redis`             | Container image repository.                                                             |
+| redis.image.tag                          | string | `8.2.2`             | Image tag / Redis version.                                                              |
+| redis.image.pullPolicy                   | string | `IfNotPresent`      | Image pull policy.                                                                      |
+| redis.resources.requests.cpu             | string | `""`                | Guaranteed minimum CPU.                                                                 |
+| redis.resources.requests.memory          | string | `""`                | Guaranteed minimum memory.                                                              |
+| redis.resources.limits.cpu               | string | `""`                | CPU limit.                                                                              |
+| redis.resources.limits.memory            | string | `""`                | Memory limit.                                                                           |
+| redis.storage.enabled                    | bool   | `true`              | Create PersistentVolumeClaim.                                                           |
+| redis.storage.storageClassName           | string | `microk8s-hostpath` | StorageClass for the PVC.                                                               |
+| redis.storage.accessModes                | list   | `[ReadWriteOnce]`   | PVC access modes.                                                                       |
+| redis.storage.size                       | string | `5Gi`               | Requested persistent volume size.                                                       |
+| redis.persistence.aof.enabled            | bool   | `true`              | Enable Append Only File persistence.                                                    |
+| redis.persistence.aof.fsync              | string | `everysec`          | AOF fsync policy (`always`, `everysec`, `no`). Necessary to migrate from bitnami Redis. |
+| redis.podSecurityContext.runAsUser       | int    | `999`               | UID for the container (non-root hardening).                                             |
+| redis.podSecurityContext.fsGroup         | int    | `999`               | FS group owning mounted volumes.                                                        |
+
+
+### Architecture modes
+
+#### Standalone mode (default)
+
+**Architecture**:
+
+* Single Redis pod
+* Simple deployment
+* Minimal resource overhead
+
+Use cases:
+
+* Single-node environments
+* Non-critical workloads
+
+Characteristics:
+
+* Resources: 1 Redis pod
+* Complexity: Low
+* Recovery time: ~30-60 seconds (Kubernetes reschedules pod on node failure)
+
+##### Configuration
+
+```yaml
+redis:
+  architecture: standalone
+```
+
+#### Replication mode
+
+Architecture:
+
+* 3 Redis pods (1 master + 2 replicas)
+* 3 Redis Sentinel pods (monitoring and automatic failover)
+* Automatic master promotion on failure
+
+Use cases:
+
+* Production deployments
+* Multi-node Kubernetes clusters
+* Critical workloads requiring high availability
+
+Characteristics:
+
+* Recovery time: ~5-10 seconds (Sentinel automatic failover)
+* Resources: 6 pods total (3 Redis + 3 Sentinel)
+
+##### Configuration
+
+```yaml
+redis:
+  architecture: replication
+  replicas: 3
+  sentinel:
+    replicas: 3
+    quorum: 2
+```
+
+##### Storage considerations
+
+For true high availability with pod rescheduling across nodes, you must use network-attached storage. Node-local storage (like `microk8s-hostpath`) prevents failed pods from rejoining the cluster on different nodes.
+This is the example of using redis in replication mode with NFS storage:
+
+```yaml
+redis:
+  architecture: replication
+  replicas: 3
+  storage:
+    enabled: true
+    storageClassName: nfs
+    accessModes:
+      - ReadWriteMany
+    size: 3Gi
+```
+
+!!!note
+    The `storageClassName` must point to a `StorageClass` that supports network-attached volumes with `ReadWriteMany` (or `ReadWriteOnce` with cross-node support). Examples: NFS, Ceph, EBS, GCP Persistent Disk, Azure Disk.
+
+EXAMPLE: For MicroK8s on Ubuntu, you can enable NFS this way:
+
+1. Enable NFS client on ALL nodes:
+    ```bash
+    sudo apt update
+    sudo apt install -y nfs-common
+    ```
+
+2. Enable NFS StorageClass:
+    ```bash
+    microk8s enable nfs
+    ```
+3. Verify StorageClass exists
+    ```bash
+   microk8s kubectl get storageclass nfs
+    ```
+
+The solution might differ depending on the platform and Kubernetes distribution.
+
+### Resource Requirements
+
+Redis memory limits depend on your data size and persistence strategy.
+
+**Quick sizing:**
+
+- Cache only: Set `redis.resources.limits.memory` to 1.5× expected data size
+- With persistence: Set to 2.5-3× expected data size
+
+**Examples:**
+```yaml
+redis:
+  limits:
+    memory: "4Gi"
+    cpu: "1000m"
+  requests:
+    memory: "1Gi"
+    cpu: "500m"
+```
+
+By default no resource limits our set. You can define them in the `values.yaml` file as shown above.
+
+### Use authentication for Redis
+
+By default, Redis authentication is disabled. To enable it, choose one of the following methods:
+
+#### Plain text password
+
+Set the password directly in `values.yaml`:
+
+```yaml
+redis:
+  auth:
+    enabled: true
+    password: "your_password_here"
+```
+
+#### Kubernetes Secret password
+
+To use a Kubernetes Secret for the Redis password, first create a secret with the desired password:
+
+```bash
+microk8s kubectl create secret generic prod-redis-secret -n <namespace> --from-literal=password="your_password_here"
+```
+
+It is advised to use strong randomized passwords (min. 32 characters).
+
+!!!note
+    Replace `<namespace>` with the appropriate namespace where SC4SNMP is deployed.
+    `--from-literal` key is `password` because it is the default value of `existingSecretPasswordKey` in `values.yaml`.
+    If you want to use a different key, you can specify it in the `values.yaml` file by modifying the `existingSecretPasswordKey` field.
+
+Then, modify the `values.yaml` file to reference this secret:
+
+```yaml
+redis:
+  auth:
+    enabled: true
+    existingSecret: "prod-redis-secret"
+```
+!!!warning
+    For smoother migration, it's better to create a new secret with the updated values and then update your configuration to reference this new secret, rather than modifying an existing secret in place.
+
+### Migration from Bitnami Redis
+
+The chart automatically detects and migrates data from existing Bitnami Redis deployments:
+
+1. Detects Bitnami PVC: `redis-data-<release>-redis-master-0`
+2. Reuses the PVC if found (preserves data)
+3. Init container fixes file permissions for compatibility
+4. If no existing PVC is found, creates a new one
+
+No manual intervention required — simply upgrade your deployment with the new chart.
+
+!!!note
+   Migration between Bitnami Redis and the new chart is possible only to `standalone` architecture mode. For using `replication` please [reinstall SC4SNMP](../sc4snmp-installation.md#reinstall-splunk-connect-for-snmp).

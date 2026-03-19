@@ -20,6 +20,8 @@ if os.path.isfile(args.path):
             wrong_key = True
             break
     if not wrong_key:
+        if value.startswith("bitnami/"):
+            value = value.replace("bitnami/", "bitnamilegacy/")
         print(value)
     else:
         print("")

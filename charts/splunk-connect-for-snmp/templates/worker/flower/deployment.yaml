@@ -41,6 +41,7 @@ spec:
             ]
           env:
             {{- include "environmental-variables" . | nindent 12 }}
+            {{ include "splunk-connect-for-snmp.redis-env" . | nindent 12 }}
           ports:
             - containerPort: 5555
           

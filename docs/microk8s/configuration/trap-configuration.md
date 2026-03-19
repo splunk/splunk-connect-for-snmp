@@ -89,6 +89,20 @@ The following is an example of an SNMPv3 trap:
 snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 '' 1.3.6.1.2.1.2.2.1.1.1
 ```
 
+### Engine ID Discovery
+If you are managing a large amount of traps agents it is possible to enable engine id discovery mode. The Engine ID Discovery feature automatically extracts the engine ID from each incoming SNMPv3 raw datagram and dynamically registers it with the SNMP engine, so the trap can be authenticated on the fly.
+The engine ID is only registered if the username matches a known user and stored in database.
+
+This feature can be enabled by setting in configuration file: 
+
+```yaml
+traps:
+  discoverEngineId: "true"  
+```
+
+!!! info
+    It is recommended to enable this feature only during the initial setup of the traps receiver. Once the engine IDs for all required devices in the network have been collected, disable the feature to prevent unwanted engine ID registration and to improve trap processing efficiency by eliminating the overhead of extracting the engine ID from every incoming message.
+
 ### Updating trap configuration
 If you need to update part of the traps configuration, you can do it by editing the `values.yaml` and then running the following command to restart the pod deployment:
 ```
@@ -104,15 +118,17 @@ microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-trap -n
 
 ### Define external gateway for traps
 
-If you use SC4SNMP on a single machine, configure `loadBalancerIP`.
-`loadBalancerIP` is the IP address in the metallb pool. 
+#### Using MetalLB LoadBalancer
+
+If you use SC4SNMP on a multinode setup, configure `loadBalancerIP`.
+`loadBalancerIP` should be an IP assigned from your MetalLB address pool in the same subnet as your cluster nodes can reach.
 See the following example:
 
 ```yaml
 traps:
   loadBalancerIP: 10.202.4.202
 ```
-If you have enabled the Ipv6 you need to pass IP addresses for both IPv4 and IPv6.
+If you have enabled IPv6 dual‑stack, provide both IPv4 and IPv6 addresses as a comma‑separated list:
 See the following example:
 
 ```yaml
@@ -120,7 +136,9 @@ traps:
   loadBalancerIP: 10.202.4.202,2001:0DB8:AC10:FE01:0000:0000:0000:0001
 ```
 
-If you want to use the SC4SNMP trap receiver in K8S cluster, configure `NodePort` instead. Use the following configuration:
+#### Using NodePort
+
+For single‑node clusters or simple setups without a load balancer, you can expose the traps receiver on a fixed port across all node IPs with `NodePort`:
 
 ```yaml
 traps:
@@ -130,15 +148,28 @@ traps:
     nodePort: 30000
 ```
 
-Using this method, the SNMP trap will always be forwarded to one of the trap receiver pods listening on port 30000 (like in the
-example above, you can configure to any other port). So, it does not matter that IP address of which node you use. 
-Adding nodePort will make it end up in the correct place everytime. 
+This way the trap receiver will be available on all node IPs on port 30000.
 
-A good practice is to create an IP floating address/Anycast pointing to the healthy nodes, so the traffic is forwarded in case of the
-failover. To do this, create an external LoadBalancer that balances the traffic between nodes.
+#### Using Cloud Load Balancer
+
+You can also deploy the traps receiver without MetalLB or NodePort, using Kubernetes Service annotations supported by your cloud platform.
+For example, on AWS EKS you can enable an AWS Network Load Balancer with annotations:
+
+```yaml
+traps:
+  service:
+    usemetallb: false
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: external
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+```
+
 
 ### Define number of traps server replica
+
 `replicaCount` defines that the number of replicas per trap container should be 2 times the number of nodes.
+
 ```yaml
 traps:
   #For production deployments the value should be at least 2x the number of nodes

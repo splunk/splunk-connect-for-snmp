@@ -45,7 +45,6 @@ class TestSanity:
             """search index="netops" sourcetype="sc4snmp:event" earliest=-5m"""
         )
         result_count, events_count = splunk_single_search(setup_splunk, search_string)
-
         assert result_count > 0
         assert events_count > 0
 

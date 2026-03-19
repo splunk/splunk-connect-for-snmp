@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "splunk-connect-for-snmp"
-version = "1.14.1"
+version = "1.14.2-beta.12"
 description = ""
 authors = ["omrozowicz-splunk <omrozowicz@splunk.com>"]
 license = "Apache-2.0"
@@ -31,9 +31,9 @@ opentelemetry-sdk = "^1.6.2"
 opentelemetry-instrumentation-celery = "*"
 opentelemetry-instrumentation-logging = "*"
 opentelemetry-exporter-jaeger-thrift = "^1.10.0"
-pyrate-limiter = "^2.10.0"
+pyrate-limiter = "^4.0.0"
 requests-cache = "^1.0.0"
-requests-ratelimiter = "^0.7.0"
+requests-ratelimiter = "^0.9.0"
 mongoengine = "^0.29.0"
 celery-redbeat = {git = "https://github.com/splunk/redbeat", branch = "main"}
 PyYAML = "^6.0"
@@ -42,15 +42,15 @@ wait-for-dep = {extras = ["redis"], git="https://github.com/omrozowicz-splunk/wa
 mongolock = "^1.3.4"
 pika = "^1.2.0"
 JSON-log-formatter ="^1.0.0"
-"ruamel.yaml" = "^0.18.0"
+"ruamel.yaml" = "^0.19.0"
 pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", branch = "main"}
 urllib3 = "^2.0.0"
-jsonschema = "4.24.0"
+jsonschema = "4.26.0"
 flower = "^2.0.1"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.0.0"
-pytest-cov = "^6.0.0"
+pytest = "^9.0.0"
+pytest-cov = "^7.0.0"
 mike = "^2.0.0"
 mkdocs = "^1.2.2"
 mkdocs-material = "^9.0.0"

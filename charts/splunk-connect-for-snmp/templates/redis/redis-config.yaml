@@ -1,0 +1,37 @@
+{{- if eq .Values.redis.architecture "standalone" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-redis-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-redis
+data:
+  redis.conf: |
+    # Data directory
+    dir /data
+
+    # Persistence - RDB
+    save 900 1
+    save 300 10
+    save 60 10000
+
+    # Persistence - AOF
+    {{- if .Values.redis.persistence.aof.enabled }}
+    appendonly yes
+    appendfsync {{ .Values.redis.persistence.aof.fsync }}
+    {{- else }}
+    appendonly no
+    {{- end }}
+
+    # Logging
+    loglevel notice
+
+    # Memory
+    maxmemory-policy noeviction
+
+    # Network
+    bind 0.0.0.0
+    protected-mode no
+    port 6379
+{{- end }}

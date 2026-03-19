@@ -32,8 +32,9 @@ with suppress(ImportError, OSError):
 import asyncio
 import os
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
+import pymongo
 import yaml
 from celery import Celery, chain
 from opentelemetry import trace
@@ -42,6 +43,7 @@ from pysnmp.carrier.asyncio.dgram import udp, udp6
 from pysnmp.entity import config, engine
 from pysnmp.entity.rfc3413 import ntfrcv
 
+from splunk_connect_for_snmp.common.collection_manager import EngineIdManager
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.tasks import trap
 from splunk_connect_for_snmp.splunk.tasks import prepare, send
@@ -50,12 +52,14 @@ provider = TracerProvider()
 trace.set_tracer_provider(provider)
 
 CONFIG_PATH = os.getenv("CONFIG_PATH", "/app/config/config.yaml")
+MONGO_URI = os.getenv("MONGO_URI")
 SECURITY_ENGINE_ID_LIST = os.getenv("SNMP_V3_SECURITY_ENGINE_ID", "80003a8c04").split(
     ","
 )
 INCLUDE_SECURITY_CONTEXT_ID = human_bool(
     os.getenv("INCLUDE_SECURITY_CONTEXT_ID", "false")
 )
+DISCOVER_ENGINE_ID = human_bool(os.getenv("DISCOVER_ENGINE_ID", "false"))
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 PYSNMP_DEBUG = os.getenv("PYSNMP_DEBUG", "")
@@ -96,8 +100,8 @@ if PYSNMP_DEBUG:
             debug.Debug(*enabled_debug_flags, options={"loggerName": logger})
         )
 
+engine_id_manager = None
 
-# //using rabbitmq as the message broker
 app = Celery("sc4snmp_traps")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
 
@@ -106,9 +110,12 @@ prepare_task_signature = prepare.s
 send_task_signature = send.s
 
 
-def decode_security_context(hexstr: bytes) -> str | None:
+def decode_security_context(
+    hexstr: bytes,
+) -> Tuple[str | None, str | None]:
     """
-    Decodes SNMPv3 security context from ASN.1 bytes and returns the engineID as a hex string.
+    Decodes SNMPv3 security context from ASN.1 bytes.
+    Returns (engineID hex string, USM userName) on success, or (None, None) on failure.
     Sometimes (for example in ERICSSON devices) the engineID is the only place where device IP is stored.
     """
     try:
@@ -118,7 +125,7 @@ def decode_security_context(hexstr: bytes) -> str | None:
             logger.warning(
                 "SNMP message version is not 3, skipping security context decoding."
             )
-            return None
+            return None, None
         msg_security_parameters_raw = decoded_message.getComponentByPosition(
             2
         ).asOctets()
@@ -127,12 +134,122 @@ def decode_security_context(hexstr: bytes) -> str | None:
         )
         usm_engine_id_obj = usm_message.getComponentByPosition(0)
         usm_engine_id_bytes = usm_engine_id_obj.asOctets()
-        return usm_engine_id_bytes.hex()
+        usm_username = usm_message.getComponentByPosition(3).asOctets().decode("utf-8")
+        return usm_engine_id_bytes.hex(), usm_username
     except PyAsn1Error as e:
         logger.error(f"ASN.1 decoding error: {e}")
     except Exception as e:
         logger.error(f"Error decoding SNMPv3 engineID: {e}")
-    return None
+    return None, None
+
+
+def _sync_engine_ids_with_mongo():
+    """
+    Bidirectional sync between SECURITY_ENGINE_ID_LIST taken from configuration file and MongoDB engine_id_records collection.
+    Returns the merged set of all known engine IDs.
+    """
+    env_ids = {eid.strip() for eid in SECURITY_ENGINE_ID_LIST if (eid or "").strip()}
+
+    for eid in env_ids:
+        engine_id_manager.save_engine_id("config", eid)
+
+    mongo_engine_ids = engine_id_manager.get_unique_engine_ids()
+    merged = env_ids | mongo_engine_ids
+
+    logger.info(
+        "Engine ID sync: %d from env var, %d from MongoDB, %d total unique",
+        len(env_ids),
+        len(mongo_engine_ids),
+        len(merged),
+    )
+    return merged
+
+
+# Cache of engineID read from raw datagram (before pysnmp parsing).
+# Key: normalized (host, port); value: engineID hex string.
+_engine_id_from_raw_message: Dict[Tuple[Any, ...], str] = {}
+
+# Dynamic V3 user registration: when a new engineID is seen in a trap, add it for all configured users
+# so pysnmp can authenticate the same message. Set in main() after loading config.
+_snmp_engine_for_discovery: Any = None
+_v3_user_configs_for_discovery: list[Dict[str, Any]] = []
+_added_engine_ids: set[str] = set()
+
+
+def _normalize_transport_address(transport_address: Any) -> Tuple[Any, ...]:
+    """Normalize transport address to a hashable tuple for use as cache key."""
+    if isinstance(transport_address, (list, tuple)) and len(transport_address) >= 2:
+        host, port = transport_address[0], transport_address[1]
+        if isinstance(host, str) and "%" in host:
+            host = host.split("%")[0]
+        return (host, port)
+    return (transport_address,)
+
+
+def get_engine_id_from_raw_message(transport_address: Any) -> str | None:
+    """Return engineID previously extracted from raw datagram for this address, if any."""
+    key = _normalize_transport_address(transport_address)
+    return _engine_id_from_raw_message.get(key)
+
+
+def _add_v3_user_for_new_engine_id(engine_id: str) -> bool:
+    """
+    If engine_id is new, add it as securityEngineId for all configured V3 users so the
+    incoming trap can be authenticated. Returns True if the engine_id was newly added.
+    """
+    engine_id = (engine_id or "").strip().lower()
+    if not engine_id or engine_id in _added_engine_ids:
+        return False
+    if _snmp_engine_for_discovery is None or not _v3_user_configs_for_discovery:
+        return False
+    for uc in _v3_user_configs_for_discovery:
+        config.addV3User(
+            _snmp_engine_for_discovery,
+            userName=uc["userName"],
+            authProtocol=uc["authProtocol"],
+            authKey=uc["authKey"],
+            privProtocol=uc["privProtocol"],
+            privKey=uc["privKey"],
+            securityEngineId=v2c.OctetString(hexValue=engine_id),
+        )
+    _added_engine_ids.add(engine_id)
+    logger.info(
+        "Added securityEngineId %s for all V3 users so trap can be processed",
+        engine_id,
+    )
+    return True
+
+
+class _EngineIDCaptureUdpTransport(udp.UdpAsyncioTransport):
+    """UDP transport that extracts SNMPv3 engineID from raw datagram and adds it as V3 user before pysnmp parses."""
+
+    def datagram_received(self, datagram: bytes, transport_address: Any) -> None:
+        if DISCOVER_ENGINE_ID:
+            engine_id, username = decode_security_context(datagram)
+            if engine_id:
+                key = _normalize_transport_address(transport_address)
+                _engine_id_from_raw_message[key] = engine_id
+                if username and any(
+                    uc["userName"] == username for uc in _v3_user_configs_for_discovery
+                ):
+                    _add_v3_user_for_new_engine_id(engine_id)
+        super().datagram_received(datagram, transport_address)
+
+
+class _EngineIDCaptureUdp6Transport(udp6.Udp6AsyncioTransport):
+    """UDP6 transport that extracts SNMPv3 engineID from raw datagram and adds it as V3 user before pysnmp parses."""
+
+    def datagram_received(self, datagram: bytes, transport_address: Any) -> None:
+        if DISCOVER_ENGINE_ID:
+            engine_id, username = decode_security_context(datagram)
+            if engine_id:
+                key = _normalize_transport_address(transport_address)
+                _engine_id_from_raw_message[key] = engine_id
+                if username and any(
+                    uc["userName"] == username for uc in _v3_user_configs_for_discovery
+                ):
+                    _add_v3_user_for_new_engine_id(engine_id)
+        super().datagram_received(datagram, transport_address)
 
 
 # Callback function for receiving notifications
@@ -157,10 +274,12 @@ def cb_fun(
         data.append((name.prettyPrint(), val.prettyPrint()))
 
     work = {"data": data, "host": device_ip}
-    if INCLUDE_SECURITY_CONTEXT_ID:
-        context_engine_id = decode_security_context(exec_context.get("wholeMsg"))
-        if context_engine_id:
-            work["fields"] = {"context_engine_id": context_engine_id}
+    decoded_engine_id, _ = decode_security_context(exec_context.get("wholeMsg"))
+    if decoded_engine_id:
+        if engine_id_manager is not None:
+            engine_id_manager.save_engine_id(device_ip, decoded_engine_id)
+        if INCLUDE_SECURITY_CONTEXT_ID:
+            work["fields"] = {"context_engine_id": decoded_engine_id}
     my_chain = chain(
         trap_task_signature(work).set(queue="traps").set(priority=5),
         prepare_task_signature().set(queue="send").set(priority=1),
@@ -171,10 +290,17 @@ def cb_fun(
 
 # Callback function for logging traps authentication errors
 def authentication_observer_cb_fun(snmp_engine, execpoint, variables, contexts):
-    logger.error(
-        f"Security Model failure for device {variables.get('transportAddress', None)}: "
+    transport_address = variables.get("transportAddress", None)
+    engine_id = (
+        get_engine_id_from_raw_message(transport_address) if transport_address else None
+    )
+    msg = (
+        f"Security Model failure for device {transport_address}: "
         f"{variables.get('statusInformation', {}).get('errorIndication', None)}"
     )
+    if engine_id:
+        msg += f" (security_engine_id from incoming message: {engine_id})"
+    logger.error(msg)
 
 
 app.autodiscover_tasks(
@@ -203,9 +329,21 @@ def add_communities(config_base, snmp_engine):
 
 
 def main():
+    global engine_id_manager
+
     # Get the event loop for this thread
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
+
+    if MONGO_URI:
+        mongo_client = pymongo.MongoClient(MONGO_URI)
+        engine_id_manager = EngineIdManager(mongo_client)
+        all_engine_ids = _sync_engine_ids_with_mongo()
+    else:
+        logger.warning("MONGO_URI is not set; engine ID records will not be persisted.")
+        all_engine_ids = {
+            eid.strip() for eid in SECURITY_ENGINE_ID_LIST if (eid or "").strip()
+        }
 
     # Create SNMP engine with autogenernated engineID and pre-bound
     # to socket transport dispatcher
@@ -220,19 +358,19 @@ def main():
         cbCtx=observer_context,
     )
 
-    # UDP socket over IPv6 listens also for IPv4
+    # UDP socket over IPv6 listens also for IPv4 (with engineID capture from raw datagram before parse)
     if IPv6_ENABLED:
         config.addTransport(
             snmp_engine,
             udp6.domainName,
-            udp6.Udp6Transport().openServerMode(("::", 2162)),
+            _EngineIDCaptureUdp6Transport().openServerMode(("::", 2162)),
         )
     else:
-        # UDP over IPv4, first listening interface/port
+        # UDP over IPv4, first listening interface/port (with engineID capture from raw datagram before parse)
         config.addTransport(
             snmp_engine,
             udp.domainName,
-            udp.UdpTransport().openServerMode(("0.0.0.0", 2162)),
+            _EngineIDCaptureUdpTransport().openServerMode(("0.0.0.0", 2162)),
         )
 
     with open(CONFIG_PATH, encoding="utf-8") as file:
@@ -241,14 +379,21 @@ def main():
     add_communities(config_base, snmp_engine)
 
     if "usernameSecrets" in config_base:
+        _added_engine_ids.update(eid.lower() for eid in all_engine_ids)
+        v3_user_configs: list[Dict[str, Any]] = []
+
         for secret in config_base["usernameSecrets"]:
             location = os.path.join("secrets/snmpv3", secret)
             username = get_secret_value(
                 location, "userName", required=True, default=None
             )
 
-            auth_key = get_secret_value(location, "authKey", required=False)
-            priv_key = get_secret_value(location, "privKey", required=False)
+            auth_key = get_secret_value(
+                location, "authKey", required=False, default=None
+            )
+            priv_key = get_secret_value(
+                location, "privKey", required=False, default=None
+            )
 
             auth_protocol = get_secret_value(location, "authProtocol", required=False)
             logger.debug(f"authProtocol: {auth_protocol}")
@@ -260,7 +405,17 @@ def main():
             logger.debug(f"privProtocol: {priv_protocol}")
             priv_protocol = PrivProtocolMap.get(priv_protocol.upper(), "NONE")
 
-            for security_engine_id in SECURITY_ENGINE_ID_LIST:
+            v3_user_configs.append(
+                {
+                    "userName": username,
+                    "authProtocol": auth_protocol,
+                    "authKey": auth_key,
+                    "privProtocol": priv_protocol,
+                    "privKey": priv_key,
+                }
+            )
+
+            for security_engine_id in all_engine_ids:
                 config.addV3User(
                     snmp_engine,
                     userName=username,
@@ -271,9 +426,14 @@ def main():
                     securityEngineId=v2c.OctetString(hexValue=security_engine_id),
                 )
                 logger.debug(
-                    f"V3 users: {username} auth {auth_protocol} authkey {len(auth_key)*'*'} privprotocol {priv_protocol} "
-                    f"privkey {len(priv_key)*'*'} securityEngineId {len(security_engine_id)*'*'}"
+                    f"V3 users: {username} auth {auth_protocol} authkey {len(str(auth_key))*'*'} privprotocol {priv_protocol} "
+                    f"privkey {len(str(priv_key))*'*'} securityEngineId {len(security_engine_id)*'*'}"
                 )
+
+        # Allow transport to add newly seen engineIDs as V3 users so traps are processed successfully
+        global _snmp_engine_for_discovery, _v3_user_configs_for_discovery
+        _snmp_engine_for_discovery = snmp_engine
+        _v3_user_configs_for_discovery = v3_user_configs
 
     # Register SNMP Application at the SNMP engine
     ntfrcv.NotificationReceiver(snmp_engine, cb_fun)

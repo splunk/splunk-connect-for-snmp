@@ -75,12 +75,22 @@ redis:
     storageClass: "openebs-hostpath"
 ```
 
-Install the DNS server for microk8s and configure the forwarding DNS servers. Replace the IP addressed below (opendns) with
-the allowed values for your network: 
-
+MicroK8s comes with a preinstalled CoreDNS addon. You can check if it is installed and running with:
+```bash
+microk8s kubectl get pods -n kube-system
+```
+If the CoreDNS pod is not listed, enable it by running the following command (replace the IP addresses with those allowed on your network):
 ```bash
 microk8s enable dns:208.67.222.222,208.67.220.220
 microk8s status --wait-ready
+```
+If the CoreDNS addon is already enabled and you want to change its settings, you can either disable and re-enable it:
+```bash
+microk8s disable dns
+```
+Or edit the CoreDNS configuration directly:
+```bash
+microk8s kubectl -n kube-system edit configmap/coredns
 ```
 
 ## Install Metallb

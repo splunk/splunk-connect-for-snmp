@@ -5,7 +5,8 @@ kind: PodDisruptionBudget
 metadata:
   name: release-name-splunk-connect-for-snmp-trap
   labels:
-    app.kubernetes.io/name: splunk-connect-for-snmp-trap
+    app.kubernetes.io/name: splunk-connect-for-snmp
+    app.kubernetes.io/component: trap
     app.kubernetes.io/instance: release-name
     helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
     app.kubernetes.io/version: "CURRENT-VERSION"
@@ -14,5 +15,6 @@ spec:
   minAvailable: 80%
   selector:
     matchLabels:
-        app.kubernetes.io/name: splunk-connect-for-snmp-trap
+        app.kubernetes.io/name: splunk-connect-for-snmp
+        app.kubernetes.io/component: trap
         app.kubernetes.io/instance: release-name

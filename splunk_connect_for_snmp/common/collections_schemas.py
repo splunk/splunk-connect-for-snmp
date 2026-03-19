@@ -122,3 +122,18 @@ group_schema = {
 
 def get_all_group_schemas():
     return [group_schema]
+
+
+engine_id_record_schema = {
+    "type": "object",
+    "properties": {
+        "security_engine_id": {"type": "string", "pattern": "^[0-9a-fA-F]+$"},
+        "host": {"type": "string"},
+    },
+    "required": ["security_engine_id", "host"],
+    "additionalProperties": False,
+}
+
+
+def get_engine_id_record_schema():
+    return engine_id_record_schema

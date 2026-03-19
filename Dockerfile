@@ -3,8 +3,8 @@ FROM python:3.10-alpine AS base
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
     PYTHONUNBUFFERED=1
-RUN apk add -U git sqlite-dev
-RUN pip install --upgrade setuptools pip
+RUN apk add -U git sqlite-dev && apk upgrade zlib
+RUN pip install --upgrade setuptools pip wheel
 RUN mkdir /app
 WORKDIR /app
 
@@ -23,8 +23,12 @@ RUN poetry config virtualenvs.in-project true ;\
 FROM base AS final
 
 RUN mkdir /.pysnmp && chown 10001:10001 /.pysnmp
+COPY docker_scripts/manage_secrets.py /app/secrets/
+RUN chown 10001:10001 /app/secrets/
 RUN chown 10001:10001 /tmp
-USER 10001:10001
 COPY --from=builder /app/.venv /app/.venv
-COPY entrypoint.sh ./
-ENTRYPOINT ["./entrypoint.sh"]
+COPY entrypoint.sh /app/entrypoint.sh
+COPY construct-redis-url.sh /app/construct-redis-url.sh
+RUN chmod +x /app/construct-redis-url.sh /app/entrypoint.sh
+USER 10001:10001
+ENTRYPOINT ["/app/entrypoint.sh"]

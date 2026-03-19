@@ -2,6 +2,36 @@
 
 ## Unreleased
 
+### Changed
+
+### Fixed
+
+## [1.15.0]
+
+### Changed
+- **Kubernetes Labels Unification**: Standardized labels across all SC4SNMP components
+  - Applied standard Kubernetes label scheme: `app.kubernetes.io/name`, `app.kubernetes.io/instance`, `app.kubernetes.io/component`, `app.kubernetes.io/managed-by`
+  - Enables consistent pod filtering and querying across SC4SNMP components (trap, scheduler, worker-poller, worker-sender, worker-trap, redis, mongodb)
+  - Subcharts (mibserver, mongodb) maintain their own chart names
+- add support for providing token as a secret in both kubernetes and docker compose deployments, add support for vault in kubernetes
+- add support for local MIB files in docker compose deployment
+- add support for Redis HA with Sentinel integration
+- **Redis Migration**: Replaced Bitnami Redis chart with custom Kubernetes manifests
+  - Updated to official Redis image version 8.2.2 (addresses security vulnerabilities)
+  - Added authentication support (password or Kubernetes Secret)
+  - Implemented automatic data migration from Bitnami deployments (PVC reuse)
+  - Enabled AOF persistence by default for data durability
+- add CounterBasedGauge64 and ZeroBasedCounter64 as metrics types
+- manage snmpv3 secrets for docker compose from docker entrypoint
+- **Engine Id discovery**: Add engine id discovery for traps
+  - Discover engine id from incoming traps
+  - Store engine id in mongoDB
+
+### Fixed
+- fix problem with service rendering when `traps.service.usemetallb` is set to false
+- fix setting snmpv3 to be able to set secret without privProtocol and privKey
+- fix add error handling for inventory.csv misconfigured as dir
+
 ## [1.14.1]
 - update mongodb volumePermission image repository to `bitnamileagcy`
 

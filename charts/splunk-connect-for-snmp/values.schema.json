@@ -148,7 +148,6 @@
       "additionalProperties": false,
       "required": [
         "host",
-        "token",
         "protocol",
         "port"
       ],
@@ -166,7 +165,28 @@
           "type": "string"
         },
         "token": {
-          "type": "string"
+          "type": "string",
+          "description": "Plaintext HEC token. Omit when using tokenSecretRef."
+        },
+        "tokenSecretRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Reference to an existing secret containing the HEC token (alternative to plaintext token).",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the existing Kubernetes secret."
+            },
+            "key": {
+              "type": "string",
+              "description": "Key within the secret that holds the HEC token.",
+              "default": "hec_token"
+            }
+          }
+        },
+        "tokenFilePath": {
+          "type": "string",
+          "description": "Path to file containing HEC token (e.g. /vault/secrets/splunk-hec-token). When set, SPLUNK_HEC_TOKEN_FILE is used and SPLUNK_HEC_TOKEN is not set from a Secret."
         },
         "insecureSSL": {
           "type": "string"
@@ -393,6 +413,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "podAnnotations": {
+              "type": "object",
+              "description": "Annotations applied only to poller pods (e.g. for Vault injector)."
+            },
             "replicaCount": {
               "type": "integer"
             },
@@ -456,6 +480,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "podAnnotations": {
+              "type": "object",
+              "description": "Annotations applied only to trap worker pods (e.g. for Vault injector)."
+            },
             "replicaCount": {
               "type": "integer"
             },
@@ -534,6 +562,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "podAnnotations": {
+              "type": "object",
+              "description": "Annotations applied only to sender pods (e.g. Vault injector for HEC token)."
+            },
             "replicaCount": {
               "type": "integer"
             },
@@ -668,6 +700,9 @@
         },
         "nodeSelector": {
           "type": "object"
+        },
+        "podAnnotations": {
+          "type": "object"
         }
       }
     },
@@ -728,6 +763,9 @@
         "nodeSelector": {
           "type": "object"
         },
+        "podAnnotations": {
+          "type": "object"
+        },
         "tolerations": {
           "type": "array"
         }
@@ -750,6 +788,9 @@
           "type": ["string", "boolean"]
         },
         "includeSecurityContextId": {
+          "type": ["string", "boolean"]
+        },
+        "discoverEngineId": {
           "type": ["string", "boolean"]
         },
         "communities": {

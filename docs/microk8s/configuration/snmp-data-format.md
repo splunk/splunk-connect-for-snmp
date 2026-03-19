@@ -5,12 +5,13 @@ which change dynamically, while textual fields are helpful context to understand
 
 SC4SNMP classifies the data element as a metric when its type is one of the following:
 
-- `Unsigned`
-- `Counter`
+- `Unsigned32`, `Unsigned64`
+- `Counter32`, `Counter64`
 - `TimeTicks`
-- `Gauge`
-- `Integer`
-
+- `Gauge32`, `Gauge64`
+- `Integer`, `Integer32`
+- `CounterBasedGauge64`
+- `ZeroBasedCounter64`
 Every other type is interpreted as a field value.
 
 Sometimes, the MIB file indicates a field as an `INTEGER`, but there is also some mapping defined. See the following`IF-MIB.ifOperStatus` example:

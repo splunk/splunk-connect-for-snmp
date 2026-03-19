@@ -26,7 +26,7 @@ with suppress(ImportError, OSError):
 
 import json
 import os
-from typing import Union
+from typing import Optional, Union
 from urllib.parse import urlunsplit
 
 from celery import Task, shared_task
@@ -69,8 +69,6 @@ SPLUNK_HEC_URI = urlunsplit(
     )
 )
 
-
-SPLUNK_HEC_TOKEN = os.getenv("SPLUNK_HEC_TOKEN", None)
 SPLUNK_HEC_INDEX_EVENTS = os.getenv("SPLUNK_HEC_INDEX_EVENTS", "netops")
 SPLUNK_HEC_INDEX_METRICS = os.getenv("SPLUNK_HEC_INDEX_METRICS", "netmetrics")
 SPLUNK_SOURCETYPE_TRAPS = os.getenv("SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")
@@ -91,6 +89,27 @@ SCIENTIFIC_VALUE = re.compile(r"^[+-]?\d+(\.\d+)?[eE][+-]?\d+$")
 
 logger = get_task_logger(__name__)
 
+
+def _read_hec_token() -> Optional[str]:
+    """Read token from SPLUNK_HEC_TOKEN_FILE if set and readable, else from SPLUNK_HEC_TOKEN env."""
+    token_file = os.getenv("SPLUNK_HEC_TOKEN_FILE")
+    if token_file and os.path.isfile(token_file):
+        try:
+            with open(token_file, encoding="utf-8") as f:
+                token = f.read().strip()
+                if token:
+                    return token
+                logger.warning(
+                    "SPLUNK_HEC_TOKEN_FILE is set and readable but the file is empty; "
+                    "falling back to SPLUNK_HEC_TOKEN env."
+                )
+        except OSError:
+            pass
+    return os.getenv("SPLUNK_HEC_TOKEN", None)
+
+
+SPLUNK_HEC_TOKEN = _read_hec_token()
+
 # Token is only appropriate if we are working direct with Splunk
 if SPLUNK_HEC_TOKEN:
     SPLUNK_HEC_HEADERS = {
@@ -99,6 +118,10 @@ if SPLUNK_HEC_TOKEN:
         "__splunk_app_version": SC4SNMP_VERSION,
     }
 else:
+    logger.warning(
+        "SPLUNK_HEC_TOKEN is empty; data will not be sent to Splunk HEC. "
+        "Set SPLUNK_HEC_TOKEN or SPLUNK_HEC_TOKEN_FILE."
+    )
     SPLUNK_HEC_HEADERS = {}
 SPLUNK_HEC_CHUNK_SIZE = int(os.getenv("SPLUNK_HEC_CHUNK_SIZE", "50"))
 

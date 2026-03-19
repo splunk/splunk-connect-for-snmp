@@ -1,10 +1,18 @@
 #!/usr/bin/env sh
 set -e
 . /app/.venv/bin/activate
+. /app/construct-redis-url.sh
 LOG_LEVEL=${LOG_LEVEL:=INFO}
 WORKER_CONCURRENCY=${WORKER_CONCURRENCY:=4}
-wait-for-dep "${CELERY_BROKER_URL}" "${REDIS_URL}" "${MONGO_URI}" "${MIB_INDEX}"
 
+wait-for-dep ${REDIS_DEPENDENCIES} "${MONGO_URI}" "${MIB_INDEX}"
+
+ENABLE_TRAPS_SECRETS=${ENABLE_TRAPS_SECRETS:=false}
+ENABLE_WORKER_POLLER_SECRETS=${ENABLE_WORKER_POLLER_SECRETS:=false}
+wait-for-dep "${REDIS_DEPENDENCIES}" "${MONGO_URI}" "${MIB_INDEX}"
+if [ "$ENABLE_TRAPS_SECRETS" = "true" ] || [ "$ENABLE_WORKER_POLLER_SECRETS" = "true" ]; then
+    python /app/secrets/manage_secrets.py
+fi
 case $1 in
 
 inventory)

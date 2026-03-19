@@ -38,7 +38,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-CURRENT_SCHEMA_VERSION = 5
+CURRENT_SCHEMA_VERSION = 6
 MONGO_URI = os.getenv("MONGO_URI")
 
 
@@ -110,6 +110,15 @@ def migrate_to_version_5(mongo_client, _):
     logger.info("Migrating database schema to version 5")
     inventory_collection = mongo_client.sc4snmp.inventory
     inventory_collection.update_many({}, {"$set": {"group": None}})
+
+
+def migrate_to_version_6(mongo_client, _):
+    logger.info("Migrating database schema to version 6")
+    engine_id_records = mongo_client.sc4snmp.engine_id_records
+    engine_id_records.create_index(
+        "security_engine_id",
+        unique=True,
+    )
 
 
 def transform_mongodb_periodic_to_redbeat(schedule_collection, task_manager):

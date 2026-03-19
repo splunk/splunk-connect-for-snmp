@@ -14,22 +14,6 @@
 {{- end }}
 {{- end }}
 
-{{- define "splunk-connect-for-snmp.celery_url" -}}
-{{- if and ( eq .Values.redis.architecture "replication" ) .Values.redis.sentinel.enabled  }}
-{{- printf "redis://%s-redis:6379/0" .Release.Name }}
-{{- else }}
-{{- printf "redis://%s-redis-master:6379/0" .Release.Name }}
-{{- end }}
-{{- end }}
-
-{{- define "splunk-connect-for-snmp.redis_url" -}}
-{{- if and ( eq .Values.redis.architecture "replication" ) .Values.redis.sentinel.enabled  }}
-{{- printf "redis://%s-redis:6379/1" .Release.Name }}
-{{- else }}
-{{- printf "redis://%s-redis-master:6379/1" .Release.Name }}
-{{- end }}
-{{- end }}
-
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
@@ -52,7 +36,7 @@ If release name contains chart name it will be used as a full name.
 Selector labels
 */}}
 {{- define "splunk-connect-for-snmp.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "splunk-connect-for-snmp.name" . }}
+app.kubernetes.io/name: {{ .Chart.Name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
@@ -89,12 +73,45 @@ Create the name of the service account to use
 {{- default (printf "%s" .Chart.Name ) .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
+{{/*
+Name of the secret containing the Splunk HEC token. Uses tokenSecretRef.name
+when set, otherwise the chart-created secret (requires splunk.token to be set).
+*/}}
+{{- define "splunk-connect-for-snmp.splunkHecTokenSecretName" -}}
+{{- if .Values.splunk.tokenSecretRef.name -}}
+{{- .Values.splunk.tokenSecretRef.name -}}
+{{- else -}}
+{{- printf "%s-splunk" (include "splunk-connect-for-snmp.name" .) -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Key within the secret for the Splunk HEC token. Uses tokenSecretRef.key when
+tokenSecretRef.name is set, otherwise "hec_token".
+*/}}
+{{- define "splunk-connect-for-snmp.splunkHecTokenSecretKey" -}}
+{{- if .Values.splunk.tokenSecretRef.name -}}
+{{- .Values.splunk.tokenSecretRef.key | default "hec_token" -}}
+{{- else -}}
+hec_token
+{{- end -}}
+{{- end }}
+
+{{/*
+Whether the HEC token is provided via a file (tokenFilePath set).
+When true, set SPLUNK_HEC_TOKEN_FILE and do not set SPLUNK_HEC_TOKEN from secretKeyRef.
+*/}}
+{{- define "splunk-connect-for-snmp.splunkHecTokenFromFile" -}}
+{{- if .Values.splunk.tokenFilePath -}}
+true
+{{- end -}}
+{{- end }}
 
 {{/*
 Whether enable traps
 */}}
 {{- define "splunk-connect-for-snmp.traps.enable" -}}
-{{- if or (and (eq .Values.traps.service.type "LoadBalancer") .Values.traps.loadBalancerIP ) (and (eq .Values.traps.service.type "NodePort") .Values.traps.service.nodePort) }}
+{{- if or (and (eq .Values.traps.service.type "LoadBalancer") .Values.traps.loadBalancerIP ) (and (eq .Values.traps.service.type "NodePort") .Values.traps.service.nodePort ) ( not .Values.traps.service.usemetallb) }}
 {{- printf "true" }}
 {{- else }}
 {{- printf "false" }}
@@ -111,3 +128,62 @@ Whether enable polling
 {{- printf "false" }}
 {{- end -}}
 {{- end }}
+
+{{- /*
+Generate Redis environment variables for application pods
+*/ -}}
+{{- define "splunk-connect-for-snmp.redis-env" -}}
+{{- if eq .Values.redis.architecture "replication" -}}
+- name: REDIS_MODE
+  value: "replication"
+- name: REDIS_SENTINEL_SERVICE
+  value: {{ .Release.Name }}-redis-sentinel
+- name: REDIS_HEADLESS_SERVICE
+  value: {{ .Release.Name }}-redis-headless
+- name: NAMESPACE
+  value: {{ .Release.Namespace }}
+- name: REDIS_SENTINEL_REPLICAS
+  value: {{ .Values.redis.sentinel.replicas | quote }}
+- name: REDIS_SENTINEL_PORT
+  value: "26379"
+- name: REDIS_MASTER_NAME
+  value: mymaster
+{{- else -}}
+- name: REDIS_MODE
+  value: "standalone"
+- name: REDIS_HOST
+  value: {{ .Release.Name }}-redis
+- name: REDIS_PORT
+  value: "6379"
+{{- end }}
+- name: REDIS_DB
+  value: "1"
+- name: CELERY_DB
+  value: "0"
+{{- if .Values.redis.auth.enabled }}
+- name: REDIS_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      {{- if .Values.redis.auth.existingSecret }}
+      name: {{ .Values.redis.auth.existingSecret }}
+      key: {{ .Values.redis.auth.existingSecretPasswordKey | default "password" }}
+      {{- else }}
+      name: {{ .Release.Name }}-redis-secret
+      key: password
+      {{- end }}
+{{- end -}}
+{{- end -}}
+
+{{- /*
+Generate Redis environment variables for application pods
+*/ -}}
+{{- define "splunk-connect-for-snmp.redis-annotations" -}}
+{{- if eq .Values.redis.architecture "replication" -}}
+checksum/redis-config: {{ include (print $.Template.BasePath "/redis/redis-ha-config.yaml") . | sha256sum }}
+{{- else -}}
+checksum/redis-config: {{ include (print $.Template.BasePath "/redis/redis-config.yaml") . | sha256sum }}
+{{- end -}}
+{{- if .Values.redis.auth.enabled }}
+checksum/redis-secret: {{ include (print $.Template.BasePath "/redis/redis-secret.yaml") . | sha256sum }}
+{{- end -}}
+{{- end -}}

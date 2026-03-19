@@ -118,9 +118,18 @@ class InventoryProcessor:
             logger.info("Loading inventory from inventory_ui collection")
             ir_reader = list(self.inventory_ui_collection.find({}, {"_id": 0}))
         else:
-            with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
-                logger.info(f"Loading inventory from {INVENTORY_PATH}")
-                ir_reader = list(DictReader(csv_file))
+            try:
+                with open(INVENTORY_PATH, encoding="utf-8") as csv_file:
+                    logger.info(f"Loading inventory from {INVENTORY_PATH}")
+                    ir_reader = list(DictReader(csv_file))
+
+            except IsADirectoryError:
+                logger.error(
+                    f"Inventory file {INVENTORY_PATH} not correctly created in the deployment.",
+                    exc_info=True,
+                )
+                return [], {}
+
         for inventory_line in ir_reader:
             self.process_line(inventory_line)
         for source_record in self.single_hosts:

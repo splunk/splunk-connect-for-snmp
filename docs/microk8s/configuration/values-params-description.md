@@ -28,15 +28,19 @@ Detailed documentation about configuring UI can be found in [Enable GUI](../gui/
 
 ## Splunk section
 
+For the full list of Splunk options and how to use a Kubernetes Secret or a file (e.g. Vault) for the HEC token, see [Splunk configuration](splunk-configuration.md).
+
 | Variable                   | Description                                                                 | Default                                |
 |----------------------------|-----------------------------------------------------------------------------|----------------------------------------|
 | `enabled`                  | Enables sending data to Splunk                                              | `true`                                 |
 | `protocol`                 | The protocol of the HEC endpoint: `https` or `http`                         | `https`                                |
 | `port`                     | The port of the HEC endpoint                                                | `8088`                                 |
 | `host`                     | IP address or a domain name of a Splunk instance                            |                                        |
-| `path`                     | URN to Splunk collector                                                     | `/services/collector`                  | 
-| `token`                    | Splunk HTTP Event Collector token                                           | `00000000-0000-0000-0000-000000000000` |
-| `insecureSSL`              | Checks for the certificate of the HEC endpoint when sending data over HTTPS | `false`                                |
+| `path`                     | URN to Splunk collector                                                     | `/services/collector`                  |
+| `token`                    | HEC token (plaintext). Omit when using `tokenSecretRef` or `tokenFilePath`.  | `00000000-0000-0000-0000-000000000000` |
+| `tokenSecretRef`           | Reference to an existing Secret for the HEC token. See [Splunk configuration](splunk-configuration.md#using-a-kubernetes-secret-for-the-hec-token). | `name: ""`, `key: "hec_token"` |
+| `tokenFilePath`            | Path to a file containing the HEC token (e.g. Vault injector). Set only on sender. Use `worker.sender.podAnnotations` for injector annotations. See [Splunk configuration](splunk-configuration.md#token-from-file-eg-vault-injector). | `""` |
+| `insecureSSL`              | Skip certificate verification for the HEC endpoint when using HTTPS          | `false`                                |
 | `sourcetypeTraps`          | Source type for trap events                                                 | `sc4snmp:traps`                        |
 | `sourcetypePollingEvents`  | Source type for non-metric polling event                                    | `sc4snmp:event`                        |
 | `sourcetypePollingMetrics` | Source type for metric polling event                                        | `sc4snmp:metric`                       |
@@ -46,6 +50,12 @@ Detailed documentation about configuring UI can be found in [Enable GUI](../gui/
 ## Sim section
 
 Detailed documentation about configuring sim can be found in [Splunk Infrastructure Monitoring](sim-configuration.md).
+
+!!!warning 
+  The Splunk Observability Cloud integration (sim) uses the Splunk OpenTelemetry Collector as an additional component in our pipeline. In this setup, the collector transforms metrics received via Splunk HEC into the SignalFx format for ingestion into Splunk Observability Cloud.
+  Because this path is primarily a transformation layer rather than a native O11y instrumentation, the resulting metrics may not fully match Splunk Observability Cloud’s data model, naming conventions, or recommended dimensions.
+  We recommend validating output carefully in a controlled environment before enabling sim.enabled: true broadly, and adjusting SNMP profiles or transformation rules to ensure consistency.
+
 
 | Variable                                        | Description                                                                                                                     | Default |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|---------|
