@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../../configuration/coredns-configuration/">
+        <link rel="prev" href="../deployment-configuration/">
       
       
-        <link rel="next" href="../offline-sck/">
+        <link rel="next" href="../values-params-description/">
       
       
         
@@ -23,7 +23,7 @@
     
     
       
-        <title>Install Microk8s - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Splunk configuration - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#offline-microk8s-installation-issues" class="md-skip">
+        <a href="#splunk-configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Install Microk8s
+              Splunk configuration
             
           </span>
         </div>
@@ -976,18 +976,20 @@
                 
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" checked>
         
           
           <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
@@ -1008,7 +1010,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1026,7 +1028,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/deployment-configuration/" class="md-nav__link">
+      <a href="../deployment-configuration/" class="md-nav__link">
         
   
   
@@ -1051,10 +1053,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../configuration/splunk-configuration/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Splunk configuration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1070,6 +1099,59 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#splunk-section-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Splunk section (values)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-a-kubernetes-secret-for-the-hec-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using a Kubernetes secret for the HEC token
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#token-from-file-eg-vault-injector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Token from file (e.g. Vault injector)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1082,7 +1164,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/values-params-description/" class="md-nav__link">
+      <a href="../values-params-description/" class="md-nav__link">
         
   
   
@@ -1157,7 +1239,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/poller-configuration/" class="md-nav__link">
+      <a href="../poller-configuration/" class="md-nav__link">
         
   
   
@@ -1185,7 +1267,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/scheduler-configuration/" class="md-nav__link">
+      <a href="../scheduler-configuration/" class="md-nav__link">
         
   
   
@@ -1213,7 +1295,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/configuring-profiles/" class="md-nav__link">
+      <a href="../configuring-profiles/" class="md-nav__link">
         
   
   
@@ -1241,7 +1323,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/configuring-groups/" class="md-nav__link">
+      <a href="../configuring-groups/" class="md-nav__link">
         
   
   
@@ -1269,7 +1351,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/step-by-step-poll/" class="md-nav__link">
+      <a href="../step-by-step-poll/" class="md-nav__link">
         
   
   
@@ -1297,7 +1379,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/snmp-data-format/" class="md-nav__link">
+      <a href="../snmp-data-format/" class="md-nav__link">
         
   
   
@@ -1333,7 +1415,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/trap-configuration/" class="md-nav__link">
+      <a href="../trap-configuration/" class="md-nav__link">
         
   
   
@@ -1361,7 +1443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/worker-configuration/" class="md-nav__link">
+      <a href="../worker-configuration/" class="md-nav__link">
         
   
   
@@ -1389,7 +1471,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/mongo-configuration/" class="md-nav__link">
+      <a href="../mongo-configuration/" class="md-nav__link">
         
   
   
@@ -1417,7 +1499,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/redis-configuration/" class="md-nav__link">
+      <a href="../redis-configuration/" class="md-nav__link">
         
   
   
@@ -1445,7 +1527,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/snmpv3-configuration/" class="md-nav__link">
+      <a href="../snmpv3-configuration/" class="md-nav__link">
         
   
   
@@ -1473,7 +1555,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/sim-configuration/" class="md-nav__link">
+      <a href="../sim-configuration/" class="md-nav__link">
         
   
   
@@ -1501,7 +1583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/coredns-configuration/" class="md-nav__link">
+      <a href="../coredns-configuration/" class="md-nav__link">
         
   
   
@@ -1534,20 +1616,18 @@
                 
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
         
           
           <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
@@ -1568,7 +1648,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1583,37 +1663,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Install Microk8s
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../offlineinstallation/offline-microk8s/" class="md-nav__link">
         
   
   
@@ -1629,98 +1682,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#importing-images" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Importing images
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Importing images">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#packing-up-images-for-an-offline-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Packing up images for an offline environment
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-of-the-offline-installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example of the offline installation
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#enabling-dns-and-metallb" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Enabling DNS and Metallb
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installing-helm3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Installing helm3
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verify-your-instance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Verify your instance
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1733,7 +1694,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../offline-sck/" class="md-nav__link">
+      <a href="../../offlineinstallation/offline-sck/" class="md-nav__link">
         
   
   
@@ -1761,7 +1722,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../offline-sc4snmp/" class="md-nav__link">
+      <a href="../../offlineinstallation/offline-sc4snmp/" class="md-nav__link">
         
   
   
@@ -2458,49 +2419,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#importing-images" class="md-nav__link">
+  <a href="#splunk-section-values" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Importing images
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Importing images">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#packing-up-images-for-an-offline-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Packing up images for an offline environment
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-of-the-offline-installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example of the offline installation
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#enabling-dns-and-metallb" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Enabling DNS and Metallb
+        Splunk section (values)
       
     </span>
   </a>
@@ -2508,10 +2430,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#installing-helm3" class="md-nav__link">
+  <a href="#using-a-kubernetes-secret-for-the-hec-token" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Installing helm3
+        Using a Kubernetes secret for the HEC token
       
     </span>
   </a>
@@ -2519,10 +2441,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#verify-your-instance" class="md-nav__link">
+  <a href="#token-from-file-eg-vault-injector" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Verify your instance
+        Token from file (e.g. Vault injector)
       
     </span>
   </a>
@@ -2546,152 +2468,138 @@
 
 
 
-<div><h1 id="offline-microk8s-installation-issues">Offline Microk8s installation issues<a class="headerlink" href="#offline-microk8s-installation-issues" title="Permanent link">¶</a></h1>
-<p>See <a href="https://microk8s.io/docs/install-alternatives#heading--offline">install alternatives</a> for offline installation of Microk8s. There are additional steps to install microk8s offline.
-See the following steps to install offline:</p>
-<h2 id="importing-images">Importing images<a class="headerlink" href="#importing-images" title="Permanent link">¶</a></h2>
-<p>After running the following:</p>
-<div class="highlight"><pre><span></span><code>snap ack microk8s_{microk8s_version}.assert
-snap install microk8s_{microk8s_version}.snap --classic
-</code></pre></div>
-<p>You should check if the microk8s instance is healthy. Do it using the following command:</p>
-<div class="highlight"><pre><span></span><code>microk8s kubectl get pods -A
-</code></pre></div>
-<p>The output will probably look like:
-</p><div class="highlight"><pre><span></span><code>NAMESPACE      NAME                                       READY   STATUS     RESTARTS   AGE
-kube-system    calico-kube-controllers-7c9c8dd885-fg8f2   0/1     Pending    0          14m
-kube-system    calico-node-zg4c4                          0/1     Init:0/3   0          23s
-</code></pre></div>
-<p>The pods are in the <code>Pending</code>/<code>Init</code> state because they are trying to download images, which is impossible to do offline. 
-In order to make them download, you need to download all the images on a different server with an internet connection, 
-pack it up, and import it to a microk8s image registry on your offline server.</p>
-<h3 id="packing-up-images-for-an-offline-environment">Packing up images for an offline environment<a class="headerlink" href="#packing-up-images-for-an-offline-environment" title="Permanent link">¶</a></h3>
-<p>You need to monitor</p>
-<div class="highlight"><pre><span></span><code>microk8s kubectl get events -A
-</code></pre></div>
-<p>to see if <code>microk8s</code> fails to pull images, and then import anything it needs. An example of such information is:</p>
-<div class="highlight"><pre><span></span><code>kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Failed to pull image "docker.io/calico/cni:v3.21.4": rpc error: code = Unknown desc = failed to pull and unpack image "docker.io/calico/cni:v3.21.4": failed to resolve reference "docker.io/calico/cni:v3.21.4": failed to do request: Head "https://registry-1.docker.io/v2/calico/cni/manifests/v3.21.4": dial tcp 54.83.42.45:443: i/o timeout
-kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Error: ErrImagePull
-</code></pre></div>
-<p>The previous information shows that you lack a <code>docker.io/calico/cni:v3.21.4</code> image, and need to import it in order to fix the issue.</p>
-<p>The process to do this action is always the following:</p>
-<p></p><div class="highlight"><pre><span></span><code>docker pull &lt;needed_image&gt;
-docker save &lt;needed_image&gt; &gt; image.tar
-</code></pre></div>
-Transfer package to the offline lab and execute:
-<div class="highlight"><pre><span></span><code>microk8s ctr image import image.tar
-</code></pre></div>
-<h3 id="example-of-the-offline-installation">Example of the offline installation<a class="headerlink" href="#example-of-the-offline-installation" title="Permanent link">¶</a></h3>
-<p>For example, <code>microk8s</code> version <code>3597</code> requires the following images to work correctly:</p>
-<div class="highlight"><pre><span></span><code>docker pull docker.io/calico/kube-controllers:v3.21.4 
-docker pull docker.io/calico/node:v3.21.4
-docker pull docker.io/calico/pod2daemon-flexvol:v3.21.4
-docker pull docker.io/calico/cni:v3.21.4  
-docker pull k8s.gcr.io/pause:3.1 
-docker pull k8s.gcr.io/metrics-server/metrics-server:v0.5.2 
-</code></pre></div>
-<p>You should issue the above commands on your instance connected to the internet,
-then save it to <code>tar</code> packages:</p>
-<div class="highlight"><pre><span></span><code>docker save docker.io/calico/kube-controllers:v3.21.4 &gt; kube-controllers.tar
-docker save docker.io/calico/node:v3.21.4 &gt; node.tar
-docker save docker.io/calico/pod2daemon-flexvol:v3.21.4 &gt; pod2daemon-flexvol.tar
-docker save docker.io/calico/cni:v3.21.4 &gt; cni.tar
-docker save k8s.gcr.io/pause:3.1  &gt; pause.tar
-docker save cdkbot/hostpath-provisioner:1.2.0 &gt; cdkbot.tar 
-docker save k8s.gcr.io/metrics-server/metrics-server:v0.5.2 &gt; metrics.tar
-</code></pre></div>
-<p>After that, <code>scp</code> those packages to your offline server and import it to its <code>microk8s</code> image registry:</p>
-<div class="highlight"><pre><span></span><code>microk8s ctr image import kube-controllers.tar
-microk8s ctr image import node.tar
-microk8s ctr image import pod2daemon-flexvol.tar
-microk8s ctr image import cni.tar
-microk8s ctr image import pause.tar
-microk8s ctr image import metrics.tar
-</code></pre></div>
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>For other versions of <code>microk8s</code>, tags of images may differ. </p>
-</div>
-<p>After running the following:</p>
-<div class="highlight"><pre><span></span><code>microk8s enable hostpath-storage
-microk8s enable rbac
-microk8s enable metrics-server
-</code></pre></div>
-<p>The microk8s instance should be the following:</p>
-<div class="highlight"><pre><span></span><code>NAMESPACE      NAME                                       READY   STATUS                  RESTARTS   AGE
-kube-system    calico-kube-controllers-7c9c8dd885-wxms9   1/1     Running                 0          3h21m
-kube-system    calico-node-8cxsq                          1/1     Running                 0          3h21m
-kube-system    hostpath-provisioner-f57964d5f-zs4sj       1/1     Running                 0          5m41s
-kube-system    metrics-server-5f8f64cb86-x7k29            1/1     Running                 0          2m15s
-</code></pre></div>
-<h2 id="enabling-dns-and-metallb">Enabling DNS and Metallb<a class="headerlink" href="#enabling-dns-and-metallb" title="Permanent link">¶</a></h2>
-<p><code>dns</code> and <code>metallb</code> do not require importing any images, so you can enable them simply through the following commands:</p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s enable dns</span>
-<span class="l l-Scalar l-Scalar-Plain">microk8s enable metallb</span>
-</code></pre></div>
-<p>For more information on <code>metallb</code>, see <a href="../../mk8s/k8s-microk8s/#install-metallb">Install metallb</a>.</p>
-<h2 id="installing-helm3">Installing helm3<a class="headerlink" href="#installing-helm3" title="Permanent link">¶</a></h2>
-<p>Additionally, you need to install the helm3 add-on.  See the following steps:</p>
+<div><h1 id="splunk-configuration">Splunk configuration<a class="headerlink" href="#splunk-configuration" title="Permanent link">¶</a></h1>
+<p>Configure the Splunk (HEC) endpoint for sending SNMP data. You can provide the HEC token as plaintext, from a Kubernetes Secret, or from a file (e.g. Vault Agent Injector).</p>
+<h2 id="splunk-section-values">Splunk section (values)<a class="headerlink" href="#splunk-section-values" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enabled</code></td>
+<td>Enables sending data to Splunk</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>protocol</code></td>
+<td>The protocol of the HEC endpoint: <code>https</code> or <code>http</code></td>
+<td><code>https</code></td>
+</tr>
+<tr>
+<td><code>port</code></td>
+<td>The port of the HEC endpoint</td>
+<td><code>8088</code></td>
+</tr>
+<tr>
+<td><code>host</code></td>
+<td>IP address or a domain name of a Splunk instance</td>
+<td></td>
+</tr>
+<tr>
+<td><code>path</code></td>
+<td>URN to Splunk collector</td>
+<td><code>/services/collector</code></td>
+</tr>
+<tr>
+<td><code>token</code></td>
+<td>Splunk HTTP Event Collector token (plaintext). Omit when using <code>tokenSecretRef</code> or <code>tokenFilePath</code>.</td>
+<td><code>00000000-0000-0000-0000-000000000000</code></td>
+</tr>
+<tr>
+<td><code>tokenSecretRef</code></td>
+<td>Reference to an existing Kubernetes Secret containing the HEC token. When set, the chart does not create a Secret from <code>token</code>. See <a href="#using-a-kubernetes-secret-for-the-hec-token">Using a Kubernetes secret for the HEC token</a> below.</td>
+<td><code>name: ""</code>, <code>key: "hec_token"</code></td>
+</tr>
+<tr>
+<td><code>tokenFilePath</code></td>
+<td>Path to a file containing the HEC token (e.g. from Vault Agent Injector). When set, the chart sets <code>SPLUNK_HEC_TOKEN_FILE</code> and does not set <code>SPLUNK_HEC_TOKEN</code> from a Secret. See <a href="#token-from-file-eg-vault-injector">Token from file (e.g. Vault injector)</a> below.</td>
+<td><code>""</code></td>
+</tr>
+<tr>
+<td><code>insecureSSL</code></td>
+<td>Skip certificate verification for the HEC endpoint when using HTTPS</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>sourcetypeTraps</code></td>
+<td>Source type for trap events</td>
+<td><code>sc4snmp:traps</code></td>
+</tr>
+<tr>
+<td><code>sourcetypePollingEvents</code></td>
+<td>Source type for non-metric polling event</td>
+<td><code>sc4snmp:event</code></td>
+</tr>
+<tr>
+<td><code>sourcetypePollingMetrics</code></td>
+<td>Source type for metric polling event</td>
+<td><code>sc4snmp:metric</code></td>
+</tr>
+<tr>
+<td><code>eventIndex</code></td>
+<td>Name of the event index</td>
+<td><code>netops</code></td>
+</tr>
+<tr>
+<td><code>metricsIndex</code></td>
+<td>Name of the metrics index</td>
+<td><code>netmetrics</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="using-a-kubernetes-secret-for-the-hec-token">Using a Kubernetes secret for the HEC token<a class="headerlink" href="#using-a-kubernetes-secret-for-the-hec-token" title="Permanent link">¶</a></h2>
+<p>Instead of putting the HEC token in plaintext in <code>splunk.token</code>, you can reference an existing Kubernetes Secret. This is recommended for production and when using a secrets manager.</p>
+<p><strong>Behavior:</strong> The chart provides the token to the application as the environment variable <code>SPLUNK_HEC_TOKEN</code> from a Secret via <code>secretKeyRef</code>. Any system that creates or syncs a normal Kubernetes Secret will work. The Secret must be in the <strong>same namespace</strong> as the release.</p>
 <ol>
-<li>Check your server’s platform with:</li>
+<li><strong>Create the Secret</strong> in the same namespace as the release, with the token under the key <code>hec_token</code> (or another key you specify):</li>
 </ol>
-<div class="highlight"><pre><span></span><code>dpkg --print-architecture
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>my-splunk-hec-secret<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">hec_token</span><span class="o">=</span><span class="s1">'YOUR_HEC_TOKEN'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
-<p>The output would be, for example: <code>amd64</code>.
-You need the platform to download the correct version of helm.</p>
 <ol start="2">
-<li>
-<p>Download the helm package from <code>https://get.helm.sh/helm-v3.8.0-linux-{{arch}}.tar.gz</code>, where <code>{{arch}}</code> should be 
-replaced with the result from the previous command, for example: <code>https://get.helm.sh/helm-v3.8.0-linux-amd64.tar.gz</code>.</p>
-</li>
-<li>
-<p>Rename the package to <code>helm.tar.gz</code> and send it to an offline lab.</p>
-</li>
-<li>Create <code>tmp</code> directory in <code>/var/snap/microk8s/current</code> and copy the package in the following locations: </li>
+<li><strong>Configure the chart</strong> — leave <code>splunk.token</code> empty and set <code>splunk.tokenSecretRef</code>:</li>
 </ol>
-<div class="highlight"><pre><span></span><code>sudo mkdir -p /var/snap/microk8s/current/tmp/helm3
-sudo cp helm.tar.gz /var/snap/microk8s/current/tmp/helm3
+<div class="highlight"><pre><span></span><code><span class="nt">splunk</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">"splunk.example.com"</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">"https"</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="s">"8088"</span>
+<span class="w">  </span><span class="nt">tokenSecretRef</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-splunk-hec-secret</span><span class="w">   </span><span class="c1"># name of your Secret</span>
+<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hec_token</span><span class="w">               </span><span class="c1"># optional; default is hec_token</span>
 </code></pre></div>
-<ol start="5">
-<li>Go to the directory containing <code>enable</code> script for <code>helm3</code>:</li>
-</ol>
-<div class="highlight"><pre><span></span><code>cd /var/snap/microk8s/common/addons/core/addons/helm3
+<p>If both <code>token</code> and <code>tokenSecretRef.name</code> are set, <code>tokenSecretRef</code> takes precedence and the chart does not create a Secret from <code>token</code>.</p>
+<p><strong>Startup:</strong> Pods will stay in <code>CreateContainerConfigError</code> until the referenced Secret exists. With External Secrets or similar, ensure the Secret is synced before or with the Helm release.</p>
+<p><strong>Rotation:</strong> The token is read at pod start. After rotating the token in the vault and updating the Secret, restart the relevant deployments (e.g. worker, traps) to pick up the new value.</p>
+<h2 id="token-from-file-eg-vault-injector">Token from file (e.g. Vault injector)<a class="headerlink" href="#token-from-file-eg-vault-injector" title="Permanent link">¶</a></h2>
+<p>You can provide the HEC token via a <strong>file</strong> (e.g. injected by Vault Agent Injector or another provider). Set <code>splunk.tokenFilePath</code> to the path where the token file is mounted. The chart sets <code>SPLUNK_HEC_TOKEN_FILE</code> only on the <strong>sender</strong> deployment (the only component that sends data to Splunk HEC). Add injector annotations only on the sender: <code>worker.sender.podAnnotations</code>. Do not use <code>worker.podAnnotations</code> for the token so other worker types and traps are not injected unnecessarily.</p>
+<p><strong>Important:</strong> The file must contain only the token value. Use an inject template so the mounted file has just the token.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">splunk</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">"splunk.example.com"</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">"https"</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="s">"8088"</span>
+<span class="w">  </span><span class="nt">tokenFilePath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/vault/secrets/splunk-hec-token</span>
+
+<span class="nt">worker</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">sender</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">podAnnotations</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">vault.hashicorp.com/agent-inject</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
+<span class="w">      </span><span class="nt">vault.hashicorp.com/role</span><span class="p">:</span><span class="w"> </span><span class="s">"sc4snmp"</span>
+<span class="w">      </span><span class="nt">vault.hashicorp.com/agent-inject-secret-splunk-hec-token</span><span class="p">:</span><span class="w"> </span><span class="s">"secret/data/splunk"</span>
+<span class="w">      </span><span class="nt">vault.hashicorp.com/agent-inject-template-splunk-hec-token</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">        </span><span class="no">{{- with secret "secret/data/splunk" -}}</span>
+<span class="w">        </span><span class="no">{{ .Data.data.token }}</span>
+<span class="w">        </span><span class="no">{{- end }}</span>
 </code></pre></div>
-<p>Open <code>enable</code> file with vi, nano, or some other editor. Comment this line:</p>
-<div class="highlight"><pre><span></span><code>#fetch_as $SOURCE_URI/helm-$HELM_VERSION-linux-${SNAP_ARCH}.tar.gz "$SNAP_DATA/tmp/helm3/helm.tar.gz"
-</code></pre></div>
-<p>Save file.</p>
-<ol start="6">
-<li>Run <code>microk8s enable helm3</code></li>
-</ol>
-<h2 id="verify-your-instance">Verify your instance<a class="headerlink" href="#verify-your-instance" title="Permanent link">¶</a></h2>
-<p>Check if all the add-ons were installed successfully using the following command: <code>microk8s status --wait-ready</code>. An example of
-a correct output is:</p>
-<div class="highlight"><pre><span></span><code>microk8s is running
-high-availability: no
-  datastore master nodes: 127.0.0.1:19001
-  datastore standby nodes: none
-addons:
-  enabled:
-    dns                  # (core) CoreDNS
-    ha-cluster           # (core) Configure high availability on the current node
-    helm3                # (core) Helm 3 - Kubernetes package manager
-    hostpath-storage     # (core) Storage class; allocates storage from host directory
-    metallb              # (core) Loadbalancer for your Kubernetes cluster
-    metrics-server       # (core) K8s Metrics Server for API access to service metrics
-    rbac                 # (core) Role-Based Access Control for authorisation
-    storage              # (core) Alias to hostpath-storage add-on, deprecated
-  disabled:
-    community            # (core) The community addons repository
-    dashboard            # (core) The Kubernetes dashboard
-    gpu                  # (core) Automatic enablement of Nvidia CUDA
-    helm                 # (core) Helm 2 - the package manager for Kubernetes
-    host-access          # (core) Allow Pods connecting to Host services smoothly
-    ingress              # (core) Ingress controller for external access
-    mayastor             # (core) OpenEBS MayaStor
-    prometheus           # (core) Prometheus operator for monitoring and logging
-    registry             # (core) Private image registry exposed on localhost:32000
-</code></pre></div></div>
+<p><code>tokenFilePath</code> must match where the injector writes the file: the annotation <code>agent-inject-secret-&lt;name&gt;</code> uses <code>&lt;name&gt;</code> as the filename under <code>/vault/secrets/</code>, so the path is <code>/vault/secrets/&lt;name&gt;</code> (e.g. <code>/vault/secrets/splunk-hec-token</code>). Adjust the template key (e.g. <code>{{ .Data.data.token }}</code>) if your Vault secret uses a different field name.</p></div>
 
 
 
