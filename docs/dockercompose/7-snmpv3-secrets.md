@@ -1,5 +1,8 @@
 # SNMPv3 secrets
 
+!!! info "SNMPv3 only"
+    This page is only relevant if you are using **SNMPv3** authentication. If your devices use SNMPv2c or SNMPv1, you can skip this page entirely.
+
 ## Prerequisites
 
 A folder must be created to store the secrets file.

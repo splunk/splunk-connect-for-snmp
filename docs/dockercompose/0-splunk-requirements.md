@@ -1,5 +1,33 @@
 # Prerequisites for the Splunk Connect for SNMP
 
+Splunk Connect for SNMP (SC4SNMP) collects SNMP data from network devices and forwards it to Splunk. It supports two modes of operation:
+
+- **Polling** — SC4SNMP periodically queries devices for metrics and status data according to a configurable schedule.
+- **Traps** — SC4SNMP listens for trap notifications that devices send spontaneously (for example, on a link-down event).
+
+The Docker Compose deployment runs SC4SNMP as a set of containers on a single Linux host. The following components are started:
+
+| Component | Role |
+|---|---|
+| **Scheduler** | Manages the polling schedule and dispatches tasks |
+| **Worker Poller** | Executes SNMP queries against devices |
+| **Worker Trap** | Receives and processes incoming SNMP trap notifications |
+| **Worker Sender** | Forwards collected data to Splunk via HEC |
+| **MIB Server** | Translates numeric OIDs to human-readable names |
+| **Redis** | Message broker between the scheduler and workers |
+| **MongoDB** | Stores SC4SNMP configuration and state |
+| **CoreDNS** | Internal DNS resolver for the container network |
+
+The Docker Compose deployment does not include a web UI. All configuration is done by editing files directly.
+
+## Setup flow overview
+
+1. **Prerequisites** *(this page)* — prepare Splunk indexes and HEC token
+2. **Install Docker** — install Docker on the host machine
+3. **Download package** — download and extract the `docker_compose.zip` package
+4. **Configure** — edit `.env`, `inventory.csv`, `scheduler-config.yaml`, and `traps-config.yaml`
+5. **Deploy** — run `docker compose up -d`
+
 See the following prerequisites for the Splunk Connect for SNMP.
 
 ### Requirements for Splunk Enterprise or Enterprise Cloud
