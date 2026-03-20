@@ -1,6 +1,6 @@
 # Traps configuration
 
-Traps configuration is stored in the `traps-config.yaml` file. This file has the following sections:
+Traps configuration is stored in a YAML file whose absolute path is set via `TRAPS_CONFIG_FILE_ABSOLUTE_PATH` in `.env`. This file has the following sections:
 
 ## Configuration
 

@@ -1,6 +1,6 @@
 # Inventory configuration
 
-Inventory configuration is stored in the `inventory.csv` file. Structure of this file is the same as the one of the 
+Inventory configuration is stored in a CSV file whose absolute path is set via `INVENTORY_FILE_ABSOLUTE_PATH` in `.env`. Structure of this file is the same as the one of the
 `poller.inventory` section in `values.yaml` file. Documentation of this section can be found in [configure inventory](../microk8s/configuration/poller-configuration.md#configure-inventory).
 
 ## Example of the configuration

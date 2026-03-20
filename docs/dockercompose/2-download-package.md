@@ -3,13 +3,22 @@
 ## Downloading a package
 Package with docker compose configuration files (`docker_compose.zip`) can be downloaded from the [Github release](https://github.com/splunk/splunk-connect-for-snmp/releases).
 
-## Configuration
-To configure the deployment, follow the instructions in [.env file configuration](./6-env-file-configuration.md),
-[Inventory configuration](./3-inventory-configuration.md),
-[Scheduler configuration](./4-scheduler-configuration.md), [Traps configuration](./5-traps-configuration.md),
-[SNMPv3 secrets](./7-snmpv3-secrets.md).
+## Configuration files
 
-Once all configuration files are ready, proceed to [Deploy the app](./11-deploy-and-run.md).
+After extracting the package, you need to create or edit the following files before running `docker compose up`:
+
+| File | Purpose | Details |
+|------|---------|---------|
+| Inventory file | Defines which devices to poll | [Inventory configuration](./3-inventory-configuration.md) |
+| Scheduler config file | Defines polling profiles, communities, and groups | [Scheduler configuration](./4-scheduler-configuration.md) |
+| Traps config file | Defines communities and secrets for receiving traps | [Traps configuration](./5-traps-configuration.md) |
+| `secrets.json` | Stores SNMPv3 credentials (optional, SNMPv3 only) | [SNMPv3 secrets](./7-snmpv3-secrets.md) |
+| `.env` | Sets absolute paths to the files above, Splunk connection details, and tuning parameters | [.env file](./6-env-file-configuration.md) |
+
+!!! note
+    The inventory, scheduler, and traps files can be named and placed anywhere on the host. What matters is that their absolute paths are correctly set in `.env` via `INVENTORY_FILE_ABSOLUTE_PATH`, `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH`, and `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`. The `secrets.json` filename is fixed — only the folder path is configurable via `SECRET_FOLDER_PATH`.
+
+Work through each page in order. Once all files are ready, proceed to [Deploy the app](./11-deploy-and-run.md).
 
 ## Quick start example
 

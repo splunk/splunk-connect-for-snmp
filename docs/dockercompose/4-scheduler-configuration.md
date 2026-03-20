@@ -1,6 +1,6 @@
 # Scheduler configuration
 
-Scheduler configuration is stored in the `scheduler-config.yaml` file. This file has the following sections:
+Scheduler configuration is stored in a YAML file whose absolute path is set via `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH` in `.env`. This file has the following sections:
 
 ## Configuration
 

@@ -49,7 +49,12 @@ nav:
           - Splunk Requirements: "dockercompose/0-splunk-requirements.md"
           - Install Docker: "dockercompose/1-install-docker.md"
           - Download package: "dockercompose/2-download-package.md"
-          - .env file configuration: "dockercompose/6-env-file-configuration.md"
+          - Configuration files:
+              - Inventory configuration: "dockercompose/3-inventory-configuration.md"
+              - Scheduler configuration: "dockercompose/4-scheduler-configuration.md"
+              - Traps configuration: "dockercompose/5-traps-configuration.md"
+              - SNMPv3 secrets: "dockercompose/7-snmpv3-secrets.md"
+              - .env file: "dockercompose/6-env-file-configuration.md"
           - Deploy the app: "dockercompose/11-deploy-and-run.md"
           - Advanced:
               - Offline installation: "dockercompose/8-offline-installation.md"
