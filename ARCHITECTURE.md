@@ -49,7 +49,7 @@ The Helm chart is **`splunk-connect-for-snmp`** (see `charts/splunk-connect-for-
 
 **Config and identity:**
 
-- **ConfigMaps:** scheduler-config, scheduler-inventory, traps-config, redis-config, (optional) sim-config, UI configmap-backend.
+- **ConfigMaps:** scheduler-config, scheduler-inventory, traps-config, redis-config, optional sim-config, UI configmap-backend.
 - **Secrets:** Splunk HEC (`<chart-name>-splunk`), Redis (`<release>-redis-secret`), optional sim secret.
 - **ServiceAccount:** From `values.serviceAccount` (default: chart fullname).
 - **RBAC:** UI role/role-binding when UI is enabled.
@@ -415,7 +415,7 @@ On startup the inventory loader (`<release>-splunk-connect-for-snmp-inventory` J
 **1. Trap Configuration**
 
 - Network devices are configured to send traps to the cluster (e.g. Service IP/host on port 162).
-- Trap receiver config (communities, SNMPv3 usernameSecrets, etc.) comes from the **traps config YAML** (Helm values → traps-config ConfigMap, or Docker Compose `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`). The traps process reads `CONFIG_PATH` and does not use MongoDB for trap source/mapping collections.
+- Trap receiver config (communities, SNMPv3 usernameSecrets, etc.) comes from the **traps config YAML** (Helm values → traps-config ConfigMap, or Docker Compose `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`). The traps process reads `CONFIG_PATH` and when traps security engine id discovery enabled — MongoDB.
 
 **2. Trap Reception**
 

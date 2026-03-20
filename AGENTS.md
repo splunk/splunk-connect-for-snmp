@@ -55,12 +55,12 @@ This file gives AI agents and contributors enough context to work effectively in
    Hooks include: black, isort, pyupgrade, mypy (excluding `ui_tests`, `test*`, `docs`).
 
 4. **Integration tests**
-   - Triggered in CI when the commit message contains `[run-int-tests]` or when pushing to `develop`.
+   - Triggered in CI when the commit message contains `[run-int-tests]` or when pushing to `develop` or `main`.
    - Run locally from `integration_tests/` (see workflows in `.github/workflows/ci-main.yaml` for env and flags).
 
 5. **UI tests**
    - Located in `ui_tests/`.
-   - Triggered in CI when the commit message contains `[run-ui-tests]` or when pushing to `develop`.
+   - Triggered in CI when the commit message contains `[run-ui-tests]` or when pushing to `develop` or `main`.
    - Run locally from `ui_tests/` (see workflows in `.github/workflows/ci-ui-tests.yaml` for env and flags).
 
 ## Conventions and PR expectations
@@ -85,6 +85,8 @@ This file gives AI agents and contributors enough context to work effectively in
 - Do not skip pre-commit or leave failing unit tests when submitting PRs.
 - Always start new branch from the current state of the `develop` branch.
 - Never push directly to `main` or `develop` without a PR and code review.
+- Push at least one commit with `[run-int-tests]` in the message to trigger integration tests in CI before merging.
+- Push at least one commit with `[run-ui-tests]` in the message to trigger UI integration tests in CI before merging.
 
 ## Documentation build (local)
 
