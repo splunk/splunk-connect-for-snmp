@@ -322,7 +322,7 @@ class Poller(Task):
         """
         if version == "3" or create_new:
             snmp_engine = SnmpEngine()
-            snmp_engine.cache["mibViewController"] = self.mib_view_controller
+            snmp_engine.setUserContext(mibViewController=self.mib_view_controller)
             return snmp_engine
         else:
             return self.snmp_engine
