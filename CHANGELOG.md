@@ -5,6 +5,7 @@
 ### Changed
 
 ### Fixed
+- fix reusing the snmp engine for snmpv3 calls
 
 ## [1.15.0]
 
@@ -31,7 +32,6 @@
 - fix problem with service rendering when `traps.service.usemetallb` is set to false
 - fix setting snmpv3 to be able to set secret without privProtocol and privKey
 - fix add error handling for inventory.csv misconfigured as dir
-- fix reusing the snmp engine for snmpv3 calls
 
 ## [1.14.1]
 - update mongodb volumePermission image repository to `bitnamileagcy`
