@@ -155,7 +155,7 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 | `SNMP_V3_SECURITY_ENGINE_ID` | SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table of the TRAP receiving application for each USM user, for example: SNMP_V3_SECURITY_ENGINE_ID=80003a8c04,aab123456 |
 | `INCLUDE_SECURITY_CONTEXT_ID` | Controls whether to add the context_engine_id field to v3 trap events                                                                                                                                                           |
 | `TRAPS_PORT`                 | External port exposed for traps server                                                                                                                                                                                          |
-| `ENABLE_TRAPS_SECRET`          | Enable usage of secrets for traps                           |
+| `ENABLE_TRAPS_SECRETS`         | Enable usage of secrets for traps                           |
 
 ### Scheduler
 
