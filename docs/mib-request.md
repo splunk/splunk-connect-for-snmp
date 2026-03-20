@@ -56,7 +56,7 @@ microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-
 ```
 ///
 
-/// tab | docker-compose
+/// tab | docker compose
 1. Append `mibserver` configuration to the `.env`, with the `MIBSERVER_TAG` of a value of the newest `mibserver`, for example:
 ```
 MIBSERVER_TAG=1.15.29
@@ -117,8 +117,8 @@ using `persistence.existingClaim`. If you go with the `localMibs.pathToMibs` sol
 when the Node with the mapped hostPath fails, you will have to access the MIB files on another node.
 ///
 
-/// tab | docker-compose
-### Configuring path to local mibs for docker-compose installation
+/// tab | docker compose
+### Configuring path to local mibs for docker compose installation
 
 To point to the directory with your local MIBs, set the `LOCAL_MIBS_PATH` variable in the `.env` file located in the `docker_compose` directory:
 
