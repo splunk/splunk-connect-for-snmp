@@ -94,4 +94,4 @@ This file gives AI agents and contributors enough context to work effectively in
 poetry run mkdocs serve
 ```
 
-Versioned docs are published via the `mike` workflow; see `.github/workflows/mike.yaml` and [MkDocs config](mkdocs.yml).
+Versioned docs are published via the `mike` workflow; see `.github/workflows/mike.yaml` and [MkDocs config](../mkdocs.yml).
