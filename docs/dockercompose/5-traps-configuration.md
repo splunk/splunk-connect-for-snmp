@@ -29,7 +29,7 @@ usernameSecrets:
 ### SNMPv3
 
 #### Create the SNMPv3 Secret in Docker
-Before using SNMPv3, you must create the required secret within Docker. For detailed instructions, refer to [SNMPv3 secrets](7-snmpv3-secrets.md).
+Before using SNMPv3, you must create the required secret within Docker. For detailed instructions, refer to [SNMPv3 secrets](../configuration/snmpv3.md).
 
 #### Configure the Security Engine ID
 

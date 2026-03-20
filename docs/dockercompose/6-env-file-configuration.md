@@ -34,7 +34,7 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                                                          |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose`                                           |
 | `LOCAL_MIBS_PATH`                     | Absolute path to the directory containing [local MIB files](../mib-request.md#configuring-path-to-local-mibs-for-docker-compose-installation). |
-| `SECRET_FOLDER_PATH`                  | Absolute path to [secrets.json](./7-snmpv3-secrets.md) file                                                                                    |
+| `SECRET_FOLDER_PATH`                  | Absolute path to the folder containing [secrets.json](../configuration/snmpv3.md)                                                               |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                                                             |
 
 
@@ -73,7 +73,7 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 | `SPLUNK_HEC_HOST`                         | IP address or a domain name of a Splunk instance to send data to                                                                      |
 | `SPLUNK_HEC_PROTOCOL`                     | The protocol of the HEC endpoint: `https` or `http`                                                                                   |
 | `SPLUNK_HEC_PORT`                         | The port of the HEC endpoint                                                                                                          |
-| `SPLUNK_HEC_TOKEN`                        | Splunk HTTP Event Collector token. To keep it out of `.env` and `docker inspect`, use a [Docker secret](7-snmpv3-secrets.md#splunk-hec-token-secret); the app then reads the token from the file path in `SPLUNK_HEC_TOKEN_FILE`. |
+| `SPLUNK_HEC_TOKEN`                        | Splunk HTTP Event Collector token. To keep it out of `.env` and `docker inspect`, use a [Docker secret](../configuration/snmpv3.md#splunk-hec-token-secret); the app then reads the token from the file path in `SPLUNK_HEC_TOKEN_FILE`. |
 | `SPLUNK_HEC_TOKEN_SECRET_FILE`            | Path on the host to the file used as the Docker secret for the HEC token (worker-sender only). The app reads the token from the mounted file; only the path is in the container env. |
 | `SPLUNK_HEC_INSECURESSL`                  | Whether to skip checking the certificate of the HEC endpoint when sending data over HTTPS                                             |
 | `SPLUNK_SOURCETYPE_TRAPS`                 | Splunk sourcetype for trap events                                                                                                     |

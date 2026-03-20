@@ -53,7 +53,7 @@ nav:
               - Inventory configuration: "dockercompose/3-inventory-configuration.md"
               - Scheduler configuration: "dockercompose/4-scheduler-configuration.md"
               - Traps configuration: "dockercompose/5-traps-configuration.md"
-              - SNMPv3 secrets: "dockercompose/7-snmpv3-secrets.md"
+              - SNMPv3 secrets: "configuration/snmpv3.md"
               - .env file: "dockercompose/6-env-file-configuration.md"
           - Deploy the app: "dockercompose/11-deploy-and-run.md"
           - Advanced:
