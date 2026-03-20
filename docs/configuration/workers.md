@@ -42,6 +42,44 @@ To apply changes, run the upgrade command:
 ```shell
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
+
+### Worker parameters
+
+| Variable                                                 | Description                                                                                                                     | Default           |
+|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| worker.poller.replicaCount                               | Number of poller worker replicas                                                                                                | 2                 |
+| worker.poller.concurrency                                | Minimum number of threads in a poller worker pod                                                                                | 4                 |
+| worker.poller.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 1                 |
+| worker.poller.autoscaling.enabled                        | Enabling autoscaling for poller worker pods                                                                                     | false             |
+| worker.poller.autoscaling.minReplicas                    | Minimum number of running poller worker pods when autoscaling is enabled                                                        | 2                 |
+| worker.poller.autoscaling.maxReplicas                    | Maximum number of running poller worker pods when autoscaling is enabled                                                        | 10                |
+| worker.poller.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on poller worker pods to spawn another replica                                            | 80                |
+| worker.poller.resources.limits                           | The resources limits for poller worker container                                                                                | cpu: 500m         |
+| worker.poller.resources.requests                         | The requested resources for poller worker container                                                                             | cpu: 250m         |
+| worker.trap.replicaCount                                 | Number of trap worker replicas                                                                                                  | 2                 |
+| worker.trap.concurrency                                  | Minimum number of threads in a trap worker pod                                                                                  | 4                 |
+| worker.trap.prefetch                                     | Number of tasks consumed from the queue at once                                                                                 | 30                |
+| worker.trap.resolveAddress.enabled                       | Enable reverse dns lookup of the IP address of the processed trap                                                               | false             |
+| worker.trap.resolveAddress.cacheSize                     | Maximum number of reverse dns lookup result records stored in cache                                                             | 500               |
+| worker.trap.resolveAddress.cacheTTL                      | Time to live of the cached reverse dns lookup record in seconds                                                                 | 1800              |
+| worker.trap.autoscaling.enabled                          | Enabling autoscaling for trap worker pods                                                                                       | false             |
+| worker.trap.autoscaling.minReplicas                      | Minimum number of running trap worker pods when autoscaling is enabled                                                          | 2                 |
+| worker.trap.autoscaling.maxReplicas                      | Maximum number of running trap worker pods when autoscaling is enabled                                                          | 10                |
+| worker.trap.autoscaling.targetCPUUtilizationPercentage   | CPU % threshold that must be exceeded on trap worker pods to spawn another replica                                              | 80                |
+| worker.sender.replicaCount                               | The number of sender worker replicas                                                                                            | 1                 |
+| worker.sender.concurrency                                | Minimum number of threads in a sender worker pod                                                                                | 4                 |
+| worker.sender.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 30                |
+| worker.sender.autoscaling.enabled                        | Enabling autoscaling for sender worker pods                                                                                     | false             |
+| worker.sender.autoscaling.minReplicas                    | Minimum number of running sender worker pods when autoscaling is enabled                                                        | 2                 |
+| worker.sender.autoscaling.maxReplicas                    | Maximum number of running sender worker pods when autoscaling is enabled                                                        | 10                |
+| worker.sender.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on sender worker pods to spawn another replica                                            | 80                |
+| worker.taskTimeout                                       | Task timeout in seconds when process takes a long time                                                                          | 2400              |
+| worker.walkRetryMaxInterval                              | Maximum time interval between walk attempts                                                                                     | 180               |
+| worker.walkMaxRetries                                    | Maximum number of walk retries                                                                                                  | 5                 |
+| worker.ignoreNotIncreasingOid                            | Ignoring `occurred: OID not increasing` issues for hosts specified in the array                                                 | []                |
+| worker.logLevel                                          | Logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                | INFO              |
+| worker.udpConnectionTimeout                              | Timeout for SNMP operations in seconds                                                                                          | 3                 |
+| worker.ignoreEmptyVarbinds                               | Ignores "Empty SNMP response message" in responses                                                                              | false             |
 ///
 
 /// tab | docker compose
@@ -102,8 +140,9 @@ Worker configuration is set via environment variables in `.env`.
 | `ENABLE_WORKER_POLLER_SECRETS`    | Enable usage of secrets for poller                                                               |
 ///
 
-## Worker scaling (microk8s)
+## Worker scaling
 
+/// tab | microk8s
 You can adjust worker pods in two ways: set a fixed value in `replicaCount`, or enable `autoscaling`, which scales pods automatically.
 
 ### Real life scenario: I use SC4SNMP for only trap monitoring
@@ -179,6 +218,19 @@ microk8s kubectl top pods -n sc4snmp
 If the CPU is close to 500m (the default limit), enable autoscaling or increase `replicaCount`.
 
 See [Horizontal Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) and [Scaling with Microk8s](../microk8s/mk8s/k8s-microk8s-scaling.md) for more information.
+///
+
+/// tab | docker compose
+Worker scaling is controlled via replica and resource variables in `.env`. To disable a worker type, set its replica count to `0`:
+
+```
+WORKER_POLLER_REPLICAS=0
+WORKER_TRAP_REPLICAS=4
+WORKER_SENDER_REPLICAS=1
+```
+
+Docker Compose does not support autoscaling. To handle higher load, increase the replica counts and concurrency values manually.
+///
 
 ### Reverse DNS lookup in trap worker
 
@@ -205,40 +257,3 @@ TTL_DNS_CACHE_TRAPS=1800
 ```
 ///
 
-## Worker parameters (microk8s)
-
-| Variable                                                 | Description                                                                                                                     | Default           |
-|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| worker.poller.replicaCount                               | Number of poller worker replicas                                                                                                | 2                 |
-| worker.poller.concurrency                                | Minimum number of threads in a poller worker pod                                                                                | 4                 |
-| worker.poller.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 1                 |
-| worker.poller.autoscaling.enabled                        | Enabling autoscaling for poller worker pods                                                                                     | false             |
-| worker.poller.autoscaling.minReplicas                    | Minimum number of running poller worker pods when autoscaling is enabled                                                        | 2                 |
-| worker.poller.autoscaling.maxReplicas                    | Maximum number of running poller worker pods when autoscaling is enabled                                                        | 10                |
-| worker.poller.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on poller worker pods to spawn another replica                                            | 80                |
-| worker.poller.resources.limits                           | The resources limits for poller worker container                                                                                | cpu: 500m         |
-| worker.poller.resources.requests                         | The requested resources for poller worker container                                                                             | cpu: 250m         |
-| worker.trap.replicaCount                                 | Number of trap worker replicas                                                                                                  | 2                 |
-| worker.trap.concurrency                                  | Minimum number of threads in a trap worker pod                                                                                  | 4                 |
-| worker.trap.prefetch                                     | Number of tasks consumed from the queue at once                                                                                 | 30                |
-| worker.trap.resolveAddress.enabled                       | Enable reverse dns lookup of the IP address of the processed trap                                                               | false             |
-| worker.trap.resolveAddress.cacheSize                     | Maximum number of reverse dns lookup result records stored in cache                                                             | 500               |
-| worker.trap.resolveAddress.cacheTTL                      | Time to live of the cached reverse dns lookup record in seconds                                                                 | 1800              |
-| worker.trap.autoscaling.enabled                          | Enabling autoscaling for trap worker pods                                                                                       | false             |
-| worker.trap.autoscaling.minReplicas                      | Minimum number of running trap worker pods when autoscaling is enabled                                                          | 2                 |
-| worker.trap.autoscaling.maxReplicas                      | Maximum number of running trap worker pods when autoscaling is enabled                                                          | 10                |
-| worker.trap.autoscaling.targetCPUUtilizationPercentage   | CPU % threshold that must be exceeded on trap worker pods to spawn another replica                                              | 80                |
-| worker.sender.replicaCount                               | The number of sender worker replicas                                                                                            | 1                 |
-| worker.sender.concurrency                                | Minimum number of threads in a sender worker pod                                                                                | 4                 |
-| worker.sender.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 30                |
-| worker.sender.autoscaling.enabled                        | Enabling autoscaling for sender worker pods                                                                                     | false             |
-| worker.sender.autoscaling.minReplicas                    | Minimum number of running sender worker pods when autoscaling is enabled                                                        | 2                 |
-| worker.sender.autoscaling.maxReplicas                    | Maximum number of running sender worker pods when autoscaling is enabled                                                        | 10                |
-| worker.sender.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on sender worker pods to spawn another replica                                            | 80                |
-| worker.taskTimeout                                       | Task timeout in seconds when process takes a long time                                                                          | 2400              |
-| worker.walkRetryMaxInterval                              | Maximum time interval between walk attempts                                                                                     | 180               |
-| worker.walkMaxRetries                                    | Maximum number of walk retries                                                                                                  | 5                 |
-| worker.ignoreNotIncreasingOid                            | Ignoring `occurred: OID not increasing` issues for hosts specified in the array                                                 | []                |
-| worker.logLevel                                          | Logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                | INFO              |
-| worker.udpConnectionTimeout                              | Timeout for SNMP operations in seconds                                                                                          | 3                 |
-| worker.ignoreEmptyVarbinds                               | Ignores "Empty SNMP response message" in responses                                                                              | false             |

@@ -116,9 +116,8 @@ To keep the HEC token out of `.env` and out of `docker inspect` (so it is not vi
    ```
 
 3. Recreate the worker-sender service. The compose file mounts the secret at `/run/secrets/splunk_hec_token` and sets `SPLUNK_HEC_TOKEN_FILE` to that path. The app reads the token from the file; the token itself never appears in `docker inspect` or `docker compose config`.
-///
 
-## Migration steps (docker compose only)
+### Migration steps
 
 Managing SNMPv3 secrets previously required updating docker compose files using the manage_secrets.py script.
 From SC4SNMP 1.15.0, this process has been simplified and can manage all SNMPv3 secrets using a single secrets.json file.
@@ -140,3 +139,4 @@ Manually delete the secrets from the docker-compose.yaml file under the worker-p
 Remove the corresponding entries from the .env file.
 
 After deleting the secrets, follow the above steps to configure secrets.
+///

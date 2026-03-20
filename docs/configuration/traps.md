@@ -131,8 +131,9 @@ SPLUNK_AGGREGATE_TRAPS_EVENTS=true
 ```
 ///
 
-### Define external gateway for traps (microk8s only)
+### Define external gateway for traps
 
+/// tab | microk8s
 #### Using MetalLB LoadBalancer
 
 If you use SC4SNMP on a multinode setup, configure `loadBalancerIP`.
@@ -173,11 +174,31 @@ traps:
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
       service.beta.kubernetes.io/aws-load-balancer-scheme: internal
 ```
+///
 
-### Traps port (docker compose only)
+/// tab | docker compose
+In docker compose, the trap server is exposed directly on the host network. There is no load balancer or service
+abstraction layer — port mapping is handled by Docker and configured via the `TRAPS_PORT` variable in `.env`.
+///
 
+### Traps port
+
+/// tab | microk8s
+The traps service port is controlled by the Kubernetes service configuration. By default, the trap receiver listens
+on UDP port 162. To expose a different port externally, adjust the service definition in `values.yaml`:
+
+```yaml
+traps:
+  service:
+    type: NodePort
+    nodePort: 30162
+```
+///
+
+/// tab | docker compose
 To change the external port exposed for the traps server, set in `.env`:
 
 ```
 TRAPS_PORT=162
 ```
+///
