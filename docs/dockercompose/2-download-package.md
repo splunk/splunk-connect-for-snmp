@@ -24,14 +24,14 @@ Work through each page in order. Once all files are ready, proceed to [Deploy th
 
 The following is a minimal, working configuration for polling a single SNMPv2c device. Use it as a starting point and adapt it to your environment.
 
-**`inventory.csv`** — one device at `192.168.1.1`, polled every 300 seconds using the `simple_profile` profile:
+**Inventory file** — one device at `192.168.1.1`, with a minimal SNMPv2-MIB walk every 1800 seconds and profile-based polling every 300 seconds (as defined by `simple_profile` below), using SNMPv2c community `public`:
 
 ```csv
 address,port,version,community,secret,securityEngine,walk_interval,profiles,smart_profiles,delete
 192.168.1.1,161,2c,public,,,1800,simple_profile,t,
 ```
 
-**`scheduler-config.yaml`** — define the `public` community and the `simple_profile` profile referenced above:
+**Scheduler config file** — define the `public` community and the `simple_profile` profile referenced above:
 
 ```yaml
 communities:
@@ -50,7 +50,7 @@ profiles:
       - [ 'SNMPv2-MIB' ]
 ```
 
-**`traps-config.yaml`** — accept traps from SNMPv2c devices using the `public` community:
+**Traps config file** — accept traps from SNMPv2c devices using the `public` community:
 
 ```yaml
 communities:
@@ -78,4 +78,4 @@ SPLUNK_HEC_INDEX_METRICS=netmetrics
 ```
 
 !!! note
-    The profile name used in `inventory.csv` (`simple_profile`) must match a profile defined in `scheduler-config.yaml`. If the name does not match, SC4SNMP will not poll the device.
+    The profile name used in the inventory file (`simple_profile`) must match a profile defined in the scheduler config file. If the name does not match, SC4SNMP will not poll the device.
