@@ -121,12 +121,10 @@ An example for an appropriate Splunk query would be the following:
 ## Polling authentication errors
 
 ### Unknown USM user
-In case of polling SNMPv3 devices, `Unknown USM user` error suggests wrong username. Verify 
-that the kubernetes secret with the correct username has been created ([SNMPv3 configuration](../microk8s/configuration/snmpv3-configuration.md)).
+In case of polling SNMPv3 devices, `Unknown USM user` error suggests wrong username. Verify that the secret with the correct username has been created. See [SNMPv3 configuration](../configuration/snmpv3.md).
 
 ### Wrong SNMP PDU digest
-In case of polling SNMPv3 devices, `Wrong SNMP PDU digest` error suggests wrong authentication key. Verify 
-that the kubernetes secret with the correct authentication key has been created ([SNMPv3 configuration](../microk8s/configuration/snmpv3-configuration.md)).
+In case of polling SNMPv3 devices, `Wrong SNMP PDU digest` error suggests wrong authentication key. Verify that the secret with the correct authentication key has been created. See [SNMPv3 configuration](../configuration/snmpv3.md).
 
 ### No SNMP response received before timeout
 `No SNMP response received before timeout` error might have several root causes. Some of them are:
@@ -136,6 +134,8 @@ that the kubernetes secret with the correct authentication key has been created 
 - SNMPv3 wrong privacy key
 
 ## "Field is immutable" error during helm upgrade
+
+!!! note "Microk8s only"
 
 ```
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/charts/splunk-connect-for-snmp/ --namespace=sc4snmp --create-namespace
