@@ -21,6 +21,11 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
     - **`SPLUNK_HEC_PORT`** — port of the HEC endpoint
     - **`SPLUNK_HEC_TOKEN`** or **`SPLUNK_HEC_TOKEN_SECRET_FILE`** — HEC token, or path to a file containing the token
 
+Once the required variables above are set, you can [Deploy the app](./11-deploy-and-run.md). The rest of this page covers optional and advanced parameters.
+
+!!! note "Sending container logs to Splunk?"
+    If you plan to use the [Splunk logging feature](./9-splunk-logging.md), also set **`SPLUNK_LOG_INDEX`** — the Splunk event index where container logs will be sent. This cannot be configured after the fact without editing `.env` and restarting the stack.
+
 ## Configuration
 
 ### Deployment

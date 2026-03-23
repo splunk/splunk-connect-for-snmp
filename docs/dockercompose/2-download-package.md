@@ -16,7 +16,7 @@ After extracting the package, you need to create or edit the following files bef
 | `.env` | Sets absolute paths to the files above, Splunk connection details, and tuning parameters | [.env file](./6-env-file-configuration.md) |
 
 !!! note
-    The inventory, scheduler, and traps files can be named and placed anywhere on the host. What matters is that their absolute paths are correctly set in `.env` via `INVENTORY_FILE_ABSOLUTE_PATH`, `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH`, and `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`. The `secrets.json` filename is fixed — only the folder path is configurable via `SECRET_FOLDER_PATH`.
+    The inventory, scheduler, and traps files can be named and placed anywhere on the host. What matters is that their absolute paths are correctly set in `.env` via `INVENTORY_FILE_ABSOLUTE_PATH`, `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH`, and `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`. A default `Corefile` is shipped inside the `docker_compose` package — its absolute path must be set via `COREFILE_ABS_PATH`. The `secrets.json` filename is fixed — only the folder path is configurable via `SECRET_FOLDER_PATH`.
 
 Work through each page in order. Once all files are ready, proceed to [Deploy the app](./11-deploy-and-run.md).
 

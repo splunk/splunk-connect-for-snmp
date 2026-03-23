@@ -55,11 +55,11 @@ nav:
               - Traps configuration: "dockercompose/5-traps-configuration.md"
               - SNMPv3 secrets: "configuration/snmpv3.md"
               - .env file: "dockercompose/6-env-file-configuration.md"
-          - Deploy the app: "dockercompose/11-deploy-and-run.md"
-          - Advanced:
+          - Additional configuration:
               - Offline installation: "dockercompose/8-offline-installation.md"
               - Sending logs to Splunk: "dockercompose/9-splunk-logging.md"
               - Enable IPv6: "dockercompose/10-enable-ipv6.md"
+          - Deploy the app: "dockercompose/11-deploy-and-run.md"
       - Microk8s:
           - Splunk Requirements: "microk8s/splunk-requirements.md"
           - Platform Microk8s: "microk8s/mk8s/k8s-microk8s.md"

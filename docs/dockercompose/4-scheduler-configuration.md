@@ -1,6 +1,13 @@
 # Scheduler configuration
 
-Scheduler configuration is stored in a YAML file whose absolute path is set via `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH` in `.env`. This file has the following sections:
+## .env reference
+
+| `.env` variable | Description |
+|---|---|
+| `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to this file on the host |
+
+!!! info "Full reference"
+    For the complete reference on profiles, groups, and custom translations, see [Profiles configuration](../configuration/profiles.md) and [Groups configuration](../configuration/groups.md).
 
 ## Configuration
 

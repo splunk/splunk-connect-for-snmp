@@ -1,6 +1,13 @@
 # Traps configuration
 
-Traps configuration is stored in a YAML file whose absolute path is set via `TRAPS_CONFIG_FILE_ABSOLUTE_PATH` in `.env`. Full configuration reference, including advanced options and engine ID discovery, can be found on the [Traps configuration](../configuration/traps.md) page — open the **docker compose** tab.
+## .env reference
+
+| `.env` variable | Description |
+|---|---|
+| `TRAPS_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to this file on the host |
+
+!!! info "Full reference"
+    For the complete configuration reference, see the [Traps configuration](../configuration/traps.md) page — open the **docker compose** tab.
 
 This file has the following sections:
 
@@ -31,7 +38,7 @@ usernameSecrets:
 ### SNMPv3
 
 #### Create the SNMPv3 Secret in Docker
-Before using SNMPv3, you must create the required secret within Docker. For detailed instructions, refer to [SNMPv3 secrets](../configuration/snmpv3.md).
+Before referencing a secret in `usernameSecrets`, you must create it in Docker first. Complete the [SNMPv3 secrets](../configuration/snmpv3.md) page, then return here and add the secret name to `usernameSecrets`.
 
 #### Configure the Security Engine ID
 

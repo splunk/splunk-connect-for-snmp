@@ -1,6 +1,9 @@
 # Offline installation
 
-In order to install SC4SNMP using docker compose in the offline environment, several docker images must be imported. 
+!!! note
+    If your target host has no internet access, complete this page **before** running `docker compose up`. The image download must be performed on a separate machine that has internet access. Once the images are loaded on the target host, continue with the normal setup flow.
+
+In order to install SC4SNMP using docker compose in the offline environment, several docker images must be imported.
 These images can be found in `.env` file:
 
 - `SC4SNMP_IMAGE` and `SC4SNMP_TAG` in `Deployment configuration` section
