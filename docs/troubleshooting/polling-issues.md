@@ -11,14 +11,24 @@ If you see the following line in the worker's logs:
 ```log
 [2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message')
 ```
-that causes an infinite retry of the walk operation. Add `worker.ignoreEmptyVarbinds` parameter to `values.yaml` and set it to true.
+that causes an infinite retry of the walk operation, configure the following depending on your deployment:
 
-An example configuration for a worker in `values.yaml` is:
+/// tab | microk8s
+Add `worker.ignoreEmptyVarbinds` parameter to `values.yaml` and set it to true:
 
 ```yaml
 worker:
   ignoreEmptyVarbinds: true
 ```
+///
+
+/// tab | docker compose
+Set `IGNORE_EMPTY_VARBINDS=true` in `.env`:
+
+```
+IGNORE_EMPTY_VARBINDS=true
+```
+///
 
 ## "OID not increasing" problem
 In case you see the following line in worker's logs:
@@ -26,9 +36,10 @@ In case you see the following line in worker's logs:
 ```log
 [2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing')
 ```
-that causes infinite retry of walk operation, add `worker.ignoreNotIncreasingOid` array to `values.yaml` and fill with the addresses of hosts where the problem appears.
+that causes infinite retry of walk operation, fill in the addresses of hosts where the problem appears depending on your deployment:
 
-An example configuration for a worker in `values.yaml` is:
+/// tab | microk8s
+Add `worker.ignoreNotIncreasingOid` array to `values.yaml`:
 
 ```yaml
 worker:
@@ -36,30 +47,56 @@ worker:
     - "127.0.0.1:164"
     - "127.0.0.6"
 ```
+///
 
-If you put in only the IP address (for example, `127.0.0.1`), then errors will be ignored for all of its devices (like `127.0.0.1:161`, 
+/// tab | docker compose
+Set `IGNORE_NOT_INCREASING_OIDS` in `.env` as a comma-separated list:
+
+```
+IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6
+```
+///
+
+If you put in only the IP address (for example, `127.0.0.1`), then errors will be ignored for all of its devices (like `127.0.0.1:161`,
 `127.0.0.1:163`...). If you put the IP address and host as `{host}:{port}`, that means the error will be ignored only for this device.
 
 ## Walking a device takes too much time
 
-See [Configure small walk profile](../../microk8s/configuration/configuring-profiles/#walk-profile) to enable the small walk 
-functionality.
+/// tab | microk8s
+See [Configure small walk profile](../../microk8s/configuration/configuring-profiles/#walk-profile) to enable the small walk functionality.
 
 Check if `poller.enableFullWalk` flag is set to `false`. See [poller configuration](../microk8s/configuration/poller-configuration/#poller-configuration-file).
+///
+
+/// tab | docker compose
+Enable the small walk profile by limiting the OID tree polled. See [Profiles configuration](../configuration/profiles.md#walk-profile) and define a walk profile with a restricted set of MIBs in your scheduler config file.
+///
 
 ## An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance
 
-If you see many `An error of SNMP isWalk=True` errors in your logs, that means that there is a connection problem 
+If you see many `An error of SNMP isWalk=True` errors in your logs, that means that there is a connection problem
 with the hosts you are polling from.
 Walk will retry multiple times, which will eventually cause a worker to be blocked while it retries. In that case, you might want to limit
-the maximum retry time. You can do this by setting the variable `worker.walkRetryMaxInterval`, for example:
+the maximum retry time depending on your deployment:
+
+/// tab | microk8s
+Set `worker.walkRetryMaxInterval` in `values.yaml`, for example:
 
 ```yaml
 worker:
   walkRetryMaxInterval: 60
 ```
+///
 
-With the previous configuration, 'walk' will retry exponentially from 30 seconds until it reaches 60 seconds. The default value for `worker.walkRetryMaxInterval` is 180.
+/// tab | docker compose
+Set `WALK_RETRY_MAX_INTERVAL` in `.env`, for example:
+
+```
+WALK_RETRY_MAX_INTERVAL=60
+```
+///
+
+With the previous configuration, 'walk' will retry exponentially from 30 seconds until it reaches 60 seconds. The default value is 180.
 
 ## SNMP Rollover
 The Rollover problem is due to a finite stored integer value (especially when the value is 32-bit). 

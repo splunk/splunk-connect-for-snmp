@@ -21,65 +21,65 @@ The profile template looks like the following:
 
 ```yaml
 scheduler:
-    profiles: |
-      #Name of profile
-      basev1:
-        # Define frequency for profile
-        frequency: 100
-        #Define condition
-        condition:
-          # Define type of condition. Allowed value field, base and walk
-          type: field
-          field: "SNMPv2-MIB.sysDescr"
-          # Define paterns
-          patterns:
-            - '.*STRING_TO_BE_MATCHED.*'
-        #Define varbinds to query
-        varBinds:
-          # Syntax: [ "MIB-Component", "MIB object name"[Optional], "MIB index number"[Optional]]
-          - ['SNMPv2-MIB']
-          - ['SNMPv2-MIB', 'sysName']
-          - ['SNMPv2-MIB', 'sysUpTime',0]
+  profiles: |
+    #Name of profile
+    basev1:
+      # Define frequency for profile
+      frequency: 100
+      #Define condition
+      condition:
+      # Define type of condition. Allowed value field, base and walk
+      type: field
+        field: "SNMPv2-MIB.sysDescr"
+        # Define paterns
+        patterns:
+          - '.*STRING_TO_BE_MATCHED.*'
+      #Define varbinds to query
+      varBinds:
+        # Syntax: [ "MIB-Component", "MIB object name"[Optional], "MIB index number"[Optional]]
+        - ['SNMPv2-MIB']
+        - ['SNMPv2-MIB', 'sysName']
+        - ['SNMPv2-MIB', 'sysUpTime',0]
 ```
 
 In the following example, two profiles are configured. One is smart, and the other one is static:
 
 ```yaml
 scheduler:
-    profiles: |
-      smart_profile:
-        frequency: 100
-        condition:
-          type: field
-          field: "SNMPv2-MIB.sysDescr"
-          patterns:
-            - '.*linux.*'
-        varBinds:
-          - ['SNMPv2-MIB']
-          - ['SNMPv2-MIB', 'sysName']
-          - ['SNMPv2-MIB', 'sysUpTime',0]
-      static_profile:
-        frequency: 300
-        varBinds:
-          - ['IP-MIB']
+  profiles: |
+    smart_profile:
+      frequency: 100
+      condition:
+        type: field
+        field: "SNMPv2-MIB.sysDescr"
+        patterns:
+          - '.*linux.*'
+      varBinds:
+        - ['SNMPv2-MIB']
+        - ['SNMPv2-MIB', 'sysName']
+        - ['SNMPv2-MIB', 'sysUpTime',0]
+    static_profile:
+      frequency: 300
+      varBinds:
+        - ['IP-MIB']
 ```
 
 If you only want to enable the option of `static_profile` polling for the host `10.202.4.202`, you would configure a similar inventory:
 
 ```yaml
 poller:
-    inventory: |
-      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-      10.202.4.202,,2c,public,,,2000,static_profile,f,
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+    10.202.4.202,,2c,public,,,2000,static_profile,f,
 ```
 
 If you want to enable checking the `10.202.4.202` device against smart profiles, you need to set `smart_profiles` to `t`:
 
 ```yaml
 poller:
-    inventory: |
-      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-      10.202.4.202,,2c,public,,,2000,,t,
+  inventory: |
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+    10.202.4.202,,2c,public,,,2000,,t,
 ```
 
 Afterwards, if the device `sysDescr` matches the `'.*linux.*'` filter, the `smart_profile` profile will be polled.
@@ -144,12 +144,12 @@ If you would like to limit the scope of the walk, you should set one of the prof
 definition of the `walk` type:
 ```yaml
 scheduler:
-    profiles: |
-      small_walk:
-        condition: 
-          type: "walk"
-        varBinds:
-          - ['UDP-MIB']
+  profiles: |
+    small_walk:
+      condition: 
+        type: "walk"
+      varBinds:
+        - ['UDP-MIB']
 ``` 
 This profile should be placed in the profiles section of the inventory definition. It will be executed with the frequency 
 defined in `walk_interval` field from `inventory`. If multiple profiles of type `walk` were placed in profiles, the last one will be used. 
@@ -190,30 +190,30 @@ To configure SmartProfile, the following values needs to be set in the `profiles
 See the following example of a `base` type profile:
 ```yaml
 scheduler:
-    profiles: |
-      SmartProfile_base_example:
-        frequency: 100
-        condition: 
-          type: "base"
-        varBinds:
-          - ['SNMPv2-MIB']
-          - ['SNMPv2-MIB', 'sysName']
+  profiles: |
+    SmartProfile_base_example:
+      frequency: 100
+      condition: 
+        type: "base"
+      varBinds:
+        - ['SNMPv2-MIB']
+        - ['SNMPv2-MIB', 'sysName']
 ``` 
 
 See the following example of a `field`  type profile, also called an automatic profile:
 ```yaml
 scheduler:
-    profiles: |
-      SmartProfile_field_example:
-        frequency: 100
-        condition: 
-          type: "field"
-          field: "SNMPv2-MIB.sysDescr"
-          patterns:
-            - '.*STRING_TO_BE_MATCHED.*'
-        varBinds:
-          - ['SNMPv2-MIB']
-          - ['SNMPv2-MIB', 'sysName']
+  profiles: |
+    SmartProfile_field_example:
+      frequency: 100
+      condition: 
+        type: "field"
+        field: "SNMPv2-MIB.sysDescr"
+        patterns:
+          - '.*STRING_TO_BE_MATCHED.*'
+      varBinds:
+        - ['SNMPv2-MIB']
+        - ['SNMPv2-MIB', 'sysName']
 ``` 
 
 !!! info
@@ -279,10 +279,10 @@ conditions:
 To negate an operation you can add the flag `negate_operation: "true"` to the specified `field`, for example: 
 ```yaml
 conditions:
-    - field: IF-MIB.ifAdminStatus
-      operation: "equals" 
-      value: "up"
-      negate_operation: "true"
+  - field: IF-MIB.ifAdminStatus
+    operation: "equals" 
+    value: "up"
+    negate_operation: "true"
 ```
 This will negate the operator specified in `operation`. See the following: 
 
@@ -308,11 +308,11 @@ If the user wants to use custom names/translations of MIB names, it can be confi
 Translations are grouped by the MIB family. In the following example, `IF-MIB.ifInDiscards` will be translated to `IF-MIB.myCustomName1`:
 ```yaml
 scheduler:
-    customTranslations:
-      IF-MIB:
-        ifInDiscards: myCustomName1
-        ifOutErrors: myCustomName2
-      SNMPv2-MIB:
-        sysDescr: myCustomName3
+  customTranslations:
+    IF-MIB:
+      ifInDiscards: myCustomName1
+      ifOutErrors: myCustomName2
+    SNMPv2-MIB:
+      sysDescr: myCustomName3
 ```
 
