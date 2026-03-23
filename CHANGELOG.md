@@ -5,6 +5,7 @@
 ### Changed
 
 ### Fixed
+- fix reusing the snmp engine for snmpv3 calls
 
 ## [1.15.0]
 
