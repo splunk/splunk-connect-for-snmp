@@ -183,12 +183,12 @@ Translations are grouped by the MIB family. In the following example, `IF-MIB.if
 /// tab | microk8s
 ```yaml
 scheduler:
-    customTranslations:
-      IF-MIB:
-        ifInDiscards: myCustomName1
-        ifOutErrors: myCustomName2
-      SNMPv2-MIB:
-        sysDescr: myCustomName3
+  customTranslations:
+    IF-MIB:
+      ifInDiscards: myCustomName1
+      ifOutErrors: myCustomName2
+    SNMPv2-MIB:
+      sysDescr: myCustomName3
 ```
 ///
 
@@ -213,24 +213,24 @@ Profiles are defined in the `scheduler.profiles` section of `values.yaml`:
 
 ```yaml
 scheduler:
-    profiles: |
-      static_profile_example:
-        frequency: 20
-        varBinds:
-          - ['SNMPv2-MIB']
-          - ['SNMPv2-MIB', 'sysName']
-          - ['SNMPv2-MIB', 'sysUpTime',0]
-      smart_profile:
-        frequency: 100
-        condition:
-          type: field
-          field: "SNMPv2-MIB.sysDescr"
-          patterns:
-            - '.*linux.*'
-        varBinds:
-          - ['SNMPv2-MIB']
-          - ['SNMPv2-MIB', 'sysName']
-          - ['SNMPv2-MIB', 'sysUpTime',0]
+  profiles: |
+    static_profile_example:
+      frequency: 20
+      varBinds:
+        - ['SNMPv2-MIB']
+        - ['SNMPv2-MIB', 'sysName']
+        - ['SNMPv2-MIB', 'sysUpTime',0]
+    smart_profile:
+      frequency: 100
+      condition:
+        type: field
+        field: "SNMPv2-MIB.sysDescr"
+        patterns:
+          - '.*linux.*'
+      varBinds:
+        - ['SNMPv2-MIB']
+        - ['SNMPv2-MIB', 'sysName']
+        - ['SNMPv2-MIB', 'sysUpTime', 0]
 ```
 
 To apply changes, run the upgrade command:
@@ -267,7 +267,7 @@ profiles:
     varBinds:
       - ['SNMPv2-MIB']
       - ['SNMPv2-MIB', 'sysName']
-      - ['SNMPv2-MIB', 'sysUpTime',0]
+      - ['SNMPv2-MIB', 'sysUpTime', 0]
 ```
 
 To apply changes, run the following command inside the `docker_compose` directory:

@@ -14,12 +14,7 @@
 ```yaml
 communities:
   2c:
-    public:
-      communityIndex:
-      contextEngineId:
-      contextName:
-      tag:
-      securityName:
+    - public
 customTranslations:
 profiles:
 groups:
@@ -35,12 +30,7 @@ groups:
 ```yaml
 communities:
   2c:
-    public:
-      communityIndex:
-      contextEngineId:
-      contextName:
-      tag:
-      securityName:
+    - public
 customTranslations:
   IF-MIB:
     ifInDiscards: myCustomName1

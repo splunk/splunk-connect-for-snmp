@@ -46,9 +46,14 @@ Traps configuration is stored in the `traps-config.yaml` file:
 
 ```yaml
 communities:
+  1:
+    - public
   2c:
     - public
-usernameSecrets: []
+    - homelab
+  usernameSecrets:
+    - secretv3
+    - sc4snmp-homesecure-sha-des
 ```
 
 To apply changes, run the following command inside the `docker_compose` directory:
@@ -67,8 +72,8 @@ Define all engine IDs under `traps.securityEngineId` in `values.yaml`:
 
 ```yaml
 traps:
-    securityEngineId:
-      - "80003a8c04"
+  securityEngineId:
+    - "80003a8c04"
 ```
 
 By default, it is set to a one-element list: `[80003a8c04]`.

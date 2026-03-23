@@ -51,9 +51,9 @@ INVENTORY_FILE_ABSOLUTE_PATH=/absolute/path/to/inventory.csv
 ```
 
 ```csv
-address,port,version,community,secret,securityEngine,walk_interval,profiles,smart_profiles,delete
-192.168.1.1,161,2c,public,,,1800,simple_profile,t,
-my_group,161,3,,my_secret,,1800,single_metric,t,
+address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+10.202.4.202,,2c,public,,,2000,my_profile1,,
+example_group_1,,2c,public,,,2000,my_profile2;my_profile3,,
 ```
 ///
 

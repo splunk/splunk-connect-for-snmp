@@ -45,6 +45,33 @@ nav:
       - High-level design: "architecture/design.md"
       - Infrastructure Planning: "architecture/planning.md"
   - Installation:
+      - Microk8s:
+          - Splunk Requirements: "microk8s/splunk-requirements.md"
+          - Platform Microk8s: "microk8s/mk8s/k8s-microk8s.md"
+          - Install Splunk OpenTelemetry Collector for Kubernetes: "microk8s/sck-installation.md"
+          - Install SC4SNMP: "microk8s/sc4snmp-installation.md"
+          - Scaling with Microk8s: "microk8s/mk8s/k8s-microk8s-scaling.md"
+          - Upgrade SC4SNMP: "microk8s/upgrade.md"
+          - Additional configuration:
+              - Enable IPv6: "microk8s/enable-ipv6.md"
+              - Offline Installation:
+                  - Install Microk8s: "microk8s/offlineinstallation/offline-microk8s.md"
+                  - Install Splunk OpenTelemetry Collector for Kubernetes: "microk8s/offlineinstallation/offline-sck.md"
+                  - Install SC4SNMP: "microk8s/offlineinstallation/offline-sc4snmp.md"
+          - GUI:
+              - Enable GUI: "microk8s/gui/enable-gui.md"
+              - Configuring Profiles: "microk8s/gui/profiles-gui.md"
+              - Configuring Groups: "microk8s/gui/groups-gui.md"
+              - Configuring Inventory: "microk8s/gui/inventory-gui.md"
+              - Apply changes: "microk8s/gui/apply-changes.md"
+          - Configuration reference:
+              - Deployment: "microk8s/configuration/deployment-configuration.md"
+              - Splunk configuration: "microk8s/configuration/splunk-configuration.md"
+              - Configurable values: "microk8s/configuration/values-params-description.md"
+              - MongoDB: "microk8s/configuration/mongo-configuration.md"
+              - Redis: "microk8s/configuration/redis-configuration.md"
+              - Splunk Infrastructure Monitoring: "microk8s/configuration/sim-configuration.md"
+              - CoreDNS: "microk8s/configuration/coredns-configuration.md"
       - Docker Compose:
           - Splunk Requirements: "dockercompose/0-splunk-requirements.md"
           - Install Docker: "dockercompose/1-install-docker.md"
@@ -60,32 +87,6 @@ nav:
               - Sending logs to Splunk: "dockercompose/9-splunk-logging.md"
               - Enable IPv6: "dockercompose/10-enable-ipv6.md"
           - Deploy the app: "dockercompose/11-deploy-and-run.md"
-      - Microk8s:
-          - Splunk Requirements: "microk8s/splunk-requirements.md"
-          - Platform Microk8s: "microk8s/mk8s/k8s-microk8s.md"
-          - Install Splunk OpenTelemetry Collector for Kubernetes: "microk8s/sck-installation.md"
-          - Install SC4SNMP: "microk8s/sc4snmp-installation.md"
-          - Enable IPv6: "microk8s/enable-ipv6.md"
-          - Scaling with Microk8s: "microk8s/mk8s/k8s-microk8s-scaling.md"
-          - Upgrade SC4SNMP: "microk8s/upgrade.md"
-          - Offline Installation:
-              - Install Microk8s: "microk8s/offlineinstallation/offline-microk8s.md"
-              - Install Splunk OpenTelemetry Collector for Kubernetes: "microk8s/offlineinstallation/offline-sck.md"
-              - Install SC4SNMP: "microk8s/offlineinstallation/offline-sc4snmp.md"
-          - GUI:
-              - Enable GUI: "microk8s/gui/enable-gui.md"
-              - Configuring Profiles: "microk8s/gui/profiles-gui.md"
-              - Configuring Groups: "microk8s/gui/groups-gui.md"
-              - Configuring Inventory: "microk8s/gui/inventory-gui.md"
-              - Apply changes: "microk8s/gui/apply-changes.md"
-          - Advanced:
-              - Deployment: "microk8s/configuration/deployment-configuration.md"
-              - Splunk configuration: "microk8s/configuration/splunk-configuration.md"
-              - Configurable values: "microk8s/configuration/values-params-description.md"
-              - MongoDB: "microk8s/configuration/mongo-configuration.md"
-              - Redis: "microk8s/configuration/redis-configuration.md"
-              - Splunk Infrastructure Monitoring: "microk8s/configuration/sim-configuration.md"
-              - CoreDNS: "microk8s/configuration/coredns-configuration.md"
   - Configuration:
       - Inventory: "configuration/inventory.md"
       - Profiles: "configuration/profiles.md"
