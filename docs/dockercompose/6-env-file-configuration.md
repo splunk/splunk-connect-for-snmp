@@ -119,6 +119,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_POLLER_MEMORY_LIMIT`        | Limit of memory that worker poller container can use                       |
 | `WORKER_POLLER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker poller container                        |
 | `WORKER_POLLER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker poller container                     |
+| `ENABLE_WORKER_POLLER_SECRETS`      | Enable usage of secrets for poller                                         |
 
 #### Worker Sender
 | Variable                            | Description                                                                |
@@ -144,7 +145,6 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_TRAP_MEMORY_LIMIT`        | Limit of memory that worker trap container can use                                               |
 | `WORKER_TRAP_CPU_RESERVATIONS`    | Dedicated cpu resources for worker trap container                                                |
 | `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
-| `ENABLE_WORKER_POLLER_SECRETS` | Enable usage of secrets for poller                          |
 
 ### Inventory
 

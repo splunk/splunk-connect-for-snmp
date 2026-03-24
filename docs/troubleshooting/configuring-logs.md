@@ -48,7 +48,7 @@ microk8s kubectl -n sc4snmp logs pod/snmp-splunk-connect-for-snmp-worker-poller-
 ### Accessing logs in docker
 
 Refer to [splunk logging](../dockercompose/9-splunk-logging.md) for instructions on how to enable logging in docker and 
-sent them to Splunk.
+send them to Splunk.
 
 To access logs directly in docker, first run `docker ps`. This will output all containers:
 
@@ -121,7 +121,7 @@ If the task was initialized by the scheduler after setting the `frequency`, use 
 index=* sourcetype="*:container:splunk-connect-for-snmp-scheduler*" "Scheduler: Sending due task sc4snmp;*;*;poll"
 ```
 
-The status of a completed task can be either `failed`, `succedded`. 
+The status of a completed task can be either `failed`, `succeeded`. 
 If the task shows `failed` refer to the [troubleshooting polling section](polling-issues.md) of the documentation. 
 The following queries can help filter logs to observe the poll task status:
 ```

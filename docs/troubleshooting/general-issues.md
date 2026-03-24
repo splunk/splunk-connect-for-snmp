@@ -24,7 +24,7 @@ If the `mongo-fcv-upgrade-to-6` job fails for any reason, there are two recovery
 
     [Update MongoDB's Feature Compatibility Version](https://www.mongodb.com/docs/manual/release-notes/6.0-upgrade-standalone/#upgrade-procedure) manually by executing the following command:
      ```bash
-     microk8s exec -it pod/<mongodb-pod-id> -n sc4snmp mongosh
+     microk8s exec -it pod/<mongodb-pod-id> -n sc4snmp -- mongosh
      db.adminCommand( { setFeatureCompatibilityVersion: "6.0" })
      ```
 

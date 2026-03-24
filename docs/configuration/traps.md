@@ -51,9 +51,9 @@ communities:
   2c:
     - public
     - homelab
-  usernameSecrets:
-    - secretv3
-    - sc4snmp-homesecure-sha-des
+usernameSecrets:
+  - secretv3
+  - sc4snmp-homesecure-sha-des
 ```
 
 To apply changes, run the following command inside the `docker_compose` directory:

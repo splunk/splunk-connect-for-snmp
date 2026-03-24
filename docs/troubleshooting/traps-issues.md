@@ -33,17 +33,13 @@ has a community string not configured in SC4SNMP:
 2024-02-06 15:42:14,885 ERROR Security Model failure for device ('18.226.181.199', 42514): Unknown SNMP community name encountered
 ```
 
-If this error occurs, check if the appropriate community is defined under `traps.communities` in `values.yaml`. See the 
+If this error occurs, check if the appropriate community is defined under `traps.communities` in `values.yaml`. See the
 following example of a `public` community configuration:
 ```yaml
 traps:
   communities:
-    public:
-      communityIndex:
-      contextEngineId:
-      contextName:
-      tag:
-      securityName:
+    2c:
+      - public
 ```
 
 ## Unknown SNMP security name encountered

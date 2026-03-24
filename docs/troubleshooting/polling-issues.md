@@ -58,7 +58,7 @@ IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6
 ///
 
 If you put in only the IP address (for example, `127.0.0.1`), then errors will be ignored for all of its devices (like `127.0.0.1:161`,
-`127.0.0.1:163`...). If you put the IP address and host as `{host}:{port}`, that means the error will be ignored only for this device.
+`127.0.0.1:163`...). If you put the IP address and host as `{IP}:{port}`, that means the error will be ignored only for this device.
 
 ## Walking a device takes too much time
 
