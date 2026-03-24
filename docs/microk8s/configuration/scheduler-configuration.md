@@ -30,7 +30,7 @@ The default value is `WARNING`.
 
 ### Define resource requests and limits
 
-To change the resource requests ad limits for cpu and memory, modify the `resources` section of the scheduler configuration.
+To change the resource requests and limits for cpu and memory, modify the `resources` section of the scheduler configuration.
 
 ```yaml
 scheduler:

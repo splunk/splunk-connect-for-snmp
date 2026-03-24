@@ -1,4 +1,4 @@
-#Deployment Configuration
+# Deployment Configuration
 
 The `values.yaml` is the main point of SC4SNMP management. You can check all the default values of Helm dependencies using the following command:
 
