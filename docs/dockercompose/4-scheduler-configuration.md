@@ -7,7 +7,7 @@
 | `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to this file on the host |
 
 !!! info "Full reference"
-    For the complete reference on profiles, groups, and custom translations, see [Profiles configuration](../configuration/profiles.md) and [Groups configuration](../configuration/groups.md).
+    For the complete reference on profile types, conditions, groups, and custom translations, see [Profiles configuration](../configuration/profiles.md) and [Groups configuration](../configuration/groups.md).
 
 ## Configuration
 

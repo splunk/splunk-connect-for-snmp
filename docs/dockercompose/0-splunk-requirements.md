@@ -50,5 +50,5 @@ See the following prerequisites for the Splunk Connect for SNMP.
 
 2. Create or obtain a new Splunk HTTP Event Collector token and the correct HTTPS endpoint.
 3. Verify the token using [curl](https://docs.splunk.com/Documentation/Splunk/8.1.3/Data/FormateventsforHTTPEventCollector). The endpoint must use a publicly trusted certificate authority.
-4. Use the shared IP address for SNMP traps. Simple and POC deployments will use the same IP address as the host server. For an HA deployment, use the management interface and the IP address of each cluster member. 
-5. Obtain the IP address of an internal DNS server that can resolve the Splunk Endpoint.
+
+Once the above steps are complete, proceed to [Install Docker](./1-install-docker.md).

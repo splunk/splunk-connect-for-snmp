@@ -43,7 +43,7 @@ Once all containers are running, confirm that data is reaching Splunk.
 
 ### Verify traps
 
-To verify that trap events are being received, send a test trap from any Linux machine that has `snmp-utils` installed (replace `<SC4SNMP_HOST_IP>` with the IP address of the host running SC4SNMP):
+To verify that trap events are being received, send a test trap from any Linux machine that has the `snmp` package installed (replace `<SC4SNMP_HOST_IP>` with the IP address of the host running SC4SNMP):
 
 ```shell
 snmptrap -v2c -c public <SC4SNMP_HOST_IP> 123 1.3.6.1.2.1.1.4 1.3.6.1.2.1.1.4 s test
@@ -75,6 +75,23 @@ And for metrics:
 
 !!! info
     If no data appears after one full `walk_interval`, check the worker-poller logs for errors: `sudo docker logs <worker-poller-container-name>`. For common polling problems see the [Troubleshooting](../troubleshooting/polling-issues.md) section.
+
+## Applying configuration changes
+
+To apply any change to `.env`, `inventory.csv`, `scheduler-config.yaml`, or `traps-config.yaml`, run the same command from inside the `docker_compose` directory:
+
+```shell
+sudo docker compose up -d
+```
+
+Docker Compose will recreate only the containers affected by the change. Existing data in MongoDB is preserved. After running the command, verify the containers are still running:
+
+```shell
+sudo docker compose ps
+```
+
+!!! note
+    After an inventory change, SC4SNMP schedules a new walk for any added or modified device. Data for that device will not appear in Splunk until the walk completes. Walk duration depends on the device size and the configured `walk_interval`.
 
 ## Uninstall the app
 

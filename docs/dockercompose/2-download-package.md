@@ -36,12 +36,7 @@ address,port,version,community,secret,securityEngine,walk_interval,profiles,smar
 ```yaml
 communities:
   2c:
-    public:
-      communityIndex:
-      contextEngineId:
-      contextName:
-      tag:
-      securityName:
+    - public
 profiles:
   simple_profile:
     frequency: 300

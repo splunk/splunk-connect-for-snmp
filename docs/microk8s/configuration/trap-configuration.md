@@ -179,8 +179,8 @@ traps:
 ```
 
 ### Define log level
-The log level for trap can be set by changing the value for the `logLevel` key. The allowed values are`DEBUG`, `INFO`, `WARNING`, or `ERROR`. 
-The default value is `WARNING`.
+The log level for trap can be set by changing the value for the `logLevel` key. The allowed values are `DEBUG`, `INFO`, `WARNING`, or `ERROR`.
+The default value is `INFO`.
 
 ### Define annotations
 In case you need to append some annotations to the `trap` service, you can do so by setting `traps.service.annotations`, for example:

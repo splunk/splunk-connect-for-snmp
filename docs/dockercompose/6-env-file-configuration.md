@@ -104,10 +104,12 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `METRICS_INDEXING_ENABLED`   | Details can be found in [append oid index part to the metrics](../microk8s/configuration/poller-configuration.md#append-oid-index-part-to-the-metrics) |
 | `POLL_BASE_PROFILES`         | Enable polling base profiles (with IF-MIB and SNMPv2-MIB)                                                                                              |
 | `IGNORE_NOT_INCREASING_OIDS` | Ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex: IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6                |
-| `WORKER_LOG_LEVEL`           | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                        |
-| `UDP_CONNECTION_TIMEOUT`     | Timeout in seconds for SNMP operations                                                                                                                 |
-| `MAX_OID_TO_PROCESS`         | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS   |
-| `MAX_REPETITIONS`            | The amount of requested next oids in response for each of varbinds in one request sent                                                               |
+| `WORKER_LOG_LEVEL`                      | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                        |
+| `WORKER_DISABLE_MONGO_DEBUG_LOGGING`    | Disable extensive MongoDB debug logging when `WORKER_LOG_LEVEL` is set to DEBUG                                                                        |
+| `UDP_CONNECTION_TIMEOUT`                | Timeout in seconds for SNMP operations                                                                                                                 |
+| `MAX_OID_TO_PROCESS`                    | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS   |
+| `MAX_REPETITIONS`                       | The amount of requested next oids in response for each of varbinds in one request sent                                                                 |
+| `ENABLE_FULL_WALK`                      | Enable full OID tree walk for all devices. When disabled (default), only `SNMPv2-MIB` is walked                                                        |
 
 #### Worker Poller
 | Variable                            | Description                                                                |
@@ -152,6 +154,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 |------------------------------|---------------------------------------------------------------------------------------------------| 
 | `INVENTORY_LOG_LEVEL`        | Logging level of the inventory, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL |
 | `CHAIN_OF_TASKS_EXPIRY_TIME` | Tasks expirations time in seconds                                                                 |
+| `ENABLE_FULL_WALK`                      | Enable full OID tree walk for all devices. When disabled (default), only `SNMPv2-MIB` is walked                                                        |
 
 ### Traps
 
@@ -160,10 +163,15 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `SNMP_V3_SECURITY_ENGINE_ID` | SNMPv3 TRAPs require the configuration SNMP Engine ID of the TRAP sending application for the USM users table of the TRAP receiving application for each USM user, for example: SNMP_V3_SECURITY_ENGINE_ID=80003a8c04,aab123456 |
 | `INCLUDE_SECURITY_CONTEXT_ID` | Controls whether to add the context_engine_id field to v3 trap events                                                                                                                                                           |
 | `TRAPS_PORT`                 | External port exposed for traps server                                                                                                                                                                                          |
-| `ENABLE_TRAPS_SECRETS`         | Enable usage of secrets for traps                           |
+| `ENABLE_TRAPS_SECRETS`               | Enable usage of secrets for traps                                                                                                                                                                                               |
+| `DISCOVER_ENGINE_ID`                 | Enable automatic engine ID discovery from incoming SNMPv3 trap datagrams. See [Engine ID Discovery](../configuration/traps.md#engine-id-discovery)                                                                              |
+| `TRAP_LOG_LEVEL`                     | Logging level of the traps container, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                                                                                         |
+| `TRAP_DISABLE_MONGO_DEBUG_LOGGING`   | Disable extensive MongoDB debug logging when `TRAP_LOG_LEVEL` is set to DEBUG                                                                                                                                                   |
 
 ### Scheduler
 
 | Variable              | Description                                                                                       |
 |-----------------------|---------------------------------------------------------------------------------------------------| 
 | `SCHEDULER_LOG_LEVEL` | Logging level of the scheduler, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL |
+
+Once all required variables are configured, proceed to [Deploy the app](./11-deploy-and-run.md).

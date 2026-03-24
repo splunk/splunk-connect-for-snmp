@@ -25,8 +25,8 @@ scheduler:
 ```
 
 ### Define log level
-The log level for the scheduler can be set by changing the value for the `logLevel` key. The allowed values are `DEBUG`, `INFO`, `WARNING`, or `ERROR`. 
-The default value is `WARNING`.
+The log level for the scheduler can be set by changing the value for the `logLevel` key. The allowed values are `DEBUG`, `INFO`, `WARNING`, or `ERROR`.
+The default value is `INFO`.
 
 ### Define resource requests and limits
 
