@@ -63,7 +63,7 @@ f146802a0a8d   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   
 090cc957b600   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel…"   19 seconds ago   Up 16 seconds                                                                                          docker_compose-worker-trap-1
 24aac5c89d80   ghcr.io/pysnmp/mibs/container:latest                             "/bin/sh -c '/app/lo…"   19 seconds ago   Up 18 seconds   8080/tcp                                                                               snmp-mibserver
 a5bef5a5a02c   bitnami/mongodb:6.0.9-debian-11-r5                               "/opt/bitnami/script…"   19 seconds ago   Up 18 seconds   27017/tcp                                                                              mongo
-76f966236c1b   bitnami/redis:7.2.1-debian-11-r0                                 "/opt/bitnami/script…"   19 seconds ago   Up 18 seconds   6379/tcp                                                                               redis
+76f966236c1b   redis:8.2.2                                                      "/opt/bitnami/script…"   19 seconds ago   Up 18 seconds   6379/tcp                                                                               redis
 163d880eaf8c   coredns/coredns:1.11.1                                           "/coredns -conf /Cor…"   19 seconds ago   Up 18 seconds   53/tcp, 53/udp                                                                         coredns
 ```
 
