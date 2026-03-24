@@ -1,27 +1,31 @@
 # An example of a polling scenario
 
-In the following example, there are 4 hosts you want to poll from: 
+In the following example, there are 4 hosts you want to poll from:
 
 1. `10.202.4.201:161`
 2. `10.202.4.202:161`
 3. `10.202.4.203:161`
 4. `10.202.4.204:163`
-   
-To retrieve data from the device efficiently, first determine the specific data needed. Instead of walking through 
-the entire `1.3.6.1` or polling only `SNMPv2-MIB`, limit or expand the walk to poll the necessary data. Configure the `IF-MIB` family for interfaces and 
-the `UCD-SNMP-MIB` for CPU-related statistics. In the `scheduler` section of `values.yaml`, define the target group and 
-establish the polling parameters, known as the profile, to gather the desired data precisely. See the following example: 
+
+To retrieve data from the device efficiently, first determine the specific data needed. Configure the `IF-MIB` family for interfaces and
+the `UCD-SNMP-MIB` for CPU-related statistics. Define the target group and establish the polling parameters, known as the profile, to gather the desired data precisely.
+
+!!! info "Walk scope"
+    By default, SC4SNMP only walks `SNMPv2-MIB`. You have two options to expand the scope:
+
+    - **Define a walk profile** — add a profile with `condition: type: "walk"` to walk only the MIB families you need.
+    - **Enable full walk** — set `enableFullWalk: true` in `values.yaml` (microk8s) or `ENABLE_FULL_WALK=true` in `.env` (docker compose) to walk the entire OID tree.
+
+    In the example below, no walk profile is used. `switch_profile` polls specific OIDs every 60 seconds. SC4SNMP will walk only `SNMPv2-MIB` by default.
+
+/// tab | microk8s
+
+In the `scheduler` section of `values.yaml`, define the profile and group:
 
 ```yaml
 scheduler:
   logLevel: "INFO"
   profiles: |
-    small_walk:
-      condition:
-        type: "walk"
-      varBinds:
-        - ["IF-MIB"]
-        - ["UCD-SNMP-MIB"]
     switch_profile:
       frequency: 60
       varBinds:
@@ -48,68 +52,84 @@ scheduler:
         port: 163
 ```
 
-It is required to pass the proper instruction of what to do for the SC4SNMP instance. To do this, append a new row
-to `poller.inventory`:
+Append a new row to `poller.inventory`:
 
 ```yaml
 poller:
   logLevel: "WARN"
   inventory: |
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    switch_group,,2c,public,,,2000,small_walk;switch_profile,,
+    switch_group,,2c,public,,,2000,switch_profile,,
 ```
 
-The provided example configuration will make:
+///
 
-1. Walk devices from `switch_group` with `IF-MIB` and `UCD-SNMP-MIB` every 2000 seconds.
-2. Poll specific `IF-MIB` fields and the whole `UCD-SNMP-MIB` every 60 seconds.
+/// tab | docker compose
 
-!!! info 
-    You can also limit the walk profile even more if you want to enhance the performance.
-
-It makes sense to put the textual values in the walk that are not required to be constantly monitored, and monitor only the metrics
-you are interested in:
-
-```
-small_walk:
-  condition:
-    type: "walk"
-  varBinds:
-    - ["IF-MIB", "ifDescr"]
-    - ["IF-MIB", "ifAdminStatus"]
-    - ["IF-MIB", "ifOperStatus"]
-    - ["IF-MIB", "ifName"]
-    - ["IF-MIB", "ifAlias"]
-    - ["IF-MIB", "ifIndex"]
-switch_profile:
-  frequency: 60
-  varBinds:
-    - ["IF-MIB", "ifInDiscards"]
-    - ["IF-MIB", "ifInErrors"]
-    - ["IF-MIB", "ifInOctets"]
-    - ["IF-MIB", "ifOutDiscards"]
-    - ["IF-MIB", "ifOutErrors"]
-    - ["IF-MIB", "ifOutOctets"]
-    - ["IF-MIB", "ifOutQLen"]
-```
-
-Afterwards, every metric object will be enriched with the textual values gathered from a walk process. See [here](snmp-data-format.md) for more information about SNMP format.
-
-
-Now you are ready to reload SC4SNMP. Run the following `helm3 upgrade` command:
+In `scheduler-config.yaml`, define the profile and group:
 
 ```yaml
+communities:
+  2c:
+    - public
+profiles:
+  switch_profile:
+    frequency: 60
+    varBinds:
+      - ["IF-MIB", "ifDescr"]
+      - ["IF-MIB", "ifAdminStatus"]
+      - ["IF-MIB", "ifOperStatus"]
+      - ["IF-MIB", "ifName"]
+      - ["IF-MIB", "ifAlias"]
+      - ["IF-MIB", "ifIndex"]
+      - ["IF-MIB", "ifInDiscards"]
+      - ["IF-MIB", "ifInErrors"]
+      - ["IF-MIB", "ifInOctets"]
+      - ["IF-MIB", "ifOutDiscards"]
+      - ["IF-MIB", "ifOutErrors"]
+      - ["IF-MIB", "ifOutOctets"]
+      - ["IF-MIB", "ifOutQLen"]
+      - ["UCD-SNMP-MIB"]
+groups:
+  switch_group:
+    - address: 10.202.4.201
+    - address: 10.202.4.202
+    - address: 10.202.4.203
+    - address: 10.202.4.204
+      port: 163
+```
+
+In `inventory.csv`, add a row for the group:
+
+```csv
+address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
+switch_group,,2c,public,,,2000,switch_profile,,
+```
+
+///
+
+The provided example configuration will poll specific `IF-MIB` fields and the whole `UCD-SNMP-MIB` every 60 seconds for all devices in `switch_group`.
+
+See [here](snmp-data-format.md) for more information about SNMP data format.
+
+Now you are ready to reload SC4SNMP.
+
+/// tab | microk8s
+
+Run the following `helm3 upgrade` command:
+
+```shell
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 ```
 
 See the new pod with the following `Running` -> `Completed` state command:
 
-```yaml
+```shell
 microk8s kubectl get pods -n sc4snmp -w
 ```
 
 See the following example output:
-```yaml
+```
 NAME                                                          READY   STATUS    RESTARTS   AGE
 snmp-splunk-connect-for-snmp-worker-sender-5bc5cf864b-cwmfw   1/1     Running   0          5h52m
 snmp-splunk-connect-for-snmp-worker-poller-76dcfb5896-d55pd   1/1     Running   0          5h52m
@@ -129,13 +149,13 @@ snmp-splunk-connect-for-snmp-inventory-g4bs7                  0/1     Completed 
 
 Check the pod's logs to make sure everything was reloaded correctly, using the following command:
 
-```yaml
+```shell
 microk8s kubectl logs -f snmp-splunk-connect-for-snmp-inventory-g4bs7  -n sc4snmp
 ```
 
 See the following example output:
 
-```yaml
+```
 Successfully connected to redis://snmp-redis-master:6379/0
 Successfully connected to redis://snmp-redis-master:6379/1
 Successfully connected to mongodb://snmp-mongodb:27017
@@ -147,20 +167,53 @@ Successfully connected to http://snmp-mibserver/index.csv
 {"message": "New Record address='10.202.4.204' port=163 version='2c' community='public' secret=None security_engine=None walk_interval=2000 profiles=['switch_profile'] smart_profiles=True delete=False", "time": "2022-09-05T14:30:30.607641", "level": "INFO"}
 ```
 
+///
+
+/// tab | docker compose
+
+Run the following command from inside the `docker_compose` directory:
+
+```shell
+sudo docker compose up -d
+```
+
+Check that all containers are running:
+
+```shell
+sudo docker compose ps
+```
+
+To verify that the inventory was loaded correctly, check the scheduler logs:
+
+```shell
+sudo docker logs sc4snmp-scheduler
+```
+
+You should see log lines similar to:
+
+```
+{"message": "New Record address='10.202.4.201' port=161 version='2c' community='public' secret=None security_engine=None walk_interval=2000 profiles=['switch_profile'] smart_profiles=True delete=False", "level": "INFO"}
+{"message": "New Record address='10.202.4.202' port=161 version='2c' community='public' secret=None security_engine=None walk_interval=2000 profiles=['switch_profile'] smart_profiles=True delete=False", "level": "INFO"}
+{"message": "New Record address='10.202.4.203' port=161 version='2c' community='public' secret=None security_engine=None walk_interval=2000 profiles=['switch_profile'] smart_profiles=True delete=False", "level": "INFO"}
+{"message": "New Record address='10.202.4.204' port=163 version='2c' community='public' secret=None security_engine=None walk_interval=2000 profiles=['switch_profile'] smart_profiles=True delete=False", "level": "INFO"}
+```
+
+///
+
 In some time (depending on how long the walk takes), we will see events using the following query:
 
-```yaml
+```
 | mpreview index=netmetrics | search profiles=switch_profile
 ```
 
 When groups are used, we can also use querying by the group name, for example:
 
-```yaml
+```
 | mpreview index=netmetrics | search group=switch_group
 ```
 
 Querying by profiles/group in Splunk is only possible in the metrics index. Every piece of data being sent
-by SC4SNMP is formed based on the MIB file's definition of the SNMP object's index. The object is forwarded to an event 
+by SC4SNMP is formed based on the MIB file's definition of the SNMP object's index. The object is forwarded to an event
 index only if it does not have any metric value inside.
 
 The following is a Splunk `raw` metrics example:

@@ -61,6 +61,9 @@ You should see one event per trap command sent.
 
 SC4SNMP must complete an SNMP walk on each device before polling data appears in Splunk. The walk runs automatically on first startup and then repeats every `walk_interval` seconds. Depending on the size of the device, this may take a few minutes.
 
+!!! info "Default walk scope"
+    By default, SC4SNMP only walks `SNMPv2-MIB`. If you expect interface or other MIB data and see only limited results, define a walk profile in your scheduler config file (see [Profiles configuration](../configuration/profiles.md#walk-profile)) or set `ENABLE_FULL_WALK=true` in `.env`.
+
 Once the walk completes, search in Splunk for polling events:
 
 ```

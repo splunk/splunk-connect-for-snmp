@@ -74,3 +74,6 @@ SPLUNK_HEC_INDEX_METRICS=netmetrics
 
 !!! note
     The profile name used in the inventory file (`simple_profile`) must match a profile defined in the scheduler config file. If the name does not match, SC4SNMP will not poll the device.
+
+!!! info "Default walk scope"
+    By default, SC4SNMP only walks `SNMPv2-MIB`. To expand the walk scope, define a walk profile in the scheduler config file (see [Profiles configuration](../configuration/profiles.md#walk-profile)) or set `ENABLE_FULL_WALK=true` in `.env` to walk the full OID tree.
