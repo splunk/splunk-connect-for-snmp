@@ -161,7 +161,6 @@ done
 validate_paths() {
   step "Validating paths"
 
-  # FIX 1: Correct secret folder path (was wrong in original — data/sample_v3_values doesn't exist)
   SECRET_FOLDER="${INT_TEST_DIR}/sample_v3_values"
   if [[ ! -d "$SECRET_FOLDER" ]]; then
     error "Secret folder not found: $SECRET_FOLDER"
