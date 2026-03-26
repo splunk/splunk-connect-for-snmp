@@ -306,7 +306,9 @@ def update_groups_compose(groups):
         raise
 
 
-def upgrade_env_compose(variable, new_value, env_path=".env"):
+def upgrade_env_compose(variable, new_value, env_path=None):
+    if env_path is None:
+        env_path = str(BASE_DIR / "docker_compose" / ".env")
     try:
         if not variable:
             raise ValueError("Variable name cannot be empty")
@@ -368,26 +370,24 @@ def create_v3_secrets_compose():
 
 
 def wait_for_containers_initialization():
-    script_body = """ 
+    script_body = """#!/bin/bash
     while true; do
         CONTAINERS_SC4SNMP=$(sudo docker ps | grep "sc4snmp\\|worker-poller\\|worker-sender\\|worker-trap" | grep -v "Name" | wc -l)
         if [ "$CONTAINERS_SC4SNMP" -gt 0 ]; then
-          CONTAINERS_UP=$(sudo docker ps | grep "sc4snmp\\|worker-poller\\|worker-sender\\|worker-trap" | grep "Up" | wc -l)
-          CONTAINERS_EXITED=$(sudo docker ps | grep "sc4snmp\\|worker-poller\\|worker-sender\\|worker-trap" | grep "Exited" | wc -l)
-          CONTAINERS_TOTAL=$CONTAINERS_SC4SNMP
-
-          if [ "$CONTAINERS_UP" -eq "$CONTAINERS_TOTAL" ] || \
-             { [ "$CONTAINERS_EXITED" -eq 1 ] && [ "$((CONTAINERS_UP + CONTAINERS_EXITED))" -eq "$CONTAINERS_TOTAL" ]; }; then
-            echo $(green "All 'sc4snmp' containers are ready.")
+        CONTAINERS_UP=$(sudo docker ps | grep "sc4snmp\\|worker-poller\\|worker-sender\\|worker-trap" | grep "Up" | wc -l)
+        CONTAINERS_EXITED=$(sudo docker ps | grep "sc4snmp\\|worker-poller\\|worker-sender\\|worker-trap" | grep "Exited" | wc -l)
+        CONTAINERS_TOTAL=$CONTAINERS_SC4SNMP
+        if [ "$CONTAINERS_UP" -eq "$CONTAINERS_TOTAL" ] || \\
+            { [ "$CONTAINERS_EXITED" -eq 1 ] && [ "$((CONTAINERS_UP + CONTAINERS_EXITED))" -eq "$CONTAINERS_TOTAL" ]; }; then
+            echo "All 'sc4snmp' containers are ready."
             break
-          fi
-
-          echo $(yellow "Waiting for all 'sc4snmp' containers to be ready...")
+        fi
+        echo "Waiting for all 'sc4snmp' containers to be ready..."
         else
-          echo $(yellow "No 'sc4snmp' containers found. Waiting for them to appear...")
+        echo "No 'sc4snmp' containers found. Waiting for them to appear..."
         fi
         sleep 1
-    done 
+    done
     """
     with open("check_for_containers.sh", "w") as fp:
         fp.write(script_body)

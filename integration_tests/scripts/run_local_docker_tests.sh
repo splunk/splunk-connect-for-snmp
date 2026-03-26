@@ -68,44 +68,41 @@ update_env() {
   local token="$1"
   step "Updating ${ENV_FILE}"
 
-  set_var() {
-    local key="$1" val="$2"
-    grep -v "^${key}=" "$ENV_FILE" > "${ENV_FILE}.tmp" || true
-    echo "${key}=${val}" >> "${ENV_FILE}.tmp"
-    mv "${ENV_FILE}.tmp" "$ENV_FILE"
-    info "  ${key}=${val}"
-  }
-
   local host_ip
   host_ip="$(hostname -I | awk '{print $1}')"
 
   SECRET_FOLDER="${INT_TEST_DIR}/sample_v3_values"
 
-  set_var "SPLUNK_HEC_HOST"       "$host_ip"
-  set_var "SPLUNK_HEC_TOKEN"      "$token"
-  set_var "SPLUNK_HEC_INSECURESSL" "true"
+  set_env_var "$ENV_FILE" "SC4SNMP_IMAGE"         "snmp-local"
+  set_env_var "$ENV_FILE" "SC4SNMP_TAG"           "latest"
+  set_env_var "$ENV_FILE" "SC4SNMP_VERSION"       "latest"
 
-  set_var "SECRET_FOLDER_PATH"            "$(realpath "$SECRET_FOLDER")"
-  set_var "ENABLE_TRAPS_SECRETS"          "true"
-  set_var "ENABLE_WORKER_POLLER_SECRETS"  "true"
+  set_env_var "$ENV_FILE" "SPLUNK_HEC_HOST"       "$host_ip"
+  set_env_var "$ENV_FILE" "SPLUNK_HEC_TOKEN"      "$token"
+  set_env_var "$ENV_FILE" "SPLUNK_HEC_INSECURESSL" "true"
 
-  set_var "COREFILE_ABS_PATH" \
+  set_env_var "$ENV_FILE" "SECRET_FOLDER_PATH"            "$(realpath "$SECRET_FOLDER")"
+  set_env_var "$ENV_FILE" "ENABLE_TRAPS_SECRETS"          "true"
+  set_env_var "$ENV_FILE" "ENABLE_WORKER_POLLER_SECRETS"  "true"
+
+  set_env_var "$ENV_FILE" "COREFILE_ABS_PATH" \
     "$(realpath "${DOCKER_COMPOSE_LOCAL}/Corefile")"
 
-  set_var "SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
+  set_env_var "$ENV_FILE" "SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
     "$(realpath "${INT_TEST_DIR}/configs/scheduler-config.yaml")"
 
-  set_var "TRAPS_CONFIG_FILE_ABSOLUTE_PATH" \
+  set_env_var "$ENV_FILE" "TRAPS_CONFIG_FILE_ABSOLUTE_PATH" \
     "$(realpath "${INT_TEST_DIR}/configs/traps-config.yaml")"
 
-  set_var "INVENTORY_FILE_ABSOLUTE_PATH" \
+  set_env_var "$ENV_FILE" "INVENTORY_FILE_ABSOLUTE_PATH" \
     "$(realpath "${INT_TEST_DIR}/configs/inventory-tests.csv")"
 
-  set_var "IPv6_ENABLED"          "false"
-  set_var "COREDNS_ADDRESS_IPv6"  ""
+  set_env_var "$ENV_FILE" "IPv6_ENABLED"          "false"
+  set_env_var "$ENV_FILE" "COREDNS_ADDRESS_IPv6"  ""
+  set_env_var "$ENV_FILE" "ENABLE_FULL_WALK"      "true"
 
   sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" "${INT_TEST_DIR}/configs/inventory-tests.csv"
-
+}
 # ===== START SNMP SIMULATORS =====
 start_snmp() {
   step "Starting SNMP simulators"
@@ -133,6 +130,9 @@ start_snmp() {
 start_compose() {
   step "Starting SC4SNMP via Docker Compose"
 
+  info "Building snmp-local image..."
+  sudo docker build -t snmp-local .
+
   cd "${DOCKER_COMPOSE_LOCAL}"
 
   COMPOSE="sudo docker compose"
@@ -146,9 +146,6 @@ start_compose() {
   fi
 
   sleep 3
-
-  info "Building snmp-local image..."
-  sudo docker build -t snmp-local .
 
   info "Starting stack..."
   $COMPOSE -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d

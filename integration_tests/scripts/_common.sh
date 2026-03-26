@@ -82,6 +82,19 @@ parse_common_args() {
   done
 }
 
+# ===== ENV FILE HELPERS =====
+# Replace or append a KEY=VALUE pair in a .env file.
+#   $1 — target .env file path
+#   $2 — variable name
+#   $3 — value
+set_env_var() {
+  local file="$1" key="$2" val="$3"
+  grep -v "^${key}=" "$file" > "${file}.tmp" || true
+  echo "${key}=${val}" >> "${file}.tmp"
+  mv "${file}.tmp" "$file"
+  info "  ${key}=${val}"
+}
+
 # ===== INSTALL DOCKER + DOCKER COMPOSE =====
 install_docker() {
   local _old_opts

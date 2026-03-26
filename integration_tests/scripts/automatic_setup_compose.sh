@@ -113,113 +113,44 @@ cd "$INT_TEST_DIR"
 chmod u+x "$SCRIPT_DIR/prepare_splunk.sh"
 "$SCRIPT_DIR/prepare_splunk.sh"
 echo $(green "Setting up docker compose configuration")
-cp ../docker_compose/* .
+DOCKER_COMPOSE_LOCAL="${INT_TEST_DIR}/docker_compose"
+COMPOSE_FILE="${DOCKER_COMPOSE_LOCAL}/docker-compose.yaml"
+ENV_FILE="${DOCKER_COMPOSE_LOCAL}/.env"
+rm -rf "$DOCKER_COMPOSE_LOCAL"
+cp -r "$REPO_ROOT/docker_compose" "$DOCKER_COMPOSE_LOCAL"
 
-
-COREFILE="Corefile"
 SECRET_FOLDER="sample_v3_values"
-
-# Get the absolute paths of the files
 
 SCHEDULER_CONFIG_FILE="$CONFIG_DIR/scheduler-config.yaml"
 TRAPS_CONFIG_FILE="$CONFIG_DIR/traps-config.yaml"
 INVENTORY_FILE="$CONFIG_DIR/inventory-tests.csv"
 
-SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=$(realpath "$SCHEDULER_CONFIG_FILE")
-TRAPS_CONFIG_FILE_ABSOLUTE_PATH=$(realpath "$TRAPS_CONFIG_FILE")
-INVENTORY_FILE_ABSOLUTE_PATH=$(realpath "$INVENTORY_FILE")
-
-
-COREFILE_ABS_PATH=$(realpath "$COREFILE")
 SPLUNK_HEC_HOST=$(hostname -I | cut -d " " -f1)
 SPLUNK_HEC_TOKEN=$(cat hec_token)
-SECRET_FOLDER_PATH=$(realpath "$SECRET_FOLDER")
 
-# Temporary file to store the updated .env content
-TEMP_ENV_FILE=".env.tmp"
+set_var() {
+  local key="$1" val="$2"
+  grep -v "^${key}=" "$ENV_FILE" > "${ENV_FILE}.tmp" || true
+  echo "${key}=${val}" >> "${ENV_FILE}.tmp"
+  mv "${ENV_FILE}.tmp" "$ENV_FILE"
+}
 
-# Update or add the variables in the .env file
-awk -v scheduler_path="$SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH" \
-    -v traps_path="$TRAPS_CONFIG_FILE_ABSOLUTE_PATH" \
-    -v inventory_path="$INVENTORY_FILE_ABSOLUTE_PATH" \
-    -v corefile_path="$COREFILE_ABS_PATH" \
-    -v splunk_hec_host="$SPLUNK_HEC_HOST" \
-    -v splunk_hec_token="$SPLUNK_HEC_TOKEN" \
-    -v secret_folder_path="$SECRET_FOLDER_PATH" \
-    -v enable_worker_poller_secrets="true" \
-    '
-    BEGIN {
-        updated["SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH"] = 0;
-        updated["TRAPS_CONFIG_FILE_ABSOLUTE_PATH"] = 0;
-        updated["INVENTORY_FILE_ABSOLUTE_PATH"] = 0;
-        updated["COREFILE_ABS_PATH"] = 0;
-        updated["SPLUNK_HEC_HOST"] = 0;
-        updated["SPLUNK_HEC_TOKEN"] = 0;
-        updated["SECRET_FOLDER_PATH"] = 0;
-        updated["ENABLE_WORKER_POLLER_SECRETS"] = 0;
-    }
-    {
-        if ($1 == "SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=") {
-            print "SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=" scheduler_path;
-            updated["SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH"] = 1;
-        } else if ($1 == "TRAPS_CONFIG_FILE_ABSOLUTE_PATH=") {
-            print "TRAPS_CONFIG_FILE_ABSOLUTE_PATH=" traps_path;
-            updated["TRAPS_CONFIG_FILE_ABSOLUTE_PATH"] = 1;
-        } else if ($1 == "INVENTORY_FILE_ABSOLUTE_PATH=") {
-            print "INVENTORY_FILE_ABSOLUTE_PATH=" inventory_path;
-            updated["INVENTORY_FILE_ABSOLUTE_PATH"] = 1;
-        } else if ($1 == "COREFILE_ABS_PATH=") {
-            print "COREFILE_ABS_PATH=" corefile_path;
-            updated["COREFILE_ABS_PATH"] = 1;
-        } else if ($1 == "SPLUNK_HEC_HOST=") {
-            print "SPLUNK_HEC_HOST=" splunk_hec_host;
-            updated["SPLUNK_HEC_HOST"] = 1;
-        } else if ($1 == "SPLUNK_HEC_TOKEN=") {
-            print "SPLUNK_HEC_TOKEN=" splunk_hec_token;
-            updated["SPLUNK_HEC_TOKEN"] = 1;
-        } else if ($1 == "SECRET_FOLDER_PATH=") {
-            print "SECRET_FOLDER_PATH=" secret_folder_path;
-            updated["SECRET_FOLDER_PATH"] = 1;
-        } else if ($1 == "ENABLE_WORKER_POLLER_SECRETS=") {
-            print "ENABLE_WORKER_POLLER_SECRETS=" enable_worker_poller_secrets;
-            updated["ENABLE_WORKER_POLLER_SECRETS"] = 1;
-        } else {
-            print $0;
-        }
-    }
-    END {
-        if (updated["SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH"] == 0) {
-            print "SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=" scheduler_path;
-        }
-        if (updated["TRAPS_CONFIG_FILE_ABSOLUTE_PATH"] == 0) {
-            print "TRAPS_CONFIG_FILE_ABSOLUTE_PATH=" traps_path;
-        }
-        if (updated["INVENTORY_FILE_ABSOLUTE_PATH"] == 0) {
-            print "INVENTORY_FILE_ABSOLUTE_PATH=" inventory_path;
-        }
-        if (updated["COREFILE_ABS_PATH"] == 0) {
-            print "COREFILE_ABS_PATH=" corefile_path;
-        }
-        if (updated["SPLUNK_HEC_HOST"] == 0) {
-            print "SPLUNK_HEC_HOST=" splunk_hec_host;
-        }
-        if (updated["SPLUNK_HEC_TOKEN"] == 0) {
-            print "SPLUNK_HEC_TOKEN=" splunk_hec_token;
-        }
-        if (updated["SECRET_FOLDER_PATH"] == 0) {
-            print "SECRET_FOLDER_PATH=" secret_folder_path;
-        }
-        if (updated["ENABLE_WORKER_POLLER_SECRETS"] == 0) {
-            print "ENABLE_WORKER_POLLER_SECRETS=" enable_worker_poller_secrets;
-        }
-    }
-    ' .env > "$TEMP_ENV_FILE"
+set_var "SC4SNMP_IMAGE"                          "snmp-local"
+set_var "SC4SNMP_TAG"                            "latest"
+set_var "SC4SNMP_VERSION"                        "latest"
+set_var "SPLUNK_HEC_HOST"                        "$SPLUNK_HEC_HOST"
+set_var "SPLUNK_HEC_TOKEN"                       "$SPLUNK_HEC_TOKEN"
+set_var "SPLUNK_HEC_INSECURESSL"                 "true"
+set_var "SECRET_FOLDER_PATH"                     "$(realpath "$SECRET_FOLDER")"
+set_var "ENABLE_WORKER_POLLER_SECRETS"           "true"
+set_var "ENABLE_TRAPS_SECRETS"                   "true"
+set_var "ENABLE_FULL_WALK"                       "true"
+set_var "COREFILE_ABS_PATH"                      "$(realpath "${DOCKER_COMPOSE_LOCAL}/Corefile")"
+set_var "SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH"    "$(realpath "$SCHEDULER_CONFIG_FILE")"
+set_var "TRAPS_CONFIG_FILE_ABSOLUTE_PATH"        "$(realpath "$TRAPS_CONFIG_FILE")"
+set_var "INVENTORY_FILE_ABSOLUTE_PATH"           "$(realpath "$INVENTORY_FILE")"
 
-# Replace the old .env file with the updated one
-mv "$TEMP_ENV_FILE" .env
-
-
-sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" $INVENTORY_FILE
+sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" "$INVENTORY_FILE"
 echo $(green "Running SNMP simulators in Docker")
 sudo docker run -d -p 161:161/udp tandrup/snmpsim
 sudo docker run -d -p 1162:161/udp tandrup/snmpsim
@@ -229,7 +160,7 @@ sudo docker run -d -p 1165:161/udp tandrup/snmpsim
 sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
 echo $(green "Running up Docker Compose environment")
-sudo docker compose up -d
+sudo docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d
 wait_for_containers_to_be_up
 
 sudo docker ps
