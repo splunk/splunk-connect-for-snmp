@@ -348,7 +348,12 @@ def update_traps_secrets_compose(secrets):
 
 
 def upgrade_docker_compose():
-    os.system("sudo docker compose up -d")
+    compose_dir = BASE_DIR / "docker_compose"
+    os.system(
+        f"sudo docker compose -f {compose_dir}/docker-compose.yaml --env-file {compose_dir}/.env up -d"
+    )
+
+    # os.system("sudo docker compose up -d")
 
 
 def create_v3_secrets_compose():
