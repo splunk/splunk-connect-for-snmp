@@ -98,16 +98,16 @@ def setup_profile(request):
     else:
         update_profiles_compose(profile)
         update_inventory_compose(
-            [f"{trap_external_ip},,2c,public,,,60,generic_switch,,"]
+            [f"{trap_external_ip},,2c,public,,,600,generic_switch,,"]
         )
         upgrade_docker_compose()
     time.sleep(30)
     yield
     if str(deployment) == "microk8s":
-        upgrade_helm_microk8s([f"{trap_external_ip},,2c,public,,,60,generic_switch,,t"])
+        upgrade_helm_microk8s([f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"])
     else:
         update_inventory_compose(
-            [f"{trap_external_ip},,2c,public,,,60,generic_switch,,t"]
+            [f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"]
         )
         upgrade_docker_compose()
     time.sleep(20)
