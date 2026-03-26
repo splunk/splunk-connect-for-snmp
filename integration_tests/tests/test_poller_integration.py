@@ -104,7 +104,9 @@ def setup_profile(request):
     time.sleep(30)
     yield
     if str(deployment) == "microk8s":
-        upgrade_helm_microk8s([f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"])
+        upgrade_helm_microk8s(
+            [f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"]
+        )
     else:
         update_inventory_compose(
             [f"{trap_external_ip},,2c,public,,,600,generic_switch,,t"]
