@@ -17,6 +17,27 @@ def pytest_addoption(parser):
         default="127.0.0.1",
         help="Device Simulator external IP",
     )
+    parser.addoption(
+        "--splunk-host",
+        action="store",
+        dest="splunk-host",
+        default="localhost",
+        help="Splunk host to connect to",
+    )
+    parser.addoption(
+        "--splunk-user",
+        action="store",
+        dest="splunk-user",
+        default="admin",
+        help="Splunk username for authentication",
+    )
+    parser.addoption(
+        "--splunk-password",
+        action="store",
+        dest="splunk-password",
+        default="changeme",
+        help="Splunk password for authentication",
+    )
 
 
 @pytest.fixture(scope="function")
