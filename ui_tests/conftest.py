@@ -21,7 +21,7 @@ def pytest_addoption(parser):
         "--splunk-host",
         action="store",
         dest="splunk-host",
-        default="localhost",
+        default="127.0.0.1",
         help="Splunk host to connect to",
     )
     parser.addoption(
