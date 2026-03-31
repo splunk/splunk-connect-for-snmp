@@ -2644,14 +2644,14 @@ Smart profiles are useful when you have many devices of the same kind, and you d
 <p>If you only want to enable the option of <code>static_profile</code> polling for the host <code>10.202.4.202</code>, you would configure a similar inventory:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-<span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span>
-<span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,static_profile,f,</span>
+<span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete</span>
+<span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,static_profile,f,,</span>
 </code></pre></div>
 <p>If you want to enable checking the <code>10.202.4.202</code> device against smart profiles, you need to set <code>smart_profiles</code> to <code>t</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-<span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span>
-<span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,,t,</span>
+<span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete</span>
+<span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,,t,,</span>
 </code></pre></div>
 <p>Afterwards, if the device <code>sysDescr</code> matches the <code>'.*linux.*'</code> filter, the <code>smart_profile</code> profile will be polled.</p>
 <h2 id="varbinds-configuration">varBinds configuration<a class="headerlink" href="#varbinds-configuration" title="Permanent link">¶</a></h2>
@@ -2717,8 +2717,8 @@ defined in <code>walk_interval</code> field from <code>inventory</code>. If mult
 <p>See the following example on how to use <code>walk</code> in profiles:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-<span class="w">    </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span>
-<span class="w">    </span><span class="no">10.202.4.202,,2c,public,,,2000,small_walk,,</span>
+<span class="w">    </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete</span>
+<span class="w">    </span><span class="no">10.202.4.202,,2c,public,,,2000,small_walk,,,</span>
 </code></pre></div>
 <div class="admonition info">
 <p class="admonition-title">Info</p>

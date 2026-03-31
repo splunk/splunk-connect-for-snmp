@@ -2705,12 +2705,16 @@ which may overload the SNMP device when executed too often. It is used by the SC
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"WARN"</span>
 <span class="w">  </span><span class="nt">enableFullWalk</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">  </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-<span class="w">    </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span>
-<span class="w">    </span><span class="no">10.202.4.202,,2c,public,,,2000,,,</span>
+<span class="w">    </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete</span>
+<span class="w">    </span><span class="no">10.202.4.202,,2c,public,,,2000,,,,</span>
 </code></pre></div>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
-<p>The header’s line (<code>address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</code>) is necessary for the correct execution of SC4SNMP. Do not remove it.</p>
+<p>The header’s line (<code>address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete</code>) is necessary for the correct execution of SC4SNMP. Do not remove it.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Starting with version 1.15.0, the max_oid_to_process field has been introduced as an optional addition to the inventory header. This update is backward compatible, and existing inventory headers remain fully supported.</p>
 </div>
 <h3 id="default-walk-scope">Default walk scope<a class="headerlink" href="#default-walk-scope" title="Permanent link">¶</a></h3>
 <p>The default walk profile is polling only <code>SNMPv2-MIB</code>. If the full oid tree walk is required it can be enabled by changing <code>enableFullWalk</code> flag to true.</p>
@@ -2882,8 +2886,14 @@ the data in Splunk. You can disable it with the following <code>pollBaseProfiles
 <td>NO</td>
 </tr>
 <tr>
+<td><code>max_oid_to_process</code></td>
+<td>Maximum number of OIDs requested from SNMP Agent at once. Can be also set globally to all devices by setting <a href="../values-params-description/#poller">poller.maxOidToProcess</a></td>
+<td><code>70</code></td>
+<td>NO</td>
+</tr>
+<tr>
 <td><code>delete</code></td>
-<td>A flag that defines if the inventory should be deleted from the scheduled tasks for WALKs and GETs. Its allowed value are <code>true</code>or <code>false</code>. The default value is <code>false</code>.</td>
+<td>A flag that defines if the inventory should be deleted from the scheduled tasks for WALKs and GETs. Its allowed value are <code>true</code>or <code>false</code>.</td>
 <td><code>false</code></td>
 <td>NO</td>
 </tr>
@@ -2892,9 +2902,9 @@ the data in Splunk. You can disable it with the following <code>pollBaseProfiles
 <p>See the following example:
 </p><div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-<span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span>
-<span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,my_profile1,,</span>
-<span class="w">      </span><span class="no">example_group_1,,2c,public,,,2000,my_profile2;my_profile3,,</span>
+<span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete</span>
+<span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,my_profile1,,,</span>
+<span class="w">      </span><span class="no">example_group_1,,2c,public,,,2000,my_profile2;my_profile3,,,</span>
 </code></pre></div>
 <h3 id="update-inventory">Update Inventory<a class="headerlink" href="#update-inventory" title="Permanent link">¶</a></h3>
 <p>Adding new devices for <code>values.yaml</code> is resource expensive, and can impact performance. As it interacts with hardware networking devices,
@@ -2926,8 +2936,8 @@ the next walk process for the host. The walk happens every <code>walk_interval</
 <p>You can update inventory by making changes outside of the <code>values.yaml</code>. It can be put into a separate csv file and upgraded
 using <code>--set-file poller.inventory=&lt;path_to_file&gt;</code>.</p>
 <p>See the following example of an CSV file configuration:</p>
-<div class="highlight"><pre><span></span><code>address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-10.202.4.202,,2c,public,,,3000,my_profile,,
+<div class="highlight"><pre><span></span><code>address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+10.202.4.202,,2c,public,,,3000,my_profile,,,
 </code></pre></div>
 <p>See the following example of an upgrade command with a CSV file:</p>
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>--set-file<span class="w"> </span>poller.inventory<span class="o">=</span>inventory.csv<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace

@@ -2852,8 +2852,8 @@ service<span class="w"> </span>snmpd<span class="w"> </span>start
 replacing the IP address <code>10.0.101.22</code> with the server IP address where the snmpd was configured. See the following:
 </p><div class="highlight"><pre><span></span><code>poller:
 <span class="w">  </span>inventory:<span class="w"> </span><span class="p">|</span>
-<span class="w">    </span>address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-<span class="w">    </span><span class="m">10</span>.0.101.22,,2c,public,,,42000,,,
+<span class="w">    </span>address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+<span class="w">    </span><span class="m">10</span>.0.101.22,,2c,public,,,42000,,,,
 </code></pre></div>
 </li>
 <li>

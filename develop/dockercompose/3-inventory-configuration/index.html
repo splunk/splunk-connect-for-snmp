@@ -2426,9 +2426,9 @@
 <p>Inventory configuration is stored in the <code>inventory.csv</code> file. Structure of this file is the same as the one of the 
 <code>poller.inventory</code> section in <code>values.yaml</code> file. Documentation of this section can be found in <a href="../../microk8s/configuration/poller-configuration/#configure-inventory">configure inventory</a>.</p>
 <h2 id="example-of-the-configuration">Example of the configuration<a class="headerlink" href="#example-of-the-configuration" title="Permanent link">¶</a></h2>
-<div class="highlight"><pre><span></span><code>address,port,version,community,secret,securityEngine,walk_interval,profiles,smart_profiles,delete
-0.0.0.0,161,2c,public,,,1800,small_walk;test_profile,t,
-my_group,161,3,,my_secret,,1800,single_metric,t,
+<div class="highlight"><pre><span></span><code>address,port,version,community,secret,securityEngine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+0.0.0.0,161,2c,public,,,1800,small_walk;test_profile,70,t
+my_group,161,3,,my_secret,,1800,single_metric,70,t
 </code></pre></div></div>
 
 

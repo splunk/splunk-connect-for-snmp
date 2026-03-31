@@ -2571,10 +2571,11 @@ The default value is <code>WARNING</code>.</p>
 <span class="w">        </span><span class="no">secret: 'my_secret'</span>
 <span class="w">      </span><span class="no">- address: 178.80.8.1</span>
 <span class="w">        </span><span class="no">port: 999</span>
+<span class="w">        </span><span class="no">max_oid_to_process: 3</span>
 </code></pre></div>
 <p>The one obligatory field for the host configuration is <code>address</code>. If <code>port</code> is not configured its default value is <code>161</code>. 
-Other fields that can be modified are: <code>community</code>, <code>secret</code>, <code>version</code>, and <code>security_engine</code>.
-However, if they remain unspecified in the host configuration, they will be derived from the inventory record. </p>
+Other fields that can be modified are: <code>community</code>, <code>secret</code>, <code>version</code>, <code>security_engine</code> and <code>max_oid_to_process</code>.
+However, if they remain unspecified in the host configuration, they will be derived from the inventory record or default. </p>
 <h3 id="define-the-expiration-time-for-tasks">Define the expiration time for tasks<a class="headerlink" href="#define-the-expiration-time-for-tasks" title="Permanent link">¶</a></h3>
 <p>Define the time, in seconds, when polling or walk tasks will be revoked if they have not been picked up by the worker.
 See the <a href="https://docs.celeryq.dev/en/stable/userguide/calling.html#expiration">celery documentation</a> for more details.

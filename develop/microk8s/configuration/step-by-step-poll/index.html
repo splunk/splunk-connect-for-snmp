@@ -2410,8 +2410,8 @@ to <code>poller.inventory</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"WARN"</span>
 <span class="w">  </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-<span class="w">    </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete</span>
-<span class="w">    </span><span class="no">switch_group,,2c,public,,,2000,small_walk;switch_profile,,</span>
+<span class="w">    </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete</span>
+<span class="w">    </span><span class="no">switch_group,,2c,public,,,2000,small_walk;switch_profile,,,</span>
 </code></pre></div>
 <p>The provided example configuration will make:</p>
 <ol>
