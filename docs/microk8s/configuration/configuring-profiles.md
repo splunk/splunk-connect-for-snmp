@@ -69,8 +69,8 @@ If you only want to enable the option of `static_profile` polling for the host `
 ```yaml
 poller:
     inventory: |
-      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-      10.202.4.202,,2c,public,,,2000,static_profile,f,
+      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+      10.202.4.202,,2c,public,,,2000,static_profile,f,,
 ```
 
 If you want to enable checking the `10.202.4.202` device against smart profiles, you need to set `smart_profiles` to `t`:
@@ -78,8 +78,8 @@ If you want to enable checking the `10.202.4.202` device against smart profiles,
 ```yaml
 poller:
     inventory: |
-      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-      10.202.4.202,,2c,public,,,2000,,t,
+      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+      10.202.4.202,,2c,public,,,2000,,t,,
 ```
 
 Afterwards, if the device `sysDescr` matches the `'.*linux.*'` filter, the `smart_profile` profile will be polled.
@@ -159,8 +159,8 @@ See the following example on how to use `walk` in profiles:
 ```yaml
 poller:
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    10.202.4.202,,2c,public,,,2000,small_walk,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+    10.202.4.202,,2c,public,,,2000,small_walk,,,
 ```
 
 !!! info

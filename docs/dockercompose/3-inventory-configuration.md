@@ -6,7 +6,7 @@ Inventory configuration is stored in the `inventory.csv` file. Structure of this
 ## Example of the configuration
 
 ```csv
-address,port,version,community,secret,securityEngine,walk_interval,profiles,smart_profiles,delete
-0.0.0.0,161,2c,public,,,1800,small_walk;test_profile,t,
-my_group,161,3,,my_secret,,1800,single_metric,t,
+address,port,version,community,secret,securityEngine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+0.0.0.0,161,2c,public,,,1800,small_walk;test_profile,70,t
+my_group,161,3,,my_secret,,1800,single_metric,70,t
 ```

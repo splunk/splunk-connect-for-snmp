@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- add max_oid_to_process configuration per device
 
 ### Fixed
 - fix reusing the snmp engine for snmpv3 calls

@@ -55,8 +55,8 @@ to `poller.inventory`:
 poller:
   logLevel: "WARN"
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    switch_group,,2c,public,,,2000,small_walk;switch_profile,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+    switch_group,,2c,public,,,2000,small_walk;switch_profile,,,
 ```
 
 The provided example configuration will make:

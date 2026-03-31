@@ -5,12 +5,7 @@ Scheduler configuration is stored in the `scheduler-config.yaml` file. This file
 ```yaml
 communities:
   2c:
-    public:
-      communityIndex:
-      contextEngineId:
-      contextName:
-      tag:
-      securityName:
+    - public
 customTranslations:
 profiles:
 groups:
@@ -26,12 +21,7 @@ groups:
 ```yaml
 communities:
   2c:
-    public:
-      communityIndex:
-      contextEngineId:
-      contextName:
-      tag:
-      securityName:
+    - public
 customTranslations:
   IF-MIB:
     ifInDiscards: myCustomName1
@@ -61,7 +51,20 @@ profiles:
     varBinds:
       - [ 'IF-MIB', 'ifOutDiscards' ]
 groups:
-  group1:
-    - address: 18.116.10.255
-      port: 1163
+  example_group_1:
+      - address: 123.0.0.1
+        port: 161
+      - address: 178.8.8.1
+        port: 999
+      - address: 12.22.23
+        port: 161
+        community: 'private'
+  example_group_2:
+    - address: 103.0.0.1
+      port: 1161
+      version: '3'
+      secret: 'my_secret'
+    - address: 178.80.8.1
+      port: 999
+      max_oid_to_process: 3
 ```

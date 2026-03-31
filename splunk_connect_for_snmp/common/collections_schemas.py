@@ -113,6 +113,7 @@ group_schema = {
             "secret": {"type": "string"},
             "version": {"type": "string"},
             "security_engine": {"type": "string"},
+            "max_oid_to_process": {"type": "integer"},
         },
         "required": ["address"],
         "additionalProperties": False,

@@ -44,10 +44,10 @@ poller:
     - sc4snmp-hlab-sha-aes
     - sc4snmp-hlab-sha-des
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,1800,generic_switch,,
-    10.0.0.199,,2c,public,,,3000,,,True
-    10.0.0.100,,3,,sc4snmp-hlab-sha-des,,1800,generic_switch,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+    10.0.0.1,,3,,sc4snmp-hlab-sha-aes,,1800,generic_switch,,,
+    10.0.0.199,,2c,public,,,3000,,,,True
+    10.0.0.100,,3,,sc4snmp-hlab-sha-des,,1800,generic_switch,,,
 mongodb:
   image:
     pullPolicy: Never

@@ -25,9 +25,9 @@ scheduler:
 ```yaml
 poller:
     inventory: |
-      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-      example_group_1,,2c,public,,,2000,my_profile2,,
-      10.202.4.202,,2c,public,,,2000,my_profile1,,
+      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+      example_group_1,,2c,public,,,2000,my_profile2,,,
+      10.202.4.202,,2c,public,,,2000,my_profile1,,,
 ```
 
 If the specific host from the group has to be configured separately, first it must be deleted from the group configuration,
@@ -44,7 +44,7 @@ scheduler:
 ```yaml
 poller:
     inventory: |
-      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-      example_group_1,,2c,public,,,2000,my_profile2,,
-      10.202.4.202,,2c,public,,,2000,my_profile1,,
+      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+      example_group_1,,2c,public,,,2000,my_profile2,,,
+      10.202.4.202,,2c,public,,,2000,my_profile1,,,
 ```

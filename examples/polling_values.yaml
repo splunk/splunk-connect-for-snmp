@@ -47,6 +47,6 @@ scheduler:
         - ["IP-MIB", "icmp"]
 poller:
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    54.82.4.248,,2c,public,,,4000,small_walk;IF_profile;ICMP_profile,,
-    54.82.4.249,,2c,public,,,1800,small_walk;IF_profile,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+    54.82.4.248,,2c,public,,,4000,small_walk;IF_profile;ICMP_profile,,,
+    54.82.4.249,,2c,public,,,1800,small_walk;IF_profile,,,
