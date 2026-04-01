@@ -153,7 +153,6 @@ if ! command -v microk8s &> /dev/null; then
   info "Installing MicroK8s..."
   sudo snap install microk8s --classic
   sudo usermod -aG microk8s $USER
-  newgrp microk8s
   sleep 20
 fi
 sudo microk8s status --wait-ready
@@ -205,7 +204,6 @@ if ! command -v microk8s &> /dev/null; then
   info "Installing MicroK8s..."
   sudo snap install microk8s --classic
   sudo usermod -aG microk8s $USER
-  newgrp microk8s
   sleep 10
 fi
 
