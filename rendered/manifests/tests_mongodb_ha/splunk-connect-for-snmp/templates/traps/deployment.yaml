@@ -5,7 +5,8 @@ kind: Deployment
 metadata:
   name: release-name-splunk-connect-for-snmp-trap
   labels:
-    app.kubernetes.io/name: splunk-connect-for-snmp-trap
+    app.kubernetes.io/name: splunk-connect-for-snmp
+    app.kubernetes.io/component: trap
     app.kubernetes.io/instance: release-name
     helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
     app.kubernetes.io/version: "CURRENT-VERSION"
@@ -14,14 +15,16 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app.kubernetes.io/name: splunk-connect-for-snmp-trap
+      app.kubernetes.io/name: splunk-connect-for-snmp
+      app.kubernetes.io/component: trap
       app.kubernetes.io/instance: release-name
   template:
     metadata:
       annotations:
         checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
       labels:
-        app.kubernetes.io/name: splunk-connect-for-snmp-trap
+        app.kubernetes.io/name: splunk-connect-for-snmp
+        app.kubernetes.io/component: trap
         app.kubernetes.io/instance: release-name
     spec:
       serviceAccountName: release-name-splunk-connect-for-snmp-user
@@ -98,13 +101,10 @@ spec:
               value: "true"
             - name: INCLUDE_SECURITY_CONTEXT_ID
               value: "false"
+            - name: DISCOVER_ENGINE_ID
+              value: "false"
             - name: SNMP_V3_SECURITY_ENGINE_ID
               value: 80003a8c04
-            - name: SPLUNK_HEC_TOKEN
-              valueFrom:
-                  secretKeyRef:
-                    name: splunk-connect-for-snmp-splunk
-                    key: hec_token
             - name: IPv6_ENABLED
               value: "false"
           ports:
@@ -132,7 +132,8 @@ spec:
                 topologyKey: kubernetes.io/hostname
                 labelSelector:
                   matchLabels:
-                      app.kubernetes.io/name: splunk-connect-for-snmp-trap
+                      app.kubernetes.io/name: splunk-connect-for-snmp
+                      app.kubernetes.io/component: trap
                       app.kubernetes.io/instance: release-name
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod
