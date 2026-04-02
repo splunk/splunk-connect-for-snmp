@@ -15,7 +15,7 @@ After pressing `Add group` button or plus sign next to the `Group`, new group ca
 
 Configured groups are displayed on the left-hand side, under the `Group name` label. After clicking on the group name, 
 all devices belonging to the given group are displayed. To add a new device, click the plus sign next to the group name. 
-Configuration of the device is the same as in the `values.yaml` file. For details check [Configuring groups](../configuration/configuring-groups.md).
+Configuration of the device is the same as in the `values.yaml` file. For details check [Configuring groups](../configuration/groups.md).
 
 
 ![Add a device](../../images/ui_docs/groups/add_device.png){style="border:2px solid; width:500px; height:auto" }

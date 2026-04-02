@@ -159,7 +159,9 @@ The following profiles have invalid configuration and won't be used: ['standard_
 ```
 Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to:
 
-- kubernetes: [Configuring profiles](../microk8s/configuration/configuring-profiles.md) or [Configuring Groups](../microk8s/configuration/configuring-groups.md)
-- docker: [Scheduler configuration](../dockercompose/4-scheduler-configuration.md)
+- [Configuring profiles](../configuration/profiles.md) 
+or
+- [Configuring Groups](../configuration/groups.md)
+
 
 sections to check how the correct configuration should look like.
