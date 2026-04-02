@@ -5,7 +5,7 @@
 2. Go to your Splunk and execute search: `index="em_logs"   "Sending due task" "sc4snmp;<IP_ADDRESS>;walk"` 
 and replace <IP_ADDRESS> with the pertinent IP Address. 
 
-## "Empty SNMP response message" problem
+## Empty SNMP response message
 If you see the following line in the worker's logs:
 
 ```log
@@ -30,7 +30,7 @@ IGNORE_EMPTY_VARBINDS=true
 ```
 ///
 
-## "OID not increasing" problem
+## OID not increasing
 In case you see the following line in worker's logs:
 
 ```log
@@ -58,19 +58,12 @@ IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6
 ///
 
 If you put in only the IP address (for example, `127.0.0.1`), then errors will be ignored for all of its devices (like `127.0.0.1:161`,
-`127.0.0.1:163`...). If you put the IP address and host as `{IP}:{port}`, that means the error will be ignored only for this device.
+`127.0.0.1:163`...). If you put the IP address and host as `{ip}:{port}`, that means the error will be ignored only for this device.
 
 ## Walking a device takes too much time
 
-/// tab | microk8s
-See [Configure small walk profile](../../microk8s/configuration/configuring-profiles/#walk-profile) to enable the small walk functionality.
-
-Check if `poller.enableFullWalk` flag is set to `false`. See [poller configuration](../microk8s/configuration/poller-configuration/#poller-configuration-file).
-///
-
-/// tab | docker compose
 Enable the small walk profile by limiting the OID tree polled. See [Profiles configuration](../configuration/profiles.md#walk-profile) and define a walk profile with a restricted set of MIBs in your scheduler config file.
-///
+
 
 ## An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance
 
@@ -135,7 +128,7 @@ In case of polling SNMPv3 devices, `Wrong SNMP PDU digest` error suggests wrong 
 
 ## "Field is immutable" error during helm upgrade
 
-!!! note "Microk8s only"
+!!! warning "Microk8s only"
 
 ```
 microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/charts/splunk-connect-for-snmp/ --namespace=sc4snmp --create-namespace

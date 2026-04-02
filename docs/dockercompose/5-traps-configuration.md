@@ -9,14 +9,14 @@
 !!! info "Full reference"
     For the complete configuration reference, see the [Traps configuration](../configuration/traps.md) page — open the **docker compose** tab.
 
-This file has the following sections:
-
 ## Configuration
 
 ```yaml
 communities:
+  1:
   2c:
     - public
+    - switch
 usernameSecrets: []
 ```
 
@@ -35,12 +35,11 @@ usernameSecrets:
 
 ## Advanced configuration
 
-### SNMPv3
 
-#### Create the SNMPv3 Secret in Docker
+### Create the SNMPv3 Secret in Docker
 Before referencing a secret in `usernameSecrets`, you must create it in Docker first. Complete the [SNMPv3 secrets](../configuration/snmpv3.md) page, then return here and add the secret name to `usernameSecrets`.
 
-#### Configure the Security Engine ID
+### Configure the Security Engine ID
 
 In SNMPv3, every trap receiver must know the Security Engine ID of each sending device in advance. The receiver uses this ID together with the USM username, auth key, and priv key to authenticate incoming traps. Without the correct engine ID pre-registered, pysnmp rejects the trap before it even checks credentials.
 
@@ -52,7 +51,7 @@ SNMP_V3_SECURITY_ENGINE_ID=80003a8c04,aab123456
 
 See the [Traps section of the .env file](6-env-file-configuration.md#traps) for the full variable reference.
 
-##### Engine ID Discovery
+#### Engine ID Discovery
 If you are managing a large amount of traps agents it is possible to enable engine id discovery mode. The Engine ID Discovery feature automatically extracts the engine ID from each incoming SNMPv3 raw datagram and dynamically registers it with the SNMP engine, so the trap can be authenticated on the fly.
 The engine ID is only registered if the username matches a known user and stored in database.
 

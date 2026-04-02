@@ -1,8 +1,8 @@
 # Traps configuration
 
-A trap service is a simple server that can handle SNMP traps sent by SNMP devices, such as routers or switches.
+A trap service is a simple server that can handle SNMP traps sent by SNMP agents.
 
-## Configuration fields
+## Basic configuration fields
 
 - `communities`: communities used for version `1` and `2c` of the SNMP. The default one is `public`.
 - `usernameSecrets`: names of the SNMPv3 secrets to use for authenticating incoming traps. See [SNMPv3 configuration](snmpv3.md) for details.
@@ -76,7 +76,7 @@ traps:
     - "80003a8c04"
 ```
 
-By default, it is set to a one-element list: `[80003a8c04]`.
+By default, it is set to a one-element list: `80003a8c04`.
 
 The `securityEngineID` is a substitute of the `-e` variable in `snmptrap`.
 The following is an example of an SNMPv3 trap:
@@ -170,6 +170,8 @@ traps:
 
 #### Using Cloud Load Balancer
 
+You can also deploy the traps receiver without MetalLB or NodePort, using Kubernetes Service annotations supported by your cloud platform. For example, on AWS EKS you can enable an AWS Network Load Balancer with annotations:
+
 ```yaml
 traps:
   service:
@@ -207,3 +209,47 @@ To change the external port exposed for the traps server, set in `.env`:
 TRAPS_PORT=162
 ```
 ///
+
+### Define number of traps replicas
+
+/// tab | microk8s
+Set the number of trap receiver pod replicas in `values.yaml`:
+
+```yaml
+traps:
+  replicaCount: 2
+```
+///
+
+/// tab | docker compose
+Set the number of worker-trap container replicas in `.env`:
+
+```
+WORKER_TRAP_REPLICAS=2
+```
+///
+
+### Define debug level
+
+/// tab | microk8s
+Set the log level for the trap receiver in `values.yaml`:
+
+```yaml
+traps:
+  logLevel: "DEBUG"
+```
+
+Accepted values: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, `FATAL`.
+///
+
+/// tab | docker compose
+Set the log level for the trap container in `.env`:
+
+```
+TRAP_LOG_LEVEL=DEBUG
+```
+
+Accepted values: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, `FATAL`.
+///
+
+

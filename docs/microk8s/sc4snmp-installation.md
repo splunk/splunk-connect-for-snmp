@@ -197,9 +197,9 @@ index="netops" sourcetype="sc4snmp:event"
 
 ## Next Steps
 
-A good way to start with SC4SNMP polling is to follow the [Step by Step guide for polling](configuration/step-by-step-poll.md).
+A good way to start with SC4SNMP polling is to follow the [Step by Step guide for polling](../configuration/step-by-step-poll.md).
 Advanced configuration of polling is available in the [Poller configuration](configuration/poller-configuration.md) section.
-The SNMP data format is explained in the [SNMP data format](configuration/snmp-data-format.md) section.
+The SNMP data format is explained in the [SNMP data format](../configuration/snmp-data-format.md) section.
 
 For advanced trap configuration, see the [Traps configuration](configuration/trap-configuration.md) section.
 

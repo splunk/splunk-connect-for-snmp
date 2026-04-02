@@ -5,6 +5,8 @@ SC4SNMP allows both types of configuration. A group consists of many hosts. Afte
 field in the inventory record. All settings specified in the inventory record will be assigned to hosts from the given group,
 unless specific host configuration overrides it.
 
+## Group vs host
+
 If the host is configured in the group and both the group and the single host are included in the inventory, the
 configuration for the single host will be ignored in favor of the group configuration. See the following example:
 

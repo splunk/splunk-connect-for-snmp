@@ -44,7 +44,7 @@ mibserver:
   image:
     tag: "1.15.13"
 ```
-Check all the MIB server releases in https://github.com/pysnmp/mibs/releases. 
+Check all the [MIB server releases](https://github.com/pysnmp/mibs/releases). 
 
 2. Run `microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace`.
 
@@ -61,11 +61,15 @@ microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-
 ```
 MIBSERVER_TAG=1.15.29
 ```
-Check all the MIB server releases in https://github.com/pysnmp/mibs/releases. 
+Check all the [MIB server releases](https://github.com/pysnmp/mibs/releases). 
 
 2. Remove the container with old mibserver version and start the new one with commands:
-`docker compose down snmp-mibserver`.
-`docker compose up -d snmp-mibserver`.
+
+    ```bash
+    docker compose down snmp-mibserver
+    docker compose up -d snmp-mibserver
+    ```
+
 
 ///
 

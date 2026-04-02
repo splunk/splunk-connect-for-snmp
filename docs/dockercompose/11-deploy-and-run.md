@@ -59,7 +59,7 @@ You should see one event per trap command sent.
 
 ### Verify polling
 
-SC4SNMP must complete an SNMP walk on each device before polling data appears in Splunk. The walk runs automatically on first startup and then repeats every `walk_interval` seconds. Depending on the size of the device, this may take a few minutes.
+SC4SNMP must complete an SNMP walk on each device before polling data appears in Splunk. The walk runs automatically on first startup and then repeats every `walk_interval`. Depending on the size of the device, this may take a few minutes.
 
 !!! info "Default walk scope"
     By default, SC4SNMP only walks `SNMPv2-MIB`. If you expect interface or other MIB data and see only limited results, define a walk profile in your scheduler config file (see [Profiles configuration](../configuration/profiles.md#walk-profile)) or set `ENABLE_FULL_WALK=true` in `.env`.
@@ -77,7 +77,7 @@ And for metrics:
 ```
 
 !!! info
-    If no data appears after one full `walk_interval`, check the worker-poller logs for errors: `sudo docker logs <worker-poller-container-name>`. For common polling problems see the [Troubleshooting](../troubleshooting/polling-issues.md) section.
+    If no data appears after one full `walk_interval`, check the `worker-poller` logs for errors: `sudo docker logs <worker-poller-container-name>`. For common polling problems see the [Troubleshooting](../troubleshooting/polling-issues.md) section.
 
 ## Applying configuration changes
 
@@ -96,10 +96,12 @@ sudo docker compose ps
 !!! note
     After an inventory change, SC4SNMP schedules a new walk for any added or modified device. Data for that device will not appear in Splunk until the walk completes. Walk duration depends on the device size and the configured `walk_interval`.
 
+If changes are not picked up the docker compose up can be run with flag `--force-recreate`.
+
 ## Uninstall the app
 
 To uninstall the app, run the following command inside the `docker_compose` directory:
 
 ```shell
-sudo docker compose down
+sudo docker compose down --volumes
 ```

@@ -7,5 +7,5 @@ To install `Docker` in your environment follow steps from the `Install using the
 the Docker [documentation](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository). Install the
 latest version.
 
-!!! note "Offline environment?"
+!!! note "Offline environment"
     If your target host has no internet access, see [Offline installation](./8-offline-installation.md) before proceeding.

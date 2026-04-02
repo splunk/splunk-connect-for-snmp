@@ -2,7 +2,7 @@
 
 ### Upgrading SC4SNMP from 1.12.2 to 1.12.3
 
-!!! note "Microk8s only"
+!!! warning "Microk8s only"
 
 When upgrading SC4SNMP from version `1.12.2` to `1.12.3`, the subchart version of MongoDB will be updated from `13.18.5` to `15.6.26`. This upgrade requires an increase in the MongoDB `Feature Compatibility Version (FCV)` from `5.0` to `6.0`.
 
@@ -30,7 +30,7 @@ If the `mongo-fcv-upgrade-to-6` job fails for any reason, there are two recovery
 
     Replace `<mongodb-pod-id>` with the actual Pod ID of your MongoDB instance.
 
-#### Addressing Metric Naming Conflicts for Splunk Integration
+### Addressing Metric Naming Conflicts for Splunk Integration
 
 When collecting SNMP metrics using SC4SNMP, metric names often contain hyphens (e.g., IF-MIB) because the default MIB format includes hyphens in Object Identifiers (OIDs) as specified by standard MIB naming conventions. 
 While this naming convention is standard for SNMP MIBs, it can lead to compatibility issues when forwarding these metrics, particularly when integrating with Splunk via the OpenTelemetry (OTel) Collector's Splunk HEC metric endpoint.

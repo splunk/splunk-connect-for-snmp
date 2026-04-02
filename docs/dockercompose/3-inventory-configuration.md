@@ -14,7 +14,6 @@
 !!! note
     The `profiles` values in the inventory (e.g. `small_walk`, `test_profile`, `single_metric`) must match profile names defined in the [scheduler config file](4-scheduler-configuration.md). If a profile name does not match, SC4SNMP will not poll that device.
 
-!!! note
     `my_group` in the second row is a named group of devices defined in the scheduler config file. Groups allow you to poll multiple hosts under a single inventory entry. See [Groups configuration](../configuration/groups.md) for details.
 
 ```csv
