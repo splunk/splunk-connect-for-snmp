@@ -1,0 +1,98 @@
+---
+# Source: splunk-connect-for-snmp/templates/mongodb/mongodb-standalone-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-mongodb
+  labels:
+    app: release-name-mongodb
+    mode: standalone
+spec:
+  serviceName: release-name-mongodb
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: release-name-mongodb
+
+  template:
+    metadata:
+      labels:
+        app: release-name-mongodb
+        mode: standalone
+    spec:
+      securityContext:
+        enabled: true
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        supplementalGroups: []
+        sysctls: []
+
+      initContainers:
+
+      containers:
+      - name: mongodb
+        image: "mongo:8.2.2"
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          enabled: true
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsGroup: 1001
+          runAsNonRoot: true
+          runAsUser: 1001
+          seLinuxOptions: {}
+          seccompProfile:
+            type: RuntimeDefault
+
+        ports:
+        - containerPort: 27017
+          name: mongodb
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: release-name-mongodb-secret
+                key: root-user
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: release-name-mongodb-secret
+                key: root-password
+
+        volumeMounts:
+        - name: data
+          mountPath: /data/db
+        livenessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi
