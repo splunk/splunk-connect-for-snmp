@@ -20,7 +20,7 @@ import pytest
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString as dq
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
-from integration_tests.splunk_test_utils import (
+from integration_tests.utils.splunk_test_utils import (
     splunk_single_search,
     update_file_microk8s,
     update_groups_compose,
@@ -1934,11 +1934,11 @@ class TestMisconfiguredGroups:
         assert metric_count == 0
 
 
-def run_retried_single_search(setup_splunk, search_string, retries):
-    for _ in range(retries):
+def run_retried_single_search(setup_splunk, search_string, retries, wait=20):
+    for attempt in range(retries + 1):
         result_count, metric_count = splunk_single_search(setup_splunk, search_string)
         if result_count or metric_count:
             return result_count, metric_count
-        logger.info("No results returned from search. Retrying in 2 seconds...")
-        time.sleep(2)
+        logger.info(f"Attempt {attempt+1}/{retries}: no results. Waiting {wait}s...")
+        time.sleep(wait)
     return 0, 0

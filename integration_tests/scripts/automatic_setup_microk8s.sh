@@ -6,6 +6,18 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
+
+# ===== PATHS =====
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INT_TEST_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+REPO_ROOT="$(cd "${INT_TEST_DIR}/.." && pwd)"
+CHART_DIR="${REPO_ROOT}/charts/splunk-connect-for-snmp"
+
+echo "SCRIPT_DIR: $SCRIPT_DIR"
+echo "INT_TEST_DIR: $INT_TEST_DIR"
+echo "REPO_ROOT: $REPO_ROOT"
+
+cd "$REPO_ROOT"
 function red {
     printf "${RED}$@${NC}\n"
 }
@@ -95,14 +107,19 @@ sudo docker run -d -p 8000:8000 -p 8088:8088 -p 8089:8089 -e SPLUNK_GENERAL_TERM
 
 wait_for_splunk
 
-cd integration_tests
-chmod u+x prepare_splunk.sh
-echo $(green "Preparing Splunk instance")
-./prepare_splunk.sh
-./install_sck.sh
+cd "$INT_TEST_DIR"
+chmod +x "$SCRIPT_DIR/prepare_splunk.sh"
+chmod +x "$SCRIPT_DIR/install_sck.sh"
 
-sed -i "s/###SPLUNK_TOKEN###/$(cat hec_token)/" values.yaml
-sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" values.yaml
+"$SCRIPT_DIR/prepare_splunk.sh"
+"$SCRIPT_DIR/install_sck.sh"
+
+
+VALUES_FILE="$INT_TEST_DIR/values.yaml"
+
+sed -i "s/###SPLUNK_TOKEN###/$(cat hec_token)/" "$VALUES_FILE"
+sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" "$VALUES_FILE"
+
 sudo docker run -d -p 161:161/udp tandrup/snmpsim
 sudo docker run -d -p 1162:161/udp tandrup/snmpsim
 sudo docker run -d -p 1163:161/udp tandrup/snmpsim
@@ -120,11 +137,13 @@ sudo systemctl enable iscsid
 yes $(hostname -I | cut -d " " -f1)/32 | sudo microk8s enable metallb
 sudo microk8s status --wait-ready
 
-cd ../charts/splunk-connect-for-snmp
+
+cd "$CHART_DIR"
 sudo microk8s helm3 dep update
-cd ../../integration_tests
+cd "$INT_TEST_DIR"
 
 echo $(green "Installing SC4SNMP on Kubernetes")
+
 sudo microk8s helm3 install snmp -f values.yaml ../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
 sudo microk8s kubectl create -n sc4snmp secret generic sv3poller --from-literal=userName=r-wuser --from-literal=authKey=admin1234 --from-literal=privKey=admin1234 --from-literal=authProtocol=SHA --from-literal=privProtocol=AES --from-literal=securityEngineId=8000000903000A397056B8AC
 
