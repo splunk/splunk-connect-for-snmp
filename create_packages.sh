@@ -158,6 +158,7 @@ pull_custom_chart_images(){
 
 helm repo add pysnmp-mibs https://pysnmp.github.io/mibs/charts
 helm dependency build charts/splunk-connect-for-snmp
+mkdir -p /tmp/package
 helm package charts/splunk-connect-for-snmp -d /tmp/package
 cd /tmp/package || exit
 SPLUNK_FILE=$(ls)
