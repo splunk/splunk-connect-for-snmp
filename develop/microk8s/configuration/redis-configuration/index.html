@@ -2756,7 +2756,7 @@ This change ensures we maintain full control over configuration, compatibility, 
 <span class="w">  </span><span class="c1"># Storage</span>
 <span class="w">  </span><span class="nt">storage</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">microk8s-hostpath</span>
+<span class="w">    </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="s">""</span>
 <span class="w">    </span><span class="nt">accessModes</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
 <span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5Gi</span>
@@ -2838,7 +2838,7 @@ This change ensures we maintain full control over configuration, compatibility, 
 <td>redis.auth.password</td>
 <td>string</td>
 <td><code>""</code></td>
-<td>Password when AUTH enabled (prefer secret).</td>
+<td>Password when AUTH enabled (avoid committing; prefer secret).</td>
 </tr>
 <tr>
 <td>redis.auth.existingSecret</td>
@@ -2903,7 +2903,7 @@ This change ensures we maintain full control over configuration, compatibility, 
 <tr>
 <td>redis.storage.storageClassName</td>
 <td>string</td>
-<td><code>microk8s-hostpath</code></td>
+<td><code>""</code></td>
 <td>StorageClass for the PVC.</td>
 </tr>
 <tr>
@@ -3074,6 +3074,7 @@ If you want to use a different key, you can specify it in the <code>values.yaml<
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>For smoother migration, it’s better to create a new secret with the updated values and then update your configuration to reference this new secret, rather than modifying an existing secret in place.</p>
+<p>When changing the content of a Kubernetes Secret that is already in use, the running pods will not automatically pick up the new values. You must recreate the pods for them to use the updated secret.</p>
 </div>
 <h3 id="migration-from-bitnami-redis">Migration from Bitnami Redis<a class="headerlink" href="#migration-from-bitnami-redis" title="Permanent link">¶</a></h3>
 <p>The chart automatically detects and migrates data from existing Bitnami Redis deployments:</p>
