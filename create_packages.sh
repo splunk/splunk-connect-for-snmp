@@ -1,7 +1,9 @@
 #!/bin/bash
+set -euo pipefail
 
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 python_script=$1
+[[ -f "$python_script" ]] || { echo "Usage: $0 <path-to-get_yaml_fields.py>"; exit 1; }
 combine_image_name(){
   #Function to combine registry, repository and tag
   # into one image, so that it can be pulled by docker
@@ -11,6 +13,7 @@ combine_image_name(){
   image_tag=$3
   app_version=$4
 
+  result=""
   if [ -n "$image_registry" ];
   then
     result="$result""$image_registry/"
@@ -155,13 +158,13 @@ pull_custom_chart_images(){
   fi
 }
 
-
-helm repo add pysnmp-mibs https://pysnmp.github.io/mibs/charts
-helm dependency build charts/splunk-connect-for-snmp
+rm -rf /tmp/package
 mkdir -p /tmp/package
+helm repo add pysnmp-mibs https://pysnmp.github.io/mibs/charts
+helm dependency update charts/splunk-connect-for-snmp
 helm package charts/splunk-connect-for-snmp -d /tmp/package
 cd /tmp/package || exit
-SPLUNK_FILE=$(ls)
+SPLUNK_FILE=$(ls /tmp/package/*.tgz)
 tar -xvf "$SPLUNK_FILE"
 
 DIRS=$(ls)
@@ -181,7 +184,7 @@ then
 fi
 cd "$SPLUNK_DIR" || exit
 
-mkdir /tmp/package/packages
+mkdir -p /tmp/package/packages
 
 # Export script to pull mibserver
 MIBSERVER_VERSION=$(grep -A2 'mibserver' Chart.lock | grep version | cut -d : -f2 | xargs)
@@ -197,7 +200,7 @@ cd charts || exit
 
 #Unpack dependencies charts and delete .tgz files
 FILES=$(ls)
-for f in $FILES
+for f in *.tgz
 do
   tar -xvf "$f"
   rm "$f"
@@ -284,8 +287,7 @@ helm dep update
 cd charts || exit
 
 #Unpack dependencies charts and delete .tgz files
-FILES=$(ls)
-for f in $FILES
+for f in *.tgz
 do
   tar -xvf "$f"
   rm "$f"
