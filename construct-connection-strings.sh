@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
-# Constructs REDIS_URL and CELERY_BROKER_URL from components if not already set
+# Constructs Redis and MongoDB connection strings based on environment variables
+
+############################
+       ### REDIS ###
+############################
 
 # Detect mode
 REDIS_MODE="${REDIS_MODE:-standalone}"
@@ -61,8 +65,40 @@ if [ -z "$REDIS_URL" ] || [ -z "$CELERY_BROKER_URL" ]; then
     REDIS_DEPENDENCIES="${REDIS_URL} ${CELERY_BROKER_URL}"
   fi
 
+############################
+      ### MongoDB ###
+############################
+
+  # Build MongoDB URI from environment variables
+  if [ -n "$MONGODB_PASSWORD" ]; then
+    # With authentication
+    if [ -n "$MONGODB_REPLICA_SET" ]; then
+      # Replica set
+      export MONGO_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}?replicaSet=${MONGODB_REPLICA_SET}&authSource=${MONGODB_AUTH_SOURCE:-admin}&readPreference=primary"
+    else
+      # Standalone
+      export MONGO_URI="mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin"
+    fi
+  else
+    # Without authentication
+    if [ -n "$MONGODB_REPLICA_SET" ]; then
+      export MONGO_URI="mongodb://${MONGODB_HOST}/${MONGODB_DATABASE}?replicaSet=${MONGODB_REPLICA_SET}&authSource=admin&retryWrites=false&readPreference=primary"
+    else
+      export MONGO_URI="mongodb://${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin"
+    fi
+  fi
+
+  if [ -n "$MONGODB_REPLICA_SET" ]; then
+    export MONGO_WAIT="mongodb://${MONGODB_HOST}/${MONGODB_DATABASE}?replicaSet=${MONGODB_REPLICA_SET}&authSource=admin&retryWrites=false"
+  else
+    export MONGO_WAIT="mongodb://${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin"
+  fi
+
+  export MONGO_WAIT
+  export MONGO_URI
   export REDIS_URL
   export CELERY_BROKER_URL
   export REDIS_DEPENDENCIES
   export REDIS_MODE
+
 fi

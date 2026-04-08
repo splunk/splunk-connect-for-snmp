@@ -34,10 +34,9 @@ spec:
           - name: CONFIG_PATH
             value: /app/config/config.yaml
           {{ include "splunk-connect-for-snmp.redis-env" . | nindent 10 }}
+          {{ include "splunk-connect-for-snmp.mongodb-env" . | nindent 10 }}
           - name: INVENTORY_PATH
             value: /app/inventory/inventory.csv
-          - name: MONGO_URI
-            value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
           - name: MIB_SOURCES
             value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/asn1/@mib@"
           - name: MIB_INDEX

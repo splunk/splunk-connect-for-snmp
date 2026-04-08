@@ -22,9 +22,6 @@ version: 1.16.0-beta.2
 appVersion: "1.16.0-beta.2"
 #
 dependencies:
-  - name: mongodb
-    version: ~15.6.0
-    repository: https://charts.bitnami.com/bitnami
   - name: mibserver
     version: ~1.15
     repository: https://pysnmp.github.io/mibs/charts/

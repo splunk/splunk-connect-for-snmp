@@ -1,0 +1,176 @@
+{{- if eq .Values.mongodb.mode "replication" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-mongodb
+  labels:
+    app: {{ .Release.Name }}-mongodb
+    mode: replication
+spec:
+  serviceName: {{ .Release.Name }}-mongodb-headless
+  replicas: {{ .Values.mongodb.replicaCount | default 3 }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-mongodb
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-mongodb
+        mode: replication
+    spec:
+      {{- with .Values.mongodb.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: {{ .Release.Name }}-mongodb
+              topologyKey: kubernetes.io/hostname
+
+      initContainers:
+      {{- if .Values.mongodb.initPermissions }}
+      - name: init-permissions
+        image: busybox:1.36
+        command: ["sh", "-c", "mkdir -p /data/db && chown -R 999:999 /data/db && chmod -R 755 /data/db"]
+        volumeMounts:
+        - name: data
+          mountPath: /data/db
+        securityContext:
+          runAsUser: 0
+      {{- end }}
+
+      {{- if .Values.mongodb.auth.enabled }}
+      - name: keyfile-setup
+        image: busybox:1.36
+        command: ["sh", "-c", "cp /tmp/keyfile/replica-key /keyfile/replica-key && chmod 400 /keyfile/replica-key && chown 999:999 /keyfile/replica-key"]
+        volumeMounts:
+        - name: keyfile-tmp
+          mountPath: /tmp/keyfile
+        - name: keyfile
+          mountPath: /keyfile
+        securityContext:
+          runAsUser: 0
+      {{- end }}
+
+      containers:
+      - name: mongodb
+        image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"
+        imagePullPolicy: {{ .Values.mongodb.image.pullPolicy | default "IfNotPresent" }}
+
+        {{- with .Values.mongodb.containerSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+
+        args:
+        - --replSet
+        - {{ .Values.mongodb.replicaSetName | default "rs0" }}
+        {{- if .Values.mongodb.auth.enabled }}
+        - --keyFile
+        - /etc/keyfile/replica-key
+        {{- end }}
+
+        ports:
+        - containerPort: 27017
+          name: mongodb
+
+        {{- if .Values.mongodb.auth.enabled }}
+        env:
+          {{- if .Values.mongodb.auth.existingSecret }}
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.mongodb.auth.existingSecret }}
+                key: {{ .Values.mongodb.auth.rootUserKey | default "root-user" }}
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.mongodb.auth.existingSecret }}
+                key: {{ .Values.mongodb.auth.rootPasswordKey | default "root-password" }}
+          {{- else }}
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-mongodb-secret
+                key: root-user
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-mongodb-secret
+                key: root-password
+        {{- end }}
+        {{- end }}
+
+        volumeMounts:
+        - name: data
+          mountPath: /data/db
+        {{- if .Values.mongodb.auth.enabled }}
+        - name: keyfile
+          mountPath: /etc/keyfile
+          readOnly: true
+        {{- end }}
+
+        {{- with .Values.mongodb.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+
+        {{- if .Values.mongodb.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: {{ .Values.mongodb.livenessProbe.initialDelaySeconds | default 30 }}
+          periodSeconds: {{ .Values.mongodb.livenessProbe.periodSeconds | default 10 }}
+          timeoutSeconds: {{ .Values.mongodb.livenessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.mongodb.livenessProbe.failureThreshold | default 3 }}
+        {{- end }}
+
+        {{- if .Values.mongodb.readinessProbe.enabled }}
+        readinessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - "db.adminCommand('ping')"
+          initialDelaySeconds: {{ .Values.mongodb.readinessProbe.initialDelaySeconds | default 5 }}
+          periodSeconds: {{ .Values.mongodb.readinessProbe.periodSeconds | default 10 }}
+          timeoutSeconds: {{ .Values.mongodb.readinessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.mongodb.readinessProbe.failureThreshold | default 3 }}
+        {{- end }}
+
+      volumes:
+      {{- if .Values.mongodb.auth.enabled }}
+      - name: keyfile-tmp
+        secret:
+          secretName: {{ .Release.Name }}-mongodb-replicakey
+          items:
+          - key: replica-key
+            path: replica-key
+      - name: keyfile
+        emptyDir: {}
+      {{- end }}
+
+  {{- if .Values.mongodb.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - {{ .Values.mongodb.persistence.accessMode | default "ReadWriteOnce" }}
+      {{- if .Values.mongodb.persistence.storageClassName }}
+      storageClassName: {{ .Values.mongodb.persistence.storageClassName }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.mongodb.persistence.size | default "10Gi" }}
+  {{- end }}
+{{- end }}

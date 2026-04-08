@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/component: sentinel
 spec:
   serviceName: {{ .Release.Name }}-redis-sentinel
-  replicas: {{ .Values.redis.sentinel.replicas | default 3 }}
+  replicas: {{ .Values.redis.sentinel.replicaCount | default 3 }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}-redis-sentinel

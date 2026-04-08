@@ -48,10 +48,29 @@ data:
                 value: "1"
               - name: CELERY_DB
                 value: "0"
+              
+              - name: MONGODB_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    name: release-name-mongodb-secret
+                    key: root-user
+              - name: MONGODB_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: release-name-mongodb-secret
+                    key: root-password
+              - name: MONGODB_MODE
+                value: "standalone"
+              - name: MONGODB_AUTH_SOURCE
+                value: "admin"
+              - name: MONGODB_DATABASE
+                value: "sc4snmp"
+              - name: MONGODB_HOST
+                value: release-name-mongodb-0.release-name-mongodb
+              - name: MONGODB_PORT
+                value: "27017"
               - name: INVENTORY_PATH
                 value: /app/inventory/inventory.csv
-              - name: MONGO_URI
-                value: mongodb://release-name-mongodb:27017
               - name: MIB_SOURCES
                 value: "http://release-name-mibserver/asn1/@mib@"
               - name: MIB_INDEX

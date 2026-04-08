@@ -18,7 +18,7 @@ from contextlib import suppress
 
 from kombu import Queue
 
-from splunk_connect_for_snmp.common.hummanbool import disable_mongo_logging, human_bool
+from splunk_connect_for_snmp.common.common import disable_mongo_logging, human_bool
 
 with suppress(ImportError, OSError):
     from dotenv import load_dotenv
@@ -64,7 +64,7 @@ else:
         "queue_order_strategy": "priority",
     }
 
-# Should be set by ./construct-redis-url.sh script
+# Should be set by ./construct-connection-strings.sh script
 redbeat_redis_url = os.getenv("REDIS_URL")
 broker_url = os.getenv("CELERY_BROKER_URL")
 

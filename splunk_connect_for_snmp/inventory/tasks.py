@@ -36,7 +36,7 @@ from celery import Task, shared_task
 from celery.utils.log import get_task_logger
 
 from splunk_connect_for_snmp import customtaskmanager
-from splunk_connect_for_snmp.common.hummanbool import (
+from splunk_connect_for_snmp.common.common import (
     BadlyFormattedFieldError,
     convert_to_float,
     human_bool,
