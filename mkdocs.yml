@@ -53,7 +53,7 @@ nav:
           - Scaling with Microk8s: "microk8s/mk8s/k8s-microk8s-scaling.md"
           - Configuration reference:
               - Deployment: "microk8s/configuration/deployment-configuration.md"
-              - Scheduler: "configuration/scheduler-configuration.md"
+              - Scheduler: "microk8s/configuration/scheduler-configuration.md"
               - Poller: "configuration/poller-configuration.md"
               - Splunk configuration: "configuration/splunk-configuration.md"
               - Configurable values: "microk8s/configuration/values-params-description.md"
