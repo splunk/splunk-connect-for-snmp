@@ -11,21 +11,6 @@ Below are the most common options:
 | `tag`        | Defines different versions of images to pull                | `1.21.1`                                           |
 | `pullPolicy` | Defines when kubelet attempts to pull the specified image   | `Always`                                           |
 
-## UI section
-
-Detailed documentation about configuring UI can be found in [Enable GUI](../gui/enable-gui.md).
-
-| Variable              | Description                                                                                          | Default                               |
-|-----------------------|------------------------------------------------------------------------------------------------------|---------------------------------------|
-| `enable`              | Enabling GUI for user                                                                                | `false`                               |
-| `frontEnd`            | Section with configuration for frontEnd image                                                        |                                       |
-| `backEnd`             | Section with configuration for backEnd image                                                         |                                       |
-| `NodePort`            | Port number for accessing UI                                                                         | `frontEnd - 30001`, `backend - 30002` |
-| `image`               | Refer to [Image Section](./#image-section)                                                           |                                       |
-| `valuesFileDirectory` | Absolute directory path on the host machine where configuration files from the GUI will be generated |                                       |
-| `valuesFileName`      | Full name of the file with configuration, stored inside the `valuesFileDirectory`                    |                                       |
-| `keepSectionFiles`    | Decides if additional configuration files should be generated                                        | `true`                                |
-
 ## Splunk section
 
 For the full list of Splunk options and how to use a Kubernetes Secret or a file (e.g. Vault) for the HEC token, see [Splunk configuration](../../configuration/splunk-configuration.md).
@@ -46,36 +31,6 @@ For the full list of Splunk options and how to use a Kubernetes Secret or a file
 | `sourcetypePollingMetrics` | Source type for metric polling event                                        | `sc4snmp:metric`                       |
 | `eventIndex`               | Name of the event index                                                     | `netops`                               |
 | `metricsIndex`             | Name of the metrics index                                                   | `netmetrics`                           |
-
-## Sim section
-
-Detailed documentation about configuring sim can be found in [Splunk Infrastructure Monitoring](sim-configuration.md).
-
-!!!warning 
-  The Splunk Observability Cloud integration (sim) uses the Splunk OpenTelemetry Collector as an additional component in our pipeline. In this setup, the collector transforms metrics received via Splunk HEC into the SignalFx format for ingestion into Splunk Observability Cloud.
-  Because this path is primarily a transformation layer rather than a native O11y instrumentation, the resulting metrics may not fully match Splunk Observability Cloud’s data model, naming conventions, or recommended dimensions.
-  We recommend validating output carefully in a controlled environment before enabling sim.enabled: true broadly, and adjusting SNMP profiles or transformation rules to ensure consistency.
-
-
-| Variable                                        | Description                                                                                                                     | Default |
-|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|---------|
-| `enabled`                                       | Enables sending data to Splunk Observability Cloud/ SignalFx                                                                    | `false` |
-| `signalfxToken`                                 | Splunk Observability org access token                                                                                           |         |
-| `signalfxRealm`                                 | Splunk Observability realm to send telemetry data to                                                                            |         |
-| `resources`                                     | CPU and memory limits and requests for pod                                                                                      |         |
-| `service.annotations`                           | Annotations to append under sim service                                                                                         |         |
-| `secret.create`                                 | Option to configure `signalfxToken` and `signalfxRealm` as kubernetes secrets                                                   | `true`  |
-| `secret.name`                                   | Name of existing secret in kubernetes with `signalfxToken` and `signalfxRealm`                                                  |         |
-| `replicaCount`                                  | Number of created replicas when autoscaling is disabled                                                                         | `1`     |
-| `autoscaling.enabled`                           | Enables autoscaling for pods                                                                                                    | `false` |
-| `image`                                         | Refer to [Image Section](./#image-section)                                                                                      |         |
-| `autoscaling.minReplicas`                       | Minimum number of running pods when autoscaling is enabled                                                                      |         |
-| `autoscaling.maxReplicas`                       | Maximum number of running pods when autoscaling is enabled                                                                      |         |
-| `autoscaling.targetCPUUtilizationPercentage`    | CPU % threshold that must be exceeded on pods to spawn another replica                                                          |         |
-| `autoscaling.targetMemoryUtilizationPercentage` | Memory % threshold that must be exceeded on pods to spawn another replica                                                       |         |
-| `podAntiAffinity`                               | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | `soft`  |
-| `nodeSelector`                                  | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector)               |         |
-
 
 ## Scheduler
 
@@ -215,6 +170,49 @@ not change those settings.
 
 Detailed documentation about configuring redis can be found in [Redis](redis-configuration.md). It is advised to not 
 change those settings.
+
+## UI section
+
+Detailed documentation about configuring UI can be found in [Enable GUI](../gui/enable-gui.md).
+
+| Variable              | Description                                                                                          | Default                               |
+|-----------------------|------------------------------------------------------------------------------------------------------|---------------------------------------|
+| `enable`              | Enabling GUI for user                                                                                | `false`                               |
+| `frontEnd`            | Section with configuration for frontEnd image                                                        |                                       |
+| `backEnd`             | Section with configuration for backEnd image                                                         |                                       |
+| `NodePort`            | Port number for accessing UI                                                                         | `frontEnd - 30001`, `backend - 30002` |
+| `image`               | Refer to [Image Section](./#image-section)                                                           |                                       |
+| `valuesFileDirectory` | Absolute directory path on the host machine where configuration files from the GUI will be generated |                                       |
+| `valuesFileName`      | Full name of the file with configuration, stored inside the `valuesFileDirectory`                    |                                       |
+| `keepSectionFiles`    | Decides if additional configuration files should be generated                                        | `true`                                |
+
+## Sim section
+
+Detailed documentation about configuring sim can be found in [Splunk Infrastructure Monitoring](sim-configuration.md).
+
+!!!warning
+  The Splunk Observability Cloud integration (sim) uses the Splunk OpenTelemetry Collector as an additional component in our pipeline. In this setup, the collector transforms metrics received via Splunk HEC into the SignalFx format for ingestion into Splunk Observability Cloud.
+  Because this path is primarily a transformation layer rather than a native O11y instrumentation, the resulting metrics may not fully match Splunk Observability Cloud's data model, naming conventions, or recommended dimensions.
+  We recommend validating output carefully in a controlled environment before enabling sim.enabled: true broadly, and adjusting SNMP profiles or transformation rules to ensure consistency.
+
+| Variable                                        | Description                                                                                                                     | Default |
+|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|---------|
+| `enabled`                                       | Enables sending data to Splunk Observability Cloud/ SignalFx                                                                    | `false` |
+| `signalfxToken`                                 | Splunk Observability org access token                                                                                           |         |
+| `signalfxRealm`                                 | Splunk Observability realm to send telemetry data to                                                                            |         |
+| `resources`                                     | CPU and memory limits and requests for pod                                                                                      |         |
+| `service.annotations`                           | Annotations to append under sim service                                                                                         |         |
+| `secret.create`                                 | Option to configure `signalfxToken` and `signalfxRealm` as kubernetes secrets                                                   | `true`  |
+| `secret.name`                                   | Name of existing secret in kubernetes with `signalfxToken` and `signalfxRealm`                                                  |         |
+| `replicaCount`                                  | Number of created replicas when autoscaling is disabled                                                                         | `1`     |
+| `autoscaling.enabled`                           | Enables autoscaling for pods                                                                                                    | `false` |
+| `image`                                         | Refer to [Image Section](./#image-section)                                                                                      |         |
+| `autoscaling.minReplicas`                       | Minimum number of running pods when autoscaling is enabled                                                                      |         |
+| `autoscaling.maxReplicas`                       | Maximum number of running pods when autoscaling is enabled                                                                      |         |
+| `autoscaling.targetCPUUtilizationPercentage`    | CPU % threshold that must be exceeded on pods to spawn another replica                                                          |         |
+| `autoscaling.targetMemoryUtilizationPercentage` | Memory % threshold that must be exceeded on pods to spawn another replica                                                       |         |
+| `podAntiAffinity`                               | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | `soft`  |
+| `nodeSelector`                                  | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector)               |         |
 
 ## Others
 
