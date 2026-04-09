@@ -13,26 +13,26 @@ The whole file is divided into the following parts:
 
 To configure the endpoint for sending SNMP data:
 
-- `splunk` - in case you use Splunk Enterprise/Cloud. For more details see [Splunk configuration](splunk-configuration.md).
+- `splunk` - in case you use Splunk Enterprise/Cloud. For more details see [Splunk configuration](../../configuration/splunk-configuration.md).
 - `sim` - in case you use Splunk Observability Cloud. For more details see [sim configuration](sim-configuration.md).
 
 For polling purposes:
 
 - `scheduler` - For more details see [scheduler configuration](scheduler-configuration.md).
-- `poller` - For more details see [poller configuration](poller-configuration.md).
+- `poller` - For more details see [poller configuration](../../configuration/poller-configuration.md).
 
 For traps receiving purposes:
 
-- `traps` - For more details see [trap configuration](trap-configuration.md).
+- `traps` - For more details see [trap configuration](../../configuration/traps.md).
    
 Shared components:
 
-- `inventory` - For more details see [inventory configuration](../poller-configuration#configure-inventory).
+- `inventory` - For more details see [inventory configuration](../../configuration/inventory.md).
 - `mibserver` - For more details see [mibserver configuration](../../mib-request.md).
 - `mongodb` - For more details see [mongo configuration](mongo-configuration.md).
 - `redis` - For more details see [redis configuration](redis-configuration.md).
 - `ui` - For more details see [ui configuration](../gui/enable-gui.md).
-- `worker` - For more details see [worker configuration](worker-configuration.md).
+- `worker` - For more details see [worker configuration](../../configuration/workers.md).
 
 ### Shared values
 All the components have the following `resources` field for adjusting memory resources:
@@ -47,7 +47,7 @@ All the components have the following `resources` field for adjusting memory res
       memory: 2Gi
 ```
 For more information about the concept of `resources`, see the [kuberentes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
-For more information about scaling resources see the [scaling with microk8s](../../mk8s/k8s-microk8s-scaling).
+For more information about scaling resources see the [scaling with microk8s](../../microk8s/mk8s/k8s-microk8s-scaling.md).
 
 There is an option to create common annotations across all services. It can be set by:
 

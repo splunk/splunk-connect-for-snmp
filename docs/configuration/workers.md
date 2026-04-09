@@ -91,7 +91,7 @@ Worker configuration is set via environment variables in `.env`.
 |------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `WALK_RETRY_MAX_INTERVAL`    | Maximum time interval between walk attempts                                                                                                            |
 | `WALK_MAX_RETRIES`           | Maximum number of walk retries                                                                                                                         |
-| `METRICS_INDEXING_ENABLED`   | Details can be found in [append oid index part to the metrics](../microk8s/configuration/poller-configuration.md#append-oid-index-part-to-the-metrics) |
+| `METRICS_INDEXING_ENABLED`   | Details can be found in [append oid index part to the metrics](poller-configuration.md#append-oid-index-part-to-the-metrics) |
 | `POLL_BASE_PROFILES`         | Enable polling base profiles (with IF-MIB and SNMPv2-MIB)                                                                                              |
 | `IGNORE_NOT_INCREASING_OIDS` | Ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex: IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6                |
 | `WORKER_LOG_LEVEL`           | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                        |

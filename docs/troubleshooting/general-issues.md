@@ -18,7 +18,7 @@ If the `mongo-fcv-upgrade-to-6` job fails for any reason, there are two recovery
 
 1. **Reinstall SC4SNMP**:
 
-    [Reinstall SC4SNMP](../../microk8s/sc4snmp-installation#restart-splunk-connect-for-snmp) with **Persistent Volume Claim (PVC) deletion**.
+    [Reinstall SC4SNMP](../microk8s/sc4snmp-installation.md#restart-splunk-connect-for-snmp) with **Persistent Volume Claim (PVC) deletion**.
 
 2. **Manually Update MongoDB**:
 

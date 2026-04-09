@@ -28,7 +28,7 @@ Detailed documentation about configuring UI can be found in [Enable GUI](../gui/
 
 ## Splunk section
 
-For the full list of Splunk options and how to use a Kubernetes Secret or a file (e.g. Vault) for the HEC token, see [Splunk configuration](splunk-configuration.md).
+For the full list of Splunk options and how to use a Kubernetes Secret or a file (e.g. Vault) for the HEC token, see [Splunk configuration](../../configuration/splunk-configuration.md).
 
 | Variable                   | Description                                                                 | Default                                |
 |----------------------------|-----------------------------------------------------------------------------|----------------------------------------|
@@ -38,8 +38,8 @@ For the full list of Splunk options and how to use a Kubernetes Secret or a file
 | `host`                     | IP address or a domain name of a Splunk instance                            |                                        |
 | `path`                     | URN to Splunk collector                                                     | `/services/collector`                  |
 | `token`                    | HEC token (plaintext). Omit when using `tokenSecretRef` or `tokenFilePath`.  | `00000000-0000-0000-0000-000000000000` |
-| `tokenSecretRef`           | Reference to an existing Secret for the HEC token. See [Splunk configuration](splunk-configuration.md#using-a-kubernetes-secret-for-the-hec-token). | `name: ""`, `key: "hec_token"` |
-| `tokenFilePath`            | Path to a file containing the HEC token (e.g. Vault injector). Set only on sender. Use `worker.sender.podAnnotations` for injector annotations. See [Splunk configuration](splunk-configuration.md#token-from-file-eg-vault-injector). | `""` |
+| `tokenSecretRef`           | Reference to an existing Secret for the HEC token. See [Splunk configuration](../../configuration/splunk-configuration.md#using-a-kubernetes-secret-for-the-hec-token). | `name: ""`, `key: "hec_token"` |
+| `tokenFilePath`            | Path to a file containing the HEC token (e.g. Vault injector). Set only on sender. Use `worker.sender.podAnnotations` for injector annotations. See [Splunk configuration](../../configuration/splunk-configuration.md#token-from-file-eg-vault-injector). | `""` |
 | `insecureSSL`              | Skip certificate verification for the HEC endpoint when using HTTPS          | `false`                                |
 | `sourcetypeTraps`          | Source type for trap events                                                 | `sc4snmp:traps`                        |
 | `sourcetypePollingEvents`  | Source type for non-metric polling event                                    | `sc4snmp:event`                        |
@@ -82,8 +82,8 @@ Detailed documentation about configuring sim can be found in [Splunk Infrastruct
 Detailed documentation about configuring:
 
  - scheduler can be found in [Scheduler](scheduler-configuration.md).
- - groups can be found in [Configuring Groups](configuring-groups.md).
- - profiles can be found in [Configuring Profiles](configuring-profiles.md).
+ - groups can be found in [Configuring Groups](../../configuration/groups.md).
+ - profiles can be found in [Configuring Profiles](../../configuration/profiles.md).
 
 | Variable             | Description                                                                                                                     | Default |
 |----------------------|---------------------------------------------------------------------------------------------------------------------------------|---------|
@@ -100,7 +100,7 @@ Detailed documentation about configuring:
 
 ## Poller
 
-Detailed documentation about configuring poller can be found in [Poller](poller-configuration.md).
+Detailed documentation about configuring poller can be found in [Poller](../../configuration/poller-configuration.md).
 
 | Variable                             | Description                                                                                                     | Default |
 |--------------------------------------|-----------------------------------------------------------------------------------------------------------------|---------|
@@ -117,7 +117,7 @@ Detailed documentation about configuring poller can be found in [Poller](poller-
 
 ## Worker
 
-Detailed documentation about configuring worker can be found in [Worker](worker-configuration.md).
+Detailed documentation about configuring worker can be found in [Worker](../../configuration/workers.md).
 
 | Variable                                       | Description                                                                                                                     | Default                                     | 
 |------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------|
@@ -154,7 +154,7 @@ Detailed documentation about configuring worker can be found in [Worker](worker-
 
 ## Inventory
 
-Detailed documentation about configuring inventory can be found in [Poller](../poller-configuration#configure-inventory).
+Detailed documentation about configuring inventory can be found in [Inventory](../../configuration/inventory.md).
 
 | Variable              | Description                                                                                                       | Default |
 |-----------------------|-------------------------------------------------------------------------------------------------------------------|---------|
@@ -167,7 +167,7 @@ Detailed documentation about configuring inventory can be found in [Poller](../p
 
 ## Traps
 
-Detailed documentation about configuring traps can be found in [Traps](trap-configuration.md).
+Detailed documentation about configuring traps can be found in [Traps](../../configuration/traps.md).
 
 | Variable                                        | Description                                                                                                                     | Default          |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|------------------|

@@ -46,7 +46,7 @@ scheduler:
 ```
 
 ### Define groups of hosts
-For more information on when to use groups, see [Configuring Groups](configuring-groups.md).
+For more information on when to use groups, see [Configuring Groups](../../configuration/groups.md).
 
 See the following example of group configuration:
 ```yaml

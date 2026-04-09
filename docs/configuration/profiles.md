@@ -60,7 +60,7 @@ generic_switch:
 #### WALK profile
 
 !!!info
-    By default the walk without any profile set is polling only `SNMPv2-MIB`. For changing the scope of the walk you can configure new walk profile or use `enableFullWalk` flag. More about it in [poller configuration](../microk8s/configuration/poller-configuration.md#poller-configuration-file).
+    By default the walk without any profile set is polling only `SNMPv2-MIB`. For changing the scope of the walk you can configure new walk profile or use `enableFullWalk` flag. More about it in [poller configuration](poller-configuration.md).
 
 If you would like to change the scope of the walk, you should set one of the profiles in the inventory to point to the profile
 definition of the `walk` type:

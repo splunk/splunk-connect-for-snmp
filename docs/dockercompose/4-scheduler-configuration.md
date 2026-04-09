@@ -8,6 +8,7 @@
 
 !!! info "Full reference"
     For the complete reference on profile types, conditions, groups, and custom translations, see [Profiles configuration](../configuration/profiles.md) and [Groups configuration](../configuration/groups.md).
+    For log level, see [Define log level](#define-log-level) below.
 
 ## Configuration
 
@@ -24,6 +25,16 @@ groups:
 - `customTranslations`: custom name mappings for MIB fields. See [Profiles configuration — Custom translations](../configuration/profiles.md#custom-translations).
 - `profiles`: polling profiles defining what OIDs to collect and how often. See [Profiles configuration](../configuration/profiles.md).
 - `groups`: named groups of devices that can be referenced in the inventory. See [Groups configuration](../configuration/groups.md).
+
+## Define log level
+
+Set the log level for the scheduler container in `.env`:
+
+```
+SCHEDULER_LOG_LEVEL=INFO
+```
+
+The allowed values are `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or `FATAL`.
 
 ## Example of the configuration
 
