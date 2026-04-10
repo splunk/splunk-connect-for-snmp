@@ -14,6 +14,7 @@
 ```yaml
 communities:
   1:
+    - private
   2c:
     - public
     - switch
