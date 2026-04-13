@@ -4,7 +4,7 @@ ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
     PYTHONUNBUFFERED=1
 RUN apk add -U git sqlite-dev && apk upgrade zlib
-RUN pip install --upgrade setuptools pip wheel
+RUN pip install --upgrade setuptools pip wheel libcrypto3 libssl3 libuuid
 RUN mkdir /app
 WORKDIR /app
 
