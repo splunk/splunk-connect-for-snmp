@@ -23,7 +23,7 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 
 Once the required variables above are set, you can [Deploy the app](./11-deploy-and-run.md). The rest of this page covers optional and advanced parameters.
 
-!!! note "Sending container logs to Splunk?"
+!!! note "Sending container logs to Splunk"
     If you plan to use the [Splunk logging feature](./9-splunk-logging.md), also set **`SPLUNK_LOG_INDEX`** — the Splunk event index where container logs will be sent. This cannot be configured after the fact without editing `.env` and restarting the stack.
 
 ## Configuration
@@ -109,7 +109,6 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `UDP_CONNECTION_TIMEOUT`                | Timeout in seconds for SNMP operations                                                                                                                 |
 | `MAX_OID_TO_PROCESS`                    | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS   |
 | `MAX_REPETITIONS`                       | The amount of requested next oids in response for each of varbinds in one request sent                                                                 |
-| `ENABLE_FULL_WALK`                      | Enable full OID tree walk for all devices. When disabled (default), only `SNMPv2-MIB` is walked                                                        |
 
 #### Worker Poller
 | Variable                            | Description                                                                |

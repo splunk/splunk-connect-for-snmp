@@ -37,6 +37,25 @@ poller:
 The poller behaviour is configured via environment variables in `.env`. The inventory is configured in a separate `inventory.csv` file — see [Inventory configuration](inventory.md).
 ///
 
+### Disable automatic polling of base profiles
+
+There are [two profiles](https://github.com/splunk/splunk-connect-for-snmp/blob/main/splunk_connect_for_snmp/profiles/base.yaml) that are being polled by default, so that even without any configuration set up, you can see
+the data in Splunk. You can disable it with the following parameter:
+
+/// tab | microk8s
+```yaml
+poller:
+  pollBaseProfiles: false
+```
+///
+
+/// tab | docker compose
+Set in `.env`:
+```
+POLL_BASE_PROFILES=false
+```
+///
+
 ### Default walk scope
 
 The default walk profile is polling only `SNMPv2-MIB`. If the full OID tree walk is required it can be enabled:
@@ -236,25 +255,6 @@ After conversion (underscores):
   "profiles": "TEST"
 }
 ```
-
-### Disable automatic polling of base profiles
-
-There are [two profiles](https://github.com/splunk/splunk-connect-for-snmp/blob/main/splunk_connect_for_snmp/profiles/base.yaml) that are being polled by default, so that even without any configuration set up, you can see
-the data in Splunk. You can disable it with the following parameter:
-
-/// tab | microk8s
-```yaml
-poller:
-  pollBaseProfiles: false
-```
-///
-
-/// tab | docker compose
-Set in `.env`:
-```
-POLL_BASE_PROFILES=false
-```
-///
 
 ### Configure inventory
 

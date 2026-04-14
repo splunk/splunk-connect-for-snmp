@@ -26,7 +26,7 @@
 !!!note 
     `netmetrics` and `netops` are the default names of SC4SNMP indexes. You can use the index names of your choice and reference it in the `.env` file later on. See [SC4SNMP Parameters](6-env-file-configuration.md#splunk-instance) for details.
 
-1. Create or obtain a new Splunk HTTP Event Collector token and the correct HTTPS endpoint.
-2. Verify the token using [curl](https://docs.splunk.com/Documentation/Splunk/8.1.3/Data/FormateventsforHTTPEventCollector). The endpoint must use a publicly trusted certificate authority.
+2. Create or obtain a new Splunk HTTP Event Collector token and the correct HTTPS endpoint.
+3. Verify the token using [curl](https://docs.splunk.com/Documentation/Splunk/8.1.3/Data/FormateventsforHTTPEventCollector). The endpoint must use a publicly trusted certificate authority.
 
 Once the above steps are complete, proceed to [Install Docker](./1-install-docker.md).
