@@ -241,7 +241,7 @@ def extract_index_number(index):
         return 0
     index_number = index[0]._value
     if isinstance(index_number, typing.Tuple):
-        index_number = index_number[0]
+        index_number = index_number[0] if index_number else 0
     return index_number
 
 

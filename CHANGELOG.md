@@ -14,6 +14,7 @@
 
 ### Fixed
 - fix reusing the snmp engine for snmpv3 calls
+- fix out of range error for varbinds without tuple index
 
 ## [1.15.0]
 
