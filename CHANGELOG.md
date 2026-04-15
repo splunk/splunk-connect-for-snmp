@@ -15,6 +15,7 @@
 ### Fixed
 - fix reusing the snmp engine for snmpv3 calls
 - fix out of range error for varbinds without tuple index
+- fix missing engine discovery id in traps docker_compose.yaml
 
 ## [1.15.0]
 
