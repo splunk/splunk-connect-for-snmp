@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- improve the documentation
 - add max_oid_to_process configuration per device
 - **MongoDB Migration**: Replaced Bitnami MongoDB chart dependency with custom Kubernetes manifests
   - Removed `bitnami/mongodb` chart dependency from `Chart.yaml`
