@@ -25,12 +25,16 @@ poller:
    - sc4snmp-hlab-sha-des
   enableFullWalk: false
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    10.202.4.202,,2c,public,,,2000,,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+    10.202.4.202,,2c,public,,,2000,,,,
 ```
 
 !!! info
-    The header's line (`address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete`) is necessary for the correct execution of SC4SNMP. Do not remove it.
+    The header line (`address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete`) is necessary for the correct execution of SC4SNMP. Do not remove it.
+
+!!! info
+    Starting with version 1.15.0, the max_oid_to_process field has been introduced as an optional addition to the inventory header. This update is backward compatible, and existing inventory headers remain fully supported.
+
 ///
 
 /// tab | docker compose

@@ -27,8 +27,8 @@ The following is a minimal, working configuration for polling a single SNMPv2c d
 **Inventory file** — one device at `192.168.1.1`, with a minimal SNMPv2-MIB walk every 1800 seconds and profile-based polling every 300 seconds (as defined by `simple_profile` below), using SNMPv2c community `public`:
 
 ```csv
-address,port,version,community,secret,securityEngine,walk_interval,profiles,smart_profiles,delete
-192.168.1.1,161,2c,public,,,1800,simple_profile,t,
+address,port,version,community,secret,securityEngine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+192.168.1.1,161,2c,public,,,1800,simple_profile,t,,
 ```
 
 **Scheduler config file** — define the `public` community and the `simple_profile` profile referenced above:

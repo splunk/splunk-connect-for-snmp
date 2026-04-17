@@ -28,13 +28,16 @@ Inventory is configured in the `poller.inventory` section of `values.yaml`:
 ```yaml
 poller:
     inventory: |
-      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-      10.202.4.202,,2c,public,,,2000,my_profile1,,
-      example_group_1,,2c,public,,,2000,my_profile2;my_profile3,,
+      address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+      10.202.4.202,,2c,public,,,2000,my_profile1,,,
+      example_group_1,,2c,public,,,2000,my_profile2;my_profile3,,,
 ```
 
 !!! info
-    The header line (`address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete`) is necessary for the correct execution of SC4SNMP. Do not remove it.
+    The header line (`address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete`) is necessary for the correct execution of SC4SNMP. Do not remove it.
+
+!!! info
+    Starting with version 1.15.0, the max_oid_to_process field has been introduced as an optional addition to the inventory header. This update is backward compatible, and existing inventory headers remain fully supported.
 
 You can also keep inventory in a separate CSV file and pass it at upgrade time:
 
@@ -51,9 +54,9 @@ INVENTORY_FILE_ABSOLUTE_PATH=/absolute/path/to/inventory.csv
 ```
 
 ```csv
-address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-10.202.4.202,,2c,public,,,2000,my_profile1,,
-example_group_1,,2c,public,,,2000,my_profile2;my_profile3,,
+address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+10.202.4.202,,2c,public,,,2000,my_profile1,,,
+example_group_1,,2c,public,,,2000,my_profile2;my_profile3,,,
 ```
 ///
 
