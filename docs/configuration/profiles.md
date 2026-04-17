@@ -101,15 +101,15 @@ To configure SmartProfile, the following values needs to be set in the `profiles
 - For `ProfileName`, define it as a subsection key in `profiles`.
 - For `frequency`, define it as the interval between SNMP execution in seconds.
 - For `condition`, define the conditions to match the profile.
-- For `type`, define it as the key for the `condition` section that defines the type of condition. The allowed
-  values are `base` or `field`.
-- The `base` type of condition will be executed when `SmartProfile` in inventory is set to true.
-- The `field` type of condition will be executed if it matches `pattern` for the defined `field`. Supported fields are:
-    -  `SNMPv2-MIB.sysDescr`
-    -  `SNMPv2-MIB.sysObjectID`
-- For `field`, define the field name for the field condition type.
-- For `pattern`, define the list of regular expression patterns for the MIB object field defined in the `field` section, for example:
-     - `.*linux.*`
+    * For `type`, define it as the key for the `condition` section that defines the type of condition. The allowed
+    values are `base` or `field`.
+    * The `base` type of condition will be executed when `SmartProfile` in inventory is set to true.
+    * The `field` type of condition will be executed if it matches `pattern` for the defined `field`. Supported fields are:
+        -  `SNMPv2-MIB.sysDescr`
+        -  `SNMPv2-MIB.sysObjectID`
+    * For `field`, define the field name for the field condition type.
+    * For `pattern`, define the list of regular expression patterns for the MIB object field defined in the `field` section, for example:
+         - `.*linux.*`
 - For `varBinds`, define variable bindings to query.
 
 
