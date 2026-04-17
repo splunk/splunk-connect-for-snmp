@@ -17,142 +17,80 @@ Worker configuration is kept in the `worker` section of `values.yaml`:
 
 ```yaml
 worker:
-  # workers are responsible for the actual execution of polling, processing trap messages, and sending data to Splunk.
-  # More: https://splunk.github.io/splunk-connect-for-snmp/main/configuration/workers/
-
-  # The poller worker consumes all the tasks related to polling
   poller:
-    # number of the poller replicas when autoscaling is set to false
     replicaCount: 2
-    # minimum number of threads in a pod
     concurrency: 4
-    # how many tasks are consumed from the queue at once
     prefetch: 1
     autoscaling:
-      # enabling autoscaling for poller worker pods
       enabled: false
-      # minimum number of running poller worker pods when autoscaling is enabled
       minReplicas: 2
-      # maximum number of running poller worker pods when autoscaling is enabled
       maxReplicas: 10
-      # CPU % threshold that must be exceeded on poller worker pods to spawn another replica
       targetCPUUtilizationPercentage: 80
 
     resources:
-      # the resources limits for poller worker container
       limits:
         cpu: 500m
-      # the resources requests for poller worker container
       requests:
         cpu: 250m
 
-  # The trap worker consumes all the trap related tasks produced by the trap pod
   trap:
-    # number of the trap replicas when autoscaling is set to false
     replicaCount: 2
-    # Use reverse dns lookup of trap ip address and send the hostname to splunk
     resolveAddress:
       enabled: false
-      cacheSize: 500 # maximum number of records in cache
-      cacheTTL: 1800 # time to live of the cached record in seconds
-    # minimum number of threads in a pod
+      cacheSize: 500 
+      cacheTTL: 1800 
     concurrency: 4
-    # how many tasks are consumed from the queue at once
     prefetch: 30
     autoscaling:
-      # enabling autoscaling for trap worker pods
       enabled: false
-      # minimum number of running trap worker pods when autoscaling is enabled
       minReplicas: 2
-      # maximum number of running trap worker pods when autoscaling is enabled
       maxReplicas: 10
-      # CPU % threshold that must be exceeded on traps worker pods to spawn another replica
       targetCPUUtilizationPercentage: 80
     resources:
-      # the resources limits for trap worker container
       limits:
         cpu: 500m
       requests:
-        # the resources requests for trap worker container
         cpu: 250m
-  # The sender worker handles sending data to Splunk
   sender:
-    # number of the sender replicas when autoscaling is set to false
     replicaCount: 1
-    # minimum number of threads in a pod
     concurrency: 4
-    # how many tasks are consumed from the queue at once
     prefetch: 30
     autoscaling:
-      # enabling autoscaling for sender worker pods
       enabled: false
-      # minimum number of running sender worker pods when autoscaling is enabled
       minReplicas: 2
-      # maximum number of running sender worker pods when autoscaling is enabled
       maxReplicas: 10
-      # CPU % threshold that must be exceeded on sender worker pods to spawn another replica
       targetCPUUtilizationPercentage: 80
     resources:
-      # the resources limits for sender worker container
       limits:
         cpu: 500m
-        # the resources requests for sender worker container
       requests:
         cpu: 250m
-  # Liveness probes are used in Kubernetes to know when a pod is alive or dead.
-  # A pod can be in a dead state for a number of reasons;
-  # the application could be crashed, some error in the application etc.
   livenessProbe:
-    # whether it should be turned on or not
     enabled: false
-    # The exec command for the liveness probe to run in the container.
     exec:
       command:
         - sh
         - -c
         - test $(($(date +%s) - $(stat -c %Y /tmp/worker_heartbeat))) -lt 10
-    # Number of seconds after the container has started before liveness probes are initiated.
     initialDelaySeconds: 80
-    # How often (in seconds) to perform the probe.
     periodSeconds: 10
-
-  # Readiness probes are used to know when a pod is ready to serve traffic.
-  # Until a pod is ready, it won't receive traffic from Kubernetes services.
   readinessProbe:
-    # whether it should be turned on or not
     enabled: false
-    # The exec command for the readiness probe to run in the container.
     exec:
       command:
         - sh
         - -c
         - test -e /tmp/worker_ready
-    # Number of seconds after the container has started before readiness probes are initiated.
     initialDelaySeconds: 30
-    # How often (in seconds) to perform the probe.
     periodSeconds: 5
-
-
-  # task timeout in seconds (usually necessary when walk process takes a long time)
   taskTimeout: 2400
-  # maximum time interval between walk attempts
   walkRetryMaxInterval: 180
-  # maximum number of walk retries
   walkMaxRetries: 5
-  # ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex:
-  #   ignoreNotIncreasingOid:
-  #    - "127.0.0.1:164"
-  #    - "127.0.0.6"
   ignoreNotIncreasingOid: []
-  # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
   logLevel: "INFO"
-  # disableMongoDebugLogging is used to disable extensive debug logging for MongoDB+pymongo while logLevel is set to DEBUG.
   disableMongoDebugLogging: true
   podAntiAffinity: soft
-  # udpConnectionTimeout timeout in seconds for SNMP operations
   udpConnectionTimeout: 3
-
-  # in case of seeing "Empty SNMP response message" this variable can be set to true
   ignoreEmptyVarbinds: false
 ```
 
@@ -493,4 +431,6 @@ MAX_DNS_CACHE_SIZE_TRAPS=500
 TTL_DNS_CACHE_TRAPS=1800
 ```
 ///
+
+Trap worker uses in memory cache to store the results of the reverse dns lookup. If you restart the worker, the cache will be cleared.
 
