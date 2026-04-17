@@ -24,8 +24,6 @@ spec:
         imagePullPolicy: Always
         command: ["sh","-c","/celery_start.sh"]
         env:
-        - name: MONGO_URI
-          value: mongodb://release-name-mongodb:27017
         
         - name: REDIS_MODE
           value: "standalone"
@@ -37,6 +35,27 @@ spec:
           value: "1"
         - name: CELERY_DB
           value: "0"
+        
+        - name: MONGODB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: release-name-mongodb-secret
+              key: root-user
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: release-name-mongodb-secret
+              key: root-password
+        - name: MONGODB_MODE
+          value: "standalone"
+        - name: MONGODB_AUTH_SOURCE
+          value: "admin"
+        - name: MONGODB_DATABASE
+          value: "sc4snmp"
+        - name: MONGODB_HOST
+          value: release-name-mongodb-0.release-name-mongodb
+        - name: MONGODB_PORT
+          value: "27017"
         - name: JOB_CONFIG_PATH
           value: /config/job_config.yaml
         - name: JOB_NAMESPACE

@@ -47,8 +47,7 @@ spec:
             - name: CONFIG_PATH
               value: /app/config/config.yaml
             {{- include "splunk-connect-for-snmp.redis-env" . | nindent 12 }}
-            - name: MONGO_URI
-              value: {{ include "splunk-connect-for-snmp.mongo_uri" . }}
+            {{- include "splunk-connect-for-snmp.mongodb-env" . | nindent 12 }}
             - name: MIB_SOURCES
               value: "http://{{ printf "%s-%s" .Release.Name "mibserver" }}/asn1/@mib@"
             - name: MIB_INDEX

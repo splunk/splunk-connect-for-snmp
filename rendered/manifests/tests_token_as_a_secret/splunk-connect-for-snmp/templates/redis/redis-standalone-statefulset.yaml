@@ -17,6 +17,12 @@ spec:
     metadata:
       labels:
         app: release-name-redis
+        app.kubernetes.io/name: splunk-connect-for-snmp
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: redis
+        helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
+        app.kubernetes.io/version: "CURRENT-VERSION"
+        app.kubernetes.io/managed-by: Helm
       annotations:
         checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
     spec:
@@ -101,7 +107,6 @@ spec:
     spec:
       accessModes: 
         - ReadWriteOnce
-      storageClassName: microk8s-hostpath
       resources:
         requests:
           storage: 5Gi

@@ -1,4 +1,4 @@
-pytest-splunk-addon
+pytest
 selenium
 webdriver_manager
 pyyaml

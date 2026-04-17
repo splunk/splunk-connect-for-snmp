@@ -20,7 +20,7 @@ from typing import List, Union
 
 from pydantic import BaseModel, validator
 
-from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.common import human_bool
 
 InventoryStr = Union[None, str]
 InventoryInt = Union[None, int]
@@ -40,6 +40,7 @@ class InventoryRecord(BaseModel):
     secret: InventoryStr
     security_engine: InventoryStr = ""
     walk_interval: InventoryInt = 42000
+    max_oid_to_process: InventoryInt = None
     profiles: List
     smart_profiles: InventoryBool
     delete: InventoryBool
@@ -112,6 +113,15 @@ class InventoryRecord(BaseModel):
             return 604800
         else:
             return v
+
+    @validator("max_oid_to_process", pre=True)
+    def max_oid_to_process_validator(cls, value):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
+            return None
+        v = int(value)
+        if v < 1:
+            return None
+        return v
 
     @validator("profiles", pre=True)
     def profiles_validator(cls, value):

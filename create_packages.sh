@@ -1,7 +1,9 @@
 #!/bin/bash
+set -euo pipefail
 
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 python_script=$1
+[[ -f "$python_script" ]] || { echo "Usage: $0 <path-to-get_yaml_fields.py>"; exit 1; }
 combine_image_name(){
   #Function to combine registry, repository and tag
   # into one image, so that it can be pulled by docker
@@ -11,6 +13,7 @@ combine_image_name(){
   image_tag=$3
   app_version=$4
 
+  result=""
   if [ -n "$image_registry" ];
   then
     result="$result""$image_registry/"
@@ -71,43 +74,6 @@ pull_dependencies_images_sc4snmp(){
     docker pull "$docker_pull_image"
     images_to_pack="$images_to_pack""$docker_pull_image "
 
-    #For mongodb we need one more image from values.yaml
-    if [[ "$chart_dir" == *"mongodb"* ]]
-    then
-      docker_pull_image=""
-      image_registry=$(python3 "$python_script" "$values_file" "metrics.image.registry")
-      image_repository=$(python3 "$python_script" "$values_file" "metrics.image.repository")
-      image_tag=$(python3 "$python_script" "$values_file" "metrics.image.tag")
-
-      docker_pull_image=$(combine_image_name "$image_registry" "$image_repository" "$image_tag" "$app_version")
-
-      printf "\n"
-      if [ -z "$docker_pull_image" ]
-      then
-        echo "No image to pull"
-        exit 0
-      fi
-      echo "Pulling: ""$docker_pull_image"
-      docker pull "$docker_pull_image"
-      images_to_pack="$images_to_pack""$docker_pull_image "
-
-      docker_pull_image=""
-      image_registry=$(python3 "$python_script" "$values_file" "volumePermissions.image.registry")
-      image_repository=$(python3 "$python_script" "$values_file" "volumePermissions.image.repository")
-      image_tag=$(python3 "$python_script" "$values_file" "volumePermissions.image.tag")
-
-      docker_pull_image=$(combine_image_name "$image_registry" "$image_repository" "$image_tag" "$app_version")
-
-      printf "\n"
-      if [ -z "$docker_pull_image" ]
-      then
-        echo "No image to pull"
-        exit 0
-      fi
-      echo "Pulling: ""$docker_pull_image"
-      docker pull "$docker_pull_image"
-      images_to_pack="$images_to_pack""$docker_pull_image "
-    fi
     printf "\n\n"
   else
     echo "Invalid directory"
@@ -151,12 +117,54 @@ pull_ui_images() {
 }
 
 
-helm repo add bitnami https://charts.bitnami.com/bitnami
+pull_custom_chart_images(){
+  # Pull images for MongoDB and Redis (inline templates, not sub-chart dependencies)
+  values_file="$1"
+
+  # MongoDB main image
+  mongo_repo=$(python3 "$python_script" "$values_file" "mongodb.image.repository")
+  mongo_tag=$(python3 "$python_script" "$values_file" "mongodb.image.tag")
+  if [ -n "$mongo_repo" ] && [ -n "$mongo_tag" ]; then
+    mongo_image="$mongo_repo:$mongo_tag"
+    echo "Pulling MongoDB image: $mongo_image"
+    docker pull "$mongo_image"
+    images_to_pack="$images_to_pack""$mongo_image "
+  fi
+
+  # MongoDB replica init job image (used in HA/replication mode)
+  mongo_init_repo=$(python3 "$python_script" "$values_file" "mongodb.replicaInitJob.image.repository")
+  mongo_init_tag=$(python3 "$python_script" "$values_file" "mongodb.replicaInitJob.image.tag")
+  if [ -n "$mongo_init_repo" ] && [ -n "$mongo_init_tag" ]; then
+    mongo_init_image="$mongo_init_repo:$mongo_init_tag"
+    echo "Pulling MongoDB replica init image: $mongo_init_image"
+    docker pull "$mongo_init_image"
+    images_to_pack="$images_to_pack""$mongo_init_image "
+  fi
+
+  # MongoDB init-permissions image (hardcoded in templates)
+  busybox_image="busybox:1.36"
+  echo "Pulling MongoDB init-permissions image: $busybox_image"
+  docker pull "$busybox_image"
+  images_to_pack="$images_to_pack""$busybox_image "
+
+  # Redis image
+  redis_repo=$(python3 "$python_script" "$values_file" "redis.image.repository")
+  redis_tag=$(python3 "$python_script" "$values_file" "redis.image.tag")
+  if [ -n "$redis_repo" ] && [ -n "$redis_tag" ]; then
+    redis_image="$redis_repo:$redis_tag"
+    echo "Pulling Redis image: $redis_image"
+    docker pull "$redis_image"
+    images_to_pack="$images_to_pack""$redis_image "
+  fi
+}
+
+rm -rf /tmp/package
+mkdir -p /tmp/package
 helm repo add pysnmp-mibs https://pysnmp.github.io/mibs/charts
-helm dependency build charts/splunk-connect-for-snmp
+helm dependency update charts/splunk-connect-for-snmp
 helm package charts/splunk-connect-for-snmp -d /tmp/package
 cd /tmp/package || exit
-SPLUNK_FILE=$(ls)
+SPLUNK_FILE=$(ls /tmp/package/*.tgz)
 tar -xvf "$SPLUNK_FILE"
 
 DIRS=$(ls)
@@ -176,7 +184,7 @@ then
 fi
 cd "$SPLUNK_DIR" || exit
 
-mkdir /tmp/package/packages
+mkdir -p /tmp/package/packages
 
 # Export script to pull mibserver
 MIBSERVER_VERSION=$(grep -A2 'mibserver' Chart.lock | grep version | cut -d : -f2 | xargs)
@@ -192,7 +200,7 @@ cd charts || exit
 
 #Unpack dependencies charts and delete .tgz files
 FILES=$(ls)
-for f in $FILES
+for f in *.tgz
 do
   tar -xvf "$f"
   rm "$f"
@@ -207,6 +215,9 @@ do
     pull_dependencies_images_sc4snmp "$full_dir"
   fi
 done
+
+# Pull images for custom MongoDB and Redis charts (inline templates)
+pull_custom_chart_images "/tmp/package/$SPLUNK_DIR/values.yaml"
 
 pull_ui_images "/tmp/package/$SPLUNK_DIR"
 # images_to_pack is a list so it shouldn't be quoted as variable
@@ -276,8 +287,7 @@ helm dep update
 cd charts || exit
 
 #Unpack dependencies charts and delete .tgz files
-FILES=$(ls)
-for f in $FILES
+for f in *.tgz
 do
   tar -xvf "$f"
   rm "$f"

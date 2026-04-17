@@ -3,8 +3,19 @@
 ## Unreleased
 
 ### Changed
+- add max_oid_to_process configuration per device
+- **MongoDB Migration**: Replaced Bitnami MongoDB chart dependency with custom Kubernetes manifests
+  - Removed `bitnami/mongodb` chart dependency from `Chart.yaml`
+  - Added standalone MongoDB StatefulSet template
+  - Added HA/replication MongoDB StatefulSet
+  - Added secret to authenticate to MongoDB
+  - Updated to official `mongo:8.2.2` image (previously Bitnami-patched image)
+- **Offline installation**: Updated `create_packages.sh` to pull MongoDB-related images and Redis for air-gapped environments
 
 ### Fixed
+- fix reusing the snmp engine for snmpv3 calls
+- fix out of range error for varbinds without tuple index
+- fix missing engine discovery id in traps docker_compose.yaml
 
 ## [1.15.0]
 

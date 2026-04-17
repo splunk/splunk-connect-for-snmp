@@ -44,7 +44,7 @@ redis:
   # Storage
   storage:
     enabled: true
-    storageClassName: microk8s-hostpath
+    storageClassName: ""
     accessModes:
       - ReadWriteOnce
     size: 5Gi
@@ -59,35 +59,35 @@ redis:
     fsGroup: 999
 ```
 
-| Key                                      | Type   | Default             | Description                                                                             |
-|------------------------------------------|--------|---------------------|-----------------------------------------------------------------------------------------|
-| redis.architecture                       | string | `standalone`        | Deployment mode (standalone or replication).                                            |
-| redis.replicas                           | int    | `3`                 | Data pod count (used only in replication mode).                                         |
-| redis.sentinel.replicas                  | int    | `3`                 | Sentinel pod count (odd recommended).                                                   |
-| redis.sentinel.quorum                    | int    | `2`                 | Required Sentinel votes for failover.                                                   |
-| redis.sentinel.resources.requests.cpu    | string | `50m`               | Guaranteed Sentinel minimum CPU.                                                        |
-| redis.sentinel.resources.requests.memory | string | `64Mi`              | Guaranteed Sentinel minimum memory.                                                     |
-| redis.sentinel.resources.limits.cpu      | string | `100m`              | Guaranteed Sentinel minimum CPU.                                                        |
-| redis.sentinel.resources.limits.memory   | string | `128Mi`             | Guaranteed Sentinel minimum memory.                                                     |
-| redis.auth.enabled                       | bool   | `false`             | Enable Redis AUTH.                                                                      |
-| redis.auth.password                      | string | `""`                | Password when AUTH enabled (prefer secret).                                             |
-| redis.auth.existingSecret                | string | `""`                | Name of existing Kubernetes Secret providing the password.                              |
-| redis.auth.existingSecretPasswordKey     | string | `password`          | Key inside the existing secret containing the password.                                 |
-| redis.image.repository                   | string | `redis`             | Container image repository.                                                             |
-| redis.image.tag                          | string | `8.2.2`             | Image tag / Redis version.                                                              |
-| redis.image.pullPolicy                   | string | `IfNotPresent`      | Image pull policy.                                                                      |
-| redis.resources.requests.cpu             | string | `""`                | Guaranteed minimum CPU.                                                                 |
-| redis.resources.requests.memory          | string | `""`                | Guaranteed minimum memory.                                                              |
-| redis.resources.limits.cpu               | string | `""`                | CPU limit.                                                                              |
-| redis.resources.limits.memory            | string | `""`                | Memory limit.                                                                           |
-| redis.storage.enabled                    | bool   | `true`              | Create PersistentVolumeClaim.                                                           |
-| redis.storage.storageClassName           | string | `microk8s-hostpath` | StorageClass for the PVC.                                                               |
-| redis.storage.accessModes                | list   | `[ReadWriteOnce]`   | PVC access modes.                                                                       |
-| redis.storage.size                       | string | `5Gi`               | Requested persistent volume size.                                                       |
-| redis.persistence.aof.enabled            | bool   | `true`              | Enable Append Only File persistence.                                                    |
-| redis.persistence.aof.fsync              | string | `everysec`          | AOF fsync policy (`always`, `everysec`, `no`). Necessary to migrate from bitnami Redis. |
-| redis.podSecurityContext.runAsUser       | int    | `999`               | UID for the container (non-root hardening).                                             |
-| redis.podSecurityContext.fsGroup         | int    | `999`               | FS group owning mounted volumes.                                                        |
+| Key                                      | Type   | Default           | Description                                                                             |
+|------------------------------------------|--------|-------------------|-----------------------------------------------------------------------------------------|
+| redis.architecture                       | string | `standalone`      | Deployment mode (standalone or replication).                                            |
+| redis.replicas                           | int    | `3`               | Data pod count (used only in replication mode).                                         |
+| redis.sentinel.replicas                  | int    | `3`               | Sentinel pod count (odd recommended).                                                   |
+| redis.sentinel.quorum                    | int    | `2`               | Required Sentinel votes for failover.                                                   |
+| redis.sentinel.resources.requests.cpu    | string | `50m`             | Guaranteed Sentinel minimum CPU.                                                        |
+| redis.sentinel.resources.requests.memory | string | `64Mi`            | Guaranteed Sentinel minimum memory.                                                     |
+| redis.sentinel.resources.limits.cpu      | string | `100m`            | Guaranteed Sentinel minimum CPU.                                                        |
+| redis.sentinel.resources.limits.memory   | string | `128Mi`           | Guaranteed Sentinel minimum memory.                                                     |
+| redis.auth.enabled                       | bool   | `false`           | Enable Redis AUTH.                                                                      |
+| redis.auth.password                      | string | `""`              | Password when AUTH enabled (avoid committing; prefer secret).                           |
+| redis.auth.existingSecret                | string | `""`              | Name of existing Kubernetes Secret providing the password.                              |
+| redis.auth.existingSecretPasswordKey     | string | `password`        | Key inside the existing secret containing the password.                                 |
+| redis.image.repository                   | string | `redis`           | Container image repository.                                                             |
+| redis.image.tag                          | string | `8.2.2`           | Image tag / Redis version.                                                              |
+| redis.image.pullPolicy                   | string | `IfNotPresent`    | Image pull policy.                                                                      |
+| redis.resources.requests.cpu             | string | `""`              | Guaranteed minimum CPU.                                                                 |
+| redis.resources.requests.memory          | string | `""`              | Guaranteed minimum memory.                                                              |
+| redis.resources.limits.cpu               | string | `""`              | CPU limit.                                                                              |
+| redis.resources.limits.memory            | string | `""`              | Memory limit.                                                                           |
+| redis.storage.enabled                    | bool   | `true`            | Create PersistentVolumeClaim.                                                           |
+| redis.storage.storageClassName           | string | `""`              | StorageClass for the PVC.                                                               |
+| redis.storage.accessModes                | list   | `[ReadWriteOnce]` | PVC access modes.                                                                       |
+| redis.storage.size                       | string | `5Gi`             | Requested persistent volume size.                                                       |
+| redis.persistence.aof.enabled            | bool   | `true`            | Enable Append Only File persistence.                                                    |
+| redis.persistence.aof.fsync              | string | `everysec`        | AOF fsync policy (`always`, `everysec`, `no`). Necessary to migrate from bitnami Redis. |
+| redis.podSecurityContext.runAsUser       | int    | `999`             | UID for the container (non-root hardening).                                             |
+| redis.podSecurityContext.fsGroup         | int    | `999`             | FS group owning mounted volumes.                                                        |
 
 
 ### Architecture modes
@@ -249,6 +249,8 @@ redis:
 ```
 !!!warning
     For smoother migration, it's better to create a new secret with the updated values and then update your configuration to reference this new secret, rather than modifying an existing secret in place.
+    
+    When changing the content of a Kubernetes Secret that is already in use, the running pods will not automatically pick up the new values. You must recreate the pods for them to use the updated secret.
 
 ### Migration from Bitnami Redis
 
