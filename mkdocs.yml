@@ -54,8 +54,6 @@ nav:
           - Configuration reference:
               - Deployment: "microk8s/configuration/deployment-configuration.md"
               - Scheduler: "microk8s/configuration/scheduler-configuration.md"
-              - Poller: "configuration/poller-configuration.md"
-              - Splunk configuration: "configuration/splunk-configuration.md"
               - MongoDB: "microk8s/configuration/mongo-configuration.md"
               - Redis: "microk8s/configuration/redis-configuration.md"
               - Splunk Infrastructure Monitoring: "microk8s/configuration/sim-configuration.md"
