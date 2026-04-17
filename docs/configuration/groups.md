@@ -29,8 +29,8 @@ If the specific host from the group has to be configured separately, first it mu
 and then it can be inserted as a new record in the inventory.
 
 The one obligatory field for the host configuration is `address`. If `port` is not configured its default value is `161`.
-Other fields that can be modified are: `community`, `secret`, `version`, and `security_engine`.
-However, if they remain unspecified in the host configuration, they will be derived from the inventory record.
+Other fields that can be modified are: `community`, `secret`, `version`, `security_engine` and `max_oid_to_process`.
+However, if they remain unspecified in the host configuration, they will be derived from the inventory record or default.
 
 ## Configuration
 
