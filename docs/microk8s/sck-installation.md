@@ -62,16 +62,16 @@ To run Splunk OpenTelemetry Collector on your environment, replace the `<>` vari
 
 
 ```bash
-microk8s helm3 upgrade --install sck
---set="clusterName=<cluster_name>"
---set="splunkObservability.realm=<realm>"
---set="splunkObservability.accessToken=<token>"
---set="splunkObservability.ingestUrl=<ingest_url>"
---set="splunkObservability.apiUrl=<api_url>"
---set="splunkObservability.metricsEnabled=true"
---set="splunkObservability.tracesEnabled=false"
---set="splunkObservability.logsEnabled=false"
-splunk-otel-collector-chart/splunk-otel-collector
+microk8s helm3 upgrade --install sck \
+  --set="clusterName=<cluster_name>" \
+  --set="splunkObservability.realm=<realm>" \
+  --set="splunkObservability.accessToken=<token>" \
+  --set="splunkObservability.ingestUrl=<ingest_url>" \
+  --set="splunkObservability.apiUrl=<api_url>" \
+  --set="splunkObservability.metricsEnabled=true" \
+  --set="splunkObservability.tracesEnabled=false" \
+  --set="splunkObservability.logsEnabled=false" \
+  splunk-otel-collector-chart/splunk-otel-collector
 ```
 
 ### Variables description
@@ -82,19 +82,19 @@ splunk-otel-collector-chart/splunk-otel-collector
 | cluster_name  | name of the cluster | my_cluster |
 | realm | Realm obtained from the Splunk Observability Cloud environment  | us0  |
 | token | Token obtained from the Splunk Observability Cloud environment  | BCwaJ_Ands4Xh7Nrg |
-| ingest_url | Ingest URL from the Splunk Observability Cloud environment | https://ingest..signalfx.com |
-| api_url | API URL from the Splunk Observability Cloud environment  | https://api..signalfx.com |
+| ingest_url | Ingest URL from the Splunk Observability Cloud environment | https://ingest.signalfx.com |
+| api_url | API URL from the Splunk Observability Cloud environment  | https://api.signalfx.com |
 
 See the following example of a correctly filled up command: 
 ```bash
-microk8s helm3 upgrade --install sck
---set="clusterName=my_cluster"
---set="splunkObservability.realm=us0"
---set="splunkObservability.accessToken=BCwaJ_Ands4Xh7Nrg"
---set="splunkObservability.ingestUrl=https://ingest..signalfx.com"
---set="splunkObservability.apiUrl=https://api..signalfx.com"
---set="splunkObservability.metricsEnabled=true"
---set="splunkObservability.tracesEnabled=false"
---set="splunkObservability.logsEnabled=false"
-splunk-otel-collector-chart/splunk-otel-collector
+microk8s helm3 upgrade --install sck \
+  --set="clusterName=my_cluster" \
+  --set="splunkObservability.realm=us0" \
+  --set="splunkObservability.accessToken=BCwaJ_Ands4Xh7Nrg" \
+  --set="splunkObservability.ingestUrl=https://ingest.signalfx.com" \
+  --set="splunkObservability.apiUrl=https://api.signalfx.com" \
+  --set="splunkObservability.metricsEnabled=true" \
+  --set="splunkObservability.tracesEnabled=false" \
+  --set="splunkObservability.logsEnabled=false" \
+  splunk-otel-collector-chart/splunk-otel-collector
 ```

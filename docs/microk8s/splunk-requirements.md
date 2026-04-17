@@ -1,5 +1,13 @@
 # Prerequisites for the Splunk Connect for SNMP
 
+## Setup flow overview
+
+1. **Prerequisites** *(this page)* — prepare Splunk indexes and HEC token
+2. **Platform MicroK8s** — install MicroK8s and required addons on the host machine
+3. **Install Splunk OpenTelemetry Collector for Kubernetes** *(optional)* — forward container logs and metrics to Splunk
+4. **Install SC4SNMP** — deploy SC4SNMP via Helm
+5. **Additional configuration** *(optional)* — enable IPv6, configure offline installation, scale the deployment
+
 See the following prerequisites for the Splunk Connect for SNMP.
 
 ### Requirements for Splunk Enterprise or Enterprise Cloud

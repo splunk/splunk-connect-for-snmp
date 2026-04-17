@@ -13,6 +13,6 @@ flower:
 ```
 
 
-## docker-compose
+## docker compose
 
-Just use `--profile debug` flag to run optional `flower` service together with SC4SNMP: `docker-compose --profile debug up`
+Just use `--profile debug` flag to run optional `flower` service together with SC4SNMP: `docker compose --profile debug up`

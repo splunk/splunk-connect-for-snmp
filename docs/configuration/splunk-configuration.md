@@ -1,8 +1,12 @@
 # Splunk configuration
 
-Configure the Splunk (HEC) endpoint for sending SNMP data. You can provide the HEC token as plaintext, from a Kubernetes Secret, or from a file (e.g. Vault Agent Injector).
+Configure the Splunk HTTP Event Collector (HEC) endpoint for sending SNMP data.
 
-## Splunk section (values)
+/// tab | microk8s
+
+You can provide the HEC token as plaintext, from a Kubernetes Secret, or from a file (e.g. Vault Agent Injector).
+
+## Configuration reference
 
 | Variable                   | Description                                                                 | Default                                |
 |----------------------------|-----------------------------------------------------------------------------|----------------------------------------|
@@ -12,7 +16,7 @@ Configure the Splunk (HEC) endpoint for sending SNMP data. You can provide the H
 | `host`                     | IP address or a domain name of a Splunk instance                            |                                        |
 | `path`                     | URN to Splunk collector                                                     | `/services/collector`                  |
 | `token`                    | Splunk HTTP Event Collector token (plaintext). Omit when using `tokenSecretRef` or `tokenFilePath`. | `00000000-0000-0000-0000-000000000000` |
-| `tokenSecretRef`           | Reference to an existing Kubernetes Secret containing the HEC token. When set, the chart does not create a Secret from `token`. See [Using a Kubernetes secret for the HEC token](#using-a-kubernetes-secret-for-the-hec-token) below. | `name: ""`, `key: "hec_token"` |
+| `tokenSecretRef`           | Reference to an existing Kubernetes Secret containing the HEC token. When set, the chart does not create a Secret from `token`. See [Using a Kubernetes Secret for the HEC token](#using-a-kubernetes-secret-for-the-hec-token) below. | `name: ""`, `key: "hec_token"` |
 | `tokenFilePath`            | Path to a file containing the HEC token (e.g. from Vault Agent Injector). When set, the chart sets `SPLUNK_HEC_TOKEN_FILE` and does not set `SPLUNK_HEC_TOKEN` from a Secret. See [Token from file (e.g. Vault injector)](#token-from-file-eg-vault-injector) below. | `""` |
 | `insecureSSL`              | Skip certificate verification for the HEC endpoint when using HTTPS        | `false`                                |
 | `sourcetypeTraps`          | Source type for trap events                                                 | `sc4snmp:traps`                        |
@@ -21,7 +25,7 @@ Configure the Splunk (HEC) endpoint for sending SNMP data. You can provide the H
 | `eventIndex`               | Name of the event index                                                     | `netops`                               |
 | `metricsIndex`             | Name of the metrics index                                                   | `netmetrics`                           |
 
-## Using a Kubernetes secret for the HEC token
+## Using a Kubernetes Secret for the HEC token
 
 Instead of putting the HEC token in plaintext in `splunk.token`, you can reference an existing Kubernetes Secret. This is recommended for production and when using a secrets manager.
 
@@ -83,3 +87,45 @@ worker:
 ```
 
 `tokenFilePath` must match where the injector writes the file: the annotation `agent-inject-secret-<name>` uses `<name>` as the filename under `/vault/secrets/`, so the path is `/vault/secrets/<name>` (e.g. `/vault/secrets/splunk-hec-token`). Adjust the template key (e.g. `{{ .Data.data.token }}`) if your Vault secret uses a different field name.
+
+///
+
+/// tab | docker compose
+
+All Splunk connection settings are configured through environment variables in the `.env` file.
+
+## Configuration reference
+
+| Variable                                  | Description                                                                                                                           |
+|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `SPLUNK_HEC_HOST`                         | IP address or a domain name of a Splunk instance to send data to                                                                      |
+| `SPLUNK_HEC_PROTOCOL`                     | The protocol of the HEC endpoint: `https` or `http`                                                                                   |
+| `SPLUNK_HEC_PORT`                         | The port of the HEC endpoint                                                                                                          |
+| `SPLUNK_HEC_TOKEN`                        | Splunk HTTP Event Collector token (plaintext). Omit when using `SPLUNK_HEC_TOKEN_SECRET_FILE`.                                       |
+| `SPLUNK_HEC_TOKEN_SECRET_FILE`            | Path on the host to a file containing the HEC token (worker-sender only). The app reads the token from the mounted file; only the path is in the container environment, not the token itself. See [HEC token as a Docker secret](#hec-token-as-a-docker-secret) below. |
+| `SPLUNK_HEC_INSECURESSL`                  | Whether to skip checking the certificate of the HEC endpoint when sending data over HTTPS                                             |
+| `SPLUNK_HEC_PATH`                         | Path for the HEC endpoint                                                                                                             |
+| `SPLUNK_SOURCETYPE_TRAPS`                 | Splunk sourcetype for trap events                                                                                                     |
+| `SPLUNK_SOURCETYPE_POLLING_EVENTS`        | Splunk sourcetype for non-metric polling events                                                                                       |
+| `SPLUNK_SOURCETYPE_POLLING_METRICS`       | Splunk sourcetype for metric polling events                                                                                           |
+| `SPLUNK_HEC_INDEX_EVENTS`                 | Name of the Splunk event index                                                                                                        |
+| `SPLUNK_HEC_INDEX_METRICS`                | Name of the Splunk metrics index                                                                                                      |
+| `SPLUNK_AGGREGATE_TRAPS_EVENTS`           | When set to `true`, collects trap events as a single event inside Splunk                                                              |
+| `SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE` | Replaces hyphens with underscores in generated metric names to ensure compatibility with Splunk's metric schema                       |
+| `SPLUNK_LOG_INDEX`                        | Event index in Splunk where logs from Docker containers are sent. See [Sending logs to Splunk](../dockercompose/9-splunk-logging.md). |
+
+## HEC token as a Docker secret
+
+To keep the HEC token out of `.env` and out of `docker inspect` (so it is not visible in the container's environment), use a **Docker Compose secret**. When `SPLUNK_HEC_TOKEN_SECRET_FILE` is set, the app reads the token from that file path instead of from `SPLUNK_HEC_TOKEN`. Only the path is in the environment, not the token.
+
+1. Create a file that contains only the token (e.g. `./secrets/splunk_hec_token`).
+
+2. In `.env`, set the path to that file and leave `SPLUNK_HEC_TOKEN` unset or empty:
+
+   ```
+   SPLUNK_HEC_TOKEN_SECRET_FILE=./secrets/splunk_hec_token
+   ```
+
+3. Recreate the worker-sender service. The compose file mounts the secret at `/run/secrets/splunk_hec_token` and sets `SPLUNK_HEC_TOKEN_FILE` to that path. The app reads the token from the file; the token itself never appears in `docker inspect` or `docker compose config`.
+
+///
