@@ -132,6 +132,28 @@
             }
           }
         },
+        "auth": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "existingSecret": { "type": "string" },
+            "jwtExpiryHours": { "type": "integer" },
+            "idleTimeoutMinutes": { "type": "integer" },
+            "secureCookies": { "type": "boolean" },
+            "allowedOrigins": { "type": "string" }
+          },
+          "if": { "properties": { "enabled": { "const": true } } },
+          "then": {
+            "properties": {
+              "existingSecret": { "type": "string", "minLength": 1 }
+            },
+            "required": ["existingSecret"]
+          }
+        },
+        "allowedOrigins": {
+          "type": "string"
+        },
         "valuesFileDirectory": {
           "type": "string"
         },
