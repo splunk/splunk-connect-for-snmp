@@ -89,10 +89,9 @@ spec:
           value: {{ .Values.UI.auth.idleTimeoutMinutes | quote }}
         - name: SECURE_COOKIES
           value: {{ .Values.UI.auth.secureCookies | quote }}
-        {{- $allowedOrigins := default .Values.UI.auth.allowedOrigins .Values.UI.allowedOrigins }}
-        {{- if $allowedOrigins }}
+        {{- if .Values.UI.allowedOrigins }}
         - name: ALLOWED_ORIGINS
-          value: {{ $allowedOrigins | quote }}
+          value: {{ .Values.UI.allowedOrigins | quote }}
         {{- end }}
         ports:
         - containerPort: 5000

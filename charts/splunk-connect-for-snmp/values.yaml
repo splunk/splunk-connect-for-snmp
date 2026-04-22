@@ -55,7 +55,6 @@ UI:
     jwtExpiryHours: 2
     idleTimeoutMinutes: 30
     secureCookies: true
-    allowedOrigins: ""  # Leave empty to auto-detect from ingress config
 
   # valuesFileDirectory is obligatory if UI is used. It is a location of values.yaml and configuration files generated from the UI.
   valuesFileDirectory: ""

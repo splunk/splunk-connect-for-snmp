@@ -140,8 +140,7 @@
             "existingSecret": { "type": "string" },
             "jwtExpiryHours": { "type": "integer" },
             "idleTimeoutMinutes": { "type": "integer" },
-            "secureCookies": { "type": "boolean" },
-            "allowedOrigins": { "type": "string" }
+            "secureCookies": { "type": "boolean" }
           },
           "if": { "properties": { "enabled": { "const": true } } },
           "then": {
