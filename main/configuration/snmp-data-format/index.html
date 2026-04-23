@@ -9,21 +9,21 @@
       
       
       
-        <link rel="prev" href="../6-env-file-configuration/">
+        <link rel="prev" href="../step-by-step-poll/">
       
       
-        <link rel="next" href="../8-offline-installation/">
+        <link rel="next" href="../../ha/">
       
       
         
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>SNMPv3 secrets configuration - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>SNMP data format - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#snmpv3-secrets" class="md-skip">
+        <a href="#snmp-data-format" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SNMPv3 secrets configuration
+              SNMP data format
             
           </span>
         </div>
@@ -342,20 +342,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -365,7 +363,7 @@
   <span class="md-ellipsis">
     
   
-    Getting Started with Docker Compose
+    Installation
   
 
     
@@ -376,543 +374,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Getting Started with Docker Compose
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../0-splunk-requirements/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Splunk Requirements
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../1-install-docker/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Install Docker
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../2-download-package/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Download package
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../3-inventory-configuration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Inventory configuration
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../4-scheduler-configuration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Scheduler configuration
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../5-traps-configuration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Traps configuration
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../6-env-file-configuration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    .env file configuration
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    SNMPv3 secrets configuration
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    SNMPv3 secrets configuration
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#migration-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Migration steps
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Migration steps">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-for-setups-not-yet-migrated-to-latest-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. For setups not yet migrated to latest version
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-for-setups-already-migrated-to-latest-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. For setups already migrated to latest version
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prerequisites
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Prerequisites">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#example-of-secretsjson" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example of secrets.json
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Configuration
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#creating-a-new-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Creating a new secret
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#updating-existing-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Updating existing secret
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deleting-a-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deleting a secret
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#splunk-hec-token-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Splunk HEC token secret
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../8-offline-installation/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Offline installation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../9-splunk-logging/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Sending logs to Splunk
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../10-enable-ipv6/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Enable IPv6
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Getting Started with Microk8s
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Getting Started with Microk8s
+    Installation
   
 
           </label>
@@ -933,17 +400,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
         
           
-          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    Installation
+    Microk8s
   
 
     
@@ -954,12 +421,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Installation
+    Microk8s
   
 
           </label>
@@ -1084,14 +551,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/enable-ipv6/" class="md-nav__link">
+      <a href="../../microk8s/configuration/values-params-description/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Enable IPv6
+    Configurable values
   
 
     
@@ -1100,42 +567,6 @@
   
 
       </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/mk8s/k8s-microk8s-scaling/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Scaling with Microk8s
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
     </li>
   
 
@@ -1156,17 +587,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_6" >
         
           
-          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_1_6" id="__nav_3_1_6_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
     
   
-    Configuration
+    Configuration reference
   
 
     
@@ -1177,12 +608,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_2">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1_6">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration
+    Configuration reference
   
 
           </label>
@@ -1223,137 +654,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/configuration/splunk-configuration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Splunk configuration
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/configuration/values-params-description/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Configurable values
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4_2_4" id="__nav_4_2_4_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Polling
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_2_4">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Polling
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/configuration/poller-configuration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Poller
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../microk8s/configuration/scheduler-configuration/" class="md-nav__link">
         
   
@@ -1362,182 +662,6 @@
     
   
     Scheduler
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/configuration/configuring-profiles/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Configuring Profiles
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/configuration/configuring-groups/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Configuring Groups
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/configuration/step-by-step-poll/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Step by Step polling example
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/configuration/snmp-data-format/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    SNMP data format
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/configuration/trap-configuration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Traps
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/configuration/worker-configuration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Worker
   
 
     
@@ -1594,34 +718,6 @@
     
   
     Redis
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/configuration/snmpv3-configuration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    SNMPv3 configuration
   
 
     
@@ -1714,149 +810,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_7" >
         
           
-          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Offline Installation
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_3">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Offline Installation
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/offlineinstallation/offline-microk8s/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Install Microk8s
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/offlineinstallation/offline-sck/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../microk8s/offlineinstallation/offline-sc4snmp/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Install SC4SNMP
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_1_7" id="__nav_3_1_7_label" tabindex="0">
             
   
   
@@ -1874,8 +831,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_4">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2039,6 +996,53 @@
   
   
   
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1_8" id="__nav_3_1_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Additional configuration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Additional configuration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../../microk8s/upgrade/" class="md-nav__link">
         
@@ -2056,6 +1060,1140 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../microk8s/mk8s/k8s-microk8s-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling with Microk8s
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../microk8s/enable-ipv6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enable IPv6
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_8_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1_8_4" id="__nav_3_1_8_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Offline Installation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_3_1_8_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1_8_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Offline Installation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../microk8s/offlineinstallation/offline-microk8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install Microk8s
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../microk8s/offlineinstallation/offline-sck/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install Splunk OpenTelemetry Collector for Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../microk8s/offlineinstallation/offline-sc4snmp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install SC4SNMP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker Compose
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Docker Compose
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/0-splunk-requirements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Splunk Requirements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/1-install-docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/2-download-package/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Download package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2_4" id="__nav_3_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration files
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Configuration files
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/3-inventory-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inventory configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/4-scheduler-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scheduler configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/5-traps-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traps configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../snmpv3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SNMPv3 secrets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/6-env-file-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    .env file
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2_5" id="__nav_3_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Additional configuration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Additional configuration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/8-offline-installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Offline installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/9-splunk-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sending logs to Splunk
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/10-enable-ipv6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enable IPv6
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockercompose/11-deploy-and-run/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deploy the app
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Configuration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../splunk-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Splunk
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../profiles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../groups/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Groups
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../traps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../snmpv3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SNMPv3 secrets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../poller-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Poller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-by-step-poll/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Step by Step polling example
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SNMP data format
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SNMP data format
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#to-which-splunk-index-will-my-data-go" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        To which Splunk index will my data go?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="To which Splunk index will my data go?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metric-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metric index
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event index
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2506,22 +2644,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#migration-steps" class="md-nav__link">
+  <a href="#to-which-splunk-index-will-my-data-go" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Migration steps
+        To which Splunk index will my data go?
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Migration steps">
+    <nav class="md-nav" aria-label="To which Splunk index will my data go?">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-for-setups-not-yet-migrated-to-latest-version" class="md-nav__link">
+  <a href="#metric-index" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. For setups not yet migrated to latest version
+        Metric index
       
     </span>
   </a>
@@ -2529,10 +2667,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-for-setups-already-migrated-to-latest-version" class="md-nav__link">
+  <a href="#event-index" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. For setups already migrated to latest version
+        Event index
       
     </span>
   </a>
@@ -2541,89 +2679,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prerequisites
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Prerequisites">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#example-of-secretsjson" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Example of secrets.json
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Configuration
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#creating-a-new-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Creating a new secret
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#updating-existing-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Updating existing secret
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deleting-a-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deleting a secret
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#splunk-hec-token-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Splunk HEC token secret
-      
-    </span>
-  </a>
   
 </li>
       
@@ -2644,99 +2699,149 @@
 
 
 
-<div><h1 id="snmpv3-secrets">SNMPv3 secrets<a class="headerlink" href="#snmpv3-secrets" title="Permanent link">¶</a></h1>
-<h2 id="migration-steps">Migration steps<a class="headerlink" href="#migration-steps" title="Permanent link">¶</a></h2>
-<p>Managing SNMPv3 secrets previously required updating docker compose files using the manage_secrets.py script.
-From SC4SNMP 1.15.0, this process has been simplified and can manage all SNMPv3 secrets using a single secrets.json file.</p>
-<h4 id="1-for-setups-not-yet-migrated-to-latest-version">1. For setups not yet migrated to latest version<a class="headerlink" href="#1-for-setups-not-yet-migrated-to-latest-version" title="Permanent link">¶</a></h4>
-<p>First, delete all existing secrets from docker-compose.yaml using manage_secrets.py with the following flags:</p>
-<table>
-<thead>
-<tr>
-<th>Flag</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>--secret_name</code></td>
-<td>Secret name</td>
-</tr>
-<tr>
-<td><code>--path_to_compose</code></td>
-<td>Absolute path to directory with docker compose files</td>
-</tr>
-<tr>
-<td><code>--delete</code></td>
-<td>Set this flag to true to delete the secret</td>
-</tr>
-</tbody>
-</table>
-<p>This will delete the secret with a given name from all docker compose files. If this secret hasn’t been deleted from <code>.env</code> 
-file, it will be removed from there. </p>
-<h4 id="2-for-setups-already-migrated-to-latest-version">2. For setups already migrated to latest version<a class="headerlink" href="#2-for-setups-already-migrated-to-latest-version" title="Permanent link">¶</a></h4>
-<p>Manually delete the secrets from the docker-compose.yaml file under the worker-poller and worker-trap services.
-Remove the corresponding entries from the .env file.</p>
-<p>After deleting the secrets, follow the below mention steps to configure secrets.</p>
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">¶</a></h2>
-<p>A folder must be created to store the secrets file.
-Inside this folder, create a secrets.json file that contains all SNMPv3 secrets.</p>
-<h4 id="example-of-secretsjson">Example of secrets.json<a class="headerlink" href="#example-of-secretsjson" title="Permanent link">¶</a></h4>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">"secret_name"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user1"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"privprotocol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AES"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"privkey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"privkey1"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"authprotocol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SHA"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"authkey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"authkey1"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"contextengineid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"engineid1"</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
+<div><h1 id="snmp-data-format">SNMP Data Format<a class="headerlink" href="#snmp-data-format" title="Permanent link">¶</a></h1>
+<p>SC4SNMP classifies SNMP data elements as metrics or textual fields. Metric types are usually the indicators worth monitoring, 
+which change dynamically, while textual fields are helpful context to understand what an SNMP object means.</p>
+<p>SC4SNMP classifies the data element as a metric when its type is one of the following:</p>
+<ul>
+<li><code>Unsigned32</code>, <code>Unsigned64</code></li>
+<li><code>Counter32</code>, <code>Counter64</code></li>
+<li><code>TimeTicks</code></li>
+<li><code>Gauge32</code>, <code>Gauge64</code></li>
+<li><code>Integer</code>, <code>Integer32</code></li>
+<li><code>CounterBasedGauge64</code></li>
+<li><code>ZeroBasedCounter64</code>
+Every other type is interpreted as a field value.</li>
+</ul>
+<p>Sometimes, the MIB file indicates a field as an <code>INTEGER</code>, but there is also some mapping defined. See the following<code>IF-MIB.ifOperStatus</code> example:</p>
+<div class="highlight"><pre><span></span><code>ifOperStatus OBJECT-TYPE
+    SYNTAX  INTEGER {
+                up(1),        -- ready to pass packets
+                down(2),
+                testing(3),   -- in some test mode
+                unknown(4),   -- status can not be determined
+                              -- for some reason.
+                dormant(5),
+                notPresent(6),    -- some component is missing
+                lowerLayerDown(7) -- down due to state of
+                                  -- lower-layer interface(s)
+            }
 </code></pre></div>
-<blockquote>
-<p><strong><em>NOTE:</em></strong> The name of json file should be secrets.json. Username, authprotocol and authkey are mandatory parameters.</p>
-</blockquote>
-<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h2>
-<p>In the .env file, set the path to the local folder containing the secrets.json:
-</p><div class="highlight"><pre><span></span><code>SECRET_FOLDER_PATH=/absolute/path/to/secrets/folder
+<p>Here a numeric value is expected, but actually what SNMP Agents ends up receiving from the device is a <code>string</code> value,
+like <code>up</code>. To avoid setting textual value as a metric, SC4SNMP does an additional check and tries to cast the
+numeric value to float. If the check fails, the value is classified as a textual field.</p>
+<p>See the following simple example. You just added a device and did not configure anything special. The data from a walk
+in Splunk’s metrics index is:</p>
+<div class="highlight"><pre><span></span><code>{
+   ifAdminStatus: up
+   ifDescr: GigabitEthernet1
+   ifIndex: 1
+   ifOperStatus: up
+   ifPhysAddress: 0a:aa:ef:53:67:15
+   ifType: ethernetCsmacd
+   metric_name:sc4snmp.IF-MIB.ifInDiscards: 0
+   metric_name:sc4snmp.IF-MIB.ifInErrors: 0
+   metric_name:sc4snmp.IF-MIB.ifInOctets: 3873878708
+   metric_name:sc4snmp.IF-MIB.ifInUcastPkts: 47512921
+   metric_name:sc4snmp.IF-MIB.ifInUnknownProtos: 0
+   metric_name:sc4snmp.IF-MIB.ifLastChange: 454107556
+   metric_name:sc4snmp.IF-MIB.ifMtu: 1500
+   metric_name:sc4snmp.IF-MIB.ifOutDiscards: 0
+   metric_name:sc4snmp.IF-MIB.ifOutErrors: 0
+   metric_name:sc4snmp.IF-MIB.ifOutOctets: 1738565177
+   metric_name:sc4snmp.IF-MIB.ifOutUcastPkts: 44295751
+   metric_name:sc4snmp.IF-MIB.ifSpeed: 1000000000
+}
 </code></pre></div>
-<p>Secrets usage for worker-poller and worker-trap can be controlled by flags in .env:
-</p><div class="highlight"><pre><span></span><code>ENABLE_TRAPS_SECRETS=true
-ENABLE_WORKER_POLLER_SECRETS=true
+<p>You can see a textual part:</p>
+<div class="highlight"><pre><span></span><code>   ifAdminStatus: up
+   ifDescr: GigabitEthernet1
+   ifIndex: 1
+   ifOperStatus: up
+   ifPhysAddress: 0a:aa:ef:53:67:15
+   ifType: ethernetCsmacd
 </code></pre></div>
-<h2 id="creating-a-new-secret">Creating a new secret<a class="headerlink" href="#creating-a-new-secret" title="Permanent link">¶</a></h2>
-<p>To create a new secret, 
-create <code>secrets.json</code> file inside folder (at SECRET_FOLDER_PATH), add entry for the new secrets with all the details.</p>
-<p>Inside <code>docker_compose</code> directory run:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+<p>And a metric one:
+</p><div class="highlight"><pre><span></span><code>   metric_name:sc4snmp.IF-MIB.ifInDiscards: 0
+   metric_name:sc4snmp.IF-MIB.ifInErrors: 0
+   metric_name:sc4snmp.IF-MIB.ifInOctets: 3873878708
+   metric_name:sc4snmp.IF-MIB.ifInUcastPkts: 47512921
+   metric_name:sc4snmp.IF-MIB.ifInUnknownProtos: 0
+   metric_name:sc4snmp.IF-MIB.ifLastChange: 454107556
+   metric_name:sc4snmp.IF-MIB.ifMtu: 1500
+   metric_name:sc4snmp.IF-MIB.ifOutDiscards: 0
+   metric_name:sc4snmp.IF-MIB.ifOutErrors: 0
+   metric_name:sc4snmp.IF-MIB.ifOutOctets: 1738565177
+   metric_name:sc4snmp.IF-MIB.ifOutUcastPkts: 44295751
+   metric_name:sc4snmp.IF-MIB.ifSpeed: 1000000000
 </code></pre></div>
-<h2 id="updating-existing-secret">Updating existing secret<a class="headerlink" href="#updating-existing-secret" title="Permanent link">¶</a></h2>
-<p>To update any secret, 
-update the required fields (e.g., keys, protocols, username) for any existing secret inside secrets.json file.</p>
-<p>Inside <code>docker_compose</code> directory run:
-</p><div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>&lt;service_name&gt;
+<h2 id="to-which-splunk-index-will-my-data-go">To which Splunk index will my data go?<a class="headerlink" href="#to-which-splunk-index-will-my-data-go" title="Permanent link">¶</a></h2>
+<h3 id="metric-index">Metric index<a class="headerlink" href="#metric-index" title="Permanent link">¶</a></h3>
+<p>The rule is, if we poll a profile with AT LEAST one metric value, it will go to the metric index and will be
+enriched with all the textual fields you have for the object. For example, when polling:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">profile_with_one_metric</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOutUcastPkts'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifInUcastPkts'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<h2 id="deleting-a-secret">Deleting a secret<a class="headerlink" href="#deleting-a-secret" title="Permanent link">¶</a></h2>
-<p>To delete a secret,
-delete its entry from the secrets.json file.</p>
-<p>Inside <code>docker_compose</code> directory run:
-</p><div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>&lt;service_name&gt;
+<p>The record that you will see in Splunk <code>| mpreview index=net*</code> for the same case as the previous one would be:</p>
+<div class="highlight"><pre><span></span><code>   ifAdminStatus: up
+   ifDescr: GigabitEthernet1
+   ifIndex: 1
+   ifOperStatus: up
+   ifPhysAddress: 0a:aa:ef:53:67:15
+   ifType: ethernetCsmacd
+   metric_name:sc4snmp.IF-MIB.ifOutUcastPkts: 44295751
+   metric_name:sc4snmp.IF-MIB.ifInUcastPkts: 47512921
 </code></pre></div>
-<h2 id="splunk-hec-token-secret">Splunk HEC token secret<a class="headerlink" href="#splunk-hec-token-secret" title="Permanent link">¶</a></h2>
-<p>To keep the HEC token out of <code>.env</code> and out of <code>docker inspect</code> (so it is not visible in the container’s environment), use a <strong>Docker Compose secret</strong>. The app supports the <code>SPLUNK_HEC_TOKEN_FILE</code> convention: when set, the token is read from that path instead of from the <code>SPLUNK_HEC_TOKEN</code> env var. Only the path is in the environment, not the token.</p>
-<ol>
-<li>
-<p>Create a file that contains only the token (e.g. <code>./secrets/splunk_hec_token</code>).</p>
-</li>
-<li>
-<p>In <code>.env</code>, set the path to that file and leave <code>SPLUNK_HEC_TOKEN</code> unset or empty:
-   </p><div class="highlight"><pre><span></span><code>SPLUNK_HEC_TOKEN_SECRET_FILE=./secrets/splunk_hec_token
+<p>Only fields specified in <code>varBinds</code> are actively polled from the device. In the case of the previous <code>profile_with_one_metric</code>, the textual fields <code>ifAdminStatus</code>, <code>ifDescr</code>, <code>ifIndex</code>, <code>ifOperStatus</code> and <code>ifPhysAddress</code> are taken from the database cache. This is updated on every walk process. This is fine in most cases, as values such as
+MAC address, interface type, or interface status should not change frequently if at all. </p>
+<p>If you want to keep <code>ifOperStatus</code> and <code>ifAdminStatus</code> up to date all the time, define profile using the following example:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">profile_with_one_metric</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOutUcastPkts'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifInUcastPkts'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOperStatus'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifAdminStatus'</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-</li>
-<li>
-<p>Recreate the worker-sender service. The compose file mounts the secret at <code>/run/secrets/splunk_hec_token</code> and sets <code>SPLUNK_HEC_TOKEN_FILE</code> to that path. The app reads the token from the file; the token itself never appears in <code>docker inspect</code> or <code>docker compose config</code>.</p>
-</li>
-</ol></div>
+<p>The result in Splunk will look the same, but <code>ifOperStatus</code> and <code>ifAdminStatus</code> will be actively polled.</p>
+<h3 id="event-index">Event index<a class="headerlink" href="#event-index" title="Permanent link">¶</a></h3>
+<p>It is possible to create an event without a single metric value. In such scenario, it will go to an event index.
+See the following example of profile under that scenario:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">profile_with_only_textual_fields</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifDescr'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifName'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOperStatus'</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>In the following example, no additional enrichment will be done. The events in event index <code>index=netops</code> of Splunk would look like:</p>
+<div class="highlight"><pre><span></span><code>{ [-]
+   IF-MIB.ifDescr: { [-]
+     name: IF-MIB.ifDescr
+     oid: 1.3.6.1.2.1.2.2.1.2.5
+     time: 1676302789.9729967
+     type: f
+     value: VirtualPortGroup0
+   }
+   IF-MIB.ifName: { [-]
+     name: IF-MIB.ifName
+     oid: 1.3.6.1.2.1.31.1.1.1.1.5
+     time: 1676302789.6655216
+     type: f
+     value: Vi0
+   }
+   IF-MIB.ifOperStatus: { [-]
+     name: IF-MIB.ifOperStatus
+     oid: 1.3.6.1.2.1.2.2.1.8.5
+     time: 1676302789.6655502
+     type: g
+     value: up
+   }
+}
+</code></pre></div></div>
 
 
 
