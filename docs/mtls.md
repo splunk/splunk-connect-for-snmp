@@ -71,7 +71,7 @@ splunk:
 4. Redeploy SC4SNMP
 ///
 
-/// tab | docker-compose
+/// tab | docker compose
 1. Add your **client** mTLS certificates to secrets. To do this, update the docker-compose.yaml file by adding the following section at the end:
 
 ```

@@ -167,8 +167,8 @@ replacing the IP address `10.0.101.22` with the server IP address where the snmp
 ``` bash
 poller:
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    10.0.101.22,,2c,public,,,42000,,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+    10.0.101.22,,2c,public,,,42000,,,,
 ```
 
 3. Load `values.yaml` file into SC4SNMP using the following command: 
@@ -188,20 +188,20 @@ index="netops" sourcetype="sc4snmp:event"
 ```
 
 !!!info
-    Default walk profile is polling only `SNMPv2-MIB`. To enable full oid tree polling see [poller configuration](../configuration/poller-configuration/#poller-configuration-file).
+    Default walk profile is polling only `SNMPv2-MIB`. To enable full oid tree polling see [poller configuration](../configuration/poller-configuration.md).
 
 > **_NOTE:_** Before polling starts, SC4SNMP must perform the SNMP WALK process on the device. It is run the first time after configuring the new device, and then during the run time in every `walk_interval`. 
 > Its purpose is to gather all the data and provide meaningful context for the polling records. For example, it might report that your device is so large that the walk takes too long, so the scope of walking needs to be limited.
-> In such cases, enable the small walk. See [walk takes too much time](../../troubleshooting/polling-issues/#walking-a-device-takes-too-much-time).
+> In such cases, enable the small walk. See [walk takes too much time](../troubleshooting/polling-issues.md#walking-a-device-takes-too-much-time).
 > When the walk finishes, events appear in Splunk.
 
 ## Next Steps
 
-A good way to start with SC4SNMP polling is to follow the [Step by Step guide for polling](configuration/step-by-step-poll.md).
-Advanced configuration of polling is available in the [Poller configuration](configuration/poller-configuration.md) section.
-The SNMP data format is explained in the [SNMP data format](configuration/snmp-data-format.md) section.
+A good way to start with SC4SNMP polling is to follow the [Step by Step guide for polling](../configuration/step-by-step-poll.md).
+Advanced configuration of polling is available in the [Poller configuration](../configuration/poller-configuration.md) section.
+The SNMP data format is explained in the [SNMP data format](../configuration/snmp-data-format.md) section.
 
-For advanced trap configuration, see the [Traps configuration](configuration/trap-configuration.md) section.
+For advanced trap configuration, see the [Traps configuration](../configuration/traps.md) section.
 
 ## Uninstall Splunk Connect for SNMP
 To uninstall SC4SNMP run the following commands:

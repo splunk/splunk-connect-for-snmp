@@ -25,12 +25,12 @@ scheduler:
 ```
 
 ### Define log level
-The log level for the scheduler can be set by changing the value for the `logLevel` key. The allowed values are `DEBUG`, `INFO`, `WARNING`, or `ERROR`. 
-The default value is `WARNING`.
+The log level for the scheduler can be set by changing the value for the `logLevel` key. The allowed values are `DEBUG`, `INFO`, `WARNING`, or `ERROR`.
+The default value is `INFO`.
 
 ### Define resource requests and limits
 
-To change the resource requests ad limits for cpu and memory, modify the `resources` section of the scheduler configuration.
+To change the resource requests and limits for cpu and memory, modify the `resources` section of the scheduler configuration.
 
 ```yaml
 scheduler:
@@ -46,7 +46,7 @@ scheduler:
 ```
 
 ### Define groups of hosts
-For more information on when to use groups, see [Configuring Groups](configuring-groups.md).
+For more information on when to use groups, see [Configuring Groups](../../configuration/groups.md).
 
 See the following example of group configuration:
 ```yaml
@@ -67,11 +67,12 @@ scheduler:
         secret: 'my_secret'
       - address: 178.80.8.1
         port: 999
+        max_oid_to_process: 3
 ```
 
 The one obligatory field for the host configuration is `address`. If `port` is not configured its default value is `161`. 
-Other fields that can be modified are: `community`, `secret`, `version`, and `security_engine`.
-However, if they remain unspecified in the host configuration, they will be derived from the inventory record. 
+Other fields that can be modified are: `community`, `secret`, `version`, `security_engine` and `max_oid_to_process`.
+However, if they remain unspecified in the host configuration, they will be derived from the inventory record or default. 
 
 ### Define the expiration time for tasks
 

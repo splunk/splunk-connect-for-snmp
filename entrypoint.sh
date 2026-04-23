@@ -1,11 +1,11 @@
 #!/usr/bin/env sh
 set -e
 . /app/.venv/bin/activate
-. /app/construct-redis-url.sh
+. /app/construct-connection-strings.sh
 LOG_LEVEL=${LOG_LEVEL:=INFO}
 WORKER_CONCURRENCY=${WORKER_CONCURRENCY:=4}
 
-wait-for-dep ${REDIS_DEPENDENCIES} "${MONGO_URI}" "${MIB_INDEX}"
+wait-for-dep ${REDIS_DEPENDENCIES} "${MONGO_WAIT}" "${MIB_INDEX}"
 
 ENABLE_TRAPS_SECRETS=${ENABLE_TRAPS_SECRETS:=false}
 ENABLE_WORKER_POLLER_SECRETS=${ENABLE_WORKER_POLLER_SECRETS:=false}

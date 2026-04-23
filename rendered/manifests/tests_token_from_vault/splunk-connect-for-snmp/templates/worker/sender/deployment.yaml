@@ -5,7 +5,8 @@ kind: Deployment
 metadata:
   name: release-name-splunk-connect-for-snmp-worker-sender
   labels:
-    app.kubernetes.io/name: splunk-connect-for-snmp-worker-sender
+    app.kubernetes.io/name: splunk-connect-for-snmp
+    app.kubernetes.io/component: worker-sender
     app.kubernetes.io/instance: release-name
     helm.sh/chart: splunk-connect-for-snmp-CURRENT-VERSION
     app.kubernetes.io/version: "CURRENT-VERSION"
@@ -14,7 +15,8 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: splunk-connect-for-snmp-worker-sender
+      app.kubernetes.io/name: splunk-connect-for-snmp
+      app.kubernetes.io/component: worker-sender
       app.kubernetes.io/instance: release-name
   template:
     metadata:
@@ -24,7 +26,8 @@ spec:
         vault.hashicorp.com/agent-inject-secret-splunk-hec-token: secret/data/splunk
         vault.hashicorp.com/role: sc4snmp
       labels:
-        app.kubernetes.io/name: splunk-connect-for-snmp-worker-sender
+        app.kubernetes.io/name: splunk-connect-for-snmp
+        app.kubernetes.io/component: worker-sender
         app.kubernetes.io/instance: release-name
     spec:
       serviceAccountName: release-name-splunk-connect-for-snmp-user
@@ -61,8 +64,26 @@ spec:
               value: "1"
             - name: CELERY_DB
               value: "0"
-            - name: MONGO_URI
-              value: mongodb://release-name-mongodb:27017
+            - name: MONGODB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-mongodb-secret
+                  key: root-user
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-mongodb-secret
+                  key: root-password
+            - name: MONGODB_MODE
+              value: "standalone"
+            - name: MONGODB_AUTH_SOURCE
+              value: "admin"
+            - name: MONGODB_DATABASE
+              value: "sc4snmp"
+            - name: MONGODB_HOST
+              value: release-name-mongodb-0.release-name-mongodb
+            - name: MONGODB_PORT
+              value: "27017"
             - name: WALK_RETRY_MAX_INTERVAL
               value: "180"
             - name: WALK_MAX_RETRIES
@@ -145,7 +166,8 @@ spec:
                 topologyKey: kubernetes.io/hostname
                 labelSelector:
                   matchLabels:
-                      app.kubernetes.io/name: splunk-connect-for-snmp-worker-sender
+                      app.kubernetes.io/name: splunk-connect-for-snmp
+                      app.kubernetes.io/component: worker-sender
                       app.kubernetes.io/instance: release-name
       volumes:
         # You set volumes at the Pod level, then mount them into containers inside that Pod

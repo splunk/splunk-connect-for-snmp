@@ -481,6 +481,7 @@ class TestInventoryRecord(TestCase):
             "secret": "secret",
             "security_engine": "ENGINE",
             "walk_interval": 1850,
+            "max_oid_to_process": None,
             "profiles": ["generic_switch", "new_profiles"],
             "smart_profiles": True,
             "delete": False,
@@ -512,6 +513,7 @@ class TestInventoryRecord(TestCase):
             "secret": "secret",
             "security_engine": "ENGINE",
             "walk_interval": 1850,
+            "max_oid_to_process": None,
             "profiles": ["generic_switch", "new_profiles"],
             "smart_profiles": True,
             "delete": False,
@@ -520,3 +522,139 @@ class TestInventoryRecord(TestCase):
 
         ir = InventoryRecord(**ir_dict)
         self.assertEqual(expected_dict, ir.asdict())
+
+    def test_max_oid_to_process_not_specified(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "2c",
+            "community": "public",
+            "secret": "secret",
+            "security_engine": "ENGINE",
+            "walk_interval": 1850,
+            "profiles": "",
+            "smart_profiles": True,
+            "delete": False,
+        }
+        ir = InventoryRecord(**ir_dict)
+        self.assertIsNone(ir.max_oid_to_process)
+
+    def test_max_oid_to_process_none(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "2c",
+            "community": "public",
+            "secret": "secret",
+            "security_engine": "ENGINE",
+            "walk_interval": 1850,
+            "max_oid_to_process": None,
+            "profiles": "",
+            "smart_profiles": True,
+            "delete": False,
+        }
+        ir = InventoryRecord(**ir_dict)
+        self.assertIsNone(ir.max_oid_to_process)
+
+    def test_max_oid_to_process_valid_int(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "2c",
+            "community": "public",
+            "secret": "secret",
+            "security_engine": "ENGINE",
+            "walk_interval": 1850,
+            "max_oid_to_process": 30,
+            "profiles": "",
+            "smart_profiles": True,
+            "delete": False,
+        }
+        ir = InventoryRecord(**ir_dict)
+        self.assertEqual(30, ir.max_oid_to_process)
+
+    def test_max_oid_to_process_valid_string(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "2c",
+            "community": "public",
+            "secret": "secret",
+            "security_engine": "ENGINE",
+            "walk_interval": 1850,
+            "max_oid_to_process": "50",
+            "profiles": "",
+            "smart_profiles": True,
+            "delete": False,
+        }
+        ir = InventoryRecord(**ir_dict)
+        self.assertEqual(50, ir.max_oid_to_process)
+
+    def test_max_oid_to_process_empty_string(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "2c",
+            "community": "public",
+            "secret": "secret",
+            "security_engine": "ENGINE",
+            "walk_interval": 1850,
+            "max_oid_to_process": "",
+            "profiles": "",
+            "smart_profiles": True,
+            "delete": False,
+        }
+        ir = InventoryRecord(**ir_dict)
+        self.assertIsNone(ir.max_oid_to_process)
+
+    def test_max_oid_to_process_zero_returns_none(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "2c",
+            "community": "public",
+            "secret": "secret",
+            "security_engine": "ENGINE",
+            "walk_interval": 1850,
+            "max_oid_to_process": 0,
+            "profiles": "",
+            "smart_profiles": True,
+            "delete": False,
+        }
+        ir = InventoryRecord(**ir_dict)
+        self.assertIsNone(ir.max_oid_to_process)
+
+    def test_max_oid_to_process_negative_returns_none(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "2c",
+            "community": "public",
+            "secret": "secret",
+            "security_engine": "ENGINE",
+            "walk_interval": 1850,
+            "max_oid_to_process": -5,
+            "profiles": "",
+            "smart_profiles": True,
+            "delete": False,
+        }
+        ir = InventoryRecord(**ir_dict)
+        self.assertIsNone(ir.max_oid_to_process)
+
+    def test_max_oid_to_process_in_asdict(self):
+        ir_dict = {
+            "address": "192.168.0.1",
+            "port": "34",
+            "version": "2c",
+            "community": "public",
+            "secret": "secret",
+            "security_engine": "ENGINE",
+            "walk_interval": 1850,
+            "max_oid_to_process": 25,
+            "profiles": "",
+            "smart_profiles": True,
+            "delete": False,
+        }
+        ir = InventoryRecord(**ir_dict)
+        result = ir.asdict()
+        self.assertEqual(25, result["max_oid_to_process"])

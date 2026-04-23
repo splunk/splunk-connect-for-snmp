@@ -1,0 +1,97 @@
+{{- if eq .Values.mongodb.mode "replication" }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-mongodb-init-rs
+  labels:
+    app: {{ .Release.Name }}-mongodb-init
+spec:
+  backoffLimit: 10
+  ttlSecondsAfterFinished: 600
+  template:
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ .Release.Name }}-mongodb-init-sa
+      containers:
+      - name: init-replicaset
+        image: {{ .Values.mongodb.replicaInitJob.image.repository | default "alpine/kubectl" }}:{{ .Values.mongodb.replicaInitJob.image.tag | default "1.34.2" }}
+        command:
+        - sh
+        - -c
+        - |
+          set -e
+
+          echo "=========================================="
+          echo " MongoDB Replica Set Initialization"
+          echo "=========================================="
+          echo ""
+
+          echo "Waiting for all {{ .Values.mongodb.replicaCount }} pods to be ready..."
+          {{- range $i := until (int .Values.mongodb.replicaCount) }}
+          kubectl wait --for=condition=ready pod/{{ $.Release.Name }}-mongodb-{{ $i }} --timeout={{ $.Values.mongodb.replicaInitJob.timeout | quote }}s
+          echo "  Pod {{ $i }} ready"
+          {{- end }}
+
+          {{- range $i := until (int .Values.mongodb.replicaCount) }}
+          echo "Waiting for DNS entry for pod {{ $i }}..."
+          for retry in $(seq 1 30); do
+            if getent hosts {{ $.Release.Name }}-mongodb-{{ $i }}.{{ $.Release.Name }}-mongodb-headless >/dev/null 2>&1; then
+              echo "  DNS resolved for pod {{ $i }}"
+              break
+            fi
+
+            if [ "$retry" -eq 30 ]; then
+              echo "DNS still not ready for pod {{ $i }}"
+              exit 1
+            fi
+
+            sleep 2
+          done
+          {{- end }}
+
+          echo "Checking replica set status..."
+          RS_STATUS=$(kubectl exec {{ .Release.Name }}-mongodb-0 -- mongosh \
+            {{- if .Values.mongodb.auth.enabled }}
+            -u "$MONGODB_USERNAME" -p "$MONGODB_PASSWORD" --authenticationDatabase admin \
+            {{- end }}
+            --quiet --eval "try { rs.status().ok } catch(e) { 0 }" 2>/dev/null | tail -1)
+
+          if [ "$RS_STATUS" = "1" ]; then
+            echo "Already initialized"
+            exit 0
+          fi
+
+          echo "Initializing replica set..."
+          kubectl exec {{ .Release.Name }}-mongodb-0 -- mongosh \
+            {{- if .Values.mongodb.auth.enabled }}
+            -u "$MONGODB_USERNAME" -p "$MONGODB_PASSWORD" --authenticationDatabase admin \
+            {{- end }}
+            --eval "rs.initiate({_id:'{{ .Values.mongodb.replicaSetName }}',members:[{{- range $i := until (int .Values.mongodb.replicaCount) }}{_id:{{ $i }},host:'{{ $.Release.Name }}-mongodb-{{ $i }}.{{ $.Release.Name }}-mongodb-headless:27017'}{{ if ne $i (sub (int $.Values.mongodb.replicaCount) 1) }},{{- end }}{{- end }}]})" || echo "Init completed"
+
+          echo ""
+          echo "Waiting 15s for PRIMARY election..."
+          sleep 15
+
+          echo ""
+          kubectl exec {{ .Release.Name }}-mongodb-0 -- mongosh \
+            {{- if .Values.mongodb.auth.enabled }}
+            -u "$MONGODB_USERNAME" -p "$MONGODB_PASSWORD" --authenticationDatabase admin \
+            {{- end }}
+            --quiet --eval "rs.status().members.forEach(m => print(m.name + ': ' + m.stateStr))" || true
+
+          echo ""
+          echo "Initialization complete"
+
+        {{- if .Values.mongodb.auth.enabled }}
+        env:
+          {{ include "splunk-connect-for-snmp.mongodb-auth" . | nindent 10}}
+        {{- end }}
+
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+{{- end }}

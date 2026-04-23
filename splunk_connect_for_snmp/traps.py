@@ -21,7 +21,11 @@ from pyasn1.error import PyAsn1Error
 from pyasn1.type import univ
 from pysnmp.proto.api import v2c
 
-from splunk_connect_for_snmp.common.hummanbool import disable_mongo_logging, human_bool
+from splunk_connect_for_snmp.common.common import (
+    disable_mongo_logging,
+    human_bool,
+    wait_for_mongodb_replicaset,
+)
 from splunk_connect_for_snmp.snmp.auth import get_secret_value
 
 with suppress(ImportError, OSError):
@@ -76,6 +80,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+wait_for_mongodb_replicaset(logger)
 
 if DISABLE_MONGO_DEBUG_LOGGING:
     disable_mongo_logging()
@@ -102,6 +107,7 @@ if PYSNMP_DEBUG:
 
 engine_id_manager = None
 
+wait_for_mongodb_replicaset(logger)
 app = Celery("sc4snmp_traps")
 app.config_from_object("splunk_connect_for_snmp.celery_config")
 

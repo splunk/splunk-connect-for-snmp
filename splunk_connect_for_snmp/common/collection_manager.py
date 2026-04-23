@@ -14,10 +14,10 @@ from splunk_connect_for_snmp.common.collections_schemas import (
     get_all_profile_schemas,
     get_engine_id_record_schema,
 )
+from splunk_connect_for_snmp.common.common import human_bool
 from splunk_connect_for_snmp.common.customised_json_formatter import (
     CustomisedJSONFormatter,
 )
-from splunk_connect_for_snmp.common.hummanbool import human_bool
 
 with suppress(ImportError, OSError):
     from dotenv import load_dotenv

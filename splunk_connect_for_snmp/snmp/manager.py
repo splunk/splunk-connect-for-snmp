@@ -43,7 +43,7 @@ from pysnmp.smi import compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
 
-from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.common import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import get_auth, setup_transport_target
@@ -241,7 +241,7 @@ def extract_index_number(index):
         return 0
     index_number = index[0]._value
     if isinstance(index_number, typing.Tuple):
-        index_number = index_number[0]
+        index_number = index_number[0] if index_number else 0
     return index_number
 
 
@@ -291,9 +291,9 @@ class Poller(Task):
         self.profiles_collection = ProfileCollection(self.profiles)
         self.profiles_collection.process_profiles()
         self.last_modified = time.time()
-        self.snmpEngine = SnmpEngine()
+        self.snmp_engine = SnmpEngine()
         self.already_loaded_mibs = set()
-        self.builder = self.snmpEngine.getMibBuilder()
+        self.builder = self.snmp_engine.getMibBuilder()
         self.mib_view_controller = view.MibViewController(self.builder)
         compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
 
@@ -315,6 +315,18 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {self.mib_response.status_code}"
             )
 
+    def get_snmp_engine(self, version="", create_new=False) -> SnmpEngine:
+        """
+        :returns: The new SnmpEngine with mibViewController cache attached if snmp version is 3,
+        else it reuses already defined snmp poller.
+        """
+        if version == "3" or create_new:
+            snmp_engine = SnmpEngine()
+            snmp_engine.setUserContext(mibViewController=self.mib_view_controller)
+            return snmp_engine
+        else:
+            return self.snmp_engine
+
     def do_work(
         self,
         ir: InventoryRecord,
@@ -335,7 +347,7 @@ class Poller(Task):
             address, walk=walk, profiles=profiles
         )
 
-        auth_data = get_auth(logger, ir, self.snmpEngine)
+        auth_data = get_auth(logger, ir, self.get_snmp_engine(ir.version))
         context_data = get_context_data()
 
         transport = setup_transport_target(ir)
@@ -344,6 +356,8 @@ class Poller(Task):
         if not varbinds_get and not varbinds_bulk:
             logger.info(f"No work to do for {address}")
             return False, {}
+
+        max_oid = ir.max_oid_to_process if ir.max_oid_to_process else MAX_OID_TO_PROCESS
 
         if varbinds_bulk:
             self.run_bulk_request(
@@ -356,6 +370,7 @@ class Poller(Task):
                 transport,
                 varbinds_bulk,
                 walk,
+                max_oid,
             )
 
         if varbinds_get:
@@ -369,6 +384,7 @@ class Poller(Task):
                 transport,
                 varbinds_get,
                 walk,
+                max_oid,
             )
 
         for group_key, metric in metrics.items():
@@ -390,16 +406,20 @@ class Poller(Task):
         transport,
         varbinds_get,
         walk,
+        max_oid_to_process,
     ):
-        # some devices cannot process more OID than X, so it is necessary to divide it on chunks
-        for varbind_chunk in self.get_varbind_chunk(varbinds_get, MAX_OID_TO_PROCESS):
+        for varbind_chunk in self.get_varbind_chunk(varbinds_get, max_oid_to_process):
             for (
                 error_indication,
                 error_status,
                 error_index,
                 varbind_table,
             ) in getCmd(
-                self.snmpEngine, auth_data, transport, context_data, *varbind_chunk
+                self.get_snmp_engine(create_new=True),
+                auth_data,
+                transport,
+                context_data,
+                *varbind_chunk,
             ):
                 if not _any_failure_happened(
                     error_indication,
@@ -422,39 +442,43 @@ class Poller(Task):
         transport,
         varbinds_bulk,
         walk,
+        max_oid_to_process,
     ):
-        for (
-            error_indication,
-            error_status,
-            error_index,
-            varbind_table,
-        ) in bulkCmd(
-            self.snmpEngine,
-            auth_data,
-            transport,
-            context_data,
-            0,
-            MAX_REPETITIONS,
-            *varbinds_bulk,
-            lexicographicMode=False,
-            ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
+        for varbind_chunk in self.get_varbind_chunk(
+            list(varbinds_bulk), max_oid_to_process
         ):
-            if not _any_failure_happened(
+            for (
                 error_indication,
                 error_status,
                 error_index,
                 varbind_table,
-                ir.address,
-                walk,
+            ) in bulkCmd(
+                self.get_snmp_engine(create_new=True),
+                auth_data,
+                transport,
+                context_data,
+                0,
+                MAX_REPETITIONS,
+                *varbind_chunk,
+                lexicographicMode=False,
+                ignoreNonIncreasingOid=is_increasing_oids_ignored(ir.address, ir.port),
             ):
-                _, tmp_mibs, _ = self.process_snmp_data(
-                    varbind_table, metrics, address, bulk_mapping
-                )
-                if tmp_mibs:
-                    self.load_mibs(tmp_mibs)
-                    self.process_snmp_data(
+                if not _any_failure_happened(
+                    error_indication,
+                    error_status,
+                    error_index,
+                    varbind_table,
+                    ir.address,
+                    walk,
+                ):
+                    _, tmp_mibs, _ = self.process_snmp_data(
                         varbind_table, metrics, address, bulk_mapping
                     )
+                    if tmp_mibs:
+                        self.load_mibs(tmp_mibs)
+                        self.process_snmp_data(
+                            varbind_table, metrics, address, bulk_mapping
+                        )
 
     def get_varbind_chunk(self, lst, n):
         for i in range(0, len(lst), n):

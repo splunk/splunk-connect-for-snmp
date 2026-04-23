@@ -1,15 +1,28 @@
+# Traps configuration
 
-Traps configuration is stored in the `traps-config.yaml` file. This file has the following sections:
+## .env reference
+
+| `.env` variable | Description |
+|---|---|
+| `TRAPS_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to this file on the host |
+
+!!! info "Full reference"
+    For the complete configuration reference, see the [Traps configuration](../configuration/traps.md) page — open the **docker compose** tab.
+
+## Configuration
 
 ```yaml
 communities:
+  1:
+    - private
   2c:
     - public
+    - switch
 usernameSecrets: []
 ```
 
 - `communities`: communities used for version `1` and `2c` of the snmp. The default one is `public`.
-- `usernameSecrets`: names of the secrets configured in docker used for `snmpv3` traps. 
+- `usernameSecrets`: names of the secrets configured in docker used for `snmpv3` traps.
 
 ## Example of the configuration
 
@@ -17,20 +30,27 @@ usernameSecrets: []
 communities:
   2c:
     - public
-usernameSecrets: 
+usernameSecrets:
   - my_secret
 ```
 
-## Prerequisites for SNMPv3 Configuration
+## Advanced configuration
+
 
 ### Create the SNMPv3 Secret in Docker
-Before using SNMPv3, you must create the required secret within Docker. For detailed instructions, refer to [SNMPv3 secrets](7-snmpv3-secrets.md).
+Before referencing a secret in `usernameSecrets`, you must create it in Docker first. Complete the [SNMPv3 secrets](../configuration/snmpv3.md) page, then return here and add the secret name to `usernameSecrets`.
 
 ### Configure the Security Engine ID
 
 In SNMPv3, every trap receiver must know the Security Engine ID of each sending device in advance. The receiver uses this ID together with the USM username, auth key, and priv key to authenticate incoming traps. Without the correct engine ID pre-registered, pysnmp rejects the trap before it even checks credentials.
 
-Please follow the guidelines in the [Traps Section of the .env File Configuration](6-env-file-configuration.md#traps) for instructions on setting this value manually.
+Set the engine IDs as a comma-separated list in `.env` using `SNMP_V3_SECURITY_ENGINE_ID`:
+
+```
+SNMP_V3_SECURITY_ENGINE_ID=80003a8c04,aab123456
+```
+
+See the [Traps section of the .env file](6-env-file-configuration.md#traps) for the full variable reference.
 
 #### Engine ID Discovery
 If you are managing a large amount of traps agents it is possible to enable engine id discovery mode. The Engine ID Discovery feature automatically extracts the engine ID from each incoming SNMPv3 raw datagram and dynamically registers it with the SNMP engine, so the trap can be authenticated on the fly.

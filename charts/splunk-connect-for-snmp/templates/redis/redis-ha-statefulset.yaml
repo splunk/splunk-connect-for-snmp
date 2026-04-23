@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/component: database
 spec:
   serviceName: {{ .Release.Name }}-redis-headless
-  replicas: {{ .Values.redis.replicas | default 3 }}
+  replicas: {{ .Values.redis.replicaCount | default 3 }}
   podManagementPolicy: Parallel
   selector:
     matchLabels:

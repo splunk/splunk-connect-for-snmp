@@ -104,7 +104,7 @@ celerybeat.pid
 # Environments
 .env
 !docker_compose/.env
-!integration_tests/.env
+!integration_tests/configs/.env
 .venv
 env/
 venv/
@@ -142,9 +142,6 @@ charts/splunk-connect-for-snmp/charts/*.tgz
 secrets
 
 integration_tests/scripts/set_env.sh
-
-
-# Edited by wzya
 integration_tests/scripts/.terraform/providers/registry.terraform.io/hashicorp/aws/4.22.0/darwin_arm64/terraform-provider-aws_v4.22.0_x5
 integration_tests/scripts/splunk-connect-for-snmp.tgz
 integration_tests/scripts/terraform.tfstate
@@ -153,6 +150,8 @@ integration_tests/scripts/.terraform.lock.hcl
 integration_tests/scripts/inventory.yaml
 integration_tests/scripts/main.tf
 integration_tests/scripts/.terraform
+integration_tests/docker_compose
+
 .DS_Store
 snmp-ssh-key.pem
 

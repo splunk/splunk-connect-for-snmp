@@ -2,6 +2,8 @@
 
 ### Upgrading SC4SNMP from 1.12.2 to 1.12.3
 
+!!! warning "Microk8s only"
+
 When upgrading SC4SNMP from version `1.12.2` to `1.12.3`, the subchart version of MongoDB will be updated from `13.18.5` to `15.6.26`. This upgrade requires an increase in the MongoDB `Feature Compatibility Version (FCV)` from `5.0` to `6.0`.
 
 To facilitate this change, a new pre-upgrade job has been introduced in SC4SNMP: `mongo-fcv-upgrade-to-6`. This job automatically updates the Feature Compatibility Version on MongoDB before the installation of MongoDB version `15.6.26`.
@@ -16,19 +18,19 @@ If the `mongo-fcv-upgrade-to-6` job fails for any reason, there are two recovery
 
 1. **Reinstall SC4SNMP**:
 
-    [Reinstall SC4SNMP](../../microk8s/sc4snmp-installation#restart-splunk-connect-for-snmp) with **Persistent Volume Claim (PVC) deletion**.
+    [Reinstall SC4SNMP](../microk8s/sc4snmp-installation.md#restart-splunk-connect-for-snmp) with **Persistent Volume Claim (PVC) deletion**.
 
 2. **Manually Update MongoDB**:
 
     [Update MongoDB's Feature Compatibility Version](https://www.mongodb.com/docs/manual/release-notes/6.0-upgrade-standalone/#upgrade-procedure) manually by executing the following command:
      ```bash
-     microk8s exec -it pod/<mongodb-pod-id> -n sc4snmp mongosh
+     microk8s kubectl exec -it pod/<mongodb-pod-id> -n sc4snmp -- mongosh
      db.adminCommand( { setFeatureCompatibilityVersion: "6.0" })
      ```
 
     Replace `<mongodb-pod-id>` with the actual Pod ID of your MongoDB instance.
 
-#### Addressing Metric Naming Conflicts for Splunk Integration
+### Addressing Metric Naming Conflicts for Splunk Integration
 
 When collecting SNMP metrics using SC4SNMP, metric names often contain hyphens (e.g., IF-MIB) because the default MIB format includes hyphens in Object Identifiers (OIDs) as specified by standard MIB naming conventions. 
 While this naming convention is standard for SNMP MIBs, it can lead to compatibility issues when forwarding these metrics, particularly when integrating with Splunk via the OpenTelemetry (OTel) Collector's Splunk HEC metric endpoint.
@@ -42,12 +44,24 @@ To ensure seamless compatibility and avoid potential issues, SC4SNMP provides a 
 hyphens in metric names to underscores.
 
 
-You can enable this conversion by setting the `splunkMetricNameHyphenToUnderscore` parameter to `true` within the `poller` section of your SC4SNMP configuration:
+You can enable this conversion depending on your deployment:
+
+/// tab | microk8s
+Set `splunkMetricNameHyphenToUnderscore` to `true` within the `poller` section of `values.yaml`:
 
 ```yaml
 poller:
   splunkMetricNameHyphenToUnderscore: true
 ```
+///
+
+/// tab | docker compose
+Set `SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE=true` in `.env`:
+
+```
+SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE=true
+```
+///
 
 Enabling this option transforms metric names from their hyphenated format to an underscore-separated format, aligning them with common Splunk metric naming conventions.
 

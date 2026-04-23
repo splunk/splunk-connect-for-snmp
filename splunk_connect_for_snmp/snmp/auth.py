@@ -30,7 +30,7 @@ from pysnmp.hlapi import (
 from pysnmp.proto.api.v2c import OctetString
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
-from splunk_connect_for_snmp.common.hummanbool import human_bool
+from splunk_connect_for_snmp.common.common import human_bool
 from splunk_connect_for_snmp.common.inventory_record import InventoryRecord
 from splunk_connect_for_snmp.snmp.const import AuthProtocolMap, PrivProtocolMap
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
@@ -185,5 +185,7 @@ def get_auth(
         return get_auth_v1(ir)
     elif ir.version == "2c":
         return get_auth_v2c(ir)
-    else:
+    elif ir.version == "3":
         return get_auth_v3(logger, ir, snmp_engine)
+    else:
+        raise SnmpActionError(f"Wrong SNMP version {ir.version}")

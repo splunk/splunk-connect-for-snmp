@@ -1,5 +1,5 @@
 {{- define "splunk-connect-for-snmp.mongo_uri" -}}
-{{- if eq .Values.mongodb.architecture "replicaset" }}
+{{- if eq .Values.mongodb.architecture "replication" }}
 {{- printf "mongodb+srv://%s-mongodb-headless.%s.svc.%s/?tls=false&ssl=false&replicaSet=rs0" .Release.Name .Release.Namespace .Values.mongodb.clusterDomain}}
 {{- else }}
 {{- printf "mongodb://%s-mongodb:27017" .Release.Name }}
@@ -143,7 +143,7 @@ Generate Redis environment variables for application pods
 - name: NAMESPACE
   value: {{ .Release.Namespace }}
 - name: REDIS_SENTINEL_REPLICAS
-  value: {{ .Values.redis.sentinel.replicas | quote }}
+  value: {{ .Values.redis.sentinel.replicaCount | quote }}
 - name: REDIS_SENTINEL_PORT
   value: "26379"
 - name: REDIS_MASTER_NAME
@@ -186,4 +186,69 @@ checksum/redis-config: {{ include (print $.Template.BasePath "/redis/redis-confi
 {{- if .Values.redis.auth.enabled }}
 checksum/redis-secret: {{ include (print $.Template.BasePath "/redis/redis-secret.yaml") . | sha256sum }}
 {{- end -}}
+{{- end -}}
+
+
+{{- define "splunk-connect-for-snmp.mongodb-auth" -}}
+{{- if .Values.mongodb.auth.existingSecret }}
+- name: MONGODB_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.mongodb.auth.existingSecret }}
+      key: {{ .Values.mongodb.auth.rootUserKey | quote | default "root-user" }}
+- name: MONGODB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.mongodb.auth.existingSecret }}
+      key: {{ .Values.mongodb.auth.rootPasswordKey | quote | default "root-password" }}
+{{- else -}}
+- name: MONGODB_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Release.Name }}-mongodb-secret
+      key: root-user
+- name: MONGODB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Release.Name }}-mongodb-secret
+      key: root-password
+{{- end -}}
+{{- end -}}
+
+
+{{/*
+MongoDB environment variables - one helper to rule them all
+*/}}
+{{- define "splunk-connect-for-snmp.mongodb-env" -}}
+{{- if .Values.mongodb.auth.enabled }}
+{{- include "splunk-connect-for-snmp.mongodb-auth" . -}}
+{{- end }}
+- name: MONGODB_MODE
+  value: {{ .Values.mongodb.mode | default "standalone" | quote }}
+- name: MONGODB_AUTH_SOURCE
+  value: "admin"
+- name: MONGODB_DATABASE
+  value: {{ .Values.mongodb.database | default "sc4snmp" | quote }}
+{{- if eq .Values.mongodb.mode "replication" }}
+- name: MONGODB_HOST
+  value: {{ include "splunk-connect-for-snmp.mongodb.replication.hosts" . | quote }}
+- name: MONGODB_REPLICA_SET
+  value: {{ .Values.mongodb.replicaSetName | default "rs0" | quote }}
+{{- else }}
+- name: MONGODB_HOST
+  value: {{ .Release.Name }}-mongodb-0.{{ .Release.Name }}-mongodb
+- name: MONGODB_PORT
+  value: "27017"
+{{- end -}}
+{{- end -}}
+
+{{/*
+MongoDB replica set hosts (comma-separated)
+*/}}
+{{- define "splunk-connect-for-snmp.mongodb.replication.hosts" -}}
+{{- $hosts := list -}}
+{{- range $i := until (int (.Values.mongodb.replicaCount | default 3)) -}}
+  {{- $hosts = append $hosts (printf "%s-mongodb-%d.%s-mongodb-headless.%s.svc.cluster.local:27017" $.Release.Name $i $.Release.Name $.Release.Namespace ) -}}
+{{- end -}}
+{{- join "," $hosts -}}
 {{- end -}}
