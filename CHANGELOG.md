@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- add authorisation for UI
 
 ### Fixed
 
