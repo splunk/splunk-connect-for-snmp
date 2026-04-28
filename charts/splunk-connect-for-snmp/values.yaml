@@ -54,7 +54,7 @@ UI:
     existingSecret: ""
     jwtExpiryHours: 2
     idleTimeoutMinutes: 30
-    secureCookies: true
+    secureCookies: false
 
   # valuesFileDirectory is obligatory if UI is used. It is a location of values.yaml and configuration files generated from the UI.
   valuesFileDirectory: ""
