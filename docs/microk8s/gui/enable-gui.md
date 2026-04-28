@@ -103,7 +103,7 @@ SC4SNMP release (typically `sc4snmp`). The Secret must expose exactly these thre
 Create the Secret with `kubectl`, pasting the hash generated in Step 1:
 
 ```bash
-kubectl create secret generic sc4snmp-ui-auth \
+microk8s kubectl create secret generic sc4snmp-ui-auth \
   --namespace sc4snmp \
   --from-literal=username=admin \
   --from-literal=password_hash='<paste Argon2id hash here>' \
@@ -122,6 +122,7 @@ Add the `auth` section under `UI` and point `existingSecret` at the Secret creat
 
 ```yaml
 UI:
+  enable: true
   # CORS allow-list for the backend (comma-separated scheme+host[+port]).
   # REQUIRED in production when authentication is enabled.
   allowedOrigins: "https://snmp-ui.example.com"
