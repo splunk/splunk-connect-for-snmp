@@ -2,13 +2,13 @@ UI:
   enable: true
   frontEnd:
     NodePort: 30001
-    repository: ghcr.io/splunk/sc4snmp-ui/frontend/container
-    tag: "1.2.0-beta.1"
+    repository: ajasnosz558/ui-frontend
+    tag: "new10"
     pullPolicy: "Always"
   backEnd:
     NodePort: 30002
-    repository: ghcr.io/splunk/sc4snmp-ui/backend/container
-    tag: "1.2.0-beta.1"
+    repository: ajasnosz558/ui-backend
+    tag: "new10"
     pullPolicy: "Always"
   init:
     image: registry.access.redhat.com/ubi9/ubi
