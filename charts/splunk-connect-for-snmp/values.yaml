@@ -35,6 +35,27 @@ UI:
     repository: registry.access.redhat.com/ubi9/ubi
     pullPolicy: IfNotPresent
 
+  # CORS allow-list for the backend. Comma-separated origins (scheme+host[+port]).
+  # Leave empty to auto-detect:
+  #   - if auth.enabled=false, any origin is reflected (DEV ONLY)
+  #   - if auth.enabled=true, defaults to http://localhost:8080
+  # Set explicitly in production, e.g. "https://snmp-ui.example.com"
+  allowedOrigins: ""
+
+  auth:
+    enabled: false
+    # Name of an existing Kubernetes Secret containing the auth credentials.
+    # REQUIRED when auth.enabled=true. The secret must live in the release
+    # namespace and expose the following keys:
+    #   - username       (string, admin username)
+    #   - password_hash  (Argon2id hash; generate with SC4SNMP-UI/backend/hash_password.py)
+    #   - jwt_secret     (random hex token; generate with: python -c "import secrets; print(secrets.token_hex(32))")
+    # Credentials must never be set through values.yaml.
+    existingSecret: ""
+    jwtExpiryHours: 2
+    idleTimeoutMinutes: 30
+    secureCookies: false
+
   # valuesFileDirectory is obligatory if UI is used. It is a location of values.yaml and configuration files generated from the UI.
   valuesFileDirectory: ""
 
@@ -48,7 +69,6 @@ UI:
   # If keepSectionFiles is set to true, separate configration files for different sections will be saved in
   # valuesFileDirectory directory regardless of valuesFileName proper configuration.
   keepSectionFiles: false
-
 flower:
   enabled: false
   port: 80

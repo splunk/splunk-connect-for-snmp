@@ -61,6 +61,38 @@ spec:
           value: {{ .Values.UI.valuesFileName }}
         - name: KEEP_TEMP_FILES
           value: {{ quote .Values.UI.keepSectionFiles | default "false" }}
+        - name: AUTH_ENABLED
+          value: {{ .Values.UI.auth.enabled | quote }}
+        {{- if .Values.UI.auth.enabled }}
+        {{- if not .Values.UI.auth.existingSecret }}
+        {{- fail "UI.auth.existingSecret is required when UI.auth.enabled=true. Create a Kubernetes Secret in the release namespace with keys 'username', 'password_hash', and 'jwt_secret', then set UI.auth.existingSecret to its name. Credentials must not be provided via values.yaml." }}
+        {{- end }}
+        - name: AUTH_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.UI.auth.existingSecret }}
+              key: username
+        - name: AUTH_PASSWORD_HASH
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.UI.auth.existingSecret }}
+              key: password_hash
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.UI.auth.existingSecret }}
+              key: jwt_secret
+        {{- end }}
+        - name: JWT_EXPIRY_HOURS
+          value: {{ .Values.UI.auth.jwtExpiryHours | quote }}
+        - name: IDLE_TIMEOUT_MINUTES
+          value: {{ .Values.UI.auth.idleTimeoutMinutes | quote }}
+        - name: SECURE_COOKIES
+          value: {{ .Values.UI.auth.secureCookies | quote }}
+        {{- if .Values.UI.allowedOrigins }}
+        - name: ALLOWED_ORIGINS
+          value: {{ .Values.UI.allowedOrigins | quote }}
+        {{- end }}
         ports:
         - containerPort: 5000
         volumeMounts:
