@@ -142,6 +142,8 @@ spec:
               value: "4"
             - name: PREFETCH_COUNT
               value: "30"
+            - name: MAX_TASKS_PER_CHILD
+              value: "0"
           volumeMounts:
             - name: config
               mountPath: "/app/config"

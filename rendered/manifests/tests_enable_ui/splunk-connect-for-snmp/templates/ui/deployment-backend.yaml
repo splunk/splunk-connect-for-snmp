@@ -86,6 +86,14 @@ spec:
           value: values.yaml
         - name: KEEP_TEMP_FILES
           value: "false"
+        - name: AUTH_ENABLED
+          value: "false"
+        - name: JWT_EXPIRY_HOURS
+          value: "2"
+        - name: IDLE_TIMEOUT_MINUTES
+          value: "30"
+        - name: SECURE_COOKIES
+          value: "false"
         ports:
         - containerPort: 5000
         volumeMounts:

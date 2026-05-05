@@ -4,6 +4,11 @@ set -e
 . /app/construct-connection-strings.sh
 LOG_LEVEL=${LOG_LEVEL:=INFO}
 WORKER_CONCURRENCY=${WORKER_CONCURRENCY:=4}
+MAX_TASKS_PER_CHILD=${MAX_TASKS_PER_CHILD:=0}
+MAX_TASKS_FLAG=""
+if [ "$MAX_TASKS_PER_CHILD" -gt 0 ] 2>/dev/null; then
+    MAX_TASKS_FLAG="--max-tasks-per-child=$MAX_TASKS_PER_CHILD"
+fi
 
 wait-for-dep ${REDIS_DEPENDENCIES} "${MONGO_WAIT}" "${MIB_INDEX}"
 
@@ -25,13 +30,13 @@ celery)
         celery -A splunk_connect_for_snmp.poller beat -l "$LOG_LEVEL" --max-interval=10
         ;;
     worker-trap)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q traps --autoscale=8,"$WORKER_CONCURRENCY"
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q traps --autoscale=8,"$WORKER_CONCURRENCY" $MAX_TASKS_FLAG
         ;;
     worker-poller)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL"  -O fair -Q poll --autoscale=8,"$WORKER_CONCURRENCY"
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL"  -O fair -Q poll --autoscale=8,"$WORKER_CONCURRENCY" $MAX_TASKS_FLAG
         ;;
     worker-sender)
-        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q send --autoscale=6,"$WORKER_CONCURRENCY"
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q send --autoscale=6,"$WORKER_CONCURRENCY" $MAX_TASKS_FLAG
         ;;
     flower)
         celery -A splunk_connect_for_snmp.poller flower

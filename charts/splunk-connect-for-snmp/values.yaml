@@ -316,6 +316,10 @@ worker:
     concurrency: 4
     # how many tasks are consumed from the queue at once
     prefetch: 1
+    # maximum number of tasks a worker child process can execute before
+    # being recycled. 0 (default) disables recycling. Useful to mitigate
+    # memory growth in long-running workers.
+    maxTasksPerChild: 0
     autoscaling:
       # enabling autoscaling for poller worker pods
       enabled: false
@@ -349,6 +353,10 @@ worker:
     concurrency: 4
     # how many tasks are consumed from the queue at once
     prefetch: 30
+    # maximum number of tasks a worker child process can execute before
+    # being recycled. 0 (default) disables recycling. Useful to mitigate
+    # memory growth in long-running workers.
+    maxTasksPerChild: 0
     autoscaling:
       # enabling autoscaling for trap worker pods
       enabled: false
@@ -375,6 +383,10 @@ worker:
     concurrency: 4
     # how many tasks are consumed from the queue at once
     prefetch: 30
+    # maximum number of tasks a worker child process can execute before
+    # being recycled. 0 (default) disables recycling. Useful to mitigate
+    # memory growth in long-running workers.
+    maxTasksPerChild: 0
     autoscaling:
       # enabling autoscaling for sender worker pods
       enabled: false

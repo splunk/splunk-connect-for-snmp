@@ -21,6 +21,7 @@ worker:
     replicaCount: 2
     concurrency: 4
     prefetch: 1
+    maxTasksPerChild: 0
     autoscaling:
       enabled: false
       minReplicas: 2
@@ -41,6 +42,7 @@ worker:
       cacheTTL: 1800 
     concurrency: 4
     prefetch: 30
+    maxTasksPerChild: 0
     autoscaling:
       enabled: false
       minReplicas: 2
@@ -55,6 +57,7 @@ worker:
     replicaCount: 1
     concurrency: 4
     prefetch: 30
+    maxTasksPerChild: 0
     autoscaling:
       enabled: false
       minReplicas: 2
@@ -107,6 +110,7 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 | worker.poller.replicaCount                               | Number of poller worker replicas                                                                                                | 2                 |
 | worker.poller.concurrency                                | Minimum number of threads in a poller worker pod                                                                                | 4                 |
 | worker.poller.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 1                 |
+| worker.poller.maxTasksPerChild                           | Max number of tasks a poller worker child process can execute before being recycled. `0` disables recycling                     | 0                 |
 | worker.poller.autoscaling.enabled                        | Enabling autoscaling for poller worker pods                                                                                     | false             |
 | worker.poller.autoscaling.minReplicas                    | Minimum number of running poller worker pods when autoscaling is enabled                                                        | 2                 |
 | worker.poller.autoscaling.maxReplicas                    | Maximum number of running poller worker pods when autoscaling is enabled                                                        | 10                |
@@ -116,6 +120,7 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 | worker.trap.replicaCount                                 | Number of trap worker replicas                                                                                                  | 2                 |
 | worker.trap.concurrency                                  | Minimum number of threads in a trap worker pod                                                                                  | 4                 |
 | worker.trap.prefetch                                     | Number of tasks consumed from the queue at once                                                                                 | 30                |
+| worker.trap.maxTasksPerChild                             | Max number of tasks a trap worker child process can execute before being recycled. `0` disables recycling                       | 0                 |
 | worker.trap.resolveAddress.enabled                       | Enable reverse dns lookup of the IP address of the processed trap                                                               | false             |
 | worker.trap.resolveAddress.cacheSize                     | Maximum number of reverse dns lookup result records stored in cache                                                             | 500               |
 | worker.trap.resolveAddress.cacheTTL                      | Time to live of the cached reverse dns lookup record in seconds                                                                 | 1800              |
@@ -128,6 +133,7 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 | worker.sender.replicaCount                               | The number of sender worker replicas                                                                                            | 1                 |
 | worker.sender.concurrency                                | Minimum number of threads in a sender worker pod                                                                                | 4                 |
 | worker.sender.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 30                |
+| worker.sender.maxTasksPerChild                           | Max number of tasks a sender worker child process can execute before being recycled. `0` disables recycling                     | 0                 |
 | worker.sender.autoscaling.enabled                        | Enabling autoscaling for sender worker pods                                                                                     | false             |
 | worker.sender.autoscaling.minReplicas                    | Minimum number of running sender worker pods when autoscaling is enabled                                                        | 2                 |
 | worker.sender.autoscaling.maxReplicas                    | Maximum number of running sender worker pods when autoscaling is enabled                                                        | 10                |
@@ -178,6 +184,7 @@ WORKER_POLLER_CPU_LIMIT=1
 WORKER_POLLER_MEMORY_LIMIT=500M
 WORKER_POLLER_CPU_RESERVATIONS=0.5
 WORKER_POLLER_MEMORY_RESERVATIONS=250M
+WORKER_POLLER_MAX_TASKS_PER_CHILD=0
 ENABLE_WORKER_POLLER_SECRETS=false
 
 # Worker Sender
@@ -188,6 +195,7 @@ WORKER_SENDER_CPU_LIMIT=1
 WORKER_SENDER_MEMORY_LIMIT=500M
 WORKER_SENDER_CPU_RESERVATIONS=0.5
 WORKER_SENDER_MEMORY_RESERVATIONS=250M
+WORKER_SENDER_MAX_TASKS_PER_CHILD=0
 
 # Worker Trap
 WORKER_TRAP_CONCURRENCY=4
@@ -200,6 +208,7 @@ WORKER_TRAP_CPU_LIMIT=1
 WORKER_TRAP_MEMORY_LIMIT=500M
 WORKER_TRAP_CPU_RESERVATIONS=0.5
 WORKER_TRAP_MEMORY_RESERVATIONS=250M
+WORKER_TRAP_MAX_TASKS_PER_CHILD=0
 ```
 
 To apply changes, recreate the worker containers:
@@ -235,6 +244,7 @@ sudo docker compose up -d
 | `WORKER_POLLER_MEMORY_LIMIT`        | Limit of memory that worker poller container can use                       |
 | `WORKER_POLLER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker poller container                        |
 | `WORKER_POLLER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker poller container                     |
+| `WORKER_POLLER_MAX_TASKS_PER_CHILD` | Max number of tasks a poller worker child process can execute before being recycled. `0` disables recycling |
 | `ENABLE_WORKER_POLLER_SECRETS`      | Enable usage of secrets for poller                                         |
 
 ### Worker Sender
@@ -248,6 +258,7 @@ sudo docker compose up -d
 | `WORKER_SENDER_MEMORY_LIMIT`        | Limit of memory that worker sender container can use                       |
 | `WORKER_SENDER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker sender container                        |
 | `WORKER_SENDER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker sender container                     |
+| `WORKER_SENDER_MAX_TASKS_PER_CHILD` | Max number of tasks a sender worker child process can execute before being recycled. `0` disables recycling |
 
 ### Worker Trap
 
@@ -263,6 +274,7 @@ sudo docker compose up -d
 | `WORKER_TRAP_MEMORY_LIMIT`        | Limit of memory that worker trap container can use                                               |
 | `WORKER_TRAP_CPU_RESERVATIONS`    | Dedicated cpu resources for worker trap container                                                |
 | `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
+| `WORKER_TRAP_MAX_TASKS_PER_CHILD` | Max number of tasks a trap worker child process can execute before being recycled. `0` disables recycling |
 ///
 
 ## Worker scaling

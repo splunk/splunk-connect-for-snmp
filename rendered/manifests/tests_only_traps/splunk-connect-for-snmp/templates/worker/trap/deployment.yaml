@@ -113,6 +113,8 @@ spec:
               value: "4"
             - name: PREFETCH_COUNT
               value: "30"
+            - name: MAX_TASKS_PER_CHILD
+              value: "0"
             - name: RESOLVE_TRAP_ADDRESS
               value: "false"
             - name: MAX_DNS_CACHE_SIZE_TRAPS
