@@ -120,6 +120,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_POLLER_MEMORY_LIMIT`        | Limit of memory that worker poller container can use                       |
 | `WORKER_POLLER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker poller container                        |
 | `WORKER_POLLER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker poller container                     |
+| `WORKER_POLLER_MAX_TASKS_PER_CHILD` | Max number of tasks a poller worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
 | `ENABLE_WORKER_POLLER_SECRETS`      | Enable usage of secrets for poller                                         |
 
 #### Worker Sender
@@ -132,6 +133,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_SENDER_MEMORY_LIMIT`        | Limit of memory that worker sender container can use                       |
 | `WORKER_SENDER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker sender container                        |
 | `WORKER_SENDER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker sender container                     |
+| `WORKER_SENDER_MAX_TASKS_PER_CHILD` | Max number of tasks a sender worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
 
 #### Worker Trap
 | Variable                          | Description                                                                                      |
@@ -146,6 +148,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_TRAP_MEMORY_LIMIT`        | Limit of memory that worker trap container can use                                               |
 | `WORKER_TRAP_CPU_RESERVATIONS`    | Dedicated cpu resources for worker trap container                                                |
 | `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
+| `WORKER_TRAP_MAX_TASKS_PER_CHILD` | Max number of tasks a trap worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
 
 ### Inventory
 
