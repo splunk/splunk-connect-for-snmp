@@ -2,16 +2,16 @@
 
 ## Setup flow overview
 
-1. **Prerequisites** *(this page)* — prepare Splunk indexes and HEC token
-2. **Install Docker** — install Docker on the host machine
-3. **Download package** — download and extract the `docker_compose.zip` package
-4. **Configure** — create and edit the required configuration files in this order:
-    1. [Inventory file](3-inventory-configuration.md) — define which devices to poll
-    2. [Scheduler config](4-scheduler-configuration.md) — define polling profiles, communities, and groups
-    3. [Traps config](5-traps-configuration.md) — define communities and secrets for receiving traps
-    4. [SNMPv3 secrets](../configuration/snmpv3.md) *(optional)* — create Docker secrets for SNMPv3 credentials
-    5. [`.env` file](6-env-file-configuration.md) — set file paths, Splunk connection details, and tuning parameters
-5. **Deploy** — run `docker compose up -d`
+1. **Prerequisites** *(this page)* - prepare Splunk indexes and HEC token
+2. **Install Docker** - install Docker on the host machine
+3. **Download package** - download and extract the `docker_compose.zip` package
+4. **Configure** - create and edit the required configuration files in this order:
+    1. [Inventory file](3-inventory-configuration.md) - define which devices to poll
+    2. [Scheduler config](4-scheduler-configuration.md) - define polling profiles, communities, and groups
+    3. [Traps config](5-traps-configuration.md) - define communities and secrets for receiving traps
+    4. [SNMPv3 secrets](../configuration/snmpv3.md) *(optional)* - create Docker secrets for SNMPv3 credentials
+    5. [`.env` file](6-env-file-configuration.md) - set file paths, Splunk connection details, and tuning parameters
+5. **Deploy** - run `docker compose up -d`
 
 ### Requirements for Splunk Enterprise or Enterprise Cloud
 

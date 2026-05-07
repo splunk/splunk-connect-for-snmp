@@ -31,8 +31,8 @@ redis:
   # Resources
   resources: {}
   #  **Quick sizing:**
-  #  - Cache only: Set `redis.resources.limits.memory` to 1.5× expected data size
-  #  - With persistence: Set to 2.5-3× expected data size
+  #  - Cache only: Set `redis.resources.limits.memory` to 1.5x expected data size
+  #  - With persistence: Set to 2.5-3x expected data size
   #  resources:
   #    requests:
   #      cpu: 500m
@@ -193,8 +193,8 @@ Redis memory limits depend on your data size and persistence strategy.
 
 **Quick sizing:**
 
-- Cache only: Set `redis.resources.limits.memory` to 1.5× expected data size
-- With persistence: Set to 2.5-3× expected data size
+- Cache only: Set `redis.resources.limits.memory` to 1.5x expected data size
+- With persistence: Set to 2.5-3x expected data size
 
 **Examples:**
 ```yaml
@@ -261,7 +261,7 @@ The chart automatically detects and migrates data from existing Bitnami Redis de
 3. Init container fixes file permissions for compatibility
 4. If no existing PVC is found, creates a new one
 
-No manual intervention required — simply upgrade your deployment with the new chart.
+No manual intervention required - simply upgrade your deployment with the new chart.
 
 !!!note
    Migration between Bitnami Redis and the new chart is possible only to `standalone` architecture mode. For using `replication` please [reinstall SC4SNMP](../sc4snmp-installation.md#reinstall-splunk-connect-for-snmp).

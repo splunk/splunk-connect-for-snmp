@@ -1,6 +1,6 @@
 # .env file configuration
 
-The `.env` file lives inside the `docker_compose` directory (the same directory extracted from `docker_compose.zip`). It controls all environment variables for the deployment — paths to configuration files, Splunk connection settings, image versions, and tuning parameters. Edit this file before running `docker compose up`. Variables in it can be divided into few sections.
+The `.env` file lives inside the `docker_compose` directory (the same directory extracted from `docker_compose.zip`). It controls all environment variables for the deployment - paths to configuration files, Splunk connection settings, image versions, and tuning parameters. Edit this file before running `docker compose up`. Variables in it can be divided into few sections.
 
 ## Overview
 
@@ -9,22 +9,22 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 
     **File paths:**
 
-    - **`SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH`** — absolute path to your `scheduler-config.yaml`
-    - **`TRAPS_CONFIG_FILE_ABSOLUTE_PATH`** — absolute path to your `traps-config.yaml`
-    - **`INVENTORY_FILE_ABSOLUTE_PATH`** — absolute path to your `inventory.csv`
-    - **`COREFILE_ABS_PATH`** — absolute path to the `Corefile` (a default `Corefile` is shipped inside the `docker_compose` package)
+    - **`SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH`** - absolute path to your `scheduler-config.yaml`
+    - **`TRAPS_CONFIG_FILE_ABSOLUTE_PATH`** - absolute path to your `traps-config.yaml`
+    - **`INVENTORY_FILE_ABSOLUTE_PATH`** - absolute path to your `inventory.csv`
+    - **`COREFILE_ABS_PATH`** - absolute path to the `Corefile` (a default `Corefile` is shipped inside the `docker_compose` package)
 
     **Splunk connection:**
 
-    - **`SPLUNK_HEC_HOST`** — IP address or domain name of your Splunk instance
-    - **`SPLUNK_HEC_PROTOCOL`** — `https` or `http`
-    - **`SPLUNK_HEC_PORT`** — port of the HEC endpoint
-    - **`SPLUNK_HEC_TOKEN`** or **`SPLUNK_HEC_TOKEN_SECRET_FILE`** — HEC token, or path to a file containing the token
+    - **`SPLUNK_HEC_HOST`** - IP address or domain name of your Splunk instance
+    - **`SPLUNK_HEC_PROTOCOL`** - `https` or `http`
+    - **`SPLUNK_HEC_PORT`** - port of the HEC endpoint
+    - **`SPLUNK_HEC_TOKEN`** or **`SPLUNK_HEC_TOKEN_SECRET_FILE`** - HEC token, or path to a file containing the token
 
 Once the required variables above are set, you can [Deploy the app](./11-deploy-and-run.md). The rest of this page covers optional and advanced parameters.
 
 !!! note "Sending container logs to Splunk"
-    If you plan to use the [Splunk logging feature](./9-splunk-logging.md), also set **`SPLUNK_LOG_INDEX`** — the Splunk event index where container logs will be sent. This cannot be configured after the fact without editing `.env` and restarting the stack.
+    If you plan to use the [Splunk logging feature](./9-splunk-logging.md), also set **`SPLUNK_LOG_INDEX`** - the Splunk event index where container logs will be sent. This cannot be configured after the fact without editing `.env` and restarting the stack.
 
 ## Configuration
 

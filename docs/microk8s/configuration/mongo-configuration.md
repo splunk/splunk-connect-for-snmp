@@ -256,7 +256,7 @@ The chart automatically detects and migrates data from existing Bitnami MongoDB 
 3. Init container fixes file permissions for compatibility
 4. If no existing PVC is found, creates a new one
 
-No manual intervention required — simply upgrade your deployment with the new chart.
+No manual intervention required - simply upgrade your deployment with the new chart.
 
 !!!warning
     Migration between Bitnami MongoDB and the new chart is possible only to standalone mode. For using replication mode, please reinstall SC4SNMP with a fresh MongoDB deployment.

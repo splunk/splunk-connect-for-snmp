@@ -16,7 +16,7 @@ After extracting the package, you need to create or edit the following files bef
 | `.env` | Sets absolute paths to the files above, Splunk connection details, and tuning parameters | [.env file](./6-env-file-configuration.md) |
 
 !!! note
-    The inventory, scheduler, and traps files can be named and placed anywhere on the host. What matters is that their absolute paths are correctly set in `.env` via `INVENTORY_FILE_ABSOLUTE_PATH`, `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH`, and `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`. A default `Corefile` is shipped inside the `docker_compose` package — its absolute path must be set via `COREFILE_ABS_PATH`. The `secrets.json` filename is fixed — only the folder path is configurable via `SECRET_FOLDER_PATH`.
+    The inventory, scheduler, and traps files can be named and placed anywhere on the host. What matters is that their absolute paths are correctly set in `.env` via `INVENTORY_FILE_ABSOLUTE_PATH`, `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH`, and `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`. A default `Corefile` is shipped inside the `docker_compose` package - its absolute path must be set via `COREFILE_ABS_PATH`. The `secrets.json` filename is fixed - only the folder path is configurable via `SECRET_FOLDER_PATH`.
 
 Work through each page in order. Once all files are ready, proceed to [Deploy the app](./11-deploy-and-run.md).
 
@@ -24,14 +24,14 @@ Work through each page in order. Once all files are ready, proceed to [Deploy th
 
 The following is a minimal, working configuration for polling a single SNMPv2c device. Use it as a starting point and adapt it to your environment.
 
-**Inventory file** — one device at `192.168.1.1`, with a minimal SNMPv2-MIB walk every 1800 seconds and profile-based polling every 300 seconds (as defined by `simple_profile` below), using SNMPv2c community `public`:
+**Inventory file** - one device at `192.168.1.1`, with a minimal SNMPv2-MIB walk every 1800 seconds and profile-based polling every 300 seconds (as defined by `simple_profile` below), using SNMPv2c community `public`:
 
 ```csv
 address,port,version,community,secret,securityEngine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
 192.168.1.1,161,2c,public,,,1800,simple_profile,t,,
 ```
 
-**Scheduler config file** — define the `public` community and the `simple_profile` profile referenced above:
+**Scheduler config file** - define the `public` community and the `simple_profile` profile referenced above:
 
 ```yaml
 communities:
@@ -45,7 +45,7 @@ profiles:
       - [ 'SNMPv2-MIB' ]
 ```
 
-**Traps config file** — accept traps from SNMPv2c devices using the `public` community:
+**Traps config file** - accept traps from SNMPv2c devices using the `public` community:
 
 ```yaml
 communities:
@@ -54,7 +54,7 @@ communities:
 usernameSecrets: []
 ```
 
-**`.env`** — set the required variables (adjust paths and Splunk details to your environment):
+**`.env`** - set the required variables (adjust paths and Splunk details to your environment):
 
 ```
 SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=/home/ubuntu/docker_compose/scheduler-config.yaml
