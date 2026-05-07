@@ -3317,6 +3317,10 @@
 <td>Dedicated memory resources for worker poller container</td>
 </tr>
 <tr>
+<td><code>WORKER_POLLER_MAX_TASKS_PER_CHILD</code></td>
+<td>Max number of tasks a poller worker child process can execute before being recycled. <code>0</code> (default) disables recycling. Useful to mitigate memory growth in long-running workers</td>
+</tr>
+<tr>
 <td><code>ENABLE_WORKER_POLLER_SECRETS</code></td>
 <td>Enable usage of secrets for poller</td>
 </tr>
@@ -3358,6 +3362,10 @@
 <tr>
 <td><code>WORKER_SENDER_MEMORY_RESERVATIONS</code></td>
 <td>Dedicated memory resources for worker sender container</td>
+</tr>
+<tr>
+<td><code>WORKER_SENDER_MAX_TASKS_PER_CHILD</code></td>
+<td>Max number of tasks a sender worker child process can execute before being recycled. <code>0</code> (default) disables recycling. Useful to mitigate memory growth in long-running workers</td>
 </tr>
 </tbody>
 </table>
@@ -3409,6 +3417,10 @@
 <tr>
 <td><code>WORKER_TRAP_MEMORY_RESERVATIONS</code></td>
 <td>Dedicated memory resources for worker trap container</td>
+</tr>
+<tr>
+<td><code>WORKER_TRAP_MAX_TASKS_PER_CHILD</code></td>
+<td>Max number of tasks a trap worker child process can execute before being recycled. <code>0</code> (default) disables recycling. Useful to mitigate memory growth in long-running workers</td>
 </tr>
 </tbody>
 </table>
