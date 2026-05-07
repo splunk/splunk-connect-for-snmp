@@ -2590,8 +2590,8 @@ the <code>UCD-SNMP-MIB</code> for CPU-related statistics. Define the target grou
 <p class="admonition-title">Walk scope</p>
 <p>By default, SC4SNMP only walks <code>SNMPv2-MIB</code>. You have two options to expand the scope:</p>
 <ul>
-<li><strong>Define a walk profile</strong> — add a profile with <code>condition.type: "walk"</code> to walk only the MIB families you need.</li>
-<li><strong>Enable full walk</strong> — set <code>enableFullWalk: true</code> in <code>values.yaml</code> (microk8s) or <code>ENABLE_FULL_WALK=true</code> in <code>.env</code> (docker compose) to walk the entire OID tree.</li>
+<li><strong>Define a walk profile</strong> - add a profile with <code>condition.type: "walk"</code> to walk only the MIB families you need.</li>
+<li><strong>Enable full walk</strong> - set <code>enableFullWalk: true</code> in <code>values.yaml</code> (microk8s) or <code>ENABLE_FULL_WALK=true</code> in <code>.env</code> (docker compose) to walk the entire OID tree.</li>
 </ul>
 </div>
 <p>In the example below, no walk profile is used. <code>switch_profile</code> polls specific OIDs every 60 seconds. SC4SNMP will walk only <code>SNMPv2-MIB</code> by default.</p>

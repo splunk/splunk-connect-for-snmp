@@ -2966,8 +2966,8 @@ This change ensures we maintain full control over configuration, compatibility, 
 <span class="w">  </span><span class="c1"># Resources</span>
 <span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
 <span class="w">  </span><span class="c1">#  **Quick sizing:**</span>
-<span class="w">  </span><span class="c1">#  - Cache only: Set `redis.resources.limits.memory` to 1.5× expected data size</span>
-<span class="w">  </span><span class="c1">#  - With persistence: Set to 2.5-3× expected data size</span>
+<span class="w">  </span><span class="c1">#  - Cache only: Set `redis.resources.limits.memory` to 1.5x expected data size</span>
+<span class="w">  </span><span class="c1">#  - With persistence: Set to 2.5-3x expected data size</span>
 <span class="w">  </span><span class="c1">#  resources:</span>
 <span class="w">  </span><span class="c1">#    requests:</span>
 <span class="w">  </span><span class="c1">#      cpu: 500m</span>
@@ -3255,8 +3255,8 @@ sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> <
 <p>Redis memory limits depend on your data size and persistence strategy.</p>
 <p><strong>Quick sizing:</strong></p>
 <ul>
-<li>Cache only: Set <code>redis.resources.limits.memory</code> to 1.5× expected data size</li>
-<li>With persistence: Set to 2.5-3× expected data size</li>
+<li>Cache only: Set <code>redis.resources.limits.memory</code> to 1.5x expected data size</li>
+<li>With persistence: Set to 2.5-3x expected data size</li>
 </ul>
 <p><strong>Examples:</strong>
 </p><div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
@@ -3307,7 +3307,7 @@ If you want to use a different key, you can specify it in the <code>values.yaml<
 <li>Init container fixes file permissions for compatibility</li>
 <li>If no existing PVC is found, creates a new one</li>
 </ol>
-<p>No manual intervention required — simply upgrade your deployment with the new chart.</p>
+<p>No manual intervention required - simply upgrade your deployment with the new chart.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 </div>

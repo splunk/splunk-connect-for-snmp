@@ -941,7 +941,7 @@
   <a href="#step-1-generate-the-admin-password-hash" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1 – Generate the admin password hash
+        Step 1 - Generate the admin password hash
       
     </span>
   </a>
@@ -952,7 +952,7 @@
   <a href="#step-2-create-the-kubernetes-secret" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 2 – Create the Kubernetes Secret
+        Step 2 - Create the Kubernetes Secret
       
     </span>
   </a>
@@ -963,7 +963,7 @@
   <a href="#step-3-enable-authentication-in-valuesyaml" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 3 – Enable authentication in values.yaml
+        Step 3 - Enable authentication in values.yaml
       
     </span>
   </a>
@@ -974,7 +974,7 @@
   <a href="#step-4-apply-and-verify" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 4 – Apply and verify
+        Step 4 - Apply and verify
       
     </span>
   </a>
@@ -2718,7 +2718,7 @@
   <a href="#step-1-generate-the-admin-password-hash" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1 – Generate the admin password hash
+        Step 1 - Generate the admin password hash
       
     </span>
   </a>
@@ -2729,7 +2729,7 @@
   <a href="#step-2-create-the-kubernetes-secret" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 2 – Create the Kubernetes Secret
+        Step 2 - Create the Kubernetes Secret
       
     </span>
   </a>
@@ -2740,7 +2740,7 @@
   <a href="#step-3-enable-authentication-in-valuesyaml" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 3 – Enable authentication in values.yaml
+        Step 3 - Enable authentication in values.yaml
       
     </span>
   </a>
@@ -2751,7 +2751,7 @@
   <a href="#step-4-apply-and-verify" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 4 – Apply and verify
+        Step 4 - Apply and verify
       
     </span>
   </a>
@@ -2850,8 +2850,8 @@ frontEnd section, e.g. <code>192.168.123.13:30001</code>.</p>
 <p>Starting with the UI authentication feature, SC4SNMP-UI can require users to log in with a username and password before 
 any configuration is viewed or changed. </p>
 <p>Authentication is disabled by default to preserve backwards compatibility. Follow the steps below to turn it on.</p>
-<h3 id="step-1-generate-the-admin-password-hash">Step 1 – Generate the admin password hash<a class="headerlink" href="#step-1-generate-the-admin-password-hash" title="Permanent link">¶</a></h3>
-<p>The UI backend validates logins against an Argon2id hash. Generate one locally with the <code>argon2-cffi</code> library — the hash 
+<h3 id="step-1-generate-the-admin-password-hash">Step 1 - Generate the admin password hash<a class="headerlink" href="#step-1-generate-the-admin-password-hash" title="Permanent link">¶</a></h3>
+<p>The UI backend validates logins against an Argon2id hash. Generate one locally with the <code>argon2-cffi</code> library - the hash 
 is the only value that will be stored.</p>
 <p>Install the library and run the snippet below on any machine with Python 3.8+:</p>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>argon2-cffi
@@ -2868,8 +2868,8 @@ python3<span class="w"> </span>-<span class="w"> </span><span class="s">&lt;&lt;
 <span class="s">PY</span>
 </code></pre></div>
 <p>You will be prompted for the password twice (minimum 8 characters). The command prints a single line containing the 
-Argon2id hash (it starts with <code>$argon2id$...</code>). Copy that value — you will need it in the next step.</p>
-<h3 id="step-2-create-the-kubernetes-secret">Step 2 – Create the Kubernetes Secret<a class="headerlink" href="#step-2-create-the-kubernetes-secret" title="Permanent link">¶</a></h3>
+Argon2id hash (it starts with <code>$argon2id$...</code>). Copy that value - you will need it in the next step.</p>
+<h3 id="step-2-create-the-kubernetes-secret">Step 2 - Create the Kubernetes Secret<a class="headerlink" href="#step-2-create-the-kubernetes-secret" title="Permanent link">¶</a></h3>
 <p>Credentials are consumed by the UI backend only through a Kubernetes Secret that lives in the same namespace as the 
 SC4SNMP release (typically <code>sc4snmp</code>). The Secret must expose exactly these three keys:</p>
 <table>
@@ -2890,7 +2890,7 @@ SC4SNMP release (typically <code>sc4snmp</code>). The Secret must expose exactly
 </tr>
 <tr>
 <td><code>jwt_secret</code></td>
-<td>Random hex string (≥32 bytes) used to sign session JWTs.</td>
+<td>Random hex string (&gt;=32 bytes) used to sign session JWTs.</td>
 </tr>
 </tbody>
 </table>
@@ -2910,7 +2910,7 @@ SC4SNMP release (typically <code>sc4snmp</code>). The Secret must expose exactly
   --dry-run=client -o yaml | kubectl apply -f -</code>) and restart the UI backend pods so they pick up the new values.</li>
 </ul>
 </div>
-<h3 id="step-3-enable-authentication-in-valuesyaml">Step 3 – Enable authentication in <code>values.yaml</code><a class="headerlink" href="#step-3-enable-authentication-in-valuesyaml" title="Permanent link">¶</a></h3>
+<h3 id="step-3-enable-authentication-in-valuesyaml">Step 3 - Enable authentication in <code>values.yaml</code><a class="headerlink" href="#step-3-enable-authentication-in-valuesyaml" title="Permanent link">¶</a></h3>
 <p>Add the <code>auth</code> section under <code>UI</code> and point <code>existingSecret</code> at the Secret created in the previous step:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">UI</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -2962,19 +2962,19 @@ SC4SNMP release (typically <code>sc4snmp</code>). The Secret must expose exactly
 </tr>
 <tr>
 <td><code>UI.auth.secureCookies</code></td>
-<td>When <code>true</code>, the session cookie is issued with the <code>Secure</code> flag and is only transmitted over HTTPS. Requires an HTTPS-terminating reverse proxy (e.g. nginx) in front of the NodePorts — the Helm chart serves plain HTTP only. Set to <code>false</code> for plain HTTP deployments; browsers will silently drop the cookie otherwise.</td>
+<td>When <code>true</code>, the session cookie is issued with the <code>Secure</code> flag and is only transmitted over HTTPS. Requires an HTTPS-terminating reverse proxy (e.g. nginx) in front of the NodePorts - the Helm chart serves plain HTTP only. Set to <code>false</code> for plain HTTP deployments; browsers will silently drop the cookie otherwise.</td>
 <td><code>false</code></td>
 <td>no</td>
 </tr>
 <tr>
 <td><code>UI.allowedOrigins</code></td>
-<td>Comma-separated list of origins allowed to call the UI backend (e.g. <code>http://localhost:30001</code>). If empty and <code>auth.enabled=true</code>, the backend defaults to <code>http://localhost:8080</code>. Set explicitly in production to the exact URL(s) a browser will use to reach the UI — otherwise login requests will be rejected by CORS.</td>
+<td>Comma-separated list of origins allowed to call the UI backend (e.g. <code>http://localhost:30001</code>). If empty and <code>auth.enabled=true</code>, the backend defaults to <code>http://localhost:8080</code>. Set explicitly in production to the exact URL(s) a browser will use to reach the UI - otherwise login requests will be rejected by CORS.</td>
 <td><code>""</code></td>
 <td>recommended in production</td>
 </tr>
 </tbody>
 </table>
-<h3 id="step-4-apply-and-verify">Step 4 – Apply and verify<a class="headerlink" href="#step-4-apply-and-verify" title="Permanent link">¶</a></h3>
+<h3 id="step-4-apply-and-verify">Step 4 - Apply and verify<a class="headerlink" href="#step-4-apply-and-verify" title="Permanent link">¶</a></h3>
 <p>Upgrade the Helm release so the new settings take effect:</p>
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--namespace<span class="w"> </span>sc4snmp<span class="w"> </span>--create-namespace
@@ -2986,7 +2986,7 @@ than <code>jwtExpiryHours</code> will require a fresh login.</p>
 <ul>
 <li>Serve the UI over HTTPS (TLS 1.2+). Because the JWT cookie is <code>HttpOnly</code> and <code>Secure</code>, authenticated access over plain 
   HTTP is intentionally broken outside <code>localhost</code>.</li>
-<li>Keep <code>UI.allowedOrigins</code> as tight as possible — ideally a single production URL. Wildcards are not supported when 
+<li>Keep <code>UI.allowedOrigins</code> as tight as possible - ideally a single production URL. Wildcards are not supported when 
   authentication is enabled.</li>
 <li>Rotate the <code>jwt_secret</code> on staff changes or suspected compromise. Rotating the secret invalidates all outstanding 
   sessions immediately.</li>

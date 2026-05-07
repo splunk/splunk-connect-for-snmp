@@ -2992,30 +2992,30 @@
 
 
 <div><h1 id="env-file-configuration">.env file configuration<a class="headerlink" href="#env-file-configuration" title="Permanent link">¶</a></h1>
-<p>The <code>.env</code> file lives inside the <code>docker_compose</code> directory (the same directory extracted from <code>docker_compose.zip</code>). It controls all environment variables for the deployment — paths to configuration files, Splunk connection settings, image versions, and tuning parameters. Edit this file before running <code>docker compose up</code>. Variables in it can be divided into few sections.</p>
+<p>The <code>.env</code> file lives inside the <code>docker_compose</code> directory (the same directory extracted from <code>docker_compose.zip</code>). It controls all environment variables for the deployment - paths to configuration files, Splunk connection settings, image versions, and tuning parameters. Edit this file before running <code>docker compose up</code>. Variables in it can be divided into few sections.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Required variables</p>
 <p>The following variables must be set before running <code>docker compose up</code>:</p>
 <p><strong>File paths:</strong></p>
 <ul>
-<li><strong><code>SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH</code></strong> — absolute path to your <code>scheduler-config.yaml</code></li>
-<li><strong><code>TRAPS_CONFIG_FILE_ABSOLUTE_PATH</code></strong> — absolute path to your <code>traps-config.yaml</code></li>
-<li><strong><code>INVENTORY_FILE_ABSOLUTE_PATH</code></strong> — absolute path to your <code>inventory.csv</code></li>
-<li><strong><code>COREFILE_ABS_PATH</code></strong> — absolute path to the <code>Corefile</code> (a default <code>Corefile</code> is shipped inside the <code>docker_compose</code> package)</li>
+<li><strong><code>SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH</code></strong> - absolute path to your <code>scheduler-config.yaml</code></li>
+<li><strong><code>TRAPS_CONFIG_FILE_ABSOLUTE_PATH</code></strong> - absolute path to your <code>traps-config.yaml</code></li>
+<li><strong><code>INVENTORY_FILE_ABSOLUTE_PATH</code></strong> - absolute path to your <code>inventory.csv</code></li>
+<li><strong><code>COREFILE_ABS_PATH</code></strong> - absolute path to the <code>Corefile</code> (a default <code>Corefile</code> is shipped inside the <code>docker_compose</code> package)</li>
 </ul>
 <p><strong>Splunk connection:</strong></p>
 <ul>
-<li><strong><code>SPLUNK_HEC_HOST</code></strong> — IP address or domain name of your Splunk instance</li>
-<li><strong><code>SPLUNK_HEC_PROTOCOL</code></strong> — <code>https</code> or <code>http</code></li>
-<li><strong><code>SPLUNK_HEC_PORT</code></strong> — port of the HEC endpoint</li>
-<li><strong><code>SPLUNK_HEC_TOKEN</code></strong> or <strong><code>SPLUNK_HEC_TOKEN_SECRET_FILE</code></strong> — HEC token, or path to a file containing the token</li>
+<li><strong><code>SPLUNK_HEC_HOST</code></strong> - IP address or domain name of your Splunk instance</li>
+<li><strong><code>SPLUNK_HEC_PROTOCOL</code></strong> - <code>https</code> or <code>http</code></li>
+<li><strong><code>SPLUNK_HEC_PORT</code></strong> - port of the HEC endpoint</li>
+<li><strong><code>SPLUNK_HEC_TOKEN</code></strong> or <strong><code>SPLUNK_HEC_TOKEN_SECRET_FILE</code></strong> - HEC token, or path to a file containing the token</li>
 </ul>
 </div>
 <p>Once the required variables above are set, you can <a href="../11-deploy-and-run/">Deploy the app</a>. The rest of this page covers optional and advanced parameters.</p>
 <div class="admonition note">
 <p class="admonition-title">Sending container logs to Splunk</p>
-<p>If you plan to use the <a href="../9-splunk-logging/">Splunk logging feature</a>, also set <strong><code>SPLUNK_LOG_INDEX</code></strong> — the Splunk event index where container logs will be sent. This cannot be configured after the fact without editing <code>.env</code> and restarting the stack.</p>
+<p>If you plan to use the <a href="../9-splunk-logging/">Splunk logging feature</a>, also set <strong><code>SPLUNK_LOG_INDEX</code></strong> - the Splunk event index where container logs will be sent. This cannot be configured after the fact without editing <code>.env</code> and restarting the stack.</p>
 </div>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h2>
 <h3 id="deployment">Deployment<a class="headerlink" href="#deployment" title="Permanent link">¶</a></h3>

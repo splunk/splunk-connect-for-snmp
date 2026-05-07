@@ -2682,18 +2682,18 @@
 <div><h1 id="prerequisites-for-the-splunk-connect-for-snmp">Prerequisites for the Splunk Connect for SNMP<a class="headerlink" href="#prerequisites-for-the-splunk-connect-for-snmp" title="Permanent link">¶</a></h1>
 <h2 id="setup-flow-overview">Setup flow overview<a class="headerlink" href="#setup-flow-overview" title="Permanent link">¶</a></h2>
 <ol>
-<li><strong>Prerequisites</strong> <em>(this page)</em> — prepare Splunk indexes and HEC token</li>
-<li><strong>Install Docker</strong> — install Docker on the host machine</li>
-<li><strong>Download package</strong> — download and extract the <code>docker_compose.zip</code> package</li>
-<li><strong>Configure</strong> — create and edit the required configuration files in this order:<ol>
-<li><a href="../3-inventory-configuration/">Inventory file</a> — define which devices to poll</li>
-<li><a href="../4-scheduler-configuration/">Scheduler config</a> — define polling profiles, communities, and groups</li>
-<li><a href="../5-traps-configuration/">Traps config</a> — define communities and secrets for receiving traps</li>
-<li><a href="../../configuration/snmpv3/">SNMPv3 secrets</a> <em>(optional)</em> — create Docker secrets for SNMPv3 credentials</li>
-<li><a href="../6-env-file-configuration/"><code>.env</code> file</a> — set file paths, Splunk connection details, and tuning parameters</li>
+<li><strong>Prerequisites</strong> <em>(this page)</em> - prepare Splunk indexes and HEC token</li>
+<li><strong>Install Docker</strong> - install Docker on the host machine</li>
+<li><strong>Download package</strong> - download and extract the <code>docker_compose.zip</code> package</li>
+<li><strong>Configure</strong> - create and edit the required configuration files in this order:<ol>
+<li><a href="../3-inventory-configuration/">Inventory file</a> - define which devices to poll</li>
+<li><a href="../4-scheduler-configuration/">Scheduler config</a> - define polling profiles, communities, and groups</li>
+<li><a href="../5-traps-configuration/">Traps config</a> - define communities and secrets for receiving traps</li>
+<li><a href="../../configuration/snmpv3/">SNMPv3 secrets</a> <em>(optional)</em> - create Docker secrets for SNMPv3 credentials</li>
+<li><a href="../6-env-file-configuration/"><code>.env</code> file</a> - set file paths, Splunk connection details, and tuning parameters</li>
 </ol>
 </li>
-<li><strong>Deploy</strong> — run <code>docker compose up -d</code></li>
+<li><strong>Deploy</strong> - run <code>docker compose up -d</code></li>
 </ol>
 <h3 id="requirements-for-splunk-enterprise-or-enterprise-cloud">Requirements for Splunk Enterprise or Enterprise Cloud<a class="headerlink" href="#requirements-for-splunk-enterprise-or-enterprise-cloud" title="Permanent link">¶</a></h3>
 <ol>
