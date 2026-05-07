@@ -192,6 +192,8 @@ Common labels
   value: {{ .Values.worker.poller.concurrency | default "4" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.poller.prefetch | default "1" | quote }}
+- name: MAX_TASKS_PER_CHILD
+  value: {{ .Values.worker.poller.maxTasksPerChild | default "0" | quote }}
 - name: IPv6_ENABLED
   value: {{ .Values.poller.ipv6Enabled | default "false" | quote }}
 {{- end }}
@@ -201,6 +203,8 @@ Common labels
   value: {{ .Values.worker.sender.concurrency | default "4" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.sender.prefetch | default "30" | quote }}
+- name: MAX_TASKS_PER_CHILD
+  value: {{ .Values.worker.sender.maxTasksPerChild | default "0" | quote }}
 {{- end }}
 
 {{- define "environmental-variables-trap" -}}
@@ -208,6 +212,8 @@ Common labels
   value: {{ .Values.worker.trap.concurrency | default "4" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.trap.prefetch | default "30" | quote }}
+- name: MAX_TASKS_PER_CHILD
+  value: {{ .Values.worker.trap.maxTasksPerChild | default "0" | quote }}
 - name: RESOLVE_TRAP_ADDRESS
   value: {{ .Values.worker.trap.resolveAddress.enabled | default "false" | quote }}
 - name: MAX_DNS_CACHE_SIZE_TRAPS

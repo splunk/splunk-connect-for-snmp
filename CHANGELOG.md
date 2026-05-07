@@ -4,6 +4,7 @@
 
 ### Changed
 - add authorisation for UI
+- add MAX_TASKS_PER_CHILD setting to celery workers
 
 ### Fixed
 

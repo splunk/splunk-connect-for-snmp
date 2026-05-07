@@ -447,6 +447,10 @@
             "prefetch": {
               "type": "integer"
             },
+            "maxTasksPerChild": {
+              "type": "integer",
+              "minimum": 0
+            },
             "autoscaling": {
               "type": "object",
               "additionalProperties": false,
@@ -529,6 +533,10 @@
             "prefetch": {
               "type": "integer"
             },
+            "maxTasksPerChild": {
+              "type": "integer",
+              "minimum": 0
+            },
             "autoscaling": {
               "type": "object",
               "additionalProperties": false,
@@ -595,6 +603,10 @@
             },
             "prefetch": {
               "type": "integer"
+            },
+            "maxTasksPerChild": {
+              "type": "integer",
+              "minimum": 0
             },
             "autoscaling": {
               "type": "object",
