@@ -64,9 +64,9 @@ any configuration is viewed or changed.
 
 Authentication is disabled by default to preserve backwards compatibility. Follow the steps below to turn it on.
 
-### Step 1 – Generate the admin password hash
+### Step 1 - Generate the admin password hash
 
-The UI backend validates logins against an Argon2id hash. Generate one locally with the `argon2-cffi` library — the hash 
+The UI backend validates logins against an Argon2id hash. Generate one locally with the `argon2-cffi` library - the hash 
 is the only value that will be stored.
 
 Install the library and run the snippet below on any machine with Python 3.8+:
@@ -87,9 +87,9 @@ PY
 ```
 
 You will be prompted for the password twice (minimum 8 characters). The command prints a single line containing the 
-Argon2id hash (it starts with `$argon2id$...`). Copy that value — you will need it in the next step.
+Argon2id hash (it starts with `$argon2id$...`). Copy that value - you will need it in the next step.
 
-### Step 2 – Create the Kubernetes Secret
+### Step 2 - Create the Kubernetes Secret
 
 Credentials are consumed by the UI backend only through a Kubernetes Secret that lives in the same namespace as the 
 SC4SNMP release (typically `sc4snmp`). The Secret must expose exactly these three keys:
@@ -98,7 +98,7 @@ SC4SNMP release (typically `sc4snmp`). The Secret must expose exactly these thre
 |-----------------|-----------------------------------------------------------------------------|
 | `username`      | Admin username used at the login screen.                                    |
 | `password_hash` | Argon2id hash produced in Step 1.                                           |
-| `jwt_secret`    | Random hex string (≥32 bytes) used to sign session JWTs.                    |
+| `jwt_secret`    | Random hex string (>=32 bytes) used to sign session JWTs.                    |
 
 Create the Secret with `kubectl`, pasting the hash generated in Step 1:
 
@@ -116,7 +116,7 @@ microk8s kubectl create secret generic sc4snmp-ui-auth \
     - To change the password or rotate the JWT secret, delete and recreate the Secret (or use `kubectl create secret ... 
       --dry-run=client -o yaml | kubectl apply -f -`) and restart the UI backend pods so they pick up the new values.
 
-### Step 3 – Enable authentication in `values.yaml`
+### Step 3 - Enable authentication in `values.yaml`
 
 Add the `auth` section under `UI` and point `existingSecret` at the Secret created in the previous step:
 
@@ -143,10 +143,10 @@ Configuration reference:
 | `UI.auth.existingSecret`     | Name of the Secret created in Step 2. If omitted while auth is enabled, the Helm chart refuses to render (`helm template`/`helm install` will fail with an explanatory error). Prevents credentials from flowing through `values.yaml`.                                                                                       | `""`    | **yes**, when `auth.enabled=true` |
 | `UI.auth.jwtExpiryHours`     | Absolute lifetime of a session JWT. After this period the user must log in again regardless of activity.                                                                                                                                                                                                                      | `2`     | no                                |
 | `UI.auth.idleTimeoutMinutes` | Idle timeout. If no authenticated request is made for this many minutes, the session is invalidated.                                                                                                                                                                                                                          | `30`    | no                                |
-| `UI.auth.secureCookies`      | When `true`, the session cookie is issued with the `Secure` flag and is only transmitted over HTTPS. Requires an HTTPS-terminating reverse proxy (e.g. nginx) in front of the NodePorts — the Helm chart serves plain HTTP only. Set to `false` for plain HTTP deployments; browsers will silently drop the cookie otherwise. | `false` | no                                |
-| `UI.allowedOrigins`          | Comma-separated list of origins allowed to call the UI backend (e.g. `http://localhost:30001`). If empty and `auth.enabled=true`, the backend defaults to `http://localhost:8080`. Set explicitly in production to the exact URL(s) a browser will use to reach the UI — otherwise login requests will be rejected by CORS.   | `""`    | recommended in production         |
+| `UI.auth.secureCookies`      | When `true`, the session cookie is issued with the `Secure` flag and is only transmitted over HTTPS. Requires an HTTPS-terminating reverse proxy (e.g. nginx) in front of the NodePorts - the Helm chart serves plain HTTP only. Set to `false` for plain HTTP deployments; browsers will silently drop the cookie otherwise. | `false` | no                                |
+| `UI.allowedOrigins`          | Comma-separated list of origins allowed to call the UI backend (e.g. `http://localhost:30001`). If empty and `auth.enabled=true`, the backend defaults to `http://localhost:8080`. Set explicitly in production to the exact URL(s) a browser will use to reach the UI - otherwise login requests will be rejected by CORS.   | `""`    | recommended in production         |
 
-### Step 4 – Apply and verify
+### Step 4 - Apply and verify
 
 Upgrade the Helm release so the new settings take effect:
 
@@ -163,7 +163,7 @@ than `jwtExpiryHours` will require a fresh login.
 
 - Serve the UI over HTTPS (TLS 1.2+). Because the JWT cookie is `HttpOnly` and `Secure`, authenticated access over plain 
   HTTP is intentionally broken outside `localhost`.
-- Keep `UI.allowedOrigins` as tight as possible — ideally a single production URL. Wildcards are not supported when 
+- Keep `UI.allowedOrigins` as tight as possible - ideally a single production URL. Wildcards are not supported when 
   authentication is enabled.
 - Rotate the `jwt_secret` on staff changes or suspected compromise. Rotating the secret invalidates all outstanding 
   sessions immediately.

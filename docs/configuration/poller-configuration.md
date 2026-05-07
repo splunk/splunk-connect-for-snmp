@@ -38,7 +38,7 @@ poller:
 ///
 
 /// tab | docker compose
-The poller behaviour is configured via environment variables in `.env`. The inventory is configured in a separate `inventory.csv` file — see [Inventory configuration](inventory.md).
+The poller behaviour is configured via environment variables in `.env`. The inventory is configured in a separate `inventory.csv` file - see [Inventory configuration](inventory.md).
 ///
 
 ### Disable automatic polling of base profiles

@@ -185,7 +185,7 @@ traps:
 
 /// tab | docker compose
 In docker compose, the trap server is exposed directly on the host network. There is no load balancer or service
-abstraction layer — port mapping is handled by Docker and configured via the `TRAPS_PORT` variable in `.env`.
+abstraction layer - port mapping is handled by Docker and configured via the `TRAPS_PORT` variable in `.env`.
 ///
 
 ### Traps port

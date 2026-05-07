@@ -7,7 +7,7 @@
 | `INVENTORY_FILE_ABSOLUTE_PATH` | Absolute path to this file on the host |
 
 !!! info "Full reference"
-    For the complete field reference and advanced configuration options, see the [Inventory configuration](../configuration/inventory.md) page — open the **docker compose** tab.
+    For the complete field reference and advanced configuration options, see the [Inventory configuration](../configuration/inventory.md) page - open the **docker compose** tab.
 
 ## Example of the configuration
 
