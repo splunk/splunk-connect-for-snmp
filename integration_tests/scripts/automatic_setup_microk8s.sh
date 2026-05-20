@@ -54,8 +54,6 @@ deploy_poetry() {
   curl -sSL https://install.python-poetry.org | $PYTHON -
   export PATH="/home/ubuntu/.local/bin:$PATH"
   poetry install
-  poetry add --group dev splunk-sdk
-  poetry add --group dev pysnmplib
 }
 
 wait_for_pod_initialization() {
