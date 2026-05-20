@@ -346,5 +346,5 @@ deploy_poetry() {
   poetry env use "$PYTHON" || true
   poetry install
 
-  poetry add --group dev splunk-sdk splunklib pysnmplib || true
+  poetry add --group dev splunk-sdk pysnmplib || true
 }

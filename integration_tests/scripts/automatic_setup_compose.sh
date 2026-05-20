@@ -57,7 +57,6 @@ deploy_poetry() {
   export PATH="/home/ubuntu/.local/bin:$PATH"
   poetry install
   poetry add --group dev splunk-sdk
-  poetry add --group dev splunklib
   poetry add --group dev pysnmplib
 }
 
