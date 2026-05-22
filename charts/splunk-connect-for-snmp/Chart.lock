@@ -1,6 +1,6 @@
 dependencies:
 - name: mibserver
   repository: https://pysnmp.github.io/mibs/charts/
-  version: 1.16.0
-digest: sha256:845b34826a567d45aa33419f4f1755e712742d3adf810369f821732c084b1496
-generated: "2026-05-21T02:28:45.729413244Z"
+  version: 1.16.1
+digest: sha256:b7ae60f2c4ac36082d9067e52f65d5095efebe68773460a983d8709805c1e890
+generated: "2026-05-22T11:36:46.313489+02:00"
