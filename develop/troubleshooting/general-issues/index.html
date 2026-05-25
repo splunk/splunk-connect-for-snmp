@@ -2515,6 +2515,45 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#mongodb-8x-crash-on-linux-kernel-619-exit-139-sigsegv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MongoDB 8.x crash on Linux kernel 6.19+ (exit 139 / SIGSEGV)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MongoDB 8.x crash on Linux kernel 6.19+ (exit 139 / SIGSEGV)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-confirm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to confirm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#upgrading-sc4snmp-from-1122-to-1123" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2678,6 +2717,45 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#mongodb-8x-crash-on-linux-kernel-619-exit-139-sigsegv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MongoDB 8.x crash on Linux kernel 6.19+ (exit 139 / SIGSEGV)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MongoDB 8.x crash on Linux kernel 6.19+ (exit 139 / SIGSEGV)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-confirm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to confirm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#upgrading-sc4snmp-from-1122-to-1123" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2752,6 +2830,47 @@
   <h1>General issues</h1>
 
 <div><h2 id="general-issues">General issues<a class="headerlink" href="#general-issues" title="Permanent link">¶</a></h2>
+<h3 id="mongodb-8x-crash-on-linux-kernel-619-exit-139-sigsegv">MongoDB 8.x crash on Linux kernel 6.19+ (exit 139 / SIGSEGV)<a class="headerlink" href="#mongodb-8x-crash-on-linux-kernel-619-exit-139-sigsegv" title="Permanent link">¶</a></h3>
+<p>The <code>mongo:8.0.5+</code> and <code>mongo:8.2.x</code> images (the default since SC4SNMP <code>1.16.0</code>) bake a <code>GLIBC_TUNABLES=glibc.pthread.rseq=0</code> setting into the image. On host kernels &gt;= 6.19, which overhauled the RSEQ subsystem, this setting causes MongoDB’s <code>tcmalloc</code> allocator to crash. The <code>mongo</code> container logs <code>mongod startup complete</code>, runs for about 30 seconds, then exits with code <code>139</code> (SIGSEGV). <code>OOMKilled=false</code>, and the next start logs <code>Detected unclean shutdown - Lock file is not empty</code>.</p>
+<h4 id="how-to-confirm">How to confirm<a class="headerlink" href="#how-to-confirm" title="Permanent link">¶</a></h4>
+<p>Check the host kernel version:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">docker compose</label><label for="__tabbed_1_2">microk8s</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code>uname<span class="w"> </span>-r
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>nodes<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">'{range .items[*]}{.metadata.name}{"\t"}{.status.nodeInfo.kernelVersion}{"\n"}{end}'</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<p>Anything <code>&gt;= 6.19</code> is at risk. Also check container exit state:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>inspect<span class="w"> </span>mongo<span class="w"> </span>--format<span class="w"> </span><span class="s1">'status={{.State.Status}} exit={{.State.ExitCode}} oom={{.State.OOMKilled}}'</span>
+</code></pre></div>
+<p>The combination <code>exit=139 oom=false</code> together with <code>mongod startup complete</code> in the container logs ~30s before the exit is the diagnostic signature.</p>
+<h4 id="fix">Fix<a class="headerlink" href="#fix" title="Permanent link">¶</a></h4>
+<p>SC4SNMP from version <strong>1.17.0</strong> ships a default <code>GLIBC_TUNABLES=glibc.pthread.rseq=1</code> on the mongo container, which restores the upstream glibc default and prevents the crash. The setting is a safe no-op on kernels &lt; 6.19, so it is enabled unconditionally. You normally do not need to do anything.</p>
+<p>If you previously customized the mongo container and removed/overrode the env variable, restore it:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked id="__tabbed_2_1" name="__tabbed_2" type="radio"><input id="__tabbed_2_2" name="__tabbed_2" type="radio"><div class="tabbed-labels"><label for="__tabbed_2_1">docker compose</label><label for="__tabbed_2_2">microk8s</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>In <code>docker_compose/.env</code>, ensure:</p>
+<div class="highlight"><pre><span></span><code>MONGO_GLIBC_TUNABLES=glibc.pthread.rseq=1
+</code></pre></div>
+<p>The <code>mongo</code> service in <code>docker-compose.yaml</code> already references this variable.</p>
+</div>
+<div class="tabbed-block">
+<p>In <code>values.yaml</code>, ensure the entry is present (it is the default):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">extraEnv</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GLIBC_TUNABLES</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">"glibc.pthread.rseq=1"</span>
+</code></pre></div>
+</div>
+</div>
+</div>
 <h3 id="upgrading-sc4snmp-from-1122-to-1123">Upgrading SC4SNMP from 1.12.2 to 1.12.3<a class="headerlink" href="#upgrading-sc4snmp-from-1122-to-1123" title="Permanent link">¶</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Microk8s only</p>
@@ -2788,7 +2907,7 @@ data ingestion or proper metric indexing.</p>
 <p>To ensure seamless compatibility and avoid potential issues, SC4SNMP provides a configuration option to automatically convert 
 hyphens in metric names to underscores.</p>
 <p>You can enable this conversion depending on your deployment:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked id="__tabbed_3_1" name="__tabbed_3" type="radio"><input id="__tabbed_3_2" name="__tabbed_3" type="radio"><div class="tabbed-labels"><label for="__tabbed_3_1">microk8s</label><label for="__tabbed_3_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Set <code>splunkMetricNameHyphenToUnderscore</code> to <code>true</code> within the <code>poller</code> section of <code>values.yaml</code>:</p>

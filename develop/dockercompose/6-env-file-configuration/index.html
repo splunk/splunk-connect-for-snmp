@@ -3149,6 +3149,10 @@
 <td><code>MONGO_TAG</code></td>
 <td>MongoDB image tag to pull</td>
 </tr>
+<tr>
+<td><code>MONGO_GLIBC_TUNABLES</code></td>
+<td>Value passed as <code>GLIBC_TUNABLES</code> to the <code>mongo</code> container. Defaults to <code>glibc.pthread.rseq=1</code> to mitigate a MongoDB 8.x SIGSEGV observed on host kernels &gt;= 6.19 (e.g. Ubuntu 26.04). Safe no-op on older kernels. See <a href="../../troubleshooting/general-issues/#mongodb-8x-crash-on-linux-kernel-619-exit-139--sigsegv">MongoDB 8.x crash on Linux kernel 6.19+</a>.</td>
+</tr>
 </tbody>
 </table>
 <h3 id="splunk-instance">Splunk instance<a class="headerlink" href="#splunk-instance" title="Permanent link">¶</a></h3>
