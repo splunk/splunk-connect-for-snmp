@@ -622,6 +622,13 @@ mongodb:
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
+
+  # Extra environment variables for the mongod container.
+  # The default GLIBC_TUNABLES entry mitigates a MongoDB 8.x SIGSEGV (exit 139)
+  # observed on host kernels >= 6.19 (e.g. Ubuntu 26.04).
+  extraEnv:
+    - name: GLIBC_TUNABLES
+      value: "glibc.pthread.rseq=1"
 redis:
   # Mode selector: "standalone", "replication"
   architecture: standalone
