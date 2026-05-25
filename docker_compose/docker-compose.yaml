@@ -112,6 +112,8 @@ services:
     <<: [*dns_and_networks, *dependend_on_core_dns]
     image: ${MONGO_IMAGE}:${MONGO_TAG:-latest}
     container_name: mongo
+    environment:
+      GLIBC_TUNABLES: ${MONGO_GLIBC_TUNABLES:-glibc.pthread.rseq=1}
   inventory:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}

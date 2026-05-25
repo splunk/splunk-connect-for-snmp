@@ -70,6 +70,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `REDIS_TAG`       | Redis image tag to pull              |
 | `MONGO_IMAGE`     | Registry and name of MongoDB image   |
 | `MONGO_TAG`       | MongoDB image tag to pull            |
+| `MONGO_GLIBC_TUNABLES` | Value passed as `GLIBC_TUNABLES` to the `mongo` container. Defaults to `glibc.pthread.rseq=1` to mitigate a MongoDB 8.x SIGSEGV observed on host kernels >= 6.19 (e.g. Ubuntu 26.04). Safe no-op on older kernels. See [MongoDB 8.x crash on Linux kernel 6.19+](../troubleshooting/general-issues.md#mongodb-8x-crash-on-linux-kernel-619-exit-139--sigsegv). |
 
 ### Splunk instance
 

@@ -57,9 +57,10 @@ spec:
         - containerPort: 27017
           name: mongodb
 
-        {{- if .Values.mongodb.auth.enabled }}
+        {{- if or .Values.mongodb.auth.enabled .Values.mongodb.extraEnv }}
         env:
-         {{- if .Values.mongodb.auth.existingSecret }}
+          {{- if .Values.mongodb.auth.enabled }}
+          {{- if .Values.mongodb.auth.existingSecret }}
           - name: MONGO_INITDB_ROOT_USERNAME
             valueFrom:
               secretKeyRef:
@@ -81,7 +82,11 @@ spec:
               secretKeyRef:
                 name: {{ .Release.Name }}-mongodb-secret
                 key: root-password
-        {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- with .Values.mongodb.extraEnv }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
         {{- end }}
 
         volumeMounts:

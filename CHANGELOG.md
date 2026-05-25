@@ -7,6 +7,7 @@
 - add MAX_TASKS_PER_CHILD setting to celery workers
 
 ### Fixed
+- prevent MongoDB 8.x SIGSEGV on Linux kernel >= 6.19 by defaulting `GLIBC_TUNABLES=glibc.pthread.rseq=1` on the mongo container.
 
 [1.16.0]
 ### Changed
