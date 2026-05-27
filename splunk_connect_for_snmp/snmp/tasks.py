@@ -200,16 +200,12 @@ def _resolve_trap_varbind(self, name: str, value):
 
     loc = None
     try:
-        loc = _mib_view_get_node_location(
-            self.mib_view_controller, _oid_tuple(name)
-        )
+        loc = _mib_view_get_node_location(self.mib_view_controller, _oid_tuple(name))
         mod_name, sym_name, suffix = loc
     except (SmiError, NoSuchObjectError) as e:
         raise SmiError(f"no MIB location for {name}") from e
     except (TypeError, ValueError) as e:
-        raise SmiError(
-            f"invalid MIB location tuple for {name}: {loc!r}"
-        ) from e
+        raise SmiError(f"invalid MIB location tuple for {name}: {loc!r}") from e
 
     identity_args = [mod_name, sym_name]
     if suffix:
@@ -312,9 +308,7 @@ def _process_remaining_oids(
         self.load_mibs(remotemibs)
         self.already_loaded_mibs.update(remotemibs)
     if remaining_oids:
-        unresolved.extend(
-            _resolve_remaining_oids(self, remaining_oids, varbind_table)
-        )
+        unresolved.extend(_resolve_remaining_oids(self, remaining_oids, varbind_table))
     return unresolved
 
 
