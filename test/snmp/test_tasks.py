@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from pysnmp.smi.error import SmiError
+from pysnmp.smi.error import NoSuchObjectError, SmiError
 
 
 @patch("pymongo.MongoClient")
@@ -141,6 +141,7 @@ class TestTasks(TestCase):
         m_poller.builder = MagicMock()
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
+        trap.already_loaded_mibs = set()
         result = trap(work)
 
         self.assertEqual(
@@ -182,6 +183,7 @@ class TestTasks(TestCase):
         m_poller.builder = MagicMock()
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
+        trap.already_loaded_mibs = set()
         result = trap(work)
 
         self.assertEqual(
@@ -223,6 +225,9 @@ class TestTasks(TestCase):
         m_process_data.return_value = (False, [], {"test": "value1"})
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
+        m_poller.trap.mib_view_controller.get_node_location.side_effect = (
+            NoSuchObjectError()
+        )
         m_poller.trap.already_loaded_mibs = set()
         result = trap(work)
 
@@ -271,6 +276,9 @@ class TestTasks(TestCase):
         m_process_data.return_value = (False, [], {"test": "value1"})
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
+        m_poller.trap.mib_view_controller.get_node_location.side_effect = (
+            NoSuchObjectError()
+        )
         m_poller.trap.already_loaded_mibs = set()
         result = trap(work)
 
@@ -280,16 +288,140 @@ class TestTasks(TestCase):
         self.assertEqual([], process_calls[0][0][0])
 
         self.assertEqual({"SOME-MIB"}, calls[0][0][0])
-        self.assertEqual(
-            {
-                "address": "192.168.0.1",
-                "detectchange": False,
-                "result": {"test": "value1"},
-                "sourcetype": "sc4snmp:traps",
-                "time": 1640692955.365186,
-            },
-            result,
+        self.assertEqual("192.168.0.1", result["address"])
+        self.assertIn("sc4snmp::unresolved", result["result"])
+        self.assertIn(
+            "unresolved::asd",
+            result["result"]["sc4snmp::unresolved"]["fields"],
         )
+
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
+    @patch("time.time")
+    def test_trap_keeps_varbind_when_mib_unknown(
+        self,
+        m_time,
+        m_poller,
+        m_load_mib,
+        m_is_mib_known,
+        m_process_data,
+        m_resolved,
+        m_mongo_client,
+    ):
+        m_poller.return_value = None
+        from splunk_connect_for_snmp.snmp.tasks import trap
+
+        m_time.return_value = 1640692955.365186
+        m_resolved.side_effect = SmiError()
+        m_is_mib_known.return_value = (False, "")
+        numeric_oid = "1.3.6.1.4.1.99999.1.2.3"
+
+        work = {"data": [(numeric_oid, "value")], "host": "192.168.0.1"}
+        m_process_data.return_value = (
+            False,
+            [],
+            {"SNMPv2-MIB::tuple=int=0": {"metrics": {}, "fields": {}, "indexes": []}},
+        )
+        m_poller.trap = trap
+        m_poller.trap.mib_view_controller = MagicMock()
+        m_poller.trap.already_loaded_mibs = set()
+        result = trap(work)
+
+        unresolved = result["result"]["sc4snmp::unresolved"]["fields"]
+        self.assertIn(f"unresolved::{numeric_oid}", unresolved)
+        self.assertEqual(numeric_oid, unresolved[f"unresolved::{numeric_oid}"]["oid"])
+        m_load_mib.assert_not_called()
+
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
+    @patch("time.time")
+    def test_trap_retries_remaining_oids_when_mib_already_loaded(
+        self,
+        m_time,
+        m_poller,
+        m_load_mib,
+        m_is_mib_known,
+        m_process_data,
+        m_resolved,
+        m_mongo_client,
+    ):
+        m_poller.return_value = None
+        from splunk_connect_for_snmp.snmp.tasks import trap
+
+        m_time.return_value = 1640692955.365186
+        numeric_oid = "1.3.6.1.4.1.9.9.513.1.1.1.1.1.6.0"
+        m_resolved.side_effect = [SmiError, "RETRY_OK"]
+        m_is_mib_known.return_value = (True, "CISCO-LWAPP-AP-MIB")
+
+        work = {"data": [(numeric_oid, "17")], "host": "192.168.0.1"}
+        m_process_data.return_value = (False, [], {"test": "value1"})
+        m_poller.trap = trap
+        m_poller.trap.mib_view_controller = MagicMock()
+        m_poller.trap.mib_view_controller.get_node_location.side_effect = (
+            NoSuchObjectError()
+        )
+        m_poller.trap.already_loaded_mibs = {"CISCO-LWAPP-AP-MIB"}
+        trap(work)
+
+        self.assertEqual(2, m_resolved.call_count)
+        m_load_mib.assert_not_called()
+
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.is_mib_known")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
+    @patch("time.time")
+    def test_trap_preloads_mib_from_numeric_varbind_name(
+        self,
+        m_time,
+        m_poller,
+        m_load_mib,
+        m_is_mib_known,
+        m_process_data,
+        m_resolved,
+        m_mongo_client,
+    ):
+        m_poller.return_value = None
+        from splunk_connect_for_snmp.snmp.tasks import trap
+
+        m_time.return_value = 1640692955.365186
+        numeric_oid = "1.3.6.1.4.1.9.9.513.1.1.1.1.1.6.0"
+        m_resolved.return_value = "TEST1"
+        m_is_mib_known.return_value = (True, "CISCO-LWAPP-AP-MIB")
+
+        work = {"data": [(numeric_oid, "17")], "host": "192.168.0.1"}
+        m_process_data.return_value = (False, [], {"test": "value1"})
+        m_poller.trap = trap
+        m_poller.trap.mib_view_controller = MagicMock()
+        m_poller.trap.already_loaded_mibs = set()
+        trap(work)
+
+        m_load_mib.assert_called()
+        loaded = m_load_mib.call_args_list[0][0][0]
+        self.assertIn("CISCO-LWAPP-AP-MIB", loaded)
+
+    @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
+    def test_resolve_trap_varbind_uses_node_location(self, m_resolved, m_mongo_client):
+        from splunk_connect_for_snmp.snmp.tasks import _resolve_trap_varbind
+
+        m_resolved.side_effect = [SmiError, "RESOLVED"]
+        mock_self = MagicMock()
+        mock_self.mib_view_controller.get_node_location.return_value = (
+            "CISCO-LWAPP-AP-MIB",
+            "cLApUpTime",
+            (244, 116, 112, 116, 189, 144),
+        )
+        oid = "1.3.6.1.4.1.9.9.513.1.1.1.1.1.6.244.116.112.116.189.144"
+        result = _resolve_trap_varbind(mock_self, oid, "12345")
+        self.assertEqual("RESOLVED", result)
+        self.assertEqual(2, m_resolved.call_count)
 
     @patch("splunk_connect_for_snmp.snmp.tasks.RESOLVE_TRAP_ADDRESS", "true")
     @patch("splunk_connect_for_snmp.snmp.tasks.resolve_address")
@@ -319,6 +451,7 @@ class TestTasks(TestCase):
         m_poller.builder = MagicMock()
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
+        trap.already_loaded_mibs = set()
         result = trap(work)
 
         self.assertEqual(
