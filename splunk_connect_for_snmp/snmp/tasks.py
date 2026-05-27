@@ -17,7 +17,7 @@ import logging
 import re
 from contextlib import suppress
 
-from pysnmp.smi.error import SmiError
+from pysnmp.smi.error import NoSuchObjectError, SmiError
 
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
 
@@ -38,7 +38,7 @@ from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
 from splunk_connect_for_snmp.common.common import human_bool
 from splunk_connect_for_snmp.common.custom_cache import ttl_lru_cache
-from splunk_connect_for_snmp.snmp.manager import Poller, get_inventory
+from splunk_connect_for_snmp.snmp.manager import Poller, get_inventory, value_as_best
 
 logger = get_task_logger(__name__)
 
@@ -49,6 +49,8 @@ WALK_RETRY_MAX_INTERVAL = int(os.getenv("WALK_RETRY_MAX_INTERVAL", "180"))
 WALK_MAX_RETRIES = int(os.getenv("WALK_MAX_RETRIES", "5"))
 SPLUNK_SOURCETYPE_TRAPS = os.getenv("SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")
 OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9]\d*))*$")
+UNRESOLVED_TRAP_GROUP_KEY = "sc4snmp::unresolved"
+UNRESOLVED_FIELD_PREFIX = "unresolved::"
 RESOLVE_TRAP_ADDRESS = os.getenv("RESOLVE_TRAP_ADDRESS", "false")
 MAX_DNS_CACHE_SIZE_TRAPS = int(os.getenv("MAX_DNS_CACHE_SIZE_TRAPS", "100"))
 TTL_DNS_CACHE_TRAPS = int(os.getenv("TTL_DNS_CACHE_TRAPS", "1800"))
@@ -146,14 +148,123 @@ def resolve_address(address: str):
     return result
 
 
+def _oids_for_mib_lookup(varbind):
+    """Return numeric OID strings from a trap varbind name and/or value."""
+    name, value = varbind
+    for candidate in (name, value):
+        if OID_VALIDATOR.match(candidate):
+            yield candidate
+
+
+def _is_enterprise_oid(oid: str) -> bool:
+    """
+    True for private-enterprise OID branches (1.3.6.1.4.1.*).
+
+    Trap MIB preloading only walks mib_map for these OIDs. Standard traps
+    (1.3.6.1.2.1, 1.3.6.1.6.3, etc.) rely on DEFAULT_STANDARD_MIBS loaded at
+    Poller startup; numeric OIDs in varbind *values* under those trees are
+    still checked when they match OID_VALIDATOR.
+    """
+    return oid.startswith("1.3.6.1.4.1")
+
+
+def _unresolved_field_name(oid: str) -> str:
+    return f"{UNRESOLVED_FIELD_PREFIX}{oid}"
+
+
+def _oid_tuple(oid: str):
+    try:
+        return tuple(int(x) for x in oid.split("."))
+    except ValueError as e:
+        raise SmiError(f"invalid OID {oid!r}") from e
+
+
+def _mib_view_get_node_location(mib_view_controller, oid):
+    get_location = getattr(mib_view_controller, "get_node_location", None)
+    if get_location is not None:
+        return get_location(oid)
+    return mib_view_controller.getNodeLocation(oid)
+
+
+def _resolve_trap_varbind(self, name: str, value):
+    """Resolve a trap varbind; table instance OIDs need getNodeLocation decomposition."""
+    try:
+        return ObjectType(ObjectIdentity(name), value).resolveWithMib(
+            self.mib_view_controller
+        )
+    except SmiError:
+        pass
+
+    if not OID_VALIDATOR.match(name):
+        raise SmiError(f"non-numeric OID {name!r}")
+
+    loc = None
+    try:
+        loc = _mib_view_get_node_location(self.mib_view_controller, _oid_tuple(name))
+        mod_name, sym_name, suffix = loc
+    except (SmiError, NoSuchObjectError) as e:
+        raise SmiError(f"no MIB location for {name}") from e
+    except (TypeError, ValueError) as e:
+        raise SmiError(f"invalid MIB location tuple for {name}: {loc!r}") from e
+
+    identity_args = [mod_name, sym_name]
+    if suffix:
+        identity_args.extend(suffix)
+    return ObjectType(ObjectIdentity(*identity_args), value).resolveWithMib(
+        self.mib_view_controller
+    )
+
+
+def _append_unresolved_trap_varbinds(unresolved, metrics):
+    """Include varbinds that could not be translated so trap payloads are not dropped."""
+    if not unresolved:
+        return
+    if UNRESOLVED_TRAP_GROUP_KEY not in metrics:
+        metrics[UNRESOLVED_TRAP_GROUP_KEY] = {
+            "metrics": {},
+            "fields": {},
+            "indexes": [],
+        }
+    fields = metrics[UNRESOLVED_TRAP_GROUP_KEY]["fields"]
+    now = time.time()
+    for name, value in unresolved:
+        fields[_unresolved_field_name(name)] = {
+            "time": now,
+            "type": "f",
+            "value": value_as_best(value),
+            "oid": name,
+        }
+
+
+def _preload_trap_mibs(self, work):
+    """
+    Load MIB modules referenced by trap varbinds before OID translation.
+
+    Only enterprise numeric OIDs trigger mib_map lookups here; see _is_enterprise_oid.
+    """
+    mibs_to_load = set()
+    for varbind in work["data"]:
+        for oid in _oids_for_mib_lookup(varbind):
+            if not _is_enterprise_oid(oid):
+                continue
+            found, mib = self.is_mib_known(oid, oid, work["host"])
+            if found:
+                mibs_to_load.add(mib)
+    new_mibs = mibs_to_load - self.already_loaded_mibs
+    if new_mibs:
+        self.load_mibs(new_mibs)
+        self.already_loaded_mibs.update(new_mibs)
+
+
 @shared_task(bind=True, base=Poller)
 def trap(self, work):
     varbind_table, not_translated_oids, remaining_oids, remotemibs = [], [], [], set()
     metrics = {}
     work["host"] = format_ipv4_address(work["host"])
 
+    _preload_trap_mibs(self, work)
     _process_work_data(self, work, varbind_table, not_translated_oids)
-    _process_remaining_oids(
+    unresolved = _process_remaining_oids(
         self,
         not_translated_oids,
         remotemibs,
@@ -162,6 +273,7 @@ def trap(self, work):
         varbind_table,
     )
     _, _, result = self.process_snmp_data(varbind_table, metrics, work["host"])
+    _append_unresolved_trap_varbinds(unresolved, result)
     if human_bool(RESOLVE_TRAP_ADDRESS):
         work["host"] = resolve_address(work["host"])
     fields = work.get("fields", None)
@@ -172,55 +284,44 @@ def trap(self, work):
 def _process_work_data(self, work, varbind_table, not_translated_oids):
     """Process the data in work to populate varbinds."""
     for w in work["data"]:
-        if OID_VALIDATOR.match(w[1]):
-            _load_mib_if_needed(self, w[1], work["host"])
-
         try:
-            varbind_table.append(
-                ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
-                    self.mib_view_controller
-                )
-            )
+            varbind_table.append(_resolve_trap_varbind(self, w[0], w[1]))
         except SmiError:
             not_translated_oids.append((w[0], w[1]))
-
-
-def _load_mib_if_needed(self, oid, host):
-    """Load the MIB if it is known and not already loaded."""
-    with suppress(Exception):
-        found, mib = self.is_mib_known(oid, oid, host)
-        if found and mib not in self.already_loaded_mibs:
-            self.load_mibs([mib])
-            self.already_loaded_mibs.add(mib)
 
 
 def _process_remaining_oids(
     self, not_translated_oids, remotemibs, remaining_oids, host, varbind_table
 ):
     """Process OIDs that could not be translated and add them to other oids."""
+    unresolved = []
     for oid in not_translated_oids:
         found, mib = self.is_mib_known(oid[0], oid[0], host)
-        if found and mib not in self.already_loaded_mibs:
-            remotemibs.add(mib)
+        if found:
+            if mib not in self.already_loaded_mibs:
+                remotemibs.add(mib)
             remaining_oids.append((oid[0], oid[1]))
+        else:
+            unresolved.append((oid[0], oid[1]))
 
     if remotemibs:
         self.load_mibs(remotemibs)
         self.already_loaded_mibs.update(remotemibs)
-        _resolve_remaining_oids(self, remaining_oids, varbind_table)
+    if remaining_oids:
+        unresolved.extend(_resolve_remaining_oids(self, remaining_oids, varbind_table))
+    return unresolved
 
 
 def _resolve_remaining_oids(self, remaining_oids, varbind_table):
     """Resolve remaining OIDs."""
+    unresolved = []
     for w in remaining_oids:
         try:
-            varbind_table.append(
-                ObjectType(ObjectIdentity(w[0]), w[1]).resolveWithMib(
-                    self.mib_view_controller
-                )
-            )
+            varbind_table.append(_resolve_trap_varbind(self, w[0], w[1]))
         except SmiError:
             logger.warning(f"No translation found for {w[0]}")
+            unresolved.append(w)
+    return unresolved
 
 
 def _build_result(result, host, fields=None):
