@@ -502,6 +502,20 @@
                 }
               }
             },
+            "includeUnresolvedVarbinds": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "maxVarbindsToDecode": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            },
             "concurrency": {
               "type": "integer"
             },
@@ -792,6 +806,11 @@
         },
         "discoverEngineId": {
           "type": ["string", "boolean"]
+        },
+        "maxVarbindsToDecode": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
         },
         "communities": {
           "type": "object"

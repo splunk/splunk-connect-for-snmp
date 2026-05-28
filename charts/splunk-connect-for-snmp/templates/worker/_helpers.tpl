@@ -210,6 +210,10 @@ Common labels
   value: {{ .Values.worker.trap.prefetch | default "30" | quote }}
 - name: RESOLVE_TRAP_ADDRESS
   value: {{ .Values.worker.trap.resolveAddress.enabled | default "false" | quote }}
+- name: INCLUDE_UNRESOLVED_TRAP_VARBINDS
+  value: {{ .Values.worker.trap.includeUnresolvedVarbinds.enabled | default "false" | quote }}
+- name: MAX_TRAP_VARBINDS_TO_DECODE
+  value: {{ .Values.worker.trap.maxVarbindsToDecode | default 250 | quote }}
 - name: MAX_DNS_CACHE_SIZE_TRAPS
   value: {{ .Values.worker.trap.resolveAddress.cacheSize | default "500" | quote }}
 - name: TTL_DNS_CACHE_TRAPS

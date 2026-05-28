@@ -39,6 +39,9 @@ worker:
       enabled: false
       cacheSize: 500 
       cacheTTL: 1800 
+    includeUnresolvedVarbinds:
+      enabled: false
+    maxVarbindsToDecode: 250
     concurrency: 4
     prefetch: 30
     autoscaling:
@@ -119,6 +122,8 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 | worker.trap.resolveAddress.enabled                       | Enable reverse dns lookup of the IP address of the processed trap                                                               | false             |
 | worker.trap.resolveAddress.cacheSize                     | Maximum number of reverse dns lookup result records stored in cache                                                             | 500               |
 | worker.trap.resolveAddress.cacheTTL                      | Time to live of the cached reverse dns lookup record in seconds                                                                 | 1800              |
+| worker.trap.includeUnresolvedVarbinds.enabled            | Include trap varbinds that could not be MIB-translated under `sc4snmp::unresolved` in Splunk events                             | false             |
+| worker.trap.maxVarbindsToDecode                          | Maximum varbinds to decode per trap (1–500); excess varbinds are dropped                                                        | 250               |
 | worker.trap.autoscaling.enabled                          | Enabling autoscaling for trap worker pods                                                                                       | false             |
 | worker.trap.autoscaling.minReplicas                      | Minimum number of running trap worker pods when autoscaling is enabled                                                          | 2                 |
 | worker.trap.autoscaling.maxReplicas                      | Maximum number of running trap worker pods when autoscaling is enabled                                                          | 10                |
@@ -193,6 +198,8 @@ WORKER_SENDER_MEMORY_RESERVATIONS=250M
 WORKER_TRAP_CONCURRENCY=4
 PREFETCH_TRAP_COUNT=30
 RESOLVE_TRAP_ADDRESS=false
+INCLUDE_UNRESOLVED_TRAP_VARBINDS=false
+MAX_TRAP_VARBINDS_TO_DECODE=250
 MAX_DNS_CACHE_SIZE_TRAPS=500
 TTL_DNS_CACHE_TRAPS=1800
 WORKER_TRAP_REPLICAS=2
@@ -256,6 +263,8 @@ sudo docker compose up -d
 | `WORKER_TRAP_CONCURRENCY`         | Minimum number of threads in the trap container                                                  |
 | `PREFETCH_TRAP_COUNT`             | How many tasks are consumed from the queue at once in the trap container                         |
 | `RESOLVE_TRAP_ADDRESS`            | Use reverse dns lookup for trap IP address and send the hostname to Splunk                       |
+| `INCLUDE_UNRESOLVED_TRAP_VARBINDS` | Include trap varbinds that could not be MIB-translated under `sc4snmp::unresolved` in Splunk events |
+| `MAX_TRAP_VARBINDS_TO_DECODE`     | Maximum varbinds to decode per trap (clamped to 1–500, default 250); set on traps receiver and worker-trap; excess varbinds are dropped |
 | `MAX_DNS_CACHE_SIZE_TRAPS`        | If RESOLVE_TRAP_ADDRESS is set to true, this is the maximum number of records in cache           |
 | `TTL_DNS_CACHE_TRAPS`             | If RESOLVE_TRAP_ADDRESS is set to true, this is the time to live of the cached record in seconds |
 | `WORKER_TRAP_REPLICAS`            | Number of docker replicas of worker trap container                                               |

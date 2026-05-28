@@ -33,7 +33,7 @@ import csv
 import os
 import time
 from io import StringIO
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Set, Tuple, Union
 
 import pymongo
 from celery import Task
@@ -192,6 +192,28 @@ MTYPES_G = tuple(
 )
 MTYPES_R = tuple(["ObjectIdentifier", "ObjectIdentity"])
 MTYPES = tuple(["cc", "c", "g"])
+
+
+def format_trap_varbind_value(val) -> str:
+    """
+    Serialize a trap varbind ASN.1 value for the Celery worker queue.
+
+    ``prettyPrint()`` returns an empty string or hex for some OCTET STRING payloads
+    (including InetAddressIP). Convert 4-octet values to dotted IPv4 so MIB
+    resolution can cast them.
+    """
+    with suppress(AttributeError, TypeError):
+        octets = bytes(val.asOctets())
+        if len(octets) == 4:
+            return ".".join(str(b) for b in octets)
+    displayed = val.prettyPrint()
+    if displayed:
+        return displayed
+    with suppress(AttributeError, TypeError):
+        octets = bytes(val.asOctets())
+        if octets:
+            return "0x" + octets.hex()
+    return displayed
 
 
 def value_as_best(value) -> Union[str, float]:
@@ -475,7 +497,8 @@ class Poller(Task):
                         varbind_table, metrics, address, bulk_mapping
                     )
                     if tmp_mibs:
-                        self.load_mibs(tmp_mibs)
+                        loaded = self.load_mibs(tmp_mibs)
+                        self.already_loaded_mibs.update(loaded)
                         self.process_snmp_data(
                             varbind_table, metrics, address, bulk_mapping
                         )
@@ -484,14 +507,17 @@ class Poller(Task):
         for i in range(0, len(lst), n):
             yield lst[i : i + n]
 
-    def load_mibs(self, mibs: List[str]) -> None:
+    def load_mibs(self, mibs: List[str]) -> Set[str]:
         logger.info(f"loading mib modules {mibs}")
+        loaded = set()
         for mib in mibs:
             if mib:
                 try:
                     self.builder.loadModules(mib)
+                    loaded.add(mib)
                 except Exception as e:
                     logger.warning(f"Error loading mib for {mib}, {e}")
+        return loaded
 
     def is_mib_known(self, id: str, oid: str, target: str) -> Tuple[bool, str]:
         oid_list = tuple(oid.split("."))
@@ -526,7 +552,8 @@ class Poller(Task):
                 if mib_family not in self.already_loaded_mibs
             ]
             if mib_files_to_load:
-                self.load_mibs(mib_files_to_load)
+                loaded = self.load_mibs(mib_files_to_load)
+                self.already_loaded_mibs.update(loaded)
             (
                 varbinds_get,
                 get_mapping,
