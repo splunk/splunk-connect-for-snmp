@@ -461,9 +461,7 @@ def _process_trap_metrics(self, work_data, varbind_table, metrics, host):
     """
     result = {}
     for _ in range(_TRAP_MIB_RETRY_MAX):
-        retry, remotemibs, result = self.process_snmp_data(
-            varbind_table, metrics, host
-        )
+        retry, remotemibs, result = self.process_snmp_data(varbind_table, metrics, host)
         if not retry or not remotemibs:
             break
         if _load_new_trap_mibs(self, remotemibs):
@@ -522,7 +520,9 @@ def _retry_trap_varbinds_after_mib_load(
 
     if remotemibs and _load_new_trap_mibs(self, remotemibs):
         varbind_table, still_unresolved = _resolve_work_varbinds(self, work_data)
-        return varbind_table, _merge_unresolved_trap_varbinds(unresolved, still_unresolved)
+        return varbind_table, _merge_unresolved_trap_varbinds(
+            unresolved, still_unresolved
+        )
 
     for name, value in retry_pairs:
         try:

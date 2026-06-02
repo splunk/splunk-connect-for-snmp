@@ -89,7 +89,9 @@ def log_trap_varbind_limit_config(log: Optional[logging.Logger] = None) -> None:
     )
 
 
-def limit_trap_varbind_pairs(varbind_pairs, *, log: Optional[logging.Logger] = None, source=None):
+def limit_trap_varbind_pairs(
+    varbind_pairs, *, log: Optional[logging.Logger] = None, source=None
+):
     """Return at most MAX_TRAP_VARBINDS_TO_DECODE varbind (name, value) pairs."""
     active = log or logger
     limit = MAX_TRAP_VARBINDS_TO_DECODE

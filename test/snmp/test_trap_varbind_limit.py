@@ -29,14 +29,22 @@ from splunk_connect_for_snmp.snmp.trap_varbind_limit import (
 
 class TestParseMaxTrapVarbindsToDecode(TestCase):
     def test_default(self):
-        self.assertEqual(TRAP_VARBIND_DECODE_DEFAULT, parse_max_trap_varbinds_to_decode(""))
+        self.assertEqual(
+            TRAP_VARBIND_DECODE_DEFAULT, parse_max_trap_varbinds_to_decode("")
+        )
 
     def test_clamps_high(self):
-        self.assertEqual(TRAP_VARBIND_DECODE_MAX, parse_max_trap_varbinds_to_decode("9999"))
+        self.assertEqual(
+            TRAP_VARBIND_DECODE_MAX, parse_max_trap_varbinds_to_decode("9999")
+        )
 
     def test_clamps_low(self):
-        self.assertEqual(TRAP_VARBIND_DECODE_MIN, parse_max_trap_varbinds_to_decode("-5"))
-        self.assertEqual(TRAP_VARBIND_DECODE_MIN, parse_max_trap_varbinds_to_decode("0"))
+        self.assertEqual(
+            TRAP_VARBIND_DECODE_MIN, parse_max_trap_varbinds_to_decode("-5")
+        )
+        self.assertEqual(
+            TRAP_VARBIND_DECODE_MIN, parse_max_trap_varbinds_to_decode("0")
+        )
 
     def test_invalid_uses_default(self):
         self.assertEqual(
@@ -74,9 +82,7 @@ class TestLimitTrapVarbindPairs(TestCase):
         pairs = [("1", "a"), ("2", "b"), ("3", "c")]
         test_logger = logging.getLogger("test.trap_varbind_limit")
         with self.assertLogs(test_logger, level="INFO") as captured:
-            result = limit_trap_varbind_pairs(
-                pairs, log=test_logger, source="10.0.0.1"
-            )
+            result = limit_trap_varbind_pairs(pairs, log=test_logger, source="10.0.0.1")
         self.assertEqual(pairs[:2], result)
         self.assertTrue(
             any("decoding first 2" in message for message in captured.output)

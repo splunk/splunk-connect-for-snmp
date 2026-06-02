@@ -103,6 +103,8 @@ spec:
               value: "false"
             - name: DISCOVER_ENGINE_ID
               value: "false"
+            - name: MAX_TRAP_VARBINDS_TO_DECODE
+              value: "250"
             - name: SNMP_V3_SECURITY_ENGINE_ID
               value: 80003a8c04
             - name: IPv6_ENABLED

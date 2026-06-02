@@ -436,7 +436,9 @@ class TestTasks(TestCase):
         metrics_group = {
             "CISCO-LWAPP-AP-MIB::cLApUpTime": {
                 "metrics": {},
-                "fields": {"CISCO-LWAPP-AP-MIB.cLApUpTime": {"value": 17, "oid": numeric_oid}},
+                "fields": {
+                    "CISCO-LWAPP-AP-MIB.cLApUpTime": {"value": 17, "oid": numeric_oid}
+                },
                 "indexes": [],
             }
         }
@@ -500,7 +502,9 @@ class TestTasks(TestCase):
         metrics_group = {
             "CISCO-LWAPP-AP-MIB::cLApUpTime": {
                 "metrics": {},
-                "fields": {"CISCO-LWAPP-AP-MIB.cLApUpTime": {"value": 17, "oid": numeric_oid}},
+                "fields": {
+                    "CISCO-LWAPP-AP-MIB.cLApUpTime": {"value": 17, "oid": numeric_oid}
+                },
                 "indexes": [],
             }
         }
@@ -571,7 +575,9 @@ class TestTasks(TestCase):
         metrics_group = {
             "CISCO-LWAPP-AP-MIB::cLApUpTime": {
                 "metrics": {},
-                "fields": {"CISCO-LWAPP-AP-MIB.cLApUpTime": {"value": 17, "oid": numeric_oid}},
+                "fields": {
+                    "CISCO-LWAPP-AP-MIB.cLApUpTime": {"value": 17, "oid": numeric_oid}
+                },
                 "indexes": [],
             }
         }
