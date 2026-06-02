@@ -142,6 +142,8 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_TRAP_CONCURRENCY`         | Minimum number of threads in the trap container                                                  |
 | `PREFETCH_TRAP_COUNT`             | How many tasks are consumed from the queue at once in the trap container                         |
 | `RESOLVE_TRAP_ADDRESS`            | Use reverse dns lookup for trap IP address and send the hostname to Splunk                       |
+| `INCLUDE_UNRESOLVED_TRAP_VARBINDS` | Include trap varbinds that could not be MIB-translated under `sc4snmp::unresolved` in Splunk events |
+| `MAX_TRAP_VARBINDS_TO_DECODE`     | Maximum varbinds to decode per trap (clamped to 1–500, default 250); set on traps receiver and worker-trap |
 | `MAX_DNS_CACHE_SIZE_TRAPS`        | If RESOLVE_TRAP_ADDRESS is set to true, this is the maximum number of records in cache           |
 | `TTL_DNS_CACHE_TRAPS`             | If RESOLVE_TRAP_ADDRESS is set to true, this is the time to live of the cached record in seconds |
 | `WORKER_TRAP_REPLICAS`            | Number of docker replicas of worker trap container                                               |

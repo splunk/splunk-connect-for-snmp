@@ -82,6 +82,8 @@ spec:
               value: {{ .Values.traps.includeSecurityContextId | default "false" | quote }}
             - name: DISCOVER_ENGINE_ID
               value: {{ .Values.traps.discoverEngineId | default "false" | quote }}
+            - name: MAX_TRAP_VARBINDS_TO_DECODE
+              value: {{ .Values.traps.maxVarbindsToDecode | default .Values.worker.trap.maxVarbindsToDecode | default 250 | quote }}
             - name: SNMP_V3_SECURITY_ENGINE_ID
               value: {{ join "," .Values.traps.securityEngineId }}
             - name: IPv6_ENABLED
