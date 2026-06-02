@@ -172,6 +172,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `DISCOVER_ENGINE_ID`                 | Enable automatic engine ID discovery from incoming SNMPv3 trap datagrams. See [Engine ID Discovery](../configuration/traps.md#engine-id-discovery)                                                                              |
 | `TRAP_LOG_LEVEL`                     | Logging level of the traps container, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                                                                                         |
 | `TRAP_DISABLE_MONGO_DEBUG_LOGGING`   | Disable extensive MongoDB debug logging when `TRAP_LOG_LEVEL` is set to DEBUG                                                                                                                                                   |
+| `MAX_TRAP_VARBINDS_TO_DECODE`        | Maximum varbinds to decode per trap on the trap receiver (`0` = unlimited, default `0`); must match `worker-trap` when using Compose                                                                                            |
 
 ### Scheduler
 
