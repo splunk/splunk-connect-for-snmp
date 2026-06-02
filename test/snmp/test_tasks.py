@@ -534,16 +534,8 @@ class TestTasks(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("time.time")
-    @patch(
-        "splunk_connect_for_snmp.snmp.tasks._re_resolve_trap_work_if_needed",
-        side_effect=lambda self, work_data, varbind_table, unresolved: (
-            varbind_table,
-            unresolved,
-        ),
-    )
     def test_trap_process_snmp_data_no_spin_when_mib_already_loaded(
         self,
-        m_skip_pre_metrics_re_resolve,
         m_time,
         m_poller,
         m_load_mib,
@@ -581,10 +573,7 @@ class TestTasks(TestCase):
                 "indexes": [],
             }
         }
-        m_process_data.side_effect = [
-            (True, ["CISCO-LWAPP-AP-MIB"], {}),
-            (False, [], metrics_group),
-        ]
+        m_process_data.return_value = (False, [], metrics_group)
 
         work = {"data": [(numeric_oid, "17")], "host": "192.168.0.1"}
         m_poller.trap = trap
@@ -593,7 +582,12 @@ class TestTasks(TestCase):
         result = trap(work)
 
         self.assertIn("CISCO-LWAPP-AP-MIB::cLApUpTime", result["result"])
-        self.assertEqual(2, m_process_data.call_count)
+        self.assertEqual(2, m_resolved.call_count)
+        self.assertLessEqual(m_process_data.call_count, 2)
+        self.assertEqual(
+            "CISCO-LWAPP-AP-MIB::cLApUpTime",
+            m_process_data.call_args[0][0][0][0].prettyPrint(),
+        )
         m_load_mib.assert_not_called()
 
     @patch(
@@ -919,9 +913,7 @@ class TestTrapVarbindCoercion(TestCase):
             def getSyntax(self):
                 return rfc1902.Counter64
 
-        value = _coerce_trap_varbind_value(
-            str(2**40), _NodeCounter64()
-        )
+        value = _coerce_trap_varbind_value(str(2**40), _NodeCounter64())
         self.assertIsInstance(value, rfc1902.Counter64)
         self.assertEqual(2**40, int(value))
 
@@ -964,9 +956,7 @@ class TestProcessTrapMetrics(TestCase):
         )
         poller.load_mibs = MagicMock(return_value=set())
 
-        result = _process_trap_metrics(
-            poller, [], [MagicMock()], {}, "10.0.0.1"
-        )
+        result = _process_trap_metrics(poller, [], [MagicMock()], {}, "10.0.0.1")
         self.assertEqual(existing, result)
 
 

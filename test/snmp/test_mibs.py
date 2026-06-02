@@ -18,9 +18,7 @@ class TestMibProcessing(TestCase):
         self.assertEqual("10.1.1.1", format_trap_varbind_value(octets))
 
     def test_format_trap_varbind_value_ipv6_octets(self):
-        octets = rfc1902.OctetString(
-            socket.inet_pton(socket.AF_INET6, "2001:db8::1")
-        )
+        octets = rfc1902.OctetString(socket.inet_pton(socket.AF_INET6, "2001:db8::1"))
         self.assertEqual("2001:db8::1", format_trap_varbind_value(octets))
 
     def test_format_trap_varbind_value_keeps_pretty_print(self):
