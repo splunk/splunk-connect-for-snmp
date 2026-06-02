@@ -910,6 +910,65 @@ class TestTrapVarbindCoercion(TestCase):
         self.assertIsInstance(coerced_value, rfc1902.Integer)
         self.assertEqual(0, int(coerced_value))
 
+    def test_coerce_uses_counter64_for_counter64_syntax(self):
+        from pysnmp.proto import rfc1902
+
+        from splunk_connect_for_snmp.snmp.tasks import _coerce_trap_varbind_value
+
+        class _NodeCounter64:
+            def getSyntax(self):
+                return rfc1902.Counter64
+
+        value = _coerce_trap_varbind_value(
+            str(2**40), _NodeCounter64()
+        )
+        self.assertIsInstance(value, rfc1902.Counter64)
+        self.assertEqual(2**40, int(value))
+
+    def test_coerce_large_integer_string_without_syntax_uses_counter64(self):
+        from pysnmp.proto import rfc1902
+
+        from splunk_connect_for_snmp.snmp.tasks import _coerce_trap_varbind_value
+
+        value = _coerce_trap_varbind_value(str(2**40))
+        self.assertIsInstance(value, rfc1902.Counter64)
+
+
+class TestOidsForMibLookup(TestCase):
+    def test_skips_non_string_candidates(self):
+        from splunk_connect_for_snmp.snmp.tasks import _oids_for_mib_lookup
+
+        self.assertEqual([], list(_oids_for_mib_lookup((17, 17))))
+        self.assertEqual(
+            ["1.3.6.1.2.1.1.2.0"],
+            list(_oids_for_mib_lookup((17, "1.3.6.1.2.1.1.2.0"))),
+        )
+        self.assertEqual(
+            ["1.3.6.1.2.1.1.1.0", "1.3.6.1.2.1.1.2.0"],
+            list(_oids_for_mib_lookup(("1.3.6.1.2.1.1.1.0", "1.3.6.1.2.1.1.2.0"))),
+        )
+
+
+class TestProcessTrapMetrics(TestCase):
+    def test_preserves_result_when_mib_reload_fails(self):
+        from splunk_connect_for_snmp.snmp.manager import Poller
+        from splunk_connect_for_snmp.snmp.tasks import _process_trap_metrics
+
+        poller = Poller.__new__(Poller)
+        poller.already_loaded_mibs = set()
+        existing = {"group": {"fields": {"x": 1}}}
+        poller.process_snmp_data = MagicMock(
+            side_effect=[
+                (True, {"MISSING-MIB"}, existing),
+            ]
+        )
+        poller.load_mibs = MagicMock(return_value=set())
+
+        result = _process_trap_metrics(
+            poller, [], [MagicMock()], {}, "10.0.0.1"
+        )
+        self.assertEqual(existing, result)
+
 
 class TestHelpers(TestCase):
     @patch("splunk_connect_for_snmp.snmp.tasks.IPv6_ENABLED")

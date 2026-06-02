@@ -527,19 +527,8 @@
                 }
               }
             },
-            "includeUnresolvedVarbinds": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "enabled": {
-                  "type": "boolean"
-                }
-              }
-            },
-            "maxVarbindsToDecode": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 500
+            "enableIncludeUnresolvedVarbinds": {
+              "type": "boolean"
             },
             "concurrency": {
               "type": "integer"
@@ -842,8 +831,7 @@
         },
         "maxVarbindsToDecode": {
           "type": "integer",
-          "minimum": 1,
-          "maximum": 500
+          "minimum": 0
         },
         "communities": {
           "type": "object"

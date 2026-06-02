@@ -31,6 +31,7 @@ with suppress(ImportError, OSError):
 
 import csv
 import os
+import socket
 import time
 from io import StringIO
 from typing import Any, Dict, List, Set, Tuple, Union
@@ -198,22 +199,24 @@ def format_trap_varbind_value(val) -> str:
     """
     Serialize a trap varbind ASN.1 value for the Celery worker queue.
 
-    ``prettyPrint()`` returns an empty string or hex for some OCTET STRING payloads
-    (including InetAddressIP). Convert 4-octet values to dotted IPv4 so MIB
-    resolution can cast them.
+    ``prettyPrint()`` normally returns a string; empty string is common for opaque
+    OCTET STRINGs (including InetAddress). ``None`` is rare but handled defensively.
+    Four- and sixteen-octet payloads are formatted as IPv4/IPv6 when applicable.
     """
     with suppress(AttributeError, TypeError):
         octets = bytes(val.asOctets())
         if len(octets) == 4:
             return ".".join(str(b) for b in octets)
+        if len(octets) == 16:
+            return socket.inet_ntop(socket.AF_INET6, octets)
     displayed = val.prettyPrint()
-    if displayed:
+    if displayed is not None and displayed != "":
         return displayed
     with suppress(AttributeError, TypeError):
         octets = bytes(val.asOctets())
         if octets:
             return "0x" + octets.hex()
-    return displayed
+    return displayed if displayed is not None else ""
 
 
 def value_as_best(value) -> Union[str, float]:
