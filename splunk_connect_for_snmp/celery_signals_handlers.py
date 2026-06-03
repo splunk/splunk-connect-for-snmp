@@ -53,8 +53,19 @@ def liveness_indicator(**_):
 
 
 @signals.worker_ready.connect
-def readiness_indicator(**_):
+def readiness_indicator(sender=None, **_):
     READINESS_FILE.touch()
+    if sender is not None:
+        try:
+            queue_names = {q.name for q in sender.task_consumer.queues}
+        except AttributeError:
+            queue_names = set()
+        if "traps" in queue_names:
+            from splunk_connect_for_snmp.snmp.trap_varbind_limit import (
+                log_trap_varbind_limit_config,
+            )
+
+            log_trap_varbind_limit_config()
 
 
 @signals.worker_shutdown.connect

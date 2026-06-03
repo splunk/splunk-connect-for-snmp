@@ -20,7 +20,6 @@ from unittest.mock import patch
 
 from splunk_connect_for_snmp.snmp.trap_varbind_limit import (
     TRAP_VARBIND_DECODE_DEFAULT,
-    TRAP_VARBIND_DECODE_MAX,
     TRAP_VARBIND_DECODE_MIN,
     limit_trap_varbind_pairs,
     parse_max_trap_varbinds_to_decode,
@@ -28,22 +27,20 @@ from splunk_connect_for_snmp.snmp.trap_varbind_limit import (
 
 
 class TestParseMaxTrapVarbindsToDecode(TestCase):
-    def test_default(self):
+    def test_default_unlimited(self):
         self.assertEqual(
             TRAP_VARBIND_DECODE_DEFAULT, parse_max_trap_varbinds_to_decode("")
         )
 
-    def test_clamps_high(self):
-        self.assertEqual(
-            TRAP_VARBIND_DECODE_MAX, parse_max_trap_varbinds_to_decode("9999")
-        )
+    def test_zero_means_unlimited(self):
+        self.assertEqual(0, parse_max_trap_varbinds_to_decode("0"))
 
-    def test_clamps_low(self):
+    def test_positive_limit(self):
+        self.assertEqual(100, parse_max_trap_varbinds_to_decode("100"))
+
+    def test_clamps_negative_to_minimum(self):
         self.assertEqual(
             TRAP_VARBIND_DECODE_MIN, parse_max_trap_varbinds_to_decode("-5")
-        )
-        self.assertEqual(
-            TRAP_VARBIND_DECODE_MIN, parse_max_trap_varbinds_to_decode("0")
         )
 
     def test_invalid_uses_default(self):
@@ -60,6 +57,14 @@ class TestParseMaxTrapVarbindsToDecode(TestCase):
 class TestLimitTrapVarbindPairs(TestCase):
     @patch(
         "splunk_connect_for_snmp.snmp.trap_varbind_limit.MAX_TRAP_VARBINDS_TO_DECODE",
+        0,
+    )
+    def test_unlimited_returns_all_pairs(self):
+        pairs = [("1", "a"), ("2", "b"), ("3", "c"), ("4", "d")]
+        self.assertEqual(pairs, limit_trap_varbind_pairs(pairs))
+
+    @patch(
+        "splunk_connect_for_snmp.snmp.trap_varbind_limit.MAX_TRAP_VARBINDS_TO_DECODE",
         3,
     )
     def test_limits_pairs(self):
@@ -70,7 +75,7 @@ class TestLimitTrapVarbindPairs(TestCase):
         "splunk_connect_for_snmp.snmp.trap_varbind_limit.MAX_TRAP_VARBINDS_TO_DECODE",
         1,
     )
-    def test_minimum_one_varbind(self):
+    def test_minimum_one_varbind_when_limited(self):
         pairs = [("1", "a"), ("2", "b")]
         self.assertEqual([("1", "a")], limit_trap_varbind_pairs(pairs))
 

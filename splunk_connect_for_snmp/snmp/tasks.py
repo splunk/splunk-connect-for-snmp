@@ -47,10 +47,7 @@ from splunk_connect_for_snmp.snmp.manager import (
     is_mib_resolved,
     value_as_best,
 )
-from splunk_connect_for_snmp.snmp.trap_varbind_limit import (
-    limit_trap_varbind_pairs,
-    log_trap_varbind_limit_config,
-)
+from splunk_connect_for_snmp.snmp.trap_varbind_limit import limit_trap_varbind_pairs
 
 logger = get_task_logger(__name__)
 
@@ -72,11 +69,27 @@ _INTEGER_SYNTAX_NAMES = frozenset(
         "Counter32",
         "Counter64",
         "Gauge32",
+        "Gauge64",
         "Unsigned32",
+        "Unsigned64",
         "TimeTicks",
         "ZeroBasedCounter64",
         "CounterBasedGauge64",
     }
+)
+_SIGNED32_MIN = -(2**31)
+_SIGNED32_MAX = 2**31 - 1
+_COUNTER64_SYNTAX_NAMES = frozenset(
+    {
+        "Counter64",
+        "ZeroBasedCounter64",
+        "CounterBasedGauge64",
+        "Unsigned64",
+        "Gauge64",
+    }
+)
+_UNSIGNED32_SYNTAX_NAMES = frozenset(
+    {"Counter32", "Gauge32", "Unsigned32", "TimeTicks"}
 )
 UNRESOLVED_TRAP_GROUP_KEY = "sc4snmp::unresolved"
 UNRESOLVED_FIELD_PREFIX = "unresolved::"
@@ -185,6 +198,8 @@ def _oids_for_mib_lookup(varbind):
     """Return numeric OID strings from a trap varbind name and/or value."""
     name, value = varbind
     for candidate in (name, value):
+        if not isinstance(candidate, str):
+            continue
         if OID_VALIDATOR.match(candidate):
             yield candidate
 
@@ -238,6 +253,24 @@ def _mib_syntax_class(mib_node):
         return None
 
 
+def _asn1_from_numeric_syntax(syntax_name: str, numeric: int):
+    """Map a numeric trap value to the ASN.1 type implied by MIB syntax."""
+    if syntax_name in _COUNTER64_SYNTAX_NAMES:
+        return snmp_rfc1902.Counter64(numeric)
+    if syntax_name in _UNSIGNED32_SYNTAX_NAMES:
+        return snmp_rfc1902.Unsigned32(numeric)
+    if syntax_name in ("Integer", "Integer32"):
+        if _SIGNED32_MIN <= numeric <= _SIGNED32_MAX:
+            return snmp_rfc1902.Integer(numeric)
+        logger.debug(
+            "Value %d out of Integer32 range for syntax %s; using Counter64",
+            numeric,
+            syntax_name,
+        )
+        return snmp_rfc1902.Counter64(numeric)
+    return snmp_rfc1902.Integer(numeric)
+
+
 def _coerce_trap_varbind_value(value, mib_node=None):
     """
     Build an SNMP value ObjectType.resolveWithMib() accepts.
@@ -251,23 +284,31 @@ def _coerce_trap_varbind_value(value, mib_node=None):
     syntax = _mib_syntax_class(mib_node)
     if syntax is not None:
         try:
-            return syntax.clone(value)
+            cloned = syntax.clone(value)
+            if isinstance(cloned, AbstractSimpleAsn1Item):
+                return cloned
         except Exception as exc:
             logger.debug("MIB syntax clone failed for %s: %s", mib_node, exc)
-    if isinstance(value, bool):
-        return snmp_rfc1902.Integer(int(value))
+    syntax_name = getattr(syntax, "__name__", "") if syntax is not None else ""
     if isinstance(value, (int, float)):
-        return snmp_rfc1902.Integer(int(value))
+        numeric = int(value)
+        if syntax_name in _INTEGER_SYNTAX_NAMES:
+            return _asn1_from_numeric_syntax(syntax_name, numeric)
+        if _SIGNED32_MIN <= numeric <= _SIGNED32_MAX:
+            return snmp_rfc1902.Integer(numeric)
+        return snmp_rfc1902.Counter64(numeric)
     if isinstance(value, str):
         if value == "":
             return value
-        syntax_name = getattr(syntax, "__name__", "") if syntax is not None else ""
         if syntax_name in _STRING_SYNTAX_NAMES:
             return value
         if syntax_name in _INTEGER_SYNTAX_NAMES and _INTEGER_STRING.match(value):
-            return snmp_rfc1902.Integer(int(value))
+            return _asn1_from_numeric_syntax(syntax_name, int(value))
         if syntax is None and _INTEGER_STRING.match(value):
-            return snmp_rfc1902.Integer(int(value))
+            numeric = int(value)
+            if _SIGNED32_MIN <= numeric <= _SIGNED32_MAX:
+                return snmp_rfc1902.Integer(numeric)
+            return snmp_rfc1902.Counter64(numeric)
         return value
     return value
 
@@ -464,13 +505,14 @@ def _process_trap_metrics(self, work_data, varbind_table, metrics, host):
         retry, remotemibs, result = self.process_snmp_data(varbind_table, metrics, host)
         if not retry or not remotemibs:
             break
-        if _load_new_trap_mibs(self, remotemibs):
-            varbind_table, _ = _resolve_work_varbinds(self, work_data)
-        else:
-            # MIB names are known and already loaded; re-resolve once and re-process.
-            varbind_table, _ = _resolve_work_varbinds(self, work_data)
-            _, _, result = self.process_snmp_data(varbind_table, metrics, host)
+        if not _load_new_trap_mibs(self, remotemibs):
+            logger.warning(
+                "Trap processing requested MIBs %s but none were loaded for %s",
+                remotemibs,
+                host,
+            )
             break
+        varbind_table, _ = _resolve_work_varbinds(self, work_data)
     if not result and varbind_table:
         logger.warning(
             "Trap varbinds resolved but produced no metrics for %s (%d varbinds)",
@@ -535,7 +577,6 @@ def _retry_trap_varbinds_after_mib_load(
 
 @shared_task(bind=True, base=Poller)
 def trap(self, work):
-    log_trap_varbind_limit_config(logger)
     metrics = {}
     work["host"] = format_ipv4_address(work["host"])
     work["data"] = limit_trap_varbind_pairs(

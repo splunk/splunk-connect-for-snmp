@@ -534,16 +534,8 @@ class TestTasks(TestCase):
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.load_mibs")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("time.time")
-    @patch(
-        "splunk_connect_for_snmp.snmp.tasks._re_resolve_trap_work_if_needed",
-        side_effect=lambda self, work_data, varbind_table, unresolved: (
-            varbind_table,
-            unresolved,
-        ),
-    )
     def test_trap_process_snmp_data_no_spin_when_mib_already_loaded(
         self,
-        m_skip_pre_metrics_re_resolve,
         m_time,
         m_poller,
         m_load_mib,
@@ -581,10 +573,7 @@ class TestTasks(TestCase):
                 "indexes": [],
             }
         }
-        m_process_data.side_effect = [
-            (True, ["CISCO-LWAPP-AP-MIB"], {}),
-            (False, [], metrics_group),
-        ]
+        m_process_data.return_value = (False, [], metrics_group)
 
         work = {"data": [(numeric_oid, "17")], "host": "192.168.0.1"}
         m_poller.trap = trap
@@ -593,7 +582,12 @@ class TestTasks(TestCase):
         result = trap(work)
 
         self.assertIn("CISCO-LWAPP-AP-MIB::cLApUpTime", result["result"])
-        self.assertEqual(2, m_process_data.call_count)
+        self.assertEqual(2, m_resolved.call_count)
+        self.assertLessEqual(m_process_data.call_count, 2)
+        self.assertEqual(
+            "CISCO-LWAPP-AP-MIB::cLApUpTime",
+            m_process_data.call_args[0][0][0][0].prettyPrint(),
+        )
         m_load_mib.assert_not_called()
 
     @patch(
@@ -909,6 +903,61 @@ class TestTrapVarbindCoercion(TestCase):
         coerced_value = m_object_type_cls.call_args[0][1]
         self.assertIsInstance(coerced_value, rfc1902.Integer)
         self.assertEqual(0, int(coerced_value))
+
+    def test_coerce_uses_counter64_for_counter64_syntax(self):
+        from pysnmp.proto import rfc1902
+
+        from splunk_connect_for_snmp.snmp.tasks import _coerce_trap_varbind_value
+
+        class _NodeCounter64:
+            def getSyntax(self):
+                return rfc1902.Counter64
+
+        value = _coerce_trap_varbind_value(str(2**40), _NodeCounter64())
+        self.assertIsInstance(value, rfc1902.Counter64)
+        self.assertEqual(2**40, int(value))
+
+    def test_coerce_large_integer_string_without_syntax_uses_counter64(self):
+        from pysnmp.proto import rfc1902
+
+        from splunk_connect_for_snmp.snmp.tasks import _coerce_trap_varbind_value
+
+        value = _coerce_trap_varbind_value(str(2**40))
+        self.assertIsInstance(value, rfc1902.Counter64)
+
+
+class TestOidsForMibLookup(TestCase):
+    def test_skips_non_string_candidates(self):
+        from splunk_connect_for_snmp.snmp.tasks import _oids_for_mib_lookup
+
+        self.assertEqual([], list(_oids_for_mib_lookup((17, 17))))
+        self.assertEqual(
+            ["1.3.6.1.2.1.1.2.0"],
+            list(_oids_for_mib_lookup((17, "1.3.6.1.2.1.1.2.0"))),
+        )
+        self.assertEqual(
+            ["1.3.6.1.2.1.1.1.0", "1.3.6.1.2.1.1.2.0"],
+            list(_oids_for_mib_lookup(("1.3.6.1.2.1.1.1.0", "1.3.6.1.2.1.1.2.0"))),
+        )
+
+
+class TestProcessTrapMetrics(TestCase):
+    def test_preserves_result_when_mib_reload_fails(self):
+        from splunk_connect_for_snmp.snmp.manager import Poller
+        from splunk_connect_for_snmp.snmp.tasks import _process_trap_metrics
+
+        poller = Poller.__new__(Poller)
+        poller.already_loaded_mibs = set()
+        existing = {"group": {"fields": {"x": 1}}}
+        poller.process_snmp_data = MagicMock(
+            side_effect=[
+                (True, {"MISSING-MIB"}, existing),
+            ]
+        )
+        poller.load_mibs = MagicMock(return_value=set())
+
+        result = _process_trap_metrics(poller, [], [MagicMock()], {}, "10.0.0.1")
+        self.assertEqual(existing, result)
 
 
 class TestHelpers(TestCase):

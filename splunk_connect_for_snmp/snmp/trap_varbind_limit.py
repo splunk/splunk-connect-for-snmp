@@ -19,9 +19,8 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-TRAP_VARBIND_DECODE_MIN = 1
-TRAP_VARBIND_DECODE_MAX = 500
-TRAP_VARBIND_DECODE_DEFAULT = 250
+TRAP_VARBIND_DECODE_MIN = 0
+TRAP_VARBIND_DECODE_DEFAULT = 0
 _ENV_MAX_TRAP_VARBINDS_TO_DECODE = "MAX_TRAP_VARBINDS_TO_DECODE"
 
 
@@ -29,22 +28,19 @@ def parse_max_trap_varbinds_to_decode(
     raw: str | None = None,
     *,
     minimum: int = TRAP_VARBIND_DECODE_MIN,
-    maximum: int = TRAP_VARBIND_DECODE_MAX,
     default: int = TRAP_VARBIND_DECODE_DEFAULT,
 ) -> int:
-    """Parse and clamp MAX_TRAP_VARBINDS_TO_DECODE (invalid values use default)."""
+    """Parse MAX_TRAP_VARBINDS_TO_DECODE; 0 means unlimited (decode all varbinds)."""
     if raw is None:
         raw = os.getenv(_ENV_MAX_TRAP_VARBINDS_TO_DECODE, str(default))
     try:
         value = int(str(raw).strip())
     except (TypeError, ValueError):
         logger.warning(
-            "Invalid %s=%r; using default %d (allowed range %d-%d)",
+            "Invalid %s=%r; using default %d (0=unlimited)",
             _ENV_MAX_TRAP_VARBINDS_TO_DECODE,
             raw,
             default,
-            minimum,
-            maximum,
         )
         value = default
     if value < minimum:
@@ -56,15 +52,6 @@ def parse_max_trap_varbinds_to_decode(
             minimum,
         )
         return minimum
-    if value > maximum:
-        logger.warning(
-            "%s=%d exceeds maximum %d; using %d",
-            _ENV_MAX_TRAP_VARBINDS_TO_DECODE,
-            value,
-            maximum,
-            maximum,
-        )
-        return maximum
     return value
 
 
@@ -80,23 +67,28 @@ def log_trap_varbind_limit_config(log: Optional[logging.Logger] = None) -> None:
         return
     _limit_config_logged = True
     active = log or logger
-    active.info(
-        "Trap varbind decode limit: %s=%d (allowed range %d-%d)",
-        _ENV_MAX_TRAP_VARBINDS_TO_DECODE,
-        MAX_TRAP_VARBINDS_TO_DECODE,
-        TRAP_VARBIND_DECODE_MIN,
-        TRAP_VARBIND_DECODE_MAX,
-    )
+    limit = MAX_TRAP_VARBINDS_TO_DECODE
+    if limit == 0:
+        active.info(
+            "Trap varbind decode limit: %s=0 (unlimited)",
+            _ENV_MAX_TRAP_VARBINDS_TO_DECODE,
+        )
+    else:
+        active.info(
+            "Trap varbind decode limit: %s=%d",
+            _ENV_MAX_TRAP_VARBINDS_TO_DECODE,
+            limit,
+        )
 
 
 def limit_trap_varbind_pairs(
     varbind_pairs, *, log: Optional[logging.Logger] = None, source=None
 ):
-    """Return at most MAX_TRAP_VARBINDS_TO_DECODE varbind (name, value) pairs."""
+    """Return varbind pairs, truncating when MAX_TRAP_VARBINDS_TO_DECODE > 0."""
     active = log or logger
     limit = MAX_TRAP_VARBINDS_TO_DECODE
     pairs = list(varbind_pairs)
-    if len(pairs) <= limit:
+    if limit == 0 or len(pairs) <= limit:
         return pairs
     dropped = len(pairs) - limit
     origin = source if source is not None else "unknown"
