@@ -1,3 +1,4 @@
+from types import SimpleNamespace
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
@@ -154,6 +155,7 @@ class TestTasks(TestCase):
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
         trap.already_loaded_mibs = set()
+        trap.already_attempted_mibs = set()
         result = trap(work)
 
         self.assertEqual(1, m_resolved.call_count)
@@ -197,6 +199,7 @@ class TestTasks(TestCase):
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
         trap.already_loaded_mibs = set()
+        trap.already_attempted_mibs = set()
         result = trap(work)
 
         self.assertEqual(
@@ -243,6 +246,7 @@ class TestTasks(TestCase):
             NoSuchObjectError()
         )
         trap.already_loaded_mibs = set()
+        trap.already_attempted_mibs = set()
         result = trap(work)
 
         calls = m_load_mib.call_args_list
@@ -299,6 +303,7 @@ class TestTasks(TestCase):
             NoSuchObjectError()
         )
         trap.already_loaded_mibs = set()
+        trap.already_attempted_mibs = set()
         result = trap(work)
 
         calls = m_load_mib.call_args_list
@@ -352,6 +357,7 @@ class TestTasks(TestCase):
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
         trap.already_loaded_mibs = set()
+        trap.already_attempted_mibs = set()
         result = trap(work)
 
         unresolved = result["result"]["sc4snmp::unresolved"]["fields"]
@@ -396,6 +402,7 @@ class TestTasks(TestCase):
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
         trap.already_loaded_mibs = set()
+        trap.already_attempted_mibs = set()
         result = trap(work)
 
         self.assertNotIn("sc4snmp::unresolved", result["result"])
@@ -450,6 +457,7 @@ class TestTasks(TestCase):
         work = {"data": [(numeric_oid, "17")], "host": "192.168.0.1"}
         m_poller.trap = trap
         trap.already_loaded_mibs = set()
+        trap.already_attempted_mibs = set()
         m_poller.trap.mib_view_controller = MagicMock()
         result = trap(work)
 
@@ -627,6 +635,7 @@ class TestTasks(TestCase):
         m_process_data.return_value = (False, [], {})
         m_poller.trap = trap
         trap.already_loaded_mibs = set()
+        trap.already_attempted_mibs = set()
         m_poller.trap.mib_view_controller = MagicMock()
         m_poller.trap.mib_view_controller.get_node_location.side_effect = (
             NoSuchObjectError()
@@ -667,14 +676,18 @@ class TestTasks(TestCase):
         m_process_data.return_value = (False, [], {"test": "value1"})
         m_poller.trap = trap
         trap.already_loaded_mibs = set()
+        trap.already_attempted_mibs = set()
         m_poller.trap.mib_view_controller = MagicMock()
         m_poller.trap.mib_view_controller.get_node_location.side_effect = (
             NoSuchObjectError()
         )
         trap(work)
 
-        self.assertGreaterEqual(m_load_mib.call_count, 2)
+        # A MIB whose load returns empty is attempted exactly once and not
+        # retried on the same trap (avoids repeated load attempts and log spam).
+        self.assertEqual(1, m_load_mib.call_count)
         self.assertNotIn("CISCO-LWAPP-AP-MIB", trap.already_loaded_mibs)
+        self.assertIn("CISCO-LWAPP-AP-MIB", trap.already_attempted_mibs)
 
     @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")
@@ -743,6 +756,7 @@ class TestTasks(TestCase):
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
         trap.already_loaded_mibs = set()
+        trap.already_attempted_mibs = set()
         trap(work)
 
         m_load_mib.assert_called()
@@ -795,6 +809,7 @@ class TestTasks(TestCase):
         m_poller.trap = trap
         m_poller.trap.mib_view_controller = MagicMock()
         trap.already_loaded_mibs = set()
+        trap.already_attempted_mibs = set()
         result = trap(work)
 
         self.assertEqual(
@@ -933,9 +948,7 @@ class TestTrapVarbindCoercion(TestCase):
         from splunk_connect_for_snmp.snmp.tasks import _coerce_trap_varbind_value
 
         class IfOperStatus(Integer32):
-            namedValues = namedval.NamedValues(
-                ("up", 1), ("down", 2), ("testing", 3)
-            )
+            namedValues = namedval.NamedValues(("up", 1), ("down", 2), ("testing", 3))
             subtypeSpec = Integer32.subtypeSpec + constraint.SingleValueConstraint(
                 1, 2, 3
             )
@@ -992,9 +1005,7 @@ class TestTrapVarbindCoercion(TestCase):
 
         class TruthValue(Integer32):
             namedValues = namedval.NamedValues(("true", 1), ("false", 2))
-            subtypeSpec = Integer32.subtypeSpec + constraint.SingleValueConstraint(
-                1, 2
-            )
+            subtypeSpec = Integer32.subtypeSpec + constraint.SingleValueConstraint(1, 2)
 
         class _Node:
             def getSyntax(self):
@@ -1004,6 +1015,63 @@ class TestTrapVarbindCoercion(TestCase):
         value = _coerce_trap_varbind_value("7", _Node())
         self.assertIsInstance(value, rfc1902.Integer)
         self.assertEqual(7, int(value))
+
+    def test_coerce_large_negative_does_not_crash(self):
+        # Below Integer32 range and not representable as unsigned Counter64;
+        # must degrade to text instead of raising a pyasn1 constraint error.
+        from splunk_connect_for_snmp.snmp.tasks import _coerce_trap_varbind_value
+
+        value = _coerce_trap_varbind_value(str(-(2**40)))
+        self.assertEqual(str(-(2**40)), value)
+
+    def test_coerce_above_unsigned64_does_not_crash(self):
+        from splunk_connect_for_snmp.snmp.tasks import _coerce_trap_varbind_value
+
+        value = _coerce_trap_varbind_value(str(2**70))
+        self.assertEqual(str(2**70), value)
+
+
+class TestMergeUnresolvedTrapVarbinds(TestCase):
+    def test_drops_only_identical_pairs(self):
+        from splunk_connect_for_snmp.snmp.tasks import _merge_unresolved_trap_varbinds
+
+        merged = _merge_unresolved_trap_varbinds(
+            [("1.3.6.1.2.1.1.3.0", "1")],
+            [("1.3.6.1.2.1.1.3.0", "1"), ("1.3.6.1.2.1.1.3.0", "2")],
+        )
+        # Identical pair deduped; same OID with a different value is preserved.
+        self.assertEqual(
+            [("1.3.6.1.2.1.1.3.0", "1"), ("1.3.6.1.2.1.1.3.0", "2")], merged
+        )
+
+
+class TestLoadNewTrapMibs(TestCase):
+    def test_failed_mib_is_not_reattempted(self):
+        from splunk_connect_for_snmp.snmp.tasks import _load_new_trap_mibs
+
+        self_obj = SimpleNamespace(
+            already_loaded_mibs=set(),
+            already_attempted_mibs=set(),
+            load_mibs=MagicMock(return_value=set()),  # load fails (nothing loaded)
+        )
+
+        self.assertFalse(_load_new_trap_mibs(self_obj, ["MISSING-MIB"]))
+        self.assertFalse(_load_new_trap_mibs(self_obj, ["MISSING-MIB"]))
+        # Only attempted once despite two requests.
+        self_obj.load_mibs.assert_called_once()
+        self.assertIn("MISSING-MIB", self_obj.already_attempted_mibs)
+
+    def test_successful_mib_tracked_as_loaded(self):
+        from splunk_connect_for_snmp.snmp.tasks import _load_new_trap_mibs
+
+        self_obj = SimpleNamespace(
+            already_loaded_mibs=set(),
+            already_attempted_mibs=set(),
+            load_mibs=MagicMock(return_value={"GOOD-MIB"}),
+        )
+
+        self.assertTrue(_load_new_trap_mibs(self_obj, ["GOOD-MIB"]))
+        self.assertIn("GOOD-MIB", self_obj.already_loaded_mibs)
 
 
 class TestOidsForMibLookup(TestCase):
@@ -1028,6 +1096,7 @@ class TestProcessTrapMetrics(TestCase):
 
         poller = Poller.__new__(Poller)
         poller.already_loaded_mibs = set()
+        poller.already_attempted_mibs = set()
         existing = {"group": {"fields": {"x": 1}}}
         poller.process_snmp_data = MagicMock(
             side_effect=[

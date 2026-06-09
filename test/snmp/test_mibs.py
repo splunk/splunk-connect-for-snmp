@@ -24,6 +24,23 @@ class TestMibProcessing(TestCase):
     def test_format_trap_varbind_value_keeps_pretty_print(self):
         self.assertEqual("3", format_trap_varbind_value(rfc1902.Integer(3)))
 
+    def test_format_trap_varbind_value_genuine_ipaddress(self):
+        self.assertEqual(
+            "10.1.1.1", format_trap_varbind_value(rfc1902.IpAddress("10.1.1.1"))
+        )
+
+    def test_format_trap_varbind_value_printable_4char_kept_as_text(self):
+        # Four printable bytes look like text, not an address; must not become an IP.
+        self.assertEqual("TEST", format_trap_varbind_value(rfc1902.OctetString("TEST")))
+
+    def test_format_trap_varbind_value_printable_16char_kept_as_text(self):
+        text = "abcdefghijklmnop"  # 16 printable bytes
+        self.assertEqual(text, format_trap_varbind_value(rfc1902.OctetString(text)))
+
+    def test_format_trap_varbind_value_binary_falls_back_to_hex(self):
+        octets = rfc1902.OctetString(hexValue="00ff10")  # 3 binary bytes
+        self.assertEqual("0x00ff10", format_trap_varbind_value(octets))
+
     def test_load_mib(self):
         poller = Poller.__new__(Poller)
         poller.builder = Mock()

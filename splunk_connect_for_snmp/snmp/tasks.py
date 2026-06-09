@@ -62,6 +62,7 @@ OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9]\d*))*$")
 _INTEGER_STRING = re.compile(r"^-?\d+$")
 _SIGNED32_MIN = -(2**31)
 _SIGNED32_MAX = 2**31 - 1
+_UNSIGNED64_MAX = 2**64 - 1
 UNRESOLVED_TRAP_GROUP_KEY = "sc4snmp::unresolved"
 UNRESOLVED_FIELD_PREFIX = "unresolved::"
 _TRAP_MIB_RETRY_MAX = 5
@@ -247,10 +248,18 @@ def _syntax_base_category(syntax):
 
 
 def _asn1_from_numeric(numeric: int):
-    """Size a plain integer into the smallest safe SNMP ASN.1 type."""
+    """
+    Size a plain integer into the smallest safe SNMP ASN.1 type.
+
+    Counter64 is unsigned [0, 2**64-1]; constructing it out of range raises a
+    pyasn1 error (not SmiError) that would escape the trap task and drop the
+    trap. Values outside every SNMP integer range are forwarded as text instead.
+    """
     if _SIGNED32_MIN <= numeric <= _SIGNED32_MAX:
         return snmp_rfc1902.Integer(numeric)
-    return snmp_rfc1902.Counter64(numeric)
+    if 0 <= numeric <= _UNSIGNED64_MAX:
+        return snmp_rfc1902.Counter64(numeric)
+    return str(numeric)
 
 
 def _coerce_trap_varbind_value(value, mib_node=None):
@@ -408,14 +417,19 @@ def _unprocessed_trap_varbinds(varbind_table, metrics):
 
 
 def _merge_unresolved_trap_varbinds(*sources):
+    """
+    Combine unresolved varbind sources, dropping only identical (name, value)
+    pairs. Deduping by name alone would discard the same OID legitimately
+    appearing more than once in a trap with different values.
+    """
     merged = []
     seen = set()
     for source in sources:
-        for name, value in source:
-            if name in seen:
+        for pair in source:
+            if pair in seen:
                 continue
-            seen.add(name)
-            merged.append((name, value))
+            seen.add(pair)
+            merged.append(pair)
     return merged
 
 
@@ -472,15 +486,26 @@ def _re_resolve_trap_work_if_needed(self, work_data, varbind_table, unresolved):
     """
     if not _varbind_table_has_unresolved_symbols(varbind_table):
         return varbind_table, unresolved
-    new_table, still_unresolved = _resolve_work_varbinds(self, work_data)
-    return new_table, _merge_unresolved_trap_varbinds(unresolved, still_unresolved)
+    # A full re-resolve recomputes the complete unresolved set, so the fresh
+    # result replaces the stale one rather than being merged with it.
+    return _resolve_work_varbinds(self, work_data)
 
 
 def _load_new_trap_mibs(self, mib_names) -> bool:
-    """Load MIB modules not already in already_loaded_mibs; return True if any were loaded."""
-    new_mibs = set(mib_names) - self.already_loaded_mibs
+    """
+    Load MIB modules not yet attempted; return True if any were loaded.
+
+    Attempts are tracked separately from successes so a MIB that fails to load
+    is not retried (and re-warned) on every subsequent trap.
+    """
+    attempted = getattr(self, "already_attempted_mibs", None)
+    if attempted is None:
+        attempted = set()
+        self.already_attempted_mibs = attempted
+    new_mibs = set(mib_names) - attempted
     if not new_mibs:
         return False
+    attempted.update(new_mibs)
     loaded = self.load_mibs(list(new_mibs))
     self.already_loaded_mibs.update(loaded)
     return bool(loaded)
@@ -553,10 +578,9 @@ def _retry_trap_varbinds_after_mib_load(
             unresolved.append((name, value))
 
     if remotemibs and _load_new_trap_mibs(self, remotemibs):
-        varbind_table, still_unresolved = _resolve_work_varbinds(self, work_data)
-        return varbind_table, _merge_unresolved_trap_varbinds(
-            unresolved, still_unresolved
-        )
+        # Full re-resolve after loading the deferred MIBs supersedes the
+        # first-pass unresolved list.
+        return _resolve_work_varbinds(self, work_data)
 
     for name, value in retry_pairs:
         try:

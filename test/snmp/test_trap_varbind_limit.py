@@ -53,6 +53,10 @@ class TestParseMaxTrapVarbindsToDecode(TestCase):
         with patch.dict(os.environ, {"MAX_TRAP_VARBINDS_TO_DECODE": "100"}):
             self.assertEqual(100, parse_max_trap_varbinds_to_decode())
 
+    def test_large_value_is_not_capped(self):
+        # No upper bound: only 0 means unlimited; any positive value is honored.
+        self.assertEqual(100000, parse_max_trap_varbinds_to_decode("100000"))
+
 
 class TestLimitTrapVarbindPairs(TestCase):
     @patch(
