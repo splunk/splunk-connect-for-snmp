@@ -925,6 +925,86 @@ class TestTrapVarbindCoercion(TestCase):
         value = _coerce_trap_varbind_value(str(2**40))
         self.assertIsInstance(value, rfc1902.Counter64)
 
+    def test_coerce_named_integer_tc_clones_to_subtype(self):
+        """Named INTEGER TCs (e.g. ifOperStatus) resolve via inheritance, not name."""
+        from pyasn1.type import constraint, namedval
+        from pysnmp.proto.rfc1902 import Integer32
+
+        from splunk_connect_for_snmp.snmp.tasks import _coerce_trap_varbind_value
+
+        class IfOperStatus(Integer32):
+            namedValues = namedval.NamedValues(
+                ("up", 1), ("down", 2), ("testing", 3)
+            )
+            subtypeSpec = Integer32.subtypeSpec + constraint.SingleValueConstraint(
+                1, 2, 3
+            )
+
+        class _Node:
+            def getSyntax(self):
+                return IfOperStatus()
+
+        value = _coerce_trap_varbind_value("1", _Node())
+        self.assertIsInstance(value, Integer32)
+        self.assertEqual(1, int(value))
+
+    def test_coerce_named_counter64_tc_clones_to_subtype(self):
+        """Counter64-based TCs with a custom class name still resolve as 64-bit."""
+        from pysnmp.proto.rfc1902 import Counter64
+
+        from splunk_connect_for_snmp.snmp.tasks import _coerce_trap_varbind_value
+
+        class HCPerfTotalCount(Counter64):
+            pass
+
+        class _Node:
+            def getSyntax(self):
+                return HCPerfTotalCount()
+
+        value = _coerce_trap_varbind_value(str(2**40), _Node())
+        self.assertIsInstance(value, Counter64)
+        self.assertEqual(2**40, int(value))
+
+    def test_coerce_named_string_tc_keeps_string_value(self):
+        """OctetString-based TCs (e.g. DisplayString) clone from a string value."""
+        from pysnmp.proto.rfc1902 import OctetString
+
+        from splunk_connect_for_snmp.snmp.tasks import _coerce_trap_varbind_value
+
+        class DisplayString(OctetString):
+            pass
+
+        class _Node:
+            def getSyntax(self):
+                return DisplayString()
+
+        value = _coerce_trap_varbind_value("eth0", _Node())
+        self.assertIsInstance(value, OctetString)
+        self.assertEqual("eth0", value.prettyPrint())
+
+    def test_coerce_named_integer_out_of_range_falls_back(self):
+        """A value violating the TC constraint still stays resolvable as an int."""
+        from pyasn1.type import constraint, namedval
+        from pysnmp.proto import rfc1902
+        from pysnmp.proto.rfc1902 import Integer32
+
+        from splunk_connect_for_snmp.snmp.tasks import _coerce_trap_varbind_value
+
+        class TruthValue(Integer32):
+            namedValues = namedval.NamedValues(("true", 1), ("false", 2))
+            subtypeSpec = Integer32.subtypeSpec + constraint.SingleValueConstraint(
+                1, 2
+            )
+
+        class _Node:
+            def getSyntax(self):
+                return TruthValue()
+
+        # 7 is outside {1, 2}: clone() raises, fallback keeps it as a plain Integer.
+        value = _coerce_trap_varbind_value("7", _Node())
+        self.assertIsInstance(value, rfc1902.Integer)
+        self.assertEqual(7, int(value))
+
 
 class TestOidsForMibLookup(TestCase):
     def test_skips_non_string_candidates(self):

@@ -17,6 +17,7 @@ import logging
 import re
 from contextlib import suppress
 
+from pyasn1.type import univ
 from pyasn1.type.base import AbstractSimpleAsn1Item
 from pysnmp.proto import rfc1902 as snmp_rfc1902
 from pysnmp.proto import rfc1905 as snmp_rfc1905
@@ -59,38 +60,8 @@ WALK_MAX_RETRIES = int(os.getenv("WALK_MAX_RETRIES", "5"))
 SPLUNK_SOURCETYPE_TRAPS = os.getenv("SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")
 OID_VALIDATOR = re.compile(r"^([0-2])((\.0)|(\.[1-9]\d*))*$")
 _INTEGER_STRING = re.compile(r"^-?\d+$")
-_STRING_SYNTAX_NAMES = frozenset(
-    {"OctetString", "Opaque", "IpAddress", "DisplayString", "PhysAddress"}
-)
-_INTEGER_SYNTAX_NAMES = frozenset(
-    {
-        "Integer",
-        "Integer32",
-        "Counter32",
-        "Counter64",
-        "Gauge32",
-        "Gauge64",
-        "Unsigned32",
-        "Unsigned64",
-        "TimeTicks",
-        "ZeroBasedCounter64",
-        "CounterBasedGauge64",
-    }
-)
 _SIGNED32_MIN = -(2**31)
 _SIGNED32_MAX = 2**31 - 1
-_COUNTER64_SYNTAX_NAMES = frozenset(
-    {
-        "Counter64",
-        "ZeroBasedCounter64",
-        "CounterBasedGauge64",
-        "Unsigned64",
-        "Gauge64",
-    }
-)
-_UNSIGNED32_SYNTAX_NAMES = frozenset(
-    {"Counter32", "Gauge32", "Unsigned32", "TimeTicks"}
-)
 UNRESOLVED_TRAP_GROUP_KEY = "sc4snmp::unresolved"
 UNRESOLVED_FIELD_PREFIX = "unresolved::"
 _TRAP_MIB_RETRY_MAX = 5
@@ -253,27 +224,43 @@ def _mib_syntax_class(mib_node):
         return None
 
 
-def _asn1_from_numeric_syntax(syntax_name: str, numeric: int):
-    """Map a numeric trap value to the ASN.1 type implied by MIB syntax."""
-    if syntax_name in _COUNTER64_SYNTAX_NAMES:
-        return snmp_rfc1902.Counter64(numeric)
-    if syntax_name in _UNSIGNED32_SYNTAX_NAMES:
-        return snmp_rfc1902.Unsigned32(numeric)
-    if syntax_name in ("Integer", "Integer32"):
-        if _SIGNED32_MIN <= numeric <= _SIGNED32_MAX:
-            return snmp_rfc1902.Integer(numeric)
-        logger.debug(
-            "Value %d out of Integer32 range for syntax %s; using Counter64",
-            numeric,
-            syntax_name,
-        )
-        return snmp_rfc1902.Counter64(numeric)
-    return snmp_rfc1902.Integer(numeric)
+def _syntax_base_category(syntax):
+    """Return 'int', 'str', or None based on the ASN.1 base type of a MIB syntax.
+
+    All SNMP integer types (Integer32, Counter32/64, Gauge32, Unsigned32,
+    TimeTicks) and their TEXTUAL-CONVENTION subclasses derive from
+    univ.Integer; all string types (DisplayString, PhysAddress, IpAddress,
+    Bits, ...) derive from univ.OctetString. Inheritance is checked instead of
+    the class name so that named TCs are handled the same as their base type.
+    """
+    if syntax is None:
+        return None
+    base = syntax if isinstance(syntax, type) else type(syntax)
+    try:
+        if issubclass(base, univ.Integer):
+            return "int"
+        if issubclass(base, univ.OctetString):
+            return "str"
+    except TypeError:
+        pass
+    return None
+
+
+def _asn1_from_numeric(numeric: int):
+    """Size a plain integer into the smallest safe SNMP ASN.1 type."""
+    if _SIGNED32_MIN <= numeric <= _SIGNED32_MAX:
+        return snmp_rfc1902.Integer(numeric)
+    return snmp_rfc1902.Counter64(numeric)
 
 
 def _coerce_trap_varbind_value(value, mib_node=None):
     """
     Build an SNMP value ObjectType.resolveWithMib() accepts.
+
+    Trap values arrive as plain strings (from prettyPrint). When the MIB node
+    has a syntax, convert the value to the syntax's base python type and clone
+    from the syntax itself so named TEXTUAL-CONVENTIONs (IfOperStatus,
+    TruthValue, RowStatus, HC Counter64 TCs, ...) keep their exact subtype.
 
     NOTIFICATION-TYPE nodes are not MibScalar/MibTableColumn; pysnmp only marks
     ObjectType resolved when the value is already an ASN.1 type. Plain Python
@@ -281,34 +268,35 @@ def _coerce_trap_varbind_value(value, mib_node=None):
     """
     if isinstance(value, AbstractSimpleAsn1Item):
         return value
+
     syntax = _mib_syntax_class(mib_node)
+    category = _syntax_base_category(syntax)
+
     if syntax is not None:
+        typed_value = value
+        if category == "int":
+            if isinstance(value, str) and _INTEGER_STRING.match(value):
+                typed_value = int(value)
+            elif isinstance(value, float):
+                typed_value = int(value)
         try:
-            cloned = syntax.clone(value)
+            cloned = syntax.clone(typed_value)
             if isinstance(cloned, AbstractSimpleAsn1Item):
                 return cloned
         except Exception as exc:
+            # e.g. value violates a named-value/range constraint; fall through.
             logger.debug("MIB syntax clone failed for %s: %s", mib_node, exc)
-    syntax_name = getattr(syntax, "__name__", "") if syntax is not None else ""
+
+    # Fallbacks: no usable syntax, or clone failed.
     if isinstance(value, (int, float)):
-        numeric = int(value)
-        if syntax_name in _INTEGER_SYNTAX_NAMES:
-            return _asn1_from_numeric_syntax(syntax_name, numeric)
-        if _SIGNED32_MIN <= numeric <= _SIGNED32_MAX:
-            return snmp_rfc1902.Integer(numeric)
-        return snmp_rfc1902.Counter64(numeric)
+        return _asn1_from_numeric(int(value))
     if isinstance(value, str):
         if value == "":
             return value
-        if syntax_name in _STRING_SYNTAX_NAMES:
+        if category == "str":
             return value
-        if syntax_name in _INTEGER_SYNTAX_NAMES and _INTEGER_STRING.match(value):
-            return _asn1_from_numeric_syntax(syntax_name, int(value))
-        if syntax is None and _INTEGER_STRING.match(value):
-            numeric = int(value)
-            if _SIGNED32_MIN <= numeric <= _SIGNED32_MAX:
-                return snmp_rfc1902.Integer(numeric)
-            return snmp_rfc1902.Counter64(numeric)
+        if _INTEGER_STRING.match(value) and category in ("int", None):
+            return _asn1_from_numeric(int(value))
         return value
     return value
 
@@ -318,12 +306,6 @@ def _is_notification_mib_node(mib_node) -> bool:
 
 
 def _object_type_from_resolved_identity(mib_view_controller, identity, value):
-    """
-    Resolve NOTIFICATION-TYPE varbinds (e.g. snmpTrapOID) via ObjectIdentity first.
-
-    Plain Python values cannot be passed to ObjectType.resolveWithMib() for
-    notifications; they must be wrapped as ASN.1 types after identity resolution.
-    """
     if isinstance(identity, str):
         resolved_identity = ObjectIdentity(identity).resolveWithMib(mib_view_controller)
     else:
@@ -331,8 +313,10 @@ def _object_type_from_resolved_identity(mib_view_controller, identity, value):
             mib_view_controller
         )
     mib_node = resolved_identity.getMibNode()
-    if not _is_notification_mib_node(mib_node):
-        raise SmiError(f"{identity!r} is not a NOTIFICATION-TYPE")
+    # Previously this raised for non-NOTIFICATION-TYPE nodes, which prevented
+    # coercion from ever running on regular MibScalar/MibTableColumn nodes.
+    if not _is_notification_mib_node(mib_node) and not hasattr(mib_node, "getSyntax"):
+        raise SmiError(f"{identity!r} has no resolvable MIB node")
     return ObjectType(
         resolved_identity, _coerce_trap_varbind_value(value, mib_node)
     ).resolveWithMib(mib_view_controller)
@@ -364,7 +348,15 @@ def _resolve_trap_varbind(self, name: str, value):
     if suffix:
         identity_args.extend(suffix)
     try:
-        return ObjectType(ObjectIdentity(*identity_args), resolve_value).resolveWithMib(
+        # Resolve the identity first so we can coerce the value against the
+        # actual MIB node syntax (e.g. ifOperStatus is a named INTEGER subtype;
+        # passing the raw string "1" without coercion raises SmiError).
+        resolved_identity = ObjectIdentity(*identity_args).resolveWithMib(
+            self.mib_view_controller
+        )
+        mib_node = resolved_identity.getMibNode()
+        coerced = _coerce_trap_varbind_value(resolve_value, mib_node)
+        return ObjectType(resolved_identity, coerced).resolveWithMib(
             self.mib_view_controller
         )
     except SmiError:
