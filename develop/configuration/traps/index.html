@@ -2167,6 +2167,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#limit-varbinds-decoded-per-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limit varbinds decoded per trap
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2921,6 +2932,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#limit-varbinds-decoded-per-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limit varbinds decoded per trap
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3146,6 +3168,22 @@ on UDP port 162. To expose a different port externally, adjust the service defin
 <div class="highlight"><pre><span></span><code>TRAP_LOG_LEVEL=DEBUG
 </code></pre></div>
 <p>Accepted values: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>, <code>CRITICAL</code>, <code>FATAL</code>.</p>
+</div>
+</div>
+</div>
+<h3 id="limit-varbinds-decoded-per-trap">Limit varbinds decoded per trap<a class="headerlink" href="#limit-varbinds-decoded-per-trap" title="Permanent link">¶</a></h3>
+<p>Large traps can stress MIB resolution. Use <code>MAX_TRAP_VARBINDS_TO_DECODE</code> to cap how many varbinds are decoded (ASN.1 at the trap receiver and MIB resolution on the worker). Default is <strong>0</strong> (unlimited, backward compatible). Set a positive integer to drop excess varbinds (a warning is logged).</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="9:2"><input checked id="__tabbed_9_1" name="__tabbed_9" type="radio"><input id="__tabbed_9_2" name="__tabbed_9" type="radio"><div class="tabbed-labels"><label for="__tabbed_9_1">microk8s</label><label for="__tabbed_9_2">docker compose</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">maxVarbindsToDecode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Set on both the <code>traps</code> and <code>worker-trap</code> services in <code>.env</code>:</p>
+<div class="highlight"><pre><span></span><code>MAX_TRAP_VARBINDS_TO_DECODE=0
+</code></pre></div>
 </div>
 </div>
 </div></div>

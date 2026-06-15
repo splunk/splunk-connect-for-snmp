@@ -3235,6 +3235,11 @@ Below are the most common options:</p>
 <td><code>1800</code></td>
 </tr>
 <tr>
+<td><code>trap.enableIncludeUnresolvedVarbinds</code></td>
+<td>Include trap varbinds that could not be MIB-translated under <code>sc4snmp::unresolved</code> in Splunk events</td>
+<td><code>false</code></td>
+</tr>
+<tr>
 <td><code>livenessProbe</code></td>
 <td>Liveness probes are used in Kubernetes to know when a pod is alive or dead</td>
 <td></td>
@@ -3399,6 +3404,11 @@ Below are the most common options:</p>
 <td><code>includeSecurityContextId</code></td>
 <td>Controls whether to add the context_engine_id field to v3 trap events</td>
 <td><code>false</code></td>
+</tr>
+<tr>
+<td><code>maxVarbindsToDecode</code></td>
+<td>Maximum varbinds to decode per trap (<code>0</code> = unlimited)</td>
+<td><code>0</code></td>
 </tr>
 <tr>
 <td><code>communities</code></td>

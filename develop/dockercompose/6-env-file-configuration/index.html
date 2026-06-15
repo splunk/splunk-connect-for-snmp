@@ -3395,6 +3395,10 @@
 <td>Use reverse dns lookup for trap IP address and send the hostname to Splunk</td>
 </tr>
 <tr>
+<td><code>INCLUDE_UNRESOLVED_TRAP_VARBINDS</code></td>
+<td>Include trap varbinds that could not be MIB-translated under <code>sc4snmp::unresolved</code> in Splunk events</td>
+</tr>
+<tr>
 <td><code>MAX_DNS_CACHE_SIZE_TRAPS</code></td>
 <td>If RESOLVE_TRAP_ADDRESS is set to true, this is the maximum number of records in cache</td>
 </tr>
@@ -3487,6 +3491,10 @@
 <tr>
 <td><code>TRAP_DISABLE_MONGO_DEBUG_LOGGING</code></td>
 <td>Disable extensive MongoDB debug logging when <code>TRAP_LOG_LEVEL</code> is set to DEBUG</td>
+</tr>
+<tr>
+<td><code>MAX_TRAP_VARBINDS_TO_DECODE</code></td>
+<td>Maximum varbinds to decode per trap (<code>0</code> = unlimited, default <code>0</code>)</td>
 </tr>
 </tbody>
 </table>
