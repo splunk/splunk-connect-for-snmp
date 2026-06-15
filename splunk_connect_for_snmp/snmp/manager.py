@@ -13,9 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import ipaddress
 import typing
 from contextlib import suppress
 
+from pysnmp.proto import rfc1902
 from pysnmp.proto.errind import EmptyResponse
 from pysnmp.smi import error
 from requests import Session
@@ -33,7 +35,7 @@ import csv
 import os
 import time
 from io import StringIO
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Set, Tuple, Union
 
 import pymongo
 from celery import Task
@@ -194,6 +196,49 @@ MTYPES_R = tuple(["ObjectIdentifier", "ObjectIdentity"])
 MTYPES = tuple(["cc", "c", "g"])
 
 
+_PRINTABLE_OCTETS = frozenset(range(0x20, 0x7F))  # space .. '~'
+
+
+def _looks_like_raw_address(octets: bytes) -> bool:
+    """
+    True for 4/16-octet payloads that look like raw network-order address bytes.
+
+    The trap receiver has no MIB context, so an InetAddress arrives as a bare
+    OCTET STRING with no type hint. Real address bytes are almost always
+    non-printable; printable runs (e.g. b"eth0", b"ABCD") are far more likely to
+    be text and must not be mangled into a bogus IP.
+    """
+    return len(octets) in (4, 16) and any(b not in _PRINTABLE_OCTETS for b in octets)
+
+
+def format_trap_varbind_value(val) -> str:
+    """
+    Serialize a trap varbind ASN.1 value for the Celery worker queue.
+
+    Genuine SNMP ``IpAddress`` values already ``prettyPrint()`` as dotted-quad.
+    Bare OCTET STRINGs that look like raw address bytes (e.g. InetAddress before
+    MIB resolution) are rendered as IPv4/IPv6; other binary payloads fall back to
+    hex so they are not corrupted. ``prettyPrint()`` normally returns a string;
+    empty string is common for opaque OCTET STRINGs and ``None`` is handled
+    defensively.
+    """
+    if isinstance(val, rfc1902.IpAddress):
+        return val.prettyPrint()
+
+    displayed = val.prettyPrint() if hasattr(val, "prettyPrint") else None
+
+    with suppress(AttributeError, TypeError, ValueError):
+        octets = bytes(val.asOctets())
+        if _looks_like_raw_address(octets):
+            if len(octets) == 4:
+                return str(ipaddress.IPv4Address(octets))
+            return str(ipaddress.IPv6Address(octets))
+        if (displayed is None or displayed == "") and octets:
+            return "0x" + octets.hex()
+
+    return displayed if displayed is not None else ""
+
+
 def value_as_best(value) -> Union[str, float]:
     try:
         return float(value)
@@ -293,6 +338,9 @@ class Poller(Task):
         self.last_modified = time.time()
         self.snmp_engine = SnmpEngine()
         self.already_loaded_mibs = set()
+        # MIBs we have tried to load (loaded or failed); prevents retrying a
+        # persistently-missing MIB on every trap (and the warning spam).
+        self.already_attempted_mibs = set()
         self.builder = self.snmp_engine.getMibBuilder()
         self.mib_view_controller = view.MibViewController(self.builder)
         compiler.addMibCompiler(self.builder, sources=[MIB_SOURCES])
@@ -475,7 +523,8 @@ class Poller(Task):
                         varbind_table, metrics, address, bulk_mapping
                     )
                     if tmp_mibs:
-                        self.load_mibs(tmp_mibs)
+                        loaded = self.load_mibs(tmp_mibs)
+                        self.already_loaded_mibs.update(loaded)
                         self.process_snmp_data(
                             varbind_table, metrics, address, bulk_mapping
                         )
@@ -484,14 +533,17 @@ class Poller(Task):
         for i in range(0, len(lst), n):
             yield lst[i : i + n]
 
-    def load_mibs(self, mibs: List[str]) -> None:
+    def load_mibs(self, mibs: List[str]) -> Set[str]:
         logger.info(f"loading mib modules {mibs}")
+        loaded = set()
         for mib in mibs:
             if mib:
                 try:
                     self.builder.loadModules(mib)
+                    loaded.add(mib)
                 except Exception as e:
                     logger.warning(f"Error loading mib for {mib}, {e}")
+        return loaded
 
     def is_mib_known(self, id: str, oid: str, target: str) -> Tuple[bool, str]:
         oid_list = tuple(oid.split("."))
@@ -526,7 +578,8 @@ class Poller(Task):
                 if mib_family not in self.already_loaded_mibs
             ]
             if mib_files_to_load:
-                self.load_mibs(mib_files_to_load)
+                loaded = self.load_mibs(mib_files_to_load)
+                self.already_loaded_mibs.update(loaded)
             (
                 varbinds_get,
                 get_mapping,

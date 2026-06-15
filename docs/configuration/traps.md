@@ -252,4 +252,23 @@ TRAP_LOG_LEVEL=DEBUG
 Accepted values: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, `FATAL`.
 ///
 
+### Limit varbinds decoded per trap
+
+Large traps can stress MIB resolution. Use `MAX_TRAP_VARBINDS_TO_DECODE` to cap how many varbinds are decoded (ASN.1 at the trap receiver and MIB resolution on the worker). Default is **0** (unlimited, backward compatible). Set a positive integer to drop excess varbinds (a warning is logged).
+
+/// tab | microk8s
+```yaml
+traps:
+  maxVarbindsToDecode: 0
+```
+///
+
+/// tab | docker compose
+Set on both the `traps` and `worker-trap` services in `.env`:
+
+```
+MAX_TRAP_VARBINDS_TO_DECODE=0
+```
+///
+
 

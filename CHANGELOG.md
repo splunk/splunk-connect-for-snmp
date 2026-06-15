@@ -5,11 +5,17 @@
 ### Changed
 - add authorisation for UI
 - add MAX_TASKS_PER_CHILD setting to celery workers
+-  **Trap Handling Improvements**
+  - Unresolved trap varbinds forwarding: Raw OID-value pairs that fail MIB translation can now be forwarded to Splunk under sc4snmp::unresolved instead of being silently dropped. Opt-in via
+  INCLUDE_UNRESOLVED_TRAP_VARBINDS=true / worker.trap.enableIncludeUnresolvedVarbinds
+  - Trap varbind decode limit: Added MAX_TRAP_VARBINDS_TO_DECODE / traps.maxVarbindsToDecode to cap varbinds processed per trap (default: 0 = unlimited)
+  - Improved MIB resolution for traps: Complete overhaul — table instance OIDs, ASN.1 value coercion, placeholder symbol re-resolution, retry loops for async MIB loads, and enterprise OID preloading
 
 ### Fixed
 - prevent MongoDB 8.x SIGSEGV on Linux kernel >= 6.19 by defaulting `GLIBC_TUNABLES=glibc.pthread.rseq=1` on the mongo container.
 
-[1.16.0]
+## [1.16.0]
+
 ### Changed
 - improve the documentation
 - add max_oid_to_process configuration per device

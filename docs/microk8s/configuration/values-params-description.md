@@ -90,6 +90,7 @@ Detailed documentation about configuring worker can be found in [Worker](../../c
 | `x.resources`                                  | CPU and memory limits and requests for pod                                                                                      |                                             |
 | `trap.resolveAddress.cacheSize`                | Maximum number of records in cache                                                                                              | `500`                                       |
 | `trap.resolveAddress.cacheTTL`                 | Time to live of the cached record in seconds                                                                                    | `1800`                                      |
+| `trap.enableIncludeUnresolvedVarbinds`         | Include trap varbinds that could not be MIB-translated under `sc4snmp::unresolved` in Splunk events                             | `false`                                     |
 | `livenessProbe`                                | Liveness probes are used in Kubernetes to know when a pod is alive or dead                                                      |                                             |
 | `readinessProbe`                               | Readiness probes are used to know when a pod is ready to serve traffic                                                          |                                             |
 | `xProbe.enabled`                               | If livenessProbe or readinessProbe are enabled                                                                                  |                                             |
@@ -132,6 +133,7 @@ Detailed documentation about configuring traps can be found in [Traps](../../con
 | `securityEngineId`                              | SNMP Engine ID of the TRAP sending application                                                                                  | `80003a8c04`     |
 | `aggregateTrapsEvents`                          | Enables collecting traps events as one event inside Splunk                                                                      | `false`          |
 | `includeSecurityContextId`                      | Controls whether to add the context_engine_id field to v3 trap events                                                           | `false`          |
+| `maxVarbindsToDecode`                           | Maximum varbinds to decode per trap (`0` = unlimited) | `0`              |
 | `communities`                                   | Defines a version of SNMP protocol and SNMP community string                                                                    |                  |
 | `service.annotations`                           | Annotations to append under traps service                                                                                       |                  |
 | `service.usemetallb`                            | Enables using metallb                                                                                                           | `true`           |

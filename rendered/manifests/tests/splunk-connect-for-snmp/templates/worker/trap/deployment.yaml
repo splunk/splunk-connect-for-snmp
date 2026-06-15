@@ -117,6 +117,10 @@ spec:
               value: "0"
             - name: RESOLVE_TRAP_ADDRESS
               value: "false"
+            - name: INCLUDE_UNRESOLVED_TRAP_VARBINDS
+              value: "false"
+            - name: MAX_TRAP_VARBINDS_TO_DECODE
+              value: "0"
             - name: MAX_DNS_CACHE_SIZE_TRAPS
               value: "500"
             - name: TTL_DNS_CACHE_TRAPS

@@ -53,7 +53,7 @@ class TestDoWork(TestCase):
         poller.profiles_manager = MagicMock()
         poller.profiles_collection = MagicMock()
         poller.profiles_collection.process_profiles = MagicMock()
-        poller.already_loaded_mibs = {}
+        poller.already_loaded_mibs = set()
         varbinds_bulk, varbinds_get = set(), set()
         get_mapping, bulk_mapping = {}, {}
 
@@ -95,7 +95,7 @@ class TestDoWork(TestCase):
             },
             "profile2": {"frequency": 20, "varBinds": [["UDP-MIB", "udpOutDatagrams"]]},
         }
-        poller.already_loaded_mibs = {}
+        poller.already_loaded_mibs = set()
         poller.profiles_collection = ProfileCollection(poller.profiles)
         poller.profiles_collection.process_profiles()
         bulkCmd.return_value = [(None, 0, 0, "Oid1"), (None, 0, 0, "Oid2")]
@@ -135,7 +135,7 @@ class TestDoWork(TestCase):
                 "varBinds": [["UDP-MIB", "udpOutDatagrams", 1]],
             },
         }
-        poller.already_loaded_mibs = {}
+        poller.already_loaded_mibs = set()
         poller.profiles_collection = ProfileCollection(poller.profiles)
         poller.profiles_collection.process_profiles()
         getCmd.return_value = [
@@ -172,7 +172,7 @@ class TestDoWork(TestCase):
         poller.profiles = {
             "profile1": {"frequency": 20, "varBinds": [["IF-MIB", "ifDescr", 1]]}
         }
-        poller.already_loaded_mibs = {}
+        poller.already_loaded_mibs = set()
         poller.profiles_collection = ProfileCollection(poller.profiles)
         poller.profiles_collection.process_profiles()
         getCmd.return_value = [(True, True, 2, [])]
@@ -210,7 +210,7 @@ class TestDoWork(TestCase):
             },
             "profile2": {"frequency": 20, "varBinds": [["UDP-MIB", "udpOutDatagrams"]]},
         }
-        poller.already_loaded_mibs = {}
+        poller.already_loaded_mibs = set()
         poller.profiles_collection = ProfileCollection(poller.profiles)
         poller.profiles_collection.process_profiles()
         bulkCmd.return_value = [(None, 0, 0, "Oid1")]
@@ -248,7 +248,7 @@ class TestDoWork(TestCase):
                 "varBinds": [["UDP-MIB", "udpOutDatagrams", 1]],
             },
         }
-        poller.already_loaded_mibs = {}
+        poller.already_loaded_mibs = set()
         poller.profiles_collection = ProfileCollection(poller.profiles)
         poller.profiles_collection.process_profiles()
         getCmd.return_value = [
@@ -292,7 +292,7 @@ class TestDoWork(TestCase):
             },
             "profile2": {"frequency": 20, "varBinds": [["UDP-MIB", "udpOutDatagrams"]]},
         }
-        poller.already_loaded_mibs = {}
+        poller.already_loaded_mibs = set()
         poller.profiles_collection = ProfileCollection(poller.profiles)
         poller.profiles_collection.process_profiles()
         bulkCmd.return_value = [(None, 0, 0, "Oid1")]

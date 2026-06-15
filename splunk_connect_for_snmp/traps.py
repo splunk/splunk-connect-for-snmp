@@ -27,6 +27,11 @@ from splunk_connect_for_snmp.common.common import (
     wait_for_mongodb_replicaset,
 )
 from splunk_connect_for_snmp.snmp.auth import get_secret_value
+from splunk_connect_for_snmp.snmp.manager import format_trap_varbind_value
+from splunk_connect_for_snmp.snmp.trap_varbind_limit import (
+    limit_trap_varbind_pairs,
+    log_trap_varbind_limit_config,
+)
 
 with suppress(ImportError, OSError):
     from dotenv import load_dotenv
@@ -80,6 +85,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+log_trap_varbind_limit_config(logger)
 wait_for_mongodb_replicaset(logger)
 
 if DISABLE_MONGO_DEBUG_LOGGING:
@@ -276,8 +282,8 @@ def cb_fun(
 
     logger.debug("Device IP is %s", device_ip)
 
-    for name, val in varbinds:
-        data.append((name.prettyPrint(), val.prettyPrint()))
+    for name, val in limit_trap_varbind_pairs(varbinds, log=logger, source=device_ip):
+        data.append((name.prettyPrint(), format_trap_varbind_value(val)))
 
     work = {"data": data, "host": device_ip}
     decoded_engine_id, _ = decode_security_context(exec_context.get("wholeMsg"))
