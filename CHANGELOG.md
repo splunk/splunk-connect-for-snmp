@@ -10,7 +10,13 @@
   INCLUDE_UNRESOLVED_TRAP_VARBINDS=true / worker.trap.enableIncludeUnresolvedVarbinds
   - Trap varbind decode limit: Added MAX_TRAP_VARBINDS_TO_DECODE / traps.maxVarbindsToDecode to cap varbinds processed per trap (default: 0 = unlimited)
   - Improved MIB resolution for traps: Complete overhaul — table instance OIDs, ASN.1 value coercion, placeholder symbol re-resolution, retry loops for async MIB loads, and enterprise OID preloading
-
+- **Autodiscovery**: Automatic detection of SNMP-enabled devices within subnets
+  - New `discovery` service and `worker-discovery` worker handle subnet scanning and CSV output
+  - Discovery tasks configured via `discovery-config.yaml` (Kubernetes) or docker-compose profile `discovery`
+  - Supports SNMPv1/v2c/v3, IPv6 subnets, device rules (regex group matching), and periodic scheduling
+  - New Helm values: `discovery.*`, `worker.discovery.*`, `worker.udpConnectionRetries`
+  - New docker-compose env vars: `COMPOSE_PROFILES=discovery`, `DISCOVERY_PATH`, `WORKER_DISCOVERY_*`
+  
 ### Fixed
 - prevent MongoDB 8.x SIGSEGV on Linux kernel >= 6.19 by defaulting `GLIBC_TUNABLES=glibc.pthread.rseq=1` on the mongo container.
 
