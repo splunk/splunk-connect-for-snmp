@@ -37,3 +37,23 @@ poller:
   inventory: |
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
     54.82.41.24,,2c,public,,,1800,IF_profile,false,
+
+discovery:
+  enabled: true
+  ipv6Enabled: true
+  discoveryPath: "/home/devuser/discovery"
+  autodiscovery:
+    discovery_version2c:
+      frequency: 21600
+      delete_already_discovered: false
+      network_address: 54.82.41.24/28
+      version: "2c"
+      community: "public"
+      port: 161
+      device_rules:
+        - name: "Linux servers"
+          patterns: "*linux*"
+          group: "linux_group"
+        - name: "Centos servers"
+          patterns: "*centos*"
+          group: "centos_group"

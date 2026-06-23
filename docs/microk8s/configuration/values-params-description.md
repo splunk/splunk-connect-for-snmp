@@ -79,7 +79,8 @@ Detailed documentation about configuring worker can be found in [Worker](../../c
 | `poller`                                       | Section with configuration for worker poller pods                                                                               |                                             |
 | `trap`                                         | Section with configuration for worker trap pods                                                                                 |                                             |
 | `sender`                                       | Section with configuration for worker sender pods                                                                               |                                             |
-| `x.replicaCount`                               | Number of pod replicas when autoscaling is disabled                                                                             | poller/trap - `2`, sender - `1`             |
+| `discovery`                                    | Section with configuration for worker discovery pods                                                                            |                                             |
+| `x.replicaCount`                               | Number of pod replicas when autoscaling is disabled                                                                             | poller/trap - `2`, sender/discovery - `1`   |
 | `x.concurrency`                                | Minimum number of threads in a pod                                                                                              | `4`                                         |
 | `x.prefetch`                                   | Number of tasks consumed from the queue at once                                                                                 | poller - `1`, traps/sender - `30`           |
 | `x.maxTasksPerChild`                           | Max number of tasks a worker child process can execute before being recycled. `0` disables recycling                            | `0`                                         |
@@ -104,6 +105,7 @@ Detailed documentation about configuring worker can be found in [Worker](../../c
 | `profilesReloadDelay`                          | Delay of polling profiles after inventory reload                                                                                | `60`                                        |
 | `logLevel`                                     | Log level for workers                                                                                                           | `INFO`                                      |
 | `udpConnectionTimeout`                         | Timeout for SNMP operations in seconds                                                                                          | `3`                                         |
+| `udpConnectionRetries`                         | Number of SNMP UDP retries per operation                                                                                        | `5`                                         |
 | `ignoreEmptyVarbinds`                          | Ignores "Empty SNMP response message" in responses                                                                              | `false`                                     |
 | `podAntiAffinity`                              | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | `soft`                                      |
 | `nodeSelector`                                 | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector)               |                                             |
@@ -155,6 +157,29 @@ Detailed documentation about configuring traps can be found in [Traps](../../con
 | `podAntiAffinity`                               | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | `soft`           |
 | `nodeSelector`                                  | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector)               |                  |
 | `tolerations`                                   | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)                       |                  |
+
+## Discovery
+
+Detailed documentation about configuring discovery can be found in [Discovery](discovery-configuration.md).
+
+| Variable                                        | Description                                                                                                                     | Default          |
+|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|------------------|
+| `enabled`                                       | Enables discovering SNMP-enabled devices and creates a CSV file.                                                                    | `false`          |
+| `usernameSecrets`                               | List of SNMPv3 secret names (Kubernetes secrets) used when discovering devices                                                  |                  |
+| `ipv6Enabled`                                   | Enabled device detection using IPv6 subnet                                                                                      | `false`          |
+| `logLevel`                                      | Log level for a discovery pod                                                                                                   | `INFO`           |
+| `discoveryPath`                                 | Absolute path where discovery_devices.csv will be stored                                                                        |                  |
+| `autodiscovery.x.frequency`                     | Time interval (in minutes) between each run of the discovery task                                                               | `86400`          |
+| `autodiscovery.x.delete_already_discovered`     | Deletes old entries of a particular discovery key before writing new ones.                                                      | `false`          |
+| `autodiscovery.x.network_address`               | Subnet in CIDR notation to scan.                                                                                                |                  |
+| `autodiscovery.x.version`                       | SNMP version to use                                                                                                             | `2c`             |
+| `autodiscovery.x.community`                     |  SNMP community string                                                                                                          |                  |
+| `autodiscovery.x.port`                          | SNMP port to use                                                                                                                | `161`            |
+| `autodiscovery.x.secret`                        | Name of existing secret in kubernetes                                                                                           |                  |
+| `autodiscovery.x.security_engine`               | SNMP Engine ID                                                                                                                  |                  |
+| `autodiscovery.x.device_rules.name`             | Device Rule name for reference                                                                                                  |                  |
+| `autodiscovery.x.device_rules.patterns`         | Wildcard pattern to match SNMP sysDescr                                                                                         |                  |
+| `autodiscovery.x.device_rules.group`            | Group name to assign matched devices                                                                                            |                  |
 
 ## serviceAccount
 

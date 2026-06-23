@@ -69,3 +69,10 @@ To configure poller to poll IPv4 and IPv6 addresses, you need to add the followi
 poller:
   ipv6Enabled: true
 ```
+
+To enable SNMP device detection for IPv4 and IPv6 subnet, you need to add the following configuration to `values.yaml` file:
+
+```
+discovery:
+  ipv6Enabled: true
+```
