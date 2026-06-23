@@ -14,14 +14,19 @@ wait-for-dep ${REDIS_DEPENDENCIES} "${MONGO_WAIT}" "${MIB_INDEX}"
 
 ENABLE_TRAPS_SECRETS=${ENABLE_TRAPS_SECRETS:=false}
 ENABLE_WORKER_POLLER_SECRETS=${ENABLE_WORKER_POLLER_SECRETS:=false}
+ENABLE_WORKER_DISCOVERY_SECRETS=${ENABLE_WORKER_DISCOVERY_SECRETS:=false}
 wait-for-dep "${REDIS_DEPENDENCIES}" "${MONGO_URI}" "${MIB_INDEX}"
-if [ "$ENABLE_TRAPS_SECRETS" = "true" ] || [ "$ENABLE_WORKER_POLLER_SECRETS" = "true" ]; then
+if [ "$ENABLE_TRAPS_SECRETS" = "true" ] || [ "$ENABLE_WORKER_POLLER_SECRETS" = "true" ] || [ "$ENABLE_WORKER_DISCOVERY_SECRETS" = "true" ]; then
     python /app/secrets/manage_secrets.py
 fi
 case $1 in
 
 inventory)
     inventory-loader
+    ;;
+
+discovery)
+    discovery-loader
     ;;
 
 celery)
@@ -31,6 +36,9 @@ celery)
         ;;
     worker-trap)
         celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q traps --autoscale=8,"$WORKER_CONCURRENCY" $MAX_TASKS_FLAG
+        ;;
+    worker-discovery)
+        celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL" -Q discovery --autoscale=8,"$WORKER_CONCURRENCY" $MAX_TASKS_FLAG
         ;;
     worker-poller)
         celery -A splunk_connect_for_snmp.poller worker -l "$LOG_LEVEL"  -O fair -Q poll --autoscale=8,"$WORKER_CONCURRENCY" $MAX_TASKS_FLAG

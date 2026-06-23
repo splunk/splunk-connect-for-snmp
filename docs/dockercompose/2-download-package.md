@@ -12,6 +12,7 @@ After extracting the package, you need to create or edit the following files bef
 | Inventory file | Defines which devices to poll | [Inventory configuration](./3-inventory-configuration.md) |
 | Scheduler config file | Defines polling profiles, communities, and groups | [Scheduler configuration](./4-scheduler-configuration.md) |
 | Traps config file | Defines communities and secrets for receiving traps | [Traps configuration](./5-traps-configuration.md) |
+| Discovery config file| Defines subnets for autodiscovery | [Discovery configuration](./11-discovery-configuration.md) |
 | `secrets.json` | Stores SNMPv3 credentials (optional, SNMPv3 only) | [SNMPv3 secrets](../configuration/snmpv3.md) |
 | `.env` | Sets absolute paths to the files above, Splunk connection details, and tuning parameters | [.env file](./6-env-file-configuration.md) |
 
