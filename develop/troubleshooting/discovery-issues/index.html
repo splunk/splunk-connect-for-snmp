@@ -9,10 +9,8 @@
       
       
       
-        <link rel="prev" href="../polling-issues/">
+        <link rel="prev" href="../traps-issues/">
       
-      
-        <link rel="next" href="../discovery-issues/">
       
       
         
@@ -23,7 +21,7 @@
     
     
       
-        <title>Traps issues - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Discovery issues - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -72,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#identifying-traps-issues" class="md-skip">
+        <a href="#troubleshooting-discovery-issues" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Traps issues
+              Discovery issues
             
           </span>
         </div>
@@ -2583,6 +2581,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../traps-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Traps issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -2602,7 +2628,7 @@
   <span class="md-ellipsis">
     
   
-    Traps issues
+    Discovery issues
   
 
     
@@ -2620,7 +2646,7 @@
   <span class="md-ellipsis">
     
   
-    Traps issues
+    Discovery issues
   
 
     
@@ -2646,10 +2672,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#wrong-ip-or-port" class="md-nav__link">
+  <a href="#permission-denied-while-writing-discovery-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Wrong IP or port
+        Permission denied while writing discovery file
       
     </span>
   </a>
@@ -2657,10 +2683,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#unknown-snmp-community-name-encountered" class="md-nav__link">
+  <a href="#discovery-not-completed-within-the-time-limit" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Unknown SNMP community name encountered
+        Discovery not completed within the time limit
       
     </span>
   </a>
@@ -2668,32 +2694,38 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#unknown-snmp-security-name-encountered" class="md-nav__link">
+  <a href="#discovery-takes-too-much-time" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Unknown SNMP security name encountered
+        Discovery takes too much time
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovery takes too much time">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adjust-timeout-and-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adjust Timeout and Retries
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#authenticator-mismatched" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Authenticator mismatched
-      
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#ciphering-services-not-available-or-ciphertext-is-broken" class="md-nav__link">
+  <a href="#no-output-in-discovery_devicescsv" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Ciphering services not available or ciphertext is broken
+        No Output in discovery_devices.csv
       
     </span>
   </a>
@@ -2704,34 +2736,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../discovery-issues/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Discovery issues
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -2771,10 +2775,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#wrong-ip-or-port" class="md-nav__link">
+  <a href="#permission-denied-while-writing-discovery-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Wrong IP or port
+        Permission denied while writing discovery file
       
     </span>
   </a>
@@ -2782,10 +2786,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#unknown-snmp-community-name-encountered" class="md-nav__link">
+  <a href="#discovery-not-completed-within-the-time-limit" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Unknown SNMP community name encountered
+        Discovery not completed within the time limit
       
     </span>
   </a>
@@ -2793,32 +2797,38 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#unknown-snmp-security-name-encountered" class="md-nav__link">
+  <a href="#discovery-takes-too-much-time" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Unknown SNMP security name encountered
+        Discovery takes too much time
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovery takes too much time">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adjust-timeout-and-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adjust Timeout and Retries
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#authenticator-mismatched" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Authenticator mismatched
-      
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#ciphering-services-not-available-or-ciphertext-is-broken" class="md-nav__link">
+  <a href="#no-output-in-discovery_devicescsv" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Ciphering services not available or ciphertext is broken
+        No Output in discovery_devices.csv
       
     </span>
   </a>
@@ -2842,137 +2852,52 @@
 
 
 
-<div><h1 id="identifying-traps-issues">Identifying Traps issues<a class="headerlink" href="#identifying-traps-issues" title="Permanent link">¶</a></h1>
-<h2 id="wrong-ip-or-port">Wrong IP or port<a class="headerlink" href="#wrong-ip-or-port" title="Permanent link">¶</a></h2>
-<p>The first possible answer to why traps are not sent to Splunk is that SNMP agents send trap messages to the wrong IP
-address or port.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<p>To check what is the correct address of traps server, run the following command:</p>
-<div class="highlight"><pre><span></span><code>microk8s kubectl -n sc4snmp get services
+<div><h1 id="troubleshooting-discovery-issues">Troubleshooting Discovery Issues<a class="headerlink" href="#troubleshooting-discovery-issues" title="Permanent link">¶</a></h1>
+<h2 id="permission-denied-while-writing-discovery-file">Permission denied while writing discovery file<a class="headerlink" href="#permission-denied-while-writing-discovery-file" title="Permanent link">¶</a></h2>
+<p>Discovery fails with a <code>PermissionError</code> related to <code>discovery_devices.csv</code>. In such cases, you may see the following error:</p>
+<div class="highlight"><pre><span></span><code>PermissionError: [Errno 13] Permission denied: '/app/discovery/discovery_devices.csv'
 </code></pre></div>
-<p>This command should output similar data:
-</p><div class="highlight"><pre><span></span><code>NAME                                TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)         AGE
-snmp-redis-master                 ClusterIP      None             &lt;none&gt;           6379/TCP        113s
-snmp-mibserver                      ClusterIP      10.152.183.163   &lt;none&gt;           80/TCP          113s
-snmp-mongodb                        ClusterIP      10.152.183.118   &lt;none&gt;           27017/TCP       113s
-snmp-redis-master                   ClusterIP      10.152.183.61    &lt;none&gt;           6379/TCP        113s
-snmp-mongodb-metrics                ClusterIP      10.152.183.50    &lt;none&gt;           9216/TCP        113s
-snmp-splunk-connect-for-snmp-trap   LoadBalancer   10.152.183.190   114.241.233.134   162:32180/UDP   113s
+<p>The folder specified in the <code>discoveryPath</code> value (which is mounted to <code>/app/discovery</code> inside the container) does not have the correct permissions for the application user (UID <code>10001</code>) to write files.</p>
+<p>Ensure that the folder specified in the <code>discoveryPath</code> has write permissions for UID <code>10001</code>. You can fix this by updating the folder ownership or permissions before starting the containers.</p>
+<p><strong>Example (on the host system):</strong>
+</p><div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span><span class="m">10001</span>:10001<span class="w"> </span>/your/local/folder/path
+sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>/your/local/folder/path
 </code></pre></div>
-<p>Check the <code>EXTERNAL-IP</code> of <code>snmp-splunk-connect-for-snmp-trap</code> and the second port number for this service. In this case
-the full <code>snmp-splunk-connect-for-snmp-trap</code> address will be <code>114.241.233.134:32180</code>.</p>
-<p>In case agents send traps to the correct address, but there is still no data in the <code>netops</code> index, there might be some
-issues with credentials. These errors can be seen in logs of the <code>snmp-splunk-connect-for-snmp-trap</code> pod.</p>
-</div>
-<div class="tabbed-block">
-<p>The trap server listens on the host IP on the port defined by <code>TRAPS_PORT</code> in <code>.env</code>. Check the current value:</p>
-<div class="highlight"><pre><span></span><code>TRAPS_PORT=162
+<h2 id="discovery-not-completed-within-the-time-limit">Discovery not completed within the time limit<a class="headerlink" href="#discovery-not-completed-within-the-time-limit" title="Permanent link">¶</a></h2>
+<p>If the subnet being scanned has a large IP range (e.g., <code>/22</code>, <code>/21</code>, or bigger), the task may not be completed within the default time limit of <strong>2400 seconds</strong>. In such cases, you may see the following error:</p>
+<div class="highlight"><pre><span></span><code>[2025-08-07 06:03:29,415: ERROR/MainProcess] Hard time limit (2400s) exceeded for splunk_connect_for_snmp.discovery.tasks.discovery
 </code></pre></div>
-<p>SNMP agents should send traps to the host machine’s IP address on that port.</p>
-<p>In case agents send traps to the correct address, but there is still no data in the <code>netops</code> index, there might be some
-issues with credentials. These errors can be seen in logs of the <code>sc4snmp-traps</code> container.</p>
-</div>
-</div>
-</div>
-<h2 id="unknown-snmp-community-name-encountered">Unknown SNMP community name encountered<a class="headerlink" href="#unknown-snmp-community-name-encountered" title="Permanent link">¶</a></h2>
-<p>In case of using community string for authentication purposes, the following error should be expected if the arriving trap
-has a community string not configured in SC4SNMP:
-</p><div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,885 ERROR Security Model failure for device ('18.226.181.199', 42514): Unknown SNMP community name encountered
+<p>Increase the task timeout value using the <code>taskTimeout</code> field under the <code>worker</code> section in your <code>values.yaml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">taskTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3600</span><span class="w">  </span><span class="c1"># Increase based on expected duration</span>
 </code></pre></div>
-<p>If this error occurs, check if the appropriate community is defined. See the
-following example of a <code>public</code> community configuration:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked id="__tabbed_2_1" name="__tabbed_2" type="radio"><input id="__tabbed_2_2" name="__tabbed_2" type="radio"><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<p>Check <code>traps.communities</code> in <code>values.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">communities</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">2c</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
+<h2 id="discovery-takes-too-much-time">Discovery takes too much time<a class="headerlink" href="#discovery-takes-too-much-time" title="Permanent link">¶</a></h2>
+<p>Discovery tasks may take longer to complete due to unnecessary SNMP requests or long wait times when scanning large subnets. Below are few ways to optimize performance:</p>
+<h3 id="adjust-timeout-and-retries">Adjust Timeout and Retries<a class="headerlink" href="#adjust-timeout-and-retries" title="Permanent link">¶</a></h3>
+<p>If the subnet has very few SNMP-enabled devices, high timeout and retry values can significantly slow down the process.<br>
+For example, with the default <code>udpConnectionTimeout</code> of <code>3</code> seconds and <code>udpConnectionRetries</code> of <code>5</code>, a non-SNMP-enabled device will take up to <strong>15 seconds</strong> before moving to the next IP.<br>
+Consider lowering the retry parameters to speed up execution:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">udpConnectionTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">udpConnectionRetries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Reduce these values carefully. Setting them too low may cause missed detections in slow or high-latency networks, which can impact data accuracy.</p>
 </div>
-<div class="tabbed-block">
-<p>Check <code>communities</code> in <code>traps-config.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">2c</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
-</code></pre></div>
-</div>
-</div>
-</div>
-<h2 id="unknown-snmp-security-name-encountered">Unknown SNMP security name encountered<a class="headerlink" href="#unknown-snmp-security-name-encountered" title="Permanent link">¶</a></h2>
-<p>While sending SNMP v3 traps in case of wrong username or engine id configuration, the following error should be expected:
-</p><div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,091 ERROR Security Model failure for device ('18.226.181.199', 46066): Unknown SNMP security name encountered
-</code></pre></div>
-<p>If this error occurs, verify that the correct username has been created (<a href="../../configuration/snmpv3/">SNMPv3 configuration</a>).
-After creating the secret, add it to <code>usernameSecrets</code> and check that the correct SNMP engine id is configured. See the following example with configured secret and engine id:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked id="__tabbed_3_1" name="__tabbed_3" type="radio"><input id="__tabbed_3_2" name="__tabbed_3" type="radio"><div class="tabbed-labels"><label for="__tabbed_3_1">microk8s</label><label for="__tabbed_3_2">docker compose</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
-<span class="w">  </span><span class="nt">securityEngineId</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"090807060504030201"</span>
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>In <code>traps-config.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">usernameSecrets</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
-</code></pre></div>
-<p>In <code>.env</code>:</p>
-<div class="highlight"><pre><span></span><code>SNMP_V3_SECURITY_ENGINE_ID=090807060504030201
-</code></pre></div>
-</div>
-</div>
-</div>
-<h2 id="authenticator-mismatched">Authenticator mismatched<a class="headerlink" href="#authenticator-mismatched" title="Permanent link">¶</a></h2>
-<p>While sending SNMP v3 traps in case of wrong authentication protocol or password configuration, the following error should be expected:
-</p><div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,642 ERROR Security Model failure for device ('18.226.181.199', 54806): Authenticator mismatched
-</code></pre></div>
-If this error occurs, verify that the correct authentication protocol and password has been created (<a href="../../configuration/snmpv3/">SNMPv3 configuration</a>).
-After creating the secret, add it to <code>usernameSecrets</code>. See the following example with configured secret:
-<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked id="__tabbed_4_1" name="__tabbed_4" type="radio"><input id="__tabbed_4_2" name="__tabbed_4" type="radio"><div class="tabbed-labels"><label for="__tabbed_4_1">microk8s</label><label for="__tabbed_4_2">docker compose</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>In <code>traps-config.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">usernameSecrets</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
-</code></pre></div>
-</div>
-</div>
-</div>
-<h2 id="ciphering-services-not-available-or-ciphertext-is-broken">Ciphering services not available or ciphertext is broken<a class="headerlink" href="#ciphering-services-not-available-or-ciphertext-is-broken" title="Permanent link">¶</a></h2>
-<p>While sending SNMP v3 traps in case of wrong privacy protocol or password configuration, the following error should be expected:
-</p><div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,780 ERROR Security Model failure for device ('18.226.181.199', 48249): Ciphering services not available or ciphertext is broken
-</code></pre></div>
-If this error occurs, verify that the correct privacy protocol and password has been created (<a href="../../configuration/snmpv3/">SNMPv3 configuration</a>).
-After creating the secret, add it to <code>usernameSecrets</code>. See the following example with configured secret:
-<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked id="__tabbed_5_1" name="__tabbed_5" type="radio"><input id="__tabbed_5_2" name="__tabbed_5" type="radio"><div class="tabbed-labels"><label for="__tabbed_5_1">microk8s</label><label for="__tabbed_5_2">docker compose</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>In <code>traps-config.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">usernameSecrets</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
-</code></pre></div>
-</div>
-</div>
-</div></div>
+<h2 id="no-output-in-discovery_devicescsv">No Output in <code>discovery_devices.csv</code><a class="headerlink" href="#no-output-in-discovery_devicescsv" title="Permanent link">¶</a></h2>
+<p>After running a discovery task, no entries are written to the <code>discovery_devices.csv</code> file. The issue might have several root causes. Some of them are:</p>
+<ul>
+<li>Wrong device IP or port provided.</li>
+<li>Subnet contains no reachable or SNMP-enabled devices.</li>
+<li>Nmap is unable to detect live hosts due to network or firewall restrictions.</li>
+<li>For SNMPv2c: Incorrect community string.</li>
+<li>For SNMPv3: Incorrect privacy key or authentication credentials.</li>
+</ul>
+<p><strong>Resolution:</strong>
+- Double-check the IP range or subnet provided in the discovery config.
+- Validate that the target devices have SNMP enabled and are reachable from the container. 
+- Verify SNMP credentials (community string or SNMPv3 credentials) for correctness.</p></div>
 
 
 

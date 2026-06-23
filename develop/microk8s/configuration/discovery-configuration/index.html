@@ -9,28 +9,28 @@
       
       
       
-        <link rel="prev" href="../polling-issues/">
+        <link rel="prev" href="../scheduler-configuration/">
       
       
-        <link rel="next" href="../discovery-issues/">
+        <link rel="next" href="../mongo-configuration/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Traps issues - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Discovery - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,7 +49,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#identifying-traps-issues" class="md-skip">
+        <a href="#discovery-configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -92,7 +92,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+    <a href="../../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Traps issues
+              Discovery
             
           </span>
         </div>
@@ -190,7 +190,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+    <a href="../../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -208,7 +208,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -282,7 +282,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/design/" class="md-nav__link">
+      <a href="../../../architecture/design/" class="md-nav__link">
         
   
   
@@ -310,7 +310,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/planning/" class="md-nav__link">
+      <a href="../../../architecture/planning/" class="md-nav__link">
         
   
   
@@ -342,18 +342,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -374,7 +376,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -389,18 +391,20 @@
                 
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
         
           
           <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
@@ -421,7 +425,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_1">
             <span class="md-nav__icon md-icon"></span>
             
@@ -439,7 +443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/splunk-requirements/" class="md-nav__link">
+      <a href="../../splunk-requirements/" class="md-nav__link">
         
   
   
@@ -467,7 +471,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/mk8s/k8s-microk8s/" class="md-nav__link">
+      <a href="../../mk8s/k8s-microk8s/" class="md-nav__link">
         
   
   
@@ -495,7 +499,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/sck-installation/" class="md-nav__link">
+      <a href="../../sck-installation/" class="md-nav__link">
         
   
   
@@ -523,7 +527,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/sc4snmp-installation/" class="md-nav__link">
+      <a href="../../sc4snmp-installation/" class="md-nav__link">
         
   
   
@@ -551,7 +555,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/configuration/values-params-description/" class="md-nav__link">
+      <a href="../values-params-description/" class="md-nav__link">
         
   
   
@@ -576,18 +580,20 @@
                 
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_6" checked>
         
           
           <label class="md-nav__link" for="__nav_3_1_6" id="__nav_3_1_6_label" tabindex="0">
@@ -608,7 +614,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_1_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -626,7 +632,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/configuration/deployment-configuration/" class="md-nav__link">
+      <a href="../deployment-configuration/" class="md-nav__link">
         
   
   
@@ -654,7 +660,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/configuration/scheduler-configuration/" class="md-nav__link">
+      <a href="../scheduler-configuration/" class="md-nav__link">
         
   
   
@@ -679,10 +685,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../microk8s/configuration/discovery-configuration/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -698,6 +731,175 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#discovery-configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery configuration file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enable-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enable Discovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-log-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Define log level
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enable-ipv6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enable IPv6
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-discovery-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Define Discovery Path
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-usernamesecrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Define usernamesecrets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-discovery-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure discovery tasks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-delete_already_discovered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Define delete_already_discovered
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-device_rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Define device_rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-timeouts-and-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure Timeouts and Retries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configure Timeouts and Retries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tasktimeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taskTimeout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#udpconnectiontimeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        udpConnectionTimeout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#udpconnectionretries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        udpConnectionRetries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -710,7 +912,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/configuration/mongo-configuration/" class="md-nav__link">
+      <a href="../mongo-configuration/" class="md-nav__link">
         
   
   
@@ -738,7 +940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/configuration/redis-configuration/" class="md-nav__link">
+      <a href="../redis-configuration/" class="md-nav__link">
         
   
   
@@ -766,7 +968,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/configuration/sim-configuration/" class="md-nav__link">
+      <a href="../sim-configuration/" class="md-nav__link">
         
   
   
@@ -794,7 +996,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/configuration/coredns-configuration/" class="md-nav__link">
+      <a href="../coredns-configuration/" class="md-nav__link">
         
   
   
@@ -877,7 +1079,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/gui/enable-gui/" class="md-nav__link">
+      <a href="../../gui/enable-gui/" class="md-nav__link">
         
   
   
@@ -905,7 +1107,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/gui/profiles-gui/" class="md-nav__link">
+      <a href="../../gui/profiles-gui/" class="md-nav__link">
         
   
   
@@ -933,7 +1135,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/gui/groups-gui/" class="md-nav__link">
+      <a href="../../gui/groups-gui/" class="md-nav__link">
         
   
   
@@ -961,7 +1163,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/gui/inventory-gui/" class="md-nav__link">
+      <a href="../../gui/inventory-gui/" class="md-nav__link">
         
   
   
@@ -989,7 +1191,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/gui/apply-changes/" class="md-nav__link">
+      <a href="../../gui/apply-changes/" class="md-nav__link">
         
   
   
@@ -1072,7 +1274,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/upgrade/" class="md-nav__link">
+      <a href="../../upgrade/" class="md-nav__link">
         
   
   
@@ -1100,7 +1302,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/mk8s/k8s-microk8s-scaling/" class="md-nav__link">
+      <a href="../../mk8s/k8s-microk8s-scaling/" class="md-nav__link">
         
   
   
@@ -1128,7 +1330,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/enable-ipv6/" class="md-nav__link">
+      <a href="../../enable-ipv6/" class="md-nav__link">
         
   
   
@@ -1203,7 +1405,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/offlineinstallation/offline-microk8s/" class="md-nav__link">
+      <a href="../../offlineinstallation/offline-microk8s/" class="md-nav__link">
         
   
   
@@ -1231,7 +1433,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/offlineinstallation/offline-sck/" class="md-nav__link">
+      <a href="../../offlineinstallation/offline-sck/" class="md-nav__link">
         
   
   
@@ -1259,7 +1461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/offlineinstallation/offline-sc4snmp/" class="md-nav__link">
+      <a href="../../offlineinstallation/offline-sc4snmp/" class="md-nav__link">
         
   
   
@@ -1358,7 +1560,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/0-splunk-requirements/" class="md-nav__link">
+      <a href="../../../dockercompose/0-splunk-requirements/" class="md-nav__link">
         
   
   
@@ -1386,7 +1588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/1-install-docker/" class="md-nav__link">
+      <a href="../../../dockercompose/1-install-docker/" class="md-nav__link">
         
   
   
@@ -1414,7 +1616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/2-download-package/" class="md-nav__link">
+      <a href="../../../dockercompose/2-download-package/" class="md-nav__link">
         
   
   
@@ -1489,7 +1691,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/3-inventory-configuration/" class="md-nav__link">
+      <a href="../../../dockercompose/3-inventory-configuration/" class="md-nav__link">
         
   
   
@@ -1517,7 +1719,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/4-scheduler-configuration/" class="md-nav__link">
+      <a href="../../../dockercompose/4-scheduler-configuration/" class="md-nav__link">
         
   
   
@@ -1545,7 +1747,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/5-traps-configuration/" class="md-nav__link">
+      <a href="../../../dockercompose/5-traps-configuration/" class="md-nav__link">
         
   
   
@@ -1573,7 +1775,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/11-discovery-configuration/" class="md-nav__link">
+      <a href="../../../dockercompose/11-discovery-configuration/" class="md-nav__link">
         
   
   
@@ -1601,7 +1803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/snmpv3/" class="md-nav__link">
+      <a href="../../../configuration/snmpv3/" class="md-nav__link">
         
   
   
@@ -1629,7 +1831,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/6-env-file-configuration/" class="md-nav__link">
+      <a href="../../../dockercompose/6-env-file-configuration/" class="md-nav__link">
         
   
   
@@ -1712,7 +1914,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/8-offline-installation/" class="md-nav__link">
+      <a href="../../../dockercompose/8-offline-installation/" class="md-nav__link">
         
   
   
@@ -1740,7 +1942,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/9-splunk-logging/" class="md-nav__link">
+      <a href="../../../dockercompose/9-splunk-logging/" class="md-nav__link">
         
   
   
@@ -1768,7 +1970,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/10-enable-ipv6/" class="md-nav__link">
+      <a href="../../../dockercompose/10-enable-ipv6/" class="md-nav__link">
         
   
   
@@ -1804,7 +2006,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/11-deploy-and-run/" class="md-nav__link">
+      <a href="../../../dockercompose/11-deploy-and-run/" class="md-nav__link">
         
   
   
@@ -1894,7 +2096,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/splunk-configuration/" class="md-nav__link">
+      <a href="../../../configuration/splunk-configuration/" class="md-nav__link">
         
   
   
@@ -1922,7 +2124,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/inventory/" class="md-nav__link">
+      <a href="../../../configuration/inventory/" class="md-nav__link">
         
   
   
@@ -1950,7 +2152,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/profiles/" class="md-nav__link">
+      <a href="../../../configuration/profiles/" class="md-nav__link">
         
   
   
@@ -1978,7 +2180,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/groups/" class="md-nav__link">
+      <a href="../../../configuration/groups/" class="md-nav__link">
         
   
   
@@ -2006,7 +2208,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/traps/" class="md-nav__link">
+      <a href="../../../configuration/traps/" class="md-nav__link">
         
   
   
@@ -2034,7 +2236,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/snmpv3/" class="md-nav__link">
+      <a href="../../../configuration/snmpv3/" class="md-nav__link">
         
   
   
@@ -2062,7 +2264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/poller-configuration/" class="md-nav__link">
+      <a href="../../../configuration/poller-configuration/" class="md-nav__link">
         
   
   
@@ -2090,7 +2292,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/workers/" class="md-nav__link">
+      <a href="../../../configuration/workers/" class="md-nav__link">
         
   
   
@@ -2118,7 +2320,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/step-by-step-poll/" class="md-nav__link">
+      <a href="../../../configuration/step-by-step-poll/" class="md-nav__link">
         
   
   
@@ -2146,7 +2348,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../configuration/snmp-data-format/" class="md-nav__link">
+      <a href="../../../configuration/snmp-data-format/" class="md-nav__link">
         
   
   
@@ -2181,7 +2383,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ha/" class="md-nav__link">
+      <a href="../../../ha/" class="md-nav__link">
         
   
   
@@ -2208,7 +2410,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../small-environment/" class="md-nav__link">
+      <a href="../../../small-environment/" class="md-nav__link">
         
   
   
@@ -2235,7 +2437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dashboard/" class="md-nav__link">
+      <a href="../../../dashboard/" class="md-nav__link">
         
   
   
@@ -2262,7 +2464,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../discovery/" class="md-nav__link">
+      <a href="../../../discovery/" class="md-nav__link">
         
   
   
@@ -2289,7 +2491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../releases/" class="md-nav__link">
+      <a href="../../../releases/" class="md-nav__link">
         
   
   
@@ -2316,7 +2518,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../mib-request/" class="md-nav__link">
+      <a href="../../../mib-request/" class="md-nav__link">
         
   
   
@@ -2343,7 +2545,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../security/" class="md-nav__link">
+      <a href="../../../security/" class="md-nav__link">
         
   
   
@@ -2370,7 +2572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../mtls/" class="md-nav__link">
+      <a href="../../../mtls/" class="md-nav__link">
         
   
   
@@ -2394,20 +2596,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
           <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
@@ -2428,7 +2628,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2446,7 +2646,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../configuring-logs/" class="md-nav__link">
+      <a href="../../../troubleshooting/configuring-logs/" class="md-nav__link">
         
   
   
@@ -2474,7 +2674,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../docker-commands/" class="md-nav__link">
+      <a href="../../../troubleshooting/docker-commands/" class="md-nav__link">
         
   
   
@@ -2502,7 +2702,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../k8s-commands/" class="md-nav__link">
+      <a href="../../../troubleshooting/k8s-commands/" class="md-nav__link">
         
   
   
@@ -2530,7 +2730,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../general-issues/" class="md-nav__link">
+      <a href="../../../troubleshooting/general-issues/" class="md-nav__link">
         
   
   
@@ -2558,7 +2758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../polling-issues/" class="md-nav__link">
+      <a href="../../../troubleshooting/polling-issues/" class="md-nav__link">
         
   
   
@@ -2583,37 +2783,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Traps issues
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../troubleshooting/traps-issues/" class="md-nav__link">
         
   
   
@@ -2629,81 +2802,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#wrong-ip-or-port" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Wrong IP or port
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#unknown-snmp-community-name-encountered" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Unknown SNMP community name encountered
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#unknown-snmp-security-name-encountered" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Unknown SNMP security name encountered
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#authenticator-mismatched" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Authenticator mismatched
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ciphering-services-not-available-or-ciphertext-is-broken" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Ciphering services not available or ciphertext is broken
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2716,7 +2814,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../discovery-issues/" class="md-nav__link">
+      <a href="../../../troubleshooting/discovery-issues/" class="md-nav__link">
         
   
   
@@ -2771,10 +2869,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#wrong-ip-or-port" class="md-nav__link">
+  <a href="#discovery-configuration-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Wrong IP or port
+        Discovery configuration file
       
     </span>
   </a>
@@ -2782,10 +2880,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#unknown-snmp-community-name-encountered" class="md-nav__link">
+  <a href="#enable-discovery" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Unknown SNMP community name encountered
+        Enable Discovery
       
     </span>
   </a>
@@ -2793,10 +2891,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#unknown-snmp-security-name-encountered" class="md-nav__link">
+  <a href="#define-log-level" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Unknown SNMP security name encountered
+        Define log level
       
     </span>
   </a>
@@ -2804,10 +2902,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#authenticator-mismatched" class="md-nav__link">
+  <a href="#enable-ipv6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Authenticator mismatched
+        Enable IPv6
       
     </span>
   </a>
@@ -2815,13 +2913,107 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#ciphering-services-not-available-or-ciphertext-is-broken" class="md-nav__link">
+  <a href="#define-discovery-path" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Ciphering services not available or ciphertext is broken
+        Define Discovery Path
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-usernamesecrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Define usernamesecrets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-discovery-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure discovery tasks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-delete_already_discovered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Define delete_already_discovered
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-device_rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Define device_rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-timeouts-and-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configure Timeouts and Retries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configure Timeouts and Retries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tasktimeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taskTimeout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#udpconnectiontimeout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        udpConnectionTimeout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#udpconnectionretries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        udpConnectionRetries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2842,137 +3034,178 @@
 
 
 
-<div><h1 id="identifying-traps-issues">Identifying Traps issues<a class="headerlink" href="#identifying-traps-issues" title="Permanent link">¶</a></h1>
-<h2 id="wrong-ip-or-port">Wrong IP or port<a class="headerlink" href="#wrong-ip-or-port" title="Permanent link">¶</a></h2>
-<p>The first possible answer to why traps are not sent to Splunk is that SNMP agents send trap messages to the wrong IP
-address or port.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<p>To check what is the correct address of traps server, run the following command:</p>
-<div class="highlight"><pre><span></span><code>microk8s kubectl -n sc4snmp get services
-</code></pre></div>
-<p>This command should output similar data:
-</p><div class="highlight"><pre><span></span><code>NAME                                TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)         AGE
-snmp-redis-master                 ClusterIP      None             &lt;none&gt;           6379/TCP        113s
-snmp-mibserver                      ClusterIP      10.152.183.163   &lt;none&gt;           80/TCP          113s
-snmp-mongodb                        ClusterIP      10.152.183.118   &lt;none&gt;           27017/TCP       113s
-snmp-redis-master                   ClusterIP      10.152.183.61    &lt;none&gt;           6379/TCP        113s
-snmp-mongodb-metrics                ClusterIP      10.152.183.50    &lt;none&gt;           9216/TCP        113s
-snmp-splunk-connect-for-snmp-trap   LoadBalancer   10.152.183.190   114.241.233.134   162:32180/UDP   113s
-</code></pre></div>
-<p>Check the <code>EXTERNAL-IP</code> of <code>snmp-splunk-connect-for-snmp-trap</code> and the second port number for this service. In this case
-the full <code>snmp-splunk-connect-for-snmp-trap</code> address will be <code>114.241.233.134:32180</code>.</p>
-<p>In case agents send traps to the correct address, but there is still no data in the <code>netops</code> index, there might be some
-issues with credentials. These errors can be seen in logs of the <code>snmp-splunk-connect-for-snmp-trap</code> pod.</p>
-</div>
-<div class="tabbed-block">
-<p>The trap server listens on the host IP on the port defined by <code>TRAPS_PORT</code> in <code>.env</code>. Check the current value:</p>
-<div class="highlight"><pre><span></span><code>TRAPS_PORT=162
-</code></pre></div>
-<p>SNMP agents should send traps to the host machine’s IP address on that port.</p>
-<p>In case agents send traps to the correct address, but there is still no data in the <code>netops</code> index, there might be some
-issues with credentials. These errors can be seen in logs of the <code>sc4snmp-traps</code> container.</p>
-</div>
-</div>
-</div>
-<h2 id="unknown-snmp-community-name-encountered">Unknown SNMP community name encountered<a class="headerlink" href="#unknown-snmp-community-name-encountered" title="Permanent link">¶</a></h2>
-<p>In case of using community string for authentication purposes, the following error should be expected if the arriving trap
-has a community string not configured in SC4SNMP:
-</p><div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,885 ERROR Security Model failure for device ('18.226.181.199', 42514): Unknown SNMP community name encountered
-</code></pre></div>
-<p>If this error occurs, check if the appropriate community is defined. See the
-following example of a <code>public</code> community configuration:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked id="__tabbed_2_1" name="__tabbed_2" type="radio"><input id="__tabbed_2_2" name="__tabbed_2" type="radio"><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<p>Check <code>traps.communities</code> in <code>values.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">communities</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">2c</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>Check <code>communities</code> in <code>traps-config.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">2c</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
-</code></pre></div>
-</div>
-</div>
-</div>
-<h2 id="unknown-snmp-security-name-encountered">Unknown SNMP security name encountered<a class="headerlink" href="#unknown-snmp-security-name-encountered" title="Permanent link">¶</a></h2>
-<p>While sending SNMP v3 traps in case of wrong username or engine id configuration, the following error should be expected:
-</p><div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,091 ERROR Security Model failure for device ('18.226.181.199', 46066): Unknown SNMP security name encountered
-</code></pre></div>
-<p>If this error occurs, verify that the correct username has been created (<a href="../../configuration/snmpv3/">SNMPv3 configuration</a>).
-After creating the secret, add it to <code>usernameSecrets</code> and check that the correct SNMP engine id is configured. See the following example with configured secret and engine id:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked id="__tabbed_3_1" name="__tabbed_3" type="radio"><input id="__tabbed_3_2" name="__tabbed_3" type="radio"><div class="tabbed-labels"><label for="__tabbed_3_1">microk8s</label><label for="__tabbed_3_2">docker compose</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<div><h1 id="discovery-configuration">Discovery Configuration<a class="headerlink" href="#discovery-configuration" title="Permanent link">¶</a></h1>
+<p>The discovery feature automatically discovers SNMP-enabled devices within a given subnet. Based on the discovery results, a <code>discovery_devices.csv</code> is generated and can be used to configure polling.</p>
+<p>Discovery supports IPv4 and IPv6 subnets, SNMP v1, v2c, and v3 devices, and basic grouping of devices using SNMP <code>sysDescr</code> from <code>SNMPv2-MIB</code> (OID <code>1.3.6.1.2.1.1.1.0</code>).</p>
+<h3 id="discovery-configuration-file">Discovery configuration file<a class="headerlink" href="#discovery-configuration-file" title="Permanent link">¶</a></h3>
+<p>The discovery configuration is kept in the <code>values.yaml</code> file in the discovery section.
+<code>values.yaml</code> is used during the installation process for configuring Kubernetes values.</p>
+<p>See the following discovery example configuration:
+</p><div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"DEBUG"</span>
+<span class="w">  </span><span class="nt">ipv6Enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">discoveryPath</span><span class="p">:</span><span class="w"> </span><span class="s">"/home/user/sc4snmp"</span>
 <span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
-<span class="w">  </span><span class="nt">securityEngineId</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"090807060504030201"</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-hlab-sha-aes</span>
+
+<span class="w">  </span><span class="nt">autodiscovery</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">discovery_version2c</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">86400</span>
+<span class="w">      </span><span class="nt">delete_already_discovered</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">network_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.200/30</span>
+<span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"2c"</span>
+<span class="w">      </span><span class="nt">community</span><span class="p">:</span><span class="w"> </span><span class="s">"public"</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">161</span>
+<span class="w">      </span><span class="nt">device_rules</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"Linux</span><span class="nv"> </span><span class="s">servers"</span>
+<span class="w">          </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">"*linux*"</span>
+<span class="w">          </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">"linux-group"</span>
+
+<span class="w">    </span><span class="nt">discovery_version3</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">43200</span>
+<span class="w">      </span><span class="nt">delete_already_discovered</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">network_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.200/30</span>
+<span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"3"</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">161</span>
+<span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-hlab-sha-aes</span>
+<span class="w">      </span><span class="nt">security_engine</span><span class="p">:</span><span class="w"> </span><span class="s">"80001f8880e761866965756b6800000000"</span>
+<span class="w">      </span><span class="nt">device_rules</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"Windows</span><span class="nv"> </span><span class="s">servers"</span>
+<span class="w">          </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">"*Windows*"</span>
+<span class="w">          </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">"windows-group"</span>
 </code></pre></div>
+<h3 id="enable-discovery">Enable Discovery<a class="headerlink" href="#enable-discovery" title="Permanent link">¶</a></h3>
+<p>To enable or disable the discovery feature set <code>enabled</code> key. 
+The default value is <code>false</code>. </p>
+<h3 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">¶</a></h3>
+<p>The log level for discovery can be set by changing the value for the <code>logLevel</code> key. The allowed values are<code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, or <code>ERROR</code>. 
+The default value is <code>WARNING</code>.</p>
+<h3 id="enable-ipv6">Enable IPv6<a class="headerlink" href="#enable-ipv6" title="Permanent link">¶</a></h3>
+<p>To enable IPv6 subnet scanning, set <code>ipv6Enabled</code> key.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If <code>ipv6Enabled</code> is <code>false</code>, then the task will not be created for discovery key with IPv6 network address.</p>
 </div>
-<div class="tabbed-block">
-<p>In <code>traps-config.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">usernameSecrets</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
+<h3 id="define-discovery-path">Define Discovery Path<a class="headerlink" href="#define-discovery-path" title="Permanent link">¶</a></h3>
+<p><code>discoveryPath</code> specifies the absolute path on the local file system where the <code>discovery_devices.csv</code> file will be created.
+If the CSV file is not already present, then a new file will be created.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>The path provided should have read-write permission for user and group <code>10001</code>.</p>
+</div>
+<h3 id="define-usernamesecrets">Define usernamesecrets<a class="headerlink" href="#define-usernamesecrets" title="Permanent link">¶</a></h3>
+<p>The <code>usernameSecrets</code> key in the <code>discovery</code> section defines the SNMPv3 secrets for the discovery of the SNMP device. 
+<code>usernameSecrets</code> defines which secrets in “Secret” objects in k8s should be used, as a value, it needs the name of “Secret” objects. 
+For more information on how to define the “Secret” object for SNMPv3, see <a href="snmpv3-configuration.md">SNMPv3 Configuration</a>.</p>
+<p>See the following example:
+</p><div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">usernameSecrets</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-aes</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-des</span>
 </code></pre></div>
-<p>In <code>.env</code>:</p>
-<div class="highlight"><pre><span></span><code>SNMP_V3_SECURITY_ENGINE_ID=090807060504030201
+<h3 id="configure-discovery-tasks">Configure discovery tasks<a class="headerlink" href="#configure-discovery-tasks" title="Permanent link">¶</a></h3>
+<p>Discovery tasks are defined under the autodiscovery section. Each discovery task can target a specific subnet with its own SNMP version and settings. 
+Discovery key (i.e. task name) must start with a letter (not a number).</p>
+<p>Each task has the following fields to configure:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+<th>Default</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>frequency</code></td>
+<td>Time interval (in minutes) between each run of the discovery task. Note: If the frequency is less than 6 hours, it will be taken as 6 hours by default.</td>
+<td><code>86400</code></td>
+<td>NO</td>
+</tr>
+<tr>
+<td><code>delete_already_discovered</code></td>
+<td>Deletes old entries of a particular discovery key before writing new ones.</td>
+<td><code>false</code></td>
+<td>NO</td>
+</tr>
+<tr>
+<td><code>network_address</code></td>
+<td>Subnet in CIDR notation to scan. Supports IPv4 or IPv6.</td>
+<td></td>
+<td>YES</td>
+</tr>
+<tr>
+<td><code>port</code></td>
+<td>SNMP listening port.</td>
+<td><code>161</code></td>
+<td>NO</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td>SNMP version, the allowed values are <code>1</code>, <code>2c</code>, or <code>3</code>.</td>
+<td><code>2c</code></td>
+<td>NO</td>
+</tr>
+<tr>
+<td><code>community</code></td>
+<td>SNMP community string, this field is required when the <code>version</code> is <code>1</code> or <code>2c</code>.</td>
+<td></td>
+<td>NO</td>
+</tr>
+<tr>
+<td><code>secret</code></td>
+<td>The reference to the secret from <code>discovery.usernameSecrets</code> that should be used to discover, this field is required when the <code>version</code> is <code>3</code> devices.</td>
+<td></td>
+<td>NO</td>
+</tr>
+<tr>
+<td><code>security_engine</code></td>
+<td>The security engine ID required by SNMPv3. If it is not provided for version <code>3</code>, it will be autogenerated.</td>
+<td></td>
+<td>NO</td>
+</tr>
+</tbody>
+</table>
+<h3 id="define-delete_already_discovered">Define delete_already_discovered<a class="headerlink" href="#define-delete_already_discovered" title="Permanent link">¶</a></h3>
+<p>The <code>delete_already_discovered</code> flag controls whether devices found in previous discovery runs are kept.</p>
+<p>Since the discovery task runs at fixed intervals to scan for SNMP-enabled devices:
+  - If set to <code>true</code>, all devices discovered in the previous run under the same discovery key will be deleted. This is useful when you want to ensure that the list always reflects the most up-to-date set of devices.
+  - If set to <code>false</code>, it will retain devices discovered in earlier runs, and new devices will be appended to the existing list. This is useful when you want to keep a cumulative list of all SNMP-enabled devices discovered over time.</p>
+<h3 id="define-device_rules">Define device_rules<a class="headerlink" href="#define-device_rules" title="Permanent link">¶</a></h3>
+<p>The <code>device_rules</code> section is used to organize discovered devices into logical groups based on pattern matching against their SNMP system descriptions (sysDescr).</p>
+<p>Each rule consists of:</p>
+<ul>
+<li><code>name</code>: A label to identify the rule. It is used for reference and should be unique within the list.</li>
+<li><code>patterns</code>: A wildcard pattern (supports <code>*</code>) that matches against the <code>sysDescr</code> returned from SNMP.</li>
+<li><code>group</code>: The name of the group to assign the matched devices to. This group can later be referenced for polling or other configurations.</li>
+</ul>
+<p><strong>Example</strong>
+</p><div class="highlight"><pre><span></span><code><span class="nt">device_rules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"Linux</span><span class="nv"> </span><span class="s">Devices"</span>
+<span class="w">    </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">"*Linux*"</span>
+<span class="w">    </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">"linux-group"</span><span class="w"> </span>
 </code></pre></div>
-</div>
-</div>
-</div>
-<h2 id="authenticator-mismatched">Authenticator mismatched<a class="headerlink" href="#authenticator-mismatched" title="Permanent link">¶</a></h2>
-<p>While sending SNMP v3 traps in case of wrong authentication protocol or password configuration, the following error should be expected:
-</p><div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,642 ERROR Security Model failure for device ('18.226.181.199', 54806): Authenticator mismatched
+<h3 id="configure-timeouts-and-retries">Configure Timeouts and Retries<a class="headerlink" href="#configure-timeouts-and-retries" title="Permanent link">¶</a></h3>
+<p><strong>Example</strong>
+</p><div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">taskTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8000</span>
+<span class="w">  </span><span class="nt">udpConnectionTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">udpConnectionRetries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"> </span>
 </code></pre></div>
-If this error occurs, verify that the correct authentication protocol and password has been created (<a href="../../configuration/snmpv3/">SNMPv3 configuration</a>).
-After creating the secret, add it to <code>usernameSecrets</code>. See the following example with configured secret:
-<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked id="__tabbed_4_1" name="__tabbed_4" type="radio"><input id="__tabbed_4_2" name="__tabbed_4" type="radio"><div class="tabbed-labels"><label for="__tabbed_4_1">microk8s</label><label for="__tabbed_4_2">docker compose</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>In <code>traps-config.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">usernameSecrets</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
-</code></pre></div>
-</div>
-</div>
-</div>
-<h2 id="ciphering-services-not-available-or-ciphertext-is-broken">Ciphering services not available or ciphertext is broken<a class="headerlink" href="#ciphering-services-not-available-or-ciphertext-is-broken" title="Permanent link">¶</a></h2>
-<p>While sending SNMP v3 traps in case of wrong privacy protocol or password configuration, the following error should be expected:
-</p><div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,780 ERROR Security Model failure for device ('18.226.181.199', 48249): Ciphering services not available or ciphertext is broken
-</code></pre></div>
-If this error occurs, verify that the correct privacy protocol and password has been created (<a href="../../configuration/snmpv3/">SNMPv3 configuration</a>).
-After creating the secret, add it to <code>usernameSecrets</code>. See the following example with configured secret:
-<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked id="__tabbed_5_1" name="__tabbed_5" type="radio"><input id="__tabbed_5_2" name="__tabbed_5" type="radio"><div class="tabbed-labels"><label for="__tabbed_5_1">microk8s</label><label for="__tabbed_5_2">docker compose</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>In <code>traps-config.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">usernameSecrets</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
-</code></pre></div>
-</div>
-</div>
-</div></div>
+<p>The following fields help control how long discovery tasks run and how SNMP responses are handled, especially for slower networks or larger subnets:</p>
+<h4 id="tasktimeout"><code>taskTimeout</code><a class="headerlink" href="#tasktimeout" title="Permanent link">¶</a></h4>
+<p>Defines the <strong>maximum execution time (in seconds)</strong> for a single discovery task.<br>
+- Default: <code>2400</code> seconds.<br>
+- Increase this if you are scanning large subnets or using longer SNMP retry configurations.</p>
+<p>Make sure <code>taskTimeout</code> is large enough to accommodate the <code>nmap</code> scan and the SNMP checks across all IPs.</p>
+<h4 id="udpconnectiontimeout"><code>udpConnectionTimeout</code><a class="headerlink" href="#udpconnectiontimeout" title="Permanent link">¶</a></h4>
+<p>Specifies the <strong>timeout (in seconds)</strong> for each SNMP request (<code>getCmd</code>).<br>
+Increase this if devices take longer to respond or if there is network latency.</p>
+<h4 id="udpconnectionretries"><code>udpConnectionRetries</code><a class="headerlink" href="#udpconnectionretries" title="Permanent link">¶</a></h4>
+<p>Determines how many times a request is retried if there is no response.<br>
+Higher retries can improve success rates on unstable networks, but will increase total execution time.</p></div>
 
 
 
@@ -3026,12 +3259,12 @@ After creating the secret, add it to <code>usernameSecrets</code>. See the follo
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
-        <script src="../../javascripts/footer.js"></script>
+        <script src="../../../javascripts/footer.js"></script>
       
     
   </body>

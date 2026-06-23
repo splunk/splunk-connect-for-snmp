@@ -684,6 +684,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../microk8s/configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../microk8s/configuration/mongo-configuration/" class="md-nav__link">
         
   
@@ -1551,6 +1579,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../11-discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../configuration/snmpv3/" class="md-nav__link">
         
   
@@ -1778,6 +1834,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#worker-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worker Discovery
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1788,6 +1855,17 @@
     <span class="md-ellipsis">
       
         Inventory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery
       
     </span>
   </a>
@@ -2442,6 +2520,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../discovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/" class="md-nav__link">
         
   
@@ -2558,10 +2663,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
@@ -2579,8 +2684,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2745,6 +2850,34 @@
     
   
     Traps issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/discovery-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery issues
   
 
     
@@ -2931,6 +3064,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#worker-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worker Discovery
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2941,6 +3085,17 @@
     <span class="md-ellipsis">
       
         Inventory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery
       
     </span>
   </a>
@@ -3002,6 +3157,7 @@
 <li><strong><code>SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH</code></strong> - absolute path to your <code>scheduler-config.yaml</code></li>
 <li><strong><code>TRAPS_CONFIG_FILE_ABSOLUTE_PATH</code></strong> - absolute path to your <code>traps-config.yaml</code></li>
 <li><strong><code>INVENTORY_FILE_ABSOLUTE_PATH</code></strong> - absolute path to your <code>inventory.csv</code></li>
+<li><strong><code>DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH</code></strong> - absolute path to your <code>discovery-config.yaml</code> (required when using discovery)</li>
 <li><strong><code>COREFILE_ABS_PATH</code></strong> - absolute path to the <code>Corefile</code> (a default <code>Corefile</code> is shipped inside the <code>docker_compose</code> package)</li>
 </ul>
 <p><strong>Splunk connection:</strong></p>
@@ -3046,6 +3202,10 @@
 <tr>
 <td><code>INVENTORY_FILE_ABSOLUTE_PATH</code></td>
 <td>Absolute path to <a href="../3-inventory-configuration/">inventory.csv</a> file</td>
+</tr>
+<tr>
+<td><code>DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH</code></td>
+<td>Absolute path to <a href="../11-discovery-configuration/">discovery-config.yaml</a> file (required when using discovery)</td>
 </tr>
 <tr>
 <td><code>COREFILE_ABS_PATH</code></td>
@@ -3274,12 +3434,20 @@
 <td>Timeout in seconds for SNMP operations</td>
 </tr>
 <tr>
+<td><code>UDP_CONNECTION_RETRIES</code></td>
+<td>Number of SNMP UDP retries per operation (default: <code>5</code>)</td>
+</tr>
+<tr>
 <td><code>MAX_OID_TO_PROCESS</code></td>
 <td>Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error “TooBig” is visible in logs, decrease the number of MAX_OID_TO_PROCESS</td>
 </tr>
 <tr>
 <td><code>MAX_REPETITIONS</code></td>
 <td>The amount of requested next oids in response for each of varbinds in one request sent</td>
+</tr>
+<tr>
+<td><code>CELERY_TASK_TIMEOUT</code></td>
+<td>Timeout in seconds for a single Celery task (default: <code>2400</code>)</td>
 </tr>
 </tbody>
 </table>
@@ -3432,6 +3600,53 @@
 </tr>
 </tbody>
 </table>
+<h4 id="worker-discovery">Worker Discovery<a class="headerlink" href="#worker-discovery" title="Permanent link">¶</a></h4>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WORKER_DISCOVERY_CONCURRENCY</code></td>
+<td>Minimum number of threads in the discovery worker container</td>
+</tr>
+<tr>
+<td><code>PREFETCH_DISCOVERY_COUNT</code></td>
+<td>How many tasks are consumed from the queue at once in the discovery worker container</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_REPLICAS</code></td>
+<td>Number of docker replicas of worker discovery container</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_CPU_LIMIT</code></td>
+<td>Limit of cpu that worker discovery container can use</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_MEMORY_LIMIT</code></td>
+<td>Limit of memory that worker discovery container can use</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_CPU_RESERVATIONS</code></td>
+<td>Dedicated cpu resources for worker discovery container</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_MEMORY_RESERVATIONS</code></td>
+<td>Dedicated memory resources for worker discovery container</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_MAX_TASKS_PER_CHILD</code></td>
+<td>Max number of tasks a discovery worker child process can execute before being recycled. <code>0</code> (default) disables recycling</td>
+</tr>
+<tr>
+<td><code>ENABLE_WORKER_DISCOVERY_SECRETS</code></td>
+<td>Enable usage of SNMPv3 secrets for the discovery worker</td>
+</tr>
+</tbody>
+</table>
 <h3 id="inventory">Inventory<a class="headerlink" href="#inventory" title="Permanent link">¶</a></h3>
 <table>
 <thead>
@@ -3455,6 +3670,30 @@
 </tr>
 </tbody>
 </table>
+<h3 id="discovery">Discovery<a class="headerlink" href="#discovery" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>COMPOSE_PROFILES</code></td>
+<td>Activate optional service groups. Set to <code>discovery</code> to start the discovery and worker-discovery services (e.g. <code>COMPOSE_PROFILES=discovery</code>). Combine with other profiles using commas (e.g. <code>discovery,debug</code>). Leave empty to disable.</td>
+</tr>
+<tr>
+<td><code>DISCOVERY_LOG_LEVEL</code></td>
+<td>Logging level of the discovery loader, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL</td>
+</tr>
+<tr>
+<td><code>DISCOVERY_PATH</code></td>
+<td>Absolute path on the host to the directory where the discovery worker writes discovered device CSV files</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="../11-discovery-configuration/">Discovery configuration</a> for full setup instructions.</p>
 <h3 id="traps">Traps<a class="headerlink" href="#traps" title="Permanent link">¶</a></h3>
 <table>
 <thead>
