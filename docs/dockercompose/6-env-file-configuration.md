@@ -12,7 +12,6 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
     - **`SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH`** - absolute path to your `scheduler-config.yaml`
     - **`TRAPS_CONFIG_FILE_ABSOLUTE_PATH`** - absolute path to your `traps-config.yaml`
     - **`INVENTORY_FILE_ABSOLUTE_PATH`** - absolute path to your `inventory.csv`
-    - **`DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH`** - absolute path to your `discovery-config.yaml` (required when using discovery)
     - **`COREFILE_ABS_PATH`** - absolute path to the `Corefile` (a default `Corefile` is shipped inside the `docker_compose` package)
 
     **Splunk connection:**
@@ -38,7 +37,6 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to [scheduler-config.yaml](./4-scheduler-configuration.md) file                                                                  |
 | `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`     | Absolute path to [traps-config.yaml](./5-traps-configuration.md) file                                                                          |
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                                                          |
-| `DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to [discovery-config.yaml](./11-discovery-configuration.md) file (required when using discovery)                                  |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose`                                           |
 | `LOCAL_MIBS_PATH`                     | Absolute path to the directory containing [local MIB files](../mib-request.md#configuring-path-to-local-mibs-for-docker-compose-installation). |
 | `SECRET_FOLDER_PATH`                  | Absolute path to the folder containing [secrets.json](../configuration/snmpv3.md)                                                               |
@@ -110,10 +108,8 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_LOG_LEVEL`                      | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                        |
 | `WORKER_DISABLE_MONGO_DEBUG_LOGGING`    | Disable extensive MongoDB debug logging when `WORKER_LOG_LEVEL` is set to DEBUG                                                                        |
 | `UDP_CONNECTION_TIMEOUT`                | Timeout in seconds for SNMP operations                                                                                                                 |
-| `UDP_CONNECTION_RETRIES`                | Number of SNMP UDP retries per operation (default: `5`)                                                                                                 |
 | `MAX_OID_TO_PROCESS`                    | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS   |
 | `MAX_REPETITIONS`                       | The amount of requested next oids in response for each of varbinds in one request sent                                                                 |
-| `CELERY_TASK_TIMEOUT`                   | Timeout in seconds for a single Celery task (default: `2400`)                                                                                           |
 
 #### Worker Poller
 | Variable                            | Description                                                                |
@@ -156,19 +152,6 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
 | `WORKER_TRAP_MAX_TASKS_PER_CHILD` | Max number of tasks a trap worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
 
-#### Worker Discovery
-| Variable                                  | Description                                                                         |
-|-------------------------------------------|-------------------------------------------------------------------------------------|
-| `WORKER_DISCOVERY_CONCURRENCY`            | Minimum number of threads in the discovery worker container                         |
-| `PREFETCH_DISCOVERY_COUNT`                | How many tasks are consumed from the queue at once in the discovery worker container |
-| `WORKER_DISCOVERY_REPLICAS`               | Number of docker replicas of worker discovery container                             |
-| `WORKER_DISCOVERY_CPU_LIMIT`              | Limit of cpu that worker discovery container can use                                |
-| `WORKER_DISCOVERY_MEMORY_LIMIT`           | Limit of memory that worker discovery container can use                             |
-| `WORKER_DISCOVERY_CPU_RESERVATIONS`       | Dedicated cpu resources for worker discovery container                              |
-| `WORKER_DISCOVERY_MEMORY_RESERVATIONS`    | Dedicated memory resources for worker discovery container                           |
-| `WORKER_DISCOVERY_MAX_TASKS_PER_CHILD`    | Max number of tasks a discovery worker child process can execute before being recycled. `0` (default) disables recycling |
-| `ENABLE_WORKER_DISCOVERY_SECRETS`         | Enable usage of SNMPv3 secrets for the discovery worker                             |
-
 ### Inventory
 
 | Variable                     | Description                                                                                       |
@@ -176,16 +159,6 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `INVENTORY_LOG_LEVEL`        | Logging level of the inventory, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL |
 | `CHAIN_OF_TASKS_EXPIRY_TIME` | Tasks expirations time in seconds                                                                 |
 | `ENABLE_FULL_WALK`                      | Enable full OID tree walk for all devices. When disabled (default), only `SNMPv2-MIB` is walked                                                        |
-
-### Discovery
-
-| Variable                              | Description                                                                                                                                    |
-|---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| `COMPOSE_PROFILES`                    | Activate optional service groups. Set to `discovery` to start the discovery and worker-discovery services (e.g. `COMPOSE_PROFILES=discovery`). Combine with other profiles using commas (e.g. `discovery,debug`). Leave empty to disable. |
-| `DISCOVERY_LOG_LEVEL`                 | Logging level of the discovery loader, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                        |
-| `DISCOVERY_PATH`                      | Absolute path on the host to the directory where the discovery worker writes discovered device CSV files                                        |
-
-See [Discovery configuration](./11-discovery-configuration.md) for full setup instructions.
 
 ### Traps
 

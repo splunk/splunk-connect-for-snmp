@@ -10,10 +10,6 @@ SC4SNMP has three types of workers:
 2. The `trap` worker consumes all the trap related tasks produced by the trap service.
 3. The `sender` worker handles sending data to Splunk. You need to always have at least one sender running.
 
-SC4SNMP also has a discovery functionality which is handled by the worker below:
-
-4. The `discovery` worker consumes all the tasks related to discovery.
-
 ## Configuration
 
 /// tab | microk8s
@@ -73,21 +69,6 @@ worker:
         cpu: 500m
       requests:
         cpu: 250m
-  discovery:
-    replicaCount: 1
-    concurrency: 4
-    prefetch: 30
-    maxTasksPerChild: 0
-    autoscaling:
-      enabled: false
-      minReplicas: 2
-      maxReplicas: 10
-      targetCPUUtilizationPercentage: 80
-    resources:
-      limits:
-        cpu: 500m
-      requests:
-        cpu: 250m
   livenessProbe:
     enabled: false
     exec:
@@ -114,7 +95,6 @@ worker:
   disableMongoDebugLogging: true
   podAntiAffinity: soft
   udpConnectionTimeout: 3
-  udpConnectionRetries: 5
   ignoreEmptyVarbinds: false
 ```
 
@@ -162,16 +142,6 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 | worker.sender.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on sender worker pods to spawn another replica                                            | 80                |
 | worker.sender.resources.limits                           | The resource limits for sender worker pod                                                                                       | cpu: 500m         |
 | worker.sender.resources.requests                         | The requested resources for sender worker pod                                                                                   | cpu: 250m         |
-| worker.discovery.replicaCount                            | Number of discovery worker replicas                                                                                             | 1                 |
-| worker.discovery.concurrency                             | Minimum number of threads in a discovery worker pod                                                                             | 4                 |
-| worker.discovery.prefetch                                | Number of tasks consumed from the queue at once                                                                                 | 30                |
-| worker.discovery.maxTasksPerChild                        | Max number of tasks a discovery worker child process can execute before being recycled. `0` disables recycling                  | 0                 |
-| worker.discovery.autoscaling.enabled                     | Enabling autoscaling for discovery worker pods                                                                                  | false             |
-| worker.discovery.autoscaling.minReplicas                 | Minimum number of running discovery worker pods when autoscaling is enabled                                                     | 2                 |
-| worker.discovery.autoscaling.maxReplicas                 | Maximum number of running discovery worker pods when autoscaling is enabled                                                     | 10                |
-| worker.discovery.autoscaling.targetCPUUtilizationPercentage | CPU % threshold that must be exceeded on discovery worker pods to spawn another replica                                      | 80                |
-| worker.discovery.resources.limits                        | The resources limits for discovery worker container                                                                             | cpu: 500m         |
-| worker.discovery.resources.requests                      | The requested resources for discovery worker container                                                                          | cpu: 250m         |
 | worker.livenessProbe.enabled                             | Whether the liveness probe is enabled                                                                                           | false             |
 | worker.livenessProbe.exec.command                        | The exec command for the liveness probe to run in the container                                                                 | Check values.yaml |
 | worker.livenessProbe.initialDelaySeconds                 | Number of seconds after the container has started before liveness probe is initiated                                            | 80                |
@@ -187,7 +157,6 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 | worker.logLevel                                          | Logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                | INFO              |
 | worker.disableMongoDebugLogging                          | Disable extensive MongoDB and pymongo debug logging on SC4SNMP workers                                                          | true              |
 | worker.udpConnectionTimeout                              | Timeout for SNMP operations in seconds                                                                                          | 3                 |
-| worker.udpConnectionRetries                              | Number of SNMP UDP retries per operation                                                                                        | 5                 |
 | worker.ignoreEmptyVarbinds                               | Ignores "Empty SNMP response message" in responses                                                                              | false             |
 | worker.podAntiAffinity                                   | [Kubernetes documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) | soft              |
 
@@ -244,17 +213,6 @@ WORKER_TRAP_MEMORY_LIMIT=500M
 WORKER_TRAP_CPU_RESERVATIONS=0.5
 WORKER_TRAP_MEMORY_RESERVATIONS=250M
 WORKER_TRAP_MAX_TASKS_PER_CHILD=0
-
-# Worker Discovery
-WORKER_DISCOVERY_CONCURRENCY=4
-PREFETCH_DISCOVERY_COUNT=30
-WORKER_DISCOVERY_REPLICAS=1
-WORKER_DISCOVERY_CPU_LIMIT=1
-WORKER_DISCOVERY_MEMORY_LIMIT=500M
-WORKER_DISCOVERY_CPU_RESERVATIONS=0.5
-WORKER_DISCOVERY_MEMORY_RESERVATIONS=250M
-WORKER_DISCOVERY_MAX_TASKS_PER_CHILD=0
-ENABLE_WORKER_DISCOVERY_SECRETS=false
 ```
 
 To apply changes, recreate the worker containers:
@@ -276,7 +234,6 @@ sudo docker compose up -d
 | `IGNORE_NOT_INCREASING_OIDS` | Ignoring `occurred: OID not increasing` issues for hosts specified in the array, ex: IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6                |
 | `WORKER_LOG_LEVEL`           | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                        |
 | `UDP_CONNECTION_TIMEOUT`     | Timeout in seconds for SNMP operations                                                                                                                 |
-| `UDP_CONNECTION_RETRIES`     | Number of SNMP UDP retries per operation                                                                                                               |
 | `MAX_OID_TO_PROCESS`         | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS   |
 | `MAX_REPETITIONS`            | The amount of requested next oids in response for each of varbinds in one request sent                                                                 |
 
@@ -324,20 +281,6 @@ sudo docker compose up -d
 | `WORKER_TRAP_CPU_RESERVATIONS`    | Dedicated cpu resources for worker trap container                                                |
 | `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
 | `WORKER_TRAP_MAX_TASKS_PER_CHILD` | Max number of tasks a trap worker child process can execute before being recycled. `0` disables recycling |
-
-### Worker Discovery
-
-| Variable                               | Description                                                                            |
-|----------------------------------------|----------------------------------------------------------------------------------------|
-| `WORKER_DISCOVERY_CONCURRENCY`         | Minimum number of threads in the discovery worker container                            |
-| `PREFETCH_DISCOVERY_COUNT`             | How many tasks are consumed from the queue at once in the discovery worker container   |
-| `WORKER_DISCOVERY_REPLICAS`            | Number of docker replicas of worker discovery container                                |
-| `WORKER_DISCOVERY_CPU_LIMIT`           | Limit of cpu that worker discovery container can use                                   |
-| `WORKER_DISCOVERY_MEMORY_LIMIT`        | Limit of memory that worker discovery container can use                                |
-| `WORKER_DISCOVERY_CPU_RESERVATIONS`    | Dedicated cpu resources for worker discovery container                                 |
-| `WORKER_DISCOVERY_MEMORY_RESERVATIONS` | Dedicated memory resources for worker discovery container                              |
-| `WORKER_DISCOVERY_MAX_TASKS_PER_CHILD` | Max number of tasks a discovery worker child process can execute before being recycled. `0` disables recycling |
-| `ENABLE_WORKER_DISCOVERY_SECRETS`      | Enable usage of SNMPv3 secrets for the discovery worker                                |
 ///
 
 ## Worker scaling
@@ -358,8 +301,6 @@ worker:
     replicaCount: 1
   poller:
     replicaCount: 0
-  discovery:
-    replicaCount: 0
 ```
 
 With autoscaling:
@@ -379,8 +320,6 @@ worker:
       maxReplicas: 5
       targetCPUUtilizationPercentage: 80
   poller:
-    replicaCount: 0
-  discovery:
     replicaCount: 0
 ```
 
@@ -425,8 +364,6 @@ worker:
       minReplicas: 2
       maxReplicas: 20
       targetCPUUtilizationPercentage: 80
-  discovery:
-    replicaCount: 0
 ```
 
 Remember that the system will not scale itself infinitely. There is a finite amount of resources that you can allocate. 

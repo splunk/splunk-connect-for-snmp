@@ -24,10 +24,6 @@ For polling purposes:
 For traps receiving purposes:
 
 - `traps` - For more details see [trap configuration](../../configuration/traps.md).
-
-For SNMP devices discovery purpose:
-
-- `discovery` - For more details see [Discovery configuration](discovery-configuration.md).
    
 Shared components:
 

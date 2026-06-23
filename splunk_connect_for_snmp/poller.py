@@ -48,6 +48,5 @@ app.autodiscover_tasks(
         "splunk_connect_for_snmp.inventory",
         "splunk_connect_for_snmp.snmp",
         "splunk_connect_for_snmp.splunk",
-        "splunk_connect_for_snmp.discovery",
     ]
 )
