@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "splunk-connect-for-snmp.worker.fullname" . }}-discovery
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "splunk-connect-for-snmp.worker.discovery.labels" . | nindent 4 }}
 spec:
@@ -14,6 +15,8 @@ spec:
       {{- include "splunk-connect-for-snmp.worker.discovery.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      annotations:
+        {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 }}
       labels:
         {{- include "splunk-connect-for-snmp.worker.discovery.selectorLabels" . | nindent 8 }}
     spec:

@@ -140,6 +140,17 @@ Whether enable discovery
 {{- end -}}
 {{- end }}
 
+{{/*
+Whether enable scheduler (needed for polling or discovery)
+*/}}
+{{- define "splunk-connect-for-snmp.scheduler.enable" -}}
+{{- if or .Values.poller.inventory .Values.discovery.enabled }}
+{{- printf "true" }}
+{{- else }}
+{{- printf "false" }}
+{{- end -}}
+{{- end }}
+
 {{- /*
 Generate Redis environment variables for application pods
 */ -}}

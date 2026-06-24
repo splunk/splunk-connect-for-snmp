@@ -120,6 +120,10 @@ class CustomPeriodicTaskManager:
         except KeyError:
             logger.info(f"Setting up a new task: {task_name}")
             periodic_document = RedBeatSchedulerEntry(**task_data)
+            periodic_document.save()
+            if task_data.get("run_immediately"):
+                periodic_document.reschedule()
+            return
         periodic_document.save()
 
     def get_chain_of_task_expiry(self):
