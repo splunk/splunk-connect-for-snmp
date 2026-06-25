@@ -121,6 +121,7 @@ SECRET_FOLDER="sample_v3_values"
 SCHEDULER_CONFIG_FILE="$CONFIG_DIR/scheduler-config.yaml"
 TRAPS_CONFIG_FILE="$CONFIG_DIR/traps-config.yaml"
 INVENTORY_FILE="$CONFIG_DIR/inventory-tests.csv"
+DISCOVERY_CONFIG_FILE="$CONFIG_DIR/discovery-config.yaml"
 
 SPLUNK_HEC_HOST=$(hostname -I | cut -d " " -f1)
 SPLUNK_HEC_TOKEN=$(cat hec_token)
@@ -146,6 +147,7 @@ set_var "COREFILE_ABS_PATH"                      "$(realpath "${DOCKER_COMPOSE_L
 set_var "SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH"    "$(realpath "$SCHEDULER_CONFIG_FILE")"
 set_var "TRAPS_CONFIG_FILE_ABSOLUTE_PATH"        "$(realpath "$TRAPS_CONFIG_FILE")"
 set_var "INVENTORY_FILE_ABSOLUTE_PATH"           "$(realpath "$INVENTORY_FILE")"
+set_var "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH"    "$(realpath "$DISCOVERY_CONFIG_FILE")"
 
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" "$INVENTORY_FILE"
 echo $(green "Running SNMP simulators in Docker")

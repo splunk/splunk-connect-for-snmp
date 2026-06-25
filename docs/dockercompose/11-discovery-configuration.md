@@ -1,9 +1,10 @@
 # Discovery configuration
 
+To enable discovery in Docker Compose, set `COMPOSE_PROFILES=discovery` in your `.env` file. This starts the `discovery` and `worker-discovery` containers.
+
 Discovery configuration is stored in the `discovery-config.yaml` file. This file has the following sections:
 
 ```yaml
-enabled: 
 ipv6Enabled: 
 autodiscovery:
   discovery_key:
@@ -20,7 +21,6 @@ autodiscovery:
 
 ```
 
-- `enabled`: To enable or disable the discovery feature set `enabled` key. The default value is `false`. 
 - `ipv6Enabled`: To enable IPv6 subnet scanning set `ipv6Enabled` key to be `true`.
 
 !!! info 
@@ -32,7 +32,6 @@ Discovery key (i.e. task name) must start with a letter (not a number). Configur
 ## Example of the configuration
 
 ```yaml
-enabled: true
 ipv6Enabled: true
 autodiscovery:
   discovery_version2c:
