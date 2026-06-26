@@ -680,7 +680,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../microk8s/configuration/discovery-configuration/" class="md-nav__link">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
         
   
   
@@ -1571,14 +1571,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dockercompose/11-discovery-configuration/" class="md-nav__link">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Discovery configuration
+    Discovery
   
 
     
@@ -2096,6 +2096,34 @@
     
   
     Workers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
   
 
     
@@ -2857,8 +2885,8 @@
 <p>Discovery fails with a <code>PermissionError</code> related to <code>discovery_devices.csv</code>. In such cases, you may see the following error:</p>
 <div class="highlight"><pre><span></span><code>PermissionError: [Errno 13] Permission denied: '/app/discovery/discovery_devices.csv'
 </code></pre></div>
-<p>The folder specified in the <code>discoveryPath</code> value (which is mounted to <code>/app/discovery</code> inside the container) does not have the correct permissions for the application user (UID <code>10001</code>) to write files.</p>
-<p>Ensure that the folder specified in the <code>discoveryPath</code> has write permissions for UID <code>10001</code>. You can fix this by updating the folder ownership or permissions before starting the containers.</p>
+<p>The folder specified in the <code>discoveryPath</code> value (microk8s) or <code>DISCOVERY_PATH</code> value (docker compose), which is mounted to <code>/app/discovery</code> inside the container, does not have the correct permissions for the application user (UID <code>10001</code>) to write files.</p>
+<p>Ensure that the folder has write permissions for UID <code>10001</code>. You can fix this by updating the folder ownership or permissions before starting the containers.</p>
 <p><strong>Example (on the host system):</strong>
 </p><div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span><span class="m">10001</span>:10001<span class="w"> </span>/your/local/folder/path
 sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>/your/local/folder/path
@@ -2867,20 +2895,42 @@ sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</sp
 <p>If the subnet being scanned has a large IP range (e.g., <code>/22</code>, <code>/21</code>, or bigger), the task may not be completed within the default time limit of <strong>2400 seconds</strong>. In such cases, you may see the following error:</p>
 <div class="highlight"><pre><span></span><code>[2025-08-07 06:03:29,415: ERROR/MainProcess] Hard time limit (2400s) exceeded for splunk_connect_for_snmp.discovery.tasks.discovery
 </code></pre></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
 <p>Increase the task timeout value using the <code>taskTimeout</code> field under the <code>worker</code> section in your <code>values.yaml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">taskTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3600</span><span class="w">  </span><span class="c1"># Increase based on expected duration</span>
 </code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Increase the task timeout value by setting <code>CELERY_TASK_TIMEOUT</code> in your <code>.env</code> file:</p>
+<div class="highlight"><pre><span></span><code>CELERY_TASK_TIMEOUT=3600
+</code></pre></div>
+</div>
+</div>
+</div>
 <h2 id="discovery-takes-too-much-time">Discovery takes too much time<a class="headerlink" href="#discovery-takes-too-much-time" title="Permanent link">¶</a></h2>
 <p>Discovery tasks may take longer to complete due to unnecessary SNMP requests or long wait times when scanning large subnets. Below are few ways to optimize performance:</p>
 <h3 id="adjust-timeout-and-retries">Adjust Timeout and Retries<a class="headerlink" href="#adjust-timeout-and-retries" title="Permanent link">¶</a></h3>
 <p>If the subnet has very few SNMP-enabled devices, high timeout and retry values can significantly slow down the process.<br>
-For example, with the default <code>udpConnectionTimeout</code> of <code>3</code> seconds and <code>udpConnectionRetries</code> of <code>5</code>, a non-SNMP-enabled device will take up to <strong>15 seconds</strong> before moving to the next IP.<br>
+For example, with the default timeout of <code>3</code> seconds and <code>5</code> retries, a non-SNMP-enabled device will take up to <strong>15 seconds</strong> before moving to the next IP.<br>
 Consider lowering the retry parameters to speed up execution:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked id="__tabbed_2_1" name="__tabbed_2" type="radio"><input id="__tabbed_2_2" name="__tabbed_2" type="radio"><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">udpConnectionTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 <span class="w">  </span><span class="nt">udpConnectionRetries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code>UDP_CONNECTION_TIMEOUT=3
+UDP_CONNECTION_RETRIES=2
+</code></pre></div>
+</div>
+</div>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>Reduce these values carefully. Setting them too low may cause missed detections in slow or high-latency networks, which can impact data accuracy.</p>
@@ -2890,14 +2940,15 @@ Consider lowering the retry parameters to speed up execution:</p>
 <ul>
 <li>Wrong device IP or port provided.</li>
 <li>Subnet contains no reachable or SNMP-enabled devices.</li>
-<li>Nmap is unable to detect live hosts due to network or firewall restrictions.</li>
 <li>For SNMPv2c: Incorrect community string.</li>
 <li>For SNMPv3: Incorrect privacy key or authentication credentials.</li>
 </ul>
-<p><strong>Resolution:</strong>
-- Double-check the IP range or subnet provided in the discovery config.
-- Validate that the target devices have SNMP enabled and are reachable from the container. 
-- Verify SNMP credentials (community string or SNMPv3 credentials) for correctness.</p></div>
+<p><strong>Resolution:</strong></p>
+<ul>
+<li>Double-check the IP range or subnet provided in the discovery config.</li>
+<li>Validate that the target devices have SNMP enabled and are reachable from the container. </li>
+<li>Verify SNMP credentials (community string or SNMPv3 credentials) for correctness.</li>
+</ul></div>
 
 
 
