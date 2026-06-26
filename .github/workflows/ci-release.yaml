@@ -72,9 +72,6 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
           cache-to: type=inline
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "14"
       - name: Semantic Release
         id: version
         uses: splunk/semantic-release-action@v1.3.10
