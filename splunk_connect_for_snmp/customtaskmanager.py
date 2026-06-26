@@ -57,6 +57,7 @@ class CustomPeriodicTaskManager:
         if previous_expiry_time is not None and previous_expiry_time != new_expiry_time:
             self.delete_all_walk_tasks()
             self.delete_all_poll_tasks()
+            self.delete_all_discovery_tasks()
             expiry_time_changed = True
         return expiry_time_changed
 
@@ -68,6 +69,12 @@ class CustomPeriodicTaskManager:
     def delete_all_walk_tasks(self):
         self.__delete_all_tasks_of_type(
             "splunk_connect_for_snmp.snmp.tasks.walk", "delete_all_walk_tasks"
+        )
+
+    def delete_all_discovery_tasks(self):
+        self.__delete_all_tasks_of_type(
+            "splunk_connect_for_snmp.discovery.tasks.discovery",
+            "delete_all_discovery_tasks",
         )
 
     def rerun_all_walks(self):
@@ -113,6 +120,10 @@ class CustomPeriodicTaskManager:
         except KeyError:
             logger.info(f"Setting up a new task: {task_name}")
             periodic_document = RedBeatSchedulerEntry(**task_data)
+            periodic_document.save()
+            if task_data.get("run_immediately"):
+                periodic_document.reschedule()
+            return
         periodic_document.save()
 
     def get_chain_of_task_expiry(self):

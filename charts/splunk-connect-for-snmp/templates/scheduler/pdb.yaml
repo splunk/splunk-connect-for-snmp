@@ -1,4 +1,4 @@
-{{- if eq (include "splunk-connect-for-snmp.polling.enable" .) "true" }}
+{{- if eq (include "splunk-connect-for-snmp.scheduler.enable" .) "true" }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
