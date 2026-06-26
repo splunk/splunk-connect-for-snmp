@@ -15,4 +15,4 @@
 #
 
 
-__version__ = "1.17.0-beta.6"
+__version__ = "1.17.0-beta.7"
