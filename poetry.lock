@@ -695,13 +695,14 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "json-log-formatter"
-version = "1.1.1"
+version = "1.2.1"
 description = "JSON log formatter"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "json_log_formatter-1.1.1.tar.gz", hash = "sha256:0815e3b4469e5c79cf3f6dc8a0613ba6601f4a7464f85ba03655cfa6e3e17d10"},
+    {file = "json_log_formatter-1.2.1-py3-none-any.whl", hash = "sha256:1e40432466c911ba2d106a302314b1c3b0019de44c762bef94e8f23138a415a7"},
+    {file = "json_log_formatter-1.2.1.tar.gz", hash = "sha256:1d4fd14495ad7e694aa576259ba81acaa69e6945d9d780f32ed25373d7d5ae93"},
 ]
 
 [[package]]
