@@ -689,7 +689,7 @@ redis:
   # Image
   image:
     repository: redis
-    tag: "8.6.2"
+    tag: "8.8.0"
     pullPolicy: IfNotPresent
 
   # Resources
