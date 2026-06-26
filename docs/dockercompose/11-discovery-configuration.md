@@ -8,24 +8,20 @@ Discovery configuration is stored in the `discovery-config.yaml` file. This file
 ipv6Enabled: 
 autodiscovery:
   discovery_key:
-      frequency: 
-      delete_already_discovered: 
-      network_address: 
-      version: 
-      community: 
-      port: 
-      device_rules:
-        - name: 
-          patterns: 
-          Group: 
+    frequency: 
+    delete_already_discovered: 
+    network_address: 
+    version: 
+    community: 
+    port: 
+    device_rules:
+      - name: 
+        patterns: 
+        group: 
 
 ```
 
 - `ipv6Enabled`: To enable IPv6 subnet scanning set `ipv6Enabled` key to be `true`.
-
-!!! info 
-    If `ipv6Enabled` is `false`, then the task will not be created for discovery key with IPv6 network address.
-
 - `autodiscovery`: Discovery tasks are defined under the autodiscovery section. Each discovery task can target a specific subnet with its own SNMP version and settings. 
 Discovery key (i.e. task name) must start with a letter (not a number). Configuration of this section looks the same as in the `values.yaml` in `discovery.autodiscovery` section, which can be checked in the documentation of [discovery configuration](../microk8s/configuration/discovery-configuration.md).
 
