@@ -27,7 +27,7 @@ For traps receiving purposes:
 
 For SNMP devices discovery purpose:
 
-- `discovery` - For more details see [Discovery configuration](discovery-configuration.md).
+- `discovery` - For more details see [Discovery configuration](../../configuration/discovery-configuration.md).
    
 Shared components:
 

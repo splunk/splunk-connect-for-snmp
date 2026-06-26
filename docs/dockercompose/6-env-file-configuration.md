@@ -38,7 +38,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to [scheduler-config.yaml](./4-scheduler-configuration.md) file                                                                  |
 | `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`     | Absolute path to [traps-config.yaml](./5-traps-configuration.md) file                                                                          |
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                                                          |
-| `DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to [discovery-config.yaml](./11-discovery-configuration.md) file (required when using discovery)                                  |
+| `DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to [discovery-config.yaml](../configuration/discovery-configuration.md) file (required when using discovery)                                  |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose`                                           |
 | `LOCAL_MIBS_PATH`                     | Absolute path to the directory containing [local MIB files](../mib-request.md#configuring-path-to-local-mibs-for-docker-compose-installation). |
 | `SECRET_FOLDER_PATH`                  | Absolute path to the folder containing [secrets.json](../configuration/snmpv3.md)                                                               |
@@ -185,7 +185,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `DISCOVERY_LOG_LEVEL`                 | Logging level of the discovery loader, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                        |
 | `DISCOVERY_PATH`                      | Absolute path on the host to the directory where the discovery worker writes discovered device CSV files                                        |
 
-See [Discovery configuration](./11-discovery-configuration.md) for full setup instructions.
+See [Discovery configuration](../configuration/discovery-configuration.md) for full setup instructions.
 
 ### Traps
 

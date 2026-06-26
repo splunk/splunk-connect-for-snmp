@@ -160,7 +160,7 @@ Detailed documentation about configuring traps can be found in [Traps](../../con
 
 ## Discovery
 
-Detailed documentation about configuring discovery can be found in [Discovery](discovery-configuration.md).
+Detailed documentation about configuring discovery can be found in [Discovery](../../configuration/discovery-configuration.md).
 
 | Variable                                        | Description                                                                                                                     | Default          |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|------------------|

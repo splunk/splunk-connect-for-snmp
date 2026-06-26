@@ -46,7 +46,4 @@ discovery_version2c,10.202.4.200/30,10.202.4.202,161,2c,linux-group,,public
 
 
 ## Configuration
-To configure and run SNMP Autodiscovery, refer to:
-
-- [Docker Compose discovery configuration](./dockercompose/11-discovery-configuration.md)
-- [Microk8s discovery configuration](./microk8s/configuration/discovery-configuration.md)
+To configure and run SNMP Autodiscovery, refer to [Discovery configuration](./configuration/discovery-configuration.md).
