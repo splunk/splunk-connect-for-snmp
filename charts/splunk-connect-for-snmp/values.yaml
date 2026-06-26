@@ -620,7 +620,7 @@ mongodb:
     timeout: 600
   image:
     repository: mongo
-    tag: "8.2.7"
+    tag: "8.3.4"
     pullPolicy: IfNotPresent
 
   auth:
