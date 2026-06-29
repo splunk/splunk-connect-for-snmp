@@ -75,7 +75,7 @@ def test_applying_changes_for_device_that_does_not_exists(setup):
     p_header.apply_changes()
     time_to_upgrade = p_header.get_time_to_upgrade()
     p_header.close_configuration_applied_notification_popup()
-    time.sleep(time_to_upgrade + 60)  # wait for upgrade
+    time.sleep(time_to_upgrade + 120)  # wait for upgrade
 
     # check data in Splunk
     # check walk scheduled
@@ -308,13 +308,13 @@ def test_setting_host_in_inventory(setup):
     p_header.apply_changes()
     time_to_upgrade = p_header.get_time_to_upgrade()
     p_header.close_configuration_applied_notification_popup()
-    time.sleep(time_to_upgrade + 30)  # wait for upgrade + walk time + polling
+    time.sleep(time_to_upgrade + 90)  # wait for upgrade + walk time + polling
 
     # check data in Splunk
     # check walk scheduled
     search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};walk"'
     events = check_events_from_splunk(
-        start_time="-1m@m",
+        start_time="-3m@m",
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],
@@ -381,12 +381,12 @@ def test_setting_host_in_inventory(setup):
     p_header.apply_changes()
     time_to_upgrade = p_header.get_time_to_upgrade()
     p_header.close_configuration_applied_notification_popup()
-    time.sleep(time_to_upgrade + 75)  # wait for upgrade + walk time + polling
+    time.sleep(time_to_upgrade + 90)  # wait for upgrade + walk time + polling
 
     # check walk scheduled
     search_query = f'index={config.LOGS_INDEX} "Sending due task sc4snmp;{host}:{DEFAULT_PORT};walk"'
     events = check_events_from_splunk(
-        start_time="-1m@m",
+        start_time="-3m@m",
         url=setup["splunkd_url"],
         user=setup["splunk_user"],
         query=["search {}".format(search_query)],

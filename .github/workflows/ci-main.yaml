@@ -116,16 +116,6 @@ jobs:
       - name: Run Pytest with coverage
         run: |
           poetry run pytest --cov=./splunk_connect_for_snmp --cov-report=xml --junitxml=test-results/junit.xml
-#      - name: Upload coverage to Codecov
-#        uses: codecov/codecov-action@v3
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          files: ./coverage.xml
-#          directory: ./coverage/reports/
-#          env_vars: OS,PYTHON
-#          fail_ci_if_error: true
-#          path_to_write_report: ./coverage/codecov_report.txt
-#          verbose: true
       - uses: actions/upload-artifact@v7 # upload test results
         if: success() || failure() # run this step even if previous step failed
         with:
@@ -144,9 +134,13 @@ jobs:
         id: get_commit_message
         run: |
           if [[ '${{ github.event_name }}' == 'push' ]]; then
-            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD)
+            echo "commit_message<<EOF" >> $GITHUB_OUTPUT
+            git log --format=%B -n 1 HEAD >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           elif [[ '${{ github.event_name }}' == 'pull_request' ]]; then
-            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD^2)
+            echo "commit_message<<EOF" >> $GITHUB_OUTPUT
+            git log --format=%B -n 1 HEAD^2 >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
     outputs:
       commit_message:
