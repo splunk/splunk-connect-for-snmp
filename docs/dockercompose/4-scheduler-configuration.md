@@ -22,7 +22,7 @@ groups:
 ```
 
 - `communities`: communities used for version `1` and `2c` of the `snmp`. The default one is `public`.
-- `customTranslations`: custom name mappings for MIB fields. See [Profiles configuration — Custom translations](../configuration/profiles.md#custom-translations).
+- `customTranslations`: custom name mappings for MIB fields. See [Profiles configuration - Custom translations](../configuration/profiles.md#custom-translations).
 - `profiles`: polling profiles defining what OIDs to collect and how often. See [Profiles configuration](../configuration/profiles.md).
 - `groups`: named groups of devices that can be referenced in the inventory. See [Groups configuration](../configuration/groups.md).
 

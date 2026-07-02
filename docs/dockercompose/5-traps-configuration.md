@@ -7,7 +7,7 @@
 | `TRAPS_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to this file on the host |
 
 !!! info "Full reference"
-    For the complete configuration reference, see the [Traps configuration](../configuration/traps.md) page — open the **docker compose** tab.
+    For the complete configuration reference, see the [Traps configuration](../configuration/traps.md) page - open the **docker compose** tab.
 
 ## Configuration
 

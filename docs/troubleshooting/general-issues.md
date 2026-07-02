@@ -1,5 +1,60 @@
 ## General issues
 
+### MongoDB 8.x crash on Linux kernel 6.19+ (exit 139 / SIGSEGV)
+
+The `mongo:8.0.5+` and `mongo:8.2.x` images (the default since SC4SNMP `1.16.0`) bake a `GLIBC_TUNABLES=glibc.pthread.rseq=0` setting into the image. On host kernels >= 6.19, which overhauled the RSEQ subsystem, this setting causes MongoDB's `tcmalloc` allocator to crash. The `mongo` container logs `mongod startup complete`, runs for about 30 seconds, then exits with code `139` (SIGSEGV). `OOMKilled=false`, and the next start logs `Detected unclean shutdown - Lock file is not empty`.
+
+#### How to confirm
+
+Check the host kernel version:
+
+/// tab | docker compose
+```bash
+uname -r
+```
+///
+
+/// tab | microk8s
+```bash
+kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.nodeInfo.kernelVersion}{"\n"}{end}'
+```
+///
+
+Anything `>= 6.19` is at risk. Also check container exit state:
+
+```bash
+docker inspect mongo --format 'status={{.State.Status}} exit={{.State.ExitCode}} oom={{.State.OOMKilled}}'
+```
+
+The combination `exit=139 oom=false` together with `mongod startup complete` in the container logs ~30s before the exit is the diagnostic signature.
+
+#### Fix
+
+SC4SNMP from version **1.17.0** ships a default `GLIBC_TUNABLES=glibc.pthread.rseq=1` on the mongo container, which restores the upstream glibc default and prevents the crash. The setting is a safe no-op on kernels < 6.19, so it is enabled unconditionally. You normally do not need to do anything.
+
+If you previously customized the mongo container and removed/overrode the env variable, restore it:
+
+/// tab | docker compose
+In `docker_compose/.env`, ensure:
+
+```
+MONGO_GLIBC_TUNABLES=glibc.pthread.rseq=1
+```
+
+The `mongo` service in `docker-compose.yaml` already references this variable.
+///
+
+/// tab | microk8s
+In `values.yaml`, ensure the entry is present (it is the default):
+
+```yaml
+mongodb:
+  extraEnv:
+    - name: GLIBC_TUNABLES
+      value: "glibc.pthread.rseq=1"
+```
+///
+
 ### Upgrading SC4SNMP from 1.12.2 to 1.12.3
 
 !!! warning "Microk8s only"

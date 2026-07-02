@@ -6,7 +6,7 @@
 !!! info
     mTLS encryption support is available beginning with Splunk 10
 
-Mutual TLS (mTLS) is an extension of the standard TLS protocol that provides mutual authentication between a client and a server. While TLS typically ensures that the client can verify the server’s identity, mTLS requires both parties to verify each other’s identities using digital certificates. In our case client is SC4SNMP and server is Splunk.
+Mutual TLS (mTLS) is an extension of the standard TLS protocol that provides mutual authentication between a client and a server. While TLS typically ensures that the client can verify the server's identity, mTLS requires both parties to verify each other's identities using digital certificates. In our case client is SC4SNMP and server is Splunk.
 
 
 ## How to setup Splunk

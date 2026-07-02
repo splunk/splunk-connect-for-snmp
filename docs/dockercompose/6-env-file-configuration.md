@@ -1,6 +1,6 @@
 # .env file configuration
 
-The `.env` file lives inside the `docker_compose` directory (the same directory extracted from `docker_compose.zip`). It controls all environment variables for the deployment — paths to configuration files, Splunk connection settings, image versions, and tuning parameters. Edit this file before running `docker compose up`. Variables in it can be divided into few sections.
+The `.env` file lives inside the `docker_compose` directory (the same directory extracted from `docker_compose.zip`). It controls all environment variables for the deployment - paths to configuration files, Splunk connection settings, image versions, and tuning parameters. Edit this file before running `docker compose up`. Variables in it can be divided into few sections.
 
 ## Overview
 
@@ -9,22 +9,23 @@ The `.env` file lives inside the `docker_compose` directory (the same directory 
 
     **File paths:**
 
-    - **`SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH`** — absolute path to your `scheduler-config.yaml`
-    - **`TRAPS_CONFIG_FILE_ABSOLUTE_PATH`** — absolute path to your `traps-config.yaml`
-    - **`INVENTORY_FILE_ABSOLUTE_PATH`** — absolute path to your `inventory.csv`
-    - **`COREFILE_ABS_PATH`** — absolute path to the `Corefile` (a default `Corefile` is shipped inside the `docker_compose` package)
+    - **`SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH`** - absolute path to your `scheduler-config.yaml`
+    - **`TRAPS_CONFIG_FILE_ABSOLUTE_PATH`** - absolute path to your `traps-config.yaml`
+    - **`INVENTORY_FILE_ABSOLUTE_PATH`** - absolute path to your `inventory.csv`
+    - **`DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH`** - absolute path to your `discovery-config.yaml` (required when using discovery)
+    - **`COREFILE_ABS_PATH`** - absolute path to the `Corefile` (a default `Corefile` is shipped inside the `docker_compose` package)
 
     **Splunk connection:**
 
-    - **`SPLUNK_HEC_HOST`** — IP address or domain name of your Splunk instance
-    - **`SPLUNK_HEC_PROTOCOL`** — `https` or `http`
-    - **`SPLUNK_HEC_PORT`** — port of the HEC endpoint
-    - **`SPLUNK_HEC_TOKEN`** or **`SPLUNK_HEC_TOKEN_SECRET_FILE`** — HEC token, or path to a file containing the token
+    - **`SPLUNK_HEC_HOST`** - IP address or domain name of your Splunk instance
+    - **`SPLUNK_HEC_PROTOCOL`** - `https` or `http`
+    - **`SPLUNK_HEC_PORT`** - port of the HEC endpoint
+    - **`SPLUNK_HEC_TOKEN`** or **`SPLUNK_HEC_TOKEN_SECRET_FILE`** - HEC token, or path to a file containing the token
 
 Once the required variables above are set, you can [Deploy the app](./11-deploy-and-run.md). The rest of this page covers optional and advanced parameters.
 
 !!! note "Sending container logs to Splunk"
-    If you plan to use the [Splunk logging feature](./9-splunk-logging.md), also set **`SPLUNK_LOG_INDEX`** — the Splunk event index where container logs will be sent. This cannot be configured after the fact without editing `.env` and restarting the stack.
+    If you plan to use the [Splunk logging feature](./9-splunk-logging.md), also set **`SPLUNK_LOG_INDEX`** - the Splunk event index where container logs will be sent. This cannot be configured after the fact without editing `.env` and restarting the stack.
 
 ## Configuration
 
@@ -37,6 +38,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to [scheduler-config.yaml](./4-scheduler-configuration.md) file                                                                  |
 | `TRAPS_CONFIG_FILE_ABSOLUTE_PATH`     | Absolute path to [traps-config.yaml](./5-traps-configuration.md) file                                                                          |
 | `INVENTORY_FILE_ABSOLUTE_PATH`        | Absolute path to [inventory.csv](./3-inventory-configuration.md) file                                                                          |
+| `DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH` | Absolute path to [discovery-config.yaml](../configuration/discovery-configuration.md) file (required when using discovery)                                  |
 | `COREFILE_ABS_PATH`                   | Absolute path to Corefile used by coreDNS. Default Corefile can be found inside the `docker_compose`                                           |
 | `LOCAL_MIBS_PATH`                     | Absolute path to the directory containing [local MIB files](../mib-request.md#configuring-path-to-local-mibs-for-docker-compose-installation). |
 | `SECRET_FOLDER_PATH`                  | Absolute path to the folder containing [secrets.json](../configuration/snmpv3.md)                                                               |
@@ -70,6 +72,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `REDIS_TAG`       | Redis image tag to pull              |
 | `MONGO_IMAGE`     | Registry and name of MongoDB image   |
 | `MONGO_TAG`       | MongoDB image tag to pull            |
+| `MONGO_GLIBC_TUNABLES` | Value passed as `GLIBC_TUNABLES` to the `mongo` container. Defaults to `glibc.pthread.rseq=1` to mitigate a MongoDB 8.x SIGSEGV observed on host kernels >= 6.19 (e.g. Ubuntu 26.04). Safe no-op on older kernels. See [MongoDB 8.x crash on Linux kernel 6.19+](../troubleshooting/general-issues.md#mongodb-8x-crash-on-linux-kernel-619-exit-139--sigsegv). |
 
 ### Splunk instance
 
@@ -107,8 +110,10 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_LOG_LEVEL`                      | Logging level of the workers, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                        |
 | `WORKER_DISABLE_MONGO_DEBUG_LOGGING`    | Disable extensive MongoDB debug logging when `WORKER_LOG_LEVEL` is set to DEBUG                                                                        |
 | `UDP_CONNECTION_TIMEOUT`                | Timeout in seconds for SNMP operations                                                                                                                 |
+| `UDP_CONNECTION_RETRIES`                | Number of SNMP UDP retries per operation (default: `5`)                                                                                                 |
 | `MAX_OID_TO_PROCESS`                    | Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error "TooBig" is visible in logs, decrease the number of MAX_OID_TO_PROCESS   |
 | `MAX_REPETITIONS`                       | The amount of requested next oids in response for each of varbinds in one request sent                                                                 |
+| `CELERY_TASK_TIMEOUT`                   | Timeout in seconds for a single Celery task (default: `2400`)                                                                                           |
 
 #### Worker Poller
 | Variable                            | Description                                                                |
@@ -120,6 +125,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_POLLER_MEMORY_LIMIT`        | Limit of memory that worker poller container can use                       |
 | `WORKER_POLLER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker poller container                        |
 | `WORKER_POLLER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker poller container                     |
+| `WORKER_POLLER_MAX_TASKS_PER_CHILD` | Max number of tasks a poller worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
 | `ENABLE_WORKER_POLLER_SECRETS`      | Enable usage of secrets for poller                                         |
 
 #### Worker Sender
@@ -132,6 +138,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_SENDER_MEMORY_LIMIT`        | Limit of memory that worker sender container can use                       |
 | `WORKER_SENDER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker sender container                        |
 | `WORKER_SENDER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker sender container                     |
+| `WORKER_SENDER_MAX_TASKS_PER_CHILD` | Max number of tasks a sender worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
 
 #### Worker Trap
 | Variable                          | Description                                                                                      |
@@ -139,6 +146,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_TRAP_CONCURRENCY`         | Minimum number of threads in the trap container                                                  |
 | `PREFETCH_TRAP_COUNT`             | How many tasks are consumed from the queue at once in the trap container                         |
 | `RESOLVE_TRAP_ADDRESS`            | Use reverse dns lookup for trap IP address and send the hostname to Splunk                       |
+| `INCLUDE_UNRESOLVED_TRAP_VARBINDS` | Include trap varbinds that could not be MIB-translated under `sc4snmp::unresolved` in Splunk events |
 | `MAX_DNS_CACHE_SIZE_TRAPS`        | If RESOLVE_TRAP_ADDRESS is set to true, this is the maximum number of records in cache           |
 | `TTL_DNS_CACHE_TRAPS`             | If RESOLVE_TRAP_ADDRESS is set to true, this is the time to live of the cached record in seconds |
 | `WORKER_TRAP_REPLICAS`            | Number of docker replicas of worker trap container                                               |
@@ -146,6 +154,20 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_TRAP_MEMORY_LIMIT`        | Limit of memory that worker trap container can use                                               |
 | `WORKER_TRAP_CPU_RESERVATIONS`    | Dedicated cpu resources for worker trap container                                                |
 | `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
+| `WORKER_TRAP_MAX_TASKS_PER_CHILD` | Max number of tasks a trap worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
+
+#### Worker Discovery
+| Variable                                  | Description                                                                         |
+|-------------------------------------------|-------------------------------------------------------------------------------------|
+| `WORKER_DISCOVERY_CONCURRENCY`            | Minimum number of threads in the discovery worker container                         |
+| `PREFETCH_DISCOVERY_COUNT`                | How many tasks are consumed from the queue at once in the discovery worker container |
+| `WORKER_DISCOVERY_REPLICAS`               | Number of docker replicas of worker discovery container                             |
+| `WORKER_DISCOVERY_CPU_LIMIT`              | Limit of cpu that worker discovery container can use                                |
+| `WORKER_DISCOVERY_MEMORY_LIMIT`           | Limit of memory that worker discovery container can use                             |
+| `WORKER_DISCOVERY_CPU_RESERVATIONS`       | Dedicated cpu resources for worker discovery container                              |
+| `WORKER_DISCOVERY_MEMORY_RESERVATIONS`    | Dedicated memory resources for worker discovery container                           |
+| `WORKER_DISCOVERY_MAX_TASKS_PER_CHILD`    | Max number of tasks a discovery worker child process can execute before being recycled. `0` (default) disables recycling |
+| `ENABLE_WORKER_DISCOVERY_SECRETS`         | Enable usage of SNMPv3 secrets for the discovery worker                             |
 
 ### Inventory
 
@@ -154,6 +176,16 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `INVENTORY_LOG_LEVEL`        | Logging level of the inventory, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL |
 | `CHAIN_OF_TASKS_EXPIRY_TIME` | Tasks expirations time in seconds                                                                 |
 | `ENABLE_FULL_WALK`                      | Enable full OID tree walk for all devices. When disabled (default), only `SNMPv2-MIB` is walked                                                        |
+
+### Discovery
+
+| Variable                              | Description                                                                                                                                    |
+|---------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `COMPOSE_PROFILES`                    | Activate optional service groups. Set to `discovery` to start the discovery and worker-discovery services (e.g. `COMPOSE_PROFILES=discovery`). Combine with other profiles using commas (e.g. `discovery,debug`). Leave empty to disable. |
+| `DISCOVERY_LOG_LEVEL`                 | Logging level of the discovery loader, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                        |
+| `DISCOVERY_PATH`                      | Absolute path on the host to the directory where the discovery worker writes discovered device CSV files                                        |
+
+See [Discovery configuration](../configuration/discovery-configuration.md) for full setup instructions.
 
 ### Traps
 
@@ -166,6 +198,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `DISCOVER_ENGINE_ID`                 | Enable automatic engine ID discovery from incoming SNMPv3 trap datagrams. See [Engine ID Discovery](../configuration/traps.md#engine-id-discovery)                                                                              |
 | `TRAP_LOG_LEVEL`                     | Logging level of the traps container, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL                                                                                                                         |
 | `TRAP_DISABLE_MONGO_DEBUG_LOGGING`   | Disable extensive MongoDB debug logging when `TRAP_LOG_LEVEL` is set to DEBUG                                                                                                                                                   |
+| `MAX_TRAP_VARBINDS_TO_DECODE`        | Maximum varbinds to decode per trap (`0` = unlimited, default `0`)                                                             |
 
 ### Scheduler
 

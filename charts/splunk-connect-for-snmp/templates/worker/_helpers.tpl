@@ -64,6 +64,12 @@ app.kubernetes.io/component: worker-flower
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{- define "splunk-connect-for-snmp.worker.discovery.selectorLabels" -}}
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/component: worker-discovery
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
 
 {{/*
 Common labels
@@ -90,6 +96,11 @@ Common labels
 
 {{- define "splunk-connect-for-snmp.worker.flower.labels" -}}
 {{ include "splunk-connect-for-snmp.worker.flower.selectorLabels" . }}
+{{ include "splunk-connect-for-snmp.labels" . }}
+{{- end }}
+
+{{- define "splunk-connect-for-snmp.worker.discovery.labels" -}}
+{{ include "splunk-connect-for-snmp.worker.discovery.selectorLabels" . }}
 {{ include "splunk-connect-for-snmp.labels" . }}
 {{- end }}
 
@@ -122,6 +133,8 @@ Common labels
   value: {{ .Values.worker.disableMongoDebugLogging | quote }}
 - name: UDP_CONNECTION_TIMEOUT
   value: {{ .Values.worker.udpConnectionTimeout | default "3" | quote }}
+- name: UDP_CONNECTION_RETRIES
+  value: {{ .Values.worker.udpConnectionRetries | default "5" | quote }}
 - name: MAX_OID_TO_PROCESS
   value: {{ .Values.poller.maxOidToProcess | default "70" | quote }}
 - name: MAX_REPETITIONS
@@ -192,6 +205,8 @@ Common labels
   value: {{ .Values.worker.poller.concurrency | default "4" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.poller.prefetch | default "1" | quote }}
+- name: MAX_TASKS_PER_CHILD
+  value: {{ .Values.worker.poller.maxTasksPerChild | default "0" | quote }}
 - name: IPv6_ENABLED
   value: {{ .Values.poller.ipv6Enabled | default "false" | quote }}
 {{- end }}
@@ -201,6 +216,8 @@ Common labels
   value: {{ .Values.worker.sender.concurrency | default "4" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.sender.prefetch | default "30" | quote }}
+- name: MAX_TASKS_PER_CHILD
+  value: {{ .Values.worker.sender.maxTasksPerChild | default "0" | quote }}
 {{- end }}
 
 {{- define "environmental-variables-trap" -}}
@@ -208,8 +225,14 @@ Common labels
   value: {{ .Values.worker.trap.concurrency | default "4" | quote }}
 - name: PREFETCH_COUNT
   value: {{ .Values.worker.trap.prefetch | default "30" | quote }}
+- name: MAX_TASKS_PER_CHILD
+  value: {{ .Values.worker.trap.maxTasksPerChild | default "0" | quote }}
 - name: RESOLVE_TRAP_ADDRESS
   value: {{ .Values.worker.trap.resolveAddress.enabled | default "false" | quote }}
+- name: INCLUDE_UNRESOLVED_TRAP_VARBINDS
+  value: {{ .Values.worker.trap.enableIncludeUnresolvedVarbinds | default "false" | quote }}
+- name: MAX_TRAP_VARBINDS_TO_DECODE
+  value: {{ .Values.traps.maxVarbindsToDecode | default 0 | quote }}
 - name: MAX_DNS_CACHE_SIZE_TRAPS
   value: {{ .Values.worker.trap.resolveAddress.cacheSize | default "500" | quote }}
 - name: TTL_DNS_CACHE_TRAPS
@@ -220,4 +243,13 @@ Common labels
   {{ else }}
   value: "false"
   {{- end }}
+{{- end }}
+
+{{- define "environmental-variables-discovery" -}}
+- name: WORKER_CONCURRENCY
+  value: {{ .Values.worker.discovery.concurrency | default "4" | quote }}
+- name: PREFETCH_COUNT
+  value: {{ .Values.worker.discovery.prefetch | default "30" | quote }}
+- name: MAX_TASKS_PER_CHILD
+  value: {{ .Values.worker.discovery.maxTasksPerChild | default "0" | quote }}
 {{- end }}

@@ -109,6 +109,8 @@ spec:
               value: "true"
             - name: UDP_CONNECTION_TIMEOUT
               value: "3"
+            - name: UDP_CONNECTION_RETRIES
+              value: "5"
             - name: MAX_OID_TO_PROCESS
               value: "70"
             - name: MAX_REPETITIONS
@@ -127,6 +129,8 @@ spec:
               value: "4"
             - name: PREFETCH_COUNT
               value: "1"
+            - name: MAX_TASKS_PER_CHILD
+              value: "0"
             - name: IPv6_ENABLED
               value: "false"
           volumeMounts:

@@ -2,11 +2,11 @@
 
 ## Setup flow overview
 
-1. **Prerequisites** *(this page)* — prepare Splunk indexes and HEC token
-2. **Platform MicroK8s** — install MicroK8s and required addons on the host machine
-3. **Install Splunk OpenTelemetry Collector for Kubernetes** *(optional)* — forward container logs and metrics to Splunk
-4. **Install SC4SNMP** — deploy SC4SNMP via Helm
-5. **Additional configuration** *(optional)* — enable IPv6, configure offline installation, scale the deployment
+1. **Prerequisites** *(this page)* - prepare Splunk indexes and HEC token
+2. **Platform MicroK8s** - install MicroK8s and required addons on the host machine
+3. **Install Splunk OpenTelemetry Collector for Kubernetes** *(optional)* - forward container logs and metrics to Splunk
+4. **Install SC4SNMP** - deploy SC4SNMP via Helm
+5. **Additional configuration** *(optional)* - enable IPv6, configure offline installation, scale the deployment
 
 See the following prerequisites for the Splunk Connect for SNMP.
 
@@ -33,7 +33,7 @@ See the following prerequisites for the Splunk Connect for SNMP.
 
 !!! warning 
     The Splunk Observability Cloud integration (sim) uses the Splunk OpenTelemetry Collector as an additional component in our pipeline. In this setup, the collector transforms metrics received via Splunk HEC into the SignalFx format for ingestion into Splunk Observability Cloud.
-    Because this path is primarily a transformation layer rather than a native O11y instrumentation, the resulting metrics may not fully match Splunk Observability Cloud’s data model, naming conventions, or recommended dimensions.
+    Because this path is primarily a transformation layer rather than a native O11y instrumentation, the resulting metrics may not fully match Splunk Observability Cloud's data model, naming conventions, or recommended dimensions.
     We recommend validating output carefully in a controlled environment before enabling sim.enabled: true broadly, and adjusting SNMP profiles or transformation rules to ensure consistency.
 
 Obtain the following from your Splunk Observability Cloud environment:

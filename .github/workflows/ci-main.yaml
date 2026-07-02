@@ -39,7 +39,7 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: run fossa analyze and create report
         run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install-latest.sh | bash
@@ -67,7 +67,7 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
@@ -79,7 +79,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -89,7 +89,7 @@ jobs:
           docker build -t snmp_local:ci .
 
       - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: snmp_local:ci
           format: table
@@ -104,7 +104,7 @@ jobs:
         python-version:
           - "3.10"
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Setup python
         uses: actions/setup-python@v6
         with:
@@ -116,16 +116,6 @@ jobs:
       - name: Run Pytest with coverage
         run: |
           poetry run pytest --cov=./splunk_connect_for_snmp --cov-report=xml --junitxml=test-results/junit.xml
-#      - name: Upload coverage to Codecov
-#        uses: codecov/codecov-action@v3
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          files: ./coverage.xml
-#          directory: ./coverage/reports/
-#          env_vars: OS,PYTHON
-#          fail_ci_if_error: true
-#          path_to_write_report: ./coverage/codecov_report.txt
-#          verbose: true
       - uses: actions/upload-artifact@v7 # upload test results
         if: success() || failure() # run this step even if previous step failed
         with:
@@ -137,16 +127,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 2
       - name: Get commit message
         id: get_commit_message
         run: |
           if [[ '${{ github.event_name }}' == 'push' ]]; then
-            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD)
+            echo "commit_message<<EOF" >> $GITHUB_OUTPUT
+            git log --format=%B -n 1 HEAD >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           elif [[ '${{ github.event_name }}' == 'pull_request' ]]; then
-            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD^2)
+            echo "commit_message<<EOF" >> $GITHUB_OUTPUT
+            git log --format=%B -n 1 HEAD^2 >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
     outputs:
       commit_message:
@@ -165,7 +159,7 @@ jobs:
         index: [1, 2, 3, 4, 5, 6]
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Setup python
         uses: actions/setup-python@v6
         with:
@@ -204,7 +198,7 @@ jobs:
         index: [ 1, 2, 3, 4, 5, 6 ]
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Setup python
         uses: actions/setup-python@v6
         with:

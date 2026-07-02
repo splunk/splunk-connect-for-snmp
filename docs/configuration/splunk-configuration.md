@@ -39,7 +39,7 @@ kubectl create secret generic my-splunk-hec-secret \
   -n sc4snmp
 ```
 
-2. **Configure the chart** — leave `splunk.token` empty and set `splunk.tokenSecretRef`:
+2. **Configure the chart** - leave `splunk.token` empty and set `splunk.tokenSecretRef`:
 
 ```yaml
 splunk:

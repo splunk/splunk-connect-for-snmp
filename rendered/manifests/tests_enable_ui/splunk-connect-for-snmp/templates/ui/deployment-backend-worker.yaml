@@ -62,6 +62,8 @@ spec:
           value: "default"
         - name: VALUES_DIRECTORY
           value: /var/values_dir
+        - name: AUTH_ENABLED
+          value: "false"
         ports:
         - containerPort: 5000
         volumeMounts:

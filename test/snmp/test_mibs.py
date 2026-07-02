@@ -1,21 +1,67 @@
+import socket
 from unittest import TestCase
 from unittest.mock import Mock
 
+from pysnmp.proto import rfc1902
 from pysnmp.smi import error
 
-from splunk_connect_for_snmp.snmp.manager import Poller, is_mib_resolved
+from splunk_connect_for_snmp.snmp.manager import (
+    Poller,
+    format_trap_varbind_value,
+    is_mib_resolved,
+)
 
 
 class TestMibProcessing(TestCase):
+    def test_format_trap_varbind_value_ipv4_octets(self):
+        octets = rfc1902.OctetString(socket.inet_aton("10.1.1.1"))
+        self.assertEqual("10.1.1.1", format_trap_varbind_value(octets))
+
+    def test_format_trap_varbind_value_ipv6_octets(self):
+        octets = rfc1902.OctetString(socket.inet_pton(socket.AF_INET6, "2001:db8::1"))
+        self.assertEqual("2001:db8::1", format_trap_varbind_value(octets))
+
+    def test_format_trap_varbind_value_keeps_pretty_print(self):
+        self.assertEqual("3", format_trap_varbind_value(rfc1902.Integer(3)))
+
+    def test_format_trap_varbind_value_genuine_ipaddress(self):
+        self.assertEqual(
+            "10.1.1.1", format_trap_varbind_value(rfc1902.IpAddress("10.1.1.1"))
+        )
+
+    def test_format_trap_varbind_value_printable_4char_kept_as_text(self):
+        # Four printable bytes look like text, not an address; must not become an IP.
+        self.assertEqual("TEST", format_trap_varbind_value(rfc1902.OctetString("TEST")))
+
+    def test_format_trap_varbind_value_printable_16char_kept_as_text(self):
+        text = "abcdefghijklmnop"  # 16 printable bytes
+        self.assertEqual(text, format_trap_varbind_value(rfc1902.OctetString(text)))
+
+    def test_format_trap_varbind_value_binary_falls_back_to_hex(self):
+        octets = rfc1902.OctetString(hexValue="00ff10")  # 3 binary bytes
+        self.assertEqual("0x00ff10", format_trap_varbind_value(octets))
+
     def test_load_mib(self):
         poller = Poller.__new__(Poller)
         poller.builder = Mock()
-        poller.load_mibs(["a", "b", "c"])
+        loaded = poller.load_mibs(["a", "b", "c"])
         calls = poller.builder.loadModules.call_args_list
 
+        self.assertEqual({"a", "b", "c"}, loaded)
         self.assertEqual("a", calls[0][0][0])
         self.assertEqual("b", calls[1][0][0])
         self.assertEqual("c", calls[2][0][0])
+
+    def test_load_mib_returns_only_successful(self):
+        poller = Poller.__new__(Poller)
+        poller.builder = Mock()
+        poller.builder.loadModules.side_effect = [
+            None,
+            error.MibLoadError(),
+            None,
+        ]
+        loaded = poller.load_mibs(["a", "b", "c"])
+        self.assertEqual({"a", "c"}, loaded)
 
     def test_is_mib_known_when_mib_map_is_empty(self):
         poller = Poller.__new__(Poller)
@@ -51,7 +97,8 @@ class TestMibProcessing(TestCase):
         poller = Poller.__new__(Poller)
         poller.builder = Mock()
         poller.builder.loadModules.side_effect = error.MibLoadError()
-        poller.load_mibs(["a"])
+        loaded = poller.load_mibs(["a"])
+        self.assertEqual(set(), loaded)
 
     def test_find_new_mibs_is_found(self):
         poller = Poller.__new__(Poller)

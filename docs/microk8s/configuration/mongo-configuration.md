@@ -64,6 +64,11 @@ mongodb:
     capabilities:
       drop:
       - ALL
+
+  # Extra environment variables injected into the mongod container.
+  extraEnv:
+    - name: GLIBC_TUNABLES
+      value: "glibc.pthread.rseq=1"
 ```
 
 | Key                                        | Type   | Default        | Description                                                      |
@@ -93,6 +98,10 @@ mongodb:
 | mongodb.replicaInitJob.image.repository    | string | alpine/kubectl | Container image for the initialization job.                      |
 | mongodb.replicaInitJob.image.tag           | string | 1.34.2         | Image tag / kubectl version.                                     |
 | mongodb.replicaInitJob.timeout             | int    | 600            | Maximum time (in seconds) to wait for each pod to become ready.  |
+| mongodb.extraEnv                           | list   | `[{name: GLIBC_TUNABLES, value: "glibc.pthread.rseq=1"}]` | Extra environment variables injected into the mongod container. The default `GLIBC_TUNABLES` entry mitigates a MongoDB 8.x SIGSEGV observed on host kernels >= 6.19 (e.g. Ubuntu 26.04 / kernel 6.19+ HWE backports). See [MongoDB 8.x crash on Linux kernel 6.19+](../../troubleshooting/general-issues.md#mongodb-8x-crash-on-linux-kernel-619-exit-139--sigsegv). |
+
+!!!note "Extra environment variables (`mongodb.extraEnv`)"
+    `mongodb.extraEnv` is a list of standard Kubernetes env entries appended to the mongod container. It ships with a single default entry that sets `GLIBC_TUNABLES=glibc.pthread.rseq=1`, which restores the upstream glibc default and prevents a tcmalloc SIGSEGV (`exit 139`) that occurs ~30s after `startup complete` on host nodes running Linux kernel 6.19 or later. The setting is a no-op on kernels < 6.19. To override or extend the list, redefine `mongodb.extraEnv` in your `values.yaml`.
 
 ### Architecture Modes
 
@@ -256,7 +265,7 @@ The chart automatically detects and migrates data from existing Bitnami MongoDB 
 3. Init container fixes file permissions for compatibility
 4. If no existing PVC is found, creates a new one
 
-No manual intervention required — simply upgrade your deployment with the new chart.
+No manual intervention required - simply upgrade your deployment with the new chart.
 
 !!!warning
     Migration between Bitnami MongoDB and the new chart is possible only to standalone mode. For using replication mode, please reinstall SC4SNMP with a fresh MongoDB deployment.

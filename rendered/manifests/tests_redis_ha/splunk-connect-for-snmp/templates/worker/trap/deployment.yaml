@@ -109,6 +109,8 @@ spec:
               value: "true"
             - name: UDP_CONNECTION_TIMEOUT
               value: "3"
+            - name: UDP_CONNECTION_RETRIES
+              value: "5"
             - name: MAX_OID_TO_PROCESS
               value: "70"
             - name: MAX_REPETITIONS
@@ -127,8 +129,14 @@ spec:
               value: "4"
             - name: PREFETCH_COUNT
               value: "30"
+            - name: MAX_TASKS_PER_CHILD
+              value: "0"
             - name: RESOLVE_TRAP_ADDRESS
               value: "false"
+            - name: INCLUDE_UNRESOLVED_TRAP_VARBINDS
+              value: "false"
+            - name: MAX_TRAP_VARBINDS_TO_DECODE
+              value: "0"
             - name: MAX_DNS_CACHE_SIZE_TRAPS
               value: "500"
             - name: TTL_DNS_CACHE_TRAPS

@@ -23,17 +23,38 @@ UI:
   frontEnd:
     NodePort: 30001
     repository: ghcr.io/splunk/sc4snmp-ui/frontend/container
-    tag: "1.1.2-beta.3"
+    tag: "1.2.1"
     pullPolicy: "Always"
   backEnd:
     NodePort: 30002
     repository: ghcr.io/splunk/sc4snmp-ui/backend/container
-    tag: "1.1.2-beta.3"
+    tag: "1.2.1"
     pullPolicy: "Always"
   # Base container that sets permissions for folders mounted to UI containers
   init:
     repository: registry.access.redhat.com/ubi9/ubi
     pullPolicy: IfNotPresent
+
+  # CORS allow-list for the backend. Comma-separated origins (scheme+host[+port]).
+  # Leave empty to auto-detect:
+  #   - if auth.enabled=false, any origin is reflected (DEV ONLY)
+  #   - if auth.enabled=true, defaults to http://localhost:8080
+  # Set explicitly in production, e.g. "https://snmp-ui.example.com"
+  allowedOrigins: ""
+
+  auth:
+    enabled: false
+    # Name of an existing Kubernetes Secret containing the auth credentials.
+    # REQUIRED when auth.enabled=true. The secret must live in the release
+    # namespace and expose the following keys:
+    #   - username       (string, admin username)
+    #   - password_hash  (Argon2id hash; generate with SC4SNMP-UI/backend/hash_password.py)
+    #   - jwt_secret     (random hex token; generate with: python -c "import secrets; print(secrets.token_hex(32))")
+    # Credentials must never be set through values.yaml.
+    existingSecret: ""
+    jwtExpiryHours: 2
+    idleTimeoutMinutes: 30
+    secureCookies: false
 
   # valuesFileDirectory is obligatory if UI is used. It is a location of values.yaml and configuration files generated from the UI.
   valuesFileDirectory: ""
@@ -48,7 +69,6 @@ UI:
   # If keepSectionFiles is set to true, separate configration files for different sections will be saved in
   # valuesFileDirectory directory regardless of valuesFileName proper configuration.
   keepSectionFiles: false
-
 flower:
   enabled: false
   port: 80
@@ -296,6 +316,10 @@ worker:
     concurrency: 4
     # how many tasks are consumed from the queue at once
     prefetch: 1
+    # maximum number of tasks a worker child process can execute before
+    # being recycled. 0 (default) disables recycling. Useful to mitigate
+    # memory growth in long-running workers.
+    maxTasksPerChild: 0
     autoscaling:
       # enabling autoscaling for poller worker pods
       enabled: false
@@ -325,10 +349,16 @@ worker:
       enabled: false
       cacheSize: 500 # maximum number of records in cache
       cacheTTL: 1800 # time to live of the cached record in seconds
+    # Include varbinds that could not be MIB-translated under sc4snmp::unresolved
+    enableIncludeUnresolvedVarbinds: false
     # minimum number of threads in a pod
     concurrency: 4
     # how many tasks are consumed from the queue at once
     prefetch: 30
+    # maximum number of tasks a worker child process can execute before
+    # being recycled. 0 (default) disables recycling. Useful to mitigate
+    # memory growth in long-running workers.
+    maxTasksPerChild: 0
     autoscaling:
       # enabling autoscaling for trap worker pods
       enabled: false
@@ -355,6 +385,10 @@ worker:
     concurrency: 4
     # how many tasks are consumed from the queue at once
     prefetch: 30
+    # maximum number of tasks a worker child process can execute before
+    # being recycled. 0 (default) disables recycling. Useful to mitigate
+    # memory growth in long-running workers.
+    maxTasksPerChild: 0
     autoscaling:
       # enabling autoscaling for sender worker pods
       enabled: false
@@ -369,6 +403,33 @@ worker:
       limits:
         cpu: 500m
         # the resources requests for sender worker container
+      requests:
+        cpu: 250m
+
+  # The discovery worker handles auto discovery of snmp enabled devices and create CSV file for it
+  discovery:
+    # number of the discovery replicas when autoscaling is set to false
+    replicaCount: 1
+    # minimum number of threads in a pod
+    concurrency: 4
+    # how many tasks are consumed from the queue at once
+    prefetch: 30
+    # max number of tasks a worker child process can execute before being recycled; 0 disables recycling
+    maxTasksPerChild: 0
+    autoscaling:
+      # enabling autoscaling for discovery worker pods
+      enabled: false
+      # minimum number of running discovery worker pods when autoscaling is enabled
+      minReplicas: 2
+      # maximum number of running discovery worker pods when autoscaling is enabled
+      maxReplicas: 10
+      # CPU % threshold that must be exceeded on discovery worker pods to spawn another replica
+      targetCPUUtilizationPercentage: 80
+    resources:
+      # the resources limits for discovery worker container
+      limits:
+        cpu: 500m
+        # the resources requests for discovery worker container
       requests:
         cpu: 250m
   # Liveness probes are used in Kubernetes to know when a pod is alive or dead.
@@ -423,6 +484,8 @@ worker:
   podAntiAffinity: soft
   # udpConnectionTimeout timeout in seconds for SNMP operations
   udpConnectionTimeout: 3
+  # udpConnectionRetries number of retries for SNMP operations
+  udpConnectionRetries: 5
 
   # in case of seeing "Empty SNMP response message" this variable can be set to true
   ignoreEmptyVarbinds: false
@@ -473,6 +536,8 @@ traps:
   includeSecurityContextId: "false"
   # controls whether to extract the engine ID from the raw message
   discoverEngineId: "false"
+  # Max varbinds to decode per trap (0=unlimited); excess varbinds are dropped when > 0
+  maxVarbindsToDecode: 0
 
   # communities define a version of SNMP protocol and SNMP community string, which should be used
   communities: {}
@@ -550,12 +615,12 @@ mongodb:
   replicaInitJob:
     image:
       repository: "alpine/kubectl"
-      tag: "1.34.2"
+      tag: "1.36.2"
     # MongoDB replicas pod initialisation timeout in seconds
     timeout: 600
   image:
     repository: mongo
-    tag: "8.2.2"
+    tag: "8.3.4"
     pullPolicy: IfNotPresent
 
   auth:
@@ -590,6 +655,13 @@ mongodb:
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
+
+  # Extra environment variables for the mongod container.
+  # The default GLIBC_TUNABLES entry mitigates a MongoDB 8.x SIGSEGV (exit 139)
+  # observed on host kernels >= 6.19 (e.g. Ubuntu 26.04).
+  extraEnv:
+    - name: GLIBC_TUNABLES
+      value: "glibc.pthread.rseq=1"
 redis:
   # Mode selector: "standalone", "replication"
   architecture: standalone
@@ -617,7 +689,7 @@ redis:
   # Image
   image:
     repository: redis
-    tag: "8.6.2"
+    tag: "8.8.0"
     pullPolicy: IfNotPresent
 
   # Resources
@@ -655,3 +727,14 @@ redis:
       enabled: true
 
 commonAnnotations: {}
+
+discovery:
+  # Enables discovering SNMP enabled device and create CSV file.
+  enabled: false
+  # list of kubernetes secrets name that will be used for discovery
+  # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/discovery-configuration/#define-usernamesecrets
+  usernameSecrets: []
+  # Enabled device detection using IPv6 subnet.
+  ipv6Enabled: false
+  # logging level, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL
+  logLevel: "INFO"

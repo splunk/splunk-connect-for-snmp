@@ -17,16 +17,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 2
       - name: Get commit message
         id: get_commit_message
         run: |
           if [[ '${{ github.event_name }}' == 'push' ]]; then
-            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD)
+            echo "commit_message<<EOF" >> $GITHUB_OUTPUT
+            git log --format=%B -n 1 HEAD >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           elif [[ '${{ github.event_name }}' == 'pull_request' ]]; then
-            echo ::set-output name=commit_message::$(git log --format=%B -n 1 HEAD^2)
+            echo "commit_message<<EOF" >> $GITHUB_OUTPUT
+            git log --format=%B -n 1 HEAD^2 >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
     outputs:
       commit_message:
@@ -59,7 +63,7 @@ jobs:
           swap-storage: false
 
       - name: Checkout Project
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6

@@ -56,9 +56,6 @@ deploy_poetry() {
   curl -sSL https://install.python-poetry.org | $PYTHON -
   export PATH="/home/ubuntu/.local/bin:$PATH"
   poetry install
-  poetry add --group dev splunk-sdk
-  poetry add --group dev splunklib
-  poetry add --group dev pysnmplib
 }
 
 wait_for_containers_to_be_up() {
@@ -124,6 +121,9 @@ SECRET_FOLDER="sample_v3_values"
 SCHEDULER_CONFIG_FILE="$CONFIG_DIR/scheduler-config.yaml"
 TRAPS_CONFIG_FILE="$CONFIG_DIR/traps-config.yaml"
 INVENTORY_FILE="$CONFIG_DIR/inventory-tests.csv"
+DISCOVERY_CONFIG_FILE="$CONFIG_DIR/discovery-config.yaml"
+DISCOVERY_PATH_DIR="$(pwd)/discovery"
+mkdir -p "$DISCOVERY_PATH_DIR"
 
 SPLUNK_HEC_HOST=$(hostname -I | cut -d " " -f1)
 SPLUNK_HEC_TOKEN=$(cat hec_token)
@@ -149,6 +149,8 @@ set_var "COREFILE_ABS_PATH"                      "$(realpath "${DOCKER_COMPOSE_L
 set_var "SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH"    "$(realpath "$SCHEDULER_CONFIG_FILE")"
 set_var "TRAPS_CONFIG_FILE_ABSOLUTE_PATH"        "$(realpath "$TRAPS_CONFIG_FILE")"
 set_var "INVENTORY_FILE_ABSOLUTE_PATH"           "$(realpath "$INVENTORY_FILE")"
+set_var "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH"    "$(realpath "$DISCOVERY_CONFIG_FILE")"
+set_var "DISCOVERY_PATH"                         "$DISCOVERY_PATH_DIR"
 
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" "$INVENTORY_FILE"
 echo $(green "Running SNMP simulators in Docker")

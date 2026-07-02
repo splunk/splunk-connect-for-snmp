@@ -32,7 +32,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: false
       - id: doc-files
@@ -40,7 +40,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y pandoc texlive librsvg2-bin texlive-latex-extra
-          pandoc -s --pdf-engine=pdflatex -o /tmp/SC4S4SNMP_docs.pdf $(find . -type f -name "*.md") -H deeplists.tex
+          pandoc -s --pdf-engine=pdflatex -o /tmp/SC4SNMP_docs.pdf $(find . -type f -name "*.md") -H deeplists.tex
       - name: Release
         uses: softprops/action-gh-release@v3
         with:

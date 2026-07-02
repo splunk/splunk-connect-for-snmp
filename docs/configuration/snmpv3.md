@@ -8,7 +8,7 @@ for authentication and data privacy. We recommend using SNMPv3 whenever possible
 
 /// tab | microk8s
 Each set of credentials is stored as a Kubernetes Secret object and referenced by name in `values.yaml`.
-This allows the secret to be created once — including automation by third-party password managers — then consumed without storing sensitive data in plain text.
+This allows the secret to be created once - including automation by third-party password managers - then consumed without storing sensitive data in plain text.
 
 ```bash
 # <secretname>=Arbitrary name of the secret often the same as the username or prefixed with "sc4snmp-"

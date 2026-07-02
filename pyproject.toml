@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "splunk-connect-for-snmp"
-version = "1.16.0"
+version = "1.17.0-beta.8"
 description = ""
 authors = ["omrozowicz-splunk <omrozowicz@splunk.com>"]
 license = "Apache-2.0"
@@ -10,6 +10,7 @@ include = ["splunk_connect_for_snmp/profiles/*.yaml"]
 [tool.poetry.scripts]
 traps = 'splunk_connect_for_snmp.traps:main'
 inventory-loader = 'splunk_connect_for_snmp.inventory.loader:load'
+discovery-loader = 'splunk_connect_for_snmp.discovery.loader:load'
 run-walk = 'splunk_connect_for_snmp.walk:run_walk'
 
 [tool.pytest.ini_options]
@@ -24,7 +25,7 @@ python_files = ["test_*.py"]
 python = ">=3.10,<3.12"
 pymongo = {extras = ["srv"], version = "^4.0.0"}
 requests = {extras = ["crypto"], version = "^2.31.0"}
-celery = {extras = ["tblib"], version = "5.5.3"}
+celery = {extras = ["tblib"], version = "5.6.3"}
 pydantic = "^1.9.0"
 opentelemetry-api = "^1.6.2"
 opentelemetry-sdk = "^1.6.2"
@@ -33,7 +34,7 @@ opentelemetry-instrumentation-logging = "*"
 opentelemetry-exporter-jaeger-thrift = "^1.10.0"
 pyrate-limiter = "^4.0.0"
 requests-cache = "^1.0.0"
-requests-ratelimiter = "^0.9.0"
+requests-ratelimiter = "^0.10.0"
 mongoengine = "^0.29.0"
 celery-redbeat = {git = "https://github.com/splunk/redbeat", branch = "main"}
 PyYAML = "^6.0"
@@ -47,6 +48,7 @@ pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", branch = "main"}
 urllib3 = "^2.0.0"
 jsonschema = "4.26.0"
 flower = "^2.0.1"
+filelock = "^3.18.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.0"
@@ -56,6 +58,7 @@ mkdocs = "^1.2.2"
 mkdocs-material = "^9.0.0"
 python-dotenv = "^1.0.0"
 mkdocs-video = "^1.5.0"
+splunk-sdk = "^2.1.1"
 
 [build-system]
 requires = ["poetry>=0.12"]
