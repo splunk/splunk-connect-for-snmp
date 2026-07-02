@@ -684,6 +684,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../microk8s/configuration/mongo-configuration/" class="md-nav__link">
         
   
@@ -1629,6 +1657,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../configuration/snmpv3/" class="md-nav__link">
         
   
@@ -2146,6 +2202,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../configuration/step-by-step-poll/" class="md-nav__link">
         
   
@@ -2290,6 +2374,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../discovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/" class="md-nav__link">
         
   
@@ -2406,10 +2517,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
@@ -2427,8 +2538,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2606,6 +2717,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/discovery-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2719,6 +2858,11 @@
 <td><a href="../5-traps-configuration/">Traps configuration</a></td>
 </tr>
 <tr>
+<td>Discovery config file</td>
+<td>Defines subnets for autodiscovery</td>
+<td><a href="../../configuration/discovery-configuration/">Discovery configuration</a></td>
+</tr>
+<tr>
 <td><code>secrets.json</code></td>
 <td>Stores SNMPv3 credentials (optional, SNMPv3 only)</td>
 <td><a href="../../configuration/snmpv3/">SNMPv3 secrets</a></td>
@@ -2732,16 +2876,16 @@
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The inventory, scheduler, and traps files can be named and placed anywhere on the host. What matters is that their absolute paths are correctly set in <code>.env</code> via <code>INVENTORY_FILE_ABSOLUTE_PATH</code>, <code>SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH</code>, and <code>TRAPS_CONFIG_FILE_ABSOLUTE_PATH</code>. A default <code>Corefile</code> is shipped inside the <code>docker_compose</code> package — its absolute path must be set via <code>COREFILE_ABS_PATH</code>. The <code>secrets.json</code> filename is fixed — only the folder path is configurable via <code>SECRET_FOLDER_PATH</code>.</p>
+<p>The inventory, scheduler, and traps files can be named and placed anywhere on the host. What matters is that their absolute paths are correctly set in <code>.env</code> via <code>INVENTORY_FILE_ABSOLUTE_PATH</code>, <code>SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH</code>, and <code>TRAPS_CONFIG_FILE_ABSOLUTE_PATH</code>. A default <code>Corefile</code> is shipped inside the <code>docker_compose</code> package - its absolute path must be set via <code>COREFILE_ABS_PATH</code>. The <code>secrets.json</code> filename is fixed - only the folder path is configurable via <code>SECRET_FOLDER_PATH</code>.</p>
 </div>
 <p>Work through each page in order. Once all files are ready, proceed to <a href="../11-deploy-and-run/">Deploy the app</a>.</p>
 <h2 id="quick-start-example">Quick start example<a class="headerlink" href="#quick-start-example" title="Permanent link">¶</a></h2>
 <p>The following is a minimal, working configuration for polling a single SNMPv2c device. Use it as a starting point and adapt it to your environment.</p>
-<p><strong>Inventory file</strong> — one device at <code>192.168.1.1</code>, with a minimal SNMPv2-MIB walk every 1800 seconds and profile-based polling every 300 seconds (as defined by <code>simple_profile</code> below), using SNMPv2c community <code>public</code>:</p>
+<p><strong>Inventory file</strong> - one device at <code>192.168.1.1</code>, with a minimal SNMPv2-MIB walk every 1800 seconds and profile-based polling every 300 seconds (as defined by <code>simple_profile</code> below), using SNMPv2c community <code>public</code>:</p>
 <div class="highlight"><pre><span></span><code>address,port,version,community,secret,securityEngine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
 192.168.1.1,161,2c,public,,,1800,simple_profile,t,,
 </code></pre></div>
-<p><strong>Scheduler config file</strong> — define the <code>public</code> community and the <code>simple_profile</code> profile referenced above:</p>
+<p><strong>Scheduler config file</strong> - define the <code>public</code> community and the <code>simple_profile</code> profile referenced above:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">2c</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
@@ -2752,13 +2896,13 @@
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="w"> </span><span class="p p-Indicator">]</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'SNMPv2-MIB'</span><span class="w"> </span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<p><strong>Traps config file</strong> — accept traps from SNMPv2c devices using the <code>public</code> community:</p>
+<p><strong>Traps config file</strong> - accept traps from SNMPv2c devices using the <code>public</code> community:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">2c</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
 <span class="nt">usernameSecrets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
 </code></pre></div>
-<p><strong><code>.env</code></strong> — set the required variables (adjust paths and Splunk details to your environment):</p>
+<p><strong><code>.env</code></strong> - set the required variables (adjust paths and Splunk details to your environment):</p>
 <div class="highlight"><pre><span></span><code>SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=/home/ubuntu/docker_compose/scheduler-config.yaml
 TRAPS_CONFIG_FILE_ABSOLUTE_PATH=/home/ubuntu/docker_compose/traps-config.yaml
 INVENTORY_FILE_ABSOLUTE_PATH=/home/ubuntu/docker_compose/inventory.csv

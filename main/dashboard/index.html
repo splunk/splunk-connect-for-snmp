@@ -12,7 +12,7 @@
         <link rel="prev" href="../small-environment/">
       
       
-        <link rel="next" href="../releases/">
+        <link rel="next" href="../discovery/">
       
       
         
@@ -662,6 +662,34 @@
     
   
     Scheduler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
   
 
     
@@ -1545,6 +1573,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../configuration/snmpv3/" class="md-nav__link">
         
   
@@ -2062,6 +2118,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../configuration/step-by-step-poll/" class="md-nav__link">
         
   
@@ -2329,6 +2413,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#discovery-dashboards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery dashboards
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#other-dashboards" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2353,6 +2448,33 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../discovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -2480,10 +2602,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
@@ -2501,8 +2623,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2680,6 +2802,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/discovery-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2804,6 +2954,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#discovery-dashboards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery dashboards
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#other-dashboards" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2899,6 +3060,14 @@ is configured correctly, otherwise please use <a href="../troubleshooting/traps-
 For that we need to go <strong>SNMP trap status</strong> dashboard, if we have only <strong>succeeded</strong> status it means that everything is working, 
 otherwise we will see information with another status.</p>
 <p><img alt="Trap dashboards" src="../images/dashboard/trap_dashboard.png"></p>
+<h4 id="discovery-dashboards">Discovery dashboards<a class="headerlink" href="#discovery-dashboards" title="Permanent link">¶</a></h4>
+<p>To check that discovery for your discovery key is working correctly, look at <strong>SNMP schedule of discovery tasks</strong> dashboard.
+With this chart you can understand when SC4SNMP scheduled discovery for your discovery key last time. The process works if it runs regularly.</p>
+<p>After double-checking that SC4SNMP scheduled discovery tasks for your discovery key we need to be sure that discovery is working.
+For that look at another dashboard <strong>SNMP discovery status</strong> and if everything is working you will see only <strong>succeeded</strong> status of discovery.
+If something is going wrong you will see another status (like on screenshot), then use <a href="../troubleshooting/discovery-issues/">troubleshooting docs 
+for that</a>.</p>
+<p><img alt="Discovery dashboards" src="../images/dashboard/discovery_dashboard.png"></p>
 <h4 id="other-dashboards">Other dashboards<a class="headerlink" href="#other-dashboards" title="Permanent link">¶</a></h4>
 <p>We also have tasks that will be a callback for walk and poll. For example <strong>send</strong> will publish result in Splunk. 
 We need to be sure that after successful walk and poll those callbacks have completed. Please check that we have only 

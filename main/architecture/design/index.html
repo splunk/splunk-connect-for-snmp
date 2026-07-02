@@ -742,6 +742,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../microk8s/configuration/mongo-configuration/" class="md-nav__link">
         
   
@@ -1605,6 +1633,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../configuration/snmpv3/" class="md-nav__link">
         
   
@@ -2122,6 +2178,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../configuration/step-by-step-poll/" class="md-nav__link">
         
   
@@ -2266,6 +2350,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../discovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/" class="md-nav__link">
         
   
@@ -2382,10 +2493,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
@@ -2403,8 +2514,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2582,6 +2693,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/discovery-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2663,6 +2802,7 @@ devices according to planned schedules and the second one is responsible for lis
 <li><strong>Trap</strong> - responsible for listening and receiving trap notifications from SNMP agents. The listener is always 
   waiting for the messages coming on the specified port and passing them to the trap worker for further 
   processing.</li>
+<li><strong>Discovery</strong> - responsible for detecting SNMP-enabled devices within a given subnet. Celery is used to schedule and execute the discovery tasks, with Redis acting as the message broker.</li>
 <li><strong>MIB Server</strong> - responsible for serving MIBs to SNMP Workers and translating oids to varbinds.</li>
 <li><strong>MongoDB</strong> - used for storing configuration and state of the SC4SNMP.</li>
 <li><strong>Inventory</strong> - job used for updating the information about SC4SNMP configuration. It is run after every update to 

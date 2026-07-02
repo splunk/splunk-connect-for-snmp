@@ -684,6 +684,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../microk8s/configuration/mongo-configuration/" class="md-nav__link">
         
   
@@ -1551,6 +1579,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../configuration/snmpv3/" class="md-nav__link">
         
   
@@ -1778,6 +1834,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#worker-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worker Discovery
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1788,6 +1855,17 @@
     <span class="md-ellipsis">
       
         Inventory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery
       
     </span>
   </a>
@@ -2298,6 +2376,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../configuration/step-by-step-poll/" class="md-nav__link">
         
   
@@ -2442,6 +2548,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../discovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/" class="md-nav__link">
         
   
@@ -2558,10 +2691,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
@@ -2579,8 +2712,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2745,6 +2878,34 @@
     
   
     Traps issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/discovery-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery issues
   
 
     
@@ -2931,6 +3092,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#worker-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worker Discovery
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2941,6 +3113,17 @@
     <span class="md-ellipsis">
       
         Inventory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery
       
     </span>
   </a>
@@ -2992,30 +3175,31 @@
 
 
 <div><h1 id="env-file-configuration">.env file configuration<a class="headerlink" href="#env-file-configuration" title="Permanent link">¶</a></h1>
-<p>The <code>.env</code> file lives inside the <code>docker_compose</code> directory (the same directory extracted from <code>docker_compose.zip</code>). It controls all environment variables for the deployment — paths to configuration files, Splunk connection settings, image versions, and tuning parameters. Edit this file before running <code>docker compose up</code>. Variables in it can be divided into few sections.</p>
+<p>The <code>.env</code> file lives inside the <code>docker_compose</code> directory (the same directory extracted from <code>docker_compose.zip</code>). It controls all environment variables for the deployment - paths to configuration files, Splunk connection settings, image versions, and tuning parameters. Edit this file before running <code>docker compose up</code>. Variables in it can be divided into few sections.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Required variables</p>
 <p>The following variables must be set before running <code>docker compose up</code>:</p>
 <p><strong>File paths:</strong></p>
 <ul>
-<li><strong><code>SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH</code></strong> — absolute path to your <code>scheduler-config.yaml</code></li>
-<li><strong><code>TRAPS_CONFIG_FILE_ABSOLUTE_PATH</code></strong> — absolute path to your <code>traps-config.yaml</code></li>
-<li><strong><code>INVENTORY_FILE_ABSOLUTE_PATH</code></strong> — absolute path to your <code>inventory.csv</code></li>
-<li><strong><code>COREFILE_ABS_PATH</code></strong> — absolute path to the <code>Corefile</code> (a default <code>Corefile</code> is shipped inside the <code>docker_compose</code> package)</li>
+<li><strong><code>SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH</code></strong> - absolute path to your <code>scheduler-config.yaml</code></li>
+<li><strong><code>TRAPS_CONFIG_FILE_ABSOLUTE_PATH</code></strong> - absolute path to your <code>traps-config.yaml</code></li>
+<li><strong><code>INVENTORY_FILE_ABSOLUTE_PATH</code></strong> - absolute path to your <code>inventory.csv</code></li>
+<li><strong><code>DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH</code></strong> - absolute path to your <code>discovery-config.yaml</code> (required when using discovery)</li>
+<li><strong><code>COREFILE_ABS_PATH</code></strong> - absolute path to the <code>Corefile</code> (a default <code>Corefile</code> is shipped inside the <code>docker_compose</code> package)</li>
 </ul>
 <p><strong>Splunk connection:</strong></p>
 <ul>
-<li><strong><code>SPLUNK_HEC_HOST</code></strong> — IP address or domain name of your Splunk instance</li>
-<li><strong><code>SPLUNK_HEC_PROTOCOL</code></strong> — <code>https</code> or <code>http</code></li>
-<li><strong><code>SPLUNK_HEC_PORT</code></strong> — port of the HEC endpoint</li>
-<li><strong><code>SPLUNK_HEC_TOKEN</code></strong> or <strong><code>SPLUNK_HEC_TOKEN_SECRET_FILE</code></strong> — HEC token, or path to a file containing the token</li>
+<li><strong><code>SPLUNK_HEC_HOST</code></strong> - IP address or domain name of your Splunk instance</li>
+<li><strong><code>SPLUNK_HEC_PROTOCOL</code></strong> - <code>https</code> or <code>http</code></li>
+<li><strong><code>SPLUNK_HEC_PORT</code></strong> - port of the HEC endpoint</li>
+<li><strong><code>SPLUNK_HEC_TOKEN</code></strong> or <strong><code>SPLUNK_HEC_TOKEN_SECRET_FILE</code></strong> - HEC token, or path to a file containing the token</li>
 </ul>
 </div>
 <p>Once the required variables above are set, you can <a href="../11-deploy-and-run/">Deploy the app</a>. The rest of this page covers optional and advanced parameters.</p>
 <div class="admonition note">
 <p class="admonition-title">Sending container logs to Splunk</p>
-<p>If you plan to use the <a href="../9-splunk-logging/">Splunk logging feature</a>, also set <strong><code>SPLUNK_LOG_INDEX</code></strong> — the Splunk event index where container logs will be sent. This cannot be configured after the fact without editing <code>.env</code> and restarting the stack.</p>
+<p>If you plan to use the <a href="../9-splunk-logging/">Splunk logging feature</a>, also set <strong><code>SPLUNK_LOG_INDEX</code></strong> - the Splunk event index where container logs will be sent. This cannot be configured after the fact without editing <code>.env</code> and restarting the stack.</p>
 </div>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h2>
 <h3 id="deployment">Deployment<a class="headerlink" href="#deployment" title="Permanent link">¶</a></h3>
@@ -3046,6 +3230,10 @@
 <tr>
 <td><code>INVENTORY_FILE_ABSOLUTE_PATH</code></td>
 <td>Absolute path to <a href="../3-inventory-configuration/">inventory.csv</a> file</td>
+</tr>
+<tr>
+<td><code>DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH</code></td>
+<td>Absolute path to <a href="../../configuration/discovery-configuration/">discovery-config.yaml</a> file (required when using discovery)</td>
 </tr>
 <tr>
 <td><code>COREFILE_ABS_PATH</code></td>
@@ -3148,6 +3336,10 @@
 <tr>
 <td><code>MONGO_TAG</code></td>
 <td>MongoDB image tag to pull</td>
+</tr>
+<tr>
+<td><code>MONGO_GLIBC_TUNABLES</code></td>
+<td>Value passed as <code>GLIBC_TUNABLES</code> to the <code>mongo</code> container. Defaults to <code>glibc.pthread.rseq=1</code> to mitigate a MongoDB 8.x SIGSEGV observed on host kernels &gt;= 6.19 (e.g. Ubuntu 26.04). Safe no-op on older kernels. See <a href="../../troubleshooting/general-issues/#mongodb-8x-crash-on-linux-kernel-619-exit-139--sigsegv">MongoDB 8.x crash on Linux kernel 6.19+</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -3270,12 +3462,20 @@
 <td>Timeout in seconds for SNMP operations</td>
 </tr>
 <tr>
+<td><code>UDP_CONNECTION_RETRIES</code></td>
+<td>Number of SNMP UDP retries per operation (default: <code>5</code>)</td>
+</tr>
+<tr>
 <td><code>MAX_OID_TO_PROCESS</code></td>
 <td>Sometimes SNMP Agent cannot accept more than X OIDs per once, so if the error “TooBig” is visible in logs, decrease the number of MAX_OID_TO_PROCESS</td>
 </tr>
 <tr>
 <td><code>MAX_REPETITIONS</code></td>
 <td>The amount of requested next oids in response for each of varbinds in one request sent</td>
+</tr>
+<tr>
+<td><code>CELERY_TASK_TIMEOUT</code></td>
+<td>Timeout in seconds for a single Celery task (default: <code>2400</code>)</td>
 </tr>
 </tbody>
 </table>
@@ -3315,6 +3515,10 @@
 <tr>
 <td><code>WORKER_POLLER_MEMORY_RESERVATIONS</code></td>
 <td>Dedicated memory resources for worker poller container</td>
+</tr>
+<tr>
+<td><code>WORKER_POLLER_MAX_TASKS_PER_CHILD</code></td>
+<td>Max number of tasks a poller worker child process can execute before being recycled. <code>0</code> (default) disables recycling. Useful to mitigate memory growth in long-running workers</td>
 </tr>
 <tr>
 <td><code>ENABLE_WORKER_POLLER_SECRETS</code></td>
@@ -3359,6 +3563,10 @@
 <td><code>WORKER_SENDER_MEMORY_RESERVATIONS</code></td>
 <td>Dedicated memory resources for worker sender container</td>
 </tr>
+<tr>
+<td><code>WORKER_SENDER_MAX_TASKS_PER_CHILD</code></td>
+<td>Max number of tasks a sender worker child process can execute before being recycled. <code>0</code> (default) disables recycling. Useful to mitigate memory growth in long-running workers</td>
+</tr>
 </tbody>
 </table>
 <h4 id="worker-trap">Worker Trap<a class="headerlink" href="#worker-trap" title="Permanent link">¶</a></h4>
@@ -3381,6 +3589,10 @@
 <tr>
 <td><code>RESOLVE_TRAP_ADDRESS</code></td>
 <td>Use reverse dns lookup for trap IP address and send the hostname to Splunk</td>
+</tr>
+<tr>
+<td><code>INCLUDE_UNRESOLVED_TRAP_VARBINDS</code></td>
+<td>Include trap varbinds that could not be MIB-translated under <code>sc4snmp::unresolved</code> in Splunk events</td>
 </tr>
 <tr>
 <td><code>MAX_DNS_CACHE_SIZE_TRAPS</code></td>
@@ -3410,6 +3622,57 @@
 <td><code>WORKER_TRAP_MEMORY_RESERVATIONS</code></td>
 <td>Dedicated memory resources for worker trap container</td>
 </tr>
+<tr>
+<td><code>WORKER_TRAP_MAX_TASKS_PER_CHILD</code></td>
+<td>Max number of tasks a trap worker child process can execute before being recycled. <code>0</code> (default) disables recycling. Useful to mitigate memory growth in long-running workers</td>
+</tr>
+</tbody>
+</table>
+<h4 id="worker-discovery">Worker Discovery<a class="headerlink" href="#worker-discovery" title="Permanent link">¶</a></h4>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WORKER_DISCOVERY_CONCURRENCY</code></td>
+<td>Minimum number of threads in the discovery worker container</td>
+</tr>
+<tr>
+<td><code>PREFETCH_DISCOVERY_COUNT</code></td>
+<td>How many tasks are consumed from the queue at once in the discovery worker container</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_REPLICAS</code></td>
+<td>Number of docker replicas of worker discovery container</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_CPU_LIMIT</code></td>
+<td>Limit of cpu that worker discovery container can use</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_MEMORY_LIMIT</code></td>
+<td>Limit of memory that worker discovery container can use</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_CPU_RESERVATIONS</code></td>
+<td>Dedicated cpu resources for worker discovery container</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_MEMORY_RESERVATIONS</code></td>
+<td>Dedicated memory resources for worker discovery container</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_MAX_TASKS_PER_CHILD</code></td>
+<td>Max number of tasks a discovery worker child process can execute before being recycled. <code>0</code> (default) disables recycling</td>
+</tr>
+<tr>
+<td><code>ENABLE_WORKER_DISCOVERY_SECRETS</code></td>
+<td>Enable usage of SNMPv3 secrets for the discovery worker</td>
+</tr>
 </tbody>
 </table>
 <h3 id="inventory">Inventory<a class="headerlink" href="#inventory" title="Permanent link">¶</a></h3>
@@ -3435,6 +3698,30 @@
 </tr>
 </tbody>
 </table>
+<h3 id="discovery">Discovery<a class="headerlink" href="#discovery" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>COMPOSE_PROFILES</code></td>
+<td>Activate optional service groups. Set to <code>discovery</code> to start the discovery and worker-discovery services (e.g. <code>COMPOSE_PROFILES=discovery</code>). Combine with other profiles using commas (e.g. <code>discovery,debug</code>). Leave empty to disable.</td>
+</tr>
+<tr>
+<td><code>DISCOVERY_LOG_LEVEL</code></td>
+<td>Logging level of the discovery loader, possible options: DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL</td>
+</tr>
+<tr>
+<td><code>DISCOVERY_PATH</code></td>
+<td>Absolute path on the host to the directory where the discovery worker writes discovered device CSV files</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="../../configuration/discovery-configuration/">Discovery configuration</a> for full setup instructions.</p>
 <h3 id="traps">Traps<a class="headerlink" href="#traps" title="Permanent link">¶</a></h3>
 <table>
 <thead>
@@ -3471,6 +3758,10 @@
 <tr>
 <td><code>TRAP_DISABLE_MONGO_DEBUG_LOGGING</code></td>
 <td>Disable extensive MongoDB debug logging when <code>TRAP_LOG_LEVEL</code> is set to DEBUG</td>
+</tr>
+<tr>
+<td><code>MAX_TRAP_VARBINDS_TO_DECODE</code></td>
+<td>Maximum varbinds to decode per trap (<code>0</code> = unlimited, default <code>0</code>)</td>
 </tr>
 </tbody>
 </table>

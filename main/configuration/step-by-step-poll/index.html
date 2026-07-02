@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../workers/">
+        <link rel="prev" href="../discovery-configuration/">
       
       
         <link rel="next" href="../snmp-data-format/">
@@ -662,6 +662,34 @@
     
   
     Scheduler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
   
 
     
@@ -1545,6 +1573,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../snmpv3/" class="md-nav__link">
         
   
@@ -2061,6 +2117,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -2218,6 +2302,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../discovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/" class="md-nav__link">
         
   
@@ -2334,10 +2445,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
@@ -2355,8 +2466,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2534,6 +2645,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/discovery-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2590,8 +2729,8 @@ the <code>UCD-SNMP-MIB</code> for CPU-related statistics. Define the target grou
 <p class="admonition-title">Walk scope</p>
 <p>By default, SC4SNMP only walks <code>SNMPv2-MIB</code>. You have two options to expand the scope:</p>
 <ul>
-<li><strong>Define a walk profile</strong> — add a profile with <code>condition.type: "walk"</code> to walk only the MIB families you need.</li>
-<li><strong>Enable full walk</strong> — set <code>enableFullWalk: true</code> in <code>values.yaml</code> (microk8s) or <code>ENABLE_FULL_WALK=true</code> in <code>.env</code> (docker compose) to walk the entire OID tree.</li>
+<li><strong>Define a walk profile</strong> - add a profile with <code>condition.type: "walk"</code> to walk only the MIB families you need.</li>
+<li><strong>Enable full walk</strong> - set <code>enableFullWalk: true</code> in <code>values.yaml</code> (microk8s) or <code>ENABLE_FULL_WALK=true</code> in <code>.env</code> (docker compose) to walk the entire OID tree.</li>
 </ul>
 </div>
 <p>In the example below, no walk profile is used. <code>switch_profile</code> polls specific OIDs every 60 seconds. SC4SNMP will walk only <code>SNMPv2-MIB</code> by default.</p>

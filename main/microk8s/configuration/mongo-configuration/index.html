@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../scheduler-configuration/">
+        <link rel="prev" href="../../../configuration/discovery-configuration/">
       
       
         <link rel="next" href="../redis-configuration/">
@@ -668,6 +668,34 @@
     
   
     Scheduler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
   
 
     
@@ -1793,6 +1821,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../configuration/snmpv3/" class="md-nav__link">
         
   
@@ -2310,6 +2366,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../configuration/step-by-step-poll/" class="md-nav__link">
         
   
@@ -2454,6 +2538,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../discovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../releases/" class="md-nav__link">
         
   
@@ -2570,10 +2681,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
@@ -2591,8 +2702,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2757,6 +2868,34 @@
     
   
     Traps issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../troubleshooting/discovery-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery issues
   
 
     
@@ -3077,6 +3216,11 @@ This is the snippet of MongoDB’s configuration with all available options, fil
 <span class="w">    </span><span class="nt">capabilities</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">drop</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ALL</span>
+
+<span class="w">  </span><span class="c1"># Extra environment variables injected into the mongod container.</span>
+<span class="w">  </span><span class="nt">extraEnv</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GLIBC_TUNABLES</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">"glibc.pthread.rseq=1"</span>
 </code></pre></div>
 <table>
 <thead>
@@ -3238,8 +3382,18 @@ This is the snippet of MongoDB’s configuration with all available options, fil
 <td>600</td>
 <td>Maximum time (in seconds) to wait for each pod to become ready.</td>
 </tr>
+<tr>
+<td>mongodb.extraEnv</td>
+<td>list</td>
+<td><code>[{name: GLIBC_TUNABLES, value: "glibc.pthread.rseq=1"}]</code></td>
+<td>Extra environment variables injected into the mongod container. The default <code>GLIBC_TUNABLES</code> entry mitigates a MongoDB 8.x SIGSEGV observed on host kernels &gt;= 6.19 (e.g. Ubuntu 26.04 / kernel 6.19+ HWE backports). See <a href="../../../troubleshooting/general-issues/#mongodb-8x-crash-on-linux-kernel-619-exit-139--sigsegv">MongoDB 8.x crash on Linux kernel 6.19+</a>.</td>
+</tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Extra environment variables (<code>mongodb.extraEnv</code>)</p>
+<p><code>mongodb.extraEnv</code> is a list of standard Kubernetes env entries appended to the mongod container. It ships with a single default entry that sets <code>GLIBC_TUNABLES=glibc.pthread.rseq=1</code>, which restores the upstream glibc default and prevents a tcmalloc SIGSEGV (<code>exit 139</code>) that occurs ~30s after <code>startup complete</code> on host nodes running Linux kernel 6.19 or later. The setting is a no-op on kernels &lt; 6.19. To override or extend the list, redefine <code>mongodb.extraEnv</code> in your <code>values.yaml</code>.</p>
+</div>
 <h3 id="architecture-modes">Architecture Modes<a class="headerlink" href="#architecture-modes" title="Permanent link">¶</a></h3>
 <h4 id="standalone-mode-default">Standalone Mode (Default)<a class="headerlink" href="#standalone-mode-default" title="Permanent link">¶</a></h4>
 <p><strong>Architecture</strong>:</p>
@@ -3364,7 +3518,7 @@ Large datasets (&gt;50GB): 4GB+ memory</p>
 <li>Init container fixes file permissions for compatibility</li>
 <li>If no existing PVC is found, creates a new one</li>
 </ol>
-<p>No manual intervention required — simply upgrade your deployment with the new chart.</p>
+<p>No manual intervention required - simply upgrade your deployment with the new chart.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Migration between Bitnami MongoDB and the new chart is possible only to standalone mode. For using replication mode, please reinstall SC4SNMP with a fresh MongoDB deployment.</p>

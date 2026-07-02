@@ -692,6 +692,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#serviceaccount" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -856,6 +867,34 @@
     
   
     Scheduler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
   
 
     
@@ -1739,6 +1778,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../configuration/snmpv3/" class="md-nav__link">
         
   
@@ -2256,6 +2323,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../configuration/discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../configuration/step-by-step-poll/" class="md-nav__link">
         
   
@@ -2400,6 +2495,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../discovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../releases/" class="md-nav__link">
         
   
@@ -2516,10 +2638,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
@@ -2537,8 +2659,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2716,6 +2838,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../troubleshooting/discovery-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2820,6 +2970,17 @@
     <span class="md-ellipsis">
       
         Traps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery
       
     </span>
   </a>
@@ -3180,9 +3341,14 @@ Below are the most common options:</p>
 <td></td>
 </tr>
 <tr>
+<td><code>discovery</code></td>
+<td>Section with configuration for worker discovery pods</td>
+<td></td>
+</tr>
+<tr>
 <td><code>x.replicaCount</code></td>
 <td>Number of pod replicas when autoscaling is disabled</td>
-<td>poller/trap - <code>2</code>, sender - <code>1</code></td>
+<td>poller/trap - <code>2</code>, sender/discovery - <code>1</code></td>
 </tr>
 <tr>
 <td><code>x.concurrency</code></td>
@@ -3193,6 +3359,11 @@ Below are the most common options:</p>
 <td><code>x.prefetch</code></td>
 <td>Number of tasks consumed from the queue at once</td>
 <td>poller - <code>1</code>, traps/sender - <code>30</code></td>
+</tr>
+<tr>
+<td><code>x.maxTasksPerChild</code></td>
+<td>Max number of tasks a worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+<td><code>0</code></td>
 </tr>
 <tr>
 <td><code>x.autoscaling.enabled</code></td>
@@ -3228,6 +3399,11 @@ Below are the most common options:</p>
 <td><code>trap.resolveAddress.cacheTTL</code></td>
 <td>Time to live of the cached record in seconds</td>
 <td><code>1800</code></td>
+</tr>
+<tr>
+<td><code>trap.enableIncludeUnresolvedVarbinds</code></td>
+<td>Include trap varbinds that could not be MIB-translated under <code>sc4snmp::unresolved</code> in Splunk events</td>
+<td><code>false</code></td>
 </tr>
 <tr>
 <td><code>livenessProbe</code></td>
@@ -3293,6 +3469,11 @@ Below are the most common options:</p>
 <td><code>udpConnectionTimeout</code></td>
 <td>Timeout for SNMP operations in seconds</td>
 <td><code>3</code></td>
+</tr>
+<tr>
+<td><code>udpConnectionRetries</code></td>
+<td>Number of SNMP UDP retries per operation</td>
+<td><code>5</code></td>
 </tr>
 <tr>
 <td><code>ignoreEmptyVarbinds</code></td>
@@ -3394,6 +3575,11 @@ Below are the most common options:</p>
 <td><code>includeSecurityContextId</code></td>
 <td>Controls whether to add the context_engine_id field to v3 trap events</td>
 <td><code>false</code></td>
+</tr>
+<tr>
+<td><code>maxVarbindsToDecode</code></td>
+<td>Maximum varbinds to decode per trap (<code>0</code> = unlimited)</td>
+<td><code>0</code></td>
 </tr>
 <tr>
 <td><code>communities</code></td>
@@ -3498,6 +3684,99 @@ Below are the most common options:</p>
 <tr>
 <td><code>tolerations</code></td>
 <td><a href="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/">Kubernetes documentation</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="discovery">Discovery<a class="headerlink" href="#discovery" title="Permanent link">¶</a></h2>
+<p>Detailed documentation about configuring discovery can be found in <a href="../../../configuration/discovery-configuration/">Discovery</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enabled</code></td>
+<td>Enables discovering SNMP-enabled devices and creates a CSV file.</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>usernameSecrets</code></td>
+<td>List of SNMPv3 secret names (Kubernetes secrets) used when discovering devices</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ipv6Enabled</code></td>
+<td>Enabled device detection using IPv6 subnet</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>logLevel</code></td>
+<td>Log level for a discovery pod</td>
+<td><code>INFO</code></td>
+</tr>
+<tr>
+<td><code>discoveryPath</code></td>
+<td>Absolute path where discovery_devices.csv will be stored</td>
+<td></td>
+</tr>
+<tr>
+<td><code>autodiscovery.x.frequency</code></td>
+<td>Time interval (in minutes) between each run of the discovery task</td>
+<td><code>86400</code></td>
+</tr>
+<tr>
+<td><code>autodiscovery.x.delete_already_discovered</code></td>
+<td>Deletes old entries of a particular discovery key before writing new ones.</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>autodiscovery.x.network_address</code></td>
+<td>Subnet in CIDR notation to scan.</td>
+<td></td>
+</tr>
+<tr>
+<td><code>autodiscovery.x.version</code></td>
+<td>SNMP version to use</td>
+<td><code>2c</code></td>
+</tr>
+<tr>
+<td><code>autodiscovery.x.community</code></td>
+<td>SNMP community string</td>
+<td></td>
+</tr>
+<tr>
+<td><code>autodiscovery.x.port</code></td>
+<td>SNMP port to use</td>
+<td><code>161</code></td>
+</tr>
+<tr>
+<td><code>autodiscovery.x.secret</code></td>
+<td>Name of existing secret in kubernetes</td>
+<td></td>
+</tr>
+<tr>
+<td><code>autodiscovery.x.security_engine</code></td>
+<td>SNMP Engine ID</td>
+<td></td>
+</tr>
+<tr>
+<td><code>autodiscovery.x.device_rules.name</code></td>
+<td>Device Rule name for reference</td>
+<td></td>
+</tr>
+<tr>
+<td><code>autodiscovery.x.device_rules.patterns</code></td>
+<td>Wildcard pattern to match SNMP sysDescr</td>
+<td></td>
+</tr>
+<tr>
+<td><code>autodiscovery.x.device_rules.group</code></td>
+<td>Group name to assign matched devices</td>
 <td></td>
 </tr>
 </tbody>

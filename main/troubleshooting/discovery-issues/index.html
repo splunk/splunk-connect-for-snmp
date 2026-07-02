@@ -9,28 +9,26 @@
       
       
       
-        <link rel="prev" href="../redis-configuration/">
+        <link rel="prev" href="../traps-issues/">
       
-      
-        <link rel="next" href="../coredns-configuration/">
       
       
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Splunk Infrastructure Monitoring - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Discovery issues - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,7 +47,7 @@
       
     
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -72,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#otel-and-splunk-observability-cloud-configuration" class="md-skip">
+        <a href="#troubleshooting-discovery-issues" class="md-skip">
           Skip to content
         </a>
       
@@ -92,7 +90,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+    <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -112,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Splunk Infrastructure Monitoring
+              Discovery issues
             
           </span>
         </div>
@@ -190,7 +188,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+    <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -208,7 +206,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -282,7 +280,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/design/" class="md-nav__link">
+      <a href="../../architecture/design/" class="md-nav__link">
         
   
   
@@ -310,7 +308,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/planning/" class="md-nav__link">
+      <a href="../../architecture/planning/" class="md-nav__link">
         
   
   
@@ -342,20 +340,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -376,7 +372,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -391,20 +387,18 @@
                 
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
         
           
           <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
@@ -425,7 +419,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_1">
             <span class="md-nav__icon md-icon"></span>
             
@@ -443,7 +437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../splunk-requirements/" class="md-nav__link">
+      <a href="../../microk8s/splunk-requirements/" class="md-nav__link">
         
   
   
@@ -471,7 +465,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../mk8s/k8s-microk8s/" class="md-nav__link">
+      <a href="../../microk8s/mk8s/k8s-microk8s/" class="md-nav__link">
         
   
   
@@ -499,7 +493,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../sck-installation/" class="md-nav__link">
+      <a href="../../microk8s/sck-installation/" class="md-nav__link">
         
   
   
@@ -527,7 +521,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../sc4snmp-installation/" class="md-nav__link">
+      <a href="../../microk8s/sc4snmp-installation/" class="md-nav__link">
         
   
   
@@ -555,7 +549,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../values-params-description/" class="md-nav__link">
+      <a href="../../microk8s/configuration/values-params-description/" class="md-nav__link">
         
   
   
@@ -580,20 +574,18 @@
                 
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_6" >
         
           
           <label class="md-nav__link" for="__nav_3_1_6" id="__nav_3_1_6_label" tabindex="0">
@@ -614,7 +606,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_1_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -632,7 +624,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../deployment-configuration/" class="md-nav__link">
+      <a href="../../microk8s/configuration/deployment-configuration/" class="md-nav__link">
         
   
   
@@ -660,7 +652,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../scheduler-configuration/" class="md-nav__link">
+      <a href="../../microk8s/configuration/scheduler-configuration/" class="md-nav__link">
         
   
   
@@ -688,7 +680,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/discovery-configuration/" class="md-nav__link">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
         
   
   
@@ -716,7 +708,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mongo-configuration/" class="md-nav__link">
+      <a href="../../microk8s/configuration/mongo-configuration/" class="md-nav__link">
         
   
   
@@ -744,7 +736,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../redis-configuration/" class="md-nav__link">
+      <a href="../../microk8s/configuration/redis-configuration/" class="md-nav__link">
         
   
   
@@ -769,37 +761,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Splunk Infrastructure Monitoring
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../microk8s/configuration/sim-configuration/" class="md-nav__link">
         
   
   
@@ -815,65 +780,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#token-and-realm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Token and realm
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Token and realm">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#define-annotations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Define annotations
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verify-the-deployment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Verify the deployment
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -886,7 +792,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../coredns-configuration/" class="md-nav__link">
+      <a href="../../microk8s/configuration/coredns-configuration/" class="md-nav__link">
         
   
   
@@ -969,7 +875,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gui/enable-gui/" class="md-nav__link">
+      <a href="../../microk8s/gui/enable-gui/" class="md-nav__link">
         
   
   
@@ -997,7 +903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gui/profiles-gui/" class="md-nav__link">
+      <a href="../../microk8s/gui/profiles-gui/" class="md-nav__link">
         
   
   
@@ -1025,7 +931,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gui/groups-gui/" class="md-nav__link">
+      <a href="../../microk8s/gui/groups-gui/" class="md-nav__link">
         
   
   
@@ -1053,7 +959,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gui/inventory-gui/" class="md-nav__link">
+      <a href="../../microk8s/gui/inventory-gui/" class="md-nav__link">
         
   
   
@@ -1081,7 +987,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../gui/apply-changes/" class="md-nav__link">
+      <a href="../../microk8s/gui/apply-changes/" class="md-nav__link">
         
   
   
@@ -1164,7 +1070,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../upgrade/" class="md-nav__link">
+      <a href="../../microk8s/upgrade/" class="md-nav__link">
         
   
   
@@ -1192,7 +1098,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../mk8s/k8s-microk8s-scaling/" class="md-nav__link">
+      <a href="../../microk8s/mk8s/k8s-microk8s-scaling/" class="md-nav__link">
         
   
   
@@ -1220,7 +1126,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../enable-ipv6/" class="md-nav__link">
+      <a href="../../microk8s/enable-ipv6/" class="md-nav__link">
         
   
   
@@ -1295,7 +1201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../offlineinstallation/offline-microk8s/" class="md-nav__link">
+      <a href="../../microk8s/offlineinstallation/offline-microk8s/" class="md-nav__link">
         
   
   
@@ -1323,7 +1229,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../offlineinstallation/offline-sck/" class="md-nav__link">
+      <a href="../../microk8s/offlineinstallation/offline-sck/" class="md-nav__link">
         
   
   
@@ -1351,7 +1257,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../offlineinstallation/offline-sc4snmp/" class="md-nav__link">
+      <a href="../../microk8s/offlineinstallation/offline-sc4snmp/" class="md-nav__link">
         
   
   
@@ -1450,7 +1356,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dockercompose/0-splunk-requirements/" class="md-nav__link">
+      <a href="../../dockercompose/0-splunk-requirements/" class="md-nav__link">
         
   
   
@@ -1478,7 +1384,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dockercompose/1-install-docker/" class="md-nav__link">
+      <a href="../../dockercompose/1-install-docker/" class="md-nav__link">
         
   
   
@@ -1506,7 +1412,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dockercompose/2-download-package/" class="md-nav__link">
+      <a href="../../dockercompose/2-download-package/" class="md-nav__link">
         
   
   
@@ -1581,7 +1487,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dockercompose/3-inventory-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/3-inventory-configuration/" class="md-nav__link">
         
   
   
@@ -1609,7 +1515,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dockercompose/4-scheduler-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/4-scheduler-configuration/" class="md-nav__link">
         
   
   
@@ -1637,7 +1543,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dockercompose/5-traps-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/5-traps-configuration/" class="md-nav__link">
         
   
   
@@ -1665,7 +1571,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/discovery-configuration/" class="md-nav__link">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
         
   
   
@@ -1693,7 +1599,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/snmpv3/" class="md-nav__link">
+      <a href="../../configuration/snmpv3/" class="md-nav__link">
         
   
   
@@ -1721,7 +1627,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dockercompose/6-env-file-configuration/" class="md-nav__link">
+      <a href="../../dockercompose/6-env-file-configuration/" class="md-nav__link">
         
   
   
@@ -1804,7 +1710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dockercompose/8-offline-installation/" class="md-nav__link">
+      <a href="../../dockercompose/8-offline-installation/" class="md-nav__link">
         
   
   
@@ -1832,7 +1738,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dockercompose/9-splunk-logging/" class="md-nav__link">
+      <a href="../../dockercompose/9-splunk-logging/" class="md-nav__link">
         
   
   
@@ -1860,7 +1766,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dockercompose/10-enable-ipv6/" class="md-nav__link">
+      <a href="../../dockercompose/10-enable-ipv6/" class="md-nav__link">
         
   
   
@@ -1896,7 +1802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dockercompose/11-deploy-and-run/" class="md-nav__link">
+      <a href="../../dockercompose/11-deploy-and-run/" class="md-nav__link">
         
   
   
@@ -1986,7 +1892,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/splunk-configuration/" class="md-nav__link">
+      <a href="../../configuration/splunk-configuration/" class="md-nav__link">
         
   
   
@@ -2014,7 +1920,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/inventory/" class="md-nav__link">
+      <a href="../../configuration/inventory/" class="md-nav__link">
         
   
   
@@ -2042,7 +1948,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/profiles/" class="md-nav__link">
+      <a href="../../configuration/profiles/" class="md-nav__link">
         
   
   
@@ -2070,7 +1976,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/groups/" class="md-nav__link">
+      <a href="../../configuration/groups/" class="md-nav__link">
         
   
   
@@ -2098,7 +2004,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/traps/" class="md-nav__link">
+      <a href="../../configuration/traps/" class="md-nav__link">
         
   
   
@@ -2126,7 +2032,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/snmpv3/" class="md-nav__link">
+      <a href="../../configuration/snmpv3/" class="md-nav__link">
         
   
   
@@ -2154,7 +2060,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/poller-configuration/" class="md-nav__link">
+      <a href="../../configuration/poller-configuration/" class="md-nav__link">
         
   
   
@@ -2182,7 +2088,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/workers/" class="md-nav__link">
+      <a href="../../configuration/workers/" class="md-nav__link">
         
   
   
@@ -2210,7 +2116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/discovery-configuration/" class="md-nav__link">
+      <a href="../../configuration/discovery-configuration/" class="md-nav__link">
         
   
   
@@ -2238,7 +2144,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/step-by-step-poll/" class="md-nav__link">
+      <a href="../../configuration/step-by-step-poll/" class="md-nav__link">
         
   
   
@@ -2266,7 +2172,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../configuration/snmp-data-format/" class="md-nav__link">
+      <a href="../../configuration/snmp-data-format/" class="md-nav__link">
         
   
   
@@ -2301,7 +2207,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../ha/" class="md-nav__link">
+      <a href="../../ha/" class="md-nav__link">
         
   
   
@@ -2328,7 +2234,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../small-environment/" class="md-nav__link">
+      <a href="../../small-environment/" class="md-nav__link">
         
   
   
@@ -2355,7 +2261,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dashboard/" class="md-nav__link">
+      <a href="../../dashboard/" class="md-nav__link">
         
   
   
@@ -2382,7 +2288,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../discovery/" class="md-nav__link">
+      <a href="../../discovery/" class="md-nav__link">
         
   
   
@@ -2409,7 +2315,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../releases/" class="md-nav__link">
+      <a href="../../releases/" class="md-nav__link">
         
   
   
@@ -2436,7 +2342,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../mib-request/" class="md-nav__link">
+      <a href="../../mib-request/" class="md-nav__link">
         
   
   
@@ -2463,7 +2369,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../security/" class="md-nav__link">
+      <a href="../../security/" class="md-nav__link">
         
   
   
@@ -2490,7 +2396,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../mtls/" class="md-nav__link">
+      <a href="../../mtls/" class="md-nav__link">
         
   
   
@@ -2514,18 +2420,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" checked>
         
           
           <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
@@ -2546,7 +2454,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2564,7 +2472,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../troubleshooting/configuring-logs/" class="md-nav__link">
+      <a href="../configuring-logs/" class="md-nav__link">
         
   
   
@@ -2592,7 +2500,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../troubleshooting/docker-commands/" class="md-nav__link">
+      <a href="../docker-commands/" class="md-nav__link">
         
   
   
@@ -2620,7 +2528,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../troubleshooting/k8s-commands/" class="md-nav__link">
+      <a href="../k8s-commands/" class="md-nav__link">
         
   
   
@@ -2648,7 +2556,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../troubleshooting/general-issues/" class="md-nav__link">
+      <a href="../general-issues/" class="md-nav__link">
         
   
   
@@ -2676,7 +2584,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../troubleshooting/polling-issues/" class="md-nav__link">
+      <a href="../polling-issues/" class="md-nav__link">
         
   
   
@@ -2704,7 +2612,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../troubleshooting/traps-issues/" class="md-nav__link">
+      <a href="../traps-issues/" class="md-nav__link">
         
   
   
@@ -2729,10 +2637,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../troubleshooting/discovery-issues/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery issues
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -2748,6 +2683,87 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#permission-denied-while-writing-discovery-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Permission denied while writing discovery file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovery-not-completed-within-the-time-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery not completed within the time limit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovery-takes-too-much-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery takes too much time
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovery takes too much time">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adjust-timeout-and-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adjust Timeout and Retries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#no-output-in-discovery_devicescsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No Output in discovery_devices.csv
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2787,22 +2803,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#token-and-realm" class="md-nav__link">
+  <a href="#permission-denied-while-writing-discovery-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Token and realm
+        Permission denied while writing discovery file
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Token and realm">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovery-not-completed-within-the-time-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery not completed within the time limit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discovery-takes-too-much-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery takes too much time
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Discovery takes too much time">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#define-annotations" class="md-nav__link">
+  <a href="#adjust-timeout-and-retries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Define annotations
+        Adjust Timeout and Retries
       
     </span>
   </a>
@@ -2815,10 +2853,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#verify-the-deployment" class="md-nav__link">
+  <a href="#no-output-in-discovery_devicescsv" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Verify the deployment
+        No Output in discovery_devices.csv
       
     </span>
   </a>
@@ -2842,69 +2880,75 @@
 
 
 
-<div><h1 id="otel-and-splunk-observability-cloud-configuration">OTEL and Splunk Observability Cloud configuration<a class="headerlink" href="#otel-and-splunk-observability-cloud-configuration" title="Permanent link">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>The Splunk Observability Cloud integration (sim) uses the Splunk OpenTelemetry Collector as an additional component in our pipeline. In this setup, the collector transforms metrics received via Splunk HEC into the SignalFx format for ingestion into Splunk Observability Cloud.
-Because this path is primarily a transformation layer rather than a native O11y instrumentation, the resulting metrics may not fully match Splunk Observability Cloud’s data model, naming conventions, or recommended dimensions.
-We recommend validating output carefully in a controlled environment before enabling sim.enabled: true broadly, and adjusting SNMP profiles or transformation rules to ensure consistency.</p>
+<div><h1 id="troubleshooting-discovery-issues">Troubleshooting Discovery Issues<a class="headerlink" href="#troubleshooting-discovery-issues" title="Permanent link">¶</a></h1>
+<h2 id="permission-denied-while-writing-discovery-file">Permission denied while writing discovery file<a class="headerlink" href="#permission-denied-while-writing-discovery-file" title="Permanent link">¶</a></h2>
+<p>Discovery fails with a <code>PermissionError</code> related to <code>discovery_devices.csv</code>. In such cases, you may see the following error:</p>
+<div class="highlight"><pre><span></span><code>PermissionError: [Errno 13] Permission denied: '/app/discovery/discovery_devices.csv'
+</code></pre></div>
+<p>The folder specified in the <code>discoveryPath</code> value (microk8s) or <code>DISCOVERY_PATH</code> value (docker compose), which is mounted to <code>/app/discovery</code> inside the container, does not have the correct permissions for the application user (UID <code>10001</code>) to write files.</p>
+<p>Ensure that the folder has write permissions for UID <code>10001</code>. You can fix this by updating the folder ownership or permissions before starting the containers.</p>
+<p><strong>Example (on the host system):</strong>
+</p><div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span><span class="m">10001</span>:10001<span class="w"> </span>/your/local/folder/path
+sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>/your/local/folder/path
+</code></pre></div>
+<h2 id="discovery-not-completed-within-the-time-limit">Discovery not completed within the time limit<a class="headerlink" href="#discovery-not-completed-within-the-time-limit" title="Permanent link">¶</a></h2>
+<p>If the subnet being scanned has a large IP range (e.g., <code>/22</code>, <code>/21</code>, or bigger), the task may not be completed within the default time limit of <strong>2400 seconds</strong>. In such cases, you may see the following error:</p>
+<div class="highlight"><pre><span></span><code>[2025-08-07 06:03:29,415: ERROR/MainProcess] Hard time limit (2400s) exceeded for splunk_connect_for_snmp.discovery.tasks.discovery
+</code></pre></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Increase the task timeout value using the <code>taskTimeout</code> field under the <code>worker</code> section in your <code>values.yaml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">taskTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3600</span><span class="w">  </span><span class="c1"># Increase based on expected duration</span>
+</code></pre></div>
 </div>
-<div class="highlight"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span>
-<span class="w">  </span><span class="c1"># sim must be enabled if you want to use Splunk Observability Cloud</span>
-<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="tabbed-block">
+<p>Increase the task timeout value by setting <code>CELERY_TASK_TIMEOUT</code> in your <code>.env</code> file:</p>
+<div class="highlight"><pre><span></span><code>CELERY_TASK_TIMEOUT=3600
 </code></pre></div>
-<h2 id="token-and-realm">Token and realm<a class="headerlink" href="#token-and-realm" title="Permanent link">¶</a></h2>
-<p>You need to specify Splunk Observability Cloud token and realm. There are two ways of configuring them:</p>
-<ol>
-<li>Pass those in a plain text using <code>values.yaml</code>, so at the end, the sim element looks like the following:</li>
-</ol>
-<div class="highlight"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">  </span><span class="nt">signalfxToken</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BCwaJ_Ands4Xh7Nrg</span>
-<span class="w">  </span><span class="nt">signalfxRealm</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us0</span>
+</div>
+</div>
+</div>
+<h2 id="discovery-takes-too-much-time">Discovery takes too much time<a class="headerlink" href="#discovery-takes-too-much-time" title="Permanent link">¶</a></h2>
+<p>Discovery tasks may take longer to complete due to unnecessary SNMP requests or long wait times when scanning large subnets. Below are few ways to optimize performance:</p>
+<h3 id="adjust-timeout-and-retries">Adjust Timeout and Retries<a class="headerlink" href="#adjust-timeout-and-retries" title="Permanent link">¶</a></h3>
+<p>If the subnet has very few SNMP-enabled devices, high timeout and retry values can significantly slow down the process.<br>
+For example, with the default timeout of <code>3</code> seconds and <code>5</code> retries, a non-SNMP-enabled device will take up to <strong>15 seconds</strong> before moving to the next IP.<br>
+Consider lowering the retry parameters to speed up execution:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked id="__tabbed_2_1" name="__tabbed_2" type="radio"><input id="__tabbed_2_2" name="__tabbed_2" type="radio"><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">udpConnectionTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">udpConnectionRetries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </code></pre></div>
-<ol start="2">
-<li>Alternatively, create the microk8s secret by yourself and pass its name to the <code>values.yaml</code> file. Use the following command to create it:</li>
-</ol>
-<div class="highlight"><pre><span></span><code>microk8s kubectl create -n &lt;namespace&gt; secret generic &lt;secretname&gt; \
-  --from-literal=signalfxToken=&lt;signalfxToken&gt; \
-  --from-literal=signalfxRealm=&lt;signalfxRealm&gt;
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code>UDP_CONNECTION_TIMEOUT=3
+UDP_CONNECTION_RETRIES=2
 </code></pre></div>
-<p>Modify <code>sim.secret</code> section of <code>values.yaml</code>. Disable the creation of the secret with <code>sim.secret.create</code> and provide the
-<code>&lt;secretname&gt;</code>, matching the one from the previous step. Pass it using <code>sim.secret.name</code>. For example, for <code>&lt;secretname&gt;</code>=<code>signalfx</code>,
-the <code>sim</code> section would look like the following:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">secret</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">create</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">signalfx</span>
-</code></pre></div>
+</div>
+</div>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
-<p>After the initial installation, if you change <code>sim.signalfxToken</code> and/or <code>sim.signalfxRealm</code> and no <code>sim.secret.name</code> is given, 
-the <code>sim</code> pod will sense the update by itself (after <code>helm3 upgrade</code> command) and trigger the recreation. But, when you edit secret created outside
-of <code>values.yaml</code> (given by <code>sim.secret.name</code>), you need to roll out the deployment by yourself or delete the pod to update the data.</p>
+<p>Reduce these values carefully. Setting them too low may cause missed detections in slow or high-latency networks, which can impact data accuracy.</p>
 </div>
-<h3 id="define-annotations">Define annotations<a class="headerlink" href="#define-annotations" title="Permanent link">¶</a></h3>
-<p>In case you need to append some annotations to the <code>sim</code> service, you can do it by setting <code>sim.service.annotations</code>, for example:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">sim</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">service</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">annotation_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">annotation_value</span>
-</code></pre></div>
-<h2 id="verify-the-deployment">Verify the deployment<a class="headerlink" href="#verify-the-deployment" title="Permanent link">¶</a></h2>
-<p>After executing <code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</code>, the sim pod should be up and running:</p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">splunker@ip-10-202-13-233:~$ microk8s kubectl get pods -n sc4snmp</span>
-<span class="l l-Scalar l-Scalar-Plain">NAME                                                      READY   STATUS    RESTARTS   AGE</span>
-<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-scheduler-7ddbc8d75-bljsj        1/1     Running   0          133m</span>
-<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-poller-57cd8f4665-9z9vx   1/1     Running   0          133m</span>
-<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-sender-5c44cbb9c5-ppmb5   1/1     Running   0          133m</span>
-<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-trap-549766d4-28qzh       1/1     Running   0          133m</span>
-<span class="l l-Scalar l-Scalar-Plain">snmp-mibserver-7f879c5b7c-hz9tz                               1/1     Running   0          133m</span>
-<span class="l l-Scalar l-Scalar-Plain">snmp-mongodb-869cc8586f-vvr9f                                 2/2     Running   0          133m</span>
-<span class="l l-Scalar l-Scalar-Plain">snmp-redis-master-0                                           1/1     Running   0          133m</span>
-<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-trap-78759bfc8b-79m6d            1/1     Running   0          99m</span>
-<span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-sim-59b89747f-kn6tf              1/1     Running   0          32s</span>
-</code></pre></div></div>
+<h2 id="no-output-in-discovery_devicescsv">No Output in <code>discovery_devices.csv</code><a class="headerlink" href="#no-output-in-discovery_devicescsv" title="Permanent link">¶</a></h2>
+<p>After running a discovery task, no entries are written to the <code>discovery_devices.csv</code> file. The issue might have several root causes. Some of them are:</p>
+<ul>
+<li>Wrong device IP or port provided.</li>
+<li>Subnet contains no reachable or SNMP-enabled devices.</li>
+<li>For SNMPv2c: Incorrect community string.</li>
+<li>For SNMPv3: Incorrect privacy key or authentication credentials.</li>
+</ul>
+<p><strong>Resolution:</strong></p>
+<ul>
+<li>Double-check the IP range or subnet provided in the discovery config.</li>
+<li>Validate that the target devices have SNMP enabled and are reachable from the container. </li>
+<li>Verify SNMP credentials (community string or SNMPv3 credentials) for correctness.</li>
+</ul></div>
 
 
 
@@ -2958,12 +3002,12 @@ of <code>values.yaml</code> (given by <code>sim.secret.name</code>), you need to
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
-        <script src="../../../javascripts/footer.js"></script>
+        <script src="../../javascripts/footer.js"></script>
       
     
   </body>

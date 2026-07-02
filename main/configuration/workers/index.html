@@ -12,7 +12,7 @@
         <link rel="prev" href="../poller-configuration/">
       
       
-        <link rel="next" href="../step-by-step-poll/">
+        <link rel="next" href="../discovery-configuration/">
       
       
         
@@ -662,6 +662,34 @@
     
   
     Scheduler
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
   
 
     
@@ -1545,6 +1573,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../snmpv3/" class="md-nav__link">
         
   
@@ -2184,6 +2240,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#worker-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worker Discovery
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2265,6 +2332,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../discovery-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -2421,6 +2516,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../discovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../releases/" class="md-nav__link">
         
   
@@ -2537,10 +2659,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
             
   
   
@@ -2558,8 +2680,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2737,6 +2859,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/discovery-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2859,6 +3009,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#worker-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worker Discovery
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2962,6 +3123,10 @@
 <li>The <code>trap</code> worker consumes all the trap related tasks produced by the trap service.</li>
 <li>The <code>sender</code> worker handles sending data to Splunk. You need to always have at least one sender running.</li>
 </ol>
+<p>SC4SNMP also has a discovery functionality which is handled by the worker below:</p>
+<ol start="4">
+<li>The <code>discovery</code> worker consumes all the tasks related to discovery.</li>
+</ol>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h2>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
 <div class="tabbed-content">
@@ -2972,6 +3137,7 @@
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="w">    </span><span class="nt">concurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 <span class="w">    </span><span class="nt">prefetch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">maxTasksPerChild</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 <span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">      </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
@@ -2990,8 +3156,10 @@
 <span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">      </span><span class="nt">cacheSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500</span><span class="w"> </span>
 <span class="w">      </span><span class="nt">cacheTTL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1800</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">enableIncludeUnresolvedVarbinds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">    </span><span class="nt">concurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 <span class="w">    </span><span class="nt">prefetch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="w">    </span><span class="nt">maxTasksPerChild</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 <span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">      </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
@@ -3006,6 +3174,22 @@
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 <span class="w">    </span><span class="nt">concurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 <span class="w">    </span><span class="nt">prefetch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="w">    </span><span class="nt">maxTasksPerChild</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">      </span><span class="nt">maxReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">      </span><span class="nt">targetCPUUtilizationPercentage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">limits</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500m</span>
+<span class="w">      </span><span class="nt">requests</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250m</span>
+<span class="w">  </span><span class="nt">discovery</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">    </span><span class="nt">concurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">    </span><span class="nt">prefetch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="w">    </span><span class="nt">maxTasksPerChild</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 <span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">      </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
@@ -3042,6 +3226,7 @@
 <span class="w">  </span><span class="nt">disableMongoDebugLogging</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="nt">podAntiAffinity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">soft</span>
 <span class="w">  </span><span class="nt">udpConnectionTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">udpConnectionRetries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 <span class="w">  </span><span class="nt">ignoreEmptyVarbinds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </code></pre></div>
 <p>To apply changes, run the upgrade command:</p>
@@ -3071,6 +3256,11 @@
 <td>worker.poller.prefetch</td>
 <td>Number of tasks consumed from the queue at once</td>
 <td>1</td>
+</tr>
+<tr>
+<td>worker.poller.maxTasksPerChild</td>
+<td>Max number of tasks a poller worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+<td>0</td>
 </tr>
 <tr>
 <td>worker.poller.autoscaling.enabled</td>
@@ -3118,6 +3308,11 @@
 <td>30</td>
 </tr>
 <tr>
+<td>worker.trap.maxTasksPerChild</td>
+<td>Max number of tasks a trap worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+<td>0</td>
+</tr>
+<tr>
 <td>worker.trap.resolveAddress.enabled</td>
 <td>Enable reverse dns lookup of the IP address of the processed trap</td>
 <td>false</td>
@@ -3131,6 +3326,11 @@
 <td>worker.trap.resolveAddress.cacheTTL</td>
 <td>Time to live of the cached reverse dns lookup record in seconds</td>
 <td>1800</td>
+</tr>
+<tr>
+<td>worker.trap.enableIncludeUnresolvedVarbinds</td>
+<td>Include trap varbinds that could not be MIB-translated under <code>sc4snmp::unresolved</code> in Splunk events</td>
+<td>false</td>
 </tr>
 <tr>
 <td>worker.trap.autoscaling.enabled</td>
@@ -3178,6 +3378,11 @@
 <td>30</td>
 </tr>
 <tr>
+<td>worker.sender.maxTasksPerChild</td>
+<td>Max number of tasks a sender worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+<td>0</td>
+</tr>
+<tr>
 <td>worker.sender.autoscaling.enabled</td>
 <td>Enabling autoscaling for sender worker pods</td>
 <td>false</td>
@@ -3205,6 +3410,56 @@
 <tr>
 <td>worker.sender.resources.requests</td>
 <td>The requested resources for sender worker pod</td>
+<td>cpu: 250m</td>
+</tr>
+<tr>
+<td>worker.discovery.replicaCount</td>
+<td>Number of discovery worker replicas</td>
+<td>1</td>
+</tr>
+<tr>
+<td>worker.discovery.concurrency</td>
+<td>Minimum number of threads in a discovery worker pod</td>
+<td>4</td>
+</tr>
+<tr>
+<td>worker.discovery.prefetch</td>
+<td>Number of tasks consumed from the queue at once</td>
+<td>30</td>
+</tr>
+<tr>
+<td>worker.discovery.maxTasksPerChild</td>
+<td>Max number of tasks a discovery worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+<td>0</td>
+</tr>
+<tr>
+<td>worker.discovery.autoscaling.enabled</td>
+<td>Enabling autoscaling for discovery worker pods</td>
+<td>false</td>
+</tr>
+<tr>
+<td>worker.discovery.autoscaling.minReplicas</td>
+<td>Minimum number of running discovery worker pods when autoscaling is enabled</td>
+<td>2</td>
+</tr>
+<tr>
+<td>worker.discovery.autoscaling.maxReplicas</td>
+<td>Maximum number of running discovery worker pods when autoscaling is enabled</td>
+<td>10</td>
+</tr>
+<tr>
+<td>worker.discovery.autoscaling.targetCPUUtilizationPercentage</td>
+<td>CPU % threshold that must be exceeded on discovery worker pods to spawn another replica</td>
+<td>80</td>
+</tr>
+<tr>
+<td>worker.discovery.resources.limits</td>
+<td>The resources limits for discovery worker container</td>
+<td>cpu: 500m</td>
+</tr>
+<tr>
+<td>worker.discovery.resources.requests</td>
+<td>The requested resources for discovery worker container</td>
 <td>cpu: 250m</td>
 </tr>
 <tr>
@@ -3283,6 +3538,11 @@
 <td>3</td>
 </tr>
 <tr>
+<td>worker.udpConnectionRetries</td>
+<td>Number of SNMP UDP retries per operation</td>
+<td>5</td>
+</tr>
+<tr>
 <td>worker.ignoreEmptyVarbinds</td>
 <td>Ignores “Empty SNMP response message” in responses</td>
 <td>false</td>
@@ -3317,6 +3577,7 @@ WORKER_POLLER_CPU_LIMIT=1
 WORKER_POLLER_MEMORY_LIMIT=500M
 WORKER_POLLER_CPU_RESERVATIONS=0.5
 WORKER_POLLER_MEMORY_RESERVATIONS=250M
+WORKER_POLLER_MAX_TASKS_PER_CHILD=0
 ENABLE_WORKER_POLLER_SECRETS=false
 
 # Worker Sender
@@ -3327,11 +3588,14 @@ WORKER_SENDER_CPU_LIMIT=1
 WORKER_SENDER_MEMORY_LIMIT=500M
 WORKER_SENDER_CPU_RESERVATIONS=0.5
 WORKER_SENDER_MEMORY_RESERVATIONS=250M
+WORKER_SENDER_MAX_TASKS_PER_CHILD=0
 
 # Worker Trap
 WORKER_TRAP_CONCURRENCY=4
 PREFETCH_TRAP_COUNT=30
 RESOLVE_TRAP_ADDRESS=false
+INCLUDE_UNRESOLVED_TRAP_VARBINDS=false
+MAX_TRAP_VARBINDS_TO_DECODE=0
 MAX_DNS_CACHE_SIZE_TRAPS=500
 TTL_DNS_CACHE_TRAPS=1800
 WORKER_TRAP_REPLICAS=2
@@ -3339,6 +3603,18 @@ WORKER_TRAP_CPU_LIMIT=1
 WORKER_TRAP_MEMORY_LIMIT=500M
 WORKER_TRAP_CPU_RESERVATIONS=0.5
 WORKER_TRAP_MEMORY_RESERVATIONS=250M
+WORKER_TRAP_MAX_TASKS_PER_CHILD=0
+
+# Worker Discovery
+WORKER_DISCOVERY_CONCURRENCY=4
+PREFETCH_DISCOVERY_COUNT=30
+WORKER_DISCOVERY_REPLICAS=1
+WORKER_DISCOVERY_CPU_LIMIT=1
+WORKER_DISCOVERY_MEMORY_LIMIT=500M
+WORKER_DISCOVERY_CPU_RESERVATIONS=0.5
+WORKER_DISCOVERY_MEMORY_RESERVATIONS=250M
+WORKER_DISCOVERY_MAX_TASKS_PER_CHILD=0
+ENABLE_WORKER_DISCOVERY_SECRETS=false
 </code></pre></div>
 <p>To apply changes, recreate the worker containers:</p>
 <div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
@@ -3380,6 +3656,10 @@ WORKER_TRAP_MEMORY_RESERVATIONS=250M
 <tr>
 <td><code>UDP_CONNECTION_TIMEOUT</code></td>
 <td>Timeout in seconds for SNMP operations</td>
+</tr>
+<tr>
+<td><code>UDP_CONNECTION_RETRIES</code></td>
+<td>Number of SNMP UDP retries per operation</td>
 </tr>
 <tr>
 <td><code>MAX_OID_TO_PROCESS</code></td>
@@ -3429,6 +3709,10 @@ WORKER_TRAP_MEMORY_RESERVATIONS=250M
 <td>Dedicated memory resources for worker poller container</td>
 </tr>
 <tr>
+<td><code>WORKER_POLLER_MAX_TASKS_PER_CHILD</code></td>
+<td>Max number of tasks a poller worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+</tr>
+<tr>
 <td><code>ENABLE_WORKER_POLLER_SECRETS</code></td>
 <td>Enable usage of secrets for poller</td>
 </tr>
@@ -3471,6 +3755,10 @@ WORKER_TRAP_MEMORY_RESERVATIONS=250M
 <td><code>WORKER_SENDER_MEMORY_RESERVATIONS</code></td>
 <td>Dedicated memory resources for worker sender container</td>
 </tr>
+<tr>
+<td><code>WORKER_SENDER_MAX_TASKS_PER_CHILD</code></td>
+<td>Max number of tasks a sender worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+</tr>
 </tbody>
 </table>
 <h3 id="worker-trap">Worker Trap<a class="headerlink" href="#worker-trap" title="Permanent link">¶</a></h3>
@@ -3493,6 +3781,14 @@ WORKER_TRAP_MEMORY_RESERVATIONS=250M
 <tr>
 <td><code>RESOLVE_TRAP_ADDRESS</code></td>
 <td>Use reverse dns lookup for trap IP address and send the hostname to Splunk</td>
+</tr>
+<tr>
+<td><code>INCLUDE_UNRESOLVED_TRAP_VARBINDS</code></td>
+<td>Include trap varbinds that could not be MIB-translated under <code>sc4snmp::unresolved</code> in Splunk events</td>
+</tr>
+<tr>
+<td><code>MAX_TRAP_VARBINDS_TO_DECODE</code></td>
+<td>Maximum varbinds to decode per trap (<code>0</code> = unlimited, default <code>0</code>)</td>
 </tr>
 <tr>
 <td><code>MAX_DNS_CACHE_SIZE_TRAPS</code></td>
@@ -3522,6 +3818,57 @@ WORKER_TRAP_MEMORY_RESERVATIONS=250M
 <td><code>WORKER_TRAP_MEMORY_RESERVATIONS</code></td>
 <td>Dedicated memory resources for worker trap container</td>
 </tr>
+<tr>
+<td><code>WORKER_TRAP_MAX_TASKS_PER_CHILD</code></td>
+<td>Max number of tasks a trap worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+</tr>
+</tbody>
+</table>
+<h3 id="worker-discovery">Worker Discovery<a class="headerlink" href="#worker-discovery" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WORKER_DISCOVERY_CONCURRENCY</code></td>
+<td>Minimum number of threads in the discovery worker container</td>
+</tr>
+<tr>
+<td><code>PREFETCH_DISCOVERY_COUNT</code></td>
+<td>How many tasks are consumed from the queue at once in the discovery worker container</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_REPLICAS</code></td>
+<td>Number of docker replicas of worker discovery container</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_CPU_LIMIT</code></td>
+<td>Limit of cpu that worker discovery container can use</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_MEMORY_LIMIT</code></td>
+<td>Limit of memory that worker discovery container can use</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_CPU_RESERVATIONS</code></td>
+<td>Dedicated cpu resources for worker discovery container</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_MEMORY_RESERVATIONS</code></td>
+<td>Dedicated memory resources for worker discovery container</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_MAX_TASKS_PER_CHILD</code></td>
+<td>Max number of tasks a discovery worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+</tr>
+<tr>
+<td><code>ENABLE_WORKER_DISCOVERY_SECRETS</code></td>
+<td>Enable usage of SNMPv3 secrets for the discovery worker</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -3542,6 +3889,8 @@ To monitor traps, adjust <code>worker.trap.replicaCount</code> depending on your
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 <span class="w">  </span><span class="nt">poller</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">  </span><span class="nt">discovery</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </code></pre></div>
 <p>With autoscaling:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
@@ -3558,6 +3907,8 @@ To monitor traps, adjust <code>worker.trap.replicaCount</code> depending on your
 <span class="w">      </span><span class="nt">maxReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 <span class="w">      </span><span class="nt">targetCPUUtilizationPercentage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
 <span class="w">  </span><span class="nt">poller</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">  </span><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </code></pre></div>
 <p>In the above example, both trap and sender pods are autoscaled. During an upgrade process, the number of pods is created through <code>minReplicas</code>, and then new ones are created only if the CPU threshold exceeds the <code>targetCPUUtilizationPercentage</code>, which by default is 80%. This solution helps you to keep resources usage adjusted to what you actually need.</p>
@@ -3591,6 +3942,8 @@ Enable it using <code>microk8s enable metrics-server</code>.</p>
 <span class="w">      </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="w">      </span><span class="nt">maxReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
 <span class="w">      </span><span class="nt">targetCPUUtilizationPercentage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="w">  </span><span class="nt">discovery</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </code></pre></div>
 <p>Remember that the system will not scale itself infinitely. There is a finite amount of resources that you can allocate. 
 By default, every worker has configured the following resources:</p>
