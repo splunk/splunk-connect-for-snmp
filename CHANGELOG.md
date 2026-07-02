@@ -3,9 +3,16 @@
 ## Unreleased
 
 ### Changed
+
+### Fixed
+
+
+## [1.17.0]
+
+### Changed
 - add authorisation for UI
 - add MAX_TASKS_PER_CHILD setting to celery workers
--  **Trap Handling Improvements**
+- **Trap Handling Improvements**
   - Unresolved trap varbinds forwarding: Raw OID-value pairs that fail MIB translation can now be forwarded to Splunk under sc4snmp::unresolved instead of being silently dropped. Opt-in via
   INCLUDE_UNRESOLVED_TRAP_VARBINDS=true / worker.trap.enableIncludeUnresolvedVarbinds
   - Trap varbind decode limit: Added MAX_TRAP_VARBINDS_TO_DECODE / traps.maxVarbindsToDecode to cap varbinds processed per trap (default: 0 = unlimited)
