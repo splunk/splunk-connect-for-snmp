@@ -373,7 +373,8 @@ class Poller(Task):
         """
         if version == "3" or create_new:
             snmp_engine = SnmpEngine()
-            snmp_engine.set_user_context(mibViewController=self.mib_view_controller)
+            # snmp_engine.set_user_context(mibViewController=self.mib_view_controller)
+            snmp_engine.cache["mibViewController"] = self.mib_view_controller
             return snmp_engine
         else:
             return self.snmp_engine
@@ -475,12 +476,13 @@ class Poller(Task):
         is_walk,
         max_oid_to_process,
     ):
+        snmp_engine = self.get_snmp_engine(create_new=True)
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, max_oid_to_process):
             try:
                 (error_indication, error_status, error_index, varbind_table) = (
                     await get_cmd(
-                        self.get_snmp_engine(create_new=True),
+                        snmp_engine,
                         auth_data,
                         transport,
                         context_data,
@@ -543,6 +545,8 @@ class Poller(Task):
         - Prevents walking beyond requested subtrees and eliminates duplicate OIDs
         """
 
+        snmp_engine = self.get_snmp_engine(create_new=True)
+
         for varbind_chunk in self.get_varbind_chunk(
             list(varbinds_bulk), max_oid_to_process
         ):
@@ -552,7 +556,7 @@ class Poller(Task):
                 error_index,
                 varbind_table,
             ) in multi_bulk_walk_cmd(
-                self.get_snmp_engine(create_new=True),
+                snmp_engine,
                 auth_data,
                 transport,
                 context_data,

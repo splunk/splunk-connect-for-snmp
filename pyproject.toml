@@ -51,11 +51,11 @@ filelock = "^3.18.0"
 pysnmp = "^7.1.27"
 pysmi = "^2.0.0"
 pysnmpcrypto = "^0.1.0"
-pytest-asyncio = "^1.4.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.0"
 pytest-cov = "^7.0.0"
+pytest-asyncio = "^1.4.0"
 mike = "^2.0.0"
 mkdocs = "^1.2.2"
 mkdocs-material = "^9.0.0"
