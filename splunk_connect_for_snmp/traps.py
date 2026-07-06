@@ -99,7 +99,7 @@ if PYSNMP_DEBUG:
 
     from pysnmp import debug
 
-    debug_flags = list(debug.flagMap.keys())
+    debug_flags = list(debug.FLAG_MAP.keys())
     enabled_debug_flags = [
         debug_flag.strip()
         for debug_flag in PYSNMP_DEBUG.split(",")
@@ -107,7 +107,7 @@ if PYSNMP_DEBUG:
     ]
 
     if enabled_debug_flags:
-        debug.setLogger(
+        debug.set_logger(
             debug.Debug(*enabled_debug_flags, options={"loggerName": logger})
         )
 
@@ -215,7 +215,7 @@ def _add_v3_user_for_new_engine_id(engine_id: str) -> bool:
     if _snmp_engine_for_discovery is None or not _v3_user_configs_for_discovery:
         return False
     for uc in _v3_user_configs_for_discovery:
-        config.addV3User(
+        config.add_v3_user(
             _snmp_engine_for_discovery,
             userName=uc["userName"],
             authProtocol=uc["authProtocol"],
@@ -267,13 +267,13 @@ class _EngineIDCaptureUdp6Transport(udp6.Udp6AsyncioTransport):
 # Callback function for receiving notifications
 # noinspection PyUnusedLocal
 def cb_fun(
-    snmp_engine, state_reference, context_engine_id, context_name, varbinds, cb_ctx
+    snmp_engine: engine.SnmpEngine, state_reference, context_engine_id, context_name, varbinds, cb_ctx
 ):
     logger.debug(
         'Notification from ContextEngineId "%s", ContextName "%s"'
         % (context_engine_id.prettyPrint(), context_name.prettyPrint())
     )
-    exec_context = snmp_engine.observer.getExecutionContext(
+    exec_context = snmp_engine.observer.get_execution_context(
         "rfc3412.receiveMessage:request"
     )
 
@@ -326,18 +326,18 @@ app.autodiscover_tasks(
 )
 
 
-def add_communities(config_base, snmp_engine):
+def add_communities(config_base: dict, snmp_engine: engine.SnmpEngine):
     idx = 0
     if "communities" in config_base:
         if "2c" in config_base["communities"]:
             for community in config_base["communities"]["2c"]:
                 idx += 1
-                config.addV1System(snmp_engine, idx, community)
+                config.add_v1_system(snmp_engine, str(idx), community)
         if "1" in config_base["communities"] or 1 in config_base["communities"]:
             v = config_base["communities"].get("1", config_base["communities"].get(1))
             for community in v:
                 idx += 1
-                config.addV1System(snmp_engine, idx, community)
+                config.add_v1_system(snmp_engine, str(idx), community)
 
 
 def main():
@@ -363,7 +363,7 @@ def main():
 
     # Register a callback function to log errors with traps authentication
     observer_context: Dict[Any, Any] = {}
-    snmp_engine.observer.registerObserver(
+    snmp_engine.observer.register_observer(
         authentication_observer_cb_fun,
         "rfc2576.prepareDataElements:sm-failure",
         "rfc3412.prepareDataElements:sm-failure",
@@ -372,17 +372,17 @@ def main():
 
     # UDP socket over IPv6 listens also for IPv4 (with engineID capture from raw datagram before parse)
     if IPv6_ENABLED:
-        config.addTransport(
+        config.add_transport(
             snmp_engine,
-            udp6.domainName,
-            _EngineIDCaptureUdp6Transport().openServerMode(("::", 2162)),
+            udp6.DOMAIN_NAME,
+            _EngineIDCaptureUdp6Transport().open_server_mode(("::", 2162)),
         )
     else:
         # UDP over IPv4, first listening interface/port (with engineID capture from raw datagram before parse)
-        config.addTransport(
+        config.add_transport(
             snmp_engine,
-            udp.domainName,
-            _EngineIDCaptureUdpTransport().openServerMode(("0.0.0.0", 2162)),
+            udp.DOMAIN_NAME,
+            _EngineIDCaptureUdpTransport().open_server_mode(("0.0.0.0", 2162)),
         )
 
     with open(CONFIG_PATH, encoding="utf-8") as file:
@@ -428,13 +428,13 @@ def main():
             )
 
             for security_engine_id in all_engine_ids:
-                config.addV3User(
+                config.add_v3_user(
                     snmp_engine,
                     userName=username,
                     authProtocol=auth_protocol,
-                    authKey=auth_key,
+                    authKey=auth_key if auth_key else None,
                     privProtocol=priv_protocol,
-                    privKey=priv_key,
+                    privKey=priv_key if priv_key else None,
                     securityEngineId=v2c.OctetString(hexValue=security_engine_id),
                 )
                 logger.debug(

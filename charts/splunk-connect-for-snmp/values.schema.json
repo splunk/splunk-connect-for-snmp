@@ -35,6 +35,9 @@
         }
       }
     },
+    "deploymentUser" : {
+      "type": "string"
+    },
     "imagePullSecrets": {
       "type": "array"
     },

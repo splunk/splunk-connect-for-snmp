@@ -51,6 +51,8 @@ spec:
             {{- include "environmental-variables" . | nindent 12 }}
             {{- include "environmental-variables-splunk-hec" . | nindent 12 }}
             {{- include "environmental-variables-sender" . | nindent 12 }}
+            - name: USER
+              value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
             {{- if .Values.splunk.mtls.enabled }}
             - name: SPLUNK_HEC_MTLS_CLIENT_CERT
               value: /app/hec-mtls/tls.crt
