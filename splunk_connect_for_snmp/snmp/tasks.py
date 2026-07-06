@@ -17,6 +17,8 @@ import logging
 import re
 from contextlib import suppress
 
+from asyncio import run
+
 from pyasn1.type import univ
 from pyasn1.type.base import AbstractSimpleAsn1Item
 from pysnmp.proto import rfc1902 as snmp_rfc1902
@@ -75,22 +77,7 @@ TTL_DNS_CACHE_TRAPS = int(os.getenv("TTL_DNS_CACHE_TRAPS", "1800"))
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 
 
-@shared_task(
-    bind=True,
-    base=Poller,
-    retry_backoff=30,
-    retry_backoff_max=WALK_RETRY_MAX_INTERVAL,
-    max_retries=WALK_MAX_RETRIES,
-    autoretry_for=(
-        MongoLockLocked,
-        SnmpActionError,
-    ),
-    throws=(
-        SnmpActionError,
-        SnmpActionError,
-    ),
-)
-def walk(self, **kwargs):
+async def walk_async_wrapper(self: Poller, **kwargs):
     address = kwargs["address"]
     profile = kwargs.get("profile", [])
     group = kwargs.get("group")
@@ -104,7 +91,7 @@ def walk(self, **kwargs):
     ir = get_inventory(mongo_inventory, address)
     retry = True
     while retry:
-        retry, result = self.do_work(ir, walk=True, profiles=profile)
+        retry, result = await self.do_work(ir, is_walk=True, profiles=profile)
 
     # After a Walk tell schedule to recalc
     work = {
@@ -122,14 +109,23 @@ def walk(self, **kwargs):
 @shared_task(
     bind=True,
     base=Poller,
-    default_retry_delay=5,
-    max_retries=3,
-    retry_backoff=True,
-    retry_backoff_max=1,
-    retry_jitter=True,
-    expires=30,
+    retry_backoff=30,
+    retry_backoff_max=WALK_RETRY_MAX_INTERVAL,
+    max_retries=WALK_MAX_RETRIES,
+    autoretry_for=(
+        MongoLockLocked,
+        SnmpActionError,
+    ),
+    throws=(
+        SnmpActionError,
+        SnmpActionError,
+    ),
 )
-def poll(self, **kwargs):
+def walk(self, **kwargs):
+    return run(walk_async_wrapper(self, **kwargs))
+
+
+async def poll_async_wrapper(self: Poller, **kwargs):
 
     address = kwargs["address"]
     profiles = kwargs["profiles"]
@@ -139,7 +135,7 @@ def poll(self, **kwargs):
     mongo_inventory = mongo_db.inventory
 
     ir = get_inventory(mongo_inventory, address)
-    _, result = self.do_work(ir, profiles=profiles)
+    _, result = await self.do_work(ir, profiles=profiles)
 
     # After a Walk tell schedule to recalc
     work = {
@@ -154,6 +150,18 @@ def poll(self, **kwargs):
 
     return work
 
+@shared_task(
+    bind=True,
+    base=Poller,
+    default_retry_delay=5,
+    max_retries=3,
+    retry_backoff=True,
+    retry_backoff_max=1,
+    retry_jitter=True,
+    expires=30,
+)
+def poll(self, **kwargs):
+    return run(poll_async_wrapper(self, **kwargs))
 
 @ttl_lru_cache(maxsize=MAX_DNS_CACHE_SIZE_TRAPS, ttl=TTL_DNS_CACHE_TRAPS)
 def resolve_address(address: str):
@@ -203,11 +211,11 @@ def _mib_view_get_node_location(mib_view_controller, oid):
     get_location = getattr(mib_view_controller, "get_node_location", None)
     if get_location is not None:
         return get_location(oid)
-    return mib_view_controller.getNodeLocation(oid)
+    return mib_view_controller.get_node_location(oid)
 
 
 def _value_for_trap_resolve(value):
-    """Value ObjectType.resolveWithMib() accepts; empty strings cannot be cast."""
+    """Value ObjectType.resolve_with_mib() accepts; empty strings cannot be cast."""
     if isinstance(value, AbstractSimpleAsn1Item):
         return value
     if isinstance(value, str) and value.strip() == "":
@@ -264,7 +272,7 @@ def _asn1_from_numeric(numeric: int):
 
 def _coerce_trap_varbind_value(value, mib_node=None):
     """
-    Build an SNMP value ObjectType.resolveWithMib() accepts.
+    Build an SNMP value ObjectType.resolve_with_mib() accepts.
 
     Trap values arrive as plain strings (from prettyPrint). When the MIB node
     has a syntax, convert the value to the syntax's base python type and clone
@@ -316,26 +324,26 @@ def _is_notification_mib_node(mib_node) -> bool:
 
 def _object_type_from_resolved_identity(mib_view_controller, identity, value):
     if isinstance(identity, str):
-        resolved_identity = ObjectIdentity(identity).resolveWithMib(mib_view_controller)
+        resolved_identity = ObjectIdentity(identity).resolve_with_mib(mib_view_controller)
     else:
-        resolved_identity = ObjectIdentity(*identity).resolveWithMib(
+        resolved_identity = ObjectIdentity(*identity).resolve_with_mib(
             mib_view_controller
         )
-    mib_node = resolved_identity.getMibNode()
+    mib_node = resolved_identity.get_mib_node()
     # Previously this raised for non-NOTIFICATION-TYPE nodes, which prevented
     # coercion from ever running on regular MibScalar/MibTableColumn nodes.
     if not _is_notification_mib_node(mib_node) and not hasattr(mib_node, "getSyntax"):
         raise SmiError(f"{identity!r} has no resolvable MIB node")
     return ObjectType(
         resolved_identity, _coerce_trap_varbind_value(value, mib_node)
-    ).resolveWithMib(mib_view_controller)
+    ).resolve_with_mib(mib_view_controller)
 
 
 def _resolve_trap_varbind(self, name: str, value):
-    """Resolve a trap varbind; table instance OIDs need getNodeLocation decomposition."""
+    """Resolve a trap varbind; table instance OIDs need get_node_location decomposition."""
     resolve_value = _value_for_trap_resolve(value)
     try:
-        return ObjectType(ObjectIdentity(name), resolve_value).resolveWithMib(
+        return ObjectType(ObjectIdentity(name), resolve_value).resolve_with_mib(
             self.mib_view_controller
         )
     except SmiError:
@@ -360,12 +368,12 @@ def _resolve_trap_varbind(self, name: str, value):
         # Resolve the identity first so we can coerce the value against the
         # actual MIB node syntax (e.g. ifOperStatus is a named INTEGER subtype;
         # passing the raw string "1" without coercion raises SmiError).
-        resolved_identity = ObjectIdentity(*identity_args).resolveWithMib(
+        resolved_identity = ObjectIdentity(*identity_args).resolve_with_mib(
             self.mib_view_controller
         )
-        mib_node = resolved_identity.getMibNode()
+        mib_node = resolved_identity.get_mib_node()
         coerced = _coerce_trap_varbind_value(resolve_value, mib_node)
-        return ObjectType(resolved_identity, coerced).resolveWithMib(
+        return ObjectType(resolved_identity, coerced).resolve_with_mib(
             self.mib_view_controller
         )
     except SmiError:
@@ -410,7 +418,7 @@ def _unprocessed_trap_varbinds(varbind_table, metrics):
     processed = _collect_processed_trap_oids(metrics)
     unprocessed = []
     for varbind in varbind_table:
-        oid = str(varbind[0].getOid())
+        oid = str(varbind[0].get_oid())
         if oid not in processed:
             unprocessed.append((oid, _varbind_table_value(varbind)))
     return unprocessed
@@ -593,7 +601,7 @@ def _retry_trap_varbinds_after_mib_load(
 
 @shared_task(bind=True, base=Poller)
 def trap(self, work):
-    metrics = {}
+    metrics = {} # type: ignore
     work["host"] = format_ipv4_address(work["host"])
     work["data"] = limit_trap_varbind_pairs(
         work.get("data", []), log=logger, source=work["host"]
