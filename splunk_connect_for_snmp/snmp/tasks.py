@@ -15,9 +15,8 @@
 #
 import logging
 import re
-from contextlib import suppress
-
 from asyncio import run
+from contextlib import suppress
 
 from pyasn1.type import univ
 from pyasn1.type.base import AbstractSimpleAsn1Item
@@ -150,6 +149,7 @@ async def poll_async_wrapper(self: Poller, **kwargs):
 
     return work
 
+
 @shared_task(
     bind=True,
     base=Poller,
@@ -162,6 +162,7 @@ async def poll_async_wrapper(self: Poller, **kwargs):
 )
 def poll(self, **kwargs):
     return run(poll_async_wrapper(self, **kwargs))
+
 
 @ttl_lru_cache(maxsize=MAX_DNS_CACHE_SIZE_TRAPS, ttl=TTL_DNS_CACHE_TRAPS)
 def resolve_address(address: str):
@@ -324,7 +325,9 @@ def _is_notification_mib_node(mib_node) -> bool:
 
 def _object_type_from_resolved_identity(mib_view_controller, identity, value):
     if isinstance(identity, str):
-        resolved_identity = ObjectIdentity(identity).resolve_with_mib(mib_view_controller)
+        resolved_identity = ObjectIdentity(identity).resolve_with_mib(
+            mib_view_controller
+        )
     else:
         resolved_identity = ObjectIdentity(*identity).resolve_with_mib(
             mib_view_controller
@@ -601,7 +604,7 @@ def _retry_trap_varbinds_after_mib_load(
 
 @shared_task(bind=True, base=Poller)
 def trap(self, work):
-    metrics = {} # type: ignore
+    metrics = {}  # type: ignore
     work["host"] = format_ipv4_address(work["host"])
     work["data"] = limit_trap_varbind_pairs(
         work.get("data", []), log=logger, source=work["host"]

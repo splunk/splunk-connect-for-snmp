@@ -267,7 +267,12 @@ class _EngineIDCaptureUdp6Transport(udp6.Udp6AsyncioTransport):
 # Callback function for receiving notifications
 # noinspection PyUnusedLocal
 def cb_fun(
-    snmp_engine: engine.SnmpEngine, state_reference, context_engine_id, context_name, varbinds, cb_ctx
+    snmp_engine: engine.SnmpEngine,
+    state_reference,
+    context_engine_id,
+    context_name,
+    varbinds,
+    cb_ctx,
 ):
     logger.debug(
         'Notification from ContextEngineId "%s", ContextName "%s"'

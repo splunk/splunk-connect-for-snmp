@@ -213,7 +213,6 @@ class TestDoWork(IsolatedAsyncioTestCase):
         self.assertEqual(get_cmd_mock.call_count, 1)
         self.assertEqual(multi_bulk_walk_cmd_mock.call_count, 0)
 
-
     @patch("mongolock.MongoLock.__init__", MagicMock())
     @patch("mongolock.MongoLock.lock", MagicMock())
     @patch("mongolock.MongoLock.release", MagicMock())
@@ -260,9 +259,7 @@ class TestDoWork(IsolatedAsyncioTestCase):
 
         multi_bulk_walk_cmd.side_effect = multi_bulk_walk_cmd_mock
 
-        await poller.do_work(
-            inventory_record_with_max_oid, profiles=requested_profiles
-        )
+        await poller.do_work(inventory_record_with_max_oid, profiles=requested_profiles)
 
         self.assertEqual(poller.get_varbind_chunk.call_args.args[1], 5)
         self.assertEqual(multi_bulk_walk_cmd.call_count, 1)
@@ -310,9 +307,7 @@ class TestDoWork(IsolatedAsyncioTestCase):
         poller.get_varbind_chunk = MagicMock(wraps=poller.get_varbind_chunk)
         get_cmd.return_value = (None, 0, 0, ["Oid1", "Oid2", "Oid3"])
 
-        await poller.do_work(
-            inventory_record_with_max_oid, profiles=requested_profiles
-        )
+        await poller.do_work(inventory_record_with_max_oid, profiles=requested_profiles)
 
         self.assertEqual(poller.get_varbind_chunk.call_args.args[1], 5)
         self.assertEqual(poller.process_snmp_data.call_count, 1)
