@@ -30,7 +30,7 @@ spec:
         fsGroup: 999
       initContainers:
       - name: fix-permissions
-        image: redis:8.6.2
+        image: redis:8.8.0
         imagePullPolicy: IfNotPresent
         command:
         - sh
@@ -47,7 +47,7 @@ spec:
           runAsUser: 0
       containers:
       - name: redis
-        image: redis:8.6.2
+        image: redis:8.8.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 6379

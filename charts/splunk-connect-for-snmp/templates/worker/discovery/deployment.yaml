@@ -46,6 +46,8 @@ spec:
           env:
             {{- include "environmental-variables" . | nindent 12 }}
             {{- include "environmental-variables-discovery" . | nindent 12 }}
+            - name: USER
+              value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
             - name: DISCOVERY_FOLDER_PATH
               value: /app/discovery
             - name: CELERY_TASK_TIMEOUT

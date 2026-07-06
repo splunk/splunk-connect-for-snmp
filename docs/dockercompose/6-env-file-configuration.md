@@ -43,6 +43,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `LOCAL_MIBS_PATH`                     | Absolute path to the directory containing [local MIB files](../mib-request.md#configuring-path-to-local-mibs-for-docker-compose-installation). |
 | `SECRET_FOLDER_PATH`                  | Absolute path to the folder containing [secrets.json](../configuration/snmpv3.md)                                                               |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                                                             |
+| `DEPLOYMENT_USER`                       | A user name to set in the deployment environment. The default value is sc4snmp. 
 
 
 ### Network configuration
