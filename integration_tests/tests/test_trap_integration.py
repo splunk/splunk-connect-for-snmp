@@ -15,6 +15,7 @@
 #   ########################################################################
 import asyncio
 import logging
+import time
 
 import pytest
 from pysnmp.hlapi.v3arch.asyncio import *
@@ -217,6 +218,32 @@ async def test_more_than_one_varbind(request, setup_splunk):
     search_query = """search index="netops" | search "SNMPv2-MIB.sysDescr.value"="test_more_than_one_varbind"
     "SNMPv2-MIB.sysContact.value"=test_more_than_one_varbind_contact """
 
+    result_count, events_count = splunk_single_search(setup_splunk, search_query)
+
+    assert result_count == 1
+
+
+@pytest.mark.part6
+@pytest.mark.asyncio
+async def test_unresolved_trap_with_custom_translations(request, setup_splunk):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    unresolved_oid = "1.3.6.1.4.1.9999.90.0"
+    marker = f"test_unresolved_custom_translation_{time.time_ns()}"
+
+    await send_trap(
+        trap_external_ip,
+        162,
+        "1.3.6.1.6.3.1.1.5.1",
+        "SNMPv2-MIB",
+        "public",
+        1,
+        (unresolved_oid, OctetString(marker)),
+    )
+
+    await asyncio.sleep(5)
+
+    search_query = f"""search index="netops" sourcetype="sc4snmp:traps" earliest=-2m
+        "{marker}" "unresolved::{unresolved_oid}" | head 1"""
     result_count, events_count = splunk_single_search(setup_splunk, search_query)
 
     assert result_count == 1
