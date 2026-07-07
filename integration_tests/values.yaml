@@ -35,6 +35,7 @@ worker:
     replicaCount: 1
     concurrency: 8
     prefetch: 60
+    enableIncludeUnresolvedVarbinds: true
   sender:
     replicaCount: 1
     concurrency: 4
