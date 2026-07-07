@@ -137,7 +137,7 @@ async def multi_bulk_walk_cmd(
       the generator continues even when the agent returns OIDs that are not
       greater than previous ones.
      - Returns all valid responses from each GETBULK call in a single yield: all
-      active varbinds' results are grouped together in the same batch.
+      active varbinds results are grouped together in the same batch.
      - Respects maxRows and maxCalls limits across all varbinds combined.
      - Handles timeouts gracefully: the generator continues unless the error
       is non-recoverable.

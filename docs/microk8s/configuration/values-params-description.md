@@ -249,3 +249,4 @@ Detailed documentation about configuring sim can be found in [Splunk Infrastruct
 | `imagePullSecrets`  | [Kubernetes documentation ](https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod) |         |
 | `useDeprecatedAPI`  | Enables older version of Kubernetes to use                                                                               | `false` |
 | `commonAnnotations` | Annotations added to all services                                                                                        |         |
+| `deploymentUser`    | User name assigned to the `USER` environment variable in SC4SNMP deployments                                             | `sc4snmp` |

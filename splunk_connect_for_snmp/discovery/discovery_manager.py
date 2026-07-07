@@ -41,7 +41,7 @@ class Discovery(Task):
             return [str(ip) for ip in network.hosts()]
         except Exception as e:
             err_msg = (
-                f"Error occured while finding active hosts for subnet {subnet}: {e}"
+                f"Error occurred while finding active hosts for subnet {subnet}: {e}"
             )
             raise DiscoveryError(err_msg)
 
@@ -205,14 +205,14 @@ class Discovery(Task):
         return devices_detail
 
     def add_devices_detail_to_csv(
-        self, snmp_devices_detail, delete_flag, dicovery_name
+        self, snmp_devices_detail, delete_flag, discovery_name
     ):
         """Add snmp devices detail to CSV"""
         lock = FileLock(DISCOVERY_LOCK_PATH)
         with lock:
             csv_service = CSVRecordManager(DISCOVERY_CSV_PATH)
             if delete_flag is True:
-                csv_service.delete_rows_by_key(dicovery_name)
+                csv_service.delete_rows_by_key(discovery_name)
             csv_service.create_rows(snmp_devices_detail, delete_flag)
 
     def do_work(self, discovery_record: DiscoveryRecord) -> list:
