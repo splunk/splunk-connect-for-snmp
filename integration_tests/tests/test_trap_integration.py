@@ -237,7 +237,6 @@ def test_unresolved_trap_with_custom_translations(request, setup_splunk):
         (unresolved_oid, OctetString(marker)),
     )
 
-    # Allow trap processing, custom translation, and HEC delivery to complete.
     time.sleep(5)
 
     search_query = f"""search index="netops" sourcetype="sc4snmp:traps" earliest=-2m
