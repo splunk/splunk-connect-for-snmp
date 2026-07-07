@@ -5,6 +5,7 @@
 ### Changed
 
 ### Fixed
+- Preserve unresolved trap varbind fields during custom translation processing, preventing processing failures and errors.
 
 
 ## [1.17.0]
