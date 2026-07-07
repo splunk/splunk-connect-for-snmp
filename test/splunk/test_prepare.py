@@ -606,6 +606,55 @@ class TestPrepare(TestCase):
             result,
         )
 
+    def test_apply_custom_translation_preserves_unresolved_trap_fields(self):
+        numeric_field = "unresolved::1.3.6.1.4.1.9999.90.0"
+        named_field = "unresolved::unknownSymbol"
+        work = {
+            "result": {
+                "sc4snmp::unresolved": {
+                    "fields": {
+                        numeric_field: {
+                            "oid": "1.3.6.1.4.1.9999.90.0",
+                            "value": "numeric unresolved value",
+                        },
+                        named_field: {
+                            "oid": "unknownSymbol",
+                            "value": "named unresolved value",
+                        },
+                    },
+                    "metrics": {},
+                },
+                "resolved": {
+                    "fields": {
+                        "SNMPv2-MIB.sysDescr": {
+                            "name": "SNMPv2-MIB.sysDescr",
+                            "value": "Linux",
+                        }
+                    },
+                    "metrics": {},
+                },
+            }
+        }
+        translations = {"SNMPv2-MIB": {"sysDescr": "description"}}
+
+        result = apply_custom_translations(work, translations)
+
+        unresolved = result["result"]["sc4snmp::unresolved"]["fields"]
+        self.assertEqual(
+            {
+                numeric_field: {
+                    "oid": "1.3.6.1.4.1.9999.90.0",
+                    "value": "numeric unresolved value",
+                },
+                named_field: {
+                    "oid": "unknownSymbol",
+                    "value": "named unresolved value",
+                },
+            },
+            unresolved,
+        )
+        self.assertIn("SNMPv2-MIB.description", result["result"]["resolved"]["fields"])
+
 
 @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_SOURCETYPE_TRAPS", "sc4snmp:traps")
 @patch("splunk_connect_for_snmp.splunk.tasks.SPLUNK_HEC_INDEX_EVENTS", "netops")
