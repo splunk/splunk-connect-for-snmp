@@ -20,6 +20,7 @@ spec:
       securityContext:
         runAsUser: 10000
         runAsGroup: 10000
+        runAsNonRoot: true
         fsGroup: 10000
       {{- if .Values.UI.valuesFileDirectory }}
       initContainers:
@@ -34,13 +35,18 @@ spec:
                     setfacl -n -Rm d:m::rwx,m::rwx,d:g:10000:rwx,g:10000:rwx {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }};
                 fi;' ]
           securityContext:
+            # nosemgrep: splunk.run-as-non-root
             runAsUser: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: false
           volumeMounts:
           - name: values-directory
             mountPath: {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }}
       {{- end }}
       containers:
       - name: ui-backend
+        securityContext:
+          allowPrivilegeEscalation: false
         image: {{ include "splunk-connect-for-snmp.uiBackImage" . | quote }}
         imagePullPolicy: {{ .Values.UI.backEnd.pullPolicy }}
         command: ["sh","-c","/flask_start.sh"]

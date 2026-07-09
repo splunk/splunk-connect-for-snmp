@@ -14,7 +14,10 @@ spec:
     image: registry.access.redhat.com/ubi9/ubi
     imagePullPolicy: IfNotPresent
     securityContext:
+      # nosemgrep: splunk.run-as-non-root
       runAsUser: 0
+      runAsNonRoot: false
+      allowPrivilegeEscalation: false
     command: ['sh', '-c', '
     setfacl --recursive --remove-all /var/values_dir;
     ']

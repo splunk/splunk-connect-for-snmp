@@ -28,6 +28,8 @@ spec:
       - name: mongodb
         image: "bitnamilegacy/mongodb:8.0.13-debian-10-r0"
         imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
 
         ports:
         - containerPort: 27017

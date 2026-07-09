@@ -20,6 +20,8 @@ spec:
     spec:
       containers:
       - name: ui-backend-worker
+        securityContext:
+          allowPrivilegeEscalation: false
         image: "ghcr.io/splunk/sc4snmp-ui/backend/container:main"
         imagePullPolicy: Always
         command: ["sh","-c","/celery_start.sh"]

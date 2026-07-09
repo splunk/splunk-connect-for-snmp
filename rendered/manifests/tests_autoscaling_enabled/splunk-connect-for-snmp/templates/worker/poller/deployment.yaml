@@ -32,6 +32,7 @@ spec:
       containers:
         - name: splunk-connect-for-snmp-worker-poller
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL

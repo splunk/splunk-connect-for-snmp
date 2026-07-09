@@ -19,6 +19,8 @@ spec:
     spec:
       containers:
       - name: ui-backend-worker
+        securityContext:
+          allowPrivilegeEscalation: false
         image: {{ include "splunk-connect-for-snmp.uiBackImage" . | quote }}
         imagePullPolicy: {{ .Values.UI.backEnd.pullPolicy }}
         command: ["sh","-c","/celery_start.sh"]

@@ -13,7 +13,10 @@ spec:
     image: {{ .Values.UI.init.repository }}
     imagePullPolicy: {{ .Values.UI.init.pullPolicy }}
     securityContext:
+      # nosemgrep: splunk.run-as-non-root
       runAsUser: 0
+      runAsNonRoot: false
+      allowPrivilegeEscalation: false
     command: ['sh', '-c', '
     setfacl --recursive --remove-all {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }};
     ']

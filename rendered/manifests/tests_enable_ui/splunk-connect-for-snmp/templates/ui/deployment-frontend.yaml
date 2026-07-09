@@ -18,6 +18,8 @@ spec:
     spec:
       containers:
       - name: ui-frontend
+        securityContext:
+          allowPrivilegeEscalation: false
         image: "ghcr.io/splunk/sc4snmp-ui/frontend/container:main"
         imagePullPolicy: Always
         env:

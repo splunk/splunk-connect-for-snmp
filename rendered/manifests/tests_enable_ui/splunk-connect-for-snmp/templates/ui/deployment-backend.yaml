@@ -21,6 +21,7 @@ spec:
       securityContext:
         runAsUser: 10000
         runAsGroup: 10000
+        runAsNonRoot: true
         fsGroup: 10000
       initContainers:
         - name: patch-log-dirs
@@ -34,12 +35,17 @@ spec:
                     setfacl -n -Rm d:m::rwx,m::rwx,d:g:10000:rwx,g:10000:rwx /var/values_dir;
                 fi;' ]
           securityContext:
+            # nosemgrep: splunk.run-as-non-root
             runAsUser: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: false
           volumeMounts:
           - name: values-directory
             mountPath: /var/values_dir
       containers:
       - name: ui-backend
+        securityContext:
+          allowPrivilegeEscalation: false
         image: "ghcr.io/splunk/sc4snmp-ui/backend/container:main"
         imagePullPolicy: Always
         command: ["sh","-c","/flask_start.sh"]

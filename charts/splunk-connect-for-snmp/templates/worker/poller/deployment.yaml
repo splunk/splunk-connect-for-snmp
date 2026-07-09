@@ -35,6 +35,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-worker-poller
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
