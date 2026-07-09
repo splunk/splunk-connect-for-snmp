@@ -19,7 +19,7 @@ from pysnmp.hlapi.asyncio import (
 from splunk_connect_for_snmp.common.csv_record_manager import CSVRecordManager
 from splunk_connect_for_snmp.common.discovery_record import DiscoveryRecord
 from splunk_connect_for_snmp.discovery.exceptions import DiscoveryError
-from splunk_connect_for_snmp.snmp.auth import get_auth, setup_transport_target
+from splunk_connect_for_snmp.snmp.auth import get_discovery_auth, setup_transport_target
 
 logger = get_task_logger(__name__)
 
@@ -31,8 +31,13 @@ DEFAULT_GROUP_NAME = "default_group"
 
 
 class Discovery(Task):
-    def __init__(self):
-        self.snmp_engine = SnmpEngine()
+    @staticmethod
+    def close_snmp_engine(snmp_engine: SnmpEngine):
+        """Release transport resources held by a discovery SNMP engine."""
+        try:
+            snmp_engine.close_dispatcher()
+        except Exception as e:
+            logger.debug(f"Error while closing discovery SNMP engine: {e}")
 
     def get_host_list(self, subnet):
         """Get host list"""
@@ -88,21 +93,25 @@ class Discovery(Task):
         return DEFAULT_GROUP_NAME
 
     async def check_snmp_device(
-        self, ip, discovery_record: DiscoveryRecord
+        self,
+        ip: str,
+        discovery_record: DiscoveryRecord,
+        snmp_engine: SnmpEngine,
     ) -> dict | None:
         """
         Check if an SNMP device responds at the given IP.
         :param ip: IP address of target device.
         :param discovery_record: A Discovery Record object.
+        :param snmp_engine: SNMP engine to use for this check.
 
         :return: A dictionary containing discovery_record with group_name.
         """
         discovery_record.address = ip
-        auth_data = await get_auth(logger, discovery_record, SnmpEngine())
         transport_target = await setup_transport_target(discovery_record)
+        auth_data = await get_discovery_auth(logger, discovery_record, snmp_engine)
 
         error_indication, error_status, error_index, var_binds = await get_cmd(
-            SnmpEngine(),
+            snmp_engine,
             auth_data,
             transport_target,
             ContextData(),
@@ -132,18 +141,27 @@ class Discovery(Task):
             "community": discovery_record.community,
         }
 
-    async def _scan(self, ip, discovery_record) -> dict | None:
+    async def _scan(
+        self,
+        ip: str,
+        discovery_record: DiscoveryRecord,
+        snmp_engine: SnmpEngine,
+        semaphore: asyncio.Semaphore,
+    ) -> dict | None:
         """
         Perform an SNMP check for a single IP address with concurrency control.
 
         :param ip: IP address to check the snmp device.
         :param discovery_record: Discovery configuration record.
+        :param snmp_engine: SNMP engine to reuse for this Celery task.
+        :param semaphore: Semaphore used to limit concurrent SNMP checks.
         """
-        semaphore = asyncio.Semaphore(DEFAULT_CONCURRENCY)
         async with semaphore:
             try:
                 result = await self.check_snmp_device(
-                    ip, copy.deepcopy(discovery_record)
+                    ip,
+                    copy.deepcopy(discovery_record),
+                    snmp_engine,
                 )
                 if result:
                     logger.debug(
@@ -155,10 +173,12 @@ class Discovery(Task):
                 return None
 
     def discover_snmp_devices(
-        self, ip_list: list[str], discovery_record: DiscoveryRecord
+        self,
+        ip_list: list[str],
+        discovery_record: DiscoveryRecord,
     ) -> list[dict[str, str]]:
         """
-        Synchronous wrapper for async discover_snmp_devices_details.
+        Synchronous wrapper for the async discovery scan.
         This calls asyncio.run() ONCE per task, creating a single event loop
         that handles all SNMP queries concurrently.
 
@@ -167,42 +187,55 @@ class Discovery(Task):
 
         :return list: A list of dictionaries containing discovered device information
         """
-        return asyncio.run(
-            self._discover_snmp_devices_details(ip_list, discovery_record)
-        )
+        return asyncio.run(self._discover_snmp_devices(ip_list, discovery_record))
 
-    async def _discover_snmp_devices_details(
-        self, ip_list: list[str], discovery_record: DiscoveryRecord
+    async def _discover_snmp_devices(
+        self,
+        ip_list: list[str],
+        discovery_record: DiscoveryRecord,
     ) -> list[dict[str, str]]:
         """
-        Scan multiple IPs for SNMP-enabled devices using semaphore-based concurrency.
+        Create one SNMP engine for this discovery run and close it before
+        asyncio.run() tears down the event loop used by PySNMP transports.
 
         :param ip_list: List of IP addresses to scan
         :param discovery_record: Discovery configuration record
-        :param concurrency: Maximum concurrent SNMP checks
 
         :return list: A list of dictionaries containing discovered device information
         """
-        devices_detail = []
+        snmp_engine = SnmpEngine()
+        try:
+            devices_detail = []
+            semaphore = asyncio.Semaphore(DEFAULT_CONCURRENCY)
 
-        results = await asyncio.gather(
-            *[self._scan(ip, discovery_record) for ip in ip_list],
-            return_exceptions=True,
-        )
+            results = await asyncio.gather(
+                *[
+                    self._scan(
+                        ip,
+                        discovery_record,
+                        snmp_engine,
+                        semaphore,
+                    )
+                    for ip in ip_list
+                ],
+                return_exceptions=True,
+            )
 
-        for idx, result in enumerate(results):
-            if isinstance(result, (Exception | BaseException)):
-                logger.error(
-                    f"Snmp check for device {ip_list[idx]} generated an exception : {result}"
-                )
-                continue
-            elif result:
-                logger.debug(
-                    f"SNMP device found for {ip_list[idx]}: {result}. Device is from discovery: {discovery_record.discovery_name}"
-                )
-                devices_detail.append(result)
+            for idx, result in enumerate(results):
+                if isinstance(result, BaseException):
+                    logger.error(
+                        f"Snmp check for device {ip_list[idx]} generated an exception : {result}"
+                    )
+                    continue
+                elif result:
+                    logger.debug(
+                        f"SNMP device found for {ip_list[idx]}: {result}. Device is from discovery: {discovery_record.discovery_name}"
+                    )
+                    devices_detail.append(result)
 
-        return devices_detail
+            return devices_detail
+        finally:
+            self.close_snmp_engine(snmp_engine)
 
     def add_devices_detail_to_csv(
         self, snmp_devices_detail, delete_flag, discovery_name
