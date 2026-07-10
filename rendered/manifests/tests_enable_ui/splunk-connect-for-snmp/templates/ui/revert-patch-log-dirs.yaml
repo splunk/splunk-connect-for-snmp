@@ -14,8 +14,8 @@ spec:
     image: registry.access.redhat.com/ubi9/ubi
     imagePullPolicy: IfNotPresent
     securityContext:
-      # nosemgrep: splunk.run-as-non-root-unsafe-value
       runAsUser: 0
+      # nosemgrep: splunk.run-as-non-root-unsafe-value
       runAsNonRoot: false
       allowPrivilegeEscalation: false
     command: ['sh', '-c', '

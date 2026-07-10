@@ -13,8 +13,8 @@ spec:
     image: {{ .Values.UI.init.repository }}
     imagePullPolicy: {{ .Values.UI.init.pullPolicy }}
     securityContext:
-      # nosemgrep: splunk.run-as-non-root-unsafe-value
       runAsUser: 0
+      # nosemgrep: splunk.run-as-non-root-unsafe-value
       runAsNonRoot: false
       allowPrivilegeEscalation: false
     command: ['sh', '-c', '
