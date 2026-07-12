@@ -26,7 +26,9 @@ logger = get_task_logger(__name__)
 DISCOVERY_FOLDER_PATH = os.getenv("DISCOVERY_FOLDER_PATH", "/app/discovery")
 DISCOVERY_CSV_PATH = os.path.join(DISCOVERY_FOLDER_PATH, "discovery_devices.csv")
 DISCOVERY_LOCK_PATH = os.path.join(DISCOVERY_FOLDER_PATH, "discovery_devices.lock")
-DEFAULT_CONCURRENCY = 10
+DISCOVERY_SUBNET_CHECK_CONCURRENCY = int(
+    os.getenv("DISCOVERY_SUBNET_CHECK_CONCURRENCY", 10)
+)
 DEFAULT_GROUP_NAME = "default_group"
 
 
@@ -206,7 +208,7 @@ class Discovery(Task):
         snmp_engine = SnmpEngine()
         try:
             devices_detail = []
-            semaphore = asyncio.Semaphore(DEFAULT_CONCURRENCY)
+            semaphore = asyncio.Semaphore(DISCOVERY_SUBNET_CHECK_CONCURRENCY)
 
             results = await asyncio.gather(
                 *[
@@ -252,7 +254,8 @@ class Discovery(Task):
         try:
             logger.info(
                 f"Starting SNMP discovery for '{discovery_record.discovery_name}' "
-                f"on subnet {discovery_record.network_address}"
+                f"on subnet {discovery_record.network_address} with "
+                f"DISCOVERY_SUBNET_CHECK_CONCURRENCY: {DISCOVERY_SUBNET_CHECK_CONCURRENCY}"
             )
             host_list = self.get_host_list(discovery_record.network_address)
             logger.info(f"Number of Active hosts: {len(host_list)}")

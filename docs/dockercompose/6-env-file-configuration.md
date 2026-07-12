@@ -43,8 +43,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `LOCAL_MIBS_PATH`                     | Absolute path to the directory containing [local MIB files](../mib-request.md#configuring-path-to-local-mibs-for-docker-compose-installation). |
 | `SECRET_FOLDER_PATH`                  | Absolute path to the folder containing [secrets.json](../configuration/snmpv3.md)                                                               |
 | `SC4SNMP_VERSION`                     | Version of SC4SNMP                                                                                                                             |
-| `DEPLOYMENT_USER`                       | A user name to set in the deployment environment. The default value is sc4snmp. 
-
+| `DEPLOYMENT_USER`                     | User name assigned to the `USER` environment variable in SC4SNMP containers. This is configured in the `.env` file and used by Docker Compose during deployment. Default is `sc4snmp`. |
 
 ### Network configuration
 
@@ -162,6 +161,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 |-------------------------------------------|-------------------------------------------------------------------------------------|
 | `WORKER_DISCOVERY_CONCURRENCY`            | Minimum number of threads in the discovery worker container                         |
 | `PREFETCH_DISCOVERY_COUNT`                | How many tasks are consumed from the queue at once in the discovery worker container |
+| `DISCOVERY_SUBNET_CHECK_CONCURRENCY`    | Number of subnet IPs checked concurrently inside one discovery task. This is separate from `WORKER_DISCOVERY_CONCURRENCY` |
 | `WORKER_DISCOVERY_REPLICAS`               | Number of docker replicas of worker discovery container                             |
 | `WORKER_DISCOVERY_CPU_LIMIT`              | Limit of cpu that worker discovery container can use                                |
 | `WORKER_DISCOVERY_MEMORY_LIMIT`           | Limit of memory that worker discovery container can use                             |

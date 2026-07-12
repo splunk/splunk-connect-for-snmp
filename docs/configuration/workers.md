@@ -248,6 +248,7 @@ WORKER_TRAP_MAX_TASKS_PER_CHILD=0
 # Worker Discovery
 WORKER_DISCOVERY_CONCURRENCY=4
 PREFETCH_DISCOVERY_COUNT=30
+DISCOVERY_SUBNET_CHECK_CONCURRENCY=10
 WORKER_DISCOVERY_REPLICAS=1
 WORKER_DISCOVERY_CPU_LIMIT=1
 WORKER_DISCOVERY_MEMORY_LIMIT=500M
@@ -331,6 +332,7 @@ sudo docker compose up -d
 |----------------------------------------|----------------------------------------------------------------------------------------|
 | `WORKER_DISCOVERY_CONCURRENCY`         | Minimum number of threads in the discovery worker container                            |
 | `PREFETCH_DISCOVERY_COUNT`             | How many tasks are consumed from the queue at once in the discovery worker container   |
+| `DISCOVERY_SUBNET_CHECK_CONCURRENCY` | Number of subnet IPs checked concurrently inside one discovery task. This is separate from `WORKER_DISCOVERY_CONCURRENCY` |
 | `WORKER_DISCOVERY_REPLICAS`            | Number of docker replicas of worker discovery container                                |
 | `WORKER_DISCOVERY_CPU_LIMIT`           | Limit of cpu that worker discovery container can use                                   |
 | `WORKER_DISCOVERY_MEMORY_LIMIT`        | Limit of memory that worker discovery container can use                                |
@@ -514,4 +516,3 @@ TTL_DNS_CACHE_TRAPS=1800
 ///
 
 Trap worker uses in memory cache to store the results of the reverse dns lookup. If you restart the worker, the cache will be cleared.
-

@@ -1063,6 +1063,10 @@
         "enabled": {
           "type": "boolean"
         },
+        "subnetCheckConcurrency": {
+          "type": "integer",
+          "minimum": 1
+        },
         "ipv6Enabled": {
           "type": "boolean"
         },

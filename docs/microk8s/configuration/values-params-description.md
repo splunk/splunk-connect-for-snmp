@@ -165,6 +165,7 @@ Detailed documentation about configuring discovery can be found in [Discovery](.
 | Variable                                        | Description                                                                                                                     | Default          |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|------------------|
 | `enabled`                                       | Enables discovering SNMP-enabled devices and creates a CSV file.                                                                    | `false`          |
+| `subnetCheckConcurrency`                         | Number of subnet IPs checked concurrently inside one discovery task. This is separate from `worker.discovery.concurrency`.       | `10`             |
 | `usernameSecrets`                               | List of SNMPv3 secret names (Kubernetes secrets) used when discovering devices                                                  |                  |
 | `ipv6Enabled`                                   | Enabled device detection using IPv6 subnet                                                                                      | `false`          |
 | `logLevel`                                      | Log level for a discovery pod                                                                                                   | `INFO`           |
