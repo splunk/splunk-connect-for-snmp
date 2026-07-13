@@ -1063,7 +1063,7 @@
         "enabled": {
           "type": "boolean"
         },
-        "subnetCheckConcurrency": {
+        "subnetDiscoveryConcurrency": {
           "type": "integer",
           "minimum": 1
         },

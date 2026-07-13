@@ -118,7 +118,7 @@ spec:
               value: "30"
             - name: MAX_TASKS_PER_CHILD
               value: "0"
-            - name: DISCOVERY_SUBNET_CHECK_CONCURRENCY
+            - name: SUBNET_DISCOVERY_CONCURRENCY
               value: "10"
             - name: USER
               value: "sc4snmp"

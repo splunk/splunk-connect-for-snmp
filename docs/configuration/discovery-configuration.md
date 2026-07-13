@@ -44,7 +44,7 @@ All discovery settings are configured in the `discovery` section of `values.yaml
 discovery:
   enabled:
   logLevel:
-  subnetCheckConcurrency:
+  subnetDiscoveryConcurrency:
   ipv6Enabled:
   discoveryPath:
   usernameSecrets: []
@@ -68,7 +68,7 @@ discovery:
 discovery:
   enabled: true
   logLevel: "INFO"
-  subnetCheckConcurrency: 10
+  subnetDiscoveryConcurrency: 10
   ipv6Enabled: true
   discoveryPath: "/home/user/sc4snmp"
   usernameSecrets:
@@ -105,7 +105,7 @@ discovery:
 /// tab | docker compose
 Discovery settings are split across two files:
 
-- **`.env`** — general settings: log level, output path, SNMPv3 secrets toggle, and subnet check concurrency.
+- **`.env`** — general settings: log level, output path, SNMPv3 secrets toggle, and subnet discovery concurrency.
 - **`discovery-config.yaml`** — autodiscovery tasks. Set `DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH` in `.env` to the absolute path of this file.
 
 ```yaml
@@ -195,20 +195,20 @@ ipv6Enabled: true
 !!! info
     If `ipv6Enabled` is `false`, then the task will not be created for discovery keys with an IPv6 network address.
 
-## Define subnet check concurrency
+## Define subnet discovery concurrency
 
-Controls how many subnet IPs are checked concurrently inside one discovery task. Increase it to check large subnets faster, or lower it to reduce SNMP traffic, memory usage, and load on the discovery worker.
+Controls how many subnet IPs are checked concurrently inside one discovery task. Increase it to discover large subnets faster, or lower it to reduce SNMP traffic, memory usage, and load on the discovery worker.
 
 /// tab | microk8s
 ```yaml
 discovery:
-  subnetCheckConcurrency: 10
+  subnetDiscoveryConcurrency: 10
 ```
 ///
 
 /// tab | docker compose
 ```
-DISCOVERY_SUBNET_CHECK_CONCURRENCY=10
+SUBNET_DISCOVERY_CONCURRENCY=10
 ```
 ///
 
@@ -299,12 +299,12 @@ device_rules:
     group: "linux-group"
 ```
 
-## Configure subnet check limits, timeouts, and retries
+## Configure subnet discovery limits, timeouts, and retries
 
 /// tab | microk8s
 ```yaml
 discovery:
-  subnetCheckConcurrency: 10
+  subnetDiscoveryConcurrency: 10
 
 worker:
   taskTimeout: 2400
@@ -315,7 +315,7 @@ worker:
 
 /// tab | docker compose
 ```
-DISCOVERY_SUBNET_CHECK_CONCURRENCY=10
+SUBNET_DISCOVERY_CONCURRENCY=10
 CELERY_TASK_TIMEOUT=2400
 UDP_CONNECTION_TIMEOUT=3
 UDP_CONNECTION_RETRIES=5
@@ -324,7 +324,7 @@ UDP_CONNECTION_RETRIES=5
 
 | Field | microk8s | docker compose | Description | Default |
 |-------|----------|----------------|-------------|---------|
-| Subnet check concurrency | `discovery.subnetCheckConcurrency` | `DISCOVERY_SUBNET_CHECK_CONCURRENCY` | Number of subnet IPs checked concurrently inside one discovery task. This controls per-task subnet checking, not Celery worker task concurrency. | `10` |
+| Subnet discovery concurrency | `discovery.subnetDiscoveryConcurrency` | `SUBNET_DISCOVERY_CONCURRENCY` | Number of subnet IPs checked concurrently inside one discovery task. This controls per-task subnet discovery, not Celery worker task concurrency. | `10` |
 | Task timeout | `worker.taskTimeout` | `CELERY_TASK_TIMEOUT` | Maximum execution time in seconds for a single discovery task. Increase for large subnets. Make sure it is large enough to accommodate SNMP checks across all IPs. | `2400` |
 | UDP timeout | `worker.udpConnectionTimeout` | `UDP_CONNECTION_TIMEOUT` | Timeout in seconds for each SNMP request. Increase for high-latency networks. | `3` |
 | UDP retries | `worker.udpConnectionRetries` | `UDP_CONNECTION_RETRIES` | Number of times a request is retried if there is no response. | `5` |

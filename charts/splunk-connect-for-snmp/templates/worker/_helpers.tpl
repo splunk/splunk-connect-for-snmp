@@ -252,6 +252,6 @@ Common labels
   value: {{ .Values.worker.discovery.prefetch | default "30" | quote }}
 - name: MAX_TASKS_PER_CHILD
   value: {{ .Values.worker.discovery.maxTasksPerChild | default "0" | quote }}
-- name: DISCOVERY_SUBNET_CHECK_CONCURRENCY
-  value: {{ .Values.discovery.subnetCheckConcurrency | default "10" | quote }}
+- name: SUBNET_DISCOVERY_CONCURRENCY
+  value: {{ .Values.discovery.subnetDiscoveryConcurrency | default "10" | quote }}
 {{- end }}

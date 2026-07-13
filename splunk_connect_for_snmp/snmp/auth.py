@@ -232,10 +232,7 @@ async def get_discovery_auth(
         and not security_engine.isdigit()
     )
 
-    if discovery_record.version != "3":
-        return await get_auth(logger, discovery_record, snmp_engine)
-
-    if has_configured_engine_id:
+    if discovery_record.version != "3" or has_configured_engine_id:
         return await get_auth(logger, discovery_record, snmp_engine)
 
     # No EngineID was configured for this SNMPv3 discovery target. Use the
