@@ -2,6 +2,20 @@ apiVersion: v1
 entries:
   splunk-connect-for-snmp:
   - apiVersion: v2
+    appVersion: 1.17.1-beta.2
+    created: "2026-07-13T09:22:44.190356705Z"
+    dependencies:
+    - name: mibserver
+      repository: https://pysnmp.github.io/mibs/charts/
+      version: ~1.16.1
+    description: A Helm chart for Splunk Connect for SNMP
+    digest: 2c3d2a8cc6e2740f4874ecb9d9d11ef853b618c330e3006ba00f425a68d93774
+    name: splunk-connect-for-snmp
+    type: application
+    urls:
+    - https://github.com/splunk/splunk-connect-for-snmp/releases/download/v1.17.1-beta.2/splunk-connect-for-snmp-1.17.1-beta.2.tgz
+    version: 1.17.1-beta.2
+  - apiVersion: v2
     appVersion: 1.17.1-beta.1
     created: "2026-07-07T13:49:03.256073477Z"
     dependencies:
@@ -6264,4 +6278,4 @@ entries:
     urls:
     - https://github.com/splunk/splunk-connect-for-snmp/releases/download/v0.10.5-beta.1/splunk-connect-for-snmp-0.10.5-beta.1.tgz
     version: 0.10.5-beta.1
-generated: "2026-07-07T13:49:03.25353599Z"
+generated: "2026-07-13T09:22:44.186566451Z"
