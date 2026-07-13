@@ -60,15 +60,16 @@ parse_common_args() {
         ;;
       --test)
         if [[ -z "${2:-}" ]]; then
-          error "--test requires argument: traps | poller | all"
+          error "--test requires argument: traps | poller | discovery | all"
           exit 1
         fi
         case "$2" in
           traps)  TEST_FILTER="tests/test_trap_integration.py" ;;
           poller) TEST_FILTER="tests/test_poller_integration.py" ;;
+          discovery) TEST_FILTER="tests/test_autodiscovery_integration.py" ;;
           all)    TEST_FILTER="tests/" ;;
           *)
-            error "Invalid test type: $2 (allowed: traps | poller | all)"
+            error "Invalid test type: $2 (allowed: traps | poller | discovery | all)"
             exit 1
             ;;
         esac

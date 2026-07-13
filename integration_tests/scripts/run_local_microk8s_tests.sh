@@ -22,7 +22,7 @@ clean_k8s() {
   fi
 
   sudo microk8s kubectl delete pvc --all -n sc4snmp 2>/dev/null || true
-  sudo microk8s kubectl delete secret sv3poller -n sc4snmp 2>/dev/null || true
+  sudo microk8s kubectl delete secret sv3poller autodiscovery-v3-sha-aes autodiscovery-v3-md5-aes -n sc4snmp 2>/dev/null || true
 
   info "K8s cleanup complete"
 }
@@ -179,6 +179,7 @@ sudo microk8s helm3 upgrade --install sck \
   splunk-otel-collector-chart/splunk-otel-collector
 
 VALUES_FILE="${SCRIPT_DIR}/../values.yaml"
+DISCOVERY_PATH_DIR="${INT_TEST_DIR}/discovery"
 
 HOST_IP=$(hostname -I | awk '{print $1}')
 
@@ -186,6 +187,7 @@ info "Updating values.yaml"
 
 sed -i "s|###SPLUNK_TOKEN###|${token}|g" "$VALUES_FILE"
 sed -i "s|###LOAD_BALANCER_ID###|${HOST_IP}|g" "$VALUES_FILE"
+sed -i "s|###DISCOVERY_PATH###|${DISCOVERY_PATH_DIR}|g" "$VALUES_FILE"
 
 info "Using Host IP: $HOST_IP"
 
@@ -196,6 +198,7 @@ if [[ "$LOCAL_RUN" == "true" ]]; then
 fi
 
 start_snmpsim
+"${SCRIPT_DIR}/setup_autodiscovery_simulators.sh" microk8s
 
 step "MicroK8s Setup"
 
@@ -242,6 +245,34 @@ stringData:
   authProtocol: SHA
   privProtocol: AES
   securityEngineId: "8000000903000A397056B8AC"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: autodiscovery-v3-sha-aes
+  namespace: sc4snmp
+type: Opaque
+stringData:
+  userName: autodiscovery-sha
+  authKey: AuthPass1
+  privKey: PrivPass1
+  authProtocol: SHA
+  privProtocol: AES
+  securityEngineId: "8000000903000A3900000101"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: autodiscovery-v3-md5-aes
+  namespace: sc4snmp
+type: Opaque
+stringData:
+  userName: autodiscovery-md5
+  authKey: AuthPass2
+  privKey: PrivPass2
+  authProtocol: MD5
+  privProtocol: AES
+  securityEngineId: "8000000903000A3900000102"
 EOF
 
 sudo microk8s helm3 upgrade --install snmp \
@@ -264,3 +295,4 @@ info "Restoring values.yaml"
 
 sed -i "s|${token}|###SPLUNK_TOKEN###|g" "$VALUES_FILE"
 sed -i "s|${HOST_IP}|###LOAD_BALANCER_ID###|g" "$VALUES_FILE"
+sed -i "s|${DISCOVERY_PATH_DIR}|###DISCOVERY_PATH###|g" "$VALUES_FILE"

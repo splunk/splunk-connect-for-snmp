@@ -1,3 +1,37 @@
-autodiscovery: {}
 ipv6Enabled: false
-usernameSecrets: []
+autodiscovery:
+  integration_v2c:
+    frequency: 21600
+    delete_already_discovered: true
+    network_address: 10.1.1.0/24
+    version: "2c"
+    community: public
+    port: 161
+    device_rules:
+      - name: integration-v2c-agents
+        patterns: "*autodiscovery integration v2c*"
+        group: autodiscovery-v2c
+  integration_v3_sha:
+    frequency: 21600
+    delete_already_discovered: true
+    network_address: 10.2.2.0/24
+    version: "3"
+    secret: autodiscovery-v3-sha-aes
+    security_engine: "8000000903000A3900000101"
+    port: 161
+    device_rules:
+      - name: integration-v3-sha-agents
+        patterns: "*autodiscovery integration v3 SHA*"
+        group: autodiscovery-v3-sha
+  integration_v3_md5:
+    frequency: 21600
+    delete_already_discovered: true
+    network_address: 10.2.2.0/24
+    version: "3"
+    secret: autodiscovery-v3-md5-aes
+    security_engine: "8000000903000A3900000102"
+    port: 161
+    device_rules:
+      - name: integration-v3-md5-agents
+        patterns: "*autodiscovery integration v3 MD5*"
+        group: autodiscovery-v3-md5

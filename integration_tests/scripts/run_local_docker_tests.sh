@@ -11,6 +11,8 @@ DOCKER_COMPOSE_ORIG="${REPO_ROOT}/docker_compose"
 DOCKER_COMPOSE_LOCAL="${INT_TEST_DIR}/docker_compose"
 ENV_FILE="${DOCKER_COMPOSE_LOCAL}/.env"
 COMPOSE_FILE="${DOCKER_COMPOSE_LOCAL}/docker-compose.yaml"
+AUTODISCOVERY_DOCKER_NETWORK_V1="${AUTODISCOVERY_DOCKER_NETWORK_V1:-sc4snmp-autodiscovery-v1}"
+AUTODISCOVERY_DOCKER_NETWORK_V2="${AUTODISCOVERY_DOCKER_NETWORK_V2:-sc4snmp-autodiscovery-v2}"
 
 install_docker
 parse_common_args "$@"
@@ -52,6 +54,7 @@ validate_paths() {
     "${INT_TEST_DIR}/configs/scheduler-config.yaml" \
     "${INT_TEST_DIR}/configs/traps-config.yaml" \
     "${INT_TEST_DIR}/configs/inventory-tests.csv" \
+    "${INT_TEST_DIR}/configs/discovery-config.yaml" \
     "$ENV_FILE" \
     "${DOCKER_COMPOSE_LOCAL}/Corefile" \
     "$COMPOSE_FILE"; do
@@ -84,6 +87,7 @@ update_env() {
   set_env_var "$ENV_FILE" "SECRET_FOLDER_PATH"            "$(realpath "$SECRET_FOLDER")"
   set_env_var "$ENV_FILE" "ENABLE_TRAPS_SECRETS"          "true"
   set_env_var "$ENV_FILE" "ENABLE_WORKER_POLLER_SECRETS"  "true"
+  set_env_var "$ENV_FILE" "ENABLE_WORKER_DISCOVERY_SECRETS" "true"
   set_env_var "$ENV_FILE" "INCLUDE_UNRESOLVED_TRAP_VARBINDS" "true"
 
   set_env_var "$ENV_FILE" "COREFILE_ABS_PATH" \
@@ -97,6 +101,14 @@ update_env() {
 
   set_env_var "$ENV_FILE" "INVENTORY_FILE_ABSOLUTE_PATH" \
     "$(realpath "${INT_TEST_DIR}/configs/inventory-tests.csv")"
+
+  set_env_var "$ENV_FILE" "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH" \
+    "$(realpath "${INT_TEST_DIR}/configs/discovery-config.yaml")"
+  set_env_var "$ENV_FILE" "DISCOVERY_PATH" "${INT_TEST_DIR}/discovery"
+  set_env_var "$ENV_FILE" "SUBNET_DISCOVERY_CONCURRENCY" "15"
+  set_env_var "$ENV_FILE" "UDP_CONNECTION_TIMEOUT" "5"
+  set_env_var "$ENV_FILE" "UDP_CONNECTION_RETRIES" "1"
+  set_env_var "$ENV_FILE" "COMPOSE_PROFILES" "discovery"
 
   set_env_var "$ENV_FILE" "IPv6_ENABLED"          "false"
   set_env_var "$ENV_FILE" "COREDNS_ADDRESS_IPv6"  ""
@@ -127,6 +139,47 @@ start_snmp() {
   fi
 }
 
+connect_discovery_workers_to_simulators() {
+  local container_id
+  local network
+  local attached_ip
+  local attempt
+  local -a discovery_workers=()
+
+  step "Connecting discovery workers to static simulator ranges"
+  for attempt in {1..60}; do
+    mapfile -t discovery_workers < <(
+      sudo docker ps \
+        --filter label=com.docker.compose.service=worker-discovery \
+        --format '{{.ID}}'
+    )
+    (( ${#discovery_workers[@]} > 0 )) && break
+    info "Waiting for worker-discovery (${attempt}/60)"
+    sleep 1
+  done
+  if (( ${#discovery_workers[@]} == 0 )); then
+    error "No running worker-discovery container was found"
+    return 1
+  fi
+
+  for container_id in "${discovery_workers[@]}"; do
+    for network in \
+      "${AUTODISCOVERY_DOCKER_NETWORK_V1}" \
+      "${AUTODISCOVERY_DOCKER_NETWORK_V2}"; do
+      attached_ip="$(sudo docker inspect --format \
+        "{{with index .NetworkSettings.Networks \"${network}\"}}{{.IPAddress}}{{end}}" \
+        "${container_id}")"
+      if [[ -z "${attached_ip}" ]]; then
+        sudo docker network connect "${network}" "${container_id}"
+      fi
+      info "worker-discovery ${container_id} is connected to ${network}"
+    done
+  done
+
+  sudo docker restart sc4snmp-discovery >/dev/null
+  info "Restarted sc4snmp-discovery after simulator routes were attached"
+}
+
 # ===== START COMPOSE =====
 start_compose() {
   step "Starting SC4SNMP via Docker Compose"
@@ -150,6 +203,7 @@ start_compose() {
 
   info "Starting stack..."
   $COMPOSE -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d
+  connect_discovery_workers_to_simulators
 
   step "Waiting for containers to start"
 
@@ -247,6 +301,7 @@ main() {
 
   update_env "$token"
   start_snmp
+  "${SCRIPT_DIR}/setup_autodiscovery_simulators.sh" docker
   start_compose
   ensure_python
   deploy_poetry

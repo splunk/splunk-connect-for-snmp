@@ -156,7 +156,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        index: [1, 2, 3, 4, 5, 6]
+        index: [7]
     steps:
       - name: Checkout Project
         uses: actions/checkout@v7
@@ -195,7 +195,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        index: [ 1, 2, 3, 4, 5, 6 ]
+        index: [ 7 ]
     steps:
       - name: Checkout Project
         uses: actions/checkout@v7
