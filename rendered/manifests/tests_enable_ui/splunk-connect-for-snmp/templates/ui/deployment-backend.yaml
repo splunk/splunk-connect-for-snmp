@@ -18,6 +18,7 @@ spec:
       annotations:
         checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
     spec:
+      # nosemgrep: splunk.run-as-non-root-security-context-pod-level
       securityContext:
         runAsUser: 10000
         runAsGroup: 10000
@@ -46,6 +47,7 @@ spec:
       - name: ui-backend
         securityContext:
           allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         image: "ghcr.io/splunk/sc4snmp-ui/backend/container:main"
         imagePullPolicy: Always
         command: ["sh","-c","/flask_start.sh"]
@@ -105,6 +107,8 @@ spec:
         volumeMounts:
         - name: backend-configmap
           mountPath: /config
+        - name: tmp
+          mountPath: /tmp
         - name: values-directory
           mountPath: /var/values_dir
       serviceAccountName: job-robot
@@ -115,6 +119,8 @@ spec:
             items:
               - key: job_config
                 path: job_config.yaml
+        - name: tmp
+          emptyDir: {}
         - name: values-directory
           hostPath:
             path: /home/ubuntu

@@ -16,10 +16,17 @@ spec:
       labels:
         app: ui-frontend
     spec:
+      # nosemgrep: splunk.run-as-non-root-security-context-pod-level
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        runAsNonRoot: true
+        fsGroup: 10000
       containers:
       - name: ui-frontend
         securityContext:
           allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         image: "ghcr.io/splunk/sc4snmp-ui/frontend/container:main"
         imagePullPolicy: Always
         env:
@@ -29,3 +36,9 @@ spec:
             value: "30001"
         ports:
         - containerPort: 30001
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
