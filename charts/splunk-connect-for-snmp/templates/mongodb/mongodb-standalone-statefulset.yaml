@@ -40,7 +40,10 @@ spec:
         - name: {{ $pvcName }}
           mountPath: /data/db
         securityContext:
+          # nosemgrep: splunk.run-as-non-root
           runAsUser: 0
+          runAsNonRoot: false
+          allowPrivilegeEscalation: false
       {{- end }}
 
       containers:

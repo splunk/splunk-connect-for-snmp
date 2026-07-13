@@ -22,8 +22,19 @@ spec:
         checksum/redis-config: 52233e7984ec9733ee5d72c255220b5f26923d0723b6a2dd9d645205d3bf81d5
         checksum/redis-secret: 908cbead70ef3a415f7509bf2922a7eb195dd8dc27ba5735ecde8c7794bb4b74
     spec:
+      securityContext:
+        runAsUser: 999
+        runAsNonRoot: true
+        fsGroup: 999
       containers:
       - name: sentinel
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
         image: redis:8.8.0
         imagePullPolicy: IfNotPresent
         ports:

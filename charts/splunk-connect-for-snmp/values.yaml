@@ -626,6 +626,13 @@ mongodb:
     tag: "8.3.4"
     pullPolicy: IfNotPresent
 
+  # Container-level security context for the mongod container. runAsNonRoot/
+  # readOnlyRootFilesystem are intentionally not set here: the upstream mongo
+  # image's entrypoint needs root to take ownership of the data volume on
+  # first start (see initPermissions below for an alternative).
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+
   auth:
     enabled: true
     rootUser: admin

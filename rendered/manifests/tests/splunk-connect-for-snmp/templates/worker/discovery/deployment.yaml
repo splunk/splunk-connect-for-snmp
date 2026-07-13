@@ -34,6 +34,7 @@ spec:
       containers:
         - name: splunk-connect-for-snmp-discovery
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
