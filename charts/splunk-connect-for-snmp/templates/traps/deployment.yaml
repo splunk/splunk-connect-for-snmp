@@ -32,6 +32,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-traps
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL

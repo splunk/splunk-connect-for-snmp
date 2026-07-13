@@ -36,6 +36,7 @@ spec:
       containers:
         - name: splunk-connect-for-snmp-worker-sender
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL

@@ -15,6 +15,7 @@ spec:
       command: ['wget']
       args: ['{{ include "splunk-connect-for-snmp.traps.fullname" . }}:{{ .Values.traps.service.port }}']
       securityContext:
+        allowPrivilegeEscalation: false
         capabilities:
           drop:
           - ALL

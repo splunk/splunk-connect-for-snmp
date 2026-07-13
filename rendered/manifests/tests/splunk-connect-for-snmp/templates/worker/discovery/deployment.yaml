@@ -4,6 +4,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: release-name-splunk-connect-for-snmp-worker-discovery
+  namespace: default
   labels:
     app.kubernetes.io/name: splunk-connect-for-snmp
     app.kubernetes.io/component: worker-discovery
@@ -20,6 +21,8 @@ spec:
       app.kubernetes.io/instance: release-name
   template:
     metadata:
+      annotations:
+        checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
       labels:
         app.kubernetes.io/name: splunk-connect-for-snmp
         app.kubernetes.io/component: worker-discovery
@@ -31,6 +34,7 @@ spec:
       containers:
         - name: splunk-connect-for-snmp-discovery
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL

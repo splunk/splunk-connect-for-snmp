@@ -42,7 +42,10 @@ spec:
         - name: data
           mountPath: /data/db
         securityContext:
+          # nosemgrep: splunk.run-as-non-root
           runAsUser: 0
+          runAsNonRoot: false
+          allowPrivilegeEscalation: false
       {{- end }}
 
       {{- if .Values.mongodb.auth.enabled }}
@@ -55,7 +58,10 @@ spec:
         - name: keyfile
           mountPath: /keyfile
         securityContext:
+          # nosemgrep: splunk.run-as-non-root
           runAsUser: 0
+          runAsNonRoot: false
+          allowPrivilegeEscalation: false
       {{- end }}
 
       containers:

@@ -17,6 +17,8 @@ spec:
     spec:
       containers:
       - name: ui-frontend
+        securityContext:
+          allowPrivilegeEscalation: false
         image: {{ include "splunk-connect-for-snmp.uiFrontImage" . | quote }}
         imagePullPolicy: {{ .Values.UI.frontEnd.pullPolicy }}
         env:
