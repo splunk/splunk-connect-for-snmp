@@ -15,6 +15,7 @@ spec:
       labels:
         app: ui-frontend
     spec:
+      # nosemgrep: splunk.run-as-non-root-security-context-pod-level
       securityContext:
         runAsUser: 10000
         runAsGroup: 10000

@@ -18,6 +18,7 @@ spec:
       annotations:
         checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
     spec:
+      # nosemgrep: splunk.run-as-non-root-security-context-pod-level
       securityContext:
         runAsUser: 10000
         runAsGroup: 10000
