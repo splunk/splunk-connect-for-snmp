@@ -28,11 +28,19 @@ DISCOVERY_OUTPUT_DIR = Path(
     )
 )
 DISCOVERY_CSV = DISCOVERY_OUTPUT_DIR / "discovery_devices.csv"
-EXPECTED_BY_KEY = {
+SIMULATOR_PROFILES = {
+    "microk8s": {
+        "namespace": "microk8s-agent-simulator",
+        "prefixes": ("10.1.1", "10.2.2", "10.3.3"),
+    },
+    "docker-compose": {
+        "namespace": "docker-agent-simulator",
+        "prefixes": ("10.4.4", "10.5.5", "10.6.6"),
+    },
+}
+DISCOVERY_VARIATIONS = {
     "integration_v2c": {
-        "ips": {f"10.1.1.{index}" for index in range(1, 10)},
-        "names": {f"snmp-agent-v1-{index:03d}" for index in range(1, 10)},
-        "subnet": "10.1.1.0/24",
+        "agent_prefix": "v1",
         "variation": "v2c",
         "version": "2c",
         "community": "public",
@@ -40,9 +48,7 @@ EXPECTED_BY_KEY = {
         "group": "autodiscovery-v2c",
     },
     "integration_v3_sha": {
-        "ips": {f"10.2.2.{index}" for index in range(1, 6)},
-        "names": {f"snmp-agent-v2-{index:03d}" for index in range(1, 6)},
-        "subnet": "10.2.2.0/24",
+        "agent_prefix": "v2",
         "variation": "v3-sha",
         "version": "3",
         "community": "",
@@ -50,9 +56,7 @@ EXPECTED_BY_KEY = {
         "group": "autodiscovery-v3-sha",
     },
     "integration_v3_md5": {
-        "ips": {f"10.2.2.{index}" for index in range(6, 10)},
-        "names": {f"snmp-agent-v2-{index:03d}" for index in range(6, 10)},
-        "subnet": "10.2.2.0/24",
+        "agent_prefix": "v3",
         "variation": "v3-md5",
         "version": "3",
         "community": "",
@@ -60,25 +64,30 @@ EXPECTED_BY_KEY = {
         "group": "autodiscovery-v3-md5",
     },
 }
-EXPECTED_DEVICE_COUNT = sum(
-    len(configuration["ips"]) for configuration in EXPECTED_BY_KEY.values()
-)
+
+
+def build_expected_by_key(prefixes):
+    expected = {}
+    for prefix, (discovery_key, variation) in zip(
+        prefixes, DISCOVERY_VARIATIONS.items()
+    ):
+        details = variation.copy()
+        agent_prefix = details.pop("agent_prefix")
+        expected[discovery_key] = {
+            "ips": {f"{prefix}.{index}" for index in range(1, 10)},
+            "names": {
+                f"snmp-agent-{agent_prefix}-{index:03d}" for index in range(1, 10)
+            },
+            "subnet": f"{prefix}.0/24",
+            **details,
+        }
+    return expected
+
+
+EXPECTED_DEVICE_COUNT = 27
 AUTODISCOVERY_PORT = 161
 AUTODISCOVERY_COMPLETION_TIMEOUT = 500
-SIMULATOR_NAMESPACE = os.getenv("AUTODISCOVERY_SIMULATOR_NAMESPACE", "agent-simulator")
-DOCKER_SIMULATOR_NETWORKS = {
-    "v2c": os.getenv(
-        "AUTODISCOVERY_DOCKER_NETWORK_V1", "sc4snmp-autodiscovery-v1"
-    ),
-    "v3-sha": os.getenv(
-        "AUTODISCOVERY_DOCKER_NETWORK_V2", "sc4snmp-autodiscovery-v2"
-    ),
-    "v3-md5": os.getenv(
-        "AUTODISCOVERY_DOCKER_NETWORK_V2", "sc4snmp-autodiscovery-v2"
-    ),
-}
 REMOVABLE_SIMULATOR_NAME = "snmp-agent-v1-009"
-REMOVABLE_SIMULATOR_IP = "10.1.1.9"
 OFFLINE_NETWORK_POLICY = "autodiscovery-offline-agent"
 BASE_OID_SPECS = (
     # Use the same symbolic SNMPv2-MIB lookup as Discovery.check_snmp_device.
@@ -94,6 +103,29 @@ BASE_OID_SPECS = (
 )
 
 
+@pytest.fixture(scope="module")
+def deployment(request):
+    return request.config.getoption("sc4snmp_deployment")
+
+
+@pytest.fixture(scope="module")
+def simulator_profile(deployment):
+    assert deployment in SIMULATOR_PROFILES, f"Unsupported deployment: {deployment}"
+    profile = SIMULATOR_PROFILES[deployment]
+    return {
+        **profile,
+        "namespace": os.getenv(
+            "AUTODISCOVERY_SIMULATOR_NAMESPACE", profile["namespace"]
+        ),
+        "expected_by_key": build_expected_by_key(profile["prefixes"]),
+    }
+
+
+@pytest.fixture(scope="module")
+def expected_by_key(simulator_profile):
+    return simulator_profile["expected_by_key"]
+
+
 def read_discovery_rows():
     if not DISCOVERY_CSV.is_file():
         return []
@@ -107,13 +139,10 @@ def read_discovery_rows():
 
 
 def has_complete_matrix(rows, deployed_agents):
-    if len(rows) != EXPECTED_DEVICE_COUNT:
-        return False
-    for discovery_key in EXPECTED_BY_KEY:
-        actual_ips = {row["ip"] for row in rows if row.get("key") == discovery_key}
-        if actual_ips != deployed_agents[discovery_key]["ips"]:
-            return False
-    return True
+    return len(rows) == EXPECTED_DEVICE_COUNT and all(
+        {row["ip"] for row in rows if row.get("key") == discovery_key} == agents["ips"]
+        for discovery_key, agents in deployed_agents.items()
+    )
 
 
 @pytest.fixture(scope="module")
@@ -149,73 +178,40 @@ def run_checked(command, input_text=None):
 
 
 @pytest.fixture(scope="module")
-def deployed_agents(request):
-    deployment = request.config.getoption("sc4snmp_deployment")
-    agents = []
-
-    if deployment == "microk8s":
-        pod_list = json.loads(
-            run_checked(
-                [
-                    "sudo",
-                    "microk8s",
-                    "kubectl",
-                    "get",
-                    "pods",
-                    "-n",
-                    SIMULATOR_NAMESPACE,
-                    "-l",
-                    "sc4snmp.integration.autodiscovery=true",
-                    "-o",
-                    "json",
-                ]
-            )
-        )
-        agents = [
-            {
-                "name": item["metadata"]["name"],
-                "ip": item["status"].get("podIP", ""),
-                "variation": item["metadata"]["labels"]["variation"],
-            }
-            for item in pod_list["items"]
-        ]
-    else:
-        container_ids = run_checked(
+def deployed_agents(simulator_profile, expected_by_key):
+    pod_list = json.loads(
+        run_checked(
             [
                 "sudo",
-                "docker",
-                "ps",
-                "-aq",
-                "--filter",
-                "label=sc4snmp.integration.autodiscovery=true",
+                "microk8s",
+                "kubectl",
+                "get",
+                "pods",
+                "-n",
+                simulator_profile["namespace"],
+                "-l",
+                "sc4snmp.integration.autodiscovery=true",
+                "-o",
+                "json",
             ]
-        ).splitlines()
-        assert container_ids, "No Docker autodiscovery simulator containers found"
-        containers = json.loads(
-            run_checked(["sudo", "docker", "inspect", *container_ids])
         )
-        for container in containers:
-            variation = container["Config"]["Labels"][
-                "sc4snmp.integration.variation"
-            ]
-            network = DOCKER_SIMULATOR_NETWORKS[variation]
-            agents.append(
-                {
-                    "name": container["Name"].lstrip("/"),
-                    "ip": container["NetworkSettings"]["Networks"][network][
-                        "IPAddress"
-                    ],
-                    "variation": variation,
-                }
-            )
+    )
+    agents = [
+        {
+            "name": item["metadata"]["name"],
+            "ip": item["status"].get("podIP", ""),
+            "variation": item["metadata"]["labels"]["variation"],
+        }
+        for item in pod_list["items"]
+    ]
 
     key_by_variation = {
         expected["variation"]: discovery_key
-        for discovery_key, expected in EXPECTED_BY_KEY.items()
+        for discovery_key, expected in expected_by_key.items()
     }
     deployed = {
         discovery_key: {"ips": set(), "names": set()}
-        for discovery_key in EXPECTED_BY_KEY
+        for discovery_key in expected_by_key
     }
     for agent in agents:
         discovery_key = key_by_variation.get(agent["variation"])
@@ -224,17 +220,10 @@ def deployed_agents(request):
         deployed[discovery_key]["names"].add(agent["name"])
 
     assert len(agents) == EXPECTED_DEVICE_COUNT
-    for discovery_key, expected in EXPECTED_BY_KEY.items():
+    for discovery_key, expected in expected_by_key.items():
         assert deployed[discovery_key]["ips"] == expected["ips"]
         assert deployed[discovery_key]["names"] == expected["names"]
 
-    v1_ips = deployed["integration_v2c"]["ips"]
-    v2_ips = (
-        deployed["integration_v3_sha"]["ips"]
-        | deployed["integration_v3_md5"]["ips"]
-    )
-    assert v1_ips == {f"10.1.1.{index}" for index in range(1, 10)}
-    assert v2_ips == {f"10.2.2.{index}" for index in range(1, 10)}
     return deployed
 
 
@@ -283,14 +272,14 @@ def discovery_worker_exec_prefix(deployment):
     return ["sudo", "docker", "exec", container_name[0]]
 
 
-def rerun_v2c_discovery(deployment):
+def rerun_v2c_discovery(deployment, v2c_subnet):
     discovery_script = f"""
 from splunk_connect_for_snmp.common.discovery_record import DiscoveryRecord
 from splunk_connect_for_snmp.discovery.discovery_manager import Discovery
 
 record = DiscoveryRecord(
     discovery_name="integration_v2c",
-    network_address="10.1.1.0/24",
+    network_address="{v2c_subnet}",
     address=None,
     port={AUTODISCOVERY_PORT},
     version="2c",
@@ -358,59 +347,49 @@ def wait_for_v2c_simulator(address, timeout=30):
     pytest.fail(f"Simulator {address}:{AUTODISCOVERY_PORT} did not become ready")
 
 
-def stop_removable_simulator(deployment):
-    if deployment == "microk8s":
-        network_policy = {
-            "apiVersion": "networking.k8s.io/v1",
-            "kind": "NetworkPolicy",
-            "metadata": {
-                "name": OFFLINE_NETWORK_POLICY,
-                "namespace": SIMULATOR_NAMESPACE,
-                "labels": {"sc4snmp.integration.autodiscovery": "true"},
-            },
-            "spec": {
-                "podSelector": {
-                    "matchLabels": {"agent-id": REMOVABLE_SIMULATOR_NAME}
-                },
-                "policyTypes": ["Ingress"],
-            },
-        }
-        run_checked(
-            [
-                "sudo",
-                "microk8s",
-                "kubectl",
-                "apply",
-                "-f",
-                "-",
-            ],
-            input_text=json.dumps(network_policy),
-        )
-        time.sleep(2)
-        return
-
-    run_checked(["sudo", "docker", "stop", REMOVABLE_SIMULATOR_NAME])
+def stop_removable_simulator(simulator_namespace):
+    network_policy = {
+        "apiVersion": "networking.k8s.io/v1",
+        "kind": "NetworkPolicy",
+        "metadata": {
+            "name": OFFLINE_NETWORK_POLICY,
+            "namespace": simulator_namespace,
+            "labels": {"sc4snmp.integration.autodiscovery": "true"},
+        },
+        "spec": {
+            "podSelector": {"matchLabels": {"agent-id": REMOVABLE_SIMULATOR_NAME}},
+            "policyTypes": ["Ingress"],
+        },
+    }
+    run_checked(
+        [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "apply",
+            "-f",
+            "-",
+        ],
+        input_text=json.dumps(network_policy),
+    )
+    time.sleep(2)
 
 
-def start_removable_simulator(deployment):
-    if deployment == "microk8s":
-        run_checked(
-            [
-                "sudo",
-                "microk8s",
-                "kubectl",
-                "delete",
-                "networkpolicy",
-                OFFLINE_NETWORK_POLICY,
-                "-n",
-                SIMULATOR_NAMESPACE,
-                "--ignore-not-found=true",
-            ]
-        )
-        time.sleep(2)
-        return
-
-    run_checked(["sudo", "docker", "start", REMOVABLE_SIMULATOR_NAME])
+def start_removable_simulator(simulator_namespace):
+    run_checked(
+        [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "delete",
+            "networkpolicy",
+            OFFLINE_NETWORK_POLICY,
+            "-n",
+            simulator_namespace,
+            "--ignore-not-found=true",
+        ]
+    )
+    time.sleep(2)
 
 
 async def fetch_base_oids(address, auth_data):
@@ -432,13 +411,11 @@ async def fetch_base_oids(address, auth_data):
 
 @pytest.mark.part7
 def test_autodiscovery_csv_matches_all_deployed_agents(
-    discovered_rows, deployed_agents
+    discovered_rows, deployed_agents, expected_by_key
 ):
-    assert EXPECTED_DEVICE_COUNT == 18
-    assert len(EXPECTED_BY_KEY) == 3
     assert len(discovered_rows) == EXPECTED_DEVICE_COUNT
 
-    for discovery_key, expected in EXPECTED_BY_KEY.items():
+    for discovery_key, expected in expected_by_key.items():
         rows = [row for row in discovered_rows if row["key"] == discovery_key]
         csv_ips = {row["ip"] for row in rows}
         assert csv_ips == deployed_agents[discovery_key]["ips"]
@@ -448,8 +425,8 @@ def test_autodiscovery_csv_matches_all_deployed_agents(
 
 
 @pytest.mark.part7
-def test_autodiscovery_records_v2c_and_v3_credentials(discovered_rows):
-    for discovery_key, expected in EXPECTED_BY_KEY.items():
+def test_autodiscovery_records_v2c_and_v3_credentials(discovered_rows, expected_by_key):
+    for discovery_key, expected in expected_by_key.items():
         rows = [row for row in discovered_rows if row["key"] == discovery_key]
         assert {row["version"] for row in rows} == {expected["version"]}
         assert {row["community"] for row in rows} == {expected["community"]}
@@ -458,8 +435,8 @@ def test_autodiscovery_records_v2c_and_v3_credentials(discovered_rows):
 
 
 @pytest.mark.part7
-def test_autodiscovery_applies_sysdescr_device_rules(discovered_rows):
-    for discovery_key, expected in EXPECTED_BY_KEY.items():
+def test_autodiscovery_applies_sysdescr_device_rules(discovered_rows, expected_by_key):
+    for discovery_key, expected in expected_by_key.items():
         groups = {
             row["group"] for row in discovered_rows if row["key"] == discovery_key
         }
@@ -467,37 +444,40 @@ def test_autodiscovery_applies_sysdescr_device_rules(discovered_rows):
 
 
 @pytest.mark.part7
-def test_delete_already_discovered_removes_offline_device(request, discovered_rows):
-    del discovered_rows
-    deployment = request.config.getoption("sc4snmp_deployment")
-    expected_ips = EXPECTED_BY_KEY["integration_v2c"]["ips"]
-    expected_without_offline_device = expected_ips - {REMOVABLE_SIMULATOR_IP}
+def test_delete_already_discovered_removes_offline_device(
+    deployment, discovered_rows, simulator_profile, expected_by_key
+):
+    v2c_configuration = expected_by_key["integration_v2c"]
+    expected_ips = v2c_configuration["ips"]
+    removable_simulator_ip = f'{simulator_profile["prefixes"][0]}.9'
+    expected_without_offline_device = expected_ips - {removable_simulator_ip}
 
     # Do not seed or edit discovery_devices.csv in the test. Changing device
     # availability lets the deployed discovery feature own every CSV write.
-    stop_removable_simulator(deployment)
+    stop_removable_simulator(simulator_profile["namespace"])
     try:
-        rerun_v2c_discovery(deployment)
+        rerun_v2c_discovery(deployment, v2c_configuration["subnet"])
         wait_for_discovery_ips("integration_v2c", expected_without_offline_device)
     finally:
-        start_removable_simulator(deployment)
-        wait_for_v2c_simulator(REMOVABLE_SIMULATOR_IP)
-        rerun_v2c_discovery(deployment)
+        start_removable_simulator(simulator_profile["namespace"])
+        wait_for_v2c_simulator(removable_simulator_ip)
+        rerun_v2c_discovery(deployment, v2c_configuration["subnet"])
         wait_for_discovery_ips("integration_v2c", expected_ips)
 
 
 @pytest.mark.part7
 @pytest.mark.asyncio
-async def test_get_cmd_resolves_base_mib_oids_from_simulator_ips(discovered_rows):
-    del discovered_rows
+async def test_get_cmd_resolves_base_mib_oids_from_simulator_ips(
+    discovered_rows, simulator_profile
+):
     requests = (
         (
-            "10.1.1.1",
+            f'{simulator_profile["prefixes"][0]}.1',
             CommunityData("public", mpModel=1),
             "autodiscovery integration v2c",
         ),
         (
-            "10.2.2.1",
+            f'{simulator_profile["prefixes"][1]}.1',
             UsmUserData(
                 "autodiscovery-sha",
                 authKey="AuthPass1",
@@ -508,7 +488,7 @@ async def test_get_cmd_resolves_base_mib_oids_from_simulator_ips(discovered_rows
             "autodiscovery integration v3 SHA",
         ),
         (
-            "10.2.2.6",
+            f'{simulator_profile["prefixes"][2]}.1',
             UsmUserData(
                 "autodiscovery-md5",
                 authKey="AuthPass2",

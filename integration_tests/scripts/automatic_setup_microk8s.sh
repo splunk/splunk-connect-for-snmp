@@ -38,13 +38,14 @@ dump_microk8s_diagnostics() {
   echo $(green "[INFO] Kubernetes nodes and pods at failure:")
   timeout 20s sudo microk8s kubectl get nodes -o wide || true
   timeout 20s sudo microk8s kubectl get pods -A -o wide || true
-  timeout 20s sudo microk8s kubectl get all -n agent-simulator -o wide || true
+  timeout 20s sudo microk8s kubectl get all \
+    -n microk8s-agent-simulator -o wide || true
   timeout 20s sudo microk8s kubectl get all -n sc4snmp -o wide || true
   echo $(green "[INFO] Recent Kubernetes events:")
   timeout 20s sudo microk8s kubectl get events -A \
     --sort-by=.lastTimestamp || true
   echo $(green "[INFO] Recent simulator and SC4SNMP container logs:")
-  timeout 30s sudo microk8s kubectl logs -n agent-simulator \
+  timeout 30s sudo microk8s kubectl logs -n microk8s-agent-simulator \
     -l sc4snmp.integration.autodiscovery=true \
     --all-containers=true --prefix=true --tail=50 --ignore-errors=true || true
   timeout 30s sudo microk8s kubectl logs -n sc4snmp \

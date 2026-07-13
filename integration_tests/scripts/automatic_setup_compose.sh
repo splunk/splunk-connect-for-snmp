@@ -81,51 +81,6 @@ wait_for_containers_to_be_up() {
   done
 }
 
-connect_discovery_workers_to_simulators() {
-  local container_id
-  local network
-  local attached_ip
-  local attempt
-  local -a discovery_workers=()
-  local -a simulator_networks=(
-    "${AUTODISCOVERY_DOCKER_NETWORK_V1:-sc4snmp-autodiscovery-v1}"
-    "${AUTODISCOVERY_DOCKER_NETWORK_V2:-sc4snmp-autodiscovery-v2}"
-  )
-
-  echo $(green "Connecting worker-discovery to both static simulator ranges")
-  for attempt in {1..60}; do
-    mapfile -t discovery_workers < <(
-      sudo docker ps \
-        --filter label=com.docker.compose.service=worker-discovery \
-        --format '{{.ID}}'
-    )
-    (( ${#discovery_workers[@]} > 0 )) && break
-    echo $(yellow "Waiting for worker-discovery (${attempt}/60)")
-    sleep 1
-  done
-  if (( ${#discovery_workers[@]} == 0 )); then
-    echo $(red "No running worker-discovery container was found") >&2
-    return 1
-  fi
-
-  for container_id in "${discovery_workers[@]}"; do
-    for network in "${simulator_networks[@]}"; do
-      attached_ip="$(sudo docker inspect --format \
-        "{{with index .NetworkSettings.Networks \"${network}\"}}{{.IPAddress}}{{end}}" \
-        "${container_id}")"
-      if [[ -z "${attached_ip}" ]]; then
-        sudo docker network connect "${network}" "${container_id}"
-      fi
-      echo $(green "worker-discovery ${container_id} connected to ${network}")
-    done
-  done
-
-  sudo docker restart sc4snmp-discovery >/dev/null
-  echo $(green "Restarted sc4snmp-discovery after simulator routes were attached")
-}
-
-
-
 sudo apt-get update -y
 sudo apt-get install snmpd -y
 sudo sed -i -E 's/agentaddress[[:space:]]+127.0.0.1,\[::1\]/#agentaddress  127.0.0.1,\[::1\]\nagentaddress udp:1161,udp6:[::1]:1161/g' /etc/snmp/snmpd.conf
@@ -164,7 +119,7 @@ SECRET_FOLDER="sample_v3_values"
 SCHEDULER_CONFIG_FILE="$CONFIG_DIR/scheduler-config.yaml"
 TRAPS_CONFIG_FILE="$CONFIG_DIR/traps-config.yaml"
 INVENTORY_FILE="$CONFIG_DIR/inventory-tests.csv"
-DISCOVERY_CONFIG_FILE="$CONFIG_DIR/discovery-config.yaml"
+DISCOVERY_CONFIG_FILE="$CONFIG_DIR/discovery-config-docker.yaml"
 DISCOVERY_PATH_DIR="$(pwd)/discovery"
 
 SPLUNK_HEC_HOST=$(hostname -I | cut -d " " -f1)
@@ -209,11 +164,10 @@ sudo docker run -d -p 1164:161/udp tandrup/snmpsim
 sudo docker run -d -p 1165:161/udp tandrup/snmpsim
 sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
-"$SCRIPT_DIR/setup_autodiscovery_simulators.sh" docker
+"$SCRIPT_DIR/setup_autodiscovery_simulators.sh" docker || exit 1
 
 echo $(green "Running up Docker Compose environment")
 sudo docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d
-connect_discovery_workers_to_simulators || exit 1
 wait_for_containers_to_be_up
 
 sudo docker ps

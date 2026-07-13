@@ -1,26 +1,23 @@
 # Autodiscovery integration environment
 
-The autodiscovery integration test uses 18 lightweight SNMP agents with three
-SNMP configurations. The first variation has nine v2c agents at
-`10.1.1.1`-`10.1.1.9`. The second IP variation has nine v3 agents at
-`10.2.2.1`-`10.2.2.9`, split between SHA/AES and MD5/AES credentials. This is
-below the 25-simulator limit while covering v2c and two independent v3 engine
-and authentication combinations.
+The autodiscovery integration test uses 27 lightweight SNMP agents with three
+nine-agent configurations: v2c at `10.1.1.1`-`10.1.1.9`, v3 SHA/AES at
+`10.2.2.1`-`10.2.2.9`, and v3 MD5/AES at `10.3.3.1`-`10.3.3.9`.
 
 | Discovery key | Scanned subnet | Actual agent IPs | Port | Agents | SNMP | Authentication | Engine ID |
 | --- | --- | --- | ---: | ---: | --- | --- | --- |
 | `integration_v2c` | `10.1.1.0/24` | `10.1.1.1`-`10.1.1.9` | 161 | 9 | v2c | community `public` | n/a |
-| `integration_v3_sha` | `10.2.2.0/24` | `10.2.2.1`-`10.2.2.5` | 161 | 5 | v3 | SHA/AES | `8000000903000A3900000101` |
-| `integration_v3_md5` | `10.2.2.0/24` | `10.2.2.6`-`10.2.2.9` | 161 | 4 | v3 | MD5/AES | `8000000903000A3900000102` |
+| `integration_v3_sha` | `10.2.2.0/24` | `10.2.2.1`-`10.2.2.9` | 161 | 9 | v3 | SHA/AES | `8000000903000A3900000101` |
+| `integration_v3_md5` | `10.3.3.0/24` | `10.3.3.1`-`10.3.3.9` | 161 | 9 | v3 | MD5/AES | `8000000903000A3900000102` |
 
-The exact agent names are `snmp-agent-v1-001` through
-`snmp-agent-v1-009` and `snmp-agent-v2-001` through
-`snmp-agent-v2-009`. MicroK8s creates them as static-IP Pods in the dedicated
+The exact agent names are `snmp-agent-v1-001` through `snmp-agent-v1-009`,
+`snmp-agent-v2-001` through `snmp-agent-v2-009`, and `snmp-agent-v3-001`
+through `snmp-agent-v3-009`. MicroK8s creates them as static-IP Pods in the dedicated
 `agent-simulator` namespace. The setup verifies every requested IP against the
 Pod's reported `status.podIP` and fails immediately if an address is already in
 use or Calico assigns a different address. Docker creates the same named
-containers on two static bridge networks, and connects every discovery worker
-to both networks.
+containers on three static bridge networks, and connects every discovery
+worker to all three networks.
 
 Each agent loads only 13 base OIDs: the seven SNMPv2-MIB system scalars plus a
 minimal IF-MIB interface. Discovery resolves `SNMPv2-MIB::sysDescr.0` and reads
@@ -39,7 +36,7 @@ Discovery scans the actual simulator IPs directly on UDP port 161. Therefore,
 the IP written by SC4SNMP to `discovery_devices.csv` is the same IP reported by
 the deployed Pod or Docker container. The test reads the live simulator names
 and IPs first, waits for SC4SNMP to create its CSV, and then requires an exact
-18-address equality between the deployment and the CSV for each discovery key.
+27-address match overall as well as an exact match for each discovery key.
 
 Nginx remains installed as a separate reachability check. It exposes three
 localhost UDP health endpoints: port `2161` for v2c, `2162` for v3 SHA/AES, and
