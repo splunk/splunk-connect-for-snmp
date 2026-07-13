@@ -19,6 +19,7 @@ from ipaddress import ip_address
 from typing import Any, Dict, Union
 
 from pysnmp.hlapi.asyncio import (
+    USM_KEY_TYPE_LOCALIZED,
     CommunityData,
     ContextData,
     SnmpEngine,
@@ -185,6 +186,94 @@ def get_auth_v2c(rt: RecordType) -> CommunityData:
 
 def get_auth_v1(rt: RecordType) -> CommunityData:
     return CommunityData(rt.community, mpModel=0)
+
+
+class _ConfiguredSecurityEngineId(str):
+    """
+    Mark a temporary discovery EngineID as explicitly configured.
+
+    get_auth_v3() treats all-digit strings as missing EngineIDs, but a valid
+    hex EngineID can be all digits. Returning False from isdigit() keeps the
+    temporary value on the configured EngineID path.
+    """
+
+    def isdigit(self):
+        return False
+
+
+async def get_discovery_auth(
+    logger, discovery_record: DiscoveryRecord, snmp_engine: SnmpEngine
+) -> Union[UsmUserData, CommunityData]:
+    """
+    Build SNMP authentication data for the engine shared within a discovery task.
+
+    Discovery checks many IPs at the same time with one SnmpEngine. For SNMPv3
+    records without a configured EngineID, the normal auth helper would discover
+    the remote EngineID on that shared engine before the real request. When
+    several requests are running concurrently, that discovery result can come
+    from the wrong target and cause authentication failures.
+
+    This helper keeps the normal auth path for SNMPv1, SNMPv2c, and SNMPv3 when
+    an EngineID is configured. For SNMPv3 without an EngineID, it lets PySNMP
+    discover the target EngineID during the actual request. Localized keys are
+    the exception because they already depend on a specific EngineID, so they use
+    a short-lived probe engine to avoid mixing results from concurrent targets.
+
+    :param logger: Logger used for auth and EngineID discovery messages.
+    :param discovery_record: Discovery record for the target device.
+    :param snmp_engine: Shared SNMP engine used by the discovery task.
+
+    :return: authentication data for the discovery request.
+    """
+    security_engine = discovery_record.security_engine
+    has_configured_engine_id = (
+        isinstance(security_engine, str)
+        and security_engine != ""
+        and not security_engine.isdigit()
+    )
+
+    if discovery_record.version != "3" or has_configured_engine_id:
+        return await get_auth(logger, discovery_record, snmp_engine)
+
+    # No EngineID was configured for this SNMPv3 discovery target. Use the
+    # shared engine's local ID only as a temporary value so get_auth_v3() loads
+    # the secret without running its observer-based remote EngineID probe on the
+    # shared engine.
+    local_security_engine_id = snmp_engine.snmpEngineID.asOctets().hex()
+    auth_record = discovery_record.copy(
+        update={
+            "security_engine": _ConfiguredSecurityEngineId(local_security_engine_id)
+        }
+    )
+    auth_data = await get_auth(logger, auth_record, snmp_engine)
+
+    # Passphrase and master keys can be safely bound to the real remote
+    # EngineID by PySNMP during get_cmd(). Localized keys cannot be localized
+    # again, so they need the target's exact EngineID before the request.
+    key_types = (
+        (auth_data.authentication_key, auth_data.authKeyType),
+        (auth_data.privacy_key, auth_data.privKeyType),
+    )
+    uses_localized_key = any(
+        key is not None and key_type == USM_KEY_TYPE_LOCALIZED
+        for key, key_type in key_types
+    )
+    if uses_localized_key:
+        # Keep the observer used by get_security_engine_id() off the shared
+        # discovery engine so concurrent target probes cannot overlap.
+        probe_engine = SnmpEngine()
+        try:
+            auth_data.securityEngineId = await get_security_engine_id(
+                logger, discovery_record, probe_engine
+            )
+        finally:
+            probe_engine.close_dispatcher()
+    else:
+        # Clear the temporary local ID. None tells PySNMP to discover each
+        # target's authoritative EngineID as part of the actual SNMP request.
+        auth_data.securityEngineId = None
+
+    return auth_data
 
 
 async def get_auth(

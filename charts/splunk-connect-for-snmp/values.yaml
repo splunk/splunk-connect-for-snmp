@@ -734,6 +734,8 @@ commonAnnotations: {}
 discovery:
   # Enables discovering SNMP enabled device and create CSV file.
   enabled: false
+  # Number of subnet IPs checked concurrently inside one discovery task.
+  subnetDiscoveryConcurrency: 10
   # list of kubernetes secrets name that will be used for discovery
   # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/discovery-configuration/#define-usernamesecrets
   usernameSecrets: []

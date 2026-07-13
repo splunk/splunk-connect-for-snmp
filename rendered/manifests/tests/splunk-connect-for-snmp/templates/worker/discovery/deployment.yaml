@@ -118,6 +118,8 @@ spec:
               value: "30"
             - name: MAX_TASKS_PER_CHILD
               value: "0"
+            - name: SUBNET_DISCOVERY_CONCURRENCY
+              value: "10"
             - name: USER
               value: "sc4snmp"
             - name: DISCOVERY_FOLDER_PATH
