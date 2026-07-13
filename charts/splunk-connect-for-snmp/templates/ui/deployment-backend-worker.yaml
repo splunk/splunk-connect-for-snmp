@@ -17,10 +17,16 @@ spec:
       annotations:
         {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 }}
     spec:
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        runAsNonRoot: true
+        fsGroup: 10000
       containers:
       - name: ui-backend-worker
         securityContext:
           allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         image: {{ include "splunk-connect-for-snmp.uiBackImage" . | quote }}
         imagePullPolicy: {{ .Values.UI.backEnd.pullPolicy }}
         command: ["sh","-c","/celery_start.sh"]
@@ -64,6 +70,8 @@ spec:
         volumeMounts:
         - name: backend-configmap
           mountPath: /config
+        - name: tmp
+          mountPath: /tmp
       serviceAccountName: job-robot
       volumes:
         - name: backend-configmap
@@ -72,4 +80,6 @@ spec:
             items:
               - key: job_config
                 path: job_config.yaml
+        - name: tmp
+          emptyDir: {}
 {{- end }}

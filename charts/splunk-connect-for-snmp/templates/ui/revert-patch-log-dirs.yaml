@@ -17,6 +17,7 @@ spec:
       # nosemgrep: splunk.run-as-non-root-unsafe-value
       runAsNonRoot: false
       allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
     command: ['sh', '-c', '
     setfacl --recursive --remove-all {{ include "splunk-connect-for-snmp-ui.hostMountPath" . }};
     ']

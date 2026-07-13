@@ -18,6 +18,7 @@ spec:
       # nosemgrep: splunk.run-as-non-root-unsafe-value
       runAsNonRoot: false
       allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
     command: ['sh', '-c', '
     setfacl --recursive --remove-all /var/values_dir;
     ']
