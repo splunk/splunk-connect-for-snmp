@@ -73,8 +73,8 @@ dump_microk8s_diagnostics() {
   echo $(green "[INFO] MicroK8s status:")
   timeout 20s sudo microk8s status || true
   echo $(green "[INFO] MicroK8s node and namespace resources:")
-  timeout 20s sudo microk8s kubectl get nodes -o wide || true
-  timeout 20s sudo microk8s kubectl get all -n "${SIMULATOR_NAMESPACE}" -o wide || true
+  timeout 20s sudo microk8s kubectl get nodes || true
+  timeout 20s sudo microk8s kubectl get all -n "${SIMULATOR_NAMESPACE}" || true
   echo $(green "[INFO] Recent ${SIMULATOR_NAMESPACE} events:")
   timeout 20s sudo microk8s kubectl get events \
     -n "${SIMULATOR_NAMESPACE}" --sort-by=.lastTimestamp || true
@@ -162,19 +162,6 @@ require_file() {
     echo $(red "Required autodiscovery fixture is missing: $1") >&2
     exit 1
   }
-}
-
-format_ips() {
-  local address
-  local joined=""
-
-  for address in "$@"; do
-    if [[ -n "${joined}" ]]; then
-      joined="${joined}, "
-    fi
-    joined="${joined}${address}"
-  done
-  printf "%s" "${joined}"
 }
 
 agent_name() {
@@ -277,11 +264,11 @@ ensure_calico_pool_for_range() {
   local last_ip="$4"
 
   if calico_pool_contains_range "${first_ip}" "${last_ip}"; then
-    echo $(green "[INFO] ${cidr} is already covered by a Calico IPPool")
+    echo $(green "[INFO] Static range for ${pool_name} is already covered by a Calico IPPool")
     return 0
   fi
 
-  echo $(green "[INFO] Creating Calico IPPool ${pool_name} for ${cidr}")
+  echo $(green "[INFO] Creating Calico IPPool ${pool_name}")
   apply_k8s_manifest "Calico IPPool ${pool_name}" <<YAML
 apiVersion: crd.projectcalico.org/v1
 kind: IPPool
@@ -313,7 +300,7 @@ assert_simulator_ips_available() {
     [[ -n "${used_ip}" && "${used_ip}" != "<none>" ]] || continue
     for requested_ip in "${SIMULATOR_IPS[@]}"; do
       if [[ "${used_ip}" == "${requested_ip}" ]]; then
-        echo $(red "Requested simulator IP ${requested_ip} is already used by Pod ${namespace}/${pod_name}") >&2
+        echo $(red "A requested simulator IP is already used by Pod ${namespace}/${pod_name}") >&2
         return 1
       fi
     done
@@ -324,7 +311,7 @@ assert_simulator_ips_available() {
 deploy_k8s_agent() {
   local variation="$1" name="$2" ip="$3"
 
-  echo $(green "[INFO] Applying static Pod ${SIMULATOR_NAMESPACE}/${name} at ${ip} (${variation})")
+  echo $(green "[INFO] Applying static Pod ${SIMULATOR_NAMESPACE}/${name} (${variation})")
   apply_k8s_manifest "simulator Pod ${SIMULATOR_NAMESPACE}/${name}" <<YAML
 apiVersion: v1
 kind: Pod
@@ -370,7 +357,7 @@ verify_k8s_static_agent() {
   actual_ip="$(kctl get pod "${name}" -n "${SIMULATOR_NAMESPACE}" \
     -o jsonpath='{.status.podIP}')"
   [[ "${actual_ip}" == "${expected_ip}" ]] || {
-    echo $(red "Pod ${name} expected ${expected_ip}, received ${actual_ip}") >&2
+    echo $(red "Pod ${name} did not receive its requested static IP") >&2
     return 1
   }
 }
@@ -431,11 +418,10 @@ start_microk8s_agents() {
     --timeout=300s
   echo $(green "[DONE] All ${AGENT_COUNT} simulator Pods are ready")
 
-  echo $(green "[INFO] Running: microk8s kubectl get pods -n ${SIMULATOR_NAMESPACE} -o wide")
+  echo $(green "[INFO] Running: microk8s kubectl get pods -n ${SIMULATOR_NAMESPACE}")
   kctl get pods \
     -n "${SIMULATOR_NAMESPACE}" \
-    -l sc4snmp.integration.autodiscovery=true \
-    -o wide
+    -l sc4snmp.integration.autodiscovery=true
   for_each_agent verify_k8s_static_agent
   echo $(green "[DONE] Kubernetes reports all ${AGENT_COUNT} requested simulator Pod IPs exactly")
 }
@@ -453,7 +439,7 @@ verify_v2c_agent() {
     fi
     sleep 1
   done
-  echo $(red "Simulator ${address}:161 did not return a v2c response") >&2
+  echo $(red "A v2c simulator did not return an SNMP response") >&2
   return 1
 }
 
@@ -463,6 +449,6 @@ done
 
 CURRENT_STAGE="Reporting autodiscovery simulator readiness"
 echo $(green "[STEP] ${CURRENT_STAGE}")
-echo $(green "[DONE] integration_v2c: 3/3 agents ready -> $(format_ips "${V2C_IPS[@]}")")
-echo $(green "[DONE] integration_v3: 3/3 agents ready -> $(format_ips "${V3_IPS[@]}")")
+echo $(green "[DONE] integration_v2c: 3/3 agents ready")
+echo $(green "[DONE] integration_v3: 3/3 agents ready")
 echo $(green "[DONE] Autodiscovery environment ready: ${AGENT_COUNT}/${AGENT_COUNT} MicroK8s agents available for ${DEPLOYMENT_MODE} SC4SNMP")
