@@ -3,4 +3,4 @@ dependencies:
   repository: https://pysnmp.github.io/mibs/charts/
   version: 1.16.3
 digest: sha256:6131f8cab5d441507ba6661ec38da60a7e3903bdc149fb9bb45c27a4c75863f1
-generated: "2026-07-13T10:47:28.939522182Z"
+generated: "2026-07-13T09:37:33.994039723Z"
