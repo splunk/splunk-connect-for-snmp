@@ -21,6 +21,12 @@ spec:
         app: release-name-mongodb
         mode: standalone
     spec:
+      securityContext:
+        enabled: true
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        supplementalGroups: []
+        sysctls: []
 
       initContainers:
 
@@ -28,6 +34,20 @@ spec:
       - name: mongodb
         image: "mongo:8.3.4"
         imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          enabled: true
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsGroup: 1001
+          runAsNonRoot: true
+          runAsUser: 1001
+          seLinuxOptions: {}
+          seccompProfile:
+            type: RuntimeDefault
 
         ports:
         - containerPort: 27017

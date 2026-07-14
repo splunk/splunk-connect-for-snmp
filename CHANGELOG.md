@@ -6,7 +6,7 @@
 
 ### Fixed
 - Preserve unresolved trap varbind fields during custom translation processing, preventing processing failures and errors.
-
+- Harden the security context for kubernetes templates
 
 ## [1.17.0]
 

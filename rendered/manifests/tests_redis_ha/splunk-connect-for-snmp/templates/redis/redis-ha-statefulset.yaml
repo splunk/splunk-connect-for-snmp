@@ -27,6 +27,7 @@ spec:
     spec:
       securityContext:
         runAsUser: 999
+        runAsNonRoot: true
         fsGroup: 999
       initContainers:
       - name: fix-permissions
@@ -44,9 +45,19 @@ spec:
         - name: redis-data
           mountPath: /data
         securityContext:
+          # nosemgrep: splunk.run-as-non-root
           runAsUser: 0
+          runAsNonRoot: false
+          allowPrivilegeEscalation: false
       containers:
       - name: redis
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
         image: redis:8.8.0
         imagePullPolicy: IfNotPresent
         ports:
@@ -94,6 +105,8 @@ spec:
           mountPath: /data
         - name: redis-config
           mountPath: /etc/redis
+        - name: tmp
+          mountPath: /tmp
         resources:
           {}
         livenessProbe:
@@ -122,6 +135,8 @@ spec:
       - name: redis-config
         configMap:
           name: release-name-redis-config
+      - name: tmp
+        emptyDir: {}
   volumeClaimTemplates:
   - metadata:
       name: redis-data

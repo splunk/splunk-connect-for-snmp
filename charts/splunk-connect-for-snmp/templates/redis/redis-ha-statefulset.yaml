@@ -26,6 +26,7 @@ spec:
       {{- with .Values.redis.podSecurityContext }}
       securityContext:
         runAsUser: {{ .runAsUser }}
+        runAsNonRoot: true
         fsGroup: {{ .fsGroup }}
       {{- end }}
       {{- if .Values.redis.storage.enabled }}
@@ -45,10 +46,20 @@ spec:
         - name: redis-data
           mountPath: /data
         securityContext:
+          # nosemgrep: splunk.run-as-non-root
           runAsUser: 0
+          runAsNonRoot: false
+          allowPrivilegeEscalation: false
       {{- end }}
       containers:
       - name: redis
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
         image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
         imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
         ports:
@@ -108,6 +119,8 @@ spec:
         {{- end }}
         - name: redis-config
           mountPath: /etc/redis
+        - name: tmp
+          mountPath: /tmp
         resources:
           {{- toYaml .Values.redis.resources | nindent 10 }}
         {{- if .Values.redis.livenessProbe.enabled | default true }}
@@ -148,6 +161,8 @@ spec:
       - name: redis-config
         configMap:
           name: {{ .Release.Name }}-redis-config
+      - name: tmp
+        emptyDir: {}
       {{- if not .Values.redis.storage.enabled }}
       - name: redis-data
         emptyDir: {}

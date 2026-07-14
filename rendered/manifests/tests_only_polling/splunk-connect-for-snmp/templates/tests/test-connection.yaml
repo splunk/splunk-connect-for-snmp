@@ -19,6 +19,7 @@ spec:
       command: ['wget']
       args: ['release-name-splunk-connect-for-snmp-trap:162']
       securityContext:
+        allowPrivilegeEscalation: false
         capabilities:
           drop:
           - ALL
