@@ -103,9 +103,6 @@ update_env() {
   set_env_var "$ENV_FILE" "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH" \
     "$(realpath "${INT_TEST_DIR}/configs/discovery-config-docker.yaml")"
   set_env_var "$ENV_FILE" "DISCOVERY_PATH" "${INT_TEST_DIR}/discovery"
-  set_env_var "$ENV_FILE" "SUBNET_DISCOVERY_CONCURRENCY" "15"
-  set_env_var "$ENV_FILE" "UDP_CONNECTION_TIMEOUT" "5"
-  set_env_var "$ENV_FILE" "UDP_CONNECTION_RETRIES" "1"
   set_env_var "$ENV_FILE" "COMPOSE_PROFILES" "discovery"
 
   set_env_var "$ENV_FILE" "IPv6_ENABLED"          "false"

@@ -150,9 +150,6 @@ set_var "TRAPS_CONFIG_FILE_ABSOLUTE_PATH"        "$(realpath "$TRAPS_CONFIG_FILE
 set_var "INVENTORY_FILE_ABSOLUTE_PATH"           "$(realpath "$INVENTORY_FILE")"
 set_var "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH"    "$(realpath "$DISCOVERY_CONFIG_FILE")"
 set_var "DISCOVERY_PATH"                         "$DISCOVERY_PATH_DIR"
-set_var "SUBNET_DISCOVERY_CONCURRENCY"            "15"
-set_var "UDP_CONNECTION_TIMEOUT"                  "5"
-set_var "UDP_CONNECTION_RETRIES"                  "1"
 set_var "COMPOSE_PROFILES"                        "discovery"
 
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" "$INVENTORY_FILE"

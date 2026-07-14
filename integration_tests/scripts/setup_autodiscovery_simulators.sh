@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INT_TEST_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -47,21 +47,20 @@ declare -A VAR_FLAGS=(
 )
 CURRENT_STAGE="initialization"
 
-# Color
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-function red {
+red() {
   printf '%b%s%b\n' "${RED}" "$*" "${NC}"
 }
 
-function green {
+green() {
   printf '%b%s%b\n' "${GREEN}" "$*" "${NC}"
 }
 
-function yellow {
+yellow() {
   printf '%b%s%b\n' "${YELLOW}" "$*" "${NC}"
 }
 
@@ -70,23 +69,23 @@ kctl() {
 }
 
 dump_microk8s_diagnostics() {
-  echo $(green "[INFO] MicroK8s status:")
+  green "[INFO] MicroK8s status:"
   timeout 20s sudo microk8s status || true
-  echo $(green "[INFO] MicroK8s node and namespace resources:")
+  green "[INFO] MicroK8s node and namespace resources:"
   timeout 20s sudo microk8s kubectl get nodes || true
   timeout 20s sudo microk8s kubectl get all -n "${SIMULATOR_NAMESPACE}" || true
-  echo $(green "[INFO] Recent ${SIMULATOR_NAMESPACE} events:")
+  green "[INFO] Recent ${SIMULATOR_NAMESPACE} events:"
   timeout 20s sudo microk8s kubectl get events \
     -n "${SIMULATOR_NAMESPACE}" --sort-by=.lastTimestamp || true
-  echo $(green "[INFO] Recent simulator container logs:")
+  green "[INFO] Recent simulator container logs:"
   timeout 30s sudo microk8s kubectl logs \
     -n "${SIMULATOR_NAMESPACE}" \
     -l sc4snmp.integration.autodiscovery=true \
     --all-containers=true --prefix=true --tail=50 --ignore-errors=true || true
-  echo $(green "[INFO] Kubelite service status:")
+  green "[INFO] Kubelite service status:"
   sudo systemctl status snap.microk8s.daemon-kubelite \
     --no-pager --full || true
-  echo $(green "[INFO] Recent kubelite journal:")
+  green "[INFO] Recent kubelite journal:"
   sudo journalctl -u snap.microk8s.daemon-kubelite \
     --no-pager -n 150 || true
 }
@@ -96,7 +95,7 @@ handle_error() {
   local line_number="$2"
 
   trap - ERR
-  echo $(red "[ERROR] Autodiscovery setup failed in '${CURRENT_STAGE}' at line ${line_number} (exit ${exit_code}).")
+  red "[ERROR] Autodiscovery setup failed in '${CURRENT_STAGE}' at line ${line_number} (exit ${exit_code})."
   dump_microk8s_diagnostics
   exit "${exit_code}"
 }
@@ -115,17 +114,17 @@ wait_for_microk8s_api() {
     if timeout 15s sudo microk8s kubectl get --raw=/readyz >/dev/null 2>&1; then
       consecutive_successes=$((consecutive_successes + 1))
       if (( consecutive_successes >= required_successes )); then
-        echo $(green "[DONE] MicroK8s API remained ready for ${required_successes} consecutive checks")
+        green "[DONE] MicroK8s API remained ready for ${required_successes} consecutive checks"
         return 0
       fi
     else
       consecutive_successes=0
-      echo $(yellow "[INFO] MicroK8s API is not ready (attempt ${attempt}); retrying")
+      yellow "[INFO] MicroK8s API is not ready (attempt ${attempt}); retrying"
     fi
     sleep 3
   done
 
-  echo $(red "[ERROR] MicroK8s API did not become stable within ${timeout_seconds} seconds")
+  red "[ERROR] MicroK8s API did not become stable within ${timeout_seconds} seconds"
   return 1
 }
 
@@ -141,25 +140,25 @@ apply_k8s_manifest() {
         sudo microk8s kubectl apply -f - 2>&1)"; then
       if [[ -n "${output}" ]]; then
         while IFS= read -r output_line; do
-          echo $(green "[INFO] ${output_line}")
+          green "[INFO] ${output_line}"
         done <<< "${output}"
       fi
       return 0
     fi
 
-    echo $(yellow "[INFO] ${description} apply attempt ${attempt}/4 failed: ${output}")
+    yellow "[INFO] ${description} apply attempt ${attempt}/4 failed: ${output}"
     if (( attempt < 4 )); then
       wait_for_microk8s_api 45 2 || true
     fi
   done
 
-  echo $(red "[ERROR] Unable to apply ${description} after four attempts")
+  red "[ERROR] Unable to apply ${description} after four attempts"
   return 1
 }
 
 require_file() {
   [[ -f "$1" ]] || {
-    echo $(red "Required autodiscovery fixture is missing: $1") >&2
+    red "Required autodiscovery fixture is missing: $1" >&2
     exit 1
   }
 }
@@ -177,7 +176,7 @@ for_each_agent() {
   local variation ordinal
 
   for variation in "${VARIATIONS[@]}"; do
-    for ordinal in $(seq 1 "${AGENTS_PER_VARIATION}"); do
+    for ((ordinal = 1; ordinal <= AGENTS_PER_VARIATION; ordinal++)); do
       "${callback}" "${variation}" \
         "$(agent_name "${variation}" "${ordinal}")" \
         "$(agent_ip "${variation}" "${ordinal}")"
@@ -185,24 +184,36 @@ for_each_agent() {
   done
 }
 
-for variation in "${VARIATIONS[@]}"; do
-  require_file "${DATA_ROOT}/${VAR_DATA_DIR[$variation]}/${VAR_DATA_FILE[$variation]}"
-done
+validate_fixtures() {
+  local variation
 
-CURRENT_STAGE="Installing the SNMP test client"
-echo $(green "[STEP] ${CURRENT_STAGE}")
-sudo apt-get update -y -q
-sudo apt-get install -y -q snmp
-echo $(green "[DONE] SNMP test client installed")
+  for variation in "${VARIATIONS[@]}"; do
+    require_file "${DATA_ROOT}/${VAR_DATA_DIR[$variation]}/${VAR_DATA_FILE[$variation]}"
+  done
+}
 
-CURRENT_STAGE="Preparing SC4SNMP discovery output"
-echo $(green "[STEP] ${CURRENT_STAGE}")
-echo $(green "[INFO] Removing stale discovery CSV and lock files")
-sudo rm -f "${DISCOVERY_OUTPUT_DIR}/discovery_devices.csv" \
-  "${DISCOVERY_OUTPUT_DIR}/discovery_devices.lock"
-sudo install -d -o 10001 -g 10001 -m 0755 "${DISCOVERY_OUTPUT_DIR}"
-chmod -R a+rX "${DATA_ROOT}"
-echo $(green "[DONE] Discovery directory ready: ${DISCOVERY_OUTPUT_DIR} (owner 10001:10001, mode 0755)")
+install_snmp_client() {
+  CURRENT_STAGE="Installing the SNMP test client"
+  green "[STEP] ${CURRENT_STAGE}"
+  if command -v snmpget >/dev/null 2>&1; then
+    green "[DONE] SNMP test client is already installed"
+    return
+  fi
+
+  sudo apt-get update -y -q
+  sudo apt-get install -y -q snmp
+  green "[DONE] SNMP test client installed"
+}
+
+prepare_discovery_output() {
+  CURRENT_STAGE="Preparing SC4SNMP discovery output"
+  green "[STEP] ${CURRENT_STAGE}"
+  green "[INFO] Removing stale discovery CSV and lock files"
+  sudo rm -f "${DISCOVERY_OUTPUT_DIR}/discovery_devices.csv" \
+    "${DISCOVERY_OUTPUT_DIR}/discovery_devices.lock"
+  sudo install -d -o 10001 -g 10001 -m 0755 "${DISCOVERY_OUTPUT_DIR}"
+  green "[DONE] Discovery directory ready: ${DISCOVERY_OUTPUT_DIR} (owner 10001:10001, mode 0755)"
+}
 
 create_simulator_configmap() {
   local name="$1"
@@ -222,7 +233,7 @@ ip_to_int() {
   local a b c d
 
   IFS=. read -r a b c d <<< "${ip}"
-  echo $(( (a << 24) + (b << 16) + (c << 8) + d ))
+  printf '%d\n' "$(( (a << 24) + (b << 16) + (c << 8) + d ))"
 }
 
 cidr_contains_ip() {
@@ -264,11 +275,11 @@ ensure_calico_pool_for_range() {
   local last_ip="$4"
 
   if calico_pool_contains_range "${first_ip}" "${last_ip}"; then
-    echo $(green "[INFO] Static range for ${pool_name} is already covered by a Calico IPPool")
+    green "[INFO] Static range for ${pool_name} is already covered by a Calico IPPool"
     return 0
   fi
 
-  echo $(green "[INFO] Creating Calico IPPool ${pool_name}")
+  green "[INFO] Creating Calico IPPool ${pool_name}"
   apply_k8s_manifest "Calico IPPool ${pool_name}" <<YAML
 apiVersion: crd.projectcalico.org/v1
 kind: IPPool
@@ -300,18 +311,18 @@ assert_simulator_ips_available() {
     [[ -n "${used_ip}" && "${used_ip}" != "<none>" ]] || continue
     for requested_ip in "${SIMULATOR_IPS[@]}"; do
       if [[ "${used_ip}" == "${requested_ip}" ]]; then
-        echo $(red "A requested simulator IP is already used by Pod ${namespace}/${pod_name}") >&2
+        red "A requested simulator IP is already used by Pod ${namespace}/${pod_name}" >&2
         return 1
       fi
     done
   done <<< "${pod_inventory}"
-  echo $(green "[DONE] All ${AGENT_COUNT} requested simulator IPs are currently available")
+  green "[DONE] All ${AGENT_COUNT} requested simulator IPs are currently available"
 }
 
 deploy_k8s_agent() {
   local variation="$1" name="$2" ip="$3"
 
-  echo $(green "[INFO] Applying static Pod ${SIMULATOR_NAMESPACE}/${name} (${variation})")
+  green "[INFO] Applying static Pod ${SIMULATOR_NAMESPACE}/${name} (${variation})"
   apply_k8s_manifest "simulator Pod ${SIMULATOR_NAMESPACE}/${name}" <<YAML
 apiVersion: v1
 kind: Pod
@@ -357,7 +368,7 @@ verify_k8s_static_agent() {
   actual_ip="$(kctl get pod "${name}" -n "${SIMULATOR_NAMESPACE}" \
     -o jsonpath='{.status.podIP}')"
   [[ "${actual_ip}" == "${expected_ip}" ]] || {
-    echo $(red "Pod ${name} did not receive its requested static IP") >&2
+    red "Pod ${name} did not receive its requested static IP" >&2
     return 1
   }
 }
@@ -365,90 +376,108 @@ verify_k8s_static_agent() {
 start_microk8s_agents() {
   if ! command -v microk8s >/dev/null 2>&1; then
     CURRENT_STAGE="Installing MicroK8s for autodiscovery simulators"
-    echo $(green "[STEP] ${CURRENT_STAGE}")
+    green "[STEP] ${CURRENT_STAGE}"
     sudo snap install microk8s --classic
-    echo $(green "[DONE] MicroK8s installed for the agent simulator namespace")
+    green "[DONE] MicroK8s installed for the agent simulator namespace"
   fi
 
   CURRENT_STAGE="Starting MicroK8s for autodiscovery simulators"
-  echo $(green "[STEP] ${CURRENT_STAGE}")
+  green "[STEP] ${CURRENT_STAGE}"
   sudo microk8s start
-  echo $(green "[DONE] MicroK8s services started for the agent simulator namespace")
+  green "[DONE] MicroK8s services started for the agent simulator namespace"
 
   CURRENT_STAGE="Waiting for the MicroK8s API"
-  echo $(green "[STEP] ${CURRENT_STAGE}")
+  green "[STEP] ${CURRENT_STAGE}"
   wait_for_microk8s_api 180 5
 
   CURRENT_STAGE="Preparing the MicroK8s simulator namespace"
-  echo $(green "[STEP] ${CURRENT_STAGE}")
+  green "[STEP] ${CURRENT_STAGE}"
   kctl delete namespace "${SIMULATOR_NAMESPACE}" --ignore-not-found=true
   kctl create namespace "${SIMULATOR_NAMESPACE}"
   assert_simulator_ips_available
-  echo $(green "[DONE] Namespace ${SIMULATOR_NAMESPACE} is ready")
+  green "[DONE] Namespace ${SIMULATOR_NAMESPACE} is ready"
 
   CURRENT_STAGE="Preparing static Calico simulator ranges"
-  echo $(green "[STEP] ${CURRENT_STAGE}")
+  green "[STEP] ${CURRENT_STAGE}"
   kctl get crd ippools.crd.projectcalico.org >/dev/null
   ensure_calico_pool_for_range \
     "sc4snmp-${DEPLOYMENT_MODE}-autodiscovery-v1-pool" \
-    "${V1_POOL_CIDR}" "${V1_PREFIX}.1" "${V1_PREFIX}.3"
+    "${V1_POOL_CIDR}" "${V1_PREFIX}.1" "${V1_PREFIX}.${AGENTS_PER_VARIATION}"
   ensure_calico_pool_for_range \
     "sc4snmp-${DEPLOYMENT_MODE}-autodiscovery-v2-pool" \
-    "${V2_POOL_CIDR}" "${V2_PREFIX}.1" "${V2_PREFIX}.3"
-  echo $(green "[DONE] Static simulator ranges are available through Calico")
+    "${V2_POOL_CIDR}" "${V2_PREFIX}.1" "${V2_PREFIX}.${AGENTS_PER_VARIATION}"
+  green "[DONE] Static simulator ranges are available through Calico"
 
   CURRENT_STAGE="Loading compact SNMP simulator data"
-  echo $(green "[STEP] ${CURRENT_STAGE}")
-  echo $(green "[INFO] Creating v2c and v3 SHA/AES ConfigMaps")
+  green "[STEP] ${CURRENT_STAGE}"
+  green "[INFO] Creating v2c and v3 SHA/AES ConfigMaps"
   for variation in "${VARIATIONS[@]}"; do
     create_simulator_configmap "autodiscovery-${variation}-data" \
       "${VAR_DATA_FILE[$variation]}" \
       "${DATA_ROOT}/${VAR_DATA_DIR[$variation]}/${VAR_DATA_FILE[$variation]}"
   done
-  echo $(green "[DONE] Loaded two simulator data ConfigMaps into ${SIMULATOR_NAMESPACE}")
+  green "[DONE] Loaded two simulator data ConfigMaps into ${SIMULATOR_NAMESPACE}"
 
   CURRENT_STAGE="Deploying MicroK8s SNMP simulators"
-  echo $(green "[STEP] ${CURRENT_STAGE}")
-  echo $(green "[INFO] Creating ${AGENT_COUNT} static Pods in ${SIMULATOR_NAMESPACE}")
+  green "[STEP] ${CURRENT_STAGE}"
+  green "[INFO] Creating ${AGENT_COUNT} static Pods in ${SIMULATOR_NAMESPACE}"
   for_each_agent deploy_k8s_agent
 
   kctl wait --for=condition=Ready pod \
     -n "${SIMULATOR_NAMESPACE}" \
     -l sc4snmp.integration.autodiscovery=true \
     --timeout=300s
-  echo $(green "[DONE] All ${AGENT_COUNT} simulator Pods are ready")
+  green "[DONE] All ${AGENT_COUNT} simulator Pods are ready"
 
-  echo $(green "[INFO] Running: microk8s kubectl get pods -n ${SIMULATOR_NAMESPACE}")
+  green "[INFO] Running: microk8s kubectl get pods -n ${SIMULATOR_NAMESPACE}"
   kctl get pods \
     -n "${SIMULATOR_NAMESPACE}" \
     -l sc4snmp.integration.autodiscovery=true
   for_each_agent verify_k8s_static_agent
-  echo $(green "[DONE] Kubernetes reports all ${AGENT_COUNT} requested simulator Pod IPs exactly")
+  green "[DONE] Kubernetes reports all ${AGENT_COUNT} requested simulator Pod IPs exactly"
 }
-
-start_microk8s_agents
 
 verify_v2c_agent() {
   local address="$1"
   local attempt
 
-  for attempt in $(seq 1 20); do
+  for ((attempt = 1; attempt <= 20; attempt++)); do
     if snmpget -v2c -c public -On "${address}:161" \
         1.3.6.1.2.1.1.1.0 >/dev/null 2>&1; then
       return 0
     fi
     sleep 1
   done
-  echo $(red "A v2c simulator did not return an SNMP response") >&2
+  red "A v2c simulator did not return an SNMP response" >&2
   return 1
 }
 
-for address in "${V2C_IPS[@]}"; do
-  verify_v2c_agent "${address}"
-done
+verify_v2c_agents() {
+  local address
 
-CURRENT_STAGE="Reporting autodiscovery simulator readiness"
-echo $(green "[STEP] ${CURRENT_STAGE}")
-echo $(green "[DONE] integration_v2c: 3/3 agents ready")
-echo $(green "[DONE] integration_v3: 3/3 agents ready")
-echo $(green "[DONE] Autodiscovery environment ready: ${AGENT_COUNT}/${AGENT_COUNT} MicroK8s agents available for ${DEPLOYMENT_MODE} SC4SNMP")
+  CURRENT_STAGE="Verifying v2c simulator readiness"
+  green "[STEP] ${CURRENT_STAGE}"
+  for address in "${V2C_IPS[@]}"; do
+    verify_v2c_agent "${address}"
+  done
+  green "[DONE] All v2c simulators respond to SNMP requests"
+}
+
+report_readiness() {
+  CURRENT_STAGE="Reporting autodiscovery simulator readiness"
+  green "[STEP] ${CURRENT_STAGE}"
+  green "[DONE] integration_v2c: ${AGENTS_PER_VARIATION}/${AGENTS_PER_VARIATION} agents ready"
+  green "[DONE] integration_v3: ${AGENTS_PER_VARIATION}/${AGENTS_PER_VARIATION} agents ready"
+  green "[DONE] Autodiscovery environment ready: ${AGENT_COUNT}/${AGENT_COUNT} MicroK8s agents available for ${DEPLOYMENT_MODE} SC4SNMP"
+}
+
+main() {
+  validate_fixtures
+  install_snmp_client
+  prepare_discovery_output
+  start_microk8s_agents
+  verify_v2c_agents
+  report_readiness
+}
+
+main "$@"

@@ -55,6 +55,13 @@ DISCOVERY_VARIATIONS = {
         "group": "autodiscovery-v3-sha",
     },
 }
+AGENTS_PER_VARIATION = 3
+SUBNET_PREFIX_LENGTH = 29
+EXPECTED_DEVICE_COUNT = AGENTS_PER_VARIATION * len(DISCOVERY_VARIATIONS)
+AUTODISCOVERY_PORT = 161
+AUTODISCOVERY_COMPLETION_TIMEOUT = 500
+REMOVABLE_SIMULATOR_NAME = f"snmp-agent-v1-{AGENTS_PER_VARIATION:03d}"
+OFFLINE_NETWORK_POLICY = "autodiscovery-offline-agent"
 
 
 def build_expected_by_key(prefixes):
@@ -65,21 +72,19 @@ def build_expected_by_key(prefixes):
         details = variation.copy()
         agent_prefix = details.pop("agent_prefix")
         expected[discovery_key] = {
-            "ips": {f"{prefix}.{index}" for index in range(1, 4)},
-            "names": {
-                f"snmp-agent-{agent_prefix}-{index:03d}" for index in range(1, 4)
+            "ips": {
+                f"{prefix}.{index}" for index in range(1, AGENTS_PER_VARIATION + 1)
             },
-            "subnet": f"{prefix}.0/29",
+            "names": {
+                f"snmp-agent-{agent_prefix}-{index:03d}"
+                for index in range(1, AGENTS_PER_VARIATION + 1)
+            },
+            "subnet": f"{prefix}.0/{SUBNET_PREFIX_LENGTH}",
             **details,
         }
     return expected
 
 
-EXPECTED_DEVICE_COUNT = 6
-AUTODISCOVERY_PORT = 161
-AUTODISCOVERY_COMPLETION_TIMEOUT = 500
-REMOVABLE_SIMULATOR_NAME = "snmp-agent-v1-003"
-OFFLINE_NETWORK_POLICY = "autodiscovery-offline-agent"
 BASE_OID_SPECS = (
     # Use the same symbolic SNMPv2-MIB lookup as Discovery.check_snmp_device.
     # This makes the integration test fail if the runtime can no longer load
@@ -108,13 +113,12 @@ def simulator_profile(deployment):
         "namespace": os.getenv(
             "AUTODISCOVERY_SIMULATOR_NAMESPACE", profile["namespace"]
         ),
-        "expected_by_key": build_expected_by_key(profile["prefixes"]),
     }
 
 
 @pytest.fixture(scope="module")
 def expected_by_key(simulator_profile):
-    return simulator_profile["expected_by_key"]
+    return build_expected_by_key(simulator_profile["prefixes"])
 
 
 def read_discovery_rows():
@@ -129,9 +133,17 @@ def read_discovery_rows():
         return []
 
 
+def rows_for_key(rows, discovery_key):
+    return [row for row in rows if row.get("key") == discovery_key]
+
+
+def ips_for_key(rows, discovery_key):
+    return {row["ip"] for row in rows_for_key(rows, discovery_key)}
+
+
 def has_complete_matrix(rows, deployed_agents):
     return len(rows) == EXPECTED_DEVICE_COUNT and all(
-        {row["ip"] for row in rows if row.get("key") == discovery_key} == agents["ips"]
+        ips_for_key(rows, discovery_key) == agents["ips"]
         for discovery_key, agents in deployed_agents.items()
     )
 
@@ -170,7 +182,7 @@ def run_checked(command, input_text=None):
 
 @pytest.fixture(scope="module")
 def deployed_agents(simulator_profile, expected_by_key):
-    pod_list = json.loads(
+    pods = json.loads(
         run_checked(
             [
                 "sudo",
@@ -186,15 +198,7 @@ def deployed_agents(simulator_profile, expected_by_key):
                 "json",
             ]
         )
-    )
-    agents = [
-        {
-            "name": item["metadata"]["name"],
-            "ip": item["status"].get("podIP", ""),
-            "variation": item["metadata"]["labels"]["variation"],
-        }
-        for item in pod_list["items"]
-    ]
+    )["items"]
 
     key_by_variation = {
         expected["variation"]: discovery_key
@@ -204,13 +208,14 @@ def deployed_agents(simulator_profile, expected_by_key):
         discovery_key: {"ips": set(), "names": set()}
         for discovery_key in expected_by_key
     }
-    for agent in agents:
-        discovery_key = key_by_variation.get(agent["variation"])
-        assert discovery_key, f"Unexpected simulator variation: {agent}"
-        deployed[discovery_key]["ips"].add(agent["ip"])
-        deployed[discovery_key]["names"].add(agent["name"])
+    for pod in pods:
+        variation = pod["metadata"]["labels"]["variation"]
+        discovery_key = key_by_variation.get(variation)
+        assert discovery_key, f"Unexpected simulator variation: {variation}"
+        deployed[discovery_key]["ips"].add(pod["status"].get("podIP", ""))
+        deployed[discovery_key]["names"].add(pod["metadata"]["name"])
 
-    assert len(agents) == EXPECTED_DEVICE_COUNT
+    assert len(pods) == EXPECTED_DEVICE_COUNT
     for discovery_key, expected in expected_by_key.items():
         assert deployed[discovery_key]["ips"] == expected["ips"]
         assert deployed[discovery_key]["names"] == expected["names"]
@@ -248,7 +253,7 @@ def discovery_worker_exec_prefix(deployment):
             "--",
         ]
 
-    container_name = run_checked(
+    container_names = run_checked(
         [
             "sudo",
             "docker",
@@ -259,8 +264,8 @@ def discovery_worker_exec_prefix(deployment):
             "{{.Names}}",
         ]
     ).splitlines()
-    assert container_name, "No running Docker Compose discovery worker found"
-    return ["sudo", "docker", "exec", container_name[0]]
+    assert container_names, "No running Docker Compose discovery worker found"
+    return ["sudo", "docker", "exec", container_names[0]]
 
 
 def rerun_v2c_discovery(deployment, v2c_subnet):
@@ -285,14 +290,12 @@ record = DiscoveryRecord(
         "group": "autodiscovery-v2c",
     }}],
 )
-result = Discovery().do_work(record)
-print(f"discovered={{len(result)}}")
+Discovery().do_work(record)
 """
-    output = run_checked(
+    run_checked(
         discovery_worker_exec_prefix(deployment)
         + ["/app/.venv/bin/python", "-c", discovery_script]
     )
-    assert "discovered=" in output
 
 
 def wait_for_discovery_ips(
@@ -301,11 +304,7 @@ def wait_for_discovery_ips(
     deadline = time.monotonic() + timeout
     last_ips = set()
     while time.monotonic() < deadline:
-        last_ips = {
-            row["ip"]
-            for row in read_discovery_rows()
-            if row.get("key") == discovery_key
-        }
+        last_ips = ips_for_key(read_discovery_rows(), discovery_key)
         if last_ips == expected_ips:
             return
         time.sleep(1)
@@ -407,18 +406,17 @@ def test_autodiscovery_csv_matches_all_deployed_agents(
     assert len(discovered_rows) == EXPECTED_DEVICE_COUNT
 
     for discovery_key, expected in expected_by_key.items():
-        rows = [row for row in discovered_rows if row["key"] == discovery_key]
-        csv_ips = {row["ip"] for row in rows}
+        rows = rows_for_key(discovered_rows, discovery_key)
+        csv_ips = ips_for_key(discovered_rows, discovery_key)
         assert csv_ips == deployed_agents[discovery_key]["ips"]
         assert csv_ips == expected["ips"]
-        assert deployed_agents[discovery_key]["names"] == expected["names"]
         assert {row["subnet"] for row in rows} == {expected["subnet"]}
 
 
 @pytest.mark.part7
 def test_autodiscovery_records_v2c_and_v3_credentials(discovered_rows, expected_by_key):
     for discovery_key, expected in expected_by_key.items():
-        rows = [row for row in discovered_rows if row["key"] == discovery_key]
+        rows = rows_for_key(discovered_rows, discovery_key)
         assert {row["version"] for row in rows} == {expected["version"]}
         assert {row["community"] for row in rows} == {expected["community"]}
         assert {row["secret"] for row in rows} == {expected["secret"]}
@@ -428,19 +426,20 @@ def test_autodiscovery_records_v2c_and_v3_credentials(discovered_rows, expected_
 @pytest.mark.part7
 def test_autodiscovery_applies_sysdescr_device_rules(discovered_rows, expected_by_key):
     for discovery_key, expected in expected_by_key.items():
-        groups = {
-            row["group"] for row in discovered_rows if row["key"] == discovery_key
-        }
+        groups = {row["group"] for row in rows_for_key(discovered_rows, discovery_key)}
         assert groups == {expected["group"]}
 
 
 @pytest.mark.part7
+@pytest.mark.usefixtures("discovered_rows")
 def test_delete_already_discovered_removes_offline_device(
-    deployment, discovered_rows, simulator_profile, expected_by_key
+    deployment, simulator_profile, expected_by_key
 ):
     v2c_configuration = expected_by_key["integration_v2c"]
     expected_ips = v2c_configuration["ips"]
-    removable_simulator_ip = f'{simulator_profile["prefixes"][0]}.3'
+    removable_simulator_ip = (
+        f'{simulator_profile["prefixes"][0]}.{AGENTS_PER_VARIATION}'
+    )
     expected_without_offline_device = expected_ips - {removable_simulator_ip}
 
     # Do not seed or edit discovery_devices.csv in the test. Changing device
@@ -458,8 +457,9 @@ def test_delete_already_discovered_removes_offline_device(
 
 @pytest.mark.part7
 @pytest.mark.asyncio
+@pytest.mark.usefixtures("discovered_rows")
 async def test_get_cmd_resolves_base_mib_oids_from_simulator_ips(
-    discovered_rows, simulator_profile
+    simulator_profile,
 ):
     requests = (
         (

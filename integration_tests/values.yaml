@@ -43,8 +43,7 @@ worker:
   profilesReloadDelay: 1
   # replicas: Number of replicas for worker container should two or more
   # udpConnectionTimeout: timeout in seconds for SNMP operations
-  udpConnectionTimeout: 5
-  udpConnectionRetries: 1
+  #udpConnectionTimeout: 5
   logLevel: "DEBUG"
 scheduler:
   logLevel: "INFO"
@@ -68,7 +67,6 @@ scheduler:
 #        - ['TCP-MIB']
   groups: |
     {}
-  tasksExpiryTime: 300
 poller:
   enableFullWalk: true
   usernameSecrets:
@@ -85,7 +83,6 @@ sim:
 #  signalfxRealm: us0
 discovery:
   enabled: true
-  subnetDiscoveryConcurrency: 15
   ipv6Enabled: false
   logLevel: "DEBUG"
   discoveryPath: "###DISCOVERY_PATH###"
