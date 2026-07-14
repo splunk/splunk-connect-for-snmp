@@ -81,8 +81,6 @@ wait_for_containers_to_be_up() {
   done
 }
 
-
-
 sudo apt-get update -y
 sudo apt-get install snmpd -y
 sudo sed -i -E 's/agentaddress[[:space:]]+127.0.0.1,\[::1\]/#agentaddress  127.0.0.1,\[::1\]\nagentaddress udp:1161,udp6:[::1]:1161/g' /etc/snmp/snmpd.conf
@@ -121,9 +119,8 @@ SECRET_FOLDER="sample_v3_values"
 SCHEDULER_CONFIG_FILE="$CONFIG_DIR/scheduler-config.yaml"
 TRAPS_CONFIG_FILE="$CONFIG_DIR/traps-config.yaml"
 INVENTORY_FILE="$CONFIG_DIR/inventory-tests.csv"
-DISCOVERY_CONFIG_FILE="$CONFIG_DIR/discovery-config.yaml"
+DISCOVERY_CONFIG_FILE="$CONFIG_DIR/discovery-config-docker.yaml"
 DISCOVERY_PATH_DIR="$(pwd)/discovery"
-mkdir -p "$DISCOVERY_PATH_DIR"
 
 SPLUNK_HEC_HOST=$(hostname -I | cut -d " " -f1)
 SPLUNK_HEC_TOKEN=$(cat hec_token)
@@ -143,6 +140,7 @@ set_var "SPLUNK_HEC_TOKEN"                       "$SPLUNK_HEC_TOKEN"
 set_var "SPLUNK_HEC_INSECURESSL"                 "true"
 set_var "SECRET_FOLDER_PATH"                     "$(realpath "$SECRET_FOLDER")"
 set_var "ENABLE_WORKER_POLLER_SECRETS"           "true"
+set_var "ENABLE_WORKER_DISCOVERY_SECRETS"        "true"
 set_var "ENABLE_TRAPS_SECRETS"                   "true"
 set_var "INCLUDE_UNRESOLVED_TRAP_VARBINDS"       "true"
 set_var "ENABLE_FULL_WALK"                       "true"
@@ -152,6 +150,10 @@ set_var "TRAPS_CONFIG_FILE_ABSOLUTE_PATH"        "$(realpath "$TRAPS_CONFIG_FILE
 set_var "INVENTORY_FILE_ABSOLUTE_PATH"           "$(realpath "$INVENTORY_FILE")"
 set_var "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH"    "$(realpath "$DISCOVERY_CONFIG_FILE")"
 set_var "DISCOVERY_PATH"                         "$DISCOVERY_PATH_DIR"
+set_var "SUBNET_DISCOVERY_CONCURRENCY"            "15"
+set_var "UDP_CONNECTION_TIMEOUT"                  "5"
+set_var "UDP_CONNECTION_RETRIES"                  "1"
+set_var "COMPOSE_PROFILES"                        "discovery"
 
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" "$INVENTORY_FILE"
 echo $(green "Running SNMP simulators in Docker")
@@ -161,6 +163,8 @@ sudo docker run -d -p 1163:161/udp tandrup/snmpsim
 sudo docker run -d -p 1164:161/udp tandrup/snmpsim
 sudo docker run -d -p 1165:161/udp tandrup/snmpsim
 sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
+
+"$SCRIPT_DIR/setup_autodiscovery_simulators.sh" docker || exit 1
 
 echo $(green "Running up Docker Compose environment")
 sudo docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d

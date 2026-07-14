@@ -43,7 +43,8 @@ worker:
   profilesReloadDelay: 1
   # replicas: Number of replicas for worker container should two or more
   # udpConnectionTimeout: timeout in seconds for SNMP operations
-  #udpConnectionTimeout: 5
+  udpConnectionTimeout: 5
+  udpConnectionRetries: 1
   logLevel: "DEBUG"
 scheduler:
   logLevel: "INFO"
@@ -67,6 +68,7 @@ scheduler:
 #        - ['TCP-MIB']
   groups: |
     {}
+  tasksExpiryTime: 300
 poller:
   enableFullWalk: true
   usernameSecrets:
@@ -81,3 +83,35 @@ sim:
   enabled: false
 #  signalfxToken: BCwaJ_Ands4Xh7Nrg
 #  signalfxRealm: us0
+discovery:
+  enabled: true
+  subnetDiscoveryConcurrency: 15
+  ipv6Enabled: false
+  logLevel: "DEBUG"
+  discoveryPath: "###DISCOVERY_PATH###"
+  usernameSecrets:
+    - autodiscovery-v3-sha-aes
+  autodiscovery:
+    integration_v2c:
+      frequency: 21600
+      delete_already_discovered: true
+      network_address: 10.1.1.0/29
+      version: "2c"
+      community: public
+      port: 161
+      device_rules:
+        - name: integration-v2c-agents
+          patterns: "*autodiscovery integration v2c*"
+          group: autodiscovery-v2c
+    integration_v3:
+      frequency: 21600
+      delete_already_discovered: true
+      network_address: 10.2.2.0/29
+      version: "3"
+      secret: autodiscovery-v3-sha-aes
+      security_engine: "8000000903000A3900000101"
+      port: 161
+      device_rules:
+        - name: integration-v3-sha-agents
+          patterns: "*autodiscovery integration v3 SHA*"
+          group: autodiscovery-v3-sha

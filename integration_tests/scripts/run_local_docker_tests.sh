@@ -52,6 +52,7 @@ validate_paths() {
     "${INT_TEST_DIR}/configs/scheduler-config.yaml" \
     "${INT_TEST_DIR}/configs/traps-config.yaml" \
     "${INT_TEST_DIR}/configs/inventory-tests.csv" \
+    "${INT_TEST_DIR}/configs/discovery-config-docker.yaml" \
     "$ENV_FILE" \
     "${DOCKER_COMPOSE_LOCAL}/Corefile" \
     "$COMPOSE_FILE"; do
@@ -84,6 +85,7 @@ update_env() {
   set_env_var "$ENV_FILE" "SECRET_FOLDER_PATH"            "$(realpath "$SECRET_FOLDER")"
   set_env_var "$ENV_FILE" "ENABLE_TRAPS_SECRETS"          "true"
   set_env_var "$ENV_FILE" "ENABLE_WORKER_POLLER_SECRETS"  "true"
+  set_env_var "$ENV_FILE" "ENABLE_WORKER_DISCOVERY_SECRETS" "true"
   set_env_var "$ENV_FILE" "INCLUDE_UNRESOLVED_TRAP_VARBINDS" "true"
 
   set_env_var "$ENV_FILE" "COREFILE_ABS_PATH" \
@@ -97,6 +99,14 @@ update_env() {
 
   set_env_var "$ENV_FILE" "INVENTORY_FILE_ABSOLUTE_PATH" \
     "$(realpath "${INT_TEST_DIR}/configs/inventory-tests.csv")"
+
+  set_env_var "$ENV_FILE" "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH" \
+    "$(realpath "${INT_TEST_DIR}/configs/discovery-config-docker.yaml")"
+  set_env_var "$ENV_FILE" "DISCOVERY_PATH" "${INT_TEST_DIR}/discovery"
+  set_env_var "$ENV_FILE" "SUBNET_DISCOVERY_CONCURRENCY" "15"
+  set_env_var "$ENV_FILE" "UDP_CONNECTION_TIMEOUT" "5"
+  set_env_var "$ENV_FILE" "UDP_CONNECTION_RETRIES" "1"
+  set_env_var "$ENV_FILE" "COMPOSE_PROFILES" "discovery"
 
   set_env_var "$ENV_FILE" "IPv6_ENABLED"          "false"
   set_env_var "$ENV_FILE" "COREDNS_ADDRESS_IPv6"  ""
@@ -247,6 +257,7 @@ main() {
 
   update_env "$token"
   start_snmp
+  "${SCRIPT_DIR}/setup_autodiscovery_simulators.sh" docker
   start_compose
   ensure_python
   deploy_poetry

@@ -3,7 +3,7 @@ autodiscovery:
   integration_v2c:
     frequency: 21600
     delete_already_discovered: true
-    network_address: 10.1.1.0/29
+    network_address: 10.4.4.0/29
     version: "2c"
     community: public
     port: 161
@@ -14,7 +14,7 @@ autodiscovery:
   integration_v3:
     frequency: 21600
     delete_already_discovered: true
-    network_address: 10.2.2.0/29
+    network_address: 10.5.5.0/29
     version: "3"
     secret: autodiscovery-v3-sha-aes
     security_engine: "8000000903000A3900000101"
