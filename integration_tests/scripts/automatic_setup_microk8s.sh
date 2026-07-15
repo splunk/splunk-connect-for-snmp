@@ -6,9 +6,6 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
-CURRENT_STAGE="initialization"
-
-
 # ===== PATHS =====
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INT_TEST_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -68,7 +65,7 @@ handle_setup_error() {
   local line_number="$2"
 
   trap - ERR
-  echo $(red "[ERROR] MicroK8s integration setup failed in '${CURRENT_STAGE}' at line ${line_number} (exit ${exit_code}).")
+  red "[ERROR] MicroK8s integration setup failed at line ${line_number} (exit ${exit_code})."
   dump_microk8s_diagnostics
   exit "${exit_code}"
 }
@@ -160,8 +157,7 @@ sudo systemctl restart snmpd
 echo "Show working directory:"
 pwd
 
-CURRENT_STAGE="Building the SC4SNMP Docker image"
-echo $(green "[STEP] ${CURRENT_STAGE}")
+green "[STEP] Building the SC4SNMP Docker image"
 
 sudo docker build -t snmp-local .
 
@@ -171,8 +167,7 @@ echo $(green "[DONE] Built and imported snmp-local into MicroK8s")
 mkdir -p "$PWD/splunk-data"
 
 sudo docker pull splunk/splunk:latest
-CURRENT_STAGE="Starting Splunk in Docker"
-echo $(green "[STEP] ${CURRENT_STAGE}")
+green "[STEP] Starting Splunk in Docker"
 sudo docker run -d -p 8000:8000 -p 8088:8088 -p 8089:8089 -e SPLUNK_GENERAL_TERMS=--accept-sgt-current-at-splunk-com  -e SPLUNK_START_ARGS='--accept-license' -e SPLUNK_PASSWORD='changeme2' -v "$PWD/splunk-data:/opt/splunk/var" splunk/splunk:latest
 
 wait_for_splunk
@@ -200,8 +195,7 @@ sudo docker run -d -p 1164:161/udp tandrup/snmpsim
 sudo docker run -d -p 1165:161/udp tandrup/snmpsim
 sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
-CURRENT_STAGE="Enabling required MicroK8s add-ons"
-echo $(green "[STEP] ${CURRENT_STAGE}")
+green "[STEP] Enabling required MicroK8s add-ons"
 sudo microk8s enable helm3
 sudo microk8s enable hostpath-storage
 sudo microk8s enable dns
@@ -214,8 +208,7 @@ printf '%s/32\n' "$(hostname -I | cut -d " " -f1)" | \
 sudo microk8s status --wait-ready
 echo $(green "[DONE] MicroK8s add-ons are enabled")
 
-CURRENT_STAGE="Waiting for a stable MicroK8s API"
-echo $(green "[STEP] ${CURRENT_STAGE}")
+green "[STEP] Waiting for a stable MicroK8s API"
 if ! wait_for_microk8s_api 90; then
   echo $(green "[INFO] MicroK8s did not stabilize after add-on installation; restarting it once")
   sudo snap restart microk8s
@@ -225,8 +218,7 @@ fi
 echo $(green "[DONE] MicroK8s API passed five consecutive readiness checks")
 
 if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
-  CURRENT_STAGE="Running setup_autodiscovery_simulators.sh with the MicroK8s backend"
-  echo $(green "[STEP] ${CURRENT_STAGE}")
+  green "[STEP] Running setup_autodiscovery_simulators.sh with the MicroK8s backend"
   if "$SCRIPT_DIR/setup_autodiscovery_simulators.sh" microk8s; then
     echo $(green "[DONE] setup_autodiscovery_simulators.sh completed successfully")
   else
@@ -253,8 +245,7 @@ cd "$CHART_DIR"
 sudo microk8s helm3 dep update
 cd "$INT_TEST_DIR"
 
-CURRENT_STAGE="Installing SC4SNMP on Kubernetes"
-echo $(green "[STEP] ${CURRENT_STAGE}")
+green "[STEP] Installing SC4SNMP on Kubernetes"
 
 sudo microk8s kubectl create namespace sc4snmp --dry-run=client -o yaml | sudo microk8s kubectl apply -f -
 sudo microk8s kubectl create -n sc4snmp secret generic sv3poller --dry-run=client -o yaml --from-literal=userName=r-wuser --from-literal=authKey=admin1234 --from-literal=privKey=admin1234 --from-literal=authProtocol=SHA --from-literal=privProtocol=AES --from-literal=securityEngineId=8000000903000A397056B8AC | sudo microk8s kubectl apply -f -

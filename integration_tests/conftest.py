@@ -66,62 +66,63 @@ def dump_all_docker_logs(tail_lines: int = 60):
     logger.info("=" * 60)
 
 
-def dump_kubernetes_logs():
+def dump_kubernetes_logs(namespaces=("sc4snmp",)):
     logger.info("=" * 60)
     logger.info("KUBERNETES POD LOGS (Last 50 lines)")
     logger.info("=" * 60)
 
     try:
-        result = subprocess.run(
-            [
-                "sudo",
-                "microk8s",
-                "kubectl",
-                "get",
-                "pods",
-                "-n",
-                "sc4snmp",
-                "-o",
-                "name",
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+        for namespace in namespaces:
+            result = subprocess.run(
+                [
+                    "sudo",
+                    "microk8s",
+                    "kubectl",
+                    "get",
+                    "pods",
+                    "-n",
+                    namespace,
+                    "-o",
+                    "name",
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
 
-        if result.returncode != 0:
-            logger.error("Could not get pods: %s", result.stderr)
-            return
+            if result.returncode != 0:
+                logger.error("Could not get pods from %s: %s", namespace, result.stderr)
+                continue
 
-        pod_names = result.stdout.strip().split("\n")
+            pod_names = result.stdout.strip().split("\n")
 
-        for pod_name in pod_names:
-            if pod_name:
-                pod_name = pod_name.replace("pod/", "")
-                logger.info("-" * 60)
-                logger.info("Pod: %s", pod_name)
-                logger.info("-" * 60)
+            for pod_name in pod_names:
+                if pod_name:
+                    pod_name = pod_name.replace("pod/", "")
+                    logger.info("-" * 60)
+                    logger.info("Pod: %s/%s", namespace, pod_name)
+                    logger.info("-" * 60)
 
-                logs = subprocess.run(
-                    [
-                        "sudo",
-                        "microk8s",
-                        "kubectl",
-                        "logs",
-                        "--tail=50",
-                        pod_name,
-                        "-n",
-                        "sc4snmp",
-                    ],
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
+                    logs = subprocess.run(
+                        [
+                            "sudo",
+                            "microk8s",
+                            "kubectl",
+                            "logs",
+                            "--tail=50",
+                            pod_name,
+                            "-n",
+                            namespace,
+                        ],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
 
-                if logs.stdout:
-                    logger.info("\n%s", logs.stdout)
-                else:
-                    logger.info("No logs for pod %s", pod_name)
+                    if logs.stdout:
+                        logger.info("\n%s", logs.stdout)
+                    else:
+                        logger.info("No logs for pod %s/%s", namespace, pod_name)
 
     except Exception as e:
         logger.exception("Error getting K8s logs: %s", e)
@@ -212,10 +213,16 @@ def pytest_runtest_makereport(item, call):
         try:
             deployment = item.config.getoption("sc4snmp_deployment")
 
+            is_autodiscovery_test = item.get_closest_marker("part7") is not None
             if str(deployment) == "microk8s":
-                dump_kubernetes_logs()
+                namespaces = ["sc4snmp"]
+                if is_autodiscovery_test:
+                    namespaces.append("microk8s-agent-simulator")
+                dump_kubernetes_logs(namespaces)
             else:
                 dump_all_docker_logs()
+                if is_autodiscovery_test:
+                    dump_kubernetes_logs(("docker-agent-simulator",))
 
         except Exception as e:
             logger.exception("Could not determine deployment: %s", e)

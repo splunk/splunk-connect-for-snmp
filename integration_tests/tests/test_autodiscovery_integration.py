@@ -30,11 +30,17 @@ DISCOVERY_CSV = DISCOVERY_OUTPUT_DIR / "discovery_devices.csv"
 SIMULATOR_PROFILES = {
     "microk8s": {
         "namespace": "microk8s-agent-simulator",
-        "prefixes": ("10.1.1", "10.2.2"),
+        "prefixes": {
+            "integration_v2c": "10.1.1",
+            "integration_v3": "10.2.2",
+        },
     },
     "docker-compose": {
         "namespace": "docker-agent-simulator",
-        "prefixes": ("10.4.4", "10.5.5"),
+        "prefixes": {
+            "integration_v2c": "10.4.4",
+            "integration_v3": "10.5.5",
+        },
     },
 }
 DISCOVERY_VARIATIONS = {
@@ -59,16 +65,21 @@ AGENTS_PER_VARIATION = 3
 SUBNET_PREFIX_LENGTH = 29
 EXPECTED_DEVICE_COUNT = AGENTS_PER_VARIATION * len(DISCOVERY_VARIATIONS)
 AUTODISCOVERY_PORT = 161
-AUTODISCOVERY_COMPLETION_TIMEOUT = 500
+AUTODISCOVERY_COMPLETION_TIMEOUT = int(
+    os.getenv("AUTODISCOVERY_COMPLETION_TIMEOUT", "500")
+)
+COMMAND_TIMEOUT = int(os.getenv("AUTODISCOVERY_COMMAND_TIMEOUT", "120"))
 REMOVABLE_SIMULATOR_NAME = f"snmp-agent-v1-{AGENTS_PER_VARIATION:03d}"
 OFFLINE_NETWORK_POLICY = "autodiscovery-offline-agent"
 
 
 def build_expected_by_key(prefixes):
+    assert (
+        prefixes.keys() == DISCOVERY_VARIATIONS.keys()
+    ), "Simulator prefix keys must exactly match discovery variation keys"
     expected = {}
-    for prefix, (discovery_key, variation) in zip(
-        prefixes, DISCOVERY_VARIATIONS.items()
-    ):
+    for discovery_key, variation in DISCOVERY_VARIATIONS.items():
+        prefix = prefixes[discovery_key]
         details = variation.copy()
         agent_prefix = details.pop("agent_prefix")
         expected[discovery_key] = {
@@ -117,12 +128,10 @@ def expected_by_key(simulator_profile):
 
 
 def read_discovery_rows():
-    if not DISCOVERY_CSV.is_file():
-        return []
     try:
         with DISCOVERY_CSV.open(newline="", encoding="utf-8") as csv_file:
             return list(csv.DictReader(csv_file))
-    except (OSError, csv.Error):
+    except (FileNotFoundError, csv.Error):
         # The worker rewrites the file under its own lock. A host-side read can
         # briefly overlap that replacement, so retry until the module timeout.
         return []
@@ -160,14 +169,21 @@ def discovered_rows(deployed_agents):
     )
 
 
-def run_checked(command, input_text=None):
-    result = subprocess.run(
-        command,
-        input=input_text,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+def run_checked(command, input_text=None, timeout=COMMAND_TIMEOUT):
+    try:
+        result = subprocess.run(
+            command,
+            input=input_text,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired as error:
+        pytest.fail(
+            f"Command timed out after {timeout} seconds: {' '.join(command)}\n"
+            f"stdout: {error.stdout or ''}\nstderr: {error.stderr or ''}"
+        )
     assert result.returncode == 0, (
         f"Command failed: {' '.join(command)}\n"
         f"stdout: {result.stdout}\nstderr: {result.stderr}"
@@ -289,47 +305,28 @@ Discovery().do_work(record)
 """
     run_checked(
         discovery_worker_exec_prefix(deployment)
-        + ["/app/.venv/bin/python", "-c", discovery_script]
+        + ["/app/.venv/bin/python", "-c", discovery_script],
     )
 
 
-def wait_for_discovery_ips(
-    discovery_key, expected_ips, timeout=AUTODISCOVERY_COMPLETION_TIMEOUT
+def rerun_v2c_discovery_until_ips(
+    deployment,
+    v2c_subnet,
+    expected_ips,
+    timeout=AUTODISCOVERY_COMPLETION_TIMEOUT,
 ):
     deadline = time.monotonic() + timeout
     last_ips = set()
     while time.monotonic() < deadline:
-        last_ips = ips_for_key(read_discovery_rows(), discovery_key)
+        rerun_v2c_discovery(deployment, v2c_subnet)
+        last_ips = ips_for_key(read_discovery_rows(), "integration_v2c")
         if last_ips == expected_ips:
             return
         time.sleep(1)
     pytest.fail(
-        f"Discovery key {discovery_key} did not reach expected IPs "
-        f"{expected_ips}; last IPs={last_ips}"
+        f"Discovery key integration_v2c did not reach expected IPs "
+        f"{expected_ips} after repeated discovery runs; last IPs={last_ips}"
     )
-
-
-def wait_for_v2c_simulator(address, timeout=30):
-    deadline = time.monotonic() + timeout
-    while time.monotonic() < deadline:
-        result = subprocess.run(
-            [
-                "snmpget",
-                "-v2c",
-                "-c",
-                "public",
-                "-On",
-                f"{address}:{AUTODISCOVERY_PORT}",
-                "1.3.6.1.2.1.1.1.0",
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if result.returncode == 0:
-            return
-        time.sleep(1)
-    pytest.fail(f"Simulator {address}:{AUTODISCOVERY_PORT} did not become ready")
 
 
 def stop_removable_simulator(simulator_profile):
@@ -357,7 +354,6 @@ def stop_removable_simulator(simulator_profile):
         ],
         input_text=json.dumps(network_policy),
     )
-    time.sleep(2)
 
 
 def start_removable_simulator(simulator_profile):
@@ -374,7 +370,6 @@ def start_removable_simulator(simulator_profile):
             "--ignore-not-found=true",
         ]
     )
-    time.sleep(2)
 
 
 async def fetch_base_oids(address, auth_data):
@@ -432,22 +427,24 @@ def test_delete_already_discovered_removes_offline_device(
 ):
     v2c_configuration = expected_by_key["integration_v2c"]
     expected_ips = v2c_configuration["ips"]
-    removable_simulator_ip = (
-        f'{simulator_profile["prefixes"][0]}.{AGENTS_PER_VARIATION}'
-    )
+    v2c_prefix = simulator_profile["prefixes"]["integration_v2c"]
+    removable_simulator_ip = f"{v2c_prefix}.{AGENTS_PER_VARIATION}"
     expected_without_offline_device = expected_ips - {removable_simulator_ip}
 
     # Do not seed or edit discovery_devices.csv in the test. Changing device
     # availability lets the deployed discovery feature own every CSV write.
     stop_removable_simulator(simulator_profile)
     try:
-        rerun_v2c_discovery(deployment, v2c_configuration["subnet"])
-        wait_for_discovery_ips("integration_v2c", expected_without_offline_device)
+        rerun_v2c_discovery_until_ips(
+            deployment,
+            v2c_configuration["subnet"],
+            expected_without_offline_device,
+        )
     finally:
         start_removable_simulator(simulator_profile)
-        wait_for_v2c_simulator(removable_simulator_ip)
-        rerun_v2c_discovery(deployment, v2c_configuration["subnet"])
-        wait_for_discovery_ips("integration_v2c", expected_ips)
+        rerun_v2c_discovery_until_ips(
+            deployment, v2c_configuration["subnet"], expected_ips
+        )
 
 
 @pytest.mark.part7
@@ -458,12 +455,12 @@ async def test_get_cmd_resolves_base_mib_oids_from_simulator_ips(
 ):
     requests = (
         (
-            f'{simulator_profile["prefixes"][0]}.1',
+            f'{simulator_profile["prefixes"]["integration_v2c"]}.1',
             CommunityData("public", mpModel=1),
             "autodiscovery integration v2c",
         ),
         (
-            f'{simulator_profile["prefixes"][1]}.1',
+            f'{simulator_profile["prefixes"]["integration_v3"]}.1',
             UsmUserData(
                 "autodiscovery-sha",
                 authKey="AuthPass1",

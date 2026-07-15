@@ -45,8 +45,6 @@ declare -A VAR_FLAGS=(
   [v2c]="--v2c-arch --data-dir=/usr/local/snmpsim/data"
   [v3]="--v3-only --v3-engine-id=${V3_SHA_ENGINE} --v3-context-engine-id=${V3_SHA_ENGINE} --v3-user=${V3_SHA_USER} --v3-auth-key=${V3_SHA_AUTH_KEY} --v3-auth-proto=SHA --v3-priv-key=${V3_SHA_PRIV_KEY} --v3-priv-proto=AES --data-dir=/usr/local/snmpsim/data"
 )
-CURRENT_STAGE="initialization"
-
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
@@ -95,7 +93,7 @@ handle_error() {
   local line_number="$2"
 
   trap - ERR
-  red "[ERROR] Autodiscovery setup failed in '${CURRENT_STAGE}' at line ${line_number} (exit ${exit_code})."
+  red "[ERROR] Autodiscovery setup failed at line ${line_number} (exit ${exit_code})."
   dump_microk8s_diagnostics
   exit "${exit_code}"
 }
@@ -193,8 +191,7 @@ validate_fixtures() {
 }
 
 install_snmp_client() {
-  CURRENT_STAGE="Installing the SNMP test client"
-  green "[STEP] ${CURRENT_STAGE}"
+  green "[STEP] Installing the SNMP test client"
   if command -v snmpget >/dev/null 2>&1; then
     green "[DONE] SNMP test client is already installed"
     return
@@ -206,8 +203,7 @@ install_snmp_client() {
 }
 
 prepare_discovery_output() {
-  CURRENT_STAGE="Preparing SC4SNMP discovery output"
-  green "[STEP] ${CURRENT_STAGE}"
+  green "[STEP] Preparing SC4SNMP discovery output"
   green "[INFO] Removing stale discovery CSV and lock files"
   sudo rm -f "${DISCOVERY_OUTPUT_DIR}/discovery_devices.csv" \
     "${DISCOVERY_OUTPUT_DIR}/discovery_devices.lock"
@@ -375,30 +371,25 @@ verify_k8s_static_agent() {
 
 start_microk8s_agents() {
   if ! command -v microk8s >/dev/null 2>&1; then
-    CURRENT_STAGE="Installing MicroK8s for autodiscovery simulators"
-    green "[STEP] ${CURRENT_STAGE}"
+    green "[STEP] Installing MicroK8s for autodiscovery simulators"
     sudo snap install microk8s --classic
     green "[DONE] MicroK8s installed for the agent simulator namespace"
   fi
 
-  CURRENT_STAGE="Starting MicroK8s for autodiscovery simulators"
-  green "[STEP] ${CURRENT_STAGE}"
+  green "[STEP] Starting MicroK8s for autodiscovery simulators"
   sudo microk8s start
   green "[DONE] MicroK8s services started for the agent simulator namespace"
 
-  CURRENT_STAGE="Waiting for the MicroK8s API"
-  green "[STEP] ${CURRENT_STAGE}"
+  green "[STEP] Waiting for the MicroK8s API"
   wait_for_microk8s_api 180 5
 
-  CURRENT_STAGE="Preparing the MicroK8s simulator namespace"
-  green "[STEP] ${CURRENT_STAGE}"
+  green "[STEP] Preparing the MicroK8s simulator namespace"
   kctl delete namespace "${SIMULATOR_NAMESPACE}" --ignore-not-found=true
   kctl create namespace "${SIMULATOR_NAMESPACE}"
   assert_simulator_ips_available
   green "[DONE] Namespace ${SIMULATOR_NAMESPACE} is ready"
 
-  CURRENT_STAGE="Preparing static Calico simulator ranges"
-  green "[STEP] ${CURRENT_STAGE}"
+  green "[STEP] Preparing static Calico simulator ranges"
   kctl get crd ippools.crd.projectcalico.org >/dev/null
   ensure_calico_pool_for_range \
     "sc4snmp-${DEPLOYMENT_MODE}-autodiscovery-v1-pool" \
@@ -408,8 +399,7 @@ start_microk8s_agents() {
     "${V2_POOL_CIDR}" "${V2_PREFIX}.1" "${V2_PREFIX}.${AGENTS_PER_VARIATION}"
   green "[DONE] Static simulator ranges are available through Calico"
 
-  CURRENT_STAGE="Loading compact SNMP simulator data"
-  green "[STEP] ${CURRENT_STAGE}"
+  green "[STEP] Loading compact SNMP simulator data"
   green "[INFO] Creating v2c and v3 SHA/AES ConfigMaps"
   for variation in "${VARIATIONS[@]}"; do
     create_simulator_configmap "autodiscovery-${variation}-data" \
@@ -418,8 +408,7 @@ start_microk8s_agents() {
   done
   green "[DONE] Loaded two simulator data ConfigMaps into ${SIMULATOR_NAMESPACE}"
 
-  CURRENT_STAGE="Deploying MicroK8s SNMP simulators"
-  green "[STEP] ${CURRENT_STAGE}"
+  green "[STEP] Deploying MicroK8s SNMP simulators"
   green "[INFO] Creating ${AGENT_COUNT} static Pods in ${SIMULATOR_NAMESPACE}"
   for_each_agent deploy_k8s_agent
 
@@ -455,8 +444,7 @@ verify_v2c_agent() {
 verify_v2c_agents() {
   local address
 
-  CURRENT_STAGE="Verifying v2c simulator readiness"
-  green "[STEP] ${CURRENT_STAGE}"
+  green "[STEP] Verifying v2c simulator readiness"
   for address in "${V2C_IPS[@]}"; do
     verify_v2c_agent "${address}"
   done
@@ -464,8 +452,7 @@ verify_v2c_agents() {
 }
 
 report_readiness() {
-  CURRENT_STAGE="Reporting autodiscovery simulator readiness"
-  green "[STEP] ${CURRENT_STAGE}"
+  green "[STEP] Reporting autodiscovery simulator readiness"
   green "[DONE] integration_v2c: ${AGENTS_PER_VARIATION}/${AGENTS_PER_VARIATION} agents ready"
   green "[DONE] integration_v3: ${AGENTS_PER_VARIATION}/${AGENTS_PER_VARIATION} agents ready"
   green "[DONE] Autodiscovery environment ready: ${AGENT_COUNT}/${AGENT_COUNT} MicroK8s agents available for ${DEPLOYMENT_MODE} SC4SNMP"
