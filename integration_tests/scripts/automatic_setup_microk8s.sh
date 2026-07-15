@@ -14,6 +14,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INT_TEST_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 REPO_ROOT="$(cd "${INT_TEST_DIR}/.." && pwd)"
 CHART_DIR="${REPO_ROOT}/charts/splunk-connect-for-snmp"
+AUTODISCOVERY_ENABLED="${AUTODISCOVERY_ENABLED:-true}"
+if [[ "$AUTODISCOVERY_ENABLED" != "true" && "$AUTODISCOVERY_ENABLED" != "false" ]]; then
+  echo "AUTODISCOVERY_ENABLED must be 'true' or 'false'" >&2
+  exit 2
+fi
 
 echo "SCRIPT_DIR: $SCRIPT_DIR"
 echo "INT_TEST_DIR: $INT_TEST_DIR"
@@ -219,24 +224,28 @@ if ! wait_for_microk8s_api 90; then
 fi
 echo $(green "[DONE] MicroK8s API passed five consecutive readiness checks")
 
-CURRENT_STAGE="Running setup_autodiscovery_simulators.sh with the MicroK8s backend"
-echo $(green "[STEP] ${CURRENT_STAGE}")
-if "$SCRIPT_DIR/setup_autodiscovery_simulators.sh" microk8s; then
-  echo $(green "[DONE] setup_autodiscovery_simulators.sh completed successfully")
-else
-  simulator_setup_exit=$?
-  if timeout 15s sudo microk8s kubectl get --raw=/readyz >/dev/null 2>&1; then
-    echo $(red "Autodiscovery simulator setup failed while the MicroK8s API remained healthy")
-    exit "${simulator_setup_exit}"
-  fi
+if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
+  CURRENT_STAGE="Running setup_autodiscovery_simulators.sh with the MicroK8s backend"
+  echo $(green "[STEP] ${CURRENT_STAGE}")
+  if "$SCRIPT_DIR/setup_autodiscovery_simulators.sh" microk8s; then
+    echo $(green "[DONE] setup_autodiscovery_simulators.sh completed successfully")
+  else
+    simulator_setup_exit=$?
+    if timeout 15s sudo microk8s kubectl get --raw=/readyz >/dev/null 2>&1; then
+      echo $(red "Autodiscovery simulator setup failed while the MicroK8s API remained healthy")
+      exit "${simulator_setup_exit}"
+    fi
 
-  echo $(green "[INFO] The MicroK8s API stopped during simulator deployment; restarting it once")
-  sudo snap restart microk8s
-  sudo microk8s status --wait-ready
-  wait_for_microk8s_api 180
-  echo $(green "[INFO] Running setup_autodiscovery_simulators.sh again after MicroK8s recovery")
-  "$SCRIPT_DIR/setup_autodiscovery_simulators.sh" microk8s
-  echo $(green "[DONE] setup_autodiscovery_simulators.sh completed after MicroK8s recovery")
+    echo $(green "[INFO] The MicroK8s API stopped during simulator deployment; restarting it once")
+    sudo snap restart microk8s
+    sudo microk8s status --wait-ready
+    wait_for_microk8s_api 180
+    echo $(green "[INFO] Running setup_autodiscovery_simulators.sh again after MicroK8s recovery")
+    "$SCRIPT_DIR/setup_autodiscovery_simulators.sh" microk8s
+    echo $(green "[DONE] setup_autodiscovery_simulators.sh completed after MicroK8s recovery")
+  fi
+else
+  echo $(green "[INFO] Skipping autodiscovery simulators for this test part")
 fi
 
 
@@ -249,9 +258,14 @@ echo $(green "[STEP] ${CURRENT_STAGE}")
 
 sudo microk8s kubectl create namespace sc4snmp --dry-run=client -o yaml | sudo microk8s kubectl apply -f -
 sudo microk8s kubectl create -n sc4snmp secret generic sv3poller --dry-run=client -o yaml --from-literal=userName=r-wuser --from-literal=authKey=admin1234 --from-literal=privKey=admin1234 --from-literal=authProtocol=SHA --from-literal=privProtocol=AES --from-literal=securityEngineId=8000000903000A397056B8AC | sudo microk8s kubectl apply -f -
-sudo microk8s kubectl create -n sc4snmp secret generic autodiscovery-v3-sha-aes --dry-run=client -o yaml --from-literal=userName=autodiscovery-sha --from-literal=authKey=AuthPass1 --from-literal=privKey=PrivPass1 --from-literal=authProtocol=SHA --from-literal=privProtocol=AES --from-literal=securityEngineId=8000000903000A3900000101 | sudo microk8s kubectl apply -f -
+HELM_DISCOVERY_ARGS=()
+if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
+  sudo microk8s kubectl create -n sc4snmp secret generic autodiscovery-v3-sha-aes --dry-run=client -o yaml --from-literal=userName=autodiscovery-sha --from-literal=authKey=AuthPass1 --from-literal=privKey=PrivPass1 --from-literal=authProtocol=SHA --from-literal=privProtocol=AES --from-literal=securityEngineId=8000000903000A3900000101 | sudo microk8s kubectl apply -f -
+else
+  HELM_DISCOVERY_ARGS+=(--set discovery.enabled=false)
+fi
 
-sudo microk8s helm3 install snmp -f values.yaml ../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace
+sudo microk8s helm3 install snmp -f values.yaml ../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace "${HELM_DISCOVERY_ARGS[@]}"
 
 wait_for_pod_initialization
 wait_for_sc4snmp_pods_to_be_up

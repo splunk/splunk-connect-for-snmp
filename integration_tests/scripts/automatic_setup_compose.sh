@@ -13,6 +13,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INT_TEST_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 REPO_ROOT="$(cd "${INT_TEST_DIR}/.." && pwd)"
 CONFIG_DIR="${INT_TEST_DIR}/configs"
+AUTODISCOVERY_ENABLED="${AUTODISCOVERY_ENABLED:-true}"
+if [[ "$AUTODISCOVERY_ENABLED" != "true" && "$AUTODISCOVERY_ENABLED" != "false" ]]; then
+  echo "AUTODISCOVERY_ENABLED must be 'true' or 'false'" >&2
+  exit 2
+fi
 echo "SCRIPT_DIR: $SCRIPT_DIR"
 echo "INT_TEST_DIR: $INT_TEST_DIR"
 echo "REPO_ROOT: $REPO_ROOT"
@@ -110,6 +115,7 @@ chmod u+x "$SCRIPT_DIR/prepare_splunk.sh"
 echo $(green "Setting up docker compose configuration")
 DOCKER_COMPOSE_LOCAL="${INT_TEST_DIR}/docker_compose"
 COMPOSE_FILE="${DOCKER_COMPOSE_LOCAL}/docker-compose.yaml"
+AUTODISCOVERY_COMPOSE_FILE="${CONFIG_DIR}/autodiscovery-simulators-compose.yaml"
 ENV_FILE="${DOCKER_COMPOSE_LOCAL}/.env"
 rm -rf "$DOCKER_COMPOSE_LOCAL"
 cp -r "$REPO_ROOT/docker_compose" "$DOCKER_COMPOSE_LOCAL"
@@ -150,7 +156,11 @@ set_var "TRAPS_CONFIG_FILE_ABSOLUTE_PATH"        "$(realpath "$TRAPS_CONFIG_FILE
 set_var "INVENTORY_FILE_ABSOLUTE_PATH"           "$(realpath "$INVENTORY_FILE")"
 set_var "DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH"    "$(realpath "$DISCOVERY_CONFIG_FILE")"
 set_var "DISCOVERY_PATH"                         "$DISCOVERY_PATH_DIR"
-set_var "COMPOSE_PROFILES"                        "discovery"
+if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
+  set_var "COMPOSE_PROFILES" "discovery"
+else
+  set_var "COMPOSE_PROFILES" ""
+fi
 
 sed -i "s/###LOAD_BALANCER_ID###/$(hostname -I | cut -d " " -f1)/" "$INVENTORY_FILE"
 echo $(green "Running SNMP simulators in Docker")
@@ -161,10 +171,18 @@ sudo docker run -d -p 1164:161/udp tandrup/snmpsim
 sudo docker run -d -p 1165:161/udp tandrup/snmpsim
 sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
-"$SCRIPT_DIR/setup_autodiscovery_simulators.sh" docker || exit 1
+COMPOSE_FILES=(-f "$COMPOSE_FILE")
+if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
+  "$SCRIPT_DIR/setup_autodiscovery_simulators.sh" docker || exit 1
+  COMPOSE_FILES+=(-f "$AUTODISCOVERY_COMPOSE_FILE")
+else
+  echo $(green "Skipping autodiscovery simulators and services for this test part")
+fi
 
 echo $(green "Running up Docker Compose environment")
-sudo docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d
+sudo docker compose \
+  "${COMPOSE_FILES[@]}" \
+  --env-file "$ENV_FILE" up -d
 wait_for_containers_to_be_up
 
 sudo docker ps

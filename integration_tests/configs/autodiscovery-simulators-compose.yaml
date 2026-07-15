@@ -1,0 +1,14 @@
+services:
+  worker-discovery:
+    networks:
+      sc4snmp_network: {}
+      autodiscovery_v2c: {}
+      autodiscovery_v3: {}
+
+networks:
+  autodiscovery_v2c:
+    external: true
+    name: sc4snmp-docker-autodiscovery-v1
+  autodiscovery_v3:
+    external: true
+    name: sc4snmp-docker-autodiscovery-v2

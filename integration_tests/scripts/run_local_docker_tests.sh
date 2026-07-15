@@ -11,6 +11,7 @@ DOCKER_COMPOSE_ORIG="${REPO_ROOT}/docker_compose"
 DOCKER_COMPOSE_LOCAL="${INT_TEST_DIR}/docker_compose"
 ENV_FILE="${DOCKER_COMPOSE_LOCAL}/.env"
 COMPOSE_FILE="${DOCKER_COMPOSE_LOCAL}/docker-compose.yaml"
+AUTODISCOVERY_COMPOSE_FILE="${INT_TEST_DIR}/configs/autodiscovery-simulators-compose.yaml"
 
 install_docker
 parse_common_args "$@"
@@ -53,6 +54,7 @@ validate_paths() {
     "${INT_TEST_DIR}/configs/traps-config.yaml" \
     "${INT_TEST_DIR}/configs/inventory-tests.csv" \
     "${INT_TEST_DIR}/configs/discovery-config-docker.yaml" \
+    "$AUTODISCOVERY_COMPOSE_FILE" \
     "$ENV_FILE" \
     "${DOCKER_COMPOSE_LOCAL}/Corefile" \
     "$COMPOSE_FILE"; do
@@ -146,7 +148,10 @@ start_compose() {
   COMPOSE="sudo docker compose"
 
   info "Tearing down existing stack..."
-  $COMPOSE -f "$COMPOSE_FILE" --env-file "$ENV_FILE" down --remove-orphans 2>/dev/null || true
+  $COMPOSE \
+    -f "$COMPOSE_FILE" \
+    -f "$AUTODISCOVERY_COMPOSE_FILE" \
+    --env-file "$ENV_FILE" down --remove-orphans 2>/dev/null || true
 
   if sudo docker network inspect sc4snmp_network >/dev/null 2>&1; then
     sudo docker network rm sc4snmp_network
@@ -156,7 +161,10 @@ start_compose() {
   sleep 3
 
   info "Starting stack..."
-  $COMPOSE -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d
+  $COMPOSE \
+    -f "$COMPOSE_FILE" \
+    -f "$AUTODISCOVERY_COMPOSE_FILE" \
+    --env-file "$ENV_FILE" up -d
 
   step "Waiting for containers to start"
 
@@ -170,7 +178,10 @@ start_compose() {
 
     if [[ $i -eq 60 ]]; then
       error "Containers failed to start"
-      $COMPOSE -f "$COMPOSE_FILE" --env-file "$ENV_FILE" logs --tail=50
+      $COMPOSE \
+        -f "$COMPOSE_FILE" \
+        -f "$AUTODISCOVERY_COMPOSE_FILE" \
+        --env-file "$ENV_FILE" logs --tail=50
       exit 1
     fi
 
