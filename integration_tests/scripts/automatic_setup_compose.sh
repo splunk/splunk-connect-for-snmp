@@ -115,7 +115,6 @@ chmod u+x "$SCRIPT_DIR/prepare_splunk.sh"
 echo $(green "Setting up docker compose configuration")
 DOCKER_COMPOSE_LOCAL="${INT_TEST_DIR}/docker_compose"
 COMPOSE_FILE="${DOCKER_COMPOSE_LOCAL}/docker-compose.yaml"
-AUTODISCOVERY_COMPOSE_FILE="${CONFIG_DIR}/autodiscovery-simulators-compose.yaml"
 ENV_FILE="${DOCKER_COMPOSE_LOCAL}/.env"
 rm -rf "$DOCKER_COMPOSE_LOCAL"
 cp -r "$REPO_ROOT/docker_compose" "$DOCKER_COMPOSE_LOCAL"
@@ -171,17 +170,15 @@ sudo docker run -d -p 1164:161/udp tandrup/snmpsim
 sudo docker run -d -p 1165:161/udp tandrup/snmpsim
 sudo docker run -d -p 1166:161/udp -v $(pwd)/snmpsim/data:/usr/local/snmpsim/data -e EXTRA_FLAGS="--variation-modules-dir=/usr/local/snmpsim/variation --data-dir=/usr/local/snmpsim/data" tandrup/snmpsim
 
-COMPOSE_FILES=(-f "$COMPOSE_FILE")
 if [[ "$AUTODISCOVERY_ENABLED" == "true" ]]; then
   "$SCRIPT_DIR/setup_autodiscovery_simulators.sh" docker || exit 1
-  COMPOSE_FILES+=(-f "$AUTODISCOVERY_COMPOSE_FILE")
 else
   echo $(green "Skipping autodiscovery simulators and services for this test part")
 fi
 
 echo $(green "Running up Docker Compose environment")
 sudo docker compose \
-  "${COMPOSE_FILES[@]}" \
+  -f "$COMPOSE_FILE" \
   --env-file "$ENV_FILE" up -d
 wait_for_containers_to_be_up
 

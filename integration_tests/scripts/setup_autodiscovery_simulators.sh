@@ -9,10 +9,9 @@ SIMULATOR_IMAGE="${AUTODISCOVERY_SIMULATOR_IMAGE:-tandrup/snmpsim}"
 DEPLOYMENT_MODE="${1:-microk8s}"
 case "${DEPLOYMENT_MODE}" in
   docker)
+    DEFAULT_SIMULATOR_NAMESPACE="docker-agent-simulator"
     V1_PREFIX="10.4.4"
     V2_PREFIX="10.5.5"
-    DOCKER_NETWORK_V1="sc4snmp-docker-autodiscovery-v1"
-    DOCKER_NETWORK_V2="sc4snmp-docker-autodiscovery-v2"
     ;;
   microk8s)
     DEFAULT_SIMULATOR_NAMESPACE="microk8s-agent-simulator"
@@ -24,9 +23,7 @@ case "${DEPLOYMENT_MODE}" in
     exit 2
     ;;
 esac
-SIMULATOR_NAMESPACE="${AUTODISCOVERY_SIMULATOR_NAMESPACE:-${DEFAULT_SIMULATOR_NAMESPACE:-}}"
-V1_DISCOVERY_CIDR="${V1_PREFIX}.0/29"
-V2_DISCOVERY_CIDR="${V2_PREFIX}.0/29"
+SIMULATOR_NAMESPACE="${AUTODISCOVERY_SIMULATOR_NAMESPACE:-${DEFAULT_SIMULATOR_NAMESPACE}}"
 V1_POOL_CIDR="${V1_PREFIX}.0/26"
 V2_POOL_CIDR="${V2_PREFIX}.0/26"
 V3_SHA_ENGINE="8000000903000A3900000101"
@@ -44,7 +41,6 @@ declare -A VAR_PREFIX=([v2c]=v1 [v3]=v2)
 declare -A VAR_IP_PREFIX=([v2c]="${V1_PREFIX}" [v3]="${V2_PREFIX}")
 declare -A VAR_DATA_DIR=([v2c]=v2c [v3]=v3-sha)
 declare -A VAR_DATA_FILE=([v2c]=public.snmprec [v3]=1.3.6.1.6.1.1.0.snmprec)
-declare -A VAR_DOCKER_NETWORK=([v2c]="${DOCKER_NETWORK_V1:-}" [v3]="${DOCKER_NETWORK_V2:-}")
 declare -A VAR_FLAGS=(
   [v2c]="--v2c-arch --data-dir=/usr/local/snmpsim/data"
   [v3]="--v3-only --v3-engine-id=${V3_SHA_ENGINE} --v3-context-engine-id=${V3_SHA_ENGINE} --v3-user=${V3_SHA_USER} --v3-auth-key=${V3_SHA_AUTH_KEY} --v3-auth-proto=SHA --v3-priv-key=${V3_SHA_PRIV_KEY} --v3-priv-proto=AES --data-dir=/usr/local/snmpsim/data"
@@ -94,31 +90,13 @@ dump_microk8s_diagnostics() {
     --no-pager -n 150 || true
 }
 
-dump_docker_diagnostics() {
-  green "[INFO] Docker simulator containers:"
-  sudo docker ps -a \
-    --filter label=sc4snmp.integration.autodiscovery=true \
-    --format 'table {{.Names}}\t{{.Status}}' || true
-  green "[INFO] Recent Docker simulator logs:"
-  local container
-  while IFS= read -r container; do
-    [[ -n "${container}" ]] || continue
-    sudo docker logs --tail=50 "${container}" || true
-  done < <(sudo docker ps -aq \
-    --filter label=sc4snmp.integration.autodiscovery=true)
-}
-
 handle_error() {
   local exit_code="$1"
   local line_number="$2"
 
   trap - ERR
   red "[ERROR] Autodiscovery setup failed in '${CURRENT_STAGE}' at line ${line_number} (exit ${exit_code})."
-  if [[ "${DEPLOYMENT_MODE}" == "docker" ]]; then
-    dump_docker_diagnostics
-  else
-    dump_microk8s_diagnostics
-  fi
+  dump_microk8s_diagnostics
   exit "${exit_code}"
 }
 
@@ -341,89 +319,6 @@ assert_simulator_ips_available() {
   green "[DONE] All ${AGENT_COUNT} requested simulator IPs are currently available"
 }
 
-ensure_docker_network() {
-  local network="$1"
-  local cidr="$2"
-  local gateway="$3"
-  local existing_cidr
-
-  if sudo docker network inspect "${network}" >/dev/null 2>&1; then
-    existing_cidr="$(sudo docker network inspect "${network}" \
-      --format '{{range .IPAM.Config}}{{.Subnet}}{{end}}')"
-    [[ "${existing_cidr}" == "${cidr}" ]] || {
-      red "Docker network ${network} exists with an unexpected subnet" >&2
-      return 1
-    }
-    green "[INFO] Reusing Docker network ${network}"
-    return
-  fi
-
-  sudo docker network create \
-    --driver bridge \
-    --subnet "${cidr}" \
-    --gateway "${gateway}" \
-    "${network}" >/dev/null
-  green "[INFO] Created Docker network ${network}"
-}
-
-deploy_docker_agent() {
-  local variation="$1" name="$2" ip="$3"
-
-  green "[INFO] Starting Docker container ${name} (${variation})"
-  sudo docker run -d \
-    --name "${name}" \
-    --label sc4snmp.integration.autodiscovery=true \
-    --label "variation=${variation}" \
-    --label "agent-id=${name}" \
-    --network "${VAR_DOCKER_NETWORK[$variation]}" \
-    --ip "${ip}" \
-    --mount "type=bind,src=${DATA_ROOT}/${VAR_DATA_DIR[$variation]},dst=/usr/local/snmpsim/data,readonly" \
-    "${SIMULATOR_IMAGE}" \
-    /bin/sh -c "exec snmpsimd.py ${VAR_FLAGS[$variation]} --agent-udpv4-endpoint=0.0.0.0:161 --process-user=snmpsim --process-group=nogroup" \
-    >/dev/null
-}
-
-verify_docker_agent() {
-  local variation="$1" name="$2" expected_ip="$3"
-  local actual_ip
-
-  actual_ip="$(sudo docker inspect "${name}" --format \
-    "{{with index .NetworkSettings.Networks \"${VAR_DOCKER_NETWORK[$variation]}\"}}{{.IPAddress}}{{end}}")"
-  [[ "${actual_ip}" == "${expected_ip}" ]] || {
-    red "Container ${name} did not receive its requested static IP" >&2
-    return 1
-  }
-}
-
-start_docker_agents() {
-  local -a existing_containers=()
-
-  CURRENT_STAGE="Preparing Docker simulator networks"
-  green "[STEP] ${CURRENT_STAGE}"
-  mapfile -t existing_containers < <(sudo docker ps -aq \
-    --filter label=sc4snmp.integration.autodiscovery=true)
-  if (( ${#existing_containers[@]} > 0 )); then
-    sudo docker rm -f "${existing_containers[@]}" >/dev/null
-  fi
-
-  ensure_docker_network \
-    "${DOCKER_NETWORK_V1}" "${V1_DISCOVERY_CIDR}" "${V1_PREFIX}.6"
-  ensure_docker_network \
-    "${DOCKER_NETWORK_V2}" "${V2_DISCOVERY_CIDR}" "${V2_PREFIX}.6"
-
-  CURRENT_STAGE="Deploying Docker SNMP simulators"
-  green "[STEP] ${CURRENT_STAGE}"
-  green "[INFO] Creating ${AGENT_COUNT} static Docker containers"
-  for_each_agent deploy_docker_agent
-  for_each_agent verify_docker_agent
-
-  green "[DONE] All ${AGENT_COUNT} Docker simulator containers are running"
-  sudo docker ps \
-    --filter label=sc4snmp.integration.autodiscovery=true \
-    --format 'table {{.Names}}\t{{.Status}}'
-  green "[DONE] Docker reports all requested simulator IPs exactly"
-}
-
 deploy_k8s_agent() {
   local variation="$1" name="$2" ip="$3"
 
@@ -569,25 +464,18 @@ verify_v2c_agents() {
 }
 
 report_readiness() {
-  local backend="MicroK8s"
-  [[ "${DEPLOYMENT_MODE}" == "docker" ]] && backend="Docker"
-
   CURRENT_STAGE="Reporting autodiscovery simulator readiness"
   green "[STEP] ${CURRENT_STAGE}"
   green "[DONE] integration_v2c: ${AGENTS_PER_VARIATION}/${AGENTS_PER_VARIATION} agents ready"
   green "[DONE] integration_v3: ${AGENTS_PER_VARIATION}/${AGENTS_PER_VARIATION} agents ready"
-  green "[DONE] Autodiscovery environment ready: ${AGENT_COUNT}/${AGENT_COUNT} ${backend} agents available for ${DEPLOYMENT_MODE} SC4SNMP"
+  green "[DONE] Autodiscovery environment ready: ${AGENT_COUNT}/${AGENT_COUNT} MicroK8s agents available for ${DEPLOYMENT_MODE} SC4SNMP"
 }
 
 main() {
   validate_fixtures
   install_snmp_client
   prepare_discovery_output
-  if [[ "${DEPLOYMENT_MODE}" == "docker" ]]; then
-    start_docker_agents
-  else
-    start_microk8s_agents
-  fi
+  start_microk8s_agents
   verify_v2c_agents
   report_readiness
 }

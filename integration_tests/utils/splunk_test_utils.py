@@ -351,22 +351,9 @@ def update_traps_secrets_compose(secrets):
 
 def upgrade_docker_compose():
     compose_dir = BASE_DIR / "docker_compose"
-    env_path = compose_dir / ".env"
-    autodiscovery_compose = CONFIG_DIR / "autodiscovery-simulators-compose.yaml"
-    compose_files = f"-f {compose_dir}/docker-compose.yaml"
-
-    with open(env_path) as env_file:
-        discovery_enabled = any(
-            "discovery" in line.removeprefix("COMPOSE_PROFILES=").strip().split(",")
-            for line in env_file
-            if line.startswith("COMPOSE_PROFILES=")
-        )
-    if discovery_enabled:
-        compose_files += f" -f {autodiscovery_compose}"
-
     os.system(
-        f"sudo docker compose {compose_files} "
-        f"--env-file {env_path} up -d --force-recreate"
+        f"sudo docker compose -f {compose_dir}/docker-compose.yaml "
+        f"--env-file {compose_dir}/.env up -d --force-recreate"
     )
 
 

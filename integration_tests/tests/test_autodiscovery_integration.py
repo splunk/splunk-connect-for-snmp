@@ -29,12 +29,11 @@ DISCOVERY_OUTPUT_DIR = Path(
 DISCOVERY_CSV = DISCOVERY_OUTPUT_DIR / "discovery_devices.csv"
 SIMULATOR_PROFILES = {
     "microk8s": {
-        "backend": "microk8s",
         "namespace": "microk8s-agent-simulator",
         "prefixes": ("10.1.1", "10.2.2"),
     },
     "docker-compose": {
-        "backend": "docker",
+        "namespace": "docker-agent-simulator",
         "prefixes": ("10.4.4", "10.5.5"),
     },
 }
@@ -87,15 +86,10 @@ def build_expected_by_key(prefixes):
 
 
 BASE_OID_SPECS = (
-    # Use the same symbolic SNMPv2-MIB lookup as Discovery.check_snmp_device.
-    # This makes the integration test fail if the runtime can no longer load
-    # the MIB or resolve the objects before sending get_cmd.
     ("SNMPv2-MIB", "sysDescr", 0),
     ("SNMPv2-MIB", "sysObjectID", 0),
     ("SNMPv2-MIB", "sysUpTime", 0),
     ("SNMPv2-MIB", "sysName", 0),
-    # Keep this numeric because IF-MIB is supplied by the SC4SNMP MIB server,
-    # while this test also runs directly from the local Poetry environment.
     ("1.3.6.1.2.1.2.1.0",),
 )
 
@@ -109,14 +103,12 @@ def deployment(request):
 def simulator_profile(deployment):
     assert deployment in SIMULATOR_PROFILES, f"Unsupported deployment: {deployment}"
     profile = SIMULATOR_PROFILES[deployment]
-    if profile["backend"] == "microk8s":
-        return {
-            **profile,
-            "namespace": os.getenv(
-                "AUTODISCOVERY_SIMULATOR_NAMESPACE", profile["namespace"]
-            ),
-        }
-    return profile
+    return {
+        **profile,
+        "namespace": os.getenv(
+            "AUTODISCOVERY_SIMULATOR_NAMESPACE", profile["namespace"]
+        ),
+    }
 
 
 @pytest.fixture(scope="module")
@@ -185,60 +177,23 @@ def run_checked(command, input_text=None):
 
 @pytest.fixture(scope="module")
 def deployed_agents(simulator_profile, expected_by_key):
-    if simulator_profile["backend"] == "microk8s":
-        resources = json.loads(
-            run_checked(
-                [
-                    "sudo",
-                    "microk8s",
-                    "kubectl",
-                    "get",
-                    "pods",
-                    "-n",
-                    simulator_profile["namespace"],
-                    "-l",
-                    "sc4snmp.integration.autodiscovery=true",
-                    "-o",
-                    "json",
-                ]
-            )
-        )["items"]
-        agents = [
-            {
-                "name": pod["metadata"]["name"],
-                "ip": pod["status"].get("podIP", ""),
-                "variation": pod["metadata"]["labels"]["variation"],
-            }
-            for pod in resources
-        ]
-    else:
-        container_names = run_checked(
+    pods = json.loads(
+        run_checked(
             [
                 "sudo",
-                "docker",
-                "ps",
-                "--filter",
-                "label=sc4snmp.integration.autodiscovery=true",
-                "--format",
-                "{{.Names}}",
+                "microk8s",
+                "kubectl",
+                "get",
+                "pods",
+                "-n",
+                simulator_profile["namespace"],
+                "-l",
+                "sc4snmp.integration.autodiscovery=true",
+                "-o",
+                "json",
             ]
-        ).splitlines()
-        assert container_names, "No Docker simulator containers found"
-        resources = json.loads(
-            run_checked(["sudo", "docker", "inspect", *container_names])
         )
-        agents = [
-            {
-                "name": container["Name"].lstrip("/"),
-                "ip": next(
-                    network["IPAddress"]
-                    for network in container["NetworkSettings"]["Networks"].values()
-                    if network["IPAddress"]
-                ),
-                "variation": container["Config"]["Labels"]["variation"],
-            }
-            for container in resources
-        ]
+    )["items"]
 
     key_by_variation = {
         expected["variation"]: discovery_key
@@ -248,13 +203,14 @@ def deployed_agents(simulator_profile, expected_by_key):
         discovery_key: {"ips": set(), "names": set()}
         for discovery_key in expected_by_key
     }
-    for agent in agents:
-        discovery_key = key_by_variation.get(agent["variation"])
-        assert discovery_key, f"Unexpected simulator variation: {agent['variation']}"
-        deployed[discovery_key]["ips"].add(agent["ip"])
-        deployed[discovery_key]["names"].add(agent["name"])
+    for pod in pods:
+        variation = pod["metadata"]["labels"]["variation"]
+        discovery_key = key_by_variation.get(variation)
+        assert discovery_key, f"Unexpected simulator variation: {variation}"
+        deployed[discovery_key]["ips"].add(pod["status"].get("podIP", ""))
+        deployed[discovery_key]["names"].add(pod["metadata"]["name"])
 
-    assert len(agents) == EXPECTED_DEVICE_COUNT
+    assert len(pods) == EXPECTED_DEVICE_COUNT
     for discovery_key, expected in expected_by_key.items():
         assert deployed[discovery_key]["ips"] == expected["ips"]
         assert deployed[discovery_key]["names"] == expected["names"]
@@ -376,11 +332,7 @@ def wait_for_v2c_simulator(address, timeout=30):
     pytest.fail(f"Simulator {address}:{AUTODISCOVERY_PORT} did not become ready")
 
 
-def stop_removable_simulator(deployment, simulator_profile):
-    if deployment == "docker-compose":
-        run_checked(["sudo", "docker", "stop", REMOVABLE_SIMULATOR_NAME])
-        return
-
+def stop_removable_simulator(simulator_profile):
     network_policy = {
         "apiVersion": "networking.k8s.io/v1",
         "kind": "NetworkPolicy",
@@ -408,11 +360,7 @@ def stop_removable_simulator(deployment, simulator_profile):
     time.sleep(2)
 
 
-def start_removable_simulator(deployment, simulator_profile):
-    if deployment == "docker-compose":
-        run_checked(["sudo", "docker", "start", REMOVABLE_SIMULATOR_NAME])
-        return
-
+def start_removable_simulator(simulator_profile):
     run_checked(
         [
             "sudo",
@@ -491,12 +439,12 @@ def test_delete_already_discovered_removes_offline_device(
 
     # Do not seed or edit discovery_devices.csv in the test. Changing device
     # availability lets the deployed discovery feature own every CSV write.
-    stop_removable_simulator(deployment, simulator_profile)
+    stop_removable_simulator(simulator_profile)
     try:
         rerun_v2c_discovery(deployment, v2c_configuration["subnet"])
         wait_for_discovery_ips("integration_v2c", expected_without_offline_device)
     finally:
-        start_removable_simulator(deployment, simulator_profile)
+        start_removable_simulator(simulator_profile)
         wait_for_v2c_simulator(removable_simulator_ip)
         rerun_v2c_discovery(deployment, v2c_configuration["subnet"])
         wait_for_discovery_ips("integration_v2c", expected_ips)
