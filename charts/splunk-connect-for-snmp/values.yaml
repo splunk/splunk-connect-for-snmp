@@ -22,14 +22,14 @@ UI:
   enable: false
   frontEnd:
     NodePort: 30001
-    repository: ghcr.io/splunk/sc4snmp-ui/frontend/container
-    tag: "1.2.3-beta.2"
-    pullPolicy: "Always"
+    pullPolicy: "Never"
+    repository: ajasnosz558/ui-frontend
+    tag: "new1"
   backEnd:
     NodePort: 30002
-    repository: ghcr.io/splunk/sc4snmp-ui/backend/container
-    tag: "1.2.3-beta.2"
-    pullPolicy: "Always"
+    pullPolicy: "Never"
+    repository: ajasnosz558/ui-backend
+    tag: "new1"
   # Base container that sets permissions for folders mounted to UI containers
   init:
     repository: registry.access.redhat.com/ubi9/ubi
