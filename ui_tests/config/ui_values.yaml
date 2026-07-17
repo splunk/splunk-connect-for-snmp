@@ -2,12 +2,12 @@ UI:
   enable: true
   frontEnd:
     NodePort: 30001
-    pullPolicy: "Never"
+    pullPolicy: "Always"
     repository: ajasnosz558/ui-frontend
     tag: "new1"
   backEnd:
     NodePort: 30002
-    pullPolicy: "Never"
+    pullPolicy: "Always"
     repository: ajasnosz558/ui-backend
     tag: "new1"
   init:

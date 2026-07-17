@@ -22,12 +22,12 @@ UI:
   enable: false
   frontEnd:
     NodePort: 30001
-    pullPolicy: "Never"
+    pullPolicy: "Always"
     repository: ajasnosz558/ui-frontend
     tag: "new1"
   backEnd:
     NodePort: 30002
-    pullPolicy: "Never"
+    pullPolicy: "Always"
     repository: ajasnosz558/ui-backend
     tag: "new1"
   # Base container that sets permissions for folders mounted to UI containers
