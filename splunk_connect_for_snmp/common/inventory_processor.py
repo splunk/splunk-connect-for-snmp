@@ -221,9 +221,17 @@ class InventoryRecordManager:
             logger.info(f"Modified Record {inventory_record}")
         else:
             logger.info(f"Unchanged Record {inventory_record}")
+            target = transform_address_to_key(
+                inventory_record.address, inventory_record.port
+            )
             if expiry_time_changed:
                 logger.info(
                     f"Task expiry time was modified, generating new tasks for record {inventory_record}"
+                )
+            elif not self.periodic_object_collection.walk_task_exists(target):
+                logger.info(
+                    f"Walk task for {target} is missing from the scheduler "
+                    f"(e.g. Redis/RedBeat was reset); re-registering it"
                 )
             else:
                 return
