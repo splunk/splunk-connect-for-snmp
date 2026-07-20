@@ -58,7 +58,7 @@ mkdocs = "^1.2.2"
 mkdocs-material = "^9.0.0"
 python-dotenv = "^1.0.0"
 mkdocs-video = "^1.5.0"
-splunk-sdk = "^2.1.1"
+splunk-sdk = "^3.0.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
