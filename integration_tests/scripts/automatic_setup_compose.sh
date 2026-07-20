@@ -37,6 +37,23 @@ function yellow {
     printf "${YELLOW}$@${NC}\n"
 }
 
+source "${SCRIPT_DIR}/_common.sh"
+
+handle_setup_exit() {
+  local exit_code="$?"
+
+  (( exit_code != 0 )) || return 0
+  trap - EXIT
+  red "[ERROR] Docker Compose integration setup failed (exit ${exit_code})."
+  dump_docker_diagnostics
+  if command -v microk8s >/dev/null 2>&1; then
+    dump_microk8s_diagnostics docker-agent-simulator
+  fi
+  exit "${exit_code}"
+}
+
+trap handle_setup_exit EXIT
+
 wait_for_splunk() {
   while [ "$(sudo docker ps | grep "splunk:latest" | grep healthy)" == "" ] ; do
     echo $(yellow "Waiting for Splunk initialization")

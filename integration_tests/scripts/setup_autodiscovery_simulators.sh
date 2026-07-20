@@ -62,30 +62,10 @@ yellow() {
   printf '%b%s%b\n' "${YELLOW}" "$*" "${NC}"
 }
 
+source "${SCRIPT_DIR}/_common.sh"
+
 kctl() {
   sudo microk8s kubectl "$@"
-}
-
-dump_microk8s_diagnostics() {
-  green "[INFO] MicroK8s status:"
-  timeout 20s sudo microk8s status || true
-  green "[INFO] MicroK8s node and namespace resources:"
-  timeout 20s sudo microk8s kubectl get nodes || true
-  timeout 20s sudo microk8s kubectl get all -n "${SIMULATOR_NAMESPACE}" || true
-  green "[INFO] Recent ${SIMULATOR_NAMESPACE} events:"
-  timeout 20s sudo microk8s kubectl get events \
-    -n "${SIMULATOR_NAMESPACE}" --sort-by=.lastTimestamp || true
-  green "[INFO] Recent simulator container logs:"
-  timeout 30s sudo microk8s kubectl logs \
-    -n "${SIMULATOR_NAMESPACE}" \
-    -l sc4snmp.integration.autodiscovery=true \
-    --all-containers=true --prefix=true --tail=50 --ignore-errors=true || true
-  green "[INFO] Kubelite service status:"
-  sudo systemctl status snap.microk8s.daemon-kubelite \
-    --no-pager --full || true
-  green "[INFO] Recent kubelite journal:"
-  sudo journalctl -u snap.microk8s.daemon-kubelite \
-    --no-pager -n 150 || true
 }
 
 handle_error() {
@@ -94,7 +74,7 @@ handle_error() {
 
   trap - ERR
   red "[ERROR] Autodiscovery setup failed at line ${line_number} (exit ${exit_code})."
-  dump_microk8s_diagnostics
+  dump_microk8s_diagnostics "${SIMULATOR_NAMESPACE}"
   exit "${exit_code}"
 }
 

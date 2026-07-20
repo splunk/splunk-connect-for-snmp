@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 # Color
 RED='\033[0;31m'
@@ -34,31 +33,7 @@ function yellow {
     printf "${YELLOW}$@${NC}\n"
 }
 
-dump_microk8s_diagnostics() {
-  echo $(green "[INFO] MicroK8s status at failure:")
-  timeout 20s sudo microk8s status || true
-  echo $(green "[INFO] Kubernetes nodes and pods at failure:")
-  timeout 20s sudo microk8s kubectl get nodes -o wide || true
-  timeout 20s sudo microk8s kubectl get pods -A -o wide || true
-  timeout 20s sudo microk8s kubectl get all \
-    -n microk8s-agent-simulator -o wide || true
-  timeout 20s sudo microk8s kubectl get all -n sc4snmp -o wide || true
-  echo $(green "[INFO] Recent Kubernetes events:")
-  timeout 20s sudo microk8s kubectl get events -A \
-    --sort-by=.lastTimestamp || true
-  echo $(green "[INFO] Recent simulator and SC4SNMP container logs:")
-  timeout 30s sudo microk8s kubectl logs -n microk8s-agent-simulator \
-    -l sc4snmp.integration.autodiscovery=true \
-    --all-containers=true --prefix=true --tail=50 --ignore-errors=true || true
-  timeout 30s sudo microk8s kubectl logs -n sc4snmp \
-    -l app.kubernetes.io/instance=snmp \
-    --all-containers=true --prefix=true --tail=50 --ignore-errors=true || true
-  echo $(green "[INFO] Kubelite status and recent log entries:")
-  sudo systemctl status snap.microk8s.daemon-kubelite \
-    --no-pager --full || true
-  sudo journalctl -u snap.microk8s.daemon-kubelite \
-    --no-pager -n 150 || true
-}
+source "${SCRIPT_DIR}/_common.sh"
 
 handle_setup_error() {
   local exit_code="$1"
@@ -66,7 +41,7 @@ handle_setup_error() {
 
   trap - ERR
   red "[ERROR] MicroK8s integration setup failed at line ${line_number} (exit ${exit_code})."
-  dump_microk8s_diagnostics
+  dump_microk8s_diagnostics sc4snmp microk8s-agent-simulator
   exit "${exit_code}"
 }
 
