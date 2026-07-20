@@ -142,7 +142,7 @@ class TestUtils(TestCase):
         result = get_context_data()
 
         self.assertIsNone(result.contextEngineId)
-        self.assertEqual("", result.contextName)
+        self.assertEqual(b"", result.contextName)
 
     def test_return_address_and_port(self):
         self.assertEqual(return_address_and_port("127.0.0.1"), ("127.0.0.1", 161))

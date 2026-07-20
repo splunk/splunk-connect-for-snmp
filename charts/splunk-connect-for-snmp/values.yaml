@@ -600,6 +600,9 @@ serviceAccount:
 # This parameter allows to use SC4SNMP for older version of Kubernetes that doesn't support autoscaling/v2
 useDeprecatedAPI: false
 
+# A user name to set in the deployment environment.
+deploymentUser: "sc4snmp"
+
 #############################################################################
 ### Please do not modify below values, unless you know what you're doing! ###
 #############################################################################
@@ -738,6 +741,8 @@ commonAnnotations: {}
 discovery:
   # Enables discovering SNMP enabled device and create CSV file.
   enabled: false
+  # Number of subnet IPs checked concurrently inside one discovery task.
+  subnetDiscoveryConcurrency: 10
   # list of kubernetes secrets name that will be used for discovery
   # https://splunk.github.io/splunk-connect-for-snmp/main/microk8s/configuration/discovery-configuration/#define-usernamesecrets
   usernameSecrets: []

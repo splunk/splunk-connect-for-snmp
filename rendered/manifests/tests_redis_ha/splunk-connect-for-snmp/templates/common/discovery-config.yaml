@@ -9,4 +9,5 @@ data:
     enabled: false
     ipv6Enabled: false
     logLevel: INFO
+    subnetDiscoveryConcurrency: 10
     usernameSecrets: []

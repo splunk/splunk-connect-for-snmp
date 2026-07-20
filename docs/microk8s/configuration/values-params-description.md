@@ -165,6 +165,7 @@ Detailed documentation about configuring discovery can be found in [Discovery](.
 | Variable                                        | Description                                                                                                                     | Default          |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|------------------|
 | `enabled`                                       | Enables discovering SNMP-enabled devices and creates a CSV file.                                                                    | `false`          |
+| `subnetDiscoveryConcurrency`                         | Number of subnet IPs checked concurrently inside one discovery task. This is separate from `worker.discovery.concurrency`.       | `10`             |
 | `usernameSecrets`                               | List of SNMPv3 secret names (Kubernetes secrets) used when discovering devices                                                  |                  |
 | `ipv6Enabled`                                   | Enabled device detection using IPv6 subnet                                                                                      | `false`          |
 | `logLevel`                                      | Log level for a discovery pod                                                                                                   | `INFO`           |
@@ -249,3 +250,4 @@ Detailed documentation about configuring sim can be found in [Splunk Infrastruct
 | `imagePullSecrets`  | [Kubernetes documentation ](https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod) |         |
 | `useDeprecatedAPI`  | Enables older version of Kubernetes to use                                                                               | `false` |
 | `commonAnnotations` | Annotations added to all services                                                                                        |         |
+| `deploymentUser`    | User name assigned to the `USER` environment variable in SC4SNMP deployments                                             | `sc4snmp` |

@@ -45,6 +45,8 @@ spec:
               "celery", "beat",
             ]          
           env:
+            - name: USER
+              value: {{ .Values.deploymentUser | default "sc4snmp" | quote }}
             - name: CONFIG_PATH
               value: /app/config/config.yaml
             {{- include "splunk-connect-for-snmp.redis-env" . | nindent 12 }}
