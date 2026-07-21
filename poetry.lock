@@ -1188,14 +1188,14 @@ pymongo = ">=2.6.0"
 
 [[package]]
 name = "opentelemetry-api"
-version = "1.43.0"
+version = "1.44.0"
 description = "OpenTelemetry Python API"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "opentelemetry_api-1.43.0-py3-none-any.whl", hash = "sha256:20acf45e9b21851926835292e4045d290acade1edd2ff3de86d2f069687ba1fd"},
-    {file = "opentelemetry_api-1.43.0.tar.gz", hash = "sha256:107d0d03857ea8fc7c5fcbbbd83f800c281f0d560553d61c1d675fccfd1761c1"},
+    {file = "opentelemetry_api-1.44.0-py3-none-any.whl", hash = "sha256:94b98c893a91b88657eaac1e3ba89618cdb85be6918196705354f34728b2cdef"},
+    {file = "opentelemetry_api-1.44.0.tar.gz", hash = "sha256:67647e5e9566edcf421166fdf022b3537f818635daa852b289e34604dc6fb33a"},
 ]
 
 [package.dependencies]
@@ -1220,93 +1220,93 @@ thrift = ">=0.10.0"
 
 [[package]]
 name = "opentelemetry-instrumentation"
-version = "0.64b0"
+version = "0.65b0"
 description = "Instrumentation Tools & Auto Instrumentation for OpenTelemetry Python"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "opentelemetry_instrumentation-0.64b0-py3-none-any.whl", hash = "sha256:133ab7ffca796557aec059bf6be3190a34b6dea987f25be3d9409e230cbdad8b"},
-    {file = "opentelemetry_instrumentation-0.64b0.tar.gz", hash = "sha256:b47d528dead6271d7743114417eb67fc915bd9258111c48dbf9a4951d2efa88d"},
+    {file = "opentelemetry_instrumentation-0.65b0-py3-none-any.whl", hash = "sha256:ea967a72b9939b5fcfdad572753b4306c59dcb99e3f382d95dae04286805e137"},
+    {file = "opentelemetry_instrumentation-0.65b0.tar.gz", hash = "sha256:071d9d9eced9bd6460444ec3b0c77229870ed05a881c22c84fdede58e4eed09b"},
 ]
 
 [package.dependencies]
 opentelemetry-api = ">=1.4,<2.0"
-opentelemetry-semantic-conventions = "0.64b0"
+opentelemetry-semantic-conventions = "0.65b0"
 packaging = ">=18.0"
 wrapt = ">=1.0.0,<3.0.0"
 
 [[package]]
 name = "opentelemetry-instrumentation-celery"
-version = "0.64b0"
+version = "0.65b0"
 description = "OpenTelemetry Celery Instrumentation"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "opentelemetry_instrumentation_celery-0.64b0-py3-none-any.whl", hash = "sha256:ef21be15d603ac84e15a0394c551a1d25721d31c24f0dcf3a9832dd7b7e06807"},
-    {file = "opentelemetry_instrumentation_celery-0.64b0.tar.gz", hash = "sha256:730e4ef8842861855dadc54c02b0fc3cf453c7d2b189a7125382a30e5d342e24"},
+    {file = "opentelemetry_instrumentation_celery-0.65b0-py3-none-any.whl", hash = "sha256:8510357a6a9e2cb1a6485fe98642a39f06c2970eb58656de06260b922ffe7888"},
+    {file = "opentelemetry_instrumentation_celery-0.65b0.tar.gz", hash = "sha256:ff4d192b6371cfe06969005862dc558cc8b79b03b0bbdfbf65b9a59e4dcd7fee"},
 ]
 
 [package.dependencies]
 opentelemetry-api = ">=1.12,<2.0"
-opentelemetry-instrumentation = "0.64b0"
-opentelemetry-semantic-conventions = "0.64b0"
+opentelemetry-instrumentation = "0.65b0"
+opentelemetry-semantic-conventions = "0.65b0"
 
 [package.extras]
 instruments = ["celery (>=4.0,<6.0)"]
 
 [[package]]
 name = "opentelemetry-instrumentation-logging"
-version = "0.64b0"
+version = "0.65b0"
 description = "OpenTelemetry Logging instrumentation"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "opentelemetry_instrumentation_logging-0.64b0-py3-none-any.whl", hash = "sha256:9b56f19648798ddb331c206b74d36c5f2a71e5c6b771e96298f167b2b590e40d"},
-    {file = "opentelemetry_instrumentation_logging-0.64b0.tar.gz", hash = "sha256:6435b4d215bf8183e15f7e3416a10ebe1c411810d3411fbfc62667daae3abacb"},
+    {file = "opentelemetry_instrumentation_logging-0.65b0-py3-none-any.whl", hash = "sha256:68365b31755c844f1e85f07dcd217839ff92f2d278a214bdf02d4dc806f9d915"},
+    {file = "opentelemetry_instrumentation_logging-0.65b0.tar.gz", hash = "sha256:c0a50cade5d54db6c6af12e2c69227ecd26f2b3b779e99ff850561d3d8dd77e3"},
 ]
 
 [package.dependencies]
 opentelemetry-api = ">=1.12,<2.0"
-opentelemetry-instrumentation = "0.64b0"
-opentelemetry-semantic-conventions = "0.64b0"
+opentelemetry-instrumentation = "0.65b0"
+opentelemetry-semantic-conventions = "0.65b0"
 
 [[package]]
 name = "opentelemetry-sdk"
-version = "1.43.0"
+version = "1.44.0"
 description = "OpenTelemetry Python SDK"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "opentelemetry_sdk-1.43.0-py3-none-any.whl", hash = "sha256:d1323a547c1ce69d6a069a17a44b7da82bb8b332051ecb074041f87642c86823"},
-    {file = "opentelemetry_sdk-1.43.0.tar.gz", hash = "sha256:d8187c81c162df9913e4003dd6485f7390d9a24fc17026ec7387b8b8218b08e9"},
+    {file = "opentelemetry_sdk-1.44.0-py3-none-any.whl", hash = "sha256:df081c4c6bcfdb1211e3e86140376792643128a25f8d72d1d27675936e7e96ad"},
+    {file = "opentelemetry_sdk-1.44.0.tar.gz", hash = "sha256:cebe7f65dc12f26ead75c6064de12fd2a9052e5060c0272d402cfa203aae123b"},
 ]
 
 [package.dependencies]
-opentelemetry-api = "1.43.0"
-opentelemetry-semantic-conventions = "0.64b0"
+opentelemetry-api = "1.44.0"
+opentelemetry-semantic-conventions = "0.65b0"
 typing-extensions = ">=4.5.0"
 
 [package.extras]
-file-configuration = ["jsonschema (>=4.0)", "pyyaml (>=6.0)"]
+file-configuration = ["opentelemetry-configuration (==0.65b0)"]
 
 [[package]]
 name = "opentelemetry-semantic-conventions"
-version = "0.64b0"
+version = "0.65b0"
 description = "OpenTelemetry Semantic Conventions"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "opentelemetry_semantic_conventions-0.64b0-py3-none-any.whl", hash = "sha256:ea77e85e354b8f604ddbe5f3d9135216f982fa4d77e5859ac30f6d8a50505aa6"},
-    {file = "opentelemetry_semantic_conventions-0.64b0.tar.gz", hash = "sha256:72f76fb2d1582d9d033dd1fcd84532e961e6ff3d90d24ba6fabc72975a83864c"},
+    {file = "opentelemetry_semantic_conventions-0.65b0-py3-none-any.whl", hash = "sha256:1cacde7b0ad306f84c5ef08c3dbe1bbaf20165bba6f8bff43b670e555a086bcb"},
+    {file = "opentelemetry_semantic_conventions-0.65b0.tar.gz", hash = "sha256:f9b2b81e9d5b64f11bc952075e7e9c7fb0aab075c7fd1c46d597f1b919852d60"},
 ]
 
 [package.dependencies]
-opentelemetry-api = "1.43.0"
+opentelemetry-api = "1.44.0"
 typing-extensions = ">=4.5.0"
 
 [[package]]
