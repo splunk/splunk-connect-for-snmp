@@ -4,12 +4,12 @@ UI:
     NodePort: 30001
     pullPolicy: "Always"
     repository: ajasnosz558/ui-frontend
-    tag: "new1"
+    tag: "new4"
   backEnd:
     NodePort: 30002
     pullPolicy: "Always"
     repository: ajasnosz558/ui-backend
-    tag: "new1"
+    tag: "new4"
   init:
     image: registry.access.redhat.com/ubi9/ubi
     pullPolicy: IfNotPresent
