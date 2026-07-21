@@ -21,6 +21,8 @@ from ruamel.yaml.scalarstring import DoubleQuotedScalarString as dq
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
 from integration_tests.utils.splunk_test_utils import (
+    rebuild_stack_preserve_mongo_compose,
+    rebuild_stack_preserve_mongo_microk8s,
     splunk_single_search,
     update_file_microk8s,
     update_groups_compose,
@@ -1942,3 +1944,85 @@ def run_retried_single_search(setup_splunk, search_string, retries, wait=20):
         logger.info(f"Attempt {attempt+1}/{retries}: no results. Waiting {wait}s...")
         time.sleep(wait)
     return 0, 0
+
+
+@pytest.fixture(scope="class")
+def setup_rebuild(request):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
+    profile = {
+        "rebuild_profile": {
+            "frequency": 5,
+            "varBinds": [yaml_escape_list(sq("TCP-MIB"))],
+        }
+    }
+
+    if str(deployment) == "microk8s":
+        update_profiles_microk8s(profile)
+        update_file_microk8s(
+            [f"{trap_external_ip},,2c,public,,,600,rebuild_profile,,"], "inventory.yaml"
+        )
+        upgrade_helm_microk8s(["inventory.yaml", "profiles.yaml"])
+    else:
+        update_profiles_compose(profile)
+        update_inventory_compose(
+            [f"{trap_external_ip},,2c,public,,,600,rebuild_profile,,"]
+        )
+        upgrade_docker_compose()
+    time.sleep(30)
+    yield
+    if str(deployment) == "microk8s":
+        upgrade_helm_microk8s(
+            [f"{trap_external_ip},,2c,public,,,600,rebuild_profile,,t"]
+        )
+    else:
+        update_inventory_compose(
+            [f"{trap_external_ip},,2c,public,,,600,rebuild_profile,,t"]
+        )
+        upgrade_docker_compose()
+    time.sleep(20)
+
+
+@pytest.mark.usefixtures("setup_rebuild")
+@pytest.mark.part6
+class TestRebuildWithoutConfigChange:
+    """
+    Reproduces the reported scenario: the environment is rebuilt from scratch (all pods /
+    containers deleted, Redis wiped) while the MongoDB volume/PVC survives untouched, and no
+    inventory/profile/group config is changed. Polling must resume on its own, without any
+    edit made through the UI.
+    """
+
+    def test_polling_resumes_after_rebuild_without_config_change(
+        self, request, setup_splunk
+    ):
+        search_string = """| mpreview index=netmetrics | search profiles=rebuild_profile
+        | search "TCP-MIB" """
+
+        # Sanity check: metrics are flowing for the profile before the rebuild.
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, search_string, 2
+        )
+        assert result_count > 0
+        assert metric_count > 0
+
+        deployment = request.config.getoption("sc4snmp_deployment")
+        logger.info(
+            "Simulating a rebuild that wipes Redis/RedBeat but preserves the Mongo "
+            "volume, with no inventory/profile/group config change"
+        )
+        if str(deployment) == "microk8s":
+            rebuild_stack_preserve_mongo_microk8s()
+        else:
+            rebuild_stack_preserve_mongo_compose()
+        time.sleep(60)
+
+        # Metrics must resume for the same profile with a recent time window, even though
+        # nothing was changed in the UI/config after the rebuild.
+        recent_search_string = """| mpreview index=netmetrics earliest=-3m | search profiles=rebuild_profile
+        | search "TCP-MIB" """
+        result_count, metric_count = run_retried_single_search(
+            setup_splunk, recent_search_string, 5, wait=30
+        )
+        assert result_count > 0
+        assert metric_count > 0

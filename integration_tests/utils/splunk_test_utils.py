@@ -357,6 +357,29 @@ def upgrade_docker_compose():
     )
 
 
+def rebuild_stack_preserve_mongo_compose():
+    """
+    Simulate rebuilding the environment from scratch while keeping the MongoDB data
+    volume: wipe Redis (RedBeat's schedule store) and recreate the poller/scheduler/worker
+    containers, but leave the `mongo` container/volume untouched. Then re-run the inventory
+    container the same way a normal redeploy does, WITHOUT changing any config file, so the
+    inventory records end up "Unchanged" from Mongo's point of view.
+    """
+    compose_dir = BASE_DIR / "docker_compose"
+    logger.info("Wiping Redis to simulate a rebuild that drops RedBeat's schedule")
+    os.system("sudo docker exec redis redis-cli FLUSHALL")
+    os.system(
+        f"sudo docker compose -f {compose_dir}/docker-compose.yaml "
+        f"--env-file {compose_dir}/.env up -d --force-recreate "
+        f"redis scheduler worker-poller worker-sender worker-trap"
+    )
+    logger.info("Re-running inventory container without any config change")
+    os.system(
+        f"sudo docker compose -f {compose_dir}/docker-compose.yaml "
+        f"--env-file {compose_dir}/.env up -d --force-recreate inventory"
+    )
+
+
 def create_v3_secrets_compose():
     upgrade_env_compose("ENABLE_TRAPS_SECRETS", "true")
     upgrade_env_compose(
@@ -464,6 +487,44 @@ def upgrade_helm_microk8s(yaml_files):
 
     except Exception as e:
         logger.info(f"[ERROR] Helm upgrade failed: {e}")
+        raise
+
+
+def rebuild_stack_preserve_mongo_microk8s():
+    """
+    Simulate rebuilding the environment from scratch while keeping the MongoDB PVC: delete
+    the Redis StatefulSet (RedBeat's schedule store) and the scheduler/worker Deployments,
+    but never touch the `snmp-mongodb` StatefulSet or its PVC. `helm upgrade` recreates the
+    deleted resources on re-apply. Finally re-run the inventory Job WITHOUT changing any
+    `-f` values file, so the inventory records end up "Unchanged" from Mongo's point of view.
+    """
+    try:
+        logger.info(
+            "Deleting Redis/scheduler/worker resources to simulate a rebuild "
+            "that drops RedBeat's schedule, while keeping the Mongo PVC"
+        )
+        os.system(
+            "sudo microk8s kubectl delete statefulset snmp-redis-standalone -n sc4snmp"
+        )
+        os.system(
+            "sudo microk8s kubectl delete deployment "
+            "snmp-splunk-connect-for-snmp-scheduler "
+            "snmp-splunk-connect-for-snmp-worker-poller "
+            "snmp-splunk-connect-for-snmp-worker-sender "
+            "snmp-splunk-connect-for-snmp-worker-trap "
+            "-n sc4snmp --ignore-not-found"
+        )
+        os.system(
+            "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
+        )
+        logger.info("Re-installing the release without any config change")
+        os.system(
+            "sudo microk8s helm3 upgrade --install snmp -f values.yaml "
+            "./../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+        )
+
+    except Exception as e:
+        logger.info(f"[ERROR] Rebuild simulation failed: {e}")
         raise
 
 
