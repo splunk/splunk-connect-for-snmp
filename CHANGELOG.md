@@ -5,8 +5,9 @@
 ### Changed
 
 ### Fixed
-- Preserve unresolved trap varbind fields during custom translation processing, preventing processing failures and errors.
+- Preserve unresolved trap varbind fields during custom translation processing, preventing processing failures and errors
 - Harden the security context for kubernetes templates
+- Fix schedules not resuming for unchanged inventory records after Redis/RedBeat is reset while MongoDB data is preserved
 
 ## [1.17.0]
 

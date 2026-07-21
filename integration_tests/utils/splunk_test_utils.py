@@ -503,7 +503,9 @@ def rebuild_stack_preserve_mongo_microk8s():
             "Deleting Redis/scheduler/worker resources to simulate a rebuild "
             "that drops RedBeat's schedule, while keeping the Mongo PVC"
         )
-        os.system("sudo microk8s kubectl delete statefulset snmp-redis-standalone -n sc4snmp")
+        os.system(
+            "sudo microk8s kubectl delete statefulset snmp-redis-standalone -n sc4snmp"
+        )
         os.system(
             "sudo microk8s kubectl delete deployment "
             "snmp-splunk-connect-for-snmp-scheduler "
