@@ -17,6 +17,13 @@ image:
 # Secrets to attach to the respective serviceaccount to pull docker images
 imagePullSecrets: []
 
+mibserver:
+  image:
+    repository: ajasnosz558/mibserver
+    pullPolicy: "Always"
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "new2"
+
 # SC4SNMP UI configuration
 UI:
   enable: false
