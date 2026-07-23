@@ -416,15 +416,25 @@ def configure_local_mibs_compose():
     local_mibs directory (the default bind-mount target for the mibserver,
     see LOCAL_MIBS_PATH in docker_compose/.env), then recreate the mibserver
     container so it recompiles its vendor MIB directory.
+
+    The local_mibs directory is auto-created by Docker (as root) the first
+    time the mibserver's bind mount is brought up, so it must be
+    created/populated via sudo rather than plain filesystem calls.
     """
     compose_dir = BASE_DIR / "docker_compose"
     local_mibs_dir = compose_dir / "local_mibs" / "TESTVENDOR"
-    local_mibs_dir.mkdir(parents=True, exist_ok=True)
+    source_dir = LOCAL_MIB_DIR / "TESTVENDOR"
 
-    for mib_file in (LOCAL_MIB_DIR / "TESTVENDOR").iterdir():
-        dest = local_mibs_dir / mib_file.name
-        shutil.copy(mib_file, dest)
-        os.chmod(dest, 0o644)
+    subprocess.run(["sudo", "mkdir", "-p", str(local_mibs_dir)], check=True)
+    for mib_file in source_dir.iterdir():
+        subprocess.run(
+            ["sudo", "cp", str(mib_file), str(local_mibs_dir / mib_file.name)],
+            check=True,
+        )
+    subprocess.run(
+        ["sudo", "chmod", "-R", "a+rX", str(compose_dir / "local_mibs")],
+        check=True,
+    )
 
     logger.info(f"Local MIBs copied to {local_mibs_dir}")
 
@@ -693,7 +703,7 @@ def fetch_mib_index_microk8s():
             "-c",
             "import urllib.request;"
             "print(urllib.request.urlopen("
-            "'http://snmp-mibserver:8000/index.csv').read().decode())",
+            "'http://snmp-mibserver/index.csv').read().decode())",
         ],
         capture_output=True,
         text=True,
