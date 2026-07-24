@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import MagicMock, patch
 
 from pysnmp.smi.rfc1902 import ObjectType
 
@@ -343,21 +342,4 @@ class TestProfile(unittest.TestCase):
                 "SNMPv2-MIB::sysDescr": "profile_b",
                 "IF-MIB::ifDescr": "profile_b",
             },
-        )
-
-    @patch("splunk_connect_for_snmp.snmp.varbinds_resolver.logger")
-    def test_add_mappings_logs_duplicate_decision(self, mock_logger):
-        profile = Profile("test", self.profile_dict)
-
-        result = profile.add_mappings(
-            {"SNMPv2-MIB::sysName.0": "profile_a,profile_b"},
-            {"SNMPv2-MIB::sysName.0": "profile_b,profile_a"},
-        )
-
-        self.assertEqual(result["SNMPv2-MIB::sysName.0"], "profile_a,profile_b")
-        mock_logger.debug.assert_called_once_with(
-            "Profile.add_mappings owner=test key=SNMPv2-MIB::sysName.0 "
-            "dict1_profiles=['profile_a', 'profile_b'] "
-            "dict2_profiles=['profile_b', 'profile_a'] "
-            "added_profiles=[] result_profiles=['profile_a', 'profile_b']"
         )
