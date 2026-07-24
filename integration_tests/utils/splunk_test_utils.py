@@ -15,6 +15,7 @@
 #   ########################################################################
 import logging
 import os
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -27,6 +28,7 @@ CONFIG_DIR = BASE_DIR / "configs"
 SCHEDULER_CONFIG = CONFIG_DIR / "scheduler-config.yaml"
 TRAPS_CONFIG = CONFIG_DIR / "traps-config.yaml"
 INVENTORY_FILE = CONFIG_DIR / "inventory-tests.csv"
+LOCAL_MIB_DIR = BASE_DIR / "mibs"
 
 
 def splunk_single_search(service, search, timeout=300, max_retries=5):
@@ -391,6 +393,92 @@ def create_v3_secrets_compose():
     )
 
 
+def _wait_for_docker_container_running(container_name, timeout=120):
+    start = time.time()
+    while time.time() - start < timeout:
+        result = subprocess.run(
+            ["sudo", "docker", "inspect", "-f", "{{.State.Running}}", container_name],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.stdout.strip() == "true":
+            return
+        time.sleep(1)
+    logger.warning(
+        f"Container {container_name} did not become running within {timeout}s"
+    )
+
+
+def configure_local_mibs_compose():
+    """
+    Copy the local_mibs test fixture into the docker-compose project's
+    local_mibs directory (the default bind-mount target for the mibserver,
+    see LOCAL_MIBS_PATH in docker_compose/.env), then recreate the mibserver
+    container so it recompiles its vendor MIB directory.
+
+    The local_mibs directory is auto-created by Docker (as root) the first
+    time the mibserver's bind mount is brought up, so it must be
+    created/populated via sudo rather than plain filesystem calls.
+    """
+    compose_dir = BASE_DIR / "docker_compose"
+    local_mibs_dir = compose_dir / "local_mibs" / "TESTVENDOR"
+    source_dir = LOCAL_MIB_DIR / "TESTVENDOR"
+
+    subprocess.run(["sudo", "mkdir", "-p", str(local_mibs_dir)], check=True)
+    for mib_file in source_dir.iterdir():
+        subprocess.run(
+            ["sudo", "cp", str(mib_file), str(local_mibs_dir / mib_file.name)],
+            check=True,
+        )
+    subprocess.run(
+        ["sudo", "chmod", "-R", "a+rX", str(compose_dir / "local_mibs")],
+        check=True,
+    )
+
+    logger.info(f"Local MIBs copied to {local_mibs_dir}")
+
+    os.system(
+        f"sudo docker compose -f {compose_dir}/docker-compose.yaml "
+        f"--env-file {compose_dir}/.env up -d --force-recreate snmp-mibserver"
+    )
+    _wait_for_docker_container_running("snmp-mibserver")
+    time.sleep(10)  # allow the mibserver to finish compiling the local MIBs
+
+
+def fetch_mib_index_compose():
+    """Fetch the mibserver's compiled MIB index from inside the network."""
+    result = subprocess.run(
+        [
+            "sudo",
+            "docker",
+            "exec",
+            "sc4snmp-scheduler",
+            "python",
+            "-c",
+            "import urllib.request;"
+            "print(urllib.request.urlopen("
+            "'http://snmp-mibserver:8000/index.csv').read().decode())",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        logger.error(f"Failed to fetch mibserver index: {result.stderr}")
+    return result.stdout
+
+
+def get_mibserver_logs_compose(tail_lines=200):
+    result = subprocess.run(
+        ["sudo", "docker", "logs", "--tail", str(tail_lines), "snmp-mibserver"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return result.stdout + result.stderr
+
+
 def wait_for_containers_initialization():
     script_body = """#!/bin/bash
     while true; do
@@ -556,6 +644,93 @@ def wait_for_pod_initialization_microk8s():
     with open("check_for_pods.sh", "w") as fp:
         fp.write(script_body)
     os.system("chmod a+x check_for_pods.sh && ./check_for_pods.sh")
+
+
+LOCAL_MIBS_HOST_PATH_MICROK8S = "/tmp/sc4snmp_local_mibs"
+
+local_mibs_template_microk8s = """mibserver:
+  localMibs:
+    pathToMibs: "{path}"
+"""
+
+
+def configure_local_mibs_microk8s(host_path=LOCAL_MIBS_HOST_PATH_MICROK8S):
+    """
+    Copy the local_mibs test fixture to a hostPath directory, make it
+    world-readable (the mibserver container runs as a non-root UID/GID and
+    hostPath volumes are not chowned by fsGroup, so this is the correct,
+    permission-safe setup), write a values fragment pointing
+    mibserver.localMibs.pathToMibs at it, upgrade the release, and roll out
+    the mibserver deployment so it recompiles the vendor MIB directory.
+    """
+    vendor_dir = Path(host_path) / "TESTVENDOR"
+    vendor_dir.mkdir(parents=True, exist_ok=True)
+
+    for mib_file in (LOCAL_MIB_DIR / "TESTVENDOR").iterdir():
+        dest = vendor_dir / mib_file.name
+        shutil.copy(mib_file, dest)
+
+    os.system(f"chmod -R a+rX {host_path}")
+    logger.info(f"Local MIBs copied to {vendor_dir}")
+
+    with open("local_mibs.yaml", "w") as fp:
+        fp.write(local_mibs_template_microk8s.format(path=host_path))
+
+    upgrade_helm_microk8s(["local_mibs.yaml"])
+    os.system(
+        "sudo microk8s kubectl rollout restart deployment snmp-mibserver -n sc4snmp"
+    )
+    os.system(
+        "sudo microk8s kubectl rollout status deployment snmp-mibserver "
+        "-n sc4snmp --timeout=120s"
+    )
+    time.sleep(10)  # allow the mibserver to finish compiling the local MIBs
+
+
+def fetch_mib_index_microk8s():
+    """Fetch the mibserver's compiled MIB index from inside the cluster."""
+    result = subprocess.run(
+        [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "exec",
+            "deploy/snmp-splunk-connect-for-snmp-scheduler",
+            "-n",
+            "sc4snmp",
+            "--",
+            "python",
+            "-c",
+            "import urllib.request;"
+            "print(urllib.request.urlopen("
+            "'http://snmp-mibserver/index.csv').read().decode())",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        logger.error(f"Failed to fetch mibserver index: {result.stderr}")
+    return result.stdout
+
+
+def get_mibserver_logs_microk8s(tail_lines=200):
+    result = subprocess.run(
+        [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "logs",
+            "deployment/snmp-mibserver",
+            "-n",
+            "sc4snmp",
+            f"--tail={tail_lines}",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return result.stdout + result.stderr
 
 
 # if __name__ == "__main__":

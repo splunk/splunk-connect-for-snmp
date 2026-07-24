@@ -1,0 +1,25 @@
+SC4SNMP-TEST-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, enterprises
+        FROM SNMPv2-SMI;
+
+sc4snmpTest MODULE-IDENTITY
+    LAST-UPDATED "202607230000Z"
+    ORGANIZATION "N/A - test fixture only"
+    CONTACT-INFO "SC4SNMP integration tests"
+    DESCRIPTION
+        "Minimal test MIB used by the local_mibs integration test to verify
+        that a custom MIB file placed in the mibserver's local_mibs
+        directory is compiled and served correctly."
+    ::= { enterprises 99999 }
+
+sc4snmpTestObject OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "A test object used only to exercise MIB compilation."
+    ::= { sc4snmpTest 1 }
+
+END
