@@ -221,19 +221,61 @@ class Profile:
 
     def add_mappings(self, dict1, dict2) -> dict:
         """
-        Helper to adding varbinds mapping dictionaries inside profiles.
-        When there are the same keys in both dictionaries they will be added after comma.
-        :param dict1:
-        :param dict2:
-        :return mapping:
+        Merge two OID-to-profile mappings without modifying either input.
+
+        Each dictionary maps an OID to one or more comma-separated profile
+        names. When an OID exists in both dictionaries, each distinct profile
+        name is retained once, in first-seen order.
+
+        The previous logic compared the full comma-separated profile string,
+        so duplicate profiles could be added when the profile order differed.
+
+        :param dict1: Base OID-to-profile mapping.
+        :param dict2: OID-to-profile mapping to merge into the base mapping.
+        :return: A new merged mapping containing distinct profile names.
         """
-        mapping = dict1
-        for k, v in dict2.items():
-            if mapping.get(k) and v not in mapping.get(k):
-                mapping[k] = f"{mapping[k]},{v}"
-            elif not mapping.get(k):
-                mapping[k] = v
+        mapping = {
+            mapping_key: ",".join(self.unique_profile_names(profile_names))
+            for mapping_key, profile_names in dict1.items()
+        }
+
+        for mapping_key, profile_names in dict2.items():
+            dict1_profiles = self.unique_profile_names(mapping.get(mapping_key, ""))
+            dict2_profiles = self.unique_profile_names(profile_names)
+
+            dict1_profile_set = set(dict1_profiles)
+            added_profiles = [
+                profile_name
+                for profile_name in dict2_profiles
+                if profile_name not in dict1_profile_set
+            ]
+            result_profiles = dict1_profiles + added_profiles
+            mapping[mapping_key] = ",".join(result_profiles)
+
+            logger.debug(
+                f"Profile.add_mappings name={self.name} key={mapping_key} "
+                f"dict1_profiles={dict1_profiles} "
+                f"dict2_profiles={dict2_profiles} "
+                f"added_profiles={added_profiles} "
+                f"result_profiles={result_profiles}"
+            )
         return mapping
+
+    @staticmethod
+    def unique_profile_names(profile_value: str) -> list[str]:
+        """
+        Return unique profile names while preserving their original order.
+
+        :param profile_value: Comma-separated profile names.
+        :return: Profile names with empty and duplicate entries removed.
+        """
+        return list(
+            dict.fromkeys(
+                profile_name
+                for profile_name in profile_value.split(",")
+                if profile_name
+            )
+        )
 
 
 class ProfileCollection:
