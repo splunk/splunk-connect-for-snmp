@@ -222,23 +222,26 @@ class TestProfile(unittest.TestCase):
 
     def test_add_mappings_does_not_mutate_inputs(self):
         profile = Profile("test", self.profile_dict)
-        left_mapping = {
+        base_mapping = {
             "SNMPv2-MIB::sysName.0": "profile_a",
             "SNMPv2-MIB::sysContact.0": "profile_a",
         }
-        right_mapping = {
+        incoming_mapping = {
             "SNMPv2-MIB::sysName.0": "profile_b",
             "SNMPv2-MIB::sysLocation.0": "profile_b",
         }
-        original_left = left_mapping.copy()
-        original_right = right_mapping.copy()
+        original_base_mapping = base_mapping.copy()
+        original_incoming_mapping = incoming_mapping.copy()
 
-        result = profile.add_mappings(left_mapping, right_mapping)
+        result = profile.add_mappings(
+            base_mapping=base_mapping,
+            incoming_mapping=incoming_mapping,
+        )
 
-        self.assertEqual(left_mapping, original_left)
-        self.assertEqual(right_mapping, original_right)
-        self.assertIsNot(result, left_mapping)
-        self.assertIsNot(result, right_mapping)
+        self.assertEqual(base_mapping, original_base_mapping)
+        self.assertEqual(incoming_mapping, original_incoming_mapping)
+        self.assertIsNot(result, base_mapping)
+        self.assertIsNot(result, incoming_mapping)
         self.assertEqual(
             result,
             {
@@ -252,8 +255,8 @@ class TestProfile(unittest.TestCase):
         profile = Profile("test", self.profile_dict)
 
         result = profile.add_mappings(
-            {"SNMPv2-MIB::sysName.0": "profile_10"},
-            {"SNMPv2-MIB::sysName.0": "profile_1"},
+            base_mapping={"SNMPv2-MIB::sysName.0": "profile_10"},
+            incoming_mapping={"SNMPv2-MIB::sysName.0": "profile_1"},
         )
 
         self.assertEqual(result["SNMPv2-MIB::sysName.0"], "profile_10,profile_1")
@@ -274,14 +277,14 @@ class TestProfile(unittest.TestCase):
             ),
         ]
 
-        for dict1_profiles, dict2_profiles, expected_profiles in cases:
+        for base_profiles, incoming_profiles, expected_profiles in cases:
             with self.subTest(
-                dict1_profiles=dict1_profiles,
-                dict2_profiles=dict2_profiles,
+                base_profiles=base_profiles,
+                incoming_profiles=incoming_profiles,
             ):
                 result = profile.add_mappings(
-                    {mapping_key: dict1_profiles},
-                    {mapping_key: dict2_profiles},
+                    base_mapping={mapping_key: base_profiles},
+                    incoming_mapping={mapping_key: incoming_profiles},
                 )
 
                 self.assertEqual(result[mapping_key], expected_profiles)

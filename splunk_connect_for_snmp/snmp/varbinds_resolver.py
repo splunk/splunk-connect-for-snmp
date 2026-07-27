@@ -209,17 +209,23 @@ class Profile:
         new_instance.varbinds_bulk = self.varbinds_bulk + other.varbinds_bulk
         new_instance.varbinds_get = self.varbinds_get + other.varbinds_get
         new_instance.varbinds_bulk_mapping = self.add_mappings(
-            self.varbinds_bulk_mapping, other.varbinds_bulk_mapping
+            base_mapping=self.varbinds_bulk_mapping,
+            incoming_mapping=other.varbinds_bulk_mapping,
         )
         new_instance.varbinds_get_mapping = self.add_mappings(
-            self.varbinds_get_mapping, other.varbinds_get_mapping
+            base_mapping=self.varbinds_get_mapping,
+            incoming_mapping=other.varbinds_get_mapping,
         )
         return new_instance
 
     def __repr__(self):
         return f"Profile: {self.name}, varbinds_get: {self.varbinds_get}, varbinds_bulk: {self.varbinds_bulk}, varbinds_get_mapping: {self.varbinds_get_mapping}, varbinds_bulk_mapping: {self.varbinds_bulk_mapping}"
 
-    def add_mappings(self, dict1, dict2) -> dict:
+    def add_mappings(
+        self,
+        base_mapping: dict[str, str],
+        incoming_mapping: dict[str, str],
+    ) -> dict[str, str]:
         """
         Merge two OID-to-profile mappings without modifying either input.
 
@@ -230,36 +236,40 @@ class Profile:
         The previous logic compared the full comma-separated profile string,
         so duplicate profiles could be added when the profile order differed.
 
-        :param dict1: Base OID-to-profile mapping.
-        :param dict2: OID-to-profile mapping to merge into the base mapping.
+        :param base_mapping: Existing OID-to-profile mapping.
+        :param incoming_mapping: OID-to-profile mapping to merge into the base.
         :return: A new merged mapping containing distinct profile names.
         """
-        mapping = {
-            mapping_key: ",".join(self.unique_profile_names(profile_names))
-            for mapping_key, profile_names in dict1.items()
+        merged_profile_names = {
+            mapping_key: Profile.unique_profile_names(profile_value)
+            for mapping_key, profile_value in base_mapping.items()
         }
 
-        for mapping_key, profile_names in dict2.items():
-            dict1_profiles = self.unique_profile_names(mapping.get(mapping_key, ""))
-            dict2_profiles = self.unique_profile_names(profile_names)
+        for mapping_key, profile_value in incoming_mapping.items():
+            base_profiles = merged_profile_names.get(mapping_key, [])
+            incoming_profiles = Profile.unique_profile_names(profile_value)
 
-            dict1_profile_set = set(dict1_profiles)
+            base_profile_set = set(base_profiles)
             added_profiles = [
                 profile_name
-                for profile_name in dict2_profiles
-                if profile_name not in dict1_profile_set
+                for profile_name in incoming_profiles
+                if profile_name not in base_profile_set
             ]
-            result_profiles = dict1_profiles + added_profiles
-            mapping[mapping_key] = ",".join(result_profiles)
+            result_profiles = base_profiles + added_profiles
+            merged_profile_names[mapping_key] = result_profiles
 
             logger.debug(
                 f"Profile.add_mappings name={self.name} key={mapping_key} "
-                f"dict1_profiles={dict1_profiles} "
-                f"dict2_profiles={dict2_profiles} "
+                f"base_profiles={base_profiles} "
+                f"incoming_profiles={incoming_profiles} "
                 f"added_profiles={added_profiles} "
                 f"result_profiles={result_profiles}"
             )
-        return mapping
+
+        return {
+            mapping_key: ",".join(profile_names)
+            for mapping_key, profile_names in merged_profile_names.items()
+        }
 
     @staticmethod
     def unique_profile_names(profile_value: str) -> list[str]:
