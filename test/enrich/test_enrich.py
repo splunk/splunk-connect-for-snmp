@@ -229,6 +229,33 @@ input_enrich = {
 
 @patch("splunk_connect_for_snmp.enrich.tasks.MONGO_UPDATE_BATCH_THRESHOLD", 2)
 class TestEnrich(TestCase):
+    @patch("splunk_connect_for_snmp.enrich.tasks._process_enrichment")
+    @patch("splunk_connect_for_snmp.enrich.tasks.pymongo.MongoClient")
+    def test_enrich_closes_mongo_client(self, m_mongo_client, m_process_enrichment):
+        m_process_enrichment.return_value = input_dict
+
+        result = enrich(input_dict)
+
+        self.assertIs(result, input_dict)
+        m_process_enrichment.assert_called_once_with(
+            input_dict,
+            input_dict["address"],
+            m_mongo_client.return_value,
+        )
+        m_mongo_client.return_value.close.assert_called_once_with()
+
+    @patch("splunk_connect_for_snmp.enrich.tasks._process_enrichment")
+    @patch("splunk_connect_for_snmp.enrich.tasks.pymongo.MongoClient")
+    def test_enrich_closes_mongo_client_on_error(
+        self, m_mongo_client, m_process_enrichment
+    ):
+        m_process_enrichment.side_effect = RuntimeError("enrichment failed")
+
+        with self.assertRaisesRegex(RuntimeError, "enrichment failed"):
+            enrich(input_dict)
+
+        m_mongo_client.return_value.close.assert_called_once_with()
+
     @patch("pymongo.collection.Collection.find_one")
     @patch("pymongo.collection.Collection.update_one")
     @patch("pymongo.collection.Collection.bulk_write")

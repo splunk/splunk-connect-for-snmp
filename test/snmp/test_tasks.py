@@ -19,7 +19,7 @@ class TestTasks(TestCase):
         resolved_identity.getMibNode = MagicMock(return_value=mib_node)
         self.mock_identity_resolve.return_value = resolved_identity
 
-    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
+    @patch("splunk_connect_for_snmp.snmp.tasks.get_inventory")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch("time.time")
@@ -52,8 +52,9 @@ class TestTasks(TestCase):
             },
             result,
         )
+        m_mongo_client.return_value.close.assert_called_once_with()
 
-    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
+    @patch("splunk_connect_for_snmp.snmp.tasks.get_inventory")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch("time.time")
@@ -91,8 +92,9 @@ class TestTasks(TestCase):
             },
             result,
         )
+        m_mongo_client.return_value.close.assert_called_once_with()
 
-    @patch("splunk_connect_for_snmp.snmp.manager.get_inventory")
+    @patch("splunk_connect_for_snmp.snmp.tasks.get_inventory")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.do_work")
     @patch("time.time")
@@ -129,6 +131,22 @@ class TestTasks(TestCase):
             },
             result,
         )
+        m_mongo_client.return_value.close.assert_called_once_with()
+
+    @patch("splunk_connect_for_snmp.snmp.manager.Poller.__init__", return_value=None)
+    def test_load_inventory_record_closes_client_on_error(
+        self, _m_poller, m_mongo_client
+    ):
+        from splunk_connect_for_snmp.snmp.tasks import load_inventory_record
+
+        with patch(
+            "splunk_connect_for_snmp.snmp.tasks.get_inventory",
+            side_effect=RuntimeError("inventory lookup failed"),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "inventory lookup failed"):
+                load_inventory_record("192.168.0.1")
+
+        m_mongo_client.return_value.close.assert_called_once_with()
 
     @patch("pysnmp.smi.rfc1902.ObjectType.resolveWithMib")
     @patch("splunk_connect_for_snmp.snmp.manager.Poller.process_snmp_data")

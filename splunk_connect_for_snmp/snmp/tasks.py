@@ -75,6 +75,31 @@ TTL_DNS_CACHE_TRAPS = int(os.getenv("TTL_DNS_CACHE_TRAPS", "1800"))
 IPv6_ENABLED = human_bool(os.getenv("IPv6_ENABLED", "false").lower())
 
 
+def load_inventory_record(address):
+    """
+    Load the inventory record before starting an SNMP poll or walk.
+
+    A MongoDB client is created only for the inventory lookup. Once the
+    inventory record is loaded, the client is no longer needed by the poll or
+    walk task.
+
+    :param address: address of the SNMP device, optionally including the port
+
+    :return: inventory record used for the poll or walk
+
+    ## NOTE
+    - The MongoDB client is closed before the SNMP work starts, so it is not
+      kept open during a long-running poll or walk.
+    - The finally block also closes the client if the inventory lookup fails.
+    """
+    mongo_client = pymongo.MongoClient(MONGO_URI)
+    try:
+        mongo_inventory = mongo_client[MONGO_DB].inventory
+        return get_inventory(mongo_inventory, address)
+    finally:
+        mongo_client.close()
+
+
 @shared_task(
     bind=True,
     base=Poller,
@@ -97,11 +122,8 @@ def walk(self, **kwargs):
     chain_of_tasks_expiry_time = kwargs.get("chain_of_tasks_expiry_time")
     if profile:
         profile = [profile]
-    mongo_client = pymongo.MongoClient(MONGO_URI)
-    mongo_db = mongo_client[MONGO_DB]
-    mongo_inventory = mongo_db.inventory
 
-    ir = get_inventory(mongo_inventory, address)
+    ir = load_inventory_record(address)
     retry = True
     while retry:
         retry, result = self.do_work(ir, walk=True, profiles=profile)
@@ -134,11 +156,8 @@ def poll(self, **kwargs):
     address = kwargs["address"]
     profiles = kwargs["profiles"]
     group = kwargs.get("group")
-    mongo_client = pymongo.MongoClient(MONGO_URI)
-    mongo_db = mongo_client[MONGO_DB]
-    mongo_inventory = mongo_db.inventory
 
-    ir = get_inventory(mongo_inventory, address)
+    ir = load_inventory_record(address)
     _, result = self.do_work(ir, profiles=profiles)
 
     # After a Walk tell schedule to recalc

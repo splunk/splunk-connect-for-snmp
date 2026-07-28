@@ -90,6 +90,26 @@ class EnrichTask(Task):
 def enrich(self, result):
     address = result["address"]
     mongo_client = pymongo.MongoClient(MONGO_URI)
+    try:
+        return _process_enrichment(result, address, mongo_client)
+    finally:
+        mongo_client.close()
+
+
+def _process_enrichment(result, address, mongo_client):
+    """
+    Process enrichment for an SNMP poll result.
+
+    It checks the collected data against the target and attribute data already
+    stored in MongoDB. Any changed values are saved, and the stored fields are
+    added back to the metrics before the result is returned.
+
+    :param result: poll result containing the collected metrics and fields
+    :param address: address of the SNMP device
+    :param mongo_client: MongoDB client created by the enrich task
+
+    :return: the poll result with the stored fields added
+    """
     targets_collection = mongo_client.sc4snmp.targets
     attributes_collection = mongo_client.sc4snmp.attributes
     attributes_bulk_write_operations = []
