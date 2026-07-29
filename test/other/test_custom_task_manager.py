@@ -297,6 +297,28 @@ class TestCustomTaskManager(TestCase):
         task_manager.delete_all_walk_tasks.assert_not_called()
         self.assertFalse(did_time_change)
 
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
+    def test_walk_task_exists_true(self, redbeat_scheduler_entry_from_key):
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+
+        redbeat_scheduler_entry_from_key.return_value = Mock()
+
+        self.assertTrue(task_manager.walk_task_exists("192.168.0.1:161"))
+        redbeat_scheduler_entry_from_key.assert_called_with(
+            "redbeat:sc4snmp;192.168.0.1:161;walk", app=ANY
+        )
+
+    @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
+    def test_walk_task_exists_false(self, redbeat_scheduler_entry_from_key):
+        task_manager = CustomPeriodicTaskManager.__new__(CustomPeriodicTaskManager)
+
+        redbeat_scheduler_entry_from_key.side_effect = KeyError
+
+        self.assertFalse(task_manager.walk_task_exists("192.168.0.1:161"))
+        redbeat_scheduler_entry_from_key.assert_called_with(
+            "redbeat:sc4snmp;192.168.0.1:161;walk", app=ANY
+        )
+
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.get_schedules")
     @patch("redbeat.schedulers.RedBeatSchedulerEntry.from_key")
     def test_rerun_all_walks(self, m_from_key, m_objects):

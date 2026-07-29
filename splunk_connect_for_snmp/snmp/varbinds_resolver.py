@@ -209,31 +209,83 @@ class Profile:
         new_instance.varbinds_bulk = self.varbinds_bulk + other.varbinds_bulk
         new_instance.varbinds_get = self.varbinds_get + other.varbinds_get
         new_instance.varbinds_bulk_mapping = self.add_mappings(
-            self.varbinds_bulk_mapping, other.varbinds_bulk_mapping
+            base_mapping=self.varbinds_bulk_mapping,
+            incoming_mapping=other.varbinds_bulk_mapping,
         )
         new_instance.varbinds_get_mapping = self.add_mappings(
-            self.varbinds_get_mapping, other.varbinds_get_mapping
+            base_mapping=self.varbinds_get_mapping,
+            incoming_mapping=other.varbinds_get_mapping,
         )
         return new_instance
 
     def __repr__(self):
         return f"Profile: {self.name}, varbinds_get: {self.varbinds_get}, varbinds_bulk: {self.varbinds_bulk}, varbinds_get_mapping: {self.varbinds_get_mapping}, varbinds_bulk_mapping: {self.varbinds_bulk_mapping}"
 
-    def add_mappings(self, dict1, dict2) -> dict:
+    def add_mappings(
+        self,
+        base_mapping: dict[str, str],
+        incoming_mapping: dict[str, str],
+    ) -> dict[str, str]:
         """
-        Helper to adding varbinds mapping dictionaries inside profiles.
-        When there are the same keys in both dictionaries they will be added after comma.
-        :param dict1:
-        :param dict2:
-        :return mapping:
+        Merge two OID-to-profile mappings without modifying either input.
+
+        Each dictionary maps an OID to one or more comma-separated profile
+        names. When an OID exists in both dictionaries, each distinct profile
+        name is retained once, in first-seen order.
+
+        The previous logic compared the full comma-separated profile string,
+        so duplicate profiles could be added when the profile order differed.
+
+        :param base_mapping: Existing OID-to-profile mapping.
+        :param incoming_mapping: OID-to-profile mapping to merge into the base.
+        :return: A new merged mapping containing distinct profile names.
         """
-        mapping = dict1
-        for k, v in dict2.items():
-            if mapping.get(k) and v not in mapping.get(k):
-                mapping[k] = f"{mapping[k]},{v}"
-            elif not mapping.get(k):
-                mapping[k] = v
-        return mapping
+        merged_profile_names = {
+            mapping_key: Profile.unique_profile_names(profile_value)
+            for mapping_key, profile_value in base_mapping.items()
+        }
+
+        for mapping_key, profile_value in incoming_mapping.items():
+            base_profiles = merged_profile_names.get(mapping_key, [])
+            incoming_profiles = Profile.unique_profile_names(profile_value)
+
+            base_profile_set = set(base_profiles)
+            added_profiles = [
+                profile_name
+                for profile_name in incoming_profiles
+                if profile_name not in base_profile_set
+            ]
+            result_profiles = base_profiles + added_profiles
+            merged_profile_names[mapping_key] = result_profiles
+
+            logger.debug(
+                f"Profile.add_mappings name={self.name} key={mapping_key} "
+                f"base_profiles={base_profiles} "
+                f"incoming_profiles={incoming_profiles} "
+                f"added_profiles={added_profiles} "
+                f"result_profiles={result_profiles}"
+            )
+
+        return {
+            mapping_key: ",".join(profile_names)
+            for mapping_key, profile_names in merged_profile_names.items()
+        }
+
+    @staticmethod
+    def unique_profile_names(profile_value: str) -> list[str]:
+        """
+        Return unique profile names while preserving their original order.
+
+        :param profile_value: Comma-separated profile names.
+        :return: Profile names with empty and duplicate entries removed.
+        """
+        return list(
+            dict.fromkeys(
+                profile_name
+                for profile_name in profile_value.split(",")
+                if profile_name
+            )
+        )
 
 
 class ProfileCollection:

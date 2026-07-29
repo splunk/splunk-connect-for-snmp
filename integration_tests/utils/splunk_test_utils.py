@@ -15,6 +15,7 @@
 #   ########################################################################
 import logging
 import os
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -27,6 +28,7 @@ CONFIG_DIR = BASE_DIR / "configs"
 SCHEDULER_CONFIG = CONFIG_DIR / "scheduler-config.yaml"
 TRAPS_CONFIG = CONFIG_DIR / "traps-config.yaml"
 INVENTORY_FILE = CONFIG_DIR / "inventory-tests.csv"
+LOCAL_MIB_DIR = BASE_DIR / "mibs"
 
 
 def splunk_single_search(service, search, timeout=300, max_retries=5):
@@ -357,6 +359,29 @@ def upgrade_docker_compose():
     )
 
 
+def rebuild_stack_preserve_mongo_compose():
+    """
+    Simulate rebuilding the environment from scratch while keeping the MongoDB data
+    volume: wipe Redis (RedBeat's schedule store) and recreate the poller/scheduler/worker
+    containers, but leave the `mongo` container/volume untouched. Then re-run the inventory
+    container the same way a normal redeploy does, WITHOUT changing any config file, so the
+    inventory records end up "Unchanged" from Mongo's point of view.
+    """
+    compose_dir = BASE_DIR / "docker_compose"
+    logger.info("Wiping Redis to simulate a rebuild that drops RedBeat's schedule")
+    os.system("sudo docker exec redis redis-cli FLUSHALL")
+    os.system(
+        f"sudo docker compose -f {compose_dir}/docker-compose.yaml "
+        f"--env-file {compose_dir}/.env up -d --force-recreate "
+        f"redis scheduler worker-poller worker-sender worker-trap"
+    )
+    logger.info("Re-running inventory container without any config change")
+    os.system(
+        f"sudo docker compose -f {compose_dir}/docker-compose.yaml "
+        f"--env-file {compose_dir}/.env up -d --force-recreate inventory"
+    )
+
+
 def create_v3_secrets_compose():
     upgrade_env_compose("ENABLE_TRAPS_SECRETS", "true")
     upgrade_env_compose(
@@ -366,6 +391,92 @@ def create_v3_secrets_compose():
             "sample_v3_values",
         ),
     )
+
+
+def _wait_for_docker_container_running(container_name, timeout=120):
+    start = time.time()
+    while time.time() - start < timeout:
+        result = subprocess.run(
+            ["sudo", "docker", "inspect", "-f", "{{.State.Running}}", container_name],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.stdout.strip() == "true":
+            return
+        time.sleep(1)
+    logger.warning(
+        f"Container {container_name} did not become running within {timeout}s"
+    )
+
+
+def configure_local_mibs_compose():
+    """
+    Copy the local_mibs test fixture into the docker-compose project's
+    local_mibs directory (the default bind-mount target for the mibserver,
+    see LOCAL_MIBS_PATH in docker_compose/.env), then recreate the mibserver
+    container so it recompiles its vendor MIB directory.
+
+    The local_mibs directory is auto-created by Docker (as root) the first
+    time the mibserver's bind mount is brought up, so it must be
+    created/populated via sudo rather than plain filesystem calls.
+    """
+    compose_dir = BASE_DIR / "docker_compose"
+    local_mibs_dir = compose_dir / "local_mibs" / "TESTVENDOR"
+    source_dir = LOCAL_MIB_DIR / "TESTVENDOR"
+
+    subprocess.run(["sudo", "mkdir", "-p", str(local_mibs_dir)], check=True)
+    for mib_file in source_dir.iterdir():
+        subprocess.run(
+            ["sudo", "cp", str(mib_file), str(local_mibs_dir / mib_file.name)],
+            check=True,
+        )
+    subprocess.run(
+        ["sudo", "chmod", "-R", "a+rX", str(compose_dir / "local_mibs")],
+        check=True,
+    )
+
+    logger.info(f"Local MIBs copied to {local_mibs_dir}")
+
+    os.system(
+        f"sudo docker compose -f {compose_dir}/docker-compose.yaml "
+        f"--env-file {compose_dir}/.env up -d --force-recreate snmp-mibserver"
+    )
+    _wait_for_docker_container_running("snmp-mibserver")
+    time.sleep(10)  # allow the mibserver to finish compiling the local MIBs
+
+
+def fetch_mib_index_compose():
+    """Fetch the mibserver's compiled MIB index from inside the network."""
+    result = subprocess.run(
+        [
+            "sudo",
+            "docker",
+            "exec",
+            "sc4snmp-scheduler",
+            "python",
+            "-c",
+            "import urllib.request;"
+            "print(urllib.request.urlopen("
+            "'http://snmp-mibserver:8000/index.csv').read().decode())",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        logger.error(f"Failed to fetch mibserver index: {result.stderr}")
+    return result.stdout
+
+
+def get_mibserver_logs_compose(tail_lines=200):
+    result = subprocess.run(
+        ["sudo", "docker", "logs", "--tail", str(tail_lines), "snmp-mibserver"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return result.stdout + result.stderr
 
 
 def wait_for_containers_initialization():
@@ -467,6 +578,44 @@ def upgrade_helm_microk8s(yaml_files):
         raise
 
 
+def rebuild_stack_preserve_mongo_microk8s():
+    """
+    Simulate rebuilding the environment from scratch while keeping the MongoDB PVC: delete
+    the Redis StatefulSet (RedBeat's schedule store) and the scheduler/worker Deployments,
+    but never touch the `snmp-mongodb` StatefulSet or its PVC. `helm upgrade` recreates the
+    deleted resources on re-apply. Finally re-run the inventory Job WITHOUT changing any
+    `-f` values file, so the inventory records end up "Unchanged" from Mongo's point of view.
+    """
+    try:
+        logger.info(
+            "Deleting Redis/scheduler/worker resources to simulate a rebuild "
+            "that drops RedBeat's schedule, while keeping the Mongo PVC"
+        )
+        os.system(
+            "sudo microk8s kubectl delete statefulset snmp-redis-standalone -n sc4snmp"
+        )
+        os.system(
+            "sudo microk8s kubectl delete deployment "
+            "snmp-splunk-connect-for-snmp-scheduler "
+            "snmp-splunk-connect-for-snmp-worker-poller "
+            "snmp-splunk-connect-for-snmp-worker-sender "
+            "snmp-splunk-connect-for-snmp-worker-trap "
+            "-n sc4snmp --ignore-not-found"
+        )
+        os.system(
+            "sudo microk8s kubectl delete jobs/snmp-splunk-connect-for-snmp-inventory -n sc4snmp"
+        )
+        logger.info("Re-installing the release without any config change")
+        os.system(
+            "sudo microk8s helm3 upgrade --install snmp -f values.yaml "
+            "./../charts/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace"
+        )
+
+    except Exception as e:
+        logger.info(f"[ERROR] Rebuild simulation failed: {e}")
+        raise
+
+
 def create_v3_secrets_microk8s(
     secret_name="secretv4",
     user_name="snmp-poller",
@@ -495,6 +644,93 @@ def wait_for_pod_initialization_microk8s():
     with open("check_for_pods.sh", "w") as fp:
         fp.write(script_body)
     os.system("chmod a+x check_for_pods.sh && ./check_for_pods.sh")
+
+
+LOCAL_MIBS_HOST_PATH_MICROK8S = "/tmp/sc4snmp_local_mibs"
+
+local_mibs_template_microk8s = """mibserver:
+  localMibs:
+    pathToMibs: "{path}"
+"""
+
+
+def configure_local_mibs_microk8s(host_path=LOCAL_MIBS_HOST_PATH_MICROK8S):
+    """
+    Copy the local_mibs test fixture to a hostPath directory, make it
+    world-readable (the mibserver container runs as a non-root UID/GID and
+    hostPath volumes are not chowned by fsGroup, so this is the correct,
+    permission-safe setup), write a values fragment pointing
+    mibserver.localMibs.pathToMibs at it, upgrade the release, and roll out
+    the mibserver deployment so it recompiles the vendor MIB directory.
+    """
+    vendor_dir = Path(host_path) / "TESTVENDOR"
+    vendor_dir.mkdir(parents=True, exist_ok=True)
+
+    for mib_file in (LOCAL_MIB_DIR / "TESTVENDOR").iterdir():
+        dest = vendor_dir / mib_file.name
+        shutil.copy(mib_file, dest)
+
+    os.system(f"chmod -R a+rX {host_path}")
+    logger.info(f"Local MIBs copied to {vendor_dir}")
+
+    with open("local_mibs.yaml", "w") as fp:
+        fp.write(local_mibs_template_microk8s.format(path=host_path))
+
+    upgrade_helm_microk8s(["local_mibs.yaml"])
+    os.system(
+        "sudo microk8s kubectl rollout restart deployment snmp-mibserver -n sc4snmp"
+    )
+    os.system(
+        "sudo microk8s kubectl rollout status deployment snmp-mibserver "
+        "-n sc4snmp --timeout=120s"
+    )
+    time.sleep(10)  # allow the mibserver to finish compiling the local MIBs
+
+
+def fetch_mib_index_microk8s():
+    """Fetch the mibserver's compiled MIB index from inside the cluster."""
+    result = subprocess.run(
+        [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "exec",
+            "deploy/snmp-splunk-connect-for-snmp-scheduler",
+            "-n",
+            "sc4snmp",
+            "--",
+            "python",
+            "-c",
+            "import urllib.request;"
+            "print(urllib.request.urlopen("
+            "'http://snmp-mibserver/index.csv').read().decode())",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        logger.error(f"Failed to fetch mibserver index: {result.stderr}")
+    return result.stdout
+
+
+def get_mibserver_logs_microk8s(tail_lines=200):
+    result = subprocess.run(
+        [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "logs",
+            "deployment/snmp-mibserver",
+            "-n",
+            "sc4snmp",
+            f"--tail={tail_lines}",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return result.stdout + result.stderr
 
 
 # if __name__ == "__main__":
