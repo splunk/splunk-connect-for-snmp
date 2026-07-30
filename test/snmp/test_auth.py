@@ -68,7 +68,13 @@ class TestAuth(IsolatedAsyncioTestCase):
 
     @patch("splunk_connect_for_snmp.snmp.auth.get_cmd", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.snmp.auth.fetch_security_engine_id")
-    async def test_get_security_engine_id_not_present(self, m_fetch, m_get_cmd):
+    @patch(
+        "splunk_connect_for_snmp.snmp.auth.setup_transport_target",
+        new_callable=AsyncMock,
+    )
+    async def test_get_security_engine_id_not_present(
+        self, m_setup_transport_target, m_fetch, m_get_cmd
+    ):
         ir2 = InventoryRecord(
             **{
                 "address": "192.168.0.1",
@@ -96,11 +102,20 @@ class TestAuth(IsolatedAsyncioTestCase):
         calls = snmpEngine.observer.register_observer.call_args_list
 
         self.assertEqual("rfc3412.prepareDataElements:internal", calls[0].args[1])
+        snmpEngine.observer.unregister_observer.assert_called_once_with(
+            calls[0].args[0]
+        )
         m_get_cmd.assert_called()
 
     @patch("splunk_connect_for_snmp.snmp.auth.get_cmd", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.snmp.auth.fetch_security_engine_id")
-    async def test_get_security_engine_id(self, m_fetch, m_get_cmd):
+    @patch(
+        "splunk_connect_for_snmp.snmp.auth.setup_transport_target",
+        new_callable=AsyncMock,
+    )
+    async def test_get_security_engine_id(
+        self, m_setup_transport_target, m_fetch, m_get_cmd
+    ):
         ir2 = InventoryRecord(
             **{
                 "address": "192.168.0.1",
@@ -128,9 +143,29 @@ class TestAuth(IsolatedAsyncioTestCase):
 
         calls = snmpEngine.observer.register_observer.call_args_list
         self.assertEqual("rfc3412.prepareDataElements:internal", calls[0].args[1])
+        snmpEngine.observer.unregister_observer.assert_called_once_with(
+            calls[0].args[0]
+        )
 
         m_get_cmd.assert_called()
         self.assertEqual(result, "My test value")
+
+    @patch(
+        "splunk_connect_for_snmp.snmp.auth.setup_transport_target",
+        new_callable=AsyncMock,
+    )
+    @patch("splunk_connect_for_snmp.snmp.auth.get_cmd", new_callable=AsyncMock)
+    async def test_get_security_engine_id_unregisters_observer_on_probe_failure(
+        self, m_get_cmd, m_setup_transport_target
+    ):
+        snmp_engine = Mock()
+        m_get_cmd.side_effect = RuntimeError("probe failed")
+
+        with self.assertRaisesRegex(RuntimeError, "probe failed"):
+            await get_security_engine_id(Mock(), ir, snmp_engine)
+
+        callback = snmp_engine.observer.register_observer.call_args.args[0]
+        snmp_engine.observer.unregister_observer.assert_called_once_with(callback)
 
     def test_fetch_security_engine_id(self):
         result = fetch_security_engine_id(

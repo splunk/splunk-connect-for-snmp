@@ -53,7 +53,7 @@ class TestDoWork(IsolatedAsyncioTestCase):
     async def test_do_work_no_work_to_do(self, setup_transport, get_auth):
         poller = Poller.__new__(Poller)
         poller.last_modified = time.time()
-        poller.snmp_engine = None
+        poller.mib_view_controller = MagicMock()
         poller.profiles_manager = MagicMock()
         poller.profiles_collection = MagicMock()
         poller.profiles_collection.process_profiles = MagicMock()
@@ -72,7 +72,7 @@ class TestDoWork(IsolatedAsyncioTestCase):
     @patch("mongolock.MongoLock.release", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.get_auth", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.get_snmp_engine", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.SnmpEngine", MagicMock())
     @patch(
         "splunk_connect_for_snmp.snmp.manager.setup_transport_target",
         new_callable=AsyncMock,
@@ -88,7 +88,6 @@ class TestDoWork(IsolatedAsyncioTestCase):
     ):
         poller = Poller.__new__(Poller)
         poller.last_modified = time.time()
-        poller.snmp_engine = None
         poller.builder = MagicMock()
         poller.mib_view_controller = MagicMock()
         poller.profiles_manager = MagicMock()
@@ -128,7 +127,7 @@ class TestDoWork(IsolatedAsyncioTestCase):
     @patch("mongolock.MongoLock.release", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.get_auth", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.get_snmp_engine", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.SnmpEngine", MagicMock())
     @patch(
         "splunk_connect_for_snmp.snmp.manager.setup_transport_target",
         new_callable=AsyncMock,
@@ -144,7 +143,6 @@ class TestDoWork(IsolatedAsyncioTestCase):
     ):
         poller = Poller.__new__(Poller)
         poller.last_modified = time.time()
-        poller.snmp_engine = None
         poller.builder = MagicMock()
         poller.mib_view_controller = MagicMock()
         poller.process_snmp_data = MagicMock()
@@ -190,7 +188,6 @@ class TestDoWork(IsolatedAsyncioTestCase):
     ):
         poller = Poller.__new__(Poller)
         poller.last_modified = time.time()
-        poller.snmp_engine = None
         poller.builder = MagicMock()
         poller.mib_view_controller = MagicMock()
         poller.process_snmp_data = MagicMock()
@@ -218,7 +215,7 @@ class TestDoWork(IsolatedAsyncioTestCase):
     @patch("mongolock.MongoLock.release", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.get_auth", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.get_snmp_engine", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.SnmpEngine", MagicMock())
     @patch(
         "splunk_connect_for_snmp.snmp.manager.setup_transport_target",
         new_callable=AsyncMock,
@@ -234,8 +231,8 @@ class TestDoWork(IsolatedAsyncioTestCase):
     ):
         poller = Poller.__new__(Poller)
         poller.last_modified = time.time()
-        poller.snmp_engine = None
         poller.builder = MagicMock()
+        poller.mib_view_controller = MagicMock()
         poller.process_snmp_data = MagicMock(return_value=(False, [], {}))
         poller.profiles_manager = MagicMock()
         requested_profiles = ["profile1", "profile2"]
@@ -270,7 +267,7 @@ class TestDoWork(IsolatedAsyncioTestCase):
     @patch("mongolock.MongoLock.release", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.get_auth", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.get_snmp_engine", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.SnmpEngine", MagicMock())
     @patch(
         "splunk_connect_for_snmp.snmp.manager.setup_transport_target",
         new_callable=AsyncMock,
@@ -286,8 +283,8 @@ class TestDoWork(IsolatedAsyncioTestCase):
     ):
         poller = Poller.__new__(Poller)
         poller.last_modified = time.time()
-        poller.snmp_engine = None
         poller.builder = MagicMock()
+        poller.mib_view_controller = MagicMock()
         poller.process_snmp_data = MagicMock()
         poller.profiles_manager = MagicMock()
         requested_profiles = ["profile1", "profile2"]
@@ -319,7 +316,7 @@ class TestDoWork(IsolatedAsyncioTestCase):
     @patch("mongolock.MongoLock.release", MagicMock())
     @patch("splunk_connect_for_snmp.snmp.manager.get_auth", new_callable=AsyncMock)
     @patch("splunk_connect_for_snmp.snmp.manager.get_context_data", MagicMock())
-    @patch("splunk_connect_for_snmp.snmp.manager.Poller.get_snmp_engine", MagicMock())
+    @patch("splunk_connect_for_snmp.snmp.manager.SnmpEngine", MagicMock())
     @patch(
         "splunk_connect_for_snmp.snmp.manager.setup_transport_target",
         new_callable=AsyncMock,
@@ -336,8 +333,8 @@ class TestDoWork(IsolatedAsyncioTestCase):
     ):
         poller = Poller.__new__(Poller)
         poller.last_modified = time.time()
-        poller.snmp_engine = None
         poller.builder = MagicMock()
+        poller.mib_view_controller = MagicMock()
         poller.process_snmp_data = MagicMock(return_value=(False, [], {}))
         poller.profiles_manager = MagicMock()
         requested_profiles = ["profile1", "profile2"]

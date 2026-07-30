@@ -239,9 +239,28 @@ async def multi_bulk_walk_cmd(
                 num_active = len(active_indices)
                 stopFlag = True
 
+                # lextudio's pysnmp returns GETBULK varbinds in flat wire order. Map
+                # non-repeaters once, then cycle each repetition over the
+                # remaining active roots.
+                non_repeater_count = min(max(nonRepeaters, 0), num_active)
+                repeater_count = num_active - non_repeater_count
+
                 for idx, response_vb in enumerate(varBindTable):
-                    active_vb_idx = idx % num_active
+                    if non_repeater_count == 0:
+                        active_vb_idx = idx % num_active
+                    elif idx < non_repeater_count:
+                        active_vb_idx = idx
+                    elif repeater_count:
+                        active_vb_idx = non_repeater_count + (
+                            (idx - non_repeater_count) % repeater_count
+                        )
+                    else:
+                        break
+
                     original_idx = active_indices[active_vb_idx]
+                    if completed[original_idx]:
+                        continue
+
                     name, val = response_vb
 
                     # Check if beyond initial scope (when lexicographicMode=False)
