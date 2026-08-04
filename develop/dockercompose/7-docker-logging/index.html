@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../0-splunk-requirements/">
+        <link rel="prev" href="../6-env-file-configuration/">
       
       
-        <link rel="next" href="../2-download-package/">
+        <link rel="next" href="../8-offline-installation/">
       
       
         
@@ -23,7 +23,7 @@
     
     
       
-        <title>Install Docker - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Docker logging - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#install-docker" class="md-skip">
+        <a href="#docker-logging" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Install Docker
+              Docker logging
             
           </span>
         </div>
@@ -1387,19 +1387,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../1-install-docker/" class="md-nav__link">
         
   
   
@@ -1415,7 +1406,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -1676,18 +1666,20 @@
                 
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_5" checked>
         
           
           <label class="md-nav__link" for="__nav_3_2_5" id="__nav_3_2_5_label" tabindex="0">
@@ -1708,7 +1700,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_2_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1723,10 +1715,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../7-docker-logging/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker logging
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1742,6 +1761,81 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#choose-the-logging-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choose the logging behavior
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#keep-the-current-driver-during-an-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep the current driver during an upgrade
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#switch-to-bounded-json-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switch to bounded json-file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verify-the-effective-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify the effective configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#restore-docker-daemon-inheritance-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore Docker daemon inheritance directly
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2730,6 +2824,69 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#choose-the-logging-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choose the logging behavior
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#keep-the-current-driver-during-an-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep the current driver during an upgrade
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#switch-to-bounded-json-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switch to bounded json-file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verify-the-effective-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify the effective configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#restore-docker-daemon-inheritance-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore Docker daemon inheritance directly
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2745,18 +2902,99 @@
 
 
 
-<div><h1 id="install-docker">Install Docker<a class="headerlink" href="#install-docker" title="Permanent link">¶</a></h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The instructions linked below are for <strong>Ubuntu/Debian</strong> systems using the <code>apt</code> package manager. If you are running a different Linux distribution (RHEL, CentOS, Amazon Linux, SUSE, etc.), refer to the <a href="https://docs.docker.com/engine/install/">Docker Engine installation overview</a> and select your distribution from the list.</p>
-</div>
-<p>To install <code>Docker</code> in your environment follow steps from the <code>Install using the apt repository</code> section from
-the Docker <a href="https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository">documentation</a>. Install the
-latest version.</p>
-<div class="admonition note">
-<p class="admonition-title">Offline environment</p>
-<p>If your target host has no internet access, see <a href="../8-offline-installation/">Offline installation</a> before proceeding.</p>
-</div></div>
+<div><h1 id="docker-logging">Docker logging<a class="headerlink" href="#docker-logging" title="Permanent link">¶</a></h1>
+<p>SC4SNMP applications write logs to container standard output and standard error. Docker controls how those container logs are stored and retained. These settings do not change SC4SNMP log levels, messages, formats, or destinations.</p>
+<p>The default Compose configuration uses the <code>json-file</code> driver with bounded rotation for every service:</p>
+<div class="highlight"><pre><span></span><code>DOCKER_LOG_DRIVER=json-file
+DOCKER_LOG_MAX_SIZE=10m
+DOCKER_LOG_MAX_FILE=5
+DOCKER_LOG_COMPRESS=true
+</code></pre></div>
+<p>Docker applies logging-driver changes when containers are created. Run <code>docker compose up -d</code> after changing the logging configuration so Compose can recreate the affected containers.</p>
+<h2 id="choose-the-logging-behavior">Choose the logging behavior<a class="headerlink" href="#choose-the-logging-behavior" title="Permanent link">¶</a></h2>
+<p>Check the Docker daemon’s current logging driver before a new installation or upgrade:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>info<span class="w"> </span>--format<span class="w"> </span><span class="s1">'{{.LoggingDriver}}'</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Desired behavior</th>
+<th>Value in <code>.env</code></th>
+<th>Result after running <code>--configure_default_logging</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Use bounded <code>json-file</code> logging</td>
+<td><code>DOCKER_LOG_DRIVER=json-file</code></td>
+<td>Compose applies <code>json-file</code> with the configured rotation limits</td>
+</tr>
+<tr>
+<td>Keep the Docker daemon’s current driver</td>
+<td>Use the value reported by <code>docker info</code></td>
+<td>Compose logging is removed and containers inherit the daemon driver</td>
+</tr>
+<tr>
+<td>Explicitly inherit the daemon driver</td>
+<td><code>DOCKER_LOG_DRIVER=inherit</code></td>
+<td>Compose logging is removed and containers inherit the daemon driver</td>
+</tr>
+<tr>
+<td>Use the SC4SNMP default</td>
+<td>Leave the variable missing or empty</td>
+<td>Compose applies bounded <code>json-file</code> logging</td>
+</tr>
+</tbody>
+</table>
+<p><code>DOCKER_LOG_DRIVER</code> is a selector used by <code>manage_logs.py</code>. It does not directly set a non-JSON driver on each service. For example, <code>DOCKER_LOG_DRIVER=local</code> makes containers use <code>local</code> only when <code>local</code> is the Docker daemon default.</p>
+<h2 id="keep-the-current-driver-during-an-upgrade">Keep the current driver during an upgrade<a class="headerlink" href="#keep-the-current-driver-during-an-upgrade" title="Permanent link">¶</a></h2>
+<p>If <code>docker info</code> reports <code>local</code>, add or update this line in <code>.env</code> file:</p>
+<div class="highlight"><pre><span></span><code>DOCKER_LOG_DRIVER=local
+</code></pre></div>
+<p>Use the exact value reported by <code>docker info</code> when preserving another driver. Before starting the upgraded deployment, run:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/home/ubuntu/docker_compose
+python3<span class="w"> </span>manage_logs.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--path_to_compose<span class="w"> </span>/home/ubuntu/docker_compose<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--configure_default_logging
+sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>config<span class="w"> </span>--quiet
+sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<p>The helper removes service-level logging for non-JSON values, allowing the upgraded containers to continue using the Docker daemon driver. If this step is skipped, new or recreated SC4SNMP containers use bounded <code>json-file</code> logging.</p>
+<h2 id="switch-to-bounded-json-file">Switch to bounded <code>json-file</code><a class="headerlink" href="#switch-to-bounded-json-file" title="Permanent link">¶</a></h2>
+<p>To switch from any current logging driver to bounded <code>json-file</code>, set these values in <code>.env</code>:</p>
+<div class="highlight"><pre><span></span><code>DOCKER_LOG_DRIVER=json-file
+DOCKER_LOG_MAX_SIZE=10m
+DOCKER_LOG_MAX_FILE=5
+DOCKER_LOG_COMPRESS=true
+</code></pre></div>
+<p>Apply the configuration:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/home/ubuntu/docker_compose
+python3<span class="w"> </span>manage_logs.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--path_to_compose<span class="w"> </span>/home/ubuntu/docker_compose<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--configure_default_logging
+sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>config<span class="w"> </span>--quiet
+sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<p>This changes logging only for the SC4SNMP Compose services. It does not change the Docker daemon or unrelated containers. Named MongoDB and Redis volumes are preserved by <code>docker compose up -d</code>. Do not use <code>docker compose down -v</code> for this change.</p>
+<h2 id="verify-the-effective-configuration">Verify the effective configuration<a class="headerlink" href="#verify-the-effective-configuration" title="Permanent link">¶</a></h2>
+<p>After the containers are recreated, check their logging drivers and options:</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span>id<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">$(</span>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>ps<span class="w"> </span>-q<span class="k">)</span>
+<span class="k">do</span>
+<span class="w">  </span>sudo<span class="w"> </span>docker<span class="w"> </span>inspect<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--format<span class="w"> </span><span class="s1">'{{.Name}} driver={{.HostConfig.LogConfig.Type}} options={{json .HostConfig.LogConfig.Config}}'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">"</span><span class="nv">$id</span><span class="s2">"</span>
+<span class="k">done</span>
+</code></pre></div>
+<p>Bounded logging reports <code>driver=json-file</code> with <code>max-size</code>, <code>max-file</code>, and <code>compress</code>. When daemon inheritance is selected, each container reports the daemon driver.</p>
+<h2 id="restore-docker-daemon-inheritance-directly">Restore Docker daemon inheritance directly<a class="headerlink" href="#restore-docker-daemon-inheritance-directly" title="Permanent link">¶</a></h2>
+<p>The following command removes service-level logging without reading <code>DOCKER_LOG_DRIVER</code>:</p>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>manage_logs.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--path_to_compose<span class="w"> </span>/home/ubuntu/docker_compose<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--use_docker_default_logging
+sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<p>This also removes the SC4SNMP service-level retention limits. If the daemon uses <code>json-file</code> without daemon-level <code>max-size</code> and <code>max-file</code> options, its container logs do not have a configured size limit. Check <code>/etc/docker/daemon.json</code> before selecting daemon inheritance.</p>
+<p>To send Docker container logs to Splunk instead, see <a href="../9-splunk-logging/">Sending logs to Splunk</a>.</p></div>
 
 
 

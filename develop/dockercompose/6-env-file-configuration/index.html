@@ -12,7 +12,7 @@
         <link rel="prev" href="../../configuration/snmpv3/">
       
       
-        <link rel="next" href="../8-offline-installation/">
+        <link rel="next" href="../7-docker-logging/">
       
       
         
@@ -1751,6 +1751,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#docker-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#splunk-instance" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1962,6 +1973,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../7-docker-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker logging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -3009,6 +3048,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#docker-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#splunk-instance" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3343,6 +3393,36 @@
 </tr>
 </tbody>
 </table>
+<h3 id="docker-logging">Docker logging<a class="headerlink" href="#docker-logging" title="Permanent link">¶</a></h3>
+<p>Docker Compose applies bounded <code>json-file</code> logging by default. Existing <code>json-file</code> deployments receive rotation when their containers are recreated. To preserve <code>local</code>, <code>journald</code>, or another Docker daemon driver during an upgrade, set <code>DOCKER_LOG_DRIVER</code> before starting the upgraded deployment. See <a href="../7-docker-logging/">Docker logging</a> for upgrade, switching, and verification procedures.</p>
+<p>The default limits retain up to approximately 50 MB of uncompressed logs per container. Compression normally reduces the disk used by rotated files.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DOCKER_LOG_DRIVER</code></td>
+<td>Docker daemon logging driver reported by <code>docker info --format '{{.LoggingDriver}}'</code>. <code>json-file</code>, an empty value, or a missing value uses bounded <code>json-file</code> logging. Another driver name, or <code>inherit</code>, preserves daemon inheritance after running <code>--configure_default_logging</code>. Default: <code>json-file</code></td>
+</tr>
+<tr>
+<td><code>DOCKER_LOG_MAX_SIZE</code></td>
+<td>Maximum size of each container log file. Use a positive size such as <code>100k</code>, <code>10m</code>, or <code>1g</code>. Default: <code>10m</code></td>
+</tr>
+<tr>
+<td><code>DOCKER_LOG_MAX_FILE</code></td>
+<td>Maximum number of log files retained per container. Use a positive integer. Default: <code>5</code></td>
+</tr>
+<tr>
+<td><code>DOCKER_LOG_COMPRESS</code></td>
+<td>Compress rotated log files. Supported values: <code>true</code> or <code>false</code>. Default: <code>true</code></td>
+</tr>
+</tbody>
+</table>
+<p>These settings control Docker’s local retention when bounded <code>json-file</code> logging is selected and the local cache used by Docker-to-Splunk logging. They do not change SC4SNMP log levels, messages, or forwarding.</p>
 <h3 id="splunk-instance">Splunk instance<a class="headerlink" href="#splunk-instance" title="Permanent link">¶</a></h3>
 <table>
 <thead>
@@ -3366,11 +3446,11 @@
 </tr>
 <tr>
 <td><code>SPLUNK_HEC_TOKEN</code></td>
-<td>Splunk HTTP Event Collector token. To keep it out of <code>.env</code> and <code>docker inspect</code>, use a <a href="../../configuration/snmpv3/#splunk-hec-token-secret">Docker secret</a>; the app then reads the token from the file path in <code>SPLUNK_HEC_TOKEN_FILE</code>.</td>
+<td>Splunk HTTP Event Collector token. To keep it out of <code>.env</code> and <code>docker inspect</code>, use a <a href="../../configuration/snmpv3/#splunk-hec-token-secret">Docker secret</a>. The app then reads the token from the file path in <code>SPLUNK_HEC_TOKEN_FILE</code>.</td>
 </tr>
 <tr>
 <td><code>SPLUNK_HEC_TOKEN_SECRET_FILE</code></td>
-<td>Path on the host to the file used as the Docker secret for the HEC token (worker-sender only). The app reads the token from the mounted file; only the path is in the container env.</td>
+<td>Path on the host to the file used as the Docker secret for the HEC token (worker-sender only). The app reads the token from the mounted file. Only the path is in the container env.</td>
 </tr>
 <tr>
 <td><code>SPLUNK_HEC_INSECURESSL</code></td>
