@@ -5,6 +5,11 @@ from typing import Union
 import ruamel.yaml
 
 DOCKER_COMPOSE = "docker-compose.yaml"
+DEFAULT_LOGGING_EXTENSION = "x-default-logging"
+JSON_FILE_LOG_DRIVER = "json-file"
+DOCKER_LOG_MAX_SIZE = "${DOCKER_LOG_MAX_SIZE:-10m}"
+DOCKER_LOG_MAX_FILE = "${DOCKER_LOG_MAX_FILE:-5}"
+DOCKER_LOG_COMPRESS = "${DOCKER_LOG_COMPRESS:-true}"
 
 
 def human_bool(flag: Union[str, bool], default: bool = False) -> bool:
@@ -40,8 +45,17 @@ def read_var_from_env(path_to_compose_files: str) -> dict:
         "SPLUNK_HEC_PORT",
         "SPLUNK_LOG_INDEX",
         "SPLUNK_HEC_INSECURESSL",
+        "DOCKER_LOG_DRIVER",
+        "DOCKER_LOG_MAX_SIZE",
+        "DOCKER_LOG_MAX_FILE",
+        "DOCKER_LOG_COMPRESS",
     ]
-    environment = dict()
+    environment = {
+        "DOCKER_LOG_DRIVER": JSON_FILE_LOG_DRIVER,
+        "DOCKER_LOG_MAX_SIZE": DOCKER_LOG_MAX_SIZE,
+        "DOCKER_LOG_MAX_FILE": DOCKER_LOG_MAX_FILE,
+        "DOCKER_LOG_COMPRESS": DOCKER_LOG_COMPRESS,
+    }
     try:
         with open(path_to_compose_files + "/.env") as env_file:
             for line in env_file.readlines():
@@ -66,9 +80,25 @@ def load_template(environment: dict, service_name: str) -> dict:
             splunk-index: "{environment['SPLUNK_LOG_INDEX']}"
             splunk-insecureskipverify: "{environment['SPLUNK_HEC_INSECURESSL']}"
             splunk-sourcetype: "docker:container:splunk-connect-for-snmp-{service_name}"
+            cache-max-size: "{environment['DOCKER_LOG_MAX_SIZE']}"
+            cache-max-file: "{environment['DOCKER_LOG_MAX_FILE']}"
+            cache-compress: "{environment['DOCKER_LOG_COMPRESS']}"
     """
     template_yaml = yaml.load(template)
     return template_yaml
+
+
+def load_bounded_template() -> dict:
+    return {
+        "logging": {
+            "driver": "json-file",
+            "options": {
+                "max-size": DOCKER_LOG_MAX_SIZE,
+                "max-file": DOCKER_LOG_MAX_FILE,
+                "compress": DOCKER_LOG_COMPRESS,
+            },
+        }
+    }
 
 
 def create_logs(environment, path_to_compose_files):
@@ -93,9 +123,12 @@ def delete_logs(path_to_compose_files):
         with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE)) as file:
             yaml_file = yaml.load(file)
 
+        bounded_logging = yaml_file.get(DEFAULT_LOGGING_EXTENSION)
+        if bounded_logging is None:
+            bounded_logging = load_bounded_template()["logging"]
+
         for service_name in yaml_file["services"].keys():
-            yaml_file["services"][service_name]["logging"]["driver"] = "json-file"
-            yaml_file["services"][service_name]["logging"].pop("options")
+            yaml_file["services"][service_name]["logging"] = bounded_logging
 
         with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE), "w") as file:
             yaml.dump(yaml_file, file)
@@ -103,16 +136,59 @@ def delete_logs(path_to_compose_files):
         print(f"Problem with editing docker-compose.yaml. Error: {e}")
 
 
+def use_docker_default_logging(path_to_compose_files):
+    try:
+        yaml = ruamel.yaml.YAML()
+        with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE)) as file:
+            yaml_file = yaml.load(file)
+
+        for service_name in yaml_file["services"].keys():
+            yaml_file["services"][service_name].pop("logging", None)
+
+        with open(os.path.join(path_to_compose_files, DOCKER_COMPOSE), "w") as file:
+            yaml.dump(yaml_file, file)
+    except Exception as e:
+        print(f"Problem with editing docker-compose.yaml. Error: {e}")
+
+
+def configure_default_logging(environment: dict, path_to_compose_files: str) -> str:
+    logging_driver = (
+        environment.get("DOCKER_LOG_DRIVER", JSON_FILE_LOG_DRIVER).strip()
+        or JSON_FILE_LOG_DRIVER
+    )
+    if logging_driver == JSON_FILE_LOG_DRIVER:
+        delete_logs(path_to_compose_files)
+    else:
+        use_docker_default_logging(path_to_compose_files)
+    return logging_driver
+
+
 def main():
     parser = argparse.ArgumentParser(description="Manage logs in docker compose")
     parser.add_argument(
-        "-e", "--enable_logs", action="store_true", help="Enables the logs"
+        "-e",
+        "--enable_logs",
+        action="store_true",
+        help="Enables Docker-to-Splunk container-log forwarding",
     )
     parser.add_argument(
         "-p", "--path_to_compose", required=True, help="Path to dockerfiles"
     )
     parser.add_argument(
-        "-d", "--disable_logs", action="store_true", help="Disables the logs"
+        "-d",
+        "--disable_logs",
+        action="store_true",
+        help="Disables Docker-to-Splunk forwarding",
+    )
+    parser.add_argument(
+        "--use_docker_default_logging",
+        action="store_true",
+        help="Uses the Docker daemon default logging configuration",
+    )
+    parser.add_argument(
+        "--configure_default_logging",
+        action="store_true",
+        help="Applies bounded logging when DOCKER_LOG_DRIVER is json-file",
     )
 
     args = parser.parse_args()
@@ -121,6 +197,8 @@ def main():
     enable_logs = human_bool(args.enable_logs)
     path_to_compose_files = args.path_to_compose
     disable_logs = human_bool(args.disable_logs)
+    use_docker_default = human_bool(args.use_docker_default_logging)
+    configure_default = human_bool(args.configure_default_logging)
 
     if not os.path.exists(path_to_compose_files):
         print("Path to compose files doesn't exist")
@@ -136,6 +214,17 @@ def main():
     if disable_logs:
         try:
             delete_logs(path_to_compose_files)
+        except ValueError as e:
+            print(e)
+    if use_docker_default:
+        try:
+            use_docker_default_logging(path_to_compose_files)
+        except ValueError as e:
+            print(e)
+    if configure_default:
+        try:
+            logging_driver = configure_default_logging(env, path_to_compose_files)
+            print(f"Configured Docker logging driver: {logging_driver}")
         except ValueError as e:
             print(e)
 
