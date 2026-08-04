@@ -17,10 +17,14 @@ import logging
 import os
 import shutil
 import subprocess
+import tempfile
 import time
+from contextlib import contextmanager
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Callable, Iterable
 
-import ruamel
+import ruamel.yaml
 
 logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,6 +33,9 @@ SCHEDULER_CONFIG = CONFIG_DIR / "scheduler-config.yaml"
 TRAPS_CONFIG = CONFIG_DIR / "traps-config.yaml"
 INVENTORY_FILE = CONFIG_DIR / "inventory-tests.csv"
 LOCAL_MIB_DIR = BASE_DIR / "mibs"
+MIB_INDEX_REFRESH_MIB = LOCAL_MIB_DIR / "HVRVENDOR" / "HVR-MIB"
+MIB_INDEX_REFRESH_ROW = "HVR-MIB,1.3.6.1.4.1.42705"
+INTEGRATION_TEST_TIMEOUT = 180
 
 
 def splunk_single_search(service, search, timeout=300, max_retries=5):
@@ -137,6 +144,37 @@ def splunk_single_search(service, search, timeout=300, max_retries=5):
 
     logger.error(f"Search failed after {max_retries + 1} attempts")
     return 0, 0
+
+
+def wait_for_splunk_search(service, search, expectation, timeout=120):
+    deadline = time.monotonic() + timeout
+    last_result_count = 0
+    last_event_count = 0
+
+    while time.monotonic() < deadline:
+        last_result_count, last_event_count = splunk_single_search(
+            service, search, timeout=60, max_retries=0
+        )
+        if last_result_count:
+            return last_result_count, last_event_count
+        time.sleep(2)
+
+    raise AssertionError(
+        f"Timed out waiting for {expectation}; "
+        f"last_result_count={last_result_count} "
+        f"last_event_count={last_event_count}"
+    )
+
+
+def assert_splunk_search_absent(service, search, expectation):
+    result_count, event_count = splunk_single_search(
+        service, search, timeout=60, max_retries=0
+    )
+    if result_count:
+        raise AssertionError(
+            f"Unexpectedly found {expectation}; result_count={result_count} "
+            f"event_count={event_count}"
+        )
 
 
 inventory_template_compose = """address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
@@ -731,6 +769,495 @@ def get_mibserver_logs_microk8s(tail_lines=200):
         check=False,
     )
     return result.stdout + result.stderr
+
+
+def _run_integration_command(
+    command,
+    description,
+    timeout=INTEGRATION_TEST_TIMEOUT,
+    *,
+    include_stderr=False,
+):
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=timeout,
+    )
+    if result.returncode != 0:
+        details = (result.stderr or result.stdout).strip()
+        raise RuntimeError(f"{description} failed: {details[-2000:]}")
+    if include_stderr:
+        return result.stdout + result.stderr
+    return result.stdout
+
+
+def _sc4snmp_compose_command(*arguments):
+    compose_dir = BASE_DIR / "docker_compose"
+    return [
+        "sudo",
+        "docker",
+        "compose",
+        "-f",
+        str(compose_dir / "docker-compose.yaml"),
+        "--env-file",
+        str(compose_dir / ".env"),
+        *arguments,
+    ]
+
+
+def wait_for_microk8s_rollout(kubernetes_resource, description):
+    _run_integration_command(
+        [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "rollout",
+            "status",
+            kubernetes_resource,
+            "-n",
+            "sc4snmp",
+            "--timeout=180s",
+        ],
+        f"waiting for the {description} Kubernetes rollout",
+    )
+
+
+def wait_for_mib_refresh_cleanup_microk8s():
+    """Wait until the previous local-MIB test release is fully restored."""
+    wait_for_microk8s_rollout("deployment/snmp-mibserver", "snmp-mibserver")
+    _run_integration_command(
+        [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "wait",
+            "--for=delete",
+            "pvc/snmp-mibserver",
+            "pv/snmp-mibserver",
+            "-n",
+            "sc4snmp",
+            "--timeout=180s",
+        ],
+        "waiting for the local-MIB test storage to be removed",
+    )
+
+
+def restart_sc4snmp_component(
+    deployment: str,
+    *,
+    compose_service: str,
+    kubernetes_resource: str,
+) -> None:
+    if deployment == "microk8s":
+        _run_integration_command(
+            [
+                "sudo",
+                "microk8s",
+                "kubectl",
+                "rollout",
+                "restart",
+                kubernetes_resource,
+                "-n",
+                "sc4snmp",
+            ],
+            f"restarting the {compose_service} Kubernetes resource",
+        )
+        wait_for_microk8s_rollout(kubernetes_resource, compose_service)
+    elif deployment == "docker-compose":
+        _run_integration_command(
+            _sc4snmp_compose_command(
+                "up",
+                "-d",
+                "--force-recreate",
+                "--no-deps",
+                compose_service,
+            ),
+            f"recreating the {compose_service} Docker Compose service",
+        )
+    else:
+        raise ValueError(f"Unsupported SC4SNMP deployment: {deployment}")
+
+
+def _fetch_mib_refresh_index(deployment):
+    python_command = (
+        "import urllib.request;"
+        "print(urllib.request.urlopen("
+        "'http://snmp-mibserver:8000/index.csv', timeout=10).read().decode())"
+    )
+    if deployment == "microk8s":
+        command = [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "exec",
+            "deployment/snmp-splunk-connect-for-snmp-scheduler",
+            "-n",
+            "sc4snmp",
+            "--",
+            "python",
+            "-c",
+            python_command.replace("snmp-mibserver:8000", "snmp-mibserver"),
+        ]
+    elif deployment == "docker-compose":
+        command = [
+            "sudo",
+            "docker",
+            "exec",
+            "sc4snmp-scheduler",
+            "python",
+            "-c",
+            python_command,
+        ]
+    else:
+        raise ValueError(f"Unsupported SC4SNMP deployment: {deployment}")
+
+    return _run_integration_command(command, "fetching the live MIB index", timeout=30)
+
+
+def _wait_for_mib_refresh_result(
+    fetch_result: Callable[[], str],
+    result_is_ready: Callable[[str], bool],
+    expectation: str,
+    timeout: int = INTEGRATION_TEST_TIMEOUT,
+) -> str:
+    deadline = time.monotonic() + timeout
+    last_error = None
+    last_result_length = 0
+
+    while time.monotonic() < deadline:
+        try:
+            result = fetch_result()
+            last_result_length = len(result)
+            if result_is_ready(result):
+                return result
+        except (RuntimeError, subprocess.TimeoutExpired) as exc:
+            last_error = exc
+        time.sleep(2)
+
+    error_suffix = f" Last error: {last_error}" if last_error else ""
+    raise AssertionError(
+        f"Timed out waiting for {expectation}; "
+        f"last_result_length={last_result_length}.{error_suffix}"
+    )
+
+
+def _wait_for_mib_refresh_index(deployment):
+    return _wait_for_mib_refresh_result(
+        lambda: _fetch_mib_refresh_index(deployment),
+        lambda index_content: bool(index_content.strip()),
+        "mibserver to return a non-empty MIB index",
+    )
+
+
+def _wait_for_mib_refresh_index_row(deployment, expected_present):
+
+    def row_state_matches(index_content):
+        index_rows = {line.strip() for line in index_content.splitlines()}
+        return bool(index_rows) and (
+            (MIB_INDEX_REFRESH_ROW in index_rows) == expected_present
+        )
+
+    expectation = "appear in" if expected_present else "be absent from"
+    _wait_for_mib_refresh_result(
+        lambda: _fetch_mib_refresh_index(deployment),
+        row_state_matches,
+        f"{MIB_INDEX_REFRESH_ROW!r} to {expectation} the live MIB index",
+    )
+
+
+def _restart_mib_refresh_mibserver(deployment):
+    restart_sc4snmp_component(
+        deployment,
+        compose_service="snmp-mibserver",
+        kubernetes_resource="deployment/snmp-mibserver",
+    )
+
+
+def _mib_refresh_worker_names(worker_type):
+    if worker_type not in {"trap", "poller"}:
+        raise ValueError(f"Unsupported MIB-index refresh worker: {worker_type}")
+    return (
+        f"worker-{worker_type}",
+        f"deployment/snmp-splunk-connect-for-snmp-worker-{worker_type}",
+    )
+
+
+def get_mib_refresh_worker_logs(deployment, worker_type, since):
+    compose_service, kubernetes_deployment = _mib_refresh_worker_names(worker_type)
+    if deployment == "microk8s":
+        command = [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "logs",
+            kubernetes_deployment,
+            "-n",
+            "sc4snmp",
+            f"--since-time={since}",
+        ]
+    elif deployment == "docker-compose":
+        command = _sc4snmp_compose_command(
+            "logs", "--no-color", "--since", since, compose_service
+        )
+    else:
+        raise ValueError(f"Unsupported SC4SNMP deployment: {deployment}")
+
+    return _run_integration_command(
+        command,
+        f"reading {worker_type}-worker logs",
+        timeout=30,
+        include_stderr=True,
+    )
+
+
+def wait_for_mib_refresh_worker_log(
+    deployment,
+    worker_type,
+    since,
+    required_fragments: Iterable[str],
+    expectation,
+    timeout=120,
+):
+    required_fragments = tuple(required_fragments)
+
+    def one_line_contains_fragments(logs):
+        return any(
+            all(fragment in line for fragment in required_fragments)
+            for line in logs.splitlines()
+        )
+
+    return _wait_for_mib_refresh_result(
+        lambda: get_mib_refresh_worker_logs(deployment, worker_type, since),
+        one_line_contains_fragments,
+        expectation,
+        timeout,
+    )
+
+
+def _celery_worker_is_ready(logs):
+    return " ready." in logs
+
+
+def restart_worker_for_mib_index_refresh(deployment, worker_type):
+    """Restart a worker and wait until Celery is ready to accept work.
+
+    Task classes can be initialized before Celery task INFO logging is fully
+    configured, so constructor log messages are not a reliable readiness
+    signal. The integration tests verify the MIB refresh through the unresolved
+    and resolved SNMP results on either side of this restart.
+    """
+    compose_service, kubernetes_deployment = _mib_refresh_worker_names(worker_type)
+    started_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    restart_sc4snmp_component(
+        deployment,
+        compose_service=compose_service,
+        kubernetes_resource=kubernetes_deployment,
+    )
+
+    return _wait_for_mib_refresh_result(
+        lambda: get_mib_refresh_worker_logs(deployment, worker_type, started_at),
+        _celery_worker_is_ready,
+        f"the {worker_type} worker to become ready",
+    )
+
+
+def _configure_mib_refresh_microk8s(override_file, helm_value_files):
+    # Cleanup from the previous test can start a Helm-driven mibserver rollout.
+    # Finish it before applying another pod-template change.
+    wait_for_microk8s_rollout("deployment/snmp-mibserver", "snmp-mibserver")
+    _run_integration_command(
+        [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "delete",
+            "job/snmp-splunk-connect-for-snmp-inventory",
+            "-n",
+            "sc4snmp",
+            "--ignore-not-found",
+        ],
+        "removing the immutable inventory job before Helm upgrade",
+    )
+
+    values_arguments = ["-f", str(BASE_DIR / "values.yaml")]
+    for value_file in helm_value_files:
+        value_path = Path(value_file)
+        if not value_path.is_absolute():
+            value_path = Path.cwd() / value_path
+        values_arguments.extend(["-f", str(value_path)])
+    # keeping this last so another values fragment cannot replace the test hostPath.
+    values_arguments.extend(["-f", str(override_file)])
+
+    _run_integration_command(
+        [
+            "sudo",
+            "microk8s",
+            "helm3",
+            "upgrade",
+            "--install",
+            "snmp",
+            *values_arguments,
+            str(BASE_DIR.parent / "charts" / "splunk-connect-for-snmp"),
+            "--namespace=sc4snmp",
+            "--create-namespace",
+        ],
+        "configuring the isolated MicroK8s local-MIB directory",
+    )
+    # A Helm upgrade can remove the previous rollout-restart annotation and
+    # start a mibserver rollout. Finish it before requesting another restart.
+    wait_for_microk8s_rollout("deployment/snmp-mibserver", "snmp-mibserver")
+    _run_integration_command(
+        [
+            "sudo",
+            "microk8s",
+            "kubectl",
+            "wait",
+            "--for=condition=complete",
+            "job/snmp-splunk-connect-for-snmp-inventory",
+            "-n",
+            "sc4snmp",
+            "--timeout=180s",
+        ],
+        "waiting for the MIB refresh test inventory job",
+    )
+
+
+@contextmanager
+def mib_index_refresh_test_environment(deployment, worker_type, helm_value_files=()):
+    _mib_refresh_worker_names(worker_type)
+    if deployment not in {"microk8s", "docker-compose"}:
+        raise ValueError(f"Unsupported SC4SNMP deployment: {deployment}")
+    if not MIB_INDEX_REFRESH_MIB.is_file():
+        raise FileNotFoundError(f"Missing MIB refresh fixture: {MIB_INDEX_REFRESH_MIB}")
+
+    resolved_helm_value_files = []
+    for value_file in helm_value_files:
+        value_path = Path(value_file)
+        if not value_path.is_absolute():
+            value_path = Path.cwd() / value_path
+        if not value_path.is_file():
+            raise FileNotFoundError(f"Missing Helm values file: {value_path}")
+        resolved_helm_value_files.append(value_path)
+
+    original_index = _wait_for_mib_refresh_index(deployment)
+    original_rows = {line.strip() for line in original_index.splitlines()}
+    original_hvr_present = MIB_INDEX_REFRESH_ROW in original_rows
+    test_root = Path(tempfile.mkdtemp(prefix="sc4snmp-mib-index-refresh-"))
+    test_root.chmod(0o755)
+    compose_env = BASE_DIR / "docker_compose" / ".env"
+    original_compose_env = None
+    previous_hvr_dir = test_root / "previous-HVRVENDOR"
+    local_mibs_dir = None
+    environment_changed = False
+    previous_hvr_path_existed = False
+    previous_hvr_was_moved = False
+    body_error = None
+
+    try:
+        if deployment == "microk8s":
+            local_mibs_dir = Path(LOCAL_MIBS_HOST_PATH_MICROK8S)
+            local_mibs_dir.mkdir(parents=True, exist_ok=True)
+            local_mibs_dir.chmod(0o755)
+            current_hvr_dir = local_mibs_dir / "HVRVENDOR"
+            environment_changed = True
+            previous_hvr_path_existed = os.path.lexists(current_hvr_dir)
+            if previous_hvr_path_existed:
+                shutil.move(current_hvr_dir, previous_hvr_dir)
+                previous_hvr_was_moved = True
+
+            override_file = test_root / "local-mibs-values.yaml"
+            worker_values = {"replicaCount": 1}
+            if worker_type == "poller":
+                # One child process makes the two-cycle poller assertion
+                # deterministic while a freshly loaded MIB becomes resolvable.
+                worker_values["concurrency"] = 1
+
+            yaml = ruamel.yaml.YAML()
+            with override_file.open("w") as values_file:
+                yaml.dump(
+                    {
+                        "mibserver": {"localMibs": {"pathToMibs": str(local_mibs_dir)}},
+                        "worker": {worker_type: worker_values},
+                    },
+                    values_file,
+                )
+            _configure_mib_refresh_microk8s(override_file, resolved_helm_value_files)
+        else:
+            if not compose_env.is_file():
+                raise FileNotFoundError(
+                    f"Docker integration environment is missing: {compose_env}"
+                )
+            original_compose_env = compose_env.read_text()
+            local_mibs_dir = test_root / "local_mibs"
+            local_mibs_dir.mkdir()
+            local_mibs_dir.chmod(0o755)
+            environment_changed = True
+            upgrade_env_compose("LOCAL_MIBS_PATH", str(local_mibs_dir))
+            # One worker avoids another replica consuming work with a different
+            # process-local MIB map during the negative assertion.
+            replica_variable = f"WORKER_{worker_type.upper()}_REPLICAS"
+            upgrade_env_compose(replica_variable, "1")
+            if worker_type == "poller":
+                upgrade_env_compose("WORKER_POLLER_CONCURRENCY", "1")
+
+        _restart_mib_refresh_mibserver(deployment)
+        _wait_for_mib_refresh_index_row(deployment, expected_present=False)
+
+        restart_worker_for_mib_index_refresh(deployment, worker_type)
+        logger.info(
+            f"Prepared {worker_type} MIB-index refresh test at {local_mibs_dir}"
+        )
+        yield local_mibs_dir
+    except BaseException as exc:
+        body_error = exc
+        raise
+    finally:
+        cleanup_succeeded = not environment_changed
+        if environment_changed:
+            try:
+                if deployment == "microk8s":
+                    current_hvr_dir = local_mibs_dir / "HVRVENDOR"
+                    if os.path.lexists(current_hvr_dir) and (
+                        previous_hvr_was_moved or not previous_hvr_path_existed
+                    ):
+                        shutil.move(current_hvr_dir, test_root / "test-HVRVENDOR")
+                    if previous_hvr_was_moved and os.path.lexists(previous_hvr_dir):
+                        shutil.move(previous_hvr_dir, current_hvr_dir)
+                elif original_compose_env is not None:
+                    compose_env.write_text(original_compose_env)
+
+                # Restore the live index and process-local map before removing
+                # any directory that a running mibserver might still mount.
+                _restart_mib_refresh_mibserver(deployment)
+                _wait_for_mib_refresh_index_row(
+                    deployment, expected_present=original_hvr_present
+                )
+                restart_worker_for_mib_index_refresh(deployment, worker_type)
+                cleanup_succeeded = True
+            except Exception:
+                logger.exception(
+                    f"Failed to restore the {worker_type} MIB-index test environment; "
+                    f"temporary files remain at {test_root}"
+                )
+                if body_error is None:
+                    raise
+
+        if cleanup_succeeded:
+            shutil.rmtree(test_root)
+
+
+def install_mib_index_refresh_test_mib(deployment, local_mibs_dir):
+    vendor_dir = Path(local_mibs_dir) / "HVRVENDOR"
+    vendor_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(MIB_INDEX_REFRESH_MIB, vendor_dir / MIB_INDEX_REFRESH_MIB.name)
+    vendor_dir.chmod(0o755)
+    (vendor_dir / MIB_INDEX_REFRESH_MIB.name).chmod(0o644)
+
+    _restart_mib_refresh_mibserver(deployment)
+    _wait_for_mib_refresh_index_row(deployment, expected_present=True)
+    logger.info(f"Compiled {MIB_INDEX_REFRESH_ROW} from {vendor_dir}")
 
 
 # if __name__ == "__main__":
