@@ -413,6 +413,11 @@ class Poller(Task):
             address, is_walk=is_walk, profiles=profiles
         )
 
+        metrics: Dict[str, Any] = {}
+        if not varbinds_get and not varbinds_bulk:
+            logger.info(f"No work to do for {address}")
+            return False, {}
+
         # Keeping the engine in this scope closes its transports before the poll or
         # walk leaves the event loop pysnmp bound them to.
         with SnmpEngine() as snmp_engine:
@@ -421,11 +426,6 @@ class Poller(Task):
             context_data = get_context_data()
 
             transport = await setup_transport_target(ir)
-
-            metrics: Dict[str, Any] = {}
-            if not varbinds_get and not varbinds_bulk:
-                logger.info(f"No work to do for {address}")
-                return False, {}
 
             max_oid = (
                 ir.max_oid_to_process if ir.max_oid_to_process else MAX_OID_TO_PROCESS
