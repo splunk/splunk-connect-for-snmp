@@ -67,31 +67,40 @@ async def get_security_engine_id(logger, rt: RecordType, snmp_engine: SnmpEngine
 
     transport_target = await setup_transport_target(rt)
 
+    # Keeping the callback so the same object can be unregistered in finally.
+    # pysnmp stores and removes observers using the callback object itself. If not specified,
+    # all observers will be unregistered.
+    def capture_security_engine_id(snmp_engine, execpoint, variables, context):
+        context.update(securityEngineId=variables["securityEngineId"])
+
     # Register a callback to be invoked at specified execution point of
     # SNMP Engine and passed local variables at execution point's local scope
     snmp_engine.observer.register_observer(
-        lambda e, p, v, c: c.update(securityEngineId=v["securityEngineId"]),
+        capture_security_engine_id,
         "rfc3412.prepareDataElements:internal",
         cbCtx=observer_context,
     )
 
-    # Send probe SNMP request with invalid credentials
-    auth_data = UsmUserData("non-existing-user")
+    try:
+        # Send probe SNMP request with invalid credentials
+        auth_data = UsmUserData("non-existing-user")
 
-    error_indication, _, _, _ = await get_cmd(
-        snmp_engine,
-        auth_data,
-        transport_target,
-        ContextData(),
-        ObjectType(ObjectIdentity("SNMPv2-MIB", "sysDescr", 0)),
-    )
+        error_indication, _, _, _ = await get_cmd(
+            snmp_engine,
+            auth_data,
+            transport_target,
+            ContextData(),
+            ObjectType(ObjectIdentity("SNMPv2-MIB", "sysDescr", 0)),
+        )
 
-    # See if our SNMP engine received REPORT PDU containing securityEngineId
-    security_engine_id = fetch_security_engine_id(
-        observer_context, error_indication, rt.address
-    )
-    logger.debug(f"securityEngineId={security_engine_id} for device {rt.address}")
-    return security_engine_id
+        # See if our SNMP engine received REPORT PDU containing securityEngineId
+        security_engine_id = fetch_security_engine_id(
+            observer_context, error_indication, rt.address
+        )
+        logger.debug(f"securityEngineId={security_engine_id} for device {rt.address}")
+        return security_engine_id
+    finally:
+        snmp_engine.observer.unregister_observer(capture_security_engine_id)
 
 
 async def setup_transport_target(rt: RecordType):

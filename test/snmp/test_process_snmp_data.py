@@ -2,8 +2,7 @@ from tokenize import group
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock, patch
 
-from pysnmp.entity.engine import SnmpEngine
-from pysnmp.smi import view
+from pysnmp.smi import builder, view
 
 from splunk_connect_for_snmp.snmp.manager import Poller
 
@@ -25,8 +24,7 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
-        poller.snmp_engine = SnmpEngine()
-        poller.builder = poller.snmp_engine.get_mib_builder()
+        poller.builder = builder.MibBuilder()
         poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
@@ -103,8 +101,7 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
-        poller.snmp_engine = SnmpEngine()
-        poller.builder = poller.snmp_engine.get_mib_builder()
+        poller.builder = builder.MibBuilder()
         poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True
@@ -263,8 +260,7 @@ class TestProcessSnmpData(TestCase):
         m_resolved,
     ):
         poller = Poller.__new__(Poller)
-        poller.snmp_engine = SnmpEngine()
-        poller.builder = poller.snmp_engine.get_mib_builder()
+        poller.builder = builder.MibBuilder()
         poller.mib_view_controller = view.MibViewController(poller.builder)
 
         m_resolved.return_value = True

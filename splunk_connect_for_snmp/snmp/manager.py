@@ -41,7 +41,7 @@ import pymongo
 from celery import Task
 from celery.utils.log import get_task_logger
 from pysnmp.hlapi.asyncio import SnmpEngine, get_cmd
-from pysnmp.smi import compiler, view
+from pysnmp.smi import builder, compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
 
@@ -77,6 +77,14 @@ DEFAULT_STANDARD_MIBS = [
     "TCP-MIB",
     "UDP-MIB",
 ]
+
+PYSNMP_PROTOCOL_MIBS = (
+    "SNMPv2-MIB",
+    "SNMP-MPD-MIB",
+    "SNMP-COMMUNITY-MIB",
+    "SNMP-TARGET-MIB",
+    "SNMP-USER-BASED-SM-MIB",
+)
 
 logger = get_task_logger(__name__)
 
@@ -339,13 +347,16 @@ class Poller(Task):
         self.profiles_collection = ProfileCollection(self.profiles)
         self.profiles_collection.process_profiles()
         self.last_modified = time.time()
-        self.snmp_engine = SnmpEngine()
         self.already_loaded_mibs = set()
         # MIBs we have tried to load (loaded or failed); prevents retrying a
         # persistently-missing MIB on every trap (and the warning spam).
         self.already_attempted_mibs = set()
-        self.builder = self.snmp_engine.get_mib_builder()
+        # Reusing the MIB data across task runs while creating each network engine
+        # inside the event loop used by its poll or walk.
+        self.builder = builder.MibBuilder()
         self.mib_view_controller = view.MibViewController(self.builder)
+        # Loading the protocol MIBs that SnmpEngine normally adds to its own builder.
+        self.builder.load_modules(*PYSNMP_PROTOCOL_MIBS)
         compiler.add_mib_compiler(self.builder, sources=[MIB_SOURCES])
 
         for mib in DEFAULT_STANDARD_MIBS:
@@ -366,39 +377,27 @@ class Poller(Task):
                 f"Unable to load mib map from index http error {mib_response.status_code}"
             )
 
-    def get_snmp_engine(self, version="", create_new=False) -> SnmpEngine:
-        """
-        :returns: The new SnmpEngine with mibViewController cache attached if snmp version is 3,
-        else it reuses already defined snmp poller.
-        """
-        if version == "3" or create_new:
-            snmp_engine = SnmpEngine()
-            snmp_engine.cache["mibViewController"] = self.mib_view_controller
-            return snmp_engine
-        else:
-            return self.snmp_engine
-
     async def do_work(
         self,
         ir: InventoryRecord,
         is_walk: bool = False,
         profiles: Union[List[str], None] = None,
     ):
-        """
-         ## NOTE
-        - When a task arrived at poll queue starts with a fresh SnmpEngine (which has no transport_dispatcher
-          attached), SNMP requests (get_cmd or bulk_walk_cmd or any other) run normally.
-        - if a later task finds that the SnmpEngine already has a transport_dispatcher, it reuse that transport_dispatcher.
-          this causes SNMP requests to hang infinite time.
-        - If this hang occurs, then as per our Celery configuration, any task that
-          remains in the queue longer than the default 2400s will be forcefully
-          hard-timed-out and discarded.
-        - The issue does not always appear on the alternate task but it may happen
-          on the second, third, or any subsequent task, depending on timing and
-          concurrency.
+        """Running one poll or walk with one event-loop-owned SNMP engine.
 
-        The better way to eliminate this hang is to use new SnmpEngine for each snmp request.
+        Celery reuses the Poller task instance, while the poll and walk entry
+        points run their coroutines with asyncio.run(). A network-active
+        SnmpEngine keeps the event loop used by its transport dispatcher, so it
+        should not be kept across those task runs. Creating the engine here lets
+        authentication, GET, and bulk walk share the current loop. Its context
+        manager closes the transports on success, error, or cancellation before
+        the entry point closes that loop. MIB data remains on the Poller because
+        the standalone builder does not own network or event-loop resources.
 
+        :param ir: Inventory record
+        :param is_walk: Whether to run in walk mode.
+        :param profiles: Profile names used to select GET and bulk-walk varbinds.
+        :return: A tuple containing the retry flag and collected metrics.
         """
         retry = False
         address = transform_address_to_key(ir.address, ir.port)
@@ -414,45 +413,53 @@ class Poller(Task):
             address, is_walk=is_walk, profiles=profiles
         )
 
-        auth_data = await get_auth(logger, ir, self.get_snmp_engine(ir.version))
-        context_data = get_context_data()
-
-        transport = await setup_transport_target(ir)
-
         metrics: Dict[str, Any] = {}
         if not varbinds_get and not varbinds_bulk:
             logger.info(f"No work to do for {address}")
             return False, {}
 
-        max_oid = ir.max_oid_to_process if ir.max_oid_to_process else MAX_OID_TO_PROCESS
+        # Keeping the engine in this scope closes its transports before the poll or
+        # walk leaves the event loop pysnmp bound them to.
+        with SnmpEngine() as snmp_engine:
+            snmp_engine.cache["mibViewController"] = self.mib_view_controller
+            auth_data = await get_auth(logger, ir, snmp_engine)
+            context_data = get_context_data()
 
-        if varbinds_bulk:
-            await self.run_bulk_request(
-                address,
-                auth_data,
-                bulk_mapping,
-                context_data,
-                ir,
-                metrics,
-                transport,
-                varbinds_bulk,
-                is_walk,
-                max_oid,
+            transport = await setup_transport_target(ir)
+
+            max_oid = (
+                ir.max_oid_to_process if ir.max_oid_to_process else MAX_OID_TO_PROCESS
             )
 
-        if varbinds_get:
-            await self.run_get_request(
-                address,
-                auth_data,
-                context_data,
-                get_mapping,
-                ir,
-                metrics,
-                transport,
-                varbinds_get,
-                is_walk,
-                max_oid,
-            )
+            if varbinds_bulk:
+                await self.run_bulk_request(
+                    snmp_engine,
+                    address,
+                    auth_data,
+                    bulk_mapping,
+                    context_data,
+                    ir,
+                    metrics,
+                    transport,
+                    varbinds_bulk,
+                    is_walk,
+                    max_oid,
+                )
+
+            if varbinds_get:
+                await self.run_get_request(
+                    snmp_engine,
+                    address,
+                    auth_data,
+                    context_data,
+                    get_mapping,
+                    ir,
+                    metrics,
+                    transport,
+                    varbinds_get,
+                    is_walk,
+                    max_oid,
+                )
 
         for group_key, metric in metrics.items():
             if "profiles" in metrics[group_key]:
@@ -464,6 +471,7 @@ class Poller(Task):
 
     async def run_get_request(
         self,
+        snmp_engine,
         address,
         auth_data,
         context_data,
@@ -475,7 +483,6 @@ class Poller(Task):
         is_walk,
         max_oid_to_process,
     ):
-        snmp_engine = self.get_snmp_engine(create_new=True)
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, max_oid_to_process):
             try:
@@ -505,6 +512,7 @@ class Poller(Task):
 
     async def run_bulk_request(
         self,
+        snmp_engine,
         address,
         auth_data,
         bulk_mapping,
@@ -543,8 +551,6 @@ class Poller(Task):
         - Each varbind walks only its own OID subtree and stops at its boundary
         - Prevents walking beyond requested subtrees and eliminates duplicate OIDs
         """
-
-        snmp_engine = self.get_snmp_engine(create_new=True)
 
         for varbind_chunk in self.get_varbind_chunk(
             list(varbinds_bulk), max_oid_to_process
