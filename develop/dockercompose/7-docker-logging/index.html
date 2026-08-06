@@ -1778,6 +1778,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manage_logspy-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        manage_logs.py flags
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#choose-the-logging-behavior" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2831,6 +2853,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manage_logspy-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        manage_logs.py flags
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#choose-the-logging-behavior" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2911,6 +2955,33 @@ DOCKER_LOG_MAX_FILE=5
 DOCKER_LOG_COMPRESS=true
 </code></pre></div>
 <p>Docker applies logging-driver changes when containers are created. Run <code>docker compose up -d</code> after changing the logging configuration so Compose can recreate the affected containers.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">¶</a></h2>
+<p>Running <code>manage_logs.py</code> requires the <code>ruamel.yaml</code> Python package. Install it with:</p>
+<div class="highlight"><pre><span></span><code>pip3<span class="w"> </span>install<span class="w"> </span>ruamel.yaml
+</code></pre></div>
+<h2 id="manage_logspy-flags"><code>manage_logs.py</code> flags<a class="headerlink" href="#manage_logspy-flags" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-p</code>, <code>--path_to_compose</code></td>
+<td>Absolute path to the directory containing the Docker Compose files</td>
+</tr>
+<tr>
+<td><code>--configure_default_logging</code></td>
+<td>Apply bounded <code>json-file</code> logging or Docker daemon inheritance based on <code>DOCKER_LOG_DRIVER</code></td>
+</tr>
+<tr>
+<td><code>--use_docker_default_logging</code></td>
+<td>Remove service-level logging configuration so containers inherit the Docker daemon configuration</td>
+</tr>
+</tbody>
+</table>
 <h2 id="choose-the-logging-behavior">Choose the logging behavior<a class="headerlink" href="#choose-the-logging-behavior" title="Permanent link">¶</a></h2>
 <p>Check the Docker daemon’s current logging driver before a new installation or upgrade:</p>
 <div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>info<span class="w"> </span>--format<span class="w"> </span><span class="s1">'{{.LoggingDriver}}'</span>
