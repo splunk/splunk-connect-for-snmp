@@ -13,6 +13,22 @@ DOCKER_LOG_COMPRESS=true
 
 Docker applies logging-driver changes when containers are created. Run `docker compose up -d` after changing the logging configuration so Compose can recreate the affected containers.
 
+## Prerequisites
+
+Running `manage_logs.py` requires the `ruamel.yaml` Python package. Install it with:
+
+```shell
+pip3 install ruamel.yaml
+```
+
+## `manage_logs.py` flags
+
+| Flag                                  | Description                                                                                     |
+|---------------------------------------|-------------------------------------------------------------------------------------------------|
+| `-p`, `--path_to_compose`             | Absolute path to the directory containing the Docker Compose files                              |
+| `--configure_default_logging`         | Apply bounded `json-file` logging or Docker daemon inheritance based on `DOCKER_LOG_DRIVER`     |
+| `--use_docker_default_logging`        | Remove service-level logging configuration so containers inherit the Docker daemon configuration |
+
 ## Choose the logging behavior
 
 Check the Docker daemon's current logging driver before a new installation or upgrade:
