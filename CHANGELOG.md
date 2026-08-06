@@ -3,8 +3,10 @@
 ## Unreleased
 
 ### Changed
+- Provided configurable options to control the docker logging: `DOCKER_LOG_DRIVER`, `DOCKER_LOG_MAX_SIZE`, `DOCKER_LOG_MAX_FILE`, `DOCKER_LOG_COMPRESS` to prevent the disk usage growth
 
 ### Fixed
+- Revalidates the Mongo-backed MIB index cache whenever a trap or poller worker starts/restart.
 - Preserve unresolved trap varbind fields during custom translation processing, preventing processing failures and errors
 - Harden the security context for kubernetes templates
 - Fix schedules not resuming for unchanged inventory records after Redis/RedBeat is reset while MongoDB data is preserved
