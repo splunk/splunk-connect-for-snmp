@@ -20,7 +20,7 @@ from contextlib import suppress
 from pysnmp.proto import rfc1902
 from pysnmp.proto.errind import EmptyResponse
 from pysnmp.smi import error
-from requests import Response, Session
+from requests import Session
 from requests.exceptions import RequestException
 
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
@@ -32,10 +32,8 @@ with suppress(ImportError, OSError):
 
     load_dotenv()
 
-import csv
 import os
 import time
-from io import StringIO
 from typing import Any, Dict, List, Set, Tuple, Union
 
 import pymongo
@@ -52,6 +50,7 @@ from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import get_auth, setup_transport_target
 from splunk_connect_for_snmp.snmp.context import get_context_data
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
+from splunk_connect_for_snmp.snmp.mib_index_validator import MibIndexResponseValidator
 
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
 MIB_INDEX = os.getenv("MIB_INDEX", "https://pysnmp.github.io/mibs/index.csv")
@@ -166,82 +165,6 @@ def is_mib_resolved(id):
         return False
     else:
         return True
-
-
-def _parse_mib_index(index_content: str) -> Tuple[Dict[str, str], int]:
-    """
-    Parse the MIB index into the mapping used to resolve OID prefixes.
-
-    Each two-column row contains the MIB module name followed by its OID
-    prefix. Values are kept as supplied, rows with any other number of columns
-    are skipped, and duplicate OID prefixes retain the last mapping. If CSV
-    parsing fails, mappings read before the failure are preserved.
-
-    :param index_content: Text returned by the MIB index endpoint
-
-    :return: OID-prefix-to-MIB mapping and the number of malformed rows
-    """
-    parsed_map: Dict[str, str] = {}
-    malformed_rows = 0
-
-    try:
-        with StringIO(index_content) as index_csv:
-            reader = csv.reader(index_csv)
-            for row in reader:
-                if len(row) != 2:
-                    malformed_rows += 1
-                    continue
-
-                mib = row[0].strip()
-                oid_prefix = row[1].strip()
-
-                if not mib or not oid_prefix:
-                    malformed_rows += 1
-                    continue
-
-                parsed_map[oid_prefix] = mib
-    except csv.Error:
-        malformed_rows += 1
-
-    return parsed_map, malformed_rows
-
-
-def _validate_mib_index_response(
-    response: Response, *args: Any, **kwargs: Any
-) -> Response:
-    """
-    Validate a live MIB index response before requests-cache stores it.
-
-    This hook is attached only to the MIB index request. Cached and non-success
-    responses are returned unchanged. A live HTTP 200 response must contain at
-    least one two-column mapping. Raising ``RequestException`` prevents an
-    invalid live response from being cached and allows ``stale_if_error`` to
-    return the previous cached index when one is available.
-
-    :param response: HTTP response returned by the MIB index endpoint
-    :param args: Additional positional arguments supplied to the response hook
-    :param kwargs: Additional keyword arguments supplied to the response hook
-
-    :return: Original HTTP response after validation
-
-    :raises RequestException: If a live successful response has no mappings
-    """
-    if response.status_code != 200 or bool(getattr(response, "from_cache", False)):
-        return response
-
-    parsed_map, malformed_rows = _parse_mib_index(response.text)
-    if not parsed_map:
-        logger.error(
-            f"Live MIB index response rejected before caching "
-            f"status={response.status_code} valid_mappings=0 "
-            f"malformed_rows={malformed_rows}"
-        )
-        raise RequestException(
-            "MIB index contains no valid mappings "
-            f"(malformed_rows={malformed_rows})",
-            response=response,
-        )
-    return response
 
 
 def get_group_key(mib, oid, index) -> str:
@@ -450,7 +373,8 @@ class Poller(Task):
         """
         conditional_refresh = self._uses_cached_mib_index_session
         previous_mapping_count = len(self.mib_map)
-        response_hooks = {"response": _validate_mib_index_response}
+        response_validator: MibIndexResponseValidator = MibIndexResponseValidator()
+        response_hooks = {"response": response_validator}
 
         logger.info(
             f"MIB index refresh requested reason={reason} "
@@ -503,7 +427,7 @@ class Poller(Task):
             )
             return False
 
-        new_mib_map, malformed_rows = _parse_mib_index(response.text)
+        new_mib_map, malformed_rows = response_validator.parse_response(response)
 
         if malformed_rows:
             logger.warning(
