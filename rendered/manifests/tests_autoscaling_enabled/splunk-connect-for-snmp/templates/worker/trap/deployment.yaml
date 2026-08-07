@@ -117,6 +117,8 @@ spec:
               value: "30"
             - name: MAX_TASKS_PER_CHILD
               value: "0"
+            - name: MAX_MEMORY_PER_CHILD
+              value: "0"
             - name: RESOLVE_TRAP_ADDRESS
               value: "false"
             - name: INCLUDE_UNRESOLVED_TRAP_VARBINDS

@@ -320,6 +320,9 @@ worker:
     # being recycled. 0 (default) disables recycling. Useful to mitigate
     # memory growth in long-running workers.
     maxTasksPerChild: 0
+    # maximum resident memory used by one Celery prefork child before it is
+    # recycled, in Celery kilobytes (1 unit = 1024 bytes). 0 disables memory recycling.
+    maxMemoryPerChild: 0
     autoscaling:
       # enabling autoscaling for poller worker pods
       enabled: false
@@ -359,6 +362,9 @@ worker:
     # being recycled. 0 (default) disables recycling. Useful to mitigate
     # memory growth in long-running workers.
     maxTasksPerChild: 0
+    # maximum resident memory used by one Celery prefork child before it is
+    # recycled, in Celery kilobytes (1 unit = 1024 bytes). 0 disables memory recycling.
+    maxMemoryPerChild: 0
     autoscaling:
       # enabling autoscaling for trap worker pods
       enabled: false
@@ -389,6 +395,9 @@ worker:
     # being recycled. 0 (default) disables recycling. Useful to mitigate
     # memory growth in long-running workers.
     maxTasksPerChild: 0
+    # maximum resident memory used by one Celery prefork child before it is
+    # recycled, in Celery kilobytes (1 unit = 1024 bytes). 0 disables memory recycling.
+    maxMemoryPerChild: 0
     autoscaling:
       # enabling autoscaling for sender worker pods
       enabled: false
@@ -416,6 +425,9 @@ worker:
     prefetch: 30
     # max number of tasks a worker child process can execute before being recycled; 0 disables recycling
     maxTasksPerChild: 0
+    # maximum resident memory used by one Celery prefork child before it is
+    # recycled, in Celery kilobytes (1 unit = 1024 bytes). 0 disables memory recycling.
+    maxMemoryPerChild: 0
     autoscaling:
       # enabling autoscaling for discovery worker pods
       enabled: false

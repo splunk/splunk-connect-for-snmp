@@ -141,6 +141,7 @@ These settings control Docker's local retention when bounded `json-file` logging
 | `WORKER_POLLER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker poller container                        |
 | `WORKER_POLLER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker poller container                     |
 | `WORKER_POLLER_MAX_TASKS_PER_CHILD` | Max number of tasks a poller worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
+| `WORKER_POLLER_MAX_MEMORY_PER_CHILD` | Maximum resident memory per poller child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
 | `ENABLE_WORKER_POLLER_SECRETS`      | Enable usage of secrets for poller                                         |
 
 #### Worker Sender
@@ -154,6 +155,7 @@ These settings control Docker's local retention when bounded `json-file` logging
 | `WORKER_SENDER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker sender container                        |
 | `WORKER_SENDER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker sender container                     |
 | `WORKER_SENDER_MAX_TASKS_PER_CHILD` | Max number of tasks a sender worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
+| `WORKER_SENDER_MAX_MEMORY_PER_CHILD` | Maximum resident memory per sender child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
 
 #### Worker Trap
 | Variable                          | Description                                                                                      |
@@ -170,6 +172,7 @@ These settings control Docker's local retention when bounded `json-file` logging
 | `WORKER_TRAP_CPU_RESERVATIONS`    | Dedicated cpu resources for worker trap container                                                |
 | `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
 | `WORKER_TRAP_MAX_TASKS_PER_CHILD` | Max number of tasks a trap worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
+| `WORKER_TRAP_MAX_MEMORY_PER_CHILD` | Maximum resident memory per trap child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
 
 #### Worker Discovery
 | Variable                                  | Description                                                                         |
@@ -182,6 +185,7 @@ These settings control Docker's local retention when bounded `json-file` logging
 | `WORKER_DISCOVERY_CPU_RESERVATIONS`       | Dedicated cpu resources for worker discovery container                              |
 | `WORKER_DISCOVERY_MEMORY_RESERVATIONS`    | Dedicated memory resources for worker discovery container                           |
 | `WORKER_DISCOVERY_MAX_TASKS_PER_CHILD`    | Max number of tasks a discovery worker child process can execute before being recycled. `0` (default) disables recycling |
+| `WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD`   | Maximum resident memory per discovery child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
 | `ENABLE_WORKER_DISCOVERY_SECRETS`         | Enable usage of SNMPv3 secrets for the discovery worker                             |
 
 ### Inventory
