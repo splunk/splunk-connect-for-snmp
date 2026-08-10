@@ -27,6 +27,8 @@ COPY docker_scripts/manage_secrets.py /app/secrets/
 RUN chown 10001:10001 /app/secrets/
 RUN chown 10001:10001 /tmp
 COPY --from=builder /app/.venv /app/.venv
+RUN python -m pip uninstall --yes pip && \
+    /app/.venv/bin/python -m pip uninstall --yes pip
 COPY entrypoint.sh /app/entrypoint.sh
 COPY construct-connection-strings.sh /app/construct-connection-strings.sh
 RUN chmod +x /app/construct-connection-strings.sh /app/entrypoint.sh
