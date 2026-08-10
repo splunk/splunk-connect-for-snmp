@@ -26,6 +26,8 @@ traps:
 worker:
   poller:
     replicaCount: 1
+    autoscaling:
+      enabled: false
     #changed replicaCount from 4 to 1
     concurrency: 4
     prefetch: 1

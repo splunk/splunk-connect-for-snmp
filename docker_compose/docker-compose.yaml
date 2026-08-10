@@ -1,3 +1,10 @@
+x-default-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "${DOCKER_LOG_MAX_SIZE:-10m}"
+    max-file: "${DOCKER_LOG_MAX_FILE:-5}"
+    compress: "${DOCKER_LOG_COMPRESS:-true}"
+
 x-general_sc4snmp_data: &general_sc4snmp_data
   CONFIG_PATH: /app/config/config.yaml
   REDIS_URL: redis://redis:6379/1
@@ -83,6 +90,7 @@ networks:
 services:
   coredns:
     image: ${COREDNS_IMAGE}:${COREDNS_TAG:-latest}
+    logging: *default-logging
     command: [-conf, /Corefile]
     container_name: coredns
     restart: on-failure
@@ -98,6 +106,7 @@ services:
   snmp-mibserver:
     <<: [*dns_and_networks, *dependend_on_core_dns]
     image: ${MIBSERVER_IMAGE}:${MIBSERVER_TAG:-latest}
+    logging: *default-logging
     container_name: snmp-mibserver
     environment:
       NGINX_ENTRYPOINT_QUIET_LOGS: ${NGINX_ENTRYPOINT_QUIET_LOGS:-1}
@@ -107,18 +116,21 @@ services:
   redis:
     <<: [*dns_and_networks, *dependend_on_core_dns]
     image: ${REDIS_IMAGE}:${REDIS_TAG:-latest}
+    logging: *default-logging
     container_name: redis
     environment:
       ALLOW_EMPTY_PASSWORD: yes
   mongo:
     <<: [*dns_and_networks, *dependend_on_core_dns]
     image: ${MONGO_IMAGE}:${MONGO_TAG:-latest}
+    logging: *default-logging
     container_name: mongo
     environment:
       GLIBC_TUNABLES: ${MONGO_GLIBC_TUNABLES:-glibc.pthread.rseq=1}
   inventory:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     container_name: sc4snmp-inventory
     command: [inventory]
     environment:
@@ -135,6 +147,7 @@ services:
   scheduler:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     container_name: sc4snmp-scheduler
     command: [celery, beat]
     environment:
@@ -159,6 +172,7 @@ services:
       INCLUDE_SECURITY_CONTEXT_ID: ${INCLUDE_SECURITY_CONTEXT_ID:-false}
       MAX_TRAP_VARBINDS_TO_DECODE: ${MAX_TRAP_VARBINDS_TO_DECODE:-0}
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     ports:
     - mode: host
       protocol: udp
@@ -172,6 +186,7 @@ services:
   discovery:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     container_name: sc4snmp-discovery
     profiles: [discovery]
     command: [discovery]
@@ -189,6 +204,7 @@ services:
   worker-discovery:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     profiles: [discovery]
     command:
     - celery
@@ -225,6 +241,7 @@ services:
   worker-poller:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     command:
     - celery
     - worker-poller
@@ -253,6 +270,7 @@ services:
   worker-sender:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     command: [celery, worker-sender]
     secrets:
     - splunk_hec_token
@@ -283,6 +301,7 @@ services:
   worker-trap:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     command: [celery, worker-trap]
     environment:
       <<: [*general_sc4snmp_data, *splunk_general_setup, *splunk_extended_setup, *workers_general_setup,
@@ -314,6 +333,7 @@ services:
   flower:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     command: [celery, flower]
     environment:
       <<: [

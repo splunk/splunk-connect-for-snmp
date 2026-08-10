@@ -16,14 +16,19 @@
 import logging
 import os
 import time
+from datetime import datetime, timezone
 
 import pytest
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString as dq
 from ruamel.yaml.scalarstring import SingleQuotedScalarString as sq
 
 from integration_tests.utils.splunk_test_utils import (
+    assert_splunk_search_absent,
+    install_mib_index_refresh_test_mib,
+    mib_index_refresh_test_environment,
     rebuild_stack_preserve_mongo_compose,
     rebuild_stack_preserve_mongo_microk8s,
+    restart_worker_for_mib_index_refresh,
     splunk_single_search,
     update_file_microk8s,
     update_groups_compose,
@@ -34,12 +39,95 @@ from integration_tests.utils.splunk_test_utils import (
     upgrade_docker_compose,
     upgrade_env_compose,
     upgrade_helm_microk8s,
+    wait_for_mib_refresh_cleanup_microk8s,
+    wait_for_mib_refresh_worker_log,
+    wait_for_splunk_search,
     yaml_escape_list,
 )
 
 logger = logging.getLogger(__name__)
 SPLUNK_RESULT_RETRIES = int(os.getenv("POLLER_SPLUNK_RESULT_RETRIES", "5"))
 SPLUNK_RESULT_RETRY_WAIT = int(os.getenv("POLLER_SPLUNK_RESULT_RETRY_WAIT", "30"))
+HVR_POLLER_OID = "1.3.6.1.4.1.42705.2.1.0"
+HVR_POLLER_FIELD = "HVR-MIB.hvrPollerStatus.value"
+HVR_POLLER_VALUE = "mib-index-refresh-poller"
+HVR_POLLER_CONTROL_FIELD = "SNMPv2-MIB.sysDescr.value"
+HVR_POLLER_CONTROL_VALUE = "mib-index-refresh-control"
+
+
+def _poller_field_search(host, field, value, earliest):
+    return f"""search index="netops" sourcetype="sc4snmp:event"
+        host="{host}" earliest={earliest} "{field}"="{value}" | head 1"""
+
+
+def _wait_for_poller_field(service, host, field, expected_value, earliest, timeout=180):
+    wait_for_splunk_search(
+        service,
+        _poller_field_search(host, field, expected_value, earliest),
+        f"{field!r}={expected_value!r} from {host}",
+        timeout,
+    )
+
+
+def _assert_poller_field_absent(service, host, field, value, earliest):
+    assert_splunk_search_absent(
+        service,
+        _poller_field_search(host, field, value, earliest),
+        f"poller field {field!r}={value!r} from {host}",
+    )
+
+
+@pytest.fixture
+def hvr_poller_mib_environment(request):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
+    target = f"{trap_external_ip}:1166"
+    profile_name = "mib_index_refresh_profile"
+    profile = {
+        profile_name: {
+            "frequency": 5,
+            "varBinds": [
+                yaml_escape_list(sq("SNMPv2-MIB"), sq("sysDescr"), 0),
+                yaml_escape_list(sq("SNMPv2-SMI"), sq("enterprises")),
+            ],
+        }
+    }
+    inventory_record = f"{trap_external_ip},1166,2c,hvr,,,600,{profile_name},,"
+    deleted_inventory_record = f"{inventory_record}t"
+    helm_value_files = ()
+    inventory_configured = False
+
+    if deployment not in {"microk8s", "docker-compose"}:
+        raise ValueError(f"Unsupported SC4SNMP deployment: {deployment}")
+
+    try:
+        if deployment == "microk8s":
+            update_profiles_microk8s(profile)
+            update_file_microk8s([inventory_record], "inventory.yaml")
+            inventory_configured = True
+            helm_value_files = ("inventory.yaml", "profiles.yaml")
+        else:
+            update_profiles_compose(profile)
+            update_inventory_compose([inventory_record])
+            inventory_configured = True
+            upgrade_docker_compose()
+
+        with mib_index_refresh_test_environment(
+            deployment,
+            "poller",
+            helm_value_files=helm_value_files,
+        ) as local_mibs_dir:
+            install_mib_index_refresh_test_mib(deployment, local_mibs_dir)
+            yield deployment, target
+    finally:
+        if inventory_configured:
+            if deployment == "microk8s":
+                update_file_microk8s([deleted_inventory_record], "inventory.yaml")
+                upgrade_helm_microk8s(["inventory.yaml"])
+                wait_for_mib_refresh_cleanup_microk8s()
+            else:
+                update_inventory_compose([deleted_inventory_record])
+                upgrade_docker_compose()
 
 
 @pytest.mark.part1
@@ -1964,6 +2052,57 @@ def run_retried_single_search(
             )
             time.sleep(wait)
     return 0, 0
+
+
+@pytest.mark.part6
+def test_poller_new_local_mib_is_unresolved_before_worker_restart(
+    hvr_poller_mib_environment, setup_splunk
+):
+    deployment, target = hvr_poller_mib_environment
+    started_at = datetime.now(timezone.utc)
+    earliest = int(started_at.timestamp())
+    log_start = started_at.isoformat().replace("+00:00", "Z")
+
+    _wait_for_poller_field(
+        setup_splunk,
+        target,
+        HVR_POLLER_CONTROL_FIELD,
+        HVR_POLLER_CONTROL_VALUE,
+        earliest,
+    )
+    _assert_poller_field_absent(
+        setup_splunk,
+        target,
+        HVR_POLLER_FIELD,
+        HVR_POLLER_VALUE,
+        earliest,
+    )
+    wait_for_mib_refresh_worker_log(
+        deployment,
+        "poller",
+        log_start,
+        ("no mib found", HVR_POLLER_OID, f"from {target}"),
+        f"worker-poller to report an unresolved {HVR_POLLER_OID} "
+        f"lookup from {target}",
+    )
+
+
+@pytest.mark.part6
+def test_poller_new_local_mib_is_resolved_after_worker_restart(
+    hvr_poller_mib_environment, setup_splunk
+):
+    deployment, target = hvr_poller_mib_environment
+    earliest = int(time.time())
+
+    restart_worker_for_mib_index_refresh(deployment, "poller")
+
+    _wait_for_poller_field(
+        setup_splunk,
+        target,
+        HVR_POLLER_FIELD,
+        HVR_POLLER_VALUE,
+        earliest,
+    )
 
 
 @pytest.fixture(scope="class")

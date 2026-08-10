@@ -74,6 +74,21 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `MONGO_TAG`       | MongoDB image tag to pull            |
 | `MONGO_GLIBC_TUNABLES` | Value passed as `GLIBC_TUNABLES` to the `mongo` container. Defaults to `glibc.pthread.rseq=1` to mitigate a MongoDB 8.x SIGSEGV observed on host kernels >= 6.19 (e.g. Ubuntu 26.04). Safe no-op on older kernels. See [MongoDB 8.x crash on Linux kernel 6.19+](../troubleshooting/general-issues.md#mongodb-8x-crash-on-linux-kernel-619-exit-139--sigsegv). |
 
+### Docker logging
+
+Docker Compose applies bounded `json-file` logging by default. Existing `json-file` deployments receive rotation when their containers are recreated. To preserve `local`, `journald`, or another Docker daemon driver during an upgrade, set `DOCKER_LOG_DRIVER` before starting the upgraded deployment. See [Docker logging](./7-docker-logging.md) for upgrade, switching, and verification procedures.
+
+The default limits retain up to approximately 50 MB of uncompressed logs per container. Compression normally reduces the disk used by rotated files.
+
+| Variable              | Description                                                     |
+|-----------------------|-----------------------------------------------------------------|
+| `DOCKER_LOG_DRIVER`   | Docker daemon logging driver reported by `docker info --format '{{.LoggingDriver}}'`. `json-file`, an empty value, or a missing value uses bounded `json-file` logging. Another driver name, or `inherit`, preserves daemon inheritance after running `--configure_default_logging`. Default: `json-file` |
+| `DOCKER_LOG_MAX_SIZE` | Maximum size of each container log file. Use a positive size such as `100k`, `10m`, or `1g`. Default: `10m` |
+| `DOCKER_LOG_MAX_FILE` | Maximum number of log files retained per container. Use a positive integer. Default: `5` |
+| `DOCKER_LOG_COMPRESS` | Compress rotated log files. Supported values: `true` or `false`. Default: `true` |
+
+These settings control Docker's local retention when bounded `json-file` logging is selected and the local cache used by Docker-to-Splunk logging. They do not change SC4SNMP log levels, messages, or forwarding.
+
 ### Splunk instance
 
 | Variable                                  | Description                                                                                                                           |
@@ -81,8 +96,8 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `SPLUNK_HEC_HOST`                         | IP address or a domain name of a Splunk instance to send data to                                                                      |
 | `SPLUNK_HEC_PROTOCOL`                     | The protocol of the HEC endpoint: `https` or `http`                                                                                   |
 | `SPLUNK_HEC_PORT`                         | The port of the HEC endpoint                                                                                                          |
-| `SPLUNK_HEC_TOKEN`                        | Splunk HTTP Event Collector token. To keep it out of `.env` and `docker inspect`, use a [Docker secret](../configuration/snmpv3.md#splunk-hec-token-secret); the app then reads the token from the file path in `SPLUNK_HEC_TOKEN_FILE`. |
-| `SPLUNK_HEC_TOKEN_SECRET_FILE`            | Path on the host to the file used as the Docker secret for the HEC token (worker-sender only). The app reads the token from the mounted file; only the path is in the container env. |
+| `SPLUNK_HEC_TOKEN`                        | Splunk HTTP Event Collector token. To keep it out of `.env` and `docker inspect`, use a [Docker secret](../configuration/snmpv3.md#splunk-hec-token-secret). The app then reads the token from the file path in `SPLUNK_HEC_TOKEN_FILE`. |
+| `SPLUNK_HEC_TOKEN_SECRET_FILE`            | Path on the host to the file used as the Docker secret for the HEC token (worker-sender only). The app reads the token from the mounted file. Only the path is in the container env. |
 | `SPLUNK_HEC_INSECURESSL`                  | Whether to skip checking the certificate of the HEC endpoint when sending data over HTTPS                                             |
 | `SPLUNK_SOURCETYPE_TRAPS`                 | Splunk sourcetype for trap events                                                                                                     |
 | `SPLUNK_SOURCETYPE_POLLING_EVENTS`        | Splunk sourcetype for non-metric polling events                                                                                       |

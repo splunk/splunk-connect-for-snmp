@@ -21,6 +21,7 @@ from pysnmp.proto import rfc1902
 from pysnmp.proto.errind import EmptyResponse
 from pysnmp.smi import error
 from requests import Session
+from requests.exceptions import RequestException
 
 from splunk_connect_for_snmp.common.collection_manager import ProfilesManager
 from splunk_connect_for_snmp.inventory.loader import transform_address_to_key
@@ -31,10 +32,8 @@ with suppress(ImportError, OSError):
 
     load_dotenv()
 
-import csv
 import os
 import time
-from io import StringIO
 from typing import Any, Dict, List, Set, Tuple, Union
 
 import pymongo
@@ -51,6 +50,7 @@ from splunk_connect_for_snmp.common.requests import CachedLimiterSession
 from splunk_connect_for_snmp.snmp.auth import get_auth, setup_transport_target
 from splunk_connect_for_snmp.snmp.context import get_context_data
 from splunk_connect_for_snmp.snmp.exceptions import SnmpActionError
+from splunk_connect_for_snmp.snmp.mib_index_validator import MibIndexResponseValidator
 from splunk_connect_for_snmp.snmp.multi_bulk_walk_cmd import multi_bulk_walk_cmd
 
 MIB_SOURCES = os.getenv("MIB_SOURCES", "https://pysnmp.github.io/mibs/asn1/@mib@")
@@ -87,6 +87,7 @@ PYSNMP_PROTOCOL_MIBS = (
 )
 
 logger = get_task_logger(__name__)
+
 
 if PYSNMP_DEBUG:
     # Usage: PYSNMP_DEBUG=dsp,msgproc,io
@@ -331,6 +332,7 @@ class Poller(Task):
 
         if kwargs.get("no_mongo"):
             self.session = Session()
+            self._uses_cached_mib_index_session = False
         else:
             self.session = CachedLimiterSession(
                 per_second=120,
@@ -341,6 +343,7 @@ class Poller(Task):
                 stale_if_error=True,
                 allowable_codes=[200],
             )
+            self._uses_cached_mib_index_session = True
 
         self.profiles_manager = ProfilesManager(self.mongo_client)
         self.profiles = self.profiles_manager.return_collection()
@@ -363,19 +366,107 @@ class Poller(Task):
             self.standard_mibs.append(mib)
             self.builder.load_modules(mib)
 
-        mib_response = self.session.get(f"{MIB_INDEX}")
-        self.mib_map = {}
-        if mib_response.status_code == 200:
-            with StringIO(mib_response.text) as index_csv:
-                reader = csv.reader(index_csv)
-                for each_row in reader:
-                    if len(each_row) == 2:
-                        self.mib_map[each_row[1]] = each_row[0]
-            logger.debug(f"Loaded {len(self.mib_map.keys())} mib map entries")
-        else:
-            logger.error(
-                f"Unable to load mib map from index http error {mib_response.status_code}"
+        self.mib_map: Dict[str, str] = {}
+        if not self._refresh_mib_map(reason="startup"):
+            raise RuntimeError("Unable to initialize the MIB index")
+
+    def _refresh_mib_map(self, reason: str) -> bool:
+        """
+        Retrieve the MIB index and rebuild the worker's in-memory mapping.
+
+        Cached sessions conditionally revalidate the stored response with
+        mibserver. A changed index replaces the cached response, while an
+        unchanged or stale fallback response can reuse the cached body. The
+        returned CSV is parsed into a temporary dictionary, and ``mib_map`` is
+        replaced only when the result contains at least one mapping. Otherwise,
+        the existing map is preserved.
+
+        :param reason: Reason the refresh was requested, such as worker startup
+
+        :return: True when a usable MIB index was loaded, otherwise False
+        """
+        conditional_refresh = self._uses_cached_mib_index_session
+        previous_mapping_count = len(self.mib_map)
+        response_validator: MibIndexResponseValidator = MibIndexResponseValidator()
+        response_hooks = {"response": response_validator}
+
+        logger.info(
+            f"MIB index refresh requested reason={reason} "
+            f"conditional_refresh={conditional_refresh}"
+        )
+        try:
+            if conditional_refresh:
+                # Revalidate the cached index. requests-cache may reuse it when it
+                # is unchanged or mibserver is unavailable.
+                response = self.session.get(
+                    MIB_INDEX, refresh=True, hooks=response_hooks
+                )
+            else:
+                response = self.session.get(MIB_INDEX, hooks=response_hooks)
+        except (RequestException, pymongo.errors.PyMongoError) as exc:
+            failed_response = getattr(exc, "response", None)
+            status_code = getattr(failed_response, "status_code", "unavailable")
+            from_cache = getattr(failed_response, "from_cache", "unknown")
+            logger.exception(
+                f"MIB index refresh failed reason={reason} status={status_code} "
+                f"from_cache={from_cache} "
+                "valid_mappings=0 previous_map_preserved=True "
+                f"previous_mappings={previous_mapping_count}"
             )
+            return False
+
+        status_code = response.status_code
+        from_cache = bool(getattr(response, "from_cache", False))
+        # requests-cache sets revalidated=True after a successful 304 response.
+        revalidated = bool(getattr(response, "revalidated", False))
+        logger.info(
+            f"MIB index refresh response reason={reason} status={status_code} "
+            f"from_cache={from_cache} revalidated={revalidated}"
+        )
+
+        if conditional_refresh and from_cache and not revalidated:
+            logger.warning(
+                f"Live MIB index could not be confirmed during the {reason} refresh; "
+                "stale cached MIB metadata may be in use, and newly compiled MIBs "
+                "may not be available until a successful worker restart or later "
+                "refresh"
+            )
+
+        if status_code != 200:
+            logger.error(
+                f"MIB index refresh failed reason={reason} status={status_code} "
+                f"from_cache={from_cache} revalidated={revalidated} "
+                "valid_mappings=0 previous_map_preserved=True "
+                f"previous_mappings={previous_mapping_count}"
+            )
+            return False
+
+        new_mib_map, malformed_rows = response_validator.parse_response(response)
+
+        if malformed_rows:
+            logger.warning(
+                f"MIB index refresh ignored malformed rows reason={reason} "
+                f"status={status_code} from_cache={from_cache} "
+                f"revalidated={revalidated} malformed_rows={malformed_rows}"
+            )
+
+        if not new_mib_map:
+            logger.error(
+                f"MIB index refresh failed reason={reason} status={status_code} "
+                f"from_cache={from_cache} revalidated={revalidated} "
+                f"valid_mappings=0 malformed_rows={malformed_rows} "
+                "previous_map_preserved=True "
+                f"previous_mappings={previous_mapping_count}"
+            )
+            return False
+
+        self.mib_map = new_mib_map
+        logger.info(
+            f"MIB index refresh completed reason={reason} status={status_code} "
+            f"from_cache={from_cache} revalidated={revalidated} "
+            f"valid_mappings={len(new_mib_map)} malformed_rows={malformed_rows}"
+        )
+        return True
 
     async def do_work(
         self,
@@ -609,13 +700,14 @@ class Poller(Task):
         return loaded
 
     def is_mib_known(self, id: str, oid: str, target: str) -> Tuple[bool, str]:
+        mib_map = self.mib_map
         oid_list = tuple(oid.split("."))
         # if oid match enterprise, then search should stop if there is no match to vendor
         start = 6 if oid.startswith("1.3.6.1.4.1") else 5
         for i in range(len(oid_list), start, -1):
             oid_to_check = ".".join(oid_list[:i])
-            if oid_to_check in self.mib_map:
-                mib = self.mib_map[oid_to_check]
+            mib = mib_map.get(oid_to_check)
+            if mib is not None:
                 logger.debug(f"found {mib} for {id} based on {oid_to_check}")
                 return True, mib
         logger.warning(f"no mib found {id} based on {oid} from {target}")
