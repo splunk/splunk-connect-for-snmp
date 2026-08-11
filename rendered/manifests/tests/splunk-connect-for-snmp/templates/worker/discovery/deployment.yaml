@@ -119,6 +119,8 @@ spec:
               value: "30"
             - name: MAX_TASKS_PER_CHILD
               value: "0"
+            - name: MAX_MEMORY_PER_CHILD
+              value: "0"
             - name: DISCOVERY_FOLDER_PATH
               value: /app/discovery
             - name: CELERY_TASK_TIMEOUT

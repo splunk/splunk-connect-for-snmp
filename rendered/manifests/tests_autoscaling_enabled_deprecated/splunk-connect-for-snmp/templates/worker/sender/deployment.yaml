@@ -147,6 +147,8 @@ spec:
               value: "30"
             - name: MAX_TASKS_PER_CHILD
               value: "0"
+            - name: MAX_MEMORY_PER_CHILD
+              value: "0"
           volumeMounts:
             - name: config
               mountPath: "/app/config"
