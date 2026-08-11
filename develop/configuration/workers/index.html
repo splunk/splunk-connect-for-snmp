@@ -3166,6 +3166,7 @@
 <span class="w">    </span><span class="nt">concurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 <span class="w">    </span><span class="nt">prefetch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 <span class="w">    </span><span class="nt">maxTasksPerChild</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">maxMemoryPerChild</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 <span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">      </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
@@ -3188,6 +3189,7 @@
 <span class="w">    </span><span class="nt">concurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 <span class="w">    </span><span class="nt">prefetch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <span class="w">    </span><span class="nt">maxTasksPerChild</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">maxMemoryPerChild</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 <span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">      </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
@@ -3203,6 +3205,7 @@
 <span class="w">    </span><span class="nt">concurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 <span class="w">    </span><span class="nt">prefetch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <span class="w">    </span><span class="nt">maxTasksPerChild</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">maxMemoryPerChild</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 <span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">      </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
@@ -3218,6 +3221,7 @@
 <span class="w">    </span><span class="nt">concurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 <span class="w">    </span><span class="nt">prefetch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <span class="w">    </span><span class="nt">maxTasksPerChild</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">maxMemoryPerChild</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 <span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">      </span><span class="nt">minReplicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
@@ -3291,6 +3295,11 @@
 <td>0</td>
 </tr>
 <tr>
+<td>worker.poller.maxMemoryPerChild</td>
+<td>Maximum resident memory per poller child in Celery kilobytes (1 unit = 1,024 bytes). <code>0</code> disables memory recycling</td>
+<td>0</td>
+</tr>
+<tr>
 <td>worker.poller.autoscaling.enabled</td>
 <td>Enabling autoscaling for poller worker pods</td>
 <td>false</td>
@@ -3338,6 +3347,11 @@
 <tr>
 <td>worker.trap.maxTasksPerChild</td>
 <td>Max number of tasks a trap worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+<td>0</td>
+</tr>
+<tr>
+<td>worker.trap.maxMemoryPerChild</td>
+<td>Maximum resident memory per trap child in Celery kilobytes (1 unit = 1,024 bytes). <code>0</code> disables memory recycling</td>
 <td>0</td>
 </tr>
 <tr>
@@ -3411,6 +3425,11 @@
 <td>0</td>
 </tr>
 <tr>
+<td>worker.sender.maxMemoryPerChild</td>
+<td>Maximum resident memory per sender child in Celery kilobytes (1 unit = 1,024 bytes). <code>0</code> disables memory recycling</td>
+<td>0</td>
+</tr>
+<tr>
 <td>worker.sender.autoscaling.enabled</td>
 <td>Enabling autoscaling for sender worker pods</td>
 <td>false</td>
@@ -3458,6 +3477,11 @@
 <tr>
 <td>worker.discovery.maxTasksPerChild</td>
 <td>Max number of tasks a discovery worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+<td>0</td>
+</tr>
+<tr>
+<td>worker.discovery.maxMemoryPerChild</td>
+<td>Maximum resident memory per discovery child in Celery kilobytes (1 unit = 1,024 bytes). <code>0</code> disables memory recycling</td>
 <td>0</td>
 </tr>
 <tr>
@@ -3606,6 +3630,7 @@ WORKER_POLLER_MEMORY_LIMIT=500M
 WORKER_POLLER_CPU_RESERVATIONS=0.5
 WORKER_POLLER_MEMORY_RESERVATIONS=250M
 WORKER_POLLER_MAX_TASKS_PER_CHILD=0
+WORKER_POLLER_MAX_MEMORY_PER_CHILD=0
 ENABLE_WORKER_POLLER_SECRETS=false
 
 # Worker Sender
@@ -3617,6 +3642,7 @@ WORKER_SENDER_MEMORY_LIMIT=500M
 WORKER_SENDER_CPU_RESERVATIONS=0.5
 WORKER_SENDER_MEMORY_RESERVATIONS=250M
 WORKER_SENDER_MAX_TASKS_PER_CHILD=0
+WORKER_SENDER_MAX_MEMORY_PER_CHILD=0
 
 # Worker Trap
 WORKER_TRAP_CONCURRENCY=4
@@ -3632,6 +3658,7 @@ WORKER_TRAP_MEMORY_LIMIT=500M
 WORKER_TRAP_CPU_RESERVATIONS=0.5
 WORKER_TRAP_MEMORY_RESERVATIONS=250M
 WORKER_TRAP_MAX_TASKS_PER_CHILD=0
+WORKER_TRAP_MAX_MEMORY_PER_CHILD=0
 
 # Worker Discovery
 WORKER_DISCOVERY_CONCURRENCY=4
@@ -3642,6 +3669,7 @@ WORKER_DISCOVERY_MEMORY_LIMIT=500M
 WORKER_DISCOVERY_CPU_RESERVATIONS=0.5
 WORKER_DISCOVERY_MEMORY_RESERVATIONS=250M
 WORKER_DISCOVERY_MAX_TASKS_PER_CHILD=0
+WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD=0
 ENABLE_WORKER_DISCOVERY_SECRETS=false
 </code></pre></div>
 <p>To apply changes, recreate the worker containers:</p>
@@ -3741,6 +3769,10 @@ ENABLE_WORKER_DISCOVERY_SECRETS=false
 <td>Max number of tasks a poller worker child process can execute before being recycled. <code>0</code> disables recycling</td>
 </tr>
 <tr>
+<td><code>WORKER_POLLER_MAX_MEMORY_PER_CHILD</code></td>
+<td>Maximum resident memory per poller child in Celery kilobytes (1 unit = 1,024 bytes). <code>0</code> disables memory recycling</td>
+</tr>
+<tr>
 <td><code>ENABLE_WORKER_POLLER_SECRETS</code></td>
 <td>Enable usage of secrets for poller</td>
 </tr>
@@ -3786,6 +3818,10 @@ ENABLE_WORKER_DISCOVERY_SECRETS=false
 <tr>
 <td><code>WORKER_SENDER_MAX_TASKS_PER_CHILD</code></td>
 <td>Max number of tasks a sender worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+</tr>
+<tr>
+<td><code>WORKER_SENDER_MAX_MEMORY_PER_CHILD</code></td>
+<td>Maximum resident memory per sender child in Celery kilobytes (1 unit = 1,024 bytes). <code>0</code> disables memory recycling</td>
 </tr>
 </tbody>
 </table>
@@ -3850,6 +3886,10 @@ ENABLE_WORKER_DISCOVERY_SECRETS=false
 <td><code>WORKER_TRAP_MAX_TASKS_PER_CHILD</code></td>
 <td>Max number of tasks a trap worker child process can execute before being recycled. <code>0</code> disables recycling</td>
 </tr>
+<tr>
+<td><code>WORKER_TRAP_MAX_MEMORY_PER_CHILD</code></td>
+<td>Maximum resident memory per trap child in Celery kilobytes (1 unit = 1,024 bytes). <code>0</code> disables memory recycling</td>
+</tr>
 </tbody>
 </table>
 <h3 id="worker-discovery">Worker Discovery<a class="headerlink" href="#worker-discovery" title="Permanent link">¶</a></h3>
@@ -3892,6 +3932,10 @@ ENABLE_WORKER_DISCOVERY_SECRETS=false
 <tr>
 <td><code>WORKER_DISCOVERY_MAX_TASKS_PER_CHILD</code></td>
 <td>Max number of tasks a discovery worker child process can execute before being recycled. <code>0</code> disables recycling</td>
+</tr>
+<tr>
+<td><code>WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD</code></td>
+<td>Maximum resident memory per discovery child in Celery kilobytes (1 unit = 1,024 bytes). <code>0</code> disables memory recycling</td>
 </tr>
 <tr>
 <td><code>ENABLE_WORKER_DISCOVERY_SECRETS</code></td>
