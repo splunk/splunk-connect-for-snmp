@@ -6,3 +6,4 @@ examples/
 charts/splunk-connect-for-snmp/templates/
 # Rendered Redis Secret manifest for the redis_ha test case.
 rendered/manifests/**/redis-secret.yaml
+rendered/manifests/**/mongodb/mongodb-standalone-statefulset.yaml
