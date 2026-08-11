@@ -455,6 +455,10 @@
               "type": "integer",
               "minimum": 0
             },
+            "maxMemoryPerChild": {
+              "type": "integer",
+              "minimum": 0
+            },
             "autoscaling": {
               "type": "object",
               "additionalProperties": false,
@@ -544,6 +548,10 @@
               "type": "integer",
               "minimum": 0
             },
+            "maxMemoryPerChild": {
+              "type": "integer",
+              "minimum": 0
+            },
             "autoscaling": {
               "type": "object",
               "additionalProperties": false,
@@ -615,6 +623,10 @@
               "type": "integer",
               "minimum": 0
             },
+            "maxMemoryPerChild": {
+              "type": "integer",
+              "minimum": 0
+            },
             "autoscaling": {
               "type": "object",
               "additionalProperties": false,
@@ -679,6 +691,9 @@
               "type": "integer"
             },
             "maxTasksPerChild": {
+              "type": "integer"
+            },
+            "maxMemoryPerChild": {
               "type": "integer"
             },
             "autoscaling": {

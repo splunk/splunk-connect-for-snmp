@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- Provided `MAX_MEMORY_PER_CHILD` / `maxMemoryPerChild` setting to celery workers.
 - Provided configurable options to control the docker logging: `DOCKER_LOG_DRIVER`, `DOCKER_LOG_MAX_SIZE`, `DOCKER_LOG_MAX_FILE`, `DOCKER_LOG_COMPRESS` to prevent the disk usage growth
 
 ### Fixed

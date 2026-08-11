@@ -207,6 +207,8 @@ Common labels
   value: {{ .Values.worker.poller.prefetch | default "1" | quote }}
 - name: MAX_TASKS_PER_CHILD
   value: {{ .Values.worker.poller.maxTasksPerChild | default "0" | quote }}
+- name: MAX_MEMORY_PER_CHILD
+  value: {{ .Values.worker.poller.maxMemoryPerChild | default "0" | quote }}
 - name: IPv6_ENABLED
   value: {{ .Values.poller.ipv6Enabled | default "false" | quote }}
 {{- end }}
@@ -218,6 +220,8 @@ Common labels
   value: {{ .Values.worker.sender.prefetch | default "30" | quote }}
 - name: MAX_TASKS_PER_CHILD
   value: {{ .Values.worker.sender.maxTasksPerChild | default "0" | quote }}
+- name: MAX_MEMORY_PER_CHILD
+  value: {{ .Values.worker.sender.maxMemoryPerChild | default "0" | quote }}
 {{- end }}
 
 {{- define "environmental-variables-trap" -}}
@@ -227,6 +231,8 @@ Common labels
   value: {{ .Values.worker.trap.prefetch | default "30" | quote }}
 - name: MAX_TASKS_PER_CHILD
   value: {{ .Values.worker.trap.maxTasksPerChild | default "0" | quote }}
+- name: MAX_MEMORY_PER_CHILD
+  value: {{ .Values.worker.trap.maxMemoryPerChild | default "0" | quote }}
 - name: RESOLVE_TRAP_ADDRESS
   value: {{ .Values.worker.trap.resolveAddress.enabled | default "false" | quote }}
 - name: INCLUDE_UNRESOLVED_TRAP_VARBINDS
@@ -252,6 +258,8 @@ Common labels
   value: {{ .Values.worker.discovery.prefetch | default "30" | quote }}
 - name: MAX_TASKS_PER_CHILD
   value: {{ .Values.worker.discovery.maxTasksPerChild | default "0" | quote }}
+- name: MAX_MEMORY_PER_CHILD
+  value: {{ .Values.worker.discovery.maxMemoryPerChild | default "0" | quote }}
 - name: SUBNET_DISCOVERY_CONCURRENCY
   value: {{ .Values.discovery.subnetDiscoveryConcurrency | default "10" | quote }}
 {{- end }}
