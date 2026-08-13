@@ -71,33 +71,33 @@ mongodb:
       value: "glibc.pthread.rseq=1"
 ```
 
-| Key                                        | Type   | Default        | Description                                                      |
-|--------------------------------------------|--------|----------------|------------------------------------------------------------------|
-| mongodb.mode                               | string | standalone     | Deployment mode (standalone or replication).                     |
-| mongodb.replicaCount                       | int    | 3              | Number of MongoDB pods (used only in replication mode).          |
-| mongodb.replicaSetName                     | string | rs0            | Internal replica set identifier (used only in replication mode). |
-| mongodb.auth.enabled                       | bool   | true           | Enable MongoDB authentication.                                   |
-| mongodb.auth.rootUser                      | string | admin          | Root username for MongoDB.                                       |
-| mongodb.auth.rootPassword                  | string | ""             | Root password (avoid committing; prefer secret).                 |
-| mongodb.auth.existingUserSecret            | string | ""             | Name of existing Kubernetes Secret providing credentials.        |
-| mongodb.auth.rootUserKey                   | string | root-user      | Key inside existing secret containing the username.              |
-| mongodb.auth.rootPasswordKey               | string | root-password  | Key inside existing secret containing the password.              |
-| mongodb.image.repository                   | string | mongo          | Container image repository.                                      |
-| mongodb.image.tag                          | string | 8.2.2          | Image tag / MongoDB version.                                     |
-| mongodb.image.pullPolicy                   | string | IfNotPresent   | Image pull policy.                                               |
-| mongodb.resources.requests.cpu             | string | ""             | Guaranteed minimum CPU.                                          |
-| mongodb.resources.requests.memory          | string | ""             | Guaranteed minimum memory.                                       |
-| mongodb.resources.limits.cpu               | string | ""             | CPU limit.                                                       |
-| mongodb.resources.limits.memory            | string | ""             | Memory limit.                                                    |
-| mongodb.persistence.enabled                | bool   | true           | Create PersistentVolumeClaim.                                    |
-| mongodb.persistence.storageClassName       | string | ""             | StorageClass for the PVC (empty = default).                      |
-| mongodb.persistence.accessMode             | string | ReadWriteOnce  | PVC access mode.                                                 |
-| mongodb.persistence.size                   | string | 10Gi           | Requested persistent volume size.                                |
-| mongodb.podSecurityContext.fsGroup         | int    | 999            | FS group owning mounted volumes.                                 |
-| mongodb.containerSecurityContext.runAsUser | int    | 999            | UID for the container (non-root hardening).                      |
-| mongodb.replicaInitJob.image.repository    | string | alpine/kubectl | Container image for the initialization job.                      |
-| mongodb.replicaInitJob.image.tag           | string | 1.34.2         | Image tag / kubectl version.                                     |
-| mongodb.replicaInitJob.timeout             | int    | 600            | Maximum time (in seconds) to wait for each pod to become ready.  |
+| Key                                        | Type   | Default                                                   | Description                                                      |
+|--------------------------------------------|--------|-----------------------------------------------------------|------------------------------------------------------------------|
+| mongodb.mode                               | string | standalone                                                | Deployment mode (standalone or replication).                     |
+| mongodb.replicaCount                       | int    | 3                                                         | Number of MongoDB pods (used only in replication mode).          |
+| mongodb.replicaSetName                     | string | rs0                                                       | Internal replica set identifier (used only in replication mode). |
+| mongodb.auth.enabled                       | bool   | true                                                      | Enable MongoDB authentication.                                   |
+| mongodb.auth.rootUser                      | string | admin                                                     | Root username for MongoDB.                                       |
+| mongodb.auth.rootPassword                  | string | ""                                                        | Root password (avoid committing; prefer secret).                 |
+| mongodb.auth.existingUserSecret            | string | ""                                                        | Name of existing Kubernetes Secret providing credentials.        |
+| mongodb.auth.rootUserKey                   | string | root-user                                                 | Key inside existing secret containing the username.              |
+| mongodb.auth.rootPasswordKey               | string | root-password                                             | Key inside existing secret containing the password.              |
+| mongodb.image.repository                   | string | mongo                                                     | Container image repository.                                      |
+| mongodb.image.tag                          | string | 8.2.2                                                     | Image tag / MongoDB version.                                     |
+| mongodb.image.pullPolicy                   | string | IfNotPresent                                              | Image pull policy.                                               |
+| mongodb.resources.requests.cpu             | string | ""                                                        | Guaranteed minimum CPU.                                          |
+| mongodb.resources.requests.memory          | string | ""                                                        | Guaranteed minimum memory.                                       |
+| mongodb.resources.limits.cpu               | string | ""                                                        | CPU limit.                                                       |
+| mongodb.resources.limits.memory            | string | ""                                                        | Memory limit.                                                    |
+| mongodb.persistence.enabled                | bool   | true                                                      | Create PersistentVolumeClaim.                                    |
+| mongodb.persistence.storageClassName       | string | ""                                                        | StorageClass for the PVC (empty = default).                      |
+| mongodb.persistence.accessMode             | string | ReadWriteOnce                                             | PVC access mode.                                                 |
+| mongodb.persistence.size                   | string | 10Gi                                                      | Requested persistent volume size.                                |
+| mongodb.podSecurityContext.fsGroup         | int    | 999                                                       | FS group owning mounted volumes.                                 |
+| mongodb.containerSecurityContext.runAsUser | int    | 999                                                       | UID for the container (non-root hardening).                      |
+| mongodb.replicaInitJob.image.repository    | string | alpine/kubectl                                            | Container image for the initialization job.                      |
+| mongodb.replicaInitJob.image.tag           | string | 1.36.3                                                    | Image tag / kubectl version.                                     |
+| mongodb.replicaInitJob.timeout             | int    | 600                                                       | Maximum time (in seconds) to wait for each pod to become ready.  |
 | mongodb.extraEnv                           | list   | `[{name: GLIBC_TUNABLES, value: "glibc.pthread.rseq=1"}]` | Extra environment variables injected into the mongod container. The default `GLIBC_TUNABLES` entry mitigates a MongoDB 8.x SIGSEGV observed on host kernels >= 6.19 (e.g. Ubuntu 26.04 / kernel 6.19+ HWE backports). See [MongoDB 8.x crash on Linux kernel 6.19+](../../troubleshooting/general-issues.md#mongodb-8x-crash-on-linux-kernel-619-exit-139--sigsegv). |
 
 !!!note "Extra environment variables (`mongodb.extraEnv`)"
@@ -311,7 +311,7 @@ mongodb:
   replicaInitJob:
     image:
       repository: "alpine/kubectl"
-      tag: "1.34.2"
+      tag: "1.36.3"
 ```
 
 !!!note
