@@ -8,3 +8,4 @@ sudo microk8s helm3 upgrade --install sck \
   --set="splunkPlatform.metricsIndex=em_metrics" \
   --set="splunkPlatform.index=em_logs" \
   splunk-otel-collector-chart/splunk-otel-collector
+  

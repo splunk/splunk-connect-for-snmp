@@ -164,6 +164,8 @@ spec:
               value: "0"
             - name: MAX_MEMORY_PER_CHILD
               value: "0"
+            - name: USER
+              value: "sc4snmp"
           volumeMounts:
             - name: config
               mountPath: "/app/config"

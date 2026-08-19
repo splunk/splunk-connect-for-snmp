@@ -35,6 +35,9 @@
         }
       }
     },
+    "deploymentUser" : {
+      "type": "string"
+    },
     "imagePullSecrets": {
       "type": "array"
     },
@@ -1074,6 +1077,10 @@
       "properties": {
         "enabled": {
           "type": "boolean"
+        },
+        "subnetDiscoveryConcurrency": {
+          "type": "integer",
+          "minimum": 1
         },
         "ipv6Enabled": {
           "type": "boolean"

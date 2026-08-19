@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 
-from pysnmp.hlapi import ContextData
+from pysnmp.hlapi.asyncio import ContextData
 
 
 def get_context_data() -> ContextData:
-    return ContextData(None, "")
+    return ContextData(contextEngineId=None, contextName=b"")

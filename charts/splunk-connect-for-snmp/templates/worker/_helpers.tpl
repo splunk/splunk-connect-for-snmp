@@ -260,4 +260,6 @@ Common labels
   value: {{ .Values.worker.discovery.maxTasksPerChild | default "0" | quote }}
 - name: MAX_MEMORY_PER_CHILD
   value: {{ .Values.worker.discovery.maxMemoryPerChild | default "0" | quote }}
+- name: SUBNET_DISCOVERY_CONCURRENCY
+  value: {{ .Values.discovery.subnetDiscoveryConcurrency | default "10" | quote }}
 {{- end }}
