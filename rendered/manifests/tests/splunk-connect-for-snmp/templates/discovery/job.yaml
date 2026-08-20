@@ -17,7 +17,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/redis-config: e82c09fa615350d9c147a0884485f953308babd6b8842d0cbe695ed5595eb530
+        checksum/redis-config: b14bc6ac5a9b6a6d7c018712ac86c9dcd354016f57d2ceedbe30cd9fb4e936d9
       labels:
         app.kubernetes.io/name: splunk-connect-for-snmp
         app.kubernetes.io/component: discovery

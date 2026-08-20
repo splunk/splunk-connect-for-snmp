@@ -57,6 +57,21 @@ microk8s kubectl apply -f addresspool.yaml
 ```
 
 ## SC4SNMP
+Set these values to `true` when communication between SC4SNMP pods and the MIB server, Redis, or MongoDB must use IPv6, such as when pods communicate over an IPv6-only pod network. These settings enable IPv6 listeners while retaining the existing IPv4 listeners:
+
+```
+mibserver:
+  ipv6Enabled: true
+
+redis:
+  ipv6Enabled: true
+
+mongodb:
+  ipv6Enabled: true
+```
+
+These settings configure only the MIB server, Redis, and MongoDB listeners; they do not assign IPv6 addresses or configure network connectivity.
+
 To configure traps to receive notification from IPv4 and IPv6 addresses, you need to add the following configuration to the `values.yaml` file:
 ```
 traps:

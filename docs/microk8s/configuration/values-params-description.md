@@ -190,6 +190,12 @@ Detailed documentation about configuring discovery can be found in [Discovery](.
 | `annotations` | Annotations to add to the service account             |         |
 | `name`        | The name of the service account to use.               |         |
 
+## MIB server
+
+| Variable      | Description                                                        | Default |
+|---------------|--------------------------------------------------------------------|---------|
+| `ipv6Enabled` | Enables MIB server listeners on both IPv4 and IPv6 addresses.| `false` |
+
 ## MongoDb
 
 Detailed documentation about configuring mongodb can be found in [MongoDB](mongo-configuration.md). It is advised to 

@@ -38,6 +38,7 @@ poller:
     54.82.41.24,,2c,public,,,1800,IF_profile,false,
 mongodb:
   mode: replicaset
+  ipv6Enabled: true
   replicaCount: 3
   auth:
     enabled: true

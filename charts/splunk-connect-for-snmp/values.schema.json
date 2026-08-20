@@ -1043,14 +1043,27 @@
       "type": "object"
     },
     "mongodb": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "ipv6Enabled": {
+          "type": "boolean"
+        }
+      }
     },
     "redis": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "ipv6Enabled": {
+          "type": "boolean"
+        }
+      }
     },
     "mibserver": {
       "type": "object",
       "properties": {
+        "ipv6Enabled": {
+          "type": "boolean"
+        },
         "image": {
           "type": "object",
           "additionalProperties": false,

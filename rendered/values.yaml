@@ -38,6 +38,15 @@ poller:
     address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
     54.82.41.24,,2c,public,,,1800,IF_profile,false,
 
+mibserver:
+  ipv6Enabled: true
+
+mongodb:
+  ipv6Enabled: true
+
+redis:
+  ipv6Enabled: true
+
 discovery:
   enabled: true
   ipv6Enabled: true

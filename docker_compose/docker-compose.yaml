@@ -75,6 +75,12 @@ secrets:
   splunk_hec_token:
     file: ${SPLUNK_HEC_TOKEN_SECRET_FILE:-/dev/null}
 
+configs:
+  mongodb-network-config:
+    content: |
+      net:
+        bindIpAll: true
+        ipv6: ${IPv6_ENABLED:-false}
 networks:
   sc4snmp_network:
     name: sc4snmp_network
@@ -109,6 +115,7 @@ services:
     container_name: snmp-mibserver
     environment:
       NGINX_ENTRYPOINT_QUIET_LOGS: ${NGINX_ENTRYPOINT_QUIET_LOGS:-1}
+      MIBSERVER_IPV6_ENABLED: ${IPv6_ENABLED:-false}
     volumes:
     - snmp-mibserver-tmp:/tmp/
     - ${LOCAL_MIBS_PATH:-./local_mibs}:/app/new_mibs/src/vendor
@@ -126,6 +133,12 @@ services:
     container_name: mongo
     environment:
       GLIBC_TUNABLES: ${MONGO_GLIBC_TUNABLES:-glibc.pthread.rseq=1}
+    configs:
+    - source: mongodb-network-config
+      target: /etc/mongod-sc4snmp.yaml
+    command:
+    - --config
+    - /etc/mongod-sc4snmp.yaml
   inventory:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}

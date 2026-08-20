@@ -16,6 +16,9 @@ mongodb:
   # Mode selector: "standalone", "replication"
   mode: replication
 
+  # Enable IPv6 support
+  ipv6Enabled: false
+
   # Replica set configuration (used only when mode = "replication")
   replicaCount: 3
   replicaSetName: rs0
@@ -74,6 +77,7 @@ mongodb:
 | Key                                        | Type   | Default                                                   | Description                                                      |
 |--------------------------------------------|--------|-----------------------------------------------------------|------------------------------------------------------------------|
 | mongodb.mode                               | string | standalone                                                | Deployment mode (standalone or replication).                     |
+| mongodb.ipv6Enabled                        | bool   | false                                                     | Enable IPv6 support for MongoDB.                                  |
 | mongodb.replicaCount                       | int    | 3                                                         | Number of MongoDB pods (used only in replication mode).          |
 | mongodb.replicaSetName                     | string | rs0                                                       | Internal replica set identifier (used only in replication mode). |
 | mongodb.auth.enabled                       | bool   | true                                                      | Enable MongoDB authentication.                                   |
@@ -102,6 +106,20 @@ mongodb:
 
 !!!note "Extra environment variables (`mongodb.extraEnv`)"
     `mongodb.extraEnv` is a list of standard Kubernetes env entries appended to the mongod container. It ships with a single default entry that sets `GLIBC_TUNABLES=glibc.pthread.rseq=1`, which restores the upstream glibc default and prevents a tcmalloc SIGSEGV (`exit 139`) that occurs ~30s after `startup complete` on host nodes running Linux kernel 6.19 or later. The setting is a no-op on kernels < 6.19. To override or extend the list, redefine `mongodb.extraEnv` in your `values.yaml`.
+
+### IPv6
+
+To enable IPv6 support for MongoDB, add the following setting to `values.yaml`:
+
+```yaml
+mongodb:
+  ipv6Enabled: true
+```
+
+This passes `--ipv6` and `--bind_ip_all` to MongoDB so it listens on all IPv4 and IPv6 interfaces. The default is `false`, which preserves the existing IPv4-only startup behavior.
+
+!!! info
+    The MongoDB container already listens on all IPv4 interfaces. Enabling this option also makes it listen on all IPv6 interfaces.
 
 ### Architecture Modes
 
