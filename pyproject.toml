@@ -53,11 +53,12 @@ filelock = "^3.18.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.0"
 pytest-cov = "^7.0.0"
-mike = "^2.0.0"
-mkdocs = "^1.2.2"
-mkdocs-material = "^9.0.0"
+# Zensical (successor to Material for MkDocs) is the docs generator; it reads the existing mkdocs.yml.
+zensical = ">=0.0.57"
+# Versioning uses the Material team's mike fork, which retargets mike's build step at `zensical build`.
+# This is a bridge until Zensical ships native versioning; installed from git (not on PyPI), so pin a commit.
+mike = {git = "https://github.com/squidfunk/mike.git", rev = "2d4ad799442f4592db8ad53b179bfb33db8c69ac"}
 python-dotenv = "^1.0.0"
-mkdocs-video = "^1.5.0"
 splunk-sdk = "^2.1.1"
 
 [build-system]
