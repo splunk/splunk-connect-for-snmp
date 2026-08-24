@@ -20,14 +20,12 @@ class ProfilesPage:
     def click_add_profile_button(self):
         logger.info("Click Add New Profile button")
         xpath = "//button[@data-test='sc4snmp:new-item-button']"
-        btn = driver.find_element(By.XPATH, xpath)
-        btn.click()
+        helper.safe_click(driver, xpath)
 
     def click_submit_button(self):
         logger.info("Click Submit button")
         xpath = "//button[@data-test='sc4snmp:form:submit-form-button']"
-        btn = driver.find_element(By.XPATH, xpath)
-        btn.click()
+        helper.safe_click(driver, xpath)
         time.sleep(5)  # wait for profile to be shown on the list
 
     def select_profile_type(self, profile_type):
@@ -134,28 +132,22 @@ class ProfilesPage:
     def click_delete_profile_button(self, profile_name):
         logger.info(f"click delete profile button -> {profile_name}")
         delete_btn_for_profile_with_name_xpath = f"//button[@data-test='sc4snmp:profile-row-delete' and ancestor::tr//td[text()='{profile_name}']]"
-        delete_btn = driver.find_element(
-            By.XPATH, delete_btn_for_profile_with_name_xpath
-        )
-        delete_btn.click()
+        helper.safe_click(driver, delete_btn_for_profile_with_name_xpath)
         time.sleep(1)
 
     def _confirm_delete_profile(self):
         confirm_delete_xpath = (
             "//button[@data-test='sc4snmp:delete-modal:delete-button']"
         )
-        confirm_btn = driver.find_element(By.XPATH, confirm_delete_xpath)
-        confirm_btn.click()
-        time.sleep(1)
+        helper.safe_click(driver, confirm_delete_xpath)
 
     def close_profile_delete_popup(self):
         logger.info("Closing profile delete popup")
         close_profile_delete_popup_btn_xpath = (
             "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
-        close_btn = driver.find_element(By.XPATH, close_profile_delete_popup_btn_xpath)
-        close_btn.click()
-        time.sleep(1)
+        helper.safe_click(driver, close_profile_delete_popup_btn_xpath)
+        helper.wait_for_modal_overlay_to_close(driver)
 
     def get_profile_type_for_profile_entry(self, profile_name):
         logger.info(f"getting profile type for profile {profile_name}")
@@ -229,8 +221,7 @@ class ProfilesPage:
     def click_edit_profile(self, profile_name):
         logger.info(f"Edit profile: {profile_name}")
         edit_btn_for_profile_with_name_xpath = f"//button[@data-test='sc4snmp:profile-row-edit' and ancestor::tr//td[text()='{profile_name}']]"
-        edit_btn = driver.find_element(By.XPATH, edit_btn_for_profile_with_name_xpath)
-        edit_btn.click()
+        helper.safe_click(driver, edit_btn_for_profile_with_name_xpath)
         time.sleep(1)
 
     def close_edited_profile_popup(self):
@@ -238,9 +229,8 @@ class ProfilesPage:
         close_popup_btn_xpath = (
             "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
-        close_popup_btn = driver.find_element(By.XPATH, close_popup_btn_xpath)
-        close_popup_btn.click()
-        time.sleep(2)
+        helper.safe_click(driver, close_popup_btn_xpath)
+        helper.wait_for_modal_overlay_to_close(driver)
 
     def get_submit_edited_profile_text(self):
         logger.info("Get submit edited profile popup text")
@@ -294,6 +284,5 @@ class ProfilesPage:
             time.sleep(1)
             self._confirm_delete_profile()
             self.close_profile_delete_popup()
-            time.sleep(1)
             delete_btns = driver.find_elements(By.XPATH, profile_delete_btn_xpath)
             logger.info(f" {len(delete_btns)} more items for removal")
