@@ -1,6 +1,7 @@
 import re
 import time
 
+import pages.helper as helper
 from logger.logger import Logger
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -29,8 +30,7 @@ class HeaderPage:
             "inventory": "//button[@data-test='sc4snmp:inventory-tab']",
         }
         xpath_button = page_button_xpath[page_name]
-        tab = driver.find_element(By.XPATH, xpath_button)
-        tab.click()
+        helper.safe_click(driver, xpath_button)
         page_table_xpath = {
             "profiles": "//div[@data-test='sc4snmp:profiles-table']",
             "groups": "//div[@data-test='sc4snmp:group-table']",
@@ -52,9 +52,8 @@ class HeaderPage:
     def close_configuration_applied_notification_popup(self):
         logger.info("Close configuration applied popup")
         popup_xpath = "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
-        close_popup_button = driver.find_element(By.XPATH, popup_xpath)
-        close_popup_button.click()
-        time.sleep(3)
+        helper.safe_click(driver, popup_xpath)
+        helper.wait_for_modal_overlay_to_close(driver)
 
     def get_time_to_upgrade(self):
         logger.info("Get time to upgrade")
@@ -69,15 +68,14 @@ class HeaderPage:
 
     def get_popup_error_message(self):
         logger.info("Get popup error message")
-        popup_text_xpath = "//div[@data-test='modal']//div//div"
+        popup_text_xpath = "//div[@data-test='modal']//div[@data-test='content']"
         popup_txt_element = driver.find_element(By.XPATH, popup_text_xpath)
         return popup_txt_element.text
 
-    def close_error_popup(self):  # two similar methods on profile page
+    def close_error_popup(self):
         logger.info("Close popup error message")
         close_profile_delete_popup_btn_xpath = (
             "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
-        close_btn = driver.find_element(By.XPATH, close_profile_delete_popup_btn_xpath)
-        close_btn.click()
-        time.sleep(1)
+        helper.safe_click(driver, close_profile_delete_popup_btn_xpath)
+        helper.wait_for_modal_overlay_to_close(driver)

@@ -4,18 +4,16 @@ SC4SNMP [inventory](../../configuration/inventory.md) can be configured in `Inve
 
 ![Profiles tab](../../images/ui_docs/inventory/inventory_tab.png){ style="border:2px solid" }
 
-<hr style="border:2px solid">
+## Add inventory
 
 After pressing `Add device/group` button, new single device or group can be added.
 Configuration of the device is the same as in the `inventory.yaml` file. For details check [Inventory configuration](../../configuration/inventory.md).
 
-
 ![New device/group](../../images/ui_docs/inventory/add_device.png){style="border:2px solid; width:500px; height:auto" }
 
-<hr style="border:2px solid">
+## Edit inventory
 
 To edit a device or group, click the pencil icon next in the desired row.
-
 
 ![Edit device](../../images/ui_docs/inventory/edit_device.png){style="border:2px solid; width:500px; height:auto" }
 ![Edit group](../../images/ui_docs/inventory/edit_group.png){style="border:2px solid; width:500px; height:auto" }
