@@ -23,8 +23,6 @@ markdown_extensions:
 plugins:
   - search:
       lang: en
-  - mkdocs-video:
-      is_video: true
 
 extra_javascript:
   - javascripts/footer.js
@@ -36,8 +34,6 @@ theme:
   palette:
     primary: "black"
     accent: "orange"
-#  favicon: "logo.png"
-#  logo: "logo.png"
 
 nav:
   - Home: "index.md"
