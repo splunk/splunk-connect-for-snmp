@@ -1,10 +1,10 @@
 # Enabling IPv6 for SC4SNMP
 
-Docker Compose uses `IPv6_ENABLED` to enable IPv6 for the SC4SNMP network, polling, traps, MongoDB, and the MIB server. The default value is `false`.
+Older versions of Docker do not support IPv6 or have known issues with IPv6
+configuration, so use the latest versions of Docker and Docker Compose, with
+Docker Compose 2.23.1 or later required for SC4SNMP.
 
-Older versions of Docker do not support IPv6 or have known issues with IPv6 configuration.
-To avoid problems with the network, use the latest version of Docker.
-Install the latest version of Docker Compose as well.
+Docker Compose uses `IPv6_ENABLED` to enable IPv6 for the SC4SNMP network, polling, traps, MongoDB, and the MIB server. The default value is `false`.
 
 ## Configure IPv6
 

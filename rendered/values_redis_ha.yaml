@@ -42,7 +42,6 @@ inventory:
     cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
 redis:
   architecture: replication
-  ipv6Enabled: true
   replicas: 3
   sentinel:
     enabled: true

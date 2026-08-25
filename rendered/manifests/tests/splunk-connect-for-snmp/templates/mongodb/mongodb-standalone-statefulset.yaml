@@ -30,9 +30,6 @@ spec:
         imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: false
-        args:
-        - --ipv6
-        - --bind_ip_all
 
         ports:
         - containerPort: 27017

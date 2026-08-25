@@ -1,8 +1,9 @@
 # Deploy the app
 
-After completing all configuration steps, the application can be deployed by running the following command inside
-the `docker_compose` directory. For an IPv6-enabled deployment, configure `IPv6_ENABLED` and the IPv6 network values
-first. See [Enabling IPv6 for SC4SNMP](./10-enable-ipv6.md).
+!!! note
+    For an IPv6-enabled deployment, configure `IPv6_ENABLED` and the IPv6 network values before deployment. See [Enabling IPv6 for SC4SNMP](./10-enable-ipv6.md).
+
+After completing all configuration steps, run the following command inside the `docker_compose` directory:
 
 ```shell
 sudo docker compose up -d

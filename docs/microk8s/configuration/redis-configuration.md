@@ -65,7 +65,7 @@ redis:
 | Key                                      | Type   | Default           | Description                                                                             |
 |------------------------------------------|--------|-------------------|-----------------------------------------------------------------------------------------|
 | redis.architecture                       | string | `standalone`      | Deployment mode (standalone or replication).                                            |
-| redis.ipv6Enabled                        | bool   | `false`           | Enable IPv6 support for Redis.                                                           |
+| redis.ipv6Enabled                        | bool   | `false`           | Enable IPv6 support for Redis. See [Enable IPv6](../enable-ipv6.md).                     |
 | redis.replicas                           | int    | `3`               | Data pod count (used only in replication mode).                                         |
 | redis.sentinel.replicas                  | int    | `3`               | Sentinel pod count (odd recommended).                                                   |
 | redis.sentinel.quorum                    | int    | `2`               | Required Sentinel votes for failover.                                                   |
@@ -92,21 +92,6 @@ redis:
 | redis.persistence.aof.fsync              | string | `everysec`        | AOF fsync policy (`always`, `everysec`, `no`). Necessary to migrate from bitnami Redis. |
 | redis.podSecurityContext.runAsUser       | int    | `999`             | UID for the container (non-root hardening).                                             |
 | redis.podSecurityContext.fsGroup         | int    | `999`             | FS group owning mounted volumes.                                                        |
-
-### IPv6
-
-To enable IPv6 support for Redis, add the following setting to `values.yaml`:
-
-```yaml
-redis:
-  ipv6Enabled: true
-```
-
-This configures Redis to bind to both `0.0.0.0` and `::`. The default is `false`, which preserves IPv4-only binding.
-
-!!! info
-    Enabling this option makes Redis listen on all available IPv4 and IPv6 interfaces. Enable authentication and restrict access to authorized clients.
-
 
 ### Architecture modes
 

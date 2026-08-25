@@ -28,6 +28,6 @@ data:
     maxmemory-policy noeviction
 
     # Network
-    bind 0.0.0.0 ::
+    bind 0.0.0.0
     protected-mode no
     port 6379

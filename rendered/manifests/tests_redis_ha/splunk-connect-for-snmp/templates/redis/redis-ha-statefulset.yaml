@@ -22,7 +22,7 @@ spec:
       labels:
         app: release-name-redis
       annotations:
-        checksum/redis-config: e86a3dc186ade86ef060c0c5c1eb65d5ca33ea7b7283819737b10662a5333c11
+        checksum/redis-config: 52233e7984ec9733ee5d72c255220b5f26923d0723b6a2dd9d645205d3bf81d5
         checksum/redis-secret: 908cbead70ef3a415f7509bf2922a7eb195dd8dc27ba5735ecde8c7794bb4b74
     spec:
       securityContext:
