@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="zensical-0.0.57">
     
     
       
@@ -27,10 +27,15 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.812a03bb.min.css">
       
       
 
@@ -44,12 +49,12 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -60,6 +65,8 @@
   
     
     
+      
+    
     
     
     
@@ -68,7 +75,7 @@
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
     <div data-md-component="skip">
       
         
@@ -95,12 +102,12 @@
     <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -120,51 +127,38 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="orange"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
       
       
-        <label class="md-header__button md-icon" for="__search">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
         </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
-          </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
-        </div>
-      </div>
-    </div>
-  </div>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
 </div>
       
     
-    
+    <div class="md-header__source">
+      
+    </div>
   </nav>
   
 </header>
@@ -193,7 +187,7 @@
     <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
     Splunk Connect for SNMP (SC4SNMP)
@@ -215,8 +209,7 @@
   <span class="md-ellipsis">
     
   
-    Home
-  
+  Home
 
     
   </span>
@@ -253,8 +246,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
-  
+  Architecture
 
     
   </span>
@@ -269,8 +261,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Architecture
-  
+  Architecture
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -289,8 +280,7 @@
   <span class="md-ellipsis">
     
   
-    High-level design
-  
+  High-level design
 
     
   </span>
@@ -317,8 +307,7 @@
   <span class="md-ellipsis">
     
   
-    Infrastructure Planning
-  
+  Infrastructure Planning
 
     
   </span>
@@ -363,8 +352,7 @@
   <span class="md-ellipsis">
     
   
-    Installation
-  
+  Installation
 
     
   </span>
@@ -379,8 +367,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Installation
-  
+  Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -410,8 +397,7 @@
   <span class="md-ellipsis">
     
   
-    Microk8s
-  
+  Microk8s
 
     
   </span>
@@ -426,8 +412,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Microk8s
-  
+  Microk8s
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -446,8 +431,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -474,8 +458,7 @@
   <span class="md-ellipsis">
     
   
-    Platform Microk8s
-  
+  Platform Microk8s
 
     
   </span>
@@ -502,8 +485,7 @@
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -530,8 +512,7 @@
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -558,8 +539,7 @@
   <span class="md-ellipsis">
     
   
-    Configurable values
-  
+  Configurable values
 
     
   </span>
@@ -597,8 +577,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration reference
-  
+  Configuration reference
 
     
   </span>
@@ -613,8 +592,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration reference
-  
+  Configuration reference
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -633,8 +611,7 @@
   <span class="md-ellipsis">
     
   
-    Deployment
-  
+  Deployment
 
     
   </span>
@@ -661,8 +638,7 @@
   <span class="md-ellipsis">
     
   
-    Scheduler
-  
+  Scheduler
 
     
   </span>
@@ -689,8 +665,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -717,8 +692,7 @@
   <span class="md-ellipsis">
     
   
-    MongoDB
-  
+  MongoDB
 
     
   </span>
@@ -745,8 +719,7 @@
   <span class="md-ellipsis">
     
   
-    Redis
-  
+  Redis
 
     
   </span>
@@ -773,8 +746,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Infrastructure Monitoring
-  
+  Splunk Infrastructure Monitoring
 
     
   </span>
@@ -801,8 +773,7 @@
   <span class="md-ellipsis">
     
   
-    CoreDNS
-  
+  CoreDNS
 
     
   </span>
@@ -848,8 +819,7 @@
   <span class="md-ellipsis">
     
   
-    GUI
-  
+  GUI
 
     
   </span>
@@ -864,8 +834,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    GUI
-  
+  GUI
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -884,8 +853,7 @@
   <span class="md-ellipsis">
     
   
-    Enable GUI
-  
+  Enable GUI
 
     
   </span>
@@ -912,8 +880,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Profiles
-  
+  Configuring Profiles
 
     
   </span>
@@ -940,8 +907,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Groups
-  
+  Configuring Groups
 
     
   </span>
@@ -968,8 +934,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Inventory
-  
+  Configuring Inventory
 
     
   </span>
@@ -996,8 +961,7 @@
   <span class="md-ellipsis">
     
   
-    Apply changes
-  
+  Apply changes
 
     
   </span>
@@ -1043,8 +1007,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1059,8 +1022,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1079,8 +1041,7 @@
   <span class="md-ellipsis">
     
   
-    Upgrade SC4SNMP
-  
+  Upgrade SC4SNMP
 
     
   </span>
@@ -1107,8 +1068,7 @@
   <span class="md-ellipsis">
     
   
-    Scaling with Microk8s
-  
+  Scaling with Microk8s
 
     
   </span>
@@ -1135,8 +1095,7 @@
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1174,8 +1133,7 @@
   <span class="md-ellipsis">
     
   
-    Offline Installation
-  
+  Offline Installation
 
     
   </span>
@@ -1190,8 +1148,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Offline Installation
-  
+  Offline Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1210,8 +1167,7 @@
   <span class="md-ellipsis">
     
   
-    Install Microk8s
-  
+  Install Microk8s
 
     
   </span>
@@ -1238,8 +1194,7 @@
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -1266,8 +1221,7 @@
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -1329,8 +1283,7 @@
   <span class="md-ellipsis">
     
   
-    Docker Compose
-  
+  Docker Compose
 
     
   </span>
@@ -1345,8 +1298,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Docker Compose
-  
+  Docker Compose
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1365,8 +1317,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -1393,8 +1344,7 @@
   <span class="md-ellipsis">
     
   
-    Install Docker
-  
+  Install Docker
 
     
   </span>
@@ -1421,8 +1371,7 @@
   <span class="md-ellipsis">
     
   
-    Download package
-  
+  Download package
 
     
   </span>
@@ -1460,8 +1409,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration files
-  
+  Configuration files
 
     
   </span>
@@ -1476,8 +1424,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration files
-  
+  Configuration files
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1496,8 +1443,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory configuration
-  
+  Inventory configuration
 
     
   </span>
@@ -1524,8 +1470,7 @@
   <span class="md-ellipsis">
     
   
-    Scheduler configuration
-  
+  Scheduler configuration
 
     
   </span>
@@ -1552,8 +1497,7 @@
   <span class="md-ellipsis">
     
   
-    Traps configuration
-  
+  Traps configuration
 
     
   </span>
@@ -1580,8 +1524,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery configuration
 
     
   </span>
@@ -1608,8 +1551,7 @@
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3 secrets
 
     
   </span>
@@ -1636,8 +1578,7 @@
   <span class="md-ellipsis">
     
   
-    .env file
-  
+  .env file
 
     
   </span>
@@ -1683,8 +1624,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1699,8 +1639,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1719,8 +1658,7 @@
   <span class="md-ellipsis">
     
   
-    Docker logging
-  
+  Docker logging
 
     
   </span>
@@ -1747,8 +1685,7 @@
   <span class="md-ellipsis">
     
   
-    Offline installation
-  
+  Offline installation
 
     
   </span>
@@ -1775,8 +1712,7 @@
   <span class="md-ellipsis">
     
   
-    Sending logs to Splunk
-  
+  Sending logs to Splunk
 
     
   </span>
@@ -1803,8 +1739,7 @@
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1839,8 +1774,7 @@
   <span class="md-ellipsis">
     
   
-    Deploy the app
-  
+  Deploy the app
 
     
   </span>
@@ -1893,8 +1827,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
-  
+  Configuration
 
     
   </span>
@@ -1909,8 +1842,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration
-  
+  Configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1929,8 +1861,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk
-  
+  Splunk
 
     
   </span>
@@ -1957,8 +1888,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory
-  
+  Inventory
 
     
   </span>
@@ -1985,8 +1915,7 @@
   <span class="md-ellipsis">
     
   
-    Profiles
-  
+  Profiles
 
     
   </span>
@@ -2013,8 +1942,7 @@
   <span class="md-ellipsis">
     
   
-    Groups
-  
+  Groups
 
     
   </span>
@@ -2041,8 +1969,7 @@
   <span class="md-ellipsis">
     
   
-    Traps
-  
+  Traps
 
     
   </span>
@@ -2069,8 +1996,7 @@
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3
 
     
   </span>
@@ -2097,8 +2023,7 @@
   <span class="md-ellipsis">
     
   
-    Poller
-  
+  Poller
 
     
   </span>
@@ -2125,8 +2050,7 @@
   <span class="md-ellipsis">
     
   
-    Workers
-  
+  Workers
 
     
   </span>
@@ -2153,8 +2077,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2181,8 +2104,7 @@
   <span class="md-ellipsis">
     
   
-    Step by Step polling example
-  
+  Step by Step polling example
 
     
   </span>
@@ -2209,8 +2131,7 @@
   <span class="md-ellipsis">
     
   
-    SNMP data format
-  
+  SNMP data format
 
     
   </span>
@@ -2244,8 +2165,7 @@
   <span class="md-ellipsis">
     
   
-    High Availability
-  
+  High Availability
 
     
   </span>
@@ -2271,8 +2191,7 @@
   <span class="md-ellipsis">
     
   
-    Lightweight installation
-  
+  Lightweight installation
 
     
   </span>
@@ -2298,8 +2217,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk dashboards
-  
+  Splunk dashboards
 
     
   </span>
@@ -2325,8 +2243,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2352,8 +2269,7 @@
   <span class="md-ellipsis">
     
   
-    Releases
-  
+  Releases
 
     
   </span>
@@ -2379,8 +2295,7 @@
   <span class="md-ellipsis">
     
   
-    Request MIB
-  
+  Request MIB
 
     
   </span>
@@ -2406,8 +2321,7 @@
   <span class="md-ellipsis">
     
   
-    Security
-  
+  Security
 
     
   </span>
@@ -2433,8 +2347,7 @@
   <span class="md-ellipsis">
     
   
-    mTLS
-  
+  mTLS
 
     
   </span>
@@ -2473,8 +2386,7 @@
   <span class="md-ellipsis">
     
   
-    Troubleshooting
-  
+  Troubleshooting
 
     
   </span>
@@ -2489,8 +2401,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Troubleshooting
-  
+  Troubleshooting
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -2509,8 +2420,7 @@
   <span class="md-ellipsis">
     
   
-    Accessing and configuring logs
-  
+  Accessing and configuring logs
 
     
   </span>
@@ -2533,7 +2443,7 @@
   
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
       
       
       
@@ -2544,8 +2454,7 @@
   <span class="md-ellipsis">
     
   
-    Docker commands
-  
+  Docker commands
 
     
   </span>
@@ -2555,15 +2464,14 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="./" class="md-nav__link md-nav__link--active">
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    Docker commands
-  
+  Docker commands
 
     
   </span>
@@ -2574,23 +2482,24 @@
       
         
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#docker-commands" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Docker commands
-      
+      </span>
     </span>
   </a>
   
@@ -2600,9 +2509,9 @@
           <li class="md-nav__item">
   <a href="#common-flags" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Common flags
-      
+      </span>
     </span>
   </a>
   
@@ -2611,9 +2520,9 @@
           <li class="md-nav__item">
   <a href="#accessing-logs-in-docker" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Accessing logs in docker
-      
+      </span>
     </span>
   </a>
   
@@ -2622,9 +2531,9 @@
           <li class="md-nav__item">
   <a href="#the-ls-and-ps-commands" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The ls and ps commands
-      
+      </span>
     </span>
   </a>
   
@@ -2633,9 +2542,9 @@
           <li class="md-nav__item">
   <a href="#the-inspect-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The inspect command
-      
+      </span>
     </span>
   </a>
   
@@ -2644,9 +2553,9 @@
           <li class="md-nav__item">
   <a href="#the-logs-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The logs command
-      
+      </span>
     </span>
   </a>
   
@@ -2655,9 +2564,9 @@
           <li class="md-nav__item">
   <a href="#the-exec-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The exec command
-      
+      </span>
     </span>
   </a>
   
@@ -2666,9 +2575,9 @@
           <li class="md-nav__item">
   <a href="#the-stats-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The stats command
-      
+      </span>
     </span>
   </a>
   
@@ -2682,9 +2591,9 @@
         <li class="md-nav__item">
   <a href="#examples-of-command-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Examples of command usage
-      
+      </span>
     </span>
   </a>
   
@@ -2694,9 +2603,9 @@
           <li class="md-nav__item">
   <a href="#check-secret-for-snmp-v3" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check secret for snmp v3
-      
+      </span>
     </span>
   </a>
   
@@ -2705,9 +2614,9 @@
           <li class="md-nav__item">
   <a href="#check-containers-health" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check containers health
-      
+      </span>
     </span>
   </a>
   
@@ -2716,9 +2625,9 @@
           <li class="md-nav__item">
   <a href="#check-resource-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check resource usage
-      
+      </span>
     </span>
   </a>
   
@@ -2727,9 +2636,9 @@
           <li class="md-nav__item">
   <a href="#check-network" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check network
-      
+      </span>
     </span>
   </a>
   
@@ -2763,8 +2672,7 @@
   <span class="md-ellipsis">
     
   
-    Kubernetes commands
-  
+  Kubernetes commands
 
     
   </span>
@@ -2791,8 +2699,7 @@
   <span class="md-ellipsis">
     
   
-    General issues
-  
+  General issues
 
     
   </span>
@@ -2819,8 +2726,7 @@
   <span class="md-ellipsis">
     
   
-    Polling issues
-  
+  Polling issues
 
     
   </span>
@@ -2847,8 +2753,7 @@
   <span class="md-ellipsis">
     
   
-    Traps issues
-  
+  Traps issues
 
     
   </span>
@@ -2875,8 +2780,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery issues
-  
+  Discovery issues
 
     
   </span>
@@ -2906,26 +2810,38 @@
               
               <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
                 <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#docker-commands" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Docker commands
-      
+      </span>
     </span>
   </a>
   
@@ -2935,9 +2851,9 @@
           <li class="md-nav__item">
   <a href="#common-flags" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Common flags
-      
+      </span>
     </span>
   </a>
   
@@ -2946,9 +2862,9 @@
           <li class="md-nav__item">
   <a href="#accessing-logs-in-docker" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Accessing logs in docker
-      
+      </span>
     </span>
   </a>
   
@@ -2957,9 +2873,9 @@
           <li class="md-nav__item">
   <a href="#the-ls-and-ps-commands" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The ls and ps commands
-      
+      </span>
     </span>
   </a>
   
@@ -2968,9 +2884,9 @@
           <li class="md-nav__item">
   <a href="#the-inspect-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The inspect command
-      
+      </span>
     </span>
   </a>
   
@@ -2979,9 +2895,9 @@
           <li class="md-nav__item">
   <a href="#the-logs-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The logs command
-      
+      </span>
     </span>
   </a>
   
@@ -2990,9 +2906,9 @@
           <li class="md-nav__item">
   <a href="#the-exec-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The exec command
-      
+      </span>
     </span>
   </a>
   
@@ -3001,9 +2917,9 @@
           <li class="md-nav__item">
   <a href="#the-stats-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The stats command
-      
+      </span>
     </span>
   </a>
   
@@ -3017,9 +2933,9 @@
         <li class="md-nav__item">
   <a href="#examples-of-command-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Examples of command usage
-      
+      </span>
     </span>
   </a>
   
@@ -3029,9 +2945,9 @@
           <li class="md-nav__item">
   <a href="#check-secret-for-snmp-v3" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check secret for snmp v3
-      
+      </span>
     </span>
   </a>
   
@@ -3040,9 +2956,9 @@
           <li class="md-nav__item">
   <a href="#check-containers-health" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check containers health
-      
+      </span>
     </span>
   </a>
   
@@ -3051,9 +2967,9 @@
           <li class="md-nav__item">
   <a href="#check-resource-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check resource usage
-      
+      </span>
     </span>
   </a>
   
@@ -3062,9 +2978,9 @@
           <li class="md-nav__item">
   <a href="#check-network" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check network
-      
+      </span>
     </span>
   </a>
   
@@ -3090,22 +3006,20 @@
                 
                   
 
+  <h1 id="__skip">Docker commands</h1>
 
-
-  <h1>Docker commands</h1>
-
-<div><h2 id="docker-commands">Docker commands<a class="headerlink" href="#docker-commands" title="Permanent link">¶</a></h2>
+<h2 id="docker-commands">Docker commands<a class="headerlink" href="#docker-commands" title="Permanent link">&para;</a></h2>
 <p>For full display of docker commands and their usage can be found at <a href="https://docs.docker.com/reference/cli/docker/">docker documentation</a>. 
 Below are the most common commands used to troubleshoot issues with SC4SNMP. </p>
-<h3 id="common-flags">Common flags<a class="headerlink" href="#common-flags" title="Permanent link">¶</a></h3>
+<h3 id="common-flags">Common flags<a class="headerlink" href="#common-flags" title="Permanent link">&para;</a></h3>
 <p>The following are some common flags that can be used with the <code>docker</code> commands:</p>
 <ul>
 <li><code>-a</code> flag is used to list all resources</li>
 </ul>
 <p>For more flags and options, you can refer to the <a href="https://docs.docker.com/reference/cli/docker/">docker documentation</a>.</p>
-<h3 id="accessing-logs-in-docker">Accessing logs in docker<a class="headerlink" href="#accessing-logs-in-docker" title="Permanent link">¶</a></h3>
+<h3 id="accessing-logs-in-docker">Accessing logs in docker<a class="headerlink" href="#accessing-logs-in-docker" title="Permanent link">&para;</a></h3>
 <p>The instruction on how to set up and access the logs can be found in <a href="../configuring-logs/#accessing-logs-in-docker">SC4SNMP logs</a> </p>
-<h3 id="the-ls-and-ps-commands">The ls and ps commands<a class="headerlink" href="#the-ls-and-ps-commands" title="Permanent link">¶</a></h3>
+<h3 id="the-ls-and-ps-commands">The ls and ps commands<a class="headerlink" href="#the-ls-and-ps-commands" title="Permanent link">&para;</a></h3>
 <p>The <code>ls</code> or <code>ps</code> command are used to list the resources in docker. The following are the example of resources that 
 can be listed using the commands:</p>
 <div class="highlight"><pre><span></span><code>docker compose ls
@@ -3116,45 +3030,45 @@ docker ps
 docker ps -a
 docker compose ps &lt;service_name/id&gt;
 </code></pre></div>
-<h3 id="the-inspect-command">The inspect command<a class="headerlink" href="#the-inspect-command" title="Permanent link">¶</a></h3>
+<h3 id="the-inspect-command">The inspect command<a class="headerlink" href="#the-inspect-command" title="Permanent link">&para;</a></h3>
 <p>The <code>inspect</code> command is used to get detailed information about the resources in docker. The following are the 
 example of resources that can be inspected:</p>
 <div class="highlight"><pre><span></span><code>docker inspect --type &lt;resource_type&gt; &lt;resource_name/id&gt;
 docker network inspect &lt;resource_name/id&gt;
 docker image inspect &lt;resource_name/id&gt;
 </code></pre></div>
-<h3 id="the-logs-command">The logs command<a class="headerlink" href="#the-logs-command" title="Permanent link">¶</a></h3>
+<h3 id="the-logs-command">The logs command<a class="headerlink" href="#the-logs-command" title="Permanent link">&para;</a></h3>
 <p>The <code>logs</code> command is used to get the logs of the resources in docker. 
 The following are some examples of how to use the <code>logs</code> command:</p>
 <div class="highlight"><pre><span></span><code>docker logs &lt;container_name/id&gt;
 docker compose logs &lt;service_name/id&gt;
 </code></pre></div>
-<h3 id="the-exec-command">The exec command<a class="headerlink" href="#the-exec-command" title="Permanent link">¶</a></h3>
+<h3 id="the-exec-command">The exec command<a class="headerlink" href="#the-exec-command" title="Permanent link">&para;</a></h3>
 <p>The <code>exec</code> command is used to execute a command in a running container. The following is an example of how to 
 use the <code>exec</code> command:</p>
 <div class="highlight"><pre><span></span><code>docker exec -it &lt;container_name/id&gt; sh -c &lt;command&gt;
 </code></pre></div>
-<h3 id="the-stats-command">The stats command<a class="headerlink" href="#the-stats-command" title="Permanent link">¶</a></h3>
+<h3 id="the-stats-command">The stats command<a class="headerlink" href="#the-stats-command" title="Permanent link">&para;</a></h3>
 <p>The <code>stats</code> command is used to display the live resource usage statistics of a container. The following are some
 examples of how to use the <code>stats</code> command:</p>
 <div class="highlight"><pre><span></span><code>docker stats
 docker stats &lt;container_name/id&gt;
 </code></pre></div>
-<h2 id="examples-of-command-usage">Examples of command usage<a class="headerlink" href="#examples-of-command-usage" title="Permanent link">¶</a></h2>
-<h3 id="check-secret-for-snmp-v3">Check secret for snmp v3<a class="headerlink" href="#check-secret-for-snmp-v3" title="Permanent link">¶</a></h3>
+<h2 id="examples-of-command-usage">Examples of command usage<a class="headerlink" href="#examples-of-command-usage" title="Permanent link">&para;</a></h2>
+<h3 id="check-secret-for-snmp-v3">Check secret for snmp v3<a class="headerlink" href="#check-secret-for-snmp-v3" title="Permanent link">&para;</a></h3>
 <p>One of the issues related to snmp v3 can be incorrectly configured secrets in docker. 
 Below you can find the instruction to check the existing secrets.</p>
 <p>To check the existing secrets:
-</p><div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c "ls secrets/snmpv3"
+<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c &quot;ls secrets/snmpv3&quot;
 my_secret
 </code></pre></div>
 To get more details about one secret you can use command:
-<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c "ls secrets/snmpv3/my_secret"
+<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c &quot;ls secrets/snmpv3/my_secret&quot;
 authKey  authProtocol  contextEngineId  privKey  privProtocol  userName
 </code></pre></div>
-Replace <strong>my_secret</strong> with the name of the secret you want to check and <strong>docker_compose-worker-poller-1</strong> with the name of the container.
+Replace <strong>my_secret</strong> with the name of the secret you want to check and <strong>docker_compose-worker-poller-1</strong> with the name of the container.</p>
 <p>To see the configured details of the secret: 
-</p><div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c 'cd secrets/snmpv3/my_secret &amp;&amp; for file in *; do echo "$file= $(cat $file)"; done'
+<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c &#39;cd secrets/snmpv3/my_secret &amp;&amp; for file in *; do echo &quot;$file= $(cat $file)&quot;; done&#39;
 authKey= admin1234
 authProtocol= SHA
 contextEngineId= 80003a8c04
@@ -3162,21 +3076,21 @@ privKey= admin1234
 privProtocol= AES
 userName= r-wuser
 </code></pre></div>
-Replace <strong>my_secret</strong> with the name of the secret you want to check and <strong>docker_compose-worker-poller-1</strong> with the name of the container.
-<h3 id="check-containers-health">Check containers health<a class="headerlink" href="#check-containers-health" title="Permanent link">¶</a></h3>
+Replace <strong>my_secret</strong> with the name of the secret you want to check and <strong>docker_compose-worker-poller-1</strong> with the name of the container.</p>
+<h3 id="check-containers-health">Check containers health<a class="headerlink" href="#check-containers-health" title="Permanent link">&para;</a></h3>
 <p>To check the health of the containers, you can use the <code>ps</code> command to look at the <code>STATUS</code>. 
 If the <code>STATUS</code> is not <code>Up</code> or the containers restarts continuously, then there might be an issue with it. 
 You can also use the <code>inspect</code> command to get more detailed information about the container and see if there are any 
 errors or warnings in the <code>state</code> or use <code>logs</code> command to see the logs of the container.</p>
-<h3 id="check-resource-usage">Check resource usage<a class="headerlink" href="#check-resource-usage" title="Permanent link">¶</a></h3>
+<h3 id="check-resource-usage">Check resource usage<a class="headerlink" href="#check-resource-usage" title="Permanent link">&para;</a></h3>
 <p>To check the resource usage of the containers, you can use the <code>stats</code> command. 
 With this command, you can see the CPU and memory usage of the containers in real-time and compare it with the ones 
 assigned in <code>resources</code> section in the configuration yaml.
 If they are close to each other you might consider increasing the resources assigned.</p>
-<h3 id="check-network">Check network<a class="headerlink" href="#check-network" title="Permanent link">¶</a></h3>
+<h3 id="check-network">Check network<a class="headerlink" href="#check-network" title="Permanent link">&para;</a></h3>
 <p>Checking the network configuration can be useful when enabling the dual-stack for SC4SNMP.</p>
 <p>One of useful commands to check the network configuration is:
-</p><div class="highlight"><pre><span></span><code>~$ docker network ls
+<div class="highlight"><pre><span></span><code>~$ docker network ls
 NETWORK ID     NAME              DRIVER    SCOPE
 7e46b3818089   bridge            bridge    local
 1401c370b8f4   docker_gwbridge   bridge    local
@@ -3185,128 +3099,130 @@ rssypcqbwarx   ingress           overlay   swarm
 b6c176852f41   none              null      local
 978e06ffcd4a   sc4snmp_network   bridge    local
 </code></pre></div>
-This command is showing all the network configured in the docker. The network created for sc4snmp by default is named <code>sc4snmp_network</code>.
+This command is showing all the network configured in the docker. The network created for sc4snmp by default is named <code>sc4snmp_network</code>.</p>
 <p>To see details of configured network use:
-</p><div class="highlight"><pre><span></span><code>~$ docker network inspect sc4snmp_network
+<div class="highlight"><pre><span></span><code>~$ docker network inspect sc4snmp_network
 [
     {
-        "Name": "sc4snmp_network",
-        "Id": "978e06ffcd4a49de5cd78a038050530342a029b1b1a1f1967254f701ae5ff1a0",
-        "Created": "2024-10-10T11:38:01.627727666Z",
-        "Scope": "local",
-        "Driver": "bridge",
-        "EnableIPv6": false,
-        "IPAM": {
-            "Driver": "default",
-            "Options": null,
-            "Config": [
+        &quot;Name&quot;: &quot;sc4snmp_network&quot;,
+        &quot;Id&quot;: &quot;978e06ffcd4a49de5cd78a038050530342a029b1b1a1f1967254f701ae5ff1a0&quot;,
+        &quot;Created&quot;: &quot;2024-10-10T11:38:01.627727666Z&quot;,
+        &quot;Scope&quot;: &quot;local&quot;,
+        &quot;Driver&quot;: &quot;bridge&quot;,
+        &quot;EnableIPv6&quot;: false,
+        &quot;IPAM&quot;: {
+            &quot;Driver&quot;: &quot;default&quot;,
+            &quot;Options&quot;: null,
+            &quot;Config&quot;: [
                 {
-                    "Subnet": "172.28.0.0/16",
-                    "Gateway": "172.28.0.1"
+                    &quot;Subnet&quot;: &quot;172.28.0.0/16&quot;,
+                    &quot;Gateway&quot;: &quot;172.28.0.1&quot;
                 },
                 {
-                    "Subnet": "fd02::/64",
-                    "Gateway": "fd02::1"
+                    &quot;Subnet&quot;: &quot;fd02::/64&quot;,
+                    &quot;Gateway&quot;: &quot;fd02::1&quot;
                 }
             ]
         },
-        "Internal": false,
-        "Attachable": false,
-        "Ingress": false,
-        "ConfigFrom": {
-            "Network": ""
+        &quot;Internal&quot;: false,
+        &quot;Attachable&quot;: false,
+        &quot;Ingress&quot;: false,
+        &quot;ConfigFrom&quot;: {
+            &quot;Network&quot;: &quot;&quot;
         },
-        "ConfigOnly": false,
-        "Containers": {
-            "231b21c24bd722d684349174cc5aebf40cf294617aa98741a4af1269ed930fcc": {
-                "Name": "docker_compose-worker-poller-1",
-                "EndpointID": "0195750f0539535615ebdb24d8ee7eb967d31ca3c86a0d5d4b5c21f907cb61a0",
-                "MacAddress": "02:42:ac:1c:00:0b",
-                "IPv4Address": "172.28.0.11/16",
-                "IPv6Address": ""
+        &quot;ConfigOnly&quot;: false,
+        &quot;Containers&quot;: {
+            &quot;231b21c24bd722d684349174cc5aebf40cf294617aa98741a4af1269ed930fcc&quot;: {
+                &quot;Name&quot;: &quot;docker_compose-worker-poller-1&quot;,
+                &quot;EndpointID&quot;: &quot;0195750f0539535615ebdb24d8ee7eb967d31ca3c86a0d5d4b5c21f907cb61a0&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:0b&quot;,
+                &quot;IPv4Address&quot;: &quot;172.28.0.11/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
             },
-            "25479e15afee663a7d0ad7b97f734f65d35672c49e9610f9e0406975d616e584": {
-                "Name": "snmp-mibserver",
-                "EndpointID": "68a27a27fc5acc7b1350cb5f073abf9218f1c0fa4ede5f037a67fdcce46ec91b",
-                "MacAddress": "02:42:ac:1c:00:03",
-                "IPv4Address": "172.28.0.3/16",
-                "IPv6Address": ""
+            &quot;25479e15afee663a7d0ad7b97f734f65d35672c49e9610f9e0406975d616e584&quot;: {
+                &quot;Name&quot;: &quot;snmp-mibserver&quot;,
+                &quot;EndpointID&quot;: &quot;68a27a27fc5acc7b1350cb5f073abf9218f1c0fa4ede5f037a67fdcce46ec91b&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:03&quot;,
+                &quot;IPv4Address&quot;: &quot;172.28.0.3/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
             },
-            "35f2bdd191898f7186a0c00dbffa5cc700e9d72e07efb6f3b341c6b8ce14d5f5": {
-                "Name": "coredns",
-                "EndpointID": "0c76c32e9b9b1dd033141332dee9a8f954c4a83ea5344ee4c93af057d2523d9a",
-                "MacAddress": "02:42:ac:1c:00:ff",
-                "IPv4Address": "172.28.0.255/16",
-                "IPv6Address": ""
+            &quot;35f2bdd191898f7186a0c00dbffa5cc700e9d72e07efb6f3b341c6b8ce14d5f5&quot;: {
+                &quot;Name&quot;: &quot;coredns&quot;,
+                &quot;EndpointID&quot;: &quot;0c76c32e9b9b1dd033141332dee9a8f954c4a83ea5344ee4c93af057d2523d9a&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:ff&quot;,
+                &quot;IPv4Address&quot;: &quot;172.28.0.255/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
             },
-            "3dc9f0d293578a7aca1b6b33cc3557f82262849e2be488a9cda729152854b9a9": {
-                "Name": "docker_compose-worker-trap-2",
-                "EndpointID": "88fc3701b04803d6317ad5d23031f880ec96c2206185c1994184580932ed5865",
-                "MacAddress": "02:42:ac:1c:00:0c",
-                "IPv4Address": "172.28.0.12/16",
-                "IPv6Address": ""
+            &quot;3dc9f0d293578a7aca1b6b33cc3557f82262849e2be488a9cda729152854b9a9&quot;: {
+                &quot;Name&quot;: &quot;docker_compose-worker-trap-2&quot;,
+                &quot;EndpointID&quot;: &quot;88fc3701b04803d6317ad5d23031f880ec96c2206185c1994184580932ed5865&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:0c&quot;,
+                &quot;IPv4Address&quot;: &quot;172.28.0.12/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
             },
-            "43c5893f2688da599dd0331a328937b19a62496f4eb06eaa40a9cad8e879c567": {
-                "Name": "redis",
-                "EndpointID": "c1c91866f67ed76d83e78a6b11e5001b0cf65107df3b7d4733373653be7f5e6a",
-                "MacAddress": "02:42:ac:1c:00:04",
-                "IPv4Address": "172.28.0.4/16",
-                "IPv6Address": ""
+            &quot;43c5893f2688da599dd0331a328937b19a62496f4eb06eaa40a9cad8e879c567&quot;: {
+                &quot;Name&quot;: &quot;redis&quot;,
+                &quot;EndpointID&quot;: &quot;c1c91866f67ed76d83e78a6b11e5001b0cf65107df3b7d4733373653be7f5e6a&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:04&quot;,
+                &quot;IPv4Address&quot;: &quot;172.28.0.4/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
             },
-            "52fa13245149422e559d4ff7a2f6c929b46ebfffdbafb52efcaade26e861128e": {
-                "Name": "sc4snmp-traps",
-                "EndpointID": "926187b2e4c3e9753dd260e8fa9db2745c20ed6c87f73f2df4870f0cb3be1511",
-                "MacAddress": "02:42:ac:1c:00:05",
-                "IPv4Address": "172.28.0.5/16",
-                "IPv6Address": ""
+            &quot;52fa13245149422e559d4ff7a2f6c929b46ebfffdbafb52efcaade26e861128e&quot;: {
+                &quot;Name&quot;: &quot;sc4snmp-traps&quot;,
+                &quot;EndpointID&quot;: &quot;926187b2e4c3e9753dd260e8fa9db2745c20ed6c87f73f2df4870f0cb3be1511&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:05&quot;,
+                &quot;IPv4Address&quot;: &quot;172.28.0.5/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
             },
-            "68813263e9d6a74e70061f85f9044ec334cce9aee364804566b4823e6960ae04": {
-                "Name": "docker_compose-worker-poller-2",
-                "EndpointID": "06d883d0ee21926be450b8c0adf4c31da7f13ceaa70dba3d0830608d5c192b2d",
-                "MacAddress": "02:42:ac:1c:00:08",
-                "IPv4Address": "172.28.0.8/16",
-                "IPv6Address": ""
+            &quot;68813263e9d6a74e70061f85f9044ec334cce9aee364804566b4823e6960ae04&quot;: {
+                &quot;Name&quot;: &quot;docker_compose-worker-poller-2&quot;,
+                &quot;EndpointID&quot;: &quot;06d883d0ee21926be450b8c0adf4c31da7f13ceaa70dba3d0830608d5c192b2d&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:08&quot;,
+                &quot;IPv4Address&quot;: &quot;172.28.0.8/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
             },
-            "78b04a7cd5c9ec1d3aaf014fd10c0ad89d401ad63093052a26111066198639af": {
-                "Name": "docker_compose-worker-sender-1",
-                "EndpointID": "0e9c84d4e7d1ce6362bba33c41161086a2de4623161a0ef34ce746d9983a4be7",
-                "MacAddress": "02:42:ac:1c:00:09",
-                "IPv4Address": "172.28.0.9/16",
-                "IPv6Address": ""
+            &quot;78b04a7cd5c9ec1d3aaf014fd10c0ad89d401ad63093052a26111066198639af&quot;: {
+                &quot;Name&quot;: &quot;docker_compose-worker-sender-1&quot;,
+                &quot;EndpointID&quot;: &quot;0e9c84d4e7d1ce6362bba33c41161086a2de4623161a0ef34ce746d9983a4be7&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:09&quot;,
+                &quot;IPv4Address&quot;: &quot;172.28.0.9/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
             },
-            "a34c808997eb56ab5c4043be3d9cd5ceb86f5b0f481b7bd51009eace9ff12965": {
-                "Name": "mongo",
-                "EndpointID": "992f5fd3eed5e646c250d61cc1d3c94bf43dc2ad0621f0044dbfd718d24325d5",
-                "MacAddress": "02:42:ac:1c:00:02",
-                "IPv4Address": "172.28.0.2/16",
-                "IPv6Address": ""
+            &quot;a34c808997eb56ab5c4043be3d9cd5ceb86f5b0f481b7bd51009eace9ff12965&quot;: {
+                &quot;Name&quot;: &quot;mongo&quot;,
+                &quot;EndpointID&quot;: &quot;992f5fd3eed5e646c250d61cc1d3c94bf43dc2ad0621f0044dbfd718d24325d5&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:02&quot;,
+                &quot;IPv4Address&quot;: &quot;172.28.0.2/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
             },
-            "b197d6b5ac9a0a69d8afb9a613006e916eacffd4c3a2c71e3ee8db927c307457": {
-                "Name": "sc4snmp-scheduler",
-                "EndpointID": "3753aec5d05a24683fb04f29284297444957e466fd5d5ffc6f40f8b58d04c443",
-                "MacAddress": "02:42:ac:1c:00:07",
-                "IPv4Address": "172.28.0.7/16",
-                "IPv6Address": ""
+            &quot;b197d6b5ac9a0a69d8afb9a613006e916eacffd4c3a2c71e3ee8db927c307457&quot;: {
+                &quot;Name&quot;: &quot;sc4snmp-scheduler&quot;,
+                &quot;EndpointID&quot;: &quot;3753aec5d05a24683fb04f29284297444957e466fd5d5ffc6f40f8b58d04c443&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:07&quot;,
+                &quot;IPv4Address&quot;: &quot;172.28.0.7/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
             },
-            "b52716b229679ec14fcc3236eee4e64f6f2b2c257889979ebb7d4b091c8cd0db": {
-                "Name": "docker_compose-worker-trap-1",
-                "EndpointID": "f1066da76315c595b6bd606e2f0437b16ec33b2c16e3f659682910e6a79ecb24",
-                "MacAddress": "02:42:ac:1c:00:0a",
-                "IPv4Address": "172.28.0.10/16",
-                "IPv6Address": ""
+            &quot;b52716b229679ec14fcc3236eee4e64f6f2b2c257889979ebb7d4b091c8cd0db&quot;: {
+                &quot;Name&quot;: &quot;docker_compose-worker-trap-1&quot;,
+                &quot;EndpointID&quot;: &quot;f1066da76315c595b6bd606e2f0437b16ec33b2c16e3f659682910e6a79ecb24&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:0a&quot;,
+                &quot;IPv4Address&quot;: &quot;172.28.0.10/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
             }
         },
-        "Options": {},
-        "Labels": {
-            "com.docker.compose.network": "sc4snmp_network",
-            "com.docker.compose.project": "docker_compose",
-            "com.docker.compose.version": "2.29.7"
+        &quot;Options&quot;: {},
+        &quot;Labels&quot;: {
+            &quot;com.docker.compose.network&quot;: &quot;sc4snmp_network&quot;,
+            &quot;com.docker.compose.project&quot;: &quot;docker_compose&quot;,
+            &quot;com.docker.compose.version&quot;: &quot;2.29.7&quot;
         }
     }
 ]
-</code></pre></div>
+</code></pre></div></p>
 <p>One section of the command is showing the <code>containers</code> assigned to that network with their ipv4 and ipv6 addresses.
-The commands also shows if the ipv6 is enabled and what subnets are assigned to the network.</p></div>
+The commands also shows if the ipv6 is enabled and what subnets are assigned to the network.</p>
+
+
 
 
 
@@ -3341,8 +3257,8 @@ The commands also shows if the ipv6 is enabled and what subnets are assigned to 
   
   
     Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
     </a>
   
 </div>
@@ -3360,10 +3276,10 @@ The commands also shows if the ipv6 is enabled and what subnets are assigned to 
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

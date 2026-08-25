@@ -19,18 +19,23 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="zensical-0.0.57">
     
     
       
-        <title>Polling issues - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Identifying Polling and Walk Issues - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.812a03bb.min.css">
       
       
 
@@ -44,12 +49,12 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -60,6 +65,8 @@
   
     
     
+      
+    
     
     
     
@@ -68,7 +75,7 @@
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
     <div data-md-component="skip">
       
         
@@ -95,12 +102,12 @@
     <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -112,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Polling issues
+              Identifying Polling and Walk Issues
             
           </span>
         </div>
@@ -120,51 +127,38 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="orange"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
       
       
-        <label class="md-header__button md-icon" for="__search">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
         </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
-          </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
-        </div>
-      </div>
-    </div>
-  </div>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
 </div>
       
     
-    
+    <div class="md-header__source">
+      
+    </div>
   </nav>
   
 </header>
@@ -193,7 +187,7 @@
     <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
     Splunk Connect for SNMP (SC4SNMP)
@@ -215,8 +209,7 @@
   <span class="md-ellipsis">
     
   
-    Home
-  
+  Home
 
     
   </span>
@@ -253,8 +246,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
-  
+  Architecture
 
     
   </span>
@@ -269,8 +261,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Architecture
-  
+  Architecture
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -289,8 +280,7 @@
   <span class="md-ellipsis">
     
   
-    High-level design
-  
+  High-level design
 
     
   </span>
@@ -317,8 +307,7 @@
   <span class="md-ellipsis">
     
   
-    Infrastructure Planning
-  
+  Infrastructure Planning
 
     
   </span>
@@ -363,8 +352,7 @@
   <span class="md-ellipsis">
     
   
-    Installation
-  
+  Installation
 
     
   </span>
@@ -379,8 +367,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Installation
-  
+  Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -410,8 +397,7 @@
   <span class="md-ellipsis">
     
   
-    Microk8s
-  
+  Microk8s
 
     
   </span>
@@ -426,8 +412,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Microk8s
-  
+  Microk8s
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -446,8 +431,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -474,8 +458,7 @@
   <span class="md-ellipsis">
     
   
-    Platform Microk8s
-  
+  Platform Microk8s
 
     
   </span>
@@ -502,8 +485,7 @@
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -530,8 +512,7 @@
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -558,8 +539,7 @@
   <span class="md-ellipsis">
     
   
-    Configurable values
-  
+  Configurable values
 
     
   </span>
@@ -597,8 +577,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration reference
-  
+  Configuration reference
 
     
   </span>
@@ -613,8 +592,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration reference
-  
+  Configuration reference
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -633,8 +611,7 @@
   <span class="md-ellipsis">
     
   
-    Deployment
-  
+  Deployment
 
     
   </span>
@@ -661,8 +638,7 @@
   <span class="md-ellipsis">
     
   
-    Scheduler
-  
+  Scheduler
 
     
   </span>
@@ -689,8 +665,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -717,8 +692,7 @@
   <span class="md-ellipsis">
     
   
-    MongoDB
-  
+  MongoDB
 
     
   </span>
@@ -745,8 +719,7 @@
   <span class="md-ellipsis">
     
   
-    Redis
-  
+  Redis
 
     
   </span>
@@ -773,8 +746,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Infrastructure Monitoring
-  
+  Splunk Infrastructure Monitoring
 
     
   </span>
@@ -801,8 +773,7 @@
   <span class="md-ellipsis">
     
   
-    CoreDNS
-  
+  CoreDNS
 
     
   </span>
@@ -848,8 +819,7 @@
   <span class="md-ellipsis">
     
   
-    GUI
-  
+  GUI
 
     
   </span>
@@ -864,8 +834,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    GUI
-  
+  GUI
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -884,8 +853,7 @@
   <span class="md-ellipsis">
     
   
-    Enable GUI
-  
+  Enable GUI
 
     
   </span>
@@ -912,8 +880,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Profiles
-  
+  Configuring Profiles
 
     
   </span>
@@ -940,8 +907,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Groups
-  
+  Configuring Groups
 
     
   </span>
@@ -968,8 +934,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Inventory
-  
+  Configuring Inventory
 
     
   </span>
@@ -996,8 +961,7 @@
   <span class="md-ellipsis">
     
   
-    Apply changes
-  
+  Apply changes
 
     
   </span>
@@ -1043,8 +1007,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1059,8 +1022,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1079,8 +1041,7 @@
   <span class="md-ellipsis">
     
   
-    Upgrade SC4SNMP
-  
+  Upgrade SC4SNMP
 
     
   </span>
@@ -1107,8 +1068,7 @@
   <span class="md-ellipsis">
     
   
-    Scaling with Microk8s
-  
+  Scaling with Microk8s
 
     
   </span>
@@ -1135,8 +1095,7 @@
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1174,8 +1133,7 @@
   <span class="md-ellipsis">
     
   
-    Offline Installation
-  
+  Offline Installation
 
     
   </span>
@@ -1190,8 +1148,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Offline Installation
-  
+  Offline Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1210,8 +1167,7 @@
   <span class="md-ellipsis">
     
   
-    Install Microk8s
-  
+  Install Microk8s
 
     
   </span>
@@ -1238,8 +1194,7 @@
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -1266,8 +1221,7 @@
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -1329,8 +1283,7 @@
   <span class="md-ellipsis">
     
   
-    Docker Compose
-  
+  Docker Compose
 
     
   </span>
@@ -1345,8 +1298,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Docker Compose
-  
+  Docker Compose
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1365,8 +1317,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -1393,8 +1344,7 @@
   <span class="md-ellipsis">
     
   
-    Install Docker
-  
+  Install Docker
 
     
   </span>
@@ -1421,8 +1371,7 @@
   <span class="md-ellipsis">
     
   
-    Download package
-  
+  Download package
 
     
   </span>
@@ -1460,8 +1409,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration files
-  
+  Configuration files
 
     
   </span>
@@ -1476,8 +1424,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration files
-  
+  Configuration files
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1496,8 +1443,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory configuration
-  
+  Inventory configuration
 
     
   </span>
@@ -1524,8 +1470,7 @@
   <span class="md-ellipsis">
     
   
-    Scheduler configuration
-  
+  Scheduler configuration
 
     
   </span>
@@ -1552,8 +1497,7 @@
   <span class="md-ellipsis">
     
   
-    Traps configuration
-  
+  Traps configuration
 
     
   </span>
@@ -1580,8 +1524,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery configuration
 
     
   </span>
@@ -1608,8 +1551,7 @@
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3 secrets
 
     
   </span>
@@ -1636,8 +1578,7 @@
   <span class="md-ellipsis">
     
   
-    .env file
-  
+  .env file
 
     
   </span>
@@ -1683,8 +1624,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1699,8 +1639,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1719,8 +1658,7 @@
   <span class="md-ellipsis">
     
   
-    Docker logging
-  
+  Docker logging
 
     
   </span>
@@ -1747,8 +1685,7 @@
   <span class="md-ellipsis">
     
   
-    Offline installation
-  
+  Offline installation
 
     
   </span>
@@ -1775,8 +1712,7 @@
   <span class="md-ellipsis">
     
   
-    Sending logs to Splunk
-  
+  Sending logs to Splunk
 
     
   </span>
@@ -1803,8 +1739,7 @@
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1839,8 +1774,7 @@
   <span class="md-ellipsis">
     
   
-    Deploy the app
-  
+  Deploy the app
 
     
   </span>
@@ -1893,8 +1827,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
-  
+  Configuration
 
     
   </span>
@@ -1909,8 +1842,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration
-  
+  Configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1929,8 +1861,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk
-  
+  Splunk
 
     
   </span>
@@ -1957,8 +1888,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory
-  
+  Inventory
 
     
   </span>
@@ -1985,8 +1915,7 @@
   <span class="md-ellipsis">
     
   
-    Profiles
-  
+  Profiles
 
     
   </span>
@@ -2013,8 +1942,7 @@
   <span class="md-ellipsis">
     
   
-    Groups
-  
+  Groups
 
     
   </span>
@@ -2041,8 +1969,7 @@
   <span class="md-ellipsis">
     
   
-    Traps
-  
+  Traps
 
     
   </span>
@@ -2069,8 +1996,7 @@
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3
 
     
   </span>
@@ -2097,8 +2023,7 @@
   <span class="md-ellipsis">
     
   
-    Poller
-  
+  Poller
 
     
   </span>
@@ -2125,8 +2050,7 @@
   <span class="md-ellipsis">
     
   
-    Workers
-  
+  Workers
 
     
   </span>
@@ -2153,8 +2077,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2181,8 +2104,7 @@
   <span class="md-ellipsis">
     
   
-    Step by Step polling example
-  
+  Step by Step polling example
 
     
   </span>
@@ -2209,8 +2131,7 @@
   <span class="md-ellipsis">
     
   
-    SNMP data format
-  
+  SNMP data format
 
     
   </span>
@@ -2244,8 +2165,7 @@
   <span class="md-ellipsis">
     
   
-    High Availability
-  
+  High Availability
 
     
   </span>
@@ -2271,8 +2191,7 @@
   <span class="md-ellipsis">
     
   
-    Lightweight installation
-  
+  Lightweight installation
 
     
   </span>
@@ -2298,8 +2217,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk dashboards
-  
+  Splunk dashboards
 
     
   </span>
@@ -2325,8 +2243,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2352,8 +2269,7 @@
   <span class="md-ellipsis">
     
   
-    Releases
-  
+  Releases
 
     
   </span>
@@ -2379,8 +2295,7 @@
   <span class="md-ellipsis">
     
   
-    Request MIB
-  
+  Request MIB
 
     
   </span>
@@ -2406,8 +2321,7 @@
   <span class="md-ellipsis">
     
   
-    Security
-  
+  Security
 
     
   </span>
@@ -2433,8 +2347,7 @@
   <span class="md-ellipsis">
     
   
-    mTLS
-  
+  mTLS
 
     
   </span>
@@ -2473,8 +2386,7 @@
   <span class="md-ellipsis">
     
   
-    Troubleshooting
-  
+  Troubleshooting
 
     
   </span>
@@ -2489,8 +2401,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Troubleshooting
-  
+  Troubleshooting
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -2509,8 +2420,7 @@
   <span class="md-ellipsis">
     
   
-    Accessing and configuring logs
-  
+  Accessing and configuring logs
 
     
   </span>
@@ -2537,8 +2447,7 @@
   <span class="md-ellipsis">
     
   
-    Docker commands
-  
+  Docker commands
 
     
   </span>
@@ -2565,8 +2474,7 @@
   <span class="md-ellipsis">
     
   
-    Kubernetes commands
-  
+  Kubernetes commands
 
     
   </span>
@@ -2593,8 +2501,7 @@
   <span class="md-ellipsis">
     
   
-    General issues
-  
+  General issues
 
     
   </span>
@@ -2617,7 +2524,7 @@
   
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
       
       
         
@@ -2630,8 +2537,7 @@
   <span class="md-ellipsis">
     
   
-    Polling issues
-  
+  Polling issues
 
     
   </span>
@@ -2641,15 +2547,14 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="./" class="md-nav__link md-nav__link--active">
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    Polling issues
-  
+  Polling issues
 
     
   </span>
@@ -2660,7 +2565,8 @@
       
         
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
@@ -2669,16 +2575,16 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#check-when-snmp-walk-was-executed-last-time-for-the-device" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check when SNMP WALK was executed last time for the device
-      
+      </span>
     </span>
   </a>
   
@@ -2687,9 +2593,9 @@
         <li class="md-nav__item">
   <a href="#empty-snmp-response-message" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Empty SNMP response message
-      
+      </span>
     </span>
   </a>
   
@@ -2698,9 +2604,9 @@
         <li class="md-nav__item">
   <a href="#oid-not-increasing" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         OID not increasing
-      
+      </span>
     </span>
   </a>
   
@@ -2709,9 +2615,9 @@
         <li class="md-nav__item">
   <a href="#walking-a-device-takes-too-much-time" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Walking a device takes too much time
-      
+      </span>
     </span>
   </a>
   
@@ -2720,9 +2626,9 @@
         <li class="md-nav__item">
   <a href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance
-      
+      </span>
     </span>
   </a>
   
@@ -2731,9 +2637,9 @@
         <li class="md-nav__item">
   <a href="#snmp-rollover" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         SNMP Rollover
-      
+      </span>
     </span>
   </a>
   
@@ -2742,9 +2648,9 @@
         <li class="md-nav__item">
   <a href="#polling-authentication-errors" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Polling authentication errors
-      
+      </span>
     </span>
   </a>
   
@@ -2754,9 +2660,9 @@
           <li class="md-nav__item">
   <a href="#unknown-usm-user" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Unknown USM user
-      
+      </span>
     </span>
   </a>
   
@@ -2765,9 +2671,9 @@
           <li class="md-nav__item">
   <a href="#wrong-snmp-pdu-digest" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Wrong SNMP PDU digest
-      
+      </span>
     </span>
   </a>
   
@@ -2776,9 +2682,9 @@
           <li class="md-nav__item">
   <a href="#no-snmp-response-received-before-timeout" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         No SNMP response received before timeout
-      
+      </span>
     </span>
   </a>
   
@@ -2792,9 +2698,9 @@
         <li class="md-nav__item">
   <a href="#field-is-immutable-error-during-helm-upgrade" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         &ldquo;Field is immutable&rdquo; error during helm upgrade
-      
+      </span>
     </span>
   </a>
   
@@ -2803,9 +2709,9 @@
         <li class="md-nav__item">
   <a href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         &ldquo;The following profiles have invalid configuration&rdquo; or &ldquo;The following groups have invalid configuration&rdquo; errors
-      
+      </span>
     </span>
   </a>
   
@@ -2834,8 +2740,7 @@
   <span class="md-ellipsis">
     
   
-    Traps issues
-  
+  Traps issues
 
     
   </span>
@@ -2862,8 +2767,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery issues
-  
+  Discovery issues
 
     
   </span>
@@ -2893,10 +2797,24 @@
               
               <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
                 <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
@@ -2905,16 +2823,16 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#check-when-snmp-walk-was-executed-last-time-for-the-device" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check when SNMP WALK was executed last time for the device
-      
+      </span>
     </span>
   </a>
   
@@ -2923,9 +2841,9 @@
         <li class="md-nav__item">
   <a href="#empty-snmp-response-message" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Empty SNMP response message
-      
+      </span>
     </span>
   </a>
   
@@ -2934,9 +2852,9 @@
         <li class="md-nav__item">
   <a href="#oid-not-increasing" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         OID not increasing
-      
+      </span>
     </span>
   </a>
   
@@ -2945,9 +2863,9 @@
         <li class="md-nav__item">
   <a href="#walking-a-device-takes-too-much-time" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Walking a device takes too much time
-      
+      </span>
     </span>
   </a>
   
@@ -2956,9 +2874,9 @@
         <li class="md-nav__item">
   <a href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance
-      
+      </span>
     </span>
   </a>
   
@@ -2967,9 +2885,9 @@
         <li class="md-nav__item">
   <a href="#snmp-rollover" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         SNMP Rollover
-      
+      </span>
     </span>
   </a>
   
@@ -2978,9 +2896,9 @@
         <li class="md-nav__item">
   <a href="#polling-authentication-errors" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Polling authentication errors
-      
+      </span>
     </span>
   </a>
   
@@ -2990,9 +2908,9 @@
           <li class="md-nav__item">
   <a href="#unknown-usm-user" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Unknown USM user
-      
+      </span>
     </span>
   </a>
   
@@ -3001,9 +2919,9 @@
           <li class="md-nav__item">
   <a href="#wrong-snmp-pdu-digest" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Wrong SNMP PDU digest
-      
+      </span>
     </span>
   </a>
   
@@ -3012,9 +2930,9 @@
           <li class="md-nav__item">
   <a href="#no-snmp-response-received-before-timeout" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         No SNMP response received before timeout
-      
+      </span>
     </span>
   </a>
   
@@ -3028,9 +2946,9 @@
         <li class="md-nav__item">
   <a href="#field-is-immutable-error-during-helm-upgrade" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         &ldquo;Field is immutable&rdquo; error during helm upgrade
-      
+      </span>
     </span>
   </a>
   
@@ -3039,9 +2957,9 @@
         <li class="md-nav__item">
   <a href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         &ldquo;The following profiles have invalid configuration&rdquo; or &ldquo;The following groups have invalid configuration&rdquo; errors
-      
+      </span>
     </span>
   </a>
   
@@ -3062,21 +2980,19 @@
                 
                   
 
-
-
-<div><h1 id="identifying-polling-and-walk-issues">Identifying Polling and Walk Issues<a class="headerlink" href="#identifying-polling-and-walk-issues" title="Permanent link">¶</a></h1>
-<h2 id="check-when-snmp-walk-was-executed-last-time-for-the-device">Check when SNMP WALK was executed last time for the device<a class="headerlink" href="#check-when-snmp-walk-was-executed-last-time-for-the-device" title="Permanent link">¶</a></h2>
+<h1 id="identifying-polling-and-walk-issues">Identifying Polling and Walk Issues<a class="headerlink" href="#identifying-polling-and-walk-issues" title="Permanent link">&para;</a></h1>
+<h2 id="check-when-snmp-walk-was-executed-last-time-for-the-device">Check when SNMP WALK was executed last time for the device<a class="headerlink" href="#check-when-snmp-walk-was-executed-last-time-for-the-device" title="Permanent link">&para;</a></h2>
 <ol>
 <li><a href="../../microk8s/sck-installation/">Configure Splunk OpenTelemetry Collector for Kubernetes</a> or <a href="../../dockercompose/9-splunk-logging/">Configure Docker Logs for Splunk</a>.</li>
 <li>Go to your Splunk and execute search: <code>index="em_logs"   "Sending due task" "sc4snmp;&lt;IP_ADDRESS&gt;;walk"</code> 
-and replace <ip_address> with the pertinent IP Address. </ip_address></li>
+and replace <IP_ADDRESS> with the pertinent IP Address. </li>
 </ol>
-<h2 id="empty-snmp-response-message">Empty SNMP response message<a class="headerlink" href="#empty-snmp-response-message" title="Permanent link">¶</a></h2>
-<p>If you see the following line in the worker’s logs:</p>
-<p></p><div class="highlight"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message')
+<h2 id="empty-snmp-response-message">Empty SNMP response message<a class="headerlink" href="#empty-snmp-response-message" title="Permanent link">&para;</a></h2>
+<p>If you see the following line in the worker&rsquo;s logs:</p>
+<p><div class="highlight"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError(&#39;An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message&#39;)
 </code></pre></div>
-that causes an infinite retry of the walk operation, configure the following depending on your deployment:
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
+that causes an infinite retry of the walk operation, configure the following depending on your deployment:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true:</p>
@@ -3091,19 +3007,19 @@ that causes an infinite retry of the walk operation, configure the following dep
 </div>
 </div>
 </div>
-<h2 id="oid-not-increasing">OID not increasing<a class="headerlink" href="#oid-not-increasing" title="Permanent link">¶</a></h2>
-<p>In case you see the following line in worker’s logs:</p>
-<p></p><div class="highlight"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing')
+<h2 id="oid-not-increasing">OID not increasing<a class="headerlink" href="#oid-not-increasing" title="Permanent link">&para;</a></h2>
+<p>In case you see the following line in worker&rsquo;s logs:</p>
+<p><div class="highlight"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError(&#39;An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing&#39;)
 </code></pre></div>
-that causes infinite retry of walk operation, fill in the addresses of hosts where the problem appears depending on your deployment:
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked id="__tabbed_2_1" name="__tabbed_2" type="radio"><input id="__tabbed_2_2" name="__tabbed_2" type="radio"><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
+that causes infinite retry of walk operation, fill in the addresses of hosts where the problem appears depending on your deployment:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Add <code>worker.ignoreNotIncreasingOid</code> array to <code>values.yaml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">ignoreNotIncreasingOid</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.1:164"</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.6"</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;127.0.0.1:164&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;127.0.0.6&quot;</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -3114,15 +3030,15 @@ that causes infinite retry of walk operation, fill in the addresses of hosts whe
 </div>
 </div>
 <p>If you put in only the IP address (for example, <code>127.0.0.1</code>), then errors will be ignored for all of its devices (like <code>127.0.0.1:161</code>,
-<code>127.0.0.1:163</code>…). If you put the IP address and host as <code>{ip}:{port}</code>, that means the error will be ignored only for this device.</p>
-<h2 id="walking-a-device-takes-too-much-time">Walking a device takes too much time<a class="headerlink" href="#walking-a-device-takes-too-much-time" title="Permanent link">¶</a></h2>
+<code>127.0.0.1:163</code>&hellip;). If you put the IP address and host as <code>{ip}:{port}</code>, that means the error will be ignored only for this device.</p>
+<h2 id="walking-a-device-takes-too-much-time">Walking a device takes too much time<a class="headerlink" href="#walking-a-device-takes-too-much-time" title="Permanent link">&para;</a></h2>
 <p>Enable the small walk profile by limiting the OID tree polled. See <a href="../../configuration/profiles/#walk-profile">Profiles configuration</a> and define a walk profile with a restricted set of MIBs in your scheduler config file.</p>
-<h2 id="an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance">An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance<a class="headerlink" href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance" title="Permanent link">¶</a></h2>
+<h2 id="an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance">An error of SNMP isWalk=True blocks traffic on the SC4SNMP instance<a class="headerlink" href="#an-error-of-snmp-iswalktrue-blocks-traffic-on-the-sc4snmp-instance" title="Permanent link">&para;</a></h2>
 <p>If you see many <code>An error of SNMP isWalk=True</code> errors in your logs, that means that there is a connection problem
 with the hosts you are polling from.
 Walk will retry multiple times, which will eventually cause a worker to be blocked while it retries. In that case, you might want to limit
 the maximum retry time depending on your deployment:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked id="__tabbed_3_1" name="__tabbed_3" type="radio"><input id="__tabbed_3_2" name="__tabbed_3" type="radio"><div class="tabbed-labels"><label for="__tabbed_3_1">microk8s</label><label for="__tabbed_3_2">docker compose</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">microk8s</label><label for="__tabbed_3_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Set <code>worker.walkRetryMaxInterval</code> in <code>values.yaml</code>, for example:</p>
@@ -3137,15 +3053,15 @@ the maximum retry time depending on your deployment:</p>
 </div>
 </div>
 </div>
-<p>With the previous configuration, ‘walk’ will retry exponentially from 30 seconds until it reaches 60 seconds. The default value is 180.</p>
-<h2 id="snmp-rollover">SNMP Rollover<a class="headerlink" href="#snmp-rollover" title="Permanent link">¶</a></h2>
+<p>With the previous configuration, &lsquo;walk&rsquo; will retry exponentially from 30 seconds until it reaches 60 seconds. The default value is 180.</p>
+<h2 id="snmp-rollover">SNMP Rollover<a class="headerlink" href="#snmp-rollover" title="Permanent link">&para;</a></h2>
 <p>The Rollover problem is due to a finite stored integer value (especially when the value is 32-bit). 
 When it reaches its maximum, it gets rolled down to 0 again. This causes a strange drop in Analytics data.
 The most common case of this issue is interface speed on high speed ports. As a solution to this problem, SNMPv2 SMI defined a new object type, counter64, for 64-bit counters, see https://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/26007-faq-snmpcounter.html.
 Not all the devices support it, but if they do, poll the counter64 type OID instead of the counter32 one. 
 For example, use <code>ifHCInOctets</code> instead of <code>ifInOctets</code>.</p>
 <p>If 64-bit counter is not supported on your device, you can write your own Splunk queries that calculate the shift based on
-the maximum integer value and the current state. The same works for values large enough that they don’t fit into a 64-bit value.
+the maximum integer value and the current state. The same works for values large enough that they don&rsquo;t fit into a 64-bit value.
 An example for an appropriate Splunk query would be the following:</p>
 <div class="highlight"><pre><span></span><code>| streamstats current=f last(ifInOctets) as p_ifInOctets last(ifOutOctets) as p_ifOutOctets by ifAlias             
 | eval in_delta=(ifInOctets - p_ifInOctets)
@@ -3154,47 +3070,49 @@ An example for an appropriate Splunk query would be the following:</p>
 | eval out = if(out_delta&lt;0,((max+out_delta)*8/(5*60*1000*1000*1000)),(out_delta)*8/(5*60*1000*1000*1000))
 | timechart span=5m avg(in) AS in, avg(out) AS out by ifAlias
 </code></pre></div>
-<h2 id="polling-authentication-errors">Polling authentication errors<a class="headerlink" href="#polling-authentication-errors" title="Permanent link">¶</a></h2>
-<h3 id="unknown-usm-user">Unknown USM user<a class="headerlink" href="#unknown-usm-user" title="Permanent link">¶</a></h3>
+<h2 id="polling-authentication-errors">Polling authentication errors<a class="headerlink" href="#polling-authentication-errors" title="Permanent link">&para;</a></h2>
+<h3 id="unknown-usm-user">Unknown USM user<a class="headerlink" href="#unknown-usm-user" title="Permanent link">&para;</a></h3>
 <p>In case of polling SNMPv3 devices, <code>Unknown USM user</code> error suggests wrong username. Verify that the secret with the correct username has been created. See <a href="../../configuration/snmpv3/">SNMPv3 configuration</a>.</p>
-<h3 id="wrong-snmp-pdu-digest">Wrong SNMP PDU digest<a class="headerlink" href="#wrong-snmp-pdu-digest" title="Permanent link">¶</a></h3>
+<h3 id="wrong-snmp-pdu-digest">Wrong SNMP PDU digest<a class="headerlink" href="#wrong-snmp-pdu-digest" title="Permanent link">&para;</a></h3>
 <p>In case of polling SNMPv3 devices, <code>Wrong SNMP PDU digest</code> error suggests wrong authentication key. Verify that the secret with the correct authentication key has been created. See <a href="../../configuration/snmpv3/">SNMPv3 configuration</a>.</p>
-<h3 id="no-snmp-response-received-before-timeout">No SNMP response received before timeout<a class="headerlink" href="#no-snmp-response-received-before-timeout" title="Permanent link">¶</a></h3>
+<h3 id="no-snmp-response-received-before-timeout">No SNMP response received before timeout<a class="headerlink" href="#no-snmp-response-received-before-timeout" title="Permanent link">&para;</a></h3>
 <p><code>No SNMP response received before timeout</code> error might have several root causes. Some of them are:</p>
 <ul>
 <li>wrong device IP or port</li>
 <li>SNMPv2c wrong community string</li>
 <li>SNMPv3 wrong privacy key</li>
 </ul>
-<h2 id="field-is-immutable-error-during-helm-upgrade">“Field is immutable” error during helm upgrade<a class="headerlink" href="#field-is-immutable-error-during-helm-upgrade" title="Permanent link">¶</a></h2>
+<h2 id="field-is-immutable-error-during-helm-upgrade">&ldquo;Field is immutable&rdquo; error during helm upgrade<a class="headerlink" href="#field-is-immutable-error-during-helm-upgrade" title="Permanent link">&para;</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Microk8s only</p>
 </div>
 <div class="highlight"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/charts/splunk-connect-for-snmp/ --namespace=sc4snmp --create-namespace
-Error: UPGRADE FAILED: cannot patch "snmp-splunk-connect-for-snmp-inventory" with kind Job: Job.batch "snmp-splunk-connect-for-snmp-inventory" is invalid: (...) : field is immutable
+Error: UPGRADE FAILED: cannot patch &quot;snmp-splunk-connect-for-snmp-inventory&quot; with kind Job: Job.batch &quot;snmp-splunk-connect-for-snmp-inventory&quot; is invalid: (...) : field is immutable
 </code></pre></div>
 <p>The immutable error is due to the limitation placed on an inventory job. As the SC4SNMP requires several checks before applying updates, it is designed to allow changes in the inventory task after 5 minutes. </p>
 <p>The status of the inventory can be checked with the following command:
-</p><div class="highlight"><pre><span></span><code>microk8s kubectl -n sc4snmp get pods | grep inventory
+<div class="highlight"><pre><span></span><code>microk8s kubectl -n sc4snmp get pods | grep inventory
 </code></pre></div>
-If the command is not empty, wait and execute it again after the inventory job finishes. This is when it is no longer visible in the output.
+If the command is not empty, wait and execute it again after the inventory job finishes. This is when it is no longer visible in the output.</p>
 <p>If the changes are required to be applied immediately, the previous inventory job can be deleted with the following command:
-</p><div class="highlight"><pre><span></span><code>microk8s kubectl delete job/snmp-splunk-connect-for-snmp-inventory -n sc4snmp
+<div class="highlight"><pre><span></span><code>microk8s kubectl delete job/snmp-splunk-connect-for-snmp-inventory -n sc4snmp
 </code></pre></div>
-The upgrade command can be executed again. 
-<h2 id="the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors">“The following profiles have invalid configuration” or “The following groups have invalid configuration” errors<a class="headerlink" href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" title="Permanent link">¶</a></h2>
+The upgrade command can be executed again. </p>
+<h2 id="the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors">&ldquo;The following profiles have invalid configuration&rdquo; or &ldquo;The following groups have invalid configuration&rdquo; errors<a class="headerlink" href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" title="Permanent link">&para;</a></h2>
 <p>Following errors are examples of wrong configuration:
-</p><div class="highlight"><pre><span></span><code>The following groups have invalid configuration and won't be used: ['group1']. Please check indentation and keywords spelling inside mentioned groups configuration.
+<div class="highlight"><pre><span></span><code>The following groups have invalid configuration and won&#39;t be used: [&#39;group1&#39;]. Please check indentation and keywords spelling inside mentioned groups configuration.
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>The following profiles have invalid configuration and won't be used: ['standard_profile', 'walk_profile']. Please check indentation and keywords spelling inside mentioned profiles configuration.
+<div class="highlight"><pre><span></span><code>The following profiles have invalid configuration and won&#39;t be used: [&#39;standard_profile&#39;, &#39;walk_profile&#39;]. Please check indentation and keywords spelling inside mentioned profiles configuration.
 </code></pre></div>
-Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to:
+Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to:</p>
 <ul>
 <li><a href="../../configuration/profiles/">Configuring profiles</a> 
 or</li>
 <li><a href="../../configuration/groups/">Configuring Groups</a></li>
 </ul>
-<p>sections to check how the correct configuration should look like.</p></div>
+<p>sections to check how the correct configuration should look like.</p>
+
+
 
 
 
@@ -3229,8 +3147,8 @@ or</li>
   
   
     Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
     </a>
   
 </div>
@@ -3248,10 +3166,10 @@ or</li>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

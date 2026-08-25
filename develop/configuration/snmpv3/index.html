@@ -9,28 +9,33 @@
       
       
       
-        <link rel="prev" href="../traps/">
+        <link rel="prev" href="../discovery-configuration/">
       
       
-        <link rel="next" href="../poller-configuration/">
+        <link rel="next" href="../../dockercompose/6-env-file-configuration/">
       
       
         
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="zensical-0.0.57">
     
     
       
-        <title>SNMPv3 secrets - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>SNMPv3 configuration - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.812a03bb.min.css">
       
       
 
@@ -44,12 +49,12 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -60,6 +65,8 @@
   
     
     
+      
+    
     
     
     
@@ -68,7 +75,7 @@
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
     <div data-md-component="skip">
       
         
@@ -95,12 +102,12 @@
     <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -112,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SNMPv3 secrets
+              SNMPv3 configuration
             
           </span>
         </div>
@@ -120,51 +127,38 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="orange"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
       
       
-        <label class="md-header__button md-icon" for="__search">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
         </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
-          </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
-        </div>
-      </div>
-    </div>
-  </div>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
 </div>
       
     
-    
+    <div class="md-header__source">
+      
+    </div>
   </nav>
   
 </header>
@@ -193,7 +187,7 @@
     <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
     Splunk Connect for SNMP (SC4SNMP)
@@ -215,8 +209,7 @@
   <span class="md-ellipsis">
     
   
-    Home
-  
+  Home
 
     
   </span>
@@ -253,8 +246,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
-  
+  Architecture
 
     
   </span>
@@ -269,8 +261,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Architecture
-  
+  Architecture
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -289,8 +280,7 @@
   <span class="md-ellipsis">
     
   
-    High-level design
-  
+  High-level design
 
     
   </span>
@@ -317,8 +307,7 @@
   <span class="md-ellipsis">
     
   
-    Infrastructure Planning
-  
+  Infrastructure Planning
 
     
   </span>
@@ -342,18 +331,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -363,8 +354,7 @@
   <span class="md-ellipsis">
     
   
-    Installation
-  
+  Installation
 
     
   </span>
@@ -374,13 +364,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Installation
-  
+  Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -410,8 +399,7 @@
   <span class="md-ellipsis">
     
   
-    Microk8s
-  
+  Microk8s
 
     
   </span>
@@ -426,8 +414,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Microk8s
-  
+  Microk8s
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -446,8 +433,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -474,8 +460,7 @@
   <span class="md-ellipsis">
     
   
-    Platform Microk8s
-  
+  Platform Microk8s
 
     
   </span>
@@ -502,8 +487,7 @@
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -530,8 +514,7 @@
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -558,8 +541,7 @@
   <span class="md-ellipsis">
     
   
-    Configurable values
-  
+  Configurable values
 
     
   </span>
@@ -597,8 +579,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration reference
-  
+  Configuration reference
 
     
   </span>
@@ -613,8 +594,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration reference
-  
+  Configuration reference
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -633,8 +613,7 @@
   <span class="md-ellipsis">
     
   
-    Deployment
-  
+  Deployment
 
     
   </span>
@@ -661,8 +640,7 @@
   <span class="md-ellipsis">
     
   
-    Scheduler
-  
+  Scheduler
 
     
   </span>
@@ -689,8 +667,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -717,8 +694,7 @@
   <span class="md-ellipsis">
     
   
-    MongoDB
-  
+  MongoDB
 
     
   </span>
@@ -745,8 +721,7 @@
   <span class="md-ellipsis">
     
   
-    Redis
-  
+  Redis
 
     
   </span>
@@ -773,8 +748,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Infrastructure Monitoring
-  
+  Splunk Infrastructure Monitoring
 
     
   </span>
@@ -801,8 +775,7 @@
   <span class="md-ellipsis">
     
   
-    CoreDNS
-  
+  CoreDNS
 
     
   </span>
@@ -848,8 +821,7 @@
   <span class="md-ellipsis">
     
   
-    GUI
-  
+  GUI
 
     
   </span>
@@ -864,8 +836,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    GUI
-  
+  GUI
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -884,8 +855,7 @@
   <span class="md-ellipsis">
     
   
-    Enable GUI
-  
+  Enable GUI
 
     
   </span>
@@ -912,8 +882,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Profiles
-  
+  Configuring Profiles
 
     
   </span>
@@ -940,8 +909,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Groups
-  
+  Configuring Groups
 
     
   </span>
@@ -968,8 +936,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Inventory
-  
+  Configuring Inventory
 
     
   </span>
@@ -996,8 +963,7 @@
   <span class="md-ellipsis">
     
   
-    Apply changes
-  
+  Apply changes
 
     
   </span>
@@ -1043,8 +1009,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1059,8 +1024,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1079,8 +1043,7 @@
   <span class="md-ellipsis">
     
   
-    Upgrade SC4SNMP
-  
+  Upgrade SC4SNMP
 
     
   </span>
@@ -1107,8 +1070,7 @@
   <span class="md-ellipsis">
     
   
-    Scaling with Microk8s
-  
+  Scaling with Microk8s
 
     
   </span>
@@ -1135,8 +1097,7 @@
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1174,8 +1135,7 @@
   <span class="md-ellipsis">
     
   
-    Offline Installation
-  
+  Offline Installation
 
     
   </span>
@@ -1190,8 +1150,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Offline Installation
-  
+  Offline Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1210,8 +1169,7 @@
   <span class="md-ellipsis">
     
   
-    Install Microk8s
-  
+  Install Microk8s
 
     
   </span>
@@ -1238,8 +1196,7 @@
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -1266,8 +1223,7 @@
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -1308,18 +1264,20 @@
                 
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" checked>
         
           
           <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
@@ -1329,8 +1287,7 @@
   <span class="md-ellipsis">
     
   
-    Docker Compose
-  
+  Docker Compose
 
     
   </span>
@@ -1340,13 +1297,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_2">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Docker Compose
-  
+  Docker Compose
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1365,8 +1321,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -1393,8 +1348,7 @@
   <span class="md-ellipsis">
     
   
-    Install Docker
-  
+  Install Docker
 
     
   </span>
@@ -1421,8 +1375,7 @@
   <span class="md-ellipsis">
     
   
-    Download package
-  
+  Download package
 
     
   </span>
@@ -1439,18 +1392,20 @@
                 
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_4" checked>
         
           
           <label class="md-nav__link" for="__nav_3_2_4" id="__nav_3_2_4_label" tabindex="0">
@@ -1460,8 +1415,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration files
-  
+  Configuration files
 
     
   </span>
@@ -1471,13 +1425,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_2_4">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration files
-  
+  Configuration files
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1496,8 +1449,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory configuration
-  
+  Inventory configuration
 
     
   </span>
@@ -1524,8 +1476,7 @@
   <span class="md-ellipsis">
     
   
-    Scheduler configuration
-  
+  Scheduler configuration
 
     
   </span>
@@ -1552,8 +1503,7 @@
   <span class="md-ellipsis">
     
   
-    Traps configuration
-  
+  Traps configuration
 
     
   </span>
@@ -1580,8 +1530,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery configuration
 
     
   </span>
@@ -1604,7 +1553,7 @@
   
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
       
       
         
@@ -1617,8 +1566,7 @@
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3 secrets
 
     
   </span>
@@ -1628,15 +1576,14 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="./" class="md-nav__link md-nav__link--active">
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3 secrets
 
     
   </span>
@@ -1647,7 +1594,8 @@
       
         
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
@@ -1656,16 +1604,16 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Prerequisites
-      
+      </span>
     </span>
   </a>
   
@@ -1674,9 +1622,9 @@
         <li class="md-nav__item">
   <a href="#configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Configuration
-      
+      </span>
     </span>
   </a>
   
@@ -1685,9 +1633,9 @@
         <li class="md-nav__item">
   <a href="#creating-a-new-secret" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Creating a new secret
-      
+      </span>
     </span>
   </a>
   
@@ -1696,9 +1644,9 @@
         <li class="md-nav__item">
   <a href="#updating-existing-secret" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Updating existing secret
-      
+      </span>
     </span>
   </a>
   
@@ -1707,9 +1655,9 @@
         <li class="md-nav__item">
   <a href="#deleting-a-secret" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Deleting a secret
-      
+      </span>
     </span>
   </a>
   
@@ -1718,9 +1666,9 @@
         <li class="md-nav__item">
   <a href="#migration-steps" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Migration steps
-      
+      </span>
     </span>
   </a>
   
@@ -1730,9 +1678,9 @@
           <li class="md-nav__item">
   <a href="#1-for-setups-not-yet-migrated-to-latest-version" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         1. For setups not yet migrated to latest version
-      
+      </span>
     </span>
   </a>
   
@@ -1741,9 +1689,9 @@
           <li class="md-nav__item">
   <a href="#2-for-setups-already-migrated-to-latest-version" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         2. For setups already migrated to latest version
-      
+      </span>
     </span>
   </a>
   
@@ -1777,8 +1725,7 @@
   <span class="md-ellipsis">
     
   
-    .env file
-  
+  .env file
 
     
   </span>
@@ -1824,8 +1771,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1840,8 +1786,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1860,8 +1805,7 @@
   <span class="md-ellipsis">
     
   
-    Docker logging
-  
+  Docker logging
 
     
   </span>
@@ -1888,8 +1832,7 @@
   <span class="md-ellipsis">
     
   
-    Offline installation
-  
+  Offline installation
 
     
   </span>
@@ -1916,8 +1859,7 @@
   <span class="md-ellipsis">
     
   
-    Sending logs to Splunk
-  
+  Sending logs to Splunk
 
     
   </span>
@@ -1944,8 +1886,7 @@
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1980,8 +1921,7 @@
   <span class="md-ellipsis">
     
   
-    Deploy the app
-  
+  Deploy the app
 
     
   </span>
@@ -2013,20 +1953,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
@@ -2036,8 +1974,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
-  
+  Configuration
 
     
   </span>
@@ -2047,13 +1984,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration
-  
+  Configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -2072,8 +2008,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk
-  
+  Splunk
 
     
   </span>
@@ -2100,8 +2035,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory
-  
+  Inventory
 
     
   </span>
@@ -2128,8 +2062,7 @@
   <span class="md-ellipsis">
     
   
-    Profiles
-  
+  Profiles
 
     
   </span>
@@ -2156,8 +2089,7 @@
   <span class="md-ellipsis">
     
   
-    Groups
-  
+  Groups
 
     
   </span>
@@ -2184,8 +2116,7 @@
   <span class="md-ellipsis">
     
   
-    Traps
-  
+  Traps
 
     
   </span>
@@ -2202,45 +2133,17 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    SNMPv3 secrets
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="././" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3
 
     
   </span>
@@ -2248,120 +2151,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prerequisites
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Configuration
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#creating-a-new-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Creating a new secret
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#updating-existing-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Updating existing secret
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deleting-a-secret" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deleting a secret
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#migration-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Migration steps
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Migration steps">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-for-setups-not-yet-migrated-to-latest-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. For setups not yet migrated to latest version
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-for-setups-already-migrated-to-latest-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. For setups already migrated to latest version
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2381,8 +2170,7 @@
   <span class="md-ellipsis">
     
   
-    Poller
-  
+  Poller
 
     
   </span>
@@ -2409,8 +2197,7 @@
   <span class="md-ellipsis">
     
   
-    Workers
-  
+  Workers
 
     
   </span>
@@ -2437,8 +2224,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2465,8 +2251,7 @@
   <span class="md-ellipsis">
     
   
-    Step by Step polling example
-  
+  Step by Step polling example
 
     
   </span>
@@ -2493,8 +2278,7 @@
   <span class="md-ellipsis">
     
   
-    SNMP data format
-  
+  SNMP data format
 
     
   </span>
@@ -2528,8 +2312,7 @@
   <span class="md-ellipsis">
     
   
-    High Availability
-  
+  High Availability
 
     
   </span>
@@ -2555,8 +2338,7 @@
   <span class="md-ellipsis">
     
   
-    Lightweight installation
-  
+  Lightweight installation
 
     
   </span>
@@ -2582,8 +2364,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk dashboards
-  
+  Splunk dashboards
 
     
   </span>
@@ -2609,8 +2390,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2636,8 +2416,7 @@
   <span class="md-ellipsis">
     
   
-    Releases
-  
+  Releases
 
     
   </span>
@@ -2663,8 +2442,7 @@
   <span class="md-ellipsis">
     
   
-    Request MIB
-  
+  Request MIB
 
     
   </span>
@@ -2690,8 +2468,7 @@
   <span class="md-ellipsis">
     
   
-    Security
-  
+  Security
 
     
   </span>
@@ -2717,8 +2494,7 @@
   <span class="md-ellipsis">
     
   
-    mTLS
-  
+  mTLS
 
     
   </span>
@@ -2755,8 +2531,7 @@
   <span class="md-ellipsis">
     
   
-    Troubleshooting
-  
+  Troubleshooting
 
     
   </span>
@@ -2771,8 +2546,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Troubleshooting
-  
+  Troubleshooting
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -2791,8 +2565,7 @@
   <span class="md-ellipsis">
     
   
-    Accessing and configuring logs
-  
+  Accessing and configuring logs
 
     
   </span>
@@ -2819,8 +2592,7 @@
   <span class="md-ellipsis">
     
   
-    Docker commands
-  
+  Docker commands
 
     
   </span>
@@ -2847,8 +2619,7 @@
   <span class="md-ellipsis">
     
   
-    Kubernetes commands
-  
+  Kubernetes commands
 
     
   </span>
@@ -2875,8 +2646,7 @@
   <span class="md-ellipsis">
     
   
-    General issues
-  
+  General issues
 
     
   </span>
@@ -2903,8 +2673,7 @@
   <span class="md-ellipsis">
     
   
-    Polling issues
-  
+  Polling issues
 
     
   </span>
@@ -2931,8 +2700,7 @@
   <span class="md-ellipsis">
     
   
-    Traps issues
-  
+  Traps issues
 
     
   </span>
@@ -2959,8 +2727,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery issues
-  
+  Discovery issues
 
     
   </span>
@@ -2990,10 +2757,24 @@
               
               <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
                 <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
@@ -3002,16 +2783,16 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Prerequisites
-      
+      </span>
     </span>
   </a>
   
@@ -3020,9 +2801,9 @@
         <li class="md-nav__item">
   <a href="#configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Configuration
-      
+      </span>
     </span>
   </a>
   
@@ -3031,9 +2812,9 @@
         <li class="md-nav__item">
   <a href="#creating-a-new-secret" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Creating a new secret
-      
+      </span>
     </span>
   </a>
   
@@ -3042,9 +2823,9 @@
         <li class="md-nav__item">
   <a href="#updating-existing-secret" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Updating existing secret
-      
+      </span>
     </span>
   </a>
   
@@ -3053,9 +2834,9 @@
         <li class="md-nav__item">
   <a href="#deleting-a-secret" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Deleting a secret
-      
+      </span>
     </span>
   </a>
   
@@ -3064,9 +2845,9 @@
         <li class="md-nav__item">
   <a href="#migration-steps" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Migration steps
-      
+      </span>
     </span>
   </a>
   
@@ -3076,9 +2857,9 @@
           <li class="md-nav__item">
   <a href="#1-for-setups-not-yet-migrated-to-latest-version" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         1. For setups not yet migrated to latest version
-      
+      </span>
     </span>
   </a>
   
@@ -3087,9 +2868,9 @@
           <li class="md-nav__item">
   <a href="#2-for-setups-already-migrated-to-latest-version" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         2. For setups already migrated to latest version
-      
+      </span>
     </span>
   </a>
   
@@ -3115,21 +2896,19 @@
                 
                   
 
-
-
-<div><h1 id="snmpv3-configuration">SNMPv3 configuration<a class="headerlink" href="#snmpv3-configuration" title="Permanent link">¶</a></h1>
+<h1 id="snmpv3-configuration">SNMPv3 configuration<a class="headerlink" href="#snmpv3-configuration" title="Permanent link">&para;</a></h1>
 <div class="admonition info">
 <p class="admonition-title">SNMPv3 only</p>
 <p>This page is only relevant if you are using <strong>SNMPv3</strong> authentication. If your devices use SNMPv2c or SNMPv1, you can skip this page entirely.</p>
 </div>
 <p>Configuration of SNMPv3, when supported by the monitored devices, is the most secure choice available
 for authentication and data privacy. We recommend using SNMPv3 whenever possible.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Each set of credentials is stored as a Kubernetes Secret object and referenced by name in <code>values.yaml</code>.
 This allows the secret to be created once - including automation by third-party password managers - then consumed without storing sensitive data in plain text.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with "sc4snmp-"</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with &quot;sc4snmp-&quot;</span>
 <span class="c1"># &lt;namespace&gt;=Namespace used to install sc4snmp</span>
 <span class="c1"># &lt;username&gt;=the SNMPv3 Username</span>
 <span class="c1"># &lt;key&gt;=key note must be at least 8 char long subject to target limitations</span>
@@ -3145,28 +2924,28 @@ microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class
 </code></pre></div>
 <p>Configured credentials can be used in poller and trap services. In service configuration, <code>secretname</code> needs to be provided.</p>
 <p>For poller:
-</p><div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secret_name</span>
-</code></pre></div>
+</code></pre></div></p>
 <p>For traps:
-</p><div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secret_name</span>
-</code></pre></div>
+</code></pre></div></p>
 </div>
 <div class="tabbed-block">
 <p>All SNMPv3 secrets are managed through a single <code>secrets.json</code> file stored in a folder on the host.</p>
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">¶</a></h2>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <p>Create a folder to store the secrets file. Inside this folder, create a <code>secrets.json</code> file that contains all SNMPv3 secrets.</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">"secret_name"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user1"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"privprotocol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AES"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"privkey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"privkey1"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"authprotocol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SHA"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"authkey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"authkey1"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"contextengineid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"engineid1"</span>
+<span class="w">  </span><span class="nt">&quot;secret_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;privprotocol&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AES&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;privkey&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;privkey1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;authprotocol&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;authkey&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;authkey1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;contextengineid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;engineid1&quot;</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -3174,7 +2953,7 @@ microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class
 <p class="admonition-title">Note</p>
 <p>The name of json file should be secrets.json. Username, authprotocol and authkey are mandatory parameters.</p>
 </div>
-<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h2>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <p>In the <code>.env</code> file, set the path to the local folder containing the <code>secrets.json</code>:</p>
 <div class="highlight"><pre><span></span><code>SECRET_FOLDER_PATH=/absolute/path/to/secrets/folder
 </code></pre></div>
@@ -3182,22 +2961,22 @@ microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class
 <div class="highlight"><pre><span></span><code>ENABLE_TRAPS_SECRETS=true
 ENABLE_WORKER_POLLER_SECRETS=true
 </code></pre></div>
-<h2 id="creating-a-new-secret">Creating a new secret<a class="headerlink" href="#creating-a-new-secret" title="Permanent link">¶</a></h2>
+<h2 id="creating-a-new-secret">Creating a new secret<a class="headerlink" href="#creating-a-new-secret" title="Permanent link">&para;</a></h2>
 <p>Add an entry to <code>secrets.json</code>, then inside the <code>docker_compose</code> directory run:</p>
 <div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
-<h2 id="updating-existing-secret">Updating existing secret<a class="headerlink" href="#updating-existing-secret" title="Permanent link">¶</a></h2>
+<h2 id="updating-existing-secret">Updating existing secret<a class="headerlink" href="#updating-existing-secret" title="Permanent link">&para;</a></h2>
 <p>Update the required fields (e.g., keys, protocols, username) for any existing secret inside <code>secrets.json</code>, then run:</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>&lt;service_name&gt;
 </code></pre></div>
-<h2 id="deleting-a-secret">Deleting a secret<a class="headerlink" href="#deleting-a-secret" title="Permanent link">¶</a></h2>
+<h2 id="deleting-a-secret">Deleting a secret<a class="headerlink" href="#deleting-a-secret" title="Permanent link">&para;</a></h2>
 <p>Delete its entry from <code>secrets.json</code>, then run:</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>&lt;service_name&gt;
 </code></pre></div>
-<h2 id="migration-steps">Migration steps<a class="headerlink" href="#migration-steps" title="Permanent link">¶</a></h2>
+<h2 id="migration-steps">Migration steps<a class="headerlink" href="#migration-steps" title="Permanent link">&para;</a></h2>
 <p>Managing SNMPv3 secrets previously required updating docker compose files using the manage_secrets.py script.
 From SC4SNMP 1.15.0, this process has been simplified and can manage all SNMPv3 secrets using a single secrets.json file.</p>
-<h3 id="1-for-setups-not-yet-migrated-to-latest-version">1. For setups not yet migrated to latest version<a class="headerlink" href="#1-for-setups-not-yet-migrated-to-latest-version" title="Permanent link">¶</a></h3>
+<h3 id="1-for-setups-not-yet-migrated-to-latest-version">1. For setups not yet migrated to latest version<a class="headerlink" href="#1-for-setups-not-yet-migrated-to-latest-version" title="Permanent link">&para;</a></h3>
 <p>First, delete all existing secrets from docker-compose.yaml using manage_secrets.py with the following flags:</p>
 <table>
 <thead>
@@ -3221,15 +3000,17 @@ From SC4SNMP 1.15.0, this process has been simplified and can manage all SNMPv3 
 </tr>
 </tbody>
 </table>
-<p>This will delete the secret with a given name from all docker compose files. If this secret hasn’t been deleted from <code>.env</code>
+<p>This will delete the secret with a given name from all docker compose files. If this secret hasn&rsquo;t been deleted from <code>.env</code>
 file, it will be removed from there.</p>
-<h3 id="2-for-setups-already-migrated-to-latest-version">2. For setups already migrated to latest version<a class="headerlink" href="#2-for-setups-already-migrated-to-latest-version" title="Permanent link">¶</a></h3>
+<h3 id="2-for-setups-already-migrated-to-latest-version">2. For setups already migrated to latest version<a class="headerlink" href="#2-for-setups-already-migrated-to-latest-version" title="Permanent link">&para;</a></h3>
 <p>Manually delete the secrets from the docker-compose.yaml file under the worker-poller and worker-trap services.
 Remove the corresponding entries from the .env file.</p>
 <p>After deleting the secrets, follow the above steps to configure secrets.</p>
 </div>
 </div>
-</div></div>
+</div>
+
+
 
 
 
@@ -3264,8 +3045,8 @@ Remove the corresponding entries from the .env file.</p>
   
   
     Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
     </a>
   
 </div>
@@ -3283,10 +3064,10 @@ Remove the corresponding entries from the .env file.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

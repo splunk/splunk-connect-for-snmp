@@ -19,18 +19,23 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="zensical-0.0.57">
     
     
       
-        <title>Traps - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Traps configuration - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.812a03bb.min.css">
       
       
 
@@ -44,12 +49,12 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -60,6 +65,8 @@
   
     
     
+      
+    
     
     
     
@@ -68,7 +75,7 @@
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
     <div data-md-component="skip">
       
         
@@ -95,12 +102,12 @@
     <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -112,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Traps
+              Traps configuration
             
           </span>
         </div>
@@ -120,51 +127,38 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="orange"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
       
       
-        <label class="md-header__button md-icon" for="__search">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
         </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
-          </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
-        </div>
-      </div>
-    </div>
-  </div>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
 </div>
       
     
-    
+    <div class="md-header__source">
+      
+    </div>
   </nav>
   
 </header>
@@ -193,7 +187,7 @@
     <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
     Splunk Connect for SNMP (SC4SNMP)
@@ -215,8 +209,7 @@
   <span class="md-ellipsis">
     
   
-    Home
-  
+  Home
 
     
   </span>
@@ -253,8 +246,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
-  
+  Architecture
 
     
   </span>
@@ -269,8 +261,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Architecture
-  
+  Architecture
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -289,8 +280,7 @@
   <span class="md-ellipsis">
     
   
-    High-level design
-  
+  High-level design
 
     
   </span>
@@ -317,8 +307,7 @@
   <span class="md-ellipsis">
     
   
-    Infrastructure Planning
-  
+  Infrastructure Planning
 
     
   </span>
@@ -363,8 +352,7 @@
   <span class="md-ellipsis">
     
   
-    Installation
-  
+  Installation
 
     
   </span>
@@ -379,8 +367,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Installation
-  
+  Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -410,8 +397,7 @@
   <span class="md-ellipsis">
     
   
-    Microk8s
-  
+  Microk8s
 
     
   </span>
@@ -426,8 +412,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Microk8s
-  
+  Microk8s
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -446,8 +431,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -474,8 +458,7 @@
   <span class="md-ellipsis">
     
   
-    Platform Microk8s
-  
+  Platform Microk8s
 
     
   </span>
@@ -502,8 +485,7 @@
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -530,8 +512,7 @@
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -558,8 +539,7 @@
   <span class="md-ellipsis">
     
   
-    Configurable values
-  
+  Configurable values
 
     
   </span>
@@ -597,8 +577,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration reference
-  
+  Configuration reference
 
     
   </span>
@@ -613,8 +592,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration reference
-  
+  Configuration reference
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -633,8 +611,7 @@
   <span class="md-ellipsis">
     
   
-    Deployment
-  
+  Deployment
 
     
   </span>
@@ -661,8 +638,7 @@
   <span class="md-ellipsis">
     
   
-    Scheduler
-  
+  Scheduler
 
     
   </span>
@@ -689,8 +665,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -717,8 +692,7 @@
   <span class="md-ellipsis">
     
   
-    MongoDB
-  
+  MongoDB
 
     
   </span>
@@ -745,8 +719,7 @@
   <span class="md-ellipsis">
     
   
-    Redis
-  
+  Redis
 
     
   </span>
@@ -773,8 +746,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Infrastructure Monitoring
-  
+  Splunk Infrastructure Monitoring
 
     
   </span>
@@ -801,8 +773,7 @@
   <span class="md-ellipsis">
     
   
-    CoreDNS
-  
+  CoreDNS
 
     
   </span>
@@ -848,8 +819,7 @@
   <span class="md-ellipsis">
     
   
-    GUI
-  
+  GUI
 
     
   </span>
@@ -864,8 +834,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    GUI
-  
+  GUI
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -884,8 +853,7 @@
   <span class="md-ellipsis">
     
   
-    Enable GUI
-  
+  Enable GUI
 
     
   </span>
@@ -912,8 +880,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Profiles
-  
+  Configuring Profiles
 
     
   </span>
@@ -940,8 +907,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Groups
-  
+  Configuring Groups
 
     
   </span>
@@ -968,8 +934,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Inventory
-  
+  Configuring Inventory
 
     
   </span>
@@ -996,8 +961,7 @@
   <span class="md-ellipsis">
     
   
-    Apply changes
-  
+  Apply changes
 
     
   </span>
@@ -1043,8 +1007,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1059,8 +1022,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1079,8 +1041,7 @@
   <span class="md-ellipsis">
     
   
-    Upgrade SC4SNMP
-  
+  Upgrade SC4SNMP
 
     
   </span>
@@ -1107,8 +1068,7 @@
   <span class="md-ellipsis">
     
   
-    Scaling with Microk8s
-  
+  Scaling with Microk8s
 
     
   </span>
@@ -1135,8 +1095,7 @@
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1174,8 +1133,7 @@
   <span class="md-ellipsis">
     
   
-    Offline Installation
-  
+  Offline Installation
 
     
   </span>
@@ -1190,8 +1148,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Offline Installation
-  
+  Offline Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1210,8 +1167,7 @@
   <span class="md-ellipsis">
     
   
-    Install Microk8s
-  
+  Install Microk8s
 
     
   </span>
@@ -1238,8 +1194,7 @@
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -1266,8 +1221,7 @@
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -1329,8 +1283,7 @@
   <span class="md-ellipsis">
     
   
-    Docker Compose
-  
+  Docker Compose
 
     
   </span>
@@ -1345,8 +1298,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Docker Compose
-  
+  Docker Compose
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1365,8 +1317,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -1393,8 +1344,7 @@
   <span class="md-ellipsis">
     
   
-    Install Docker
-  
+  Install Docker
 
     
   </span>
@@ -1421,8 +1371,7 @@
   <span class="md-ellipsis">
     
   
-    Download package
-  
+  Download package
 
     
   </span>
@@ -1460,8 +1409,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration files
-  
+  Configuration files
 
     
   </span>
@@ -1476,8 +1424,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration files
-  
+  Configuration files
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1496,8 +1443,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory configuration
-  
+  Inventory configuration
 
     
   </span>
@@ -1524,8 +1470,7 @@
   <span class="md-ellipsis">
     
   
-    Scheduler configuration
-  
+  Scheduler configuration
 
     
   </span>
@@ -1552,8 +1497,7 @@
   <span class="md-ellipsis">
     
   
-    Traps configuration
-  
+  Traps configuration
 
     
   </span>
@@ -1580,8 +1524,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery configuration
 
     
   </span>
@@ -1608,8 +1551,7 @@
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3 secrets
 
     
   </span>
@@ -1636,8 +1578,7 @@
   <span class="md-ellipsis">
     
   
-    .env file
-  
+  .env file
 
     
   </span>
@@ -1683,8 +1624,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1699,8 +1639,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1719,8 +1658,7 @@
   <span class="md-ellipsis">
     
   
-    Docker logging
-  
+  Docker logging
 
     
   </span>
@@ -1747,8 +1685,7 @@
   <span class="md-ellipsis">
     
   
-    Offline installation
-  
+  Offline installation
 
     
   </span>
@@ -1775,8 +1712,7 @@
   <span class="md-ellipsis">
     
   
-    Sending logs to Splunk
-  
+  Sending logs to Splunk
 
     
   </span>
@@ -1803,8 +1739,7 @@
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1839,8 +1774,7 @@
   <span class="md-ellipsis">
     
   
-    Deploy the app
-  
+  Deploy the app
 
     
   </span>
@@ -1895,8 +1829,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
-  
+  Configuration
 
     
   </span>
@@ -1911,8 +1844,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration
-  
+  Configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1931,8 +1863,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk
-  
+  Splunk
 
     
   </span>
@@ -1959,8 +1890,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory
-  
+  Inventory
 
     
   </span>
@@ -1987,8 +1917,7 @@
   <span class="md-ellipsis">
     
   
-    Profiles
-  
+  Profiles
 
     
   </span>
@@ -2015,8 +1944,7 @@
   <span class="md-ellipsis">
     
   
-    Groups
-  
+  Groups
 
     
   </span>
@@ -2039,7 +1967,7 @@
   
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
       
       
         
@@ -2052,8 +1980,7 @@
   <span class="md-ellipsis">
     
   
-    Traps
-  
+  Traps
 
     
   </span>
@@ -2063,15 +1990,14 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="./" class="md-nav__link md-nav__link--active">
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    Traps
-  
+  Traps
 
     
   </span>
@@ -2082,7 +2008,8 @@
       
         
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
@@ -2091,16 +2018,16 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#basic-configuration-fields" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Basic configuration fields
-      
+      </span>
     </span>
   </a>
   
@@ -2109,9 +2036,9 @@
         <li class="md-nav__item">
   <a href="#configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Configuration
-      
+      </span>
     </span>
   </a>
   
@@ -2120,9 +2047,9 @@
         <li class="md-nav__item">
   <a href="#snmpv3-security-engine-id" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         SNMPv3 security engine ID
-      
+      </span>
     </span>
   </a>
   
@@ -2132,9 +2059,9 @@
           <li class="md-nav__item">
   <a href="#engine-id-discovery" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Engine ID Discovery
-      
+      </span>
     </span>
   </a>
   
@@ -2148,9 +2075,9 @@
         <li class="md-nav__item">
   <a href="#advanced-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Advanced configuration
-      
+      </span>
     </span>
   </a>
   
@@ -2160,9 +2087,9 @@
           <li class="md-nav__item">
   <a href="#aggregate-traps" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Aggregate traps
-      
+      </span>
     </span>
   </a>
   
@@ -2171,9 +2098,9 @@
           <li class="md-nav__item">
   <a href="#define-external-gateway-for-traps" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Define external gateway for traps
-      
+      </span>
     </span>
   </a>
   
@@ -2183,9 +2110,9 @@
           <li class="md-nav__item">
   <a href="#using-metallb-loadbalancer" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Using MetalLB LoadBalancer
-      
+      </span>
     </span>
   </a>
   
@@ -2194,9 +2121,9 @@
           <li class="md-nav__item">
   <a href="#using-nodeport" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Using NodePort
-      
+      </span>
     </span>
   </a>
   
@@ -2205,9 +2132,9 @@
           <li class="md-nav__item">
   <a href="#using-cloud-load-balancer" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Using Cloud Load Balancer
-      
+      </span>
     </span>
   </a>
   
@@ -2221,9 +2148,9 @@
           <li class="md-nav__item">
   <a href="#traps-port" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Traps port
-      
+      </span>
     </span>
   </a>
   
@@ -2232,9 +2159,9 @@
           <li class="md-nav__item">
   <a href="#define-number-of-traps-replicas" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Define number of traps replicas
-      
+      </span>
     </span>
   </a>
   
@@ -2243,9 +2170,9 @@
           <li class="md-nav__item">
   <a href="#define-debug-level" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Define debug level
-      
+      </span>
     </span>
   </a>
   
@@ -2254,9 +2181,9 @@
           <li class="md-nav__item">
   <a href="#limit-varbinds-decoded-per-trap" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Limit varbinds decoded per trap
-      
+      </span>
     </span>
   </a>
   
@@ -2290,8 +2217,7 @@
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3
 
     
   </span>
@@ -2318,8 +2244,7 @@
   <span class="md-ellipsis">
     
   
-    Poller
-  
+  Poller
 
     
   </span>
@@ -2346,8 +2271,7 @@
   <span class="md-ellipsis">
     
   
-    Workers
-  
+  Workers
 
     
   </span>
@@ -2374,8 +2298,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2402,8 +2325,7 @@
   <span class="md-ellipsis">
     
   
-    Step by Step polling example
-  
+  Step by Step polling example
 
     
   </span>
@@ -2430,8 +2352,7 @@
   <span class="md-ellipsis">
     
   
-    SNMP data format
-  
+  SNMP data format
 
     
   </span>
@@ -2465,8 +2386,7 @@
   <span class="md-ellipsis">
     
   
-    High Availability
-  
+  High Availability
 
     
   </span>
@@ -2492,8 +2412,7 @@
   <span class="md-ellipsis">
     
   
-    Lightweight installation
-  
+  Lightweight installation
 
     
   </span>
@@ -2519,8 +2438,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk dashboards
-  
+  Splunk dashboards
 
     
   </span>
@@ -2546,8 +2464,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2573,8 +2490,7 @@
   <span class="md-ellipsis">
     
   
-    Releases
-  
+  Releases
 
     
   </span>
@@ -2600,8 +2516,7 @@
   <span class="md-ellipsis">
     
   
-    Request MIB
-  
+  Request MIB
 
     
   </span>
@@ -2627,8 +2542,7 @@
   <span class="md-ellipsis">
     
   
-    Security
-  
+  Security
 
     
   </span>
@@ -2654,8 +2568,7 @@
   <span class="md-ellipsis">
     
   
-    mTLS
-  
+  mTLS
 
     
   </span>
@@ -2692,8 +2605,7 @@
   <span class="md-ellipsis">
     
   
-    Troubleshooting
-  
+  Troubleshooting
 
     
   </span>
@@ -2708,8 +2620,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Troubleshooting
-  
+  Troubleshooting
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -2728,8 +2639,7 @@
   <span class="md-ellipsis">
     
   
-    Accessing and configuring logs
-  
+  Accessing and configuring logs
 
     
   </span>
@@ -2756,8 +2666,7 @@
   <span class="md-ellipsis">
     
   
-    Docker commands
-  
+  Docker commands
 
     
   </span>
@@ -2784,8 +2693,7 @@
   <span class="md-ellipsis">
     
   
-    Kubernetes commands
-  
+  Kubernetes commands
 
     
   </span>
@@ -2812,8 +2720,7 @@
   <span class="md-ellipsis">
     
   
-    General issues
-  
+  General issues
 
     
   </span>
@@ -2840,8 +2747,7 @@
   <span class="md-ellipsis">
     
   
-    Polling issues
-  
+  Polling issues
 
     
   </span>
@@ -2868,8 +2774,7 @@
   <span class="md-ellipsis">
     
   
-    Traps issues
-  
+  Traps issues
 
     
   </span>
@@ -2896,8 +2801,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery issues
-  
+  Discovery issues
 
     
   </span>
@@ -2927,10 +2831,24 @@
               
               <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
                 <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
@@ -2939,16 +2857,16 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#basic-configuration-fields" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Basic configuration fields
-      
+      </span>
     </span>
   </a>
   
@@ -2957,9 +2875,9 @@
         <li class="md-nav__item">
   <a href="#configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Configuration
-      
+      </span>
     </span>
   </a>
   
@@ -2968,9 +2886,9 @@
         <li class="md-nav__item">
   <a href="#snmpv3-security-engine-id" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         SNMPv3 security engine ID
-      
+      </span>
     </span>
   </a>
   
@@ -2980,9 +2898,9 @@
           <li class="md-nav__item">
   <a href="#engine-id-discovery" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Engine ID Discovery
-      
+      </span>
     </span>
   </a>
   
@@ -2996,9 +2914,9 @@
         <li class="md-nav__item">
   <a href="#advanced-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Advanced configuration
-      
+      </span>
     </span>
   </a>
   
@@ -3008,9 +2926,9 @@
           <li class="md-nav__item">
   <a href="#aggregate-traps" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Aggregate traps
-      
+      </span>
     </span>
   </a>
   
@@ -3019,9 +2937,9 @@
           <li class="md-nav__item">
   <a href="#define-external-gateway-for-traps" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Define external gateway for traps
-      
+      </span>
     </span>
   </a>
   
@@ -3031,9 +2949,9 @@
           <li class="md-nav__item">
   <a href="#using-metallb-loadbalancer" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Using MetalLB LoadBalancer
-      
+      </span>
     </span>
   </a>
   
@@ -3042,9 +2960,9 @@
           <li class="md-nav__item">
   <a href="#using-nodeport" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Using NodePort
-      
+      </span>
     </span>
   </a>
   
@@ -3053,9 +2971,9 @@
           <li class="md-nav__item">
   <a href="#using-cloud-load-balancer" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Using Cloud Load Balancer
-      
+      </span>
     </span>
   </a>
   
@@ -3069,9 +2987,9 @@
           <li class="md-nav__item">
   <a href="#traps-port" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Traps port
-      
+      </span>
     </span>
   </a>
   
@@ -3080,9 +2998,9 @@
           <li class="md-nav__item">
   <a href="#define-number-of-traps-replicas" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Define number of traps replicas
-      
+      </span>
     </span>
   </a>
   
@@ -3091,9 +3009,9 @@
           <li class="md-nav__item">
   <a href="#define-debug-level" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Define debug level
-      
+      </span>
     </span>
   </a>
   
@@ -3102,9 +3020,9 @@
           <li class="md-nav__item">
   <a href="#limit-varbinds-decoded-per-trap" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Limit varbinds decoded per trap
-      
+      </span>
     </span>
   </a>
   
@@ -3130,17 +3048,15 @@
                 
                   
 
-
-
-<div><h1 id="traps-configuration">Traps configuration<a class="headerlink" href="#traps-configuration" title="Permanent link">¶</a></h1>
+<h1 id="traps-configuration">Traps configuration<a class="headerlink" href="#traps-configuration" title="Permanent link">&para;</a></h1>
 <p>A trap service is a simple server that can handle SNMP traps sent by SNMP agents.</p>
-<h2 id="basic-configuration-fields">Basic configuration fields<a class="headerlink" href="#basic-configuration-fields" title="Permanent link">¶</a></h2>
+<h2 id="basic-configuration-fields">Basic configuration fields<a class="headerlink" href="#basic-configuration-fields" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>communities</code>: communities used for version <code>1</code> and <code>2c</code> of the SNMP. The default one is <code>public</code>.</li>
 <li><code>usernameSecrets</code>: names of the SNMPv3 secrets to use for authenticating incoming traps. See <a href="../snmpv3/">SNMPv3 configuration</a> for details.</li>
 </ul>
-<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Traps configuration is kept in the <code>traps</code> section of <code>values.yaml</code>:</p>
@@ -3154,7 +3070,7 @@
 <span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secretv3</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-des</span>
-<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"WARN"</span>
+<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;WARN&quot;</span>
 <span class="w">  </span><span class="nt">loadBalancerIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.202</span>
 </code></pre></div>
 <p>To apply changes, restart the trap deployment:</p>
@@ -3164,8 +3080,8 @@
 <p class="admonition-title">Info</p>
 <p>The name of the deployment can differ based on the helm installation name.
 This can be checked with the following command:
-</p><div class="highlight"><pre><span></span><code>microk8s kubectl get deployments -n sc4snmp
-</code></pre></div>
+<div class="highlight"><pre><span></span><code>microk8s kubectl get deployments -n sc4snmp
+</code></pre></div></p>
 </div>
 </div>
 <div class="tabbed-block">
@@ -3186,20 +3102,20 @@ This can be checked with the following command:
 </div>
 </div>
 </div>
-<h2 id="snmpv3-security-engine-id">SNMPv3 security engine ID<a class="headerlink" href="#snmpv3-security-engine-id" title="Permanent link">¶</a></h2>
+<h2 id="snmpv3-security-engine-id">SNMPv3 security engine ID<a class="headerlink" href="#snmpv3-security-engine-id" title="Permanent link">&para;</a></h2>
 <p>In SNMPv3, every trap receiver must know the Security Engine ID of each sending device in advance. The receiver uses this ID together with the USM username, auth key, and priv key to authenticate incoming traps. Without the correct engine ID pre-registered, pysnmp rejects the trap before it even checks credentials.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked id="__tabbed_2_1" name="__tabbed_2" type="radio"><input id="__tabbed_2_2" name="__tabbed_2" type="radio"><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Define all engine IDs under <code>traps.securityEngineId</code> in <code>values.yaml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">securityEngineId</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"80003a8c04"</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;80003a8c04&quot;</span>
 </code></pre></div>
 <p>By default, it is set to a one-element list: <code>80003a8c04</code>.</p>
 <p>The <code>securityEngineID</code> is a substitute of the <code>-e</code> variable in <code>snmptrap</code>.
 The following is an example of an SNMPv3 trap:</p>
-<div class="highlight"><pre><span></span><code>snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 '' 1.3.6.1.2.1.2.2.1.1.1
+<div class="highlight"><pre><span></span><code>snmptrap -v3 -e 80003a8c04 -l authPriv -u snmp-poller -a SHA -A PASSWORD1 -x AES -X PASSWORD1 10.202.13.233 &#39;&#39; 1.3.6.1.2.1.2.2.1.1.1
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -3209,14 +3125,14 @@ The following is an example of an SNMPv3 trap:</p>
 </div>
 </div>
 </div>
-<h3 id="engine-id-discovery">Engine ID Discovery<a class="headerlink" href="#engine-id-discovery" title="Permanent link">¶</a></h3>
+<h3 id="engine-id-discovery">Engine ID Discovery<a class="headerlink" href="#engine-id-discovery" title="Permanent link">&para;</a></h3>
 <p>If you are managing a large amount of traps agents it is possible to enable engine id discovery mode. The Engine ID Discovery feature automatically extracts the engine ID from each incoming SNMPv3 raw datagram and dynamically registers it with the SNMP engine, so the trap can be authenticated on the fly.
 The engine ID is only registered if the username matches a known user and stored in database.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked id="__tabbed_3_1" name="__tabbed_3" type="radio"><input id="__tabbed_3_2" name="__tabbed_3" type="radio"><div class="tabbed-labels"><label for="__tabbed_3_1">microk8s</label><label for="__tabbed_3_2">docker compose</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">microk8s</label><label for="__tabbed_3_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">discoverEngineId</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
+<span class="w">  </span><span class="nt">discoverEngineId</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -3229,14 +3145,14 @@ The engine ID is only registered if the username matches a known user and stored
 <p class="admonition-title">Info</p>
 <p>It is recommended to enable this feature only during the initial setup of the traps receiver. Once the engine IDs for all required devices in the network have been collected, disable the feature to prevent unwanted engine ID registration and to improve trap processing efficiency by eliminating the overhead of extracting the engine ID from every incoming message.</p>
 </div>
-<h2 id="advanced-configuration">Advanced configuration<a class="headerlink" href="#advanced-configuration" title="Permanent link">¶</a></h2>
-<h3 id="aggregate-traps">Aggregate traps<a class="headerlink" href="#aggregate-traps" title="Permanent link">¶</a></h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked id="__tabbed_4_1" name="__tabbed_4" type="radio"><input id="__tabbed_4_2" name="__tabbed_4" type="radio"><div class="tabbed-labels"><label for="__tabbed_4_1">microk8s</label><label for="__tabbed_4_2">docker compose</label></div>
+<h2 id="advanced-configuration">Advanced configuration<a class="headerlink" href="#advanced-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="aggregate-traps">Aggregate traps<a class="headerlink" href="#aggregate-traps" title="Permanent link">&para;</a></h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">microk8s</label><label for="__tabbed_4_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>In case you want to see traps events collected as one event inside Splunk:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">aggregateTrapsEvents</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
+<span class="w">  </span><span class="nt">aggregateTrapsEvents</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -3246,11 +3162,11 @@ The engine ID is only registered if the username matches a known user and stored
 </div>
 </div>
 </div>
-<h3 id="define-external-gateway-for-traps">Define external gateway for traps<a class="headerlink" href="#define-external-gateway-for-traps" title="Permanent link">¶</a></h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked id="__tabbed_5_1" name="__tabbed_5" type="radio"><input id="__tabbed_5_2" name="__tabbed_5" type="radio"><div class="tabbed-labels"><label for="__tabbed_5_1">microk8s</label><label for="__tabbed_5_2">docker compose</label></div>
+<h3 id="define-external-gateway-for-traps">Define external gateway for traps<a class="headerlink" href="#define-external-gateway-for-traps" title="Permanent link">&para;</a></h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">microk8s</label><label for="__tabbed_5_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<h4 id="using-metallb-loadbalancer">Using MetalLB LoadBalancer<a class="headerlink" href="#using-metallb-loadbalancer" title="Permanent link">¶</a></h4>
+<h4 id="using-metallb-loadbalancer">Using MetalLB LoadBalancer<a class="headerlink" href="#using-metallb-loadbalancer" title="Permanent link">&para;</a></h4>
 <p>If you use SC4SNMP on a multinode setup, configure <code>loadBalancerIP</code>.
 <code>loadBalancerIP</code> should be an IP assigned from your MetalLB address pool in the same subnet as your cluster nodes can reach.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
@@ -3260,7 +3176,7 @@ The engine ID is only registered if the username matches a known user and stored
 <div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">loadBalancerIP</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.202,2001:0DB8:AC10:FE01:0000:0000:0000:0001</span>
 </code></pre></div>
-<h4 id="using-nodeport">Using NodePort<a class="headerlink" href="#using-nodeport" title="Permanent link">¶</a></h4>
+<h4 id="using-nodeport">Using NodePort<a class="headerlink" href="#using-nodeport" title="Permanent link">&para;</a></h4>
 <p>For single-node clusters or simple setups without a load balancer:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">service</span><span class="p">:</span>
@@ -3268,7 +3184,7 @@ The engine ID is only registered if the username matches a known user and stored
 <span class="w">    </span><span class="nt">externalTrafficPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Cluster</span>
 <span class="w">    </span><span class="nt">nodePort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30000</span>
 </code></pre></div>
-<h4 id="using-cloud-load-balancer">Using Cloud Load Balancer<a class="headerlink" href="#using-cloud-load-balancer" title="Permanent link">¶</a></h4>
+<h4 id="using-cloud-load-balancer">Using Cloud Load Balancer<a class="headerlink" href="#using-cloud-load-balancer" title="Permanent link">&para;</a></h4>
 <p>You can also deploy the traps receiver without MetalLB or NodePort, using Kubernetes Service annotations supported by your cloud platform. For example, on AWS EKS you can enable an AWS Network Load Balancer with annotations:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">service</span><span class="p">:</span>
@@ -3285,8 +3201,8 @@ abstraction layer - port mapping is handled by Docker and configured via the <co
 </div>
 </div>
 </div>
-<h3 id="traps-port">Traps port<a class="headerlink" href="#traps-port" title="Permanent link">¶</a></h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked id="__tabbed_6_1" name="__tabbed_6" type="radio"><input id="__tabbed_6_2" name="__tabbed_6" type="radio"><div class="tabbed-labels"><label for="__tabbed_6_1">microk8s</label><label for="__tabbed_6_2">docker compose</label></div>
+<h3 id="traps-port">Traps port<a class="headerlink" href="#traps-port" title="Permanent link">&para;</a></h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">microk8s</label><label for="__tabbed_6_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>The traps service port is controlled by the Kubernetes service configuration. By default, the trap receiver listens
@@ -3304,8 +3220,8 @@ on UDP port 162. To expose a different port externally, adjust the service defin
 </div>
 </div>
 </div>
-<h3 id="define-number-of-traps-replicas">Define number of traps replicas<a class="headerlink" href="#define-number-of-traps-replicas" title="Permanent link">¶</a></h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked id="__tabbed_7_1" name="__tabbed_7" type="radio"><input id="__tabbed_7_2" name="__tabbed_7" type="radio"><div class="tabbed-labels"><label for="__tabbed_7_1">microk8s</label><label for="__tabbed_7_2">docker compose</label></div>
+<h3 id="define-number-of-traps-replicas">Define number of traps replicas<a class="headerlink" href="#define-number-of-traps-replicas" title="Permanent link">&para;</a></h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">microk8s</label><label for="__tabbed_7_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Set the number of trap receiver pod replicas in <code>values.yaml</code>:</p>
@@ -3320,13 +3236,13 @@ on UDP port 162. To expose a different port externally, adjust the service defin
 </div>
 </div>
 </div>
-<h3 id="define-debug-level">Define debug level<a class="headerlink" href="#define-debug-level" title="Permanent link">¶</a></h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked id="__tabbed_8_1" name="__tabbed_8" type="radio"><input id="__tabbed_8_2" name="__tabbed_8" type="radio"><div class="tabbed-labels"><label for="__tabbed_8_1">microk8s</label><label for="__tabbed_8_2">docker compose</label></div>
+<h3 id="define-debug-level">Define debug level<a class="headerlink" href="#define-debug-level" title="Permanent link">&para;</a></h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">microk8s</label><label for="__tabbed_8_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Set the log level for the trap receiver in <code>values.yaml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"DEBUG"</span>
+<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;DEBUG&quot;</span>
 </code></pre></div>
 <p>Accepted values: <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>, <code>CRITICAL</code>, <code>FATAL</code>.</p>
 </div>
@@ -3338,9 +3254,9 @@ on UDP port 162. To expose a different port externally, adjust the service defin
 </div>
 </div>
 </div>
-<h3 id="limit-varbinds-decoded-per-trap">Limit varbinds decoded per trap<a class="headerlink" href="#limit-varbinds-decoded-per-trap" title="Permanent link">¶</a></h3>
+<h3 id="limit-varbinds-decoded-per-trap">Limit varbinds decoded per trap<a class="headerlink" href="#limit-varbinds-decoded-per-trap" title="Permanent link">&para;</a></h3>
 <p>Large traps can stress MIB resolution. Use <code>MAX_TRAP_VARBINDS_TO_DECODE</code> to cap how many varbinds are decoded (ASN.1 at the trap receiver and MIB resolution on the worker). Default is <strong>0</strong> (unlimited, backward compatible). Set a positive integer to drop excess varbinds (a warning is logged).</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="9:2"><input checked id="__tabbed_9_1" name="__tabbed_9" type="radio"><input id="__tabbed_9_2" name="__tabbed_9" type="radio"><div class="tabbed-labels"><label for="__tabbed_9_1">microk8s</label><label for="__tabbed_9_2">docker compose</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="9:2"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">microk8s</label><label for="__tabbed_9_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
@@ -3353,7 +3269,9 @@ on UDP port 162. To expose a different port externally, adjust the service defin
 </code></pre></div>
 </div>
 </div>
-</div></div>
+</div>
+
+
 
 
 
@@ -3388,8 +3306,8 @@ on UDP port 162. To expose a different port externally, adjust the service defin
   
   
     Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
     </a>
   
 </div>
@@ -3407,10 +3325,10 @@ on UDP port 162. To expose a different port externally, adjust the service defin
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

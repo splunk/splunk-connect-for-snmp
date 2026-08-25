@@ -19,18 +19,23 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="zensical-0.0.57">
     
     
       
-        <title>Kubernetes commands - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>K8s commands - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.812a03bb.min.css">
       
       
 
@@ -44,12 +49,12 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -60,6 +65,8 @@
   
     
     
+      
+    
     
     
     
@@ -68,7 +75,7 @@
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
     <div data-md-component="skip">
       
         
@@ -95,12 +102,12 @@
     <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -112,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Kubernetes commands
+              K8s commands
             
           </span>
         </div>
@@ -120,51 +127,38 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="orange"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
       
       
-        <label class="md-header__button md-icon" for="__search">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
         </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
-          </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
-        </div>
-      </div>
-    </div>
-  </div>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
 </div>
       
     
-    
+    <div class="md-header__source">
+      
+    </div>
   </nav>
   
 </header>
@@ -193,7 +187,7 @@
     <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
     Splunk Connect for SNMP (SC4SNMP)
@@ -215,8 +209,7 @@
   <span class="md-ellipsis">
     
   
-    Home
-  
+  Home
 
     
   </span>
@@ -253,8 +246,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
-  
+  Architecture
 
     
   </span>
@@ -269,8 +261,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Architecture
-  
+  Architecture
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -289,8 +280,7 @@
   <span class="md-ellipsis">
     
   
-    High-level design
-  
+  High-level design
 
     
   </span>
@@ -317,8 +307,7 @@
   <span class="md-ellipsis">
     
   
-    Infrastructure Planning
-  
+  Infrastructure Planning
 
     
   </span>
@@ -363,8 +352,7 @@
   <span class="md-ellipsis">
     
   
-    Installation
-  
+  Installation
 
     
   </span>
@@ -379,8 +367,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Installation
-  
+  Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -410,8 +397,7 @@
   <span class="md-ellipsis">
     
   
-    Microk8s
-  
+  Microk8s
 
     
   </span>
@@ -426,8 +412,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Microk8s
-  
+  Microk8s
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -446,8 +431,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -474,8 +458,7 @@
   <span class="md-ellipsis">
     
   
-    Platform Microk8s
-  
+  Platform Microk8s
 
     
   </span>
@@ -502,8 +485,7 @@
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -530,8 +512,7 @@
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -558,8 +539,7 @@
   <span class="md-ellipsis">
     
   
-    Configurable values
-  
+  Configurable values
 
     
   </span>
@@ -597,8 +577,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration reference
-  
+  Configuration reference
 
     
   </span>
@@ -613,8 +592,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration reference
-  
+  Configuration reference
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -633,8 +611,7 @@
   <span class="md-ellipsis">
     
   
-    Deployment
-  
+  Deployment
 
     
   </span>
@@ -661,8 +638,7 @@
   <span class="md-ellipsis">
     
   
-    Scheduler
-  
+  Scheduler
 
     
   </span>
@@ -689,8 +665,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -717,8 +692,7 @@
   <span class="md-ellipsis">
     
   
-    MongoDB
-  
+  MongoDB
 
     
   </span>
@@ -745,8 +719,7 @@
   <span class="md-ellipsis">
     
   
-    Redis
-  
+  Redis
 
     
   </span>
@@ -773,8 +746,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Infrastructure Monitoring
-  
+  Splunk Infrastructure Monitoring
 
     
   </span>
@@ -801,8 +773,7 @@
   <span class="md-ellipsis">
     
   
-    CoreDNS
-  
+  CoreDNS
 
     
   </span>
@@ -848,8 +819,7 @@
   <span class="md-ellipsis">
     
   
-    GUI
-  
+  GUI
 
     
   </span>
@@ -864,8 +834,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    GUI
-  
+  GUI
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -884,8 +853,7 @@
   <span class="md-ellipsis">
     
   
-    Enable GUI
-  
+  Enable GUI
 
     
   </span>
@@ -912,8 +880,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Profiles
-  
+  Configuring Profiles
 
     
   </span>
@@ -940,8 +907,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Groups
-  
+  Configuring Groups
 
     
   </span>
@@ -968,8 +934,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Inventory
-  
+  Configuring Inventory
 
     
   </span>
@@ -996,8 +961,7 @@
   <span class="md-ellipsis">
     
   
-    Apply changes
-  
+  Apply changes
 
     
   </span>
@@ -1043,8 +1007,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1059,8 +1022,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1079,8 +1041,7 @@
   <span class="md-ellipsis">
     
   
-    Upgrade SC4SNMP
-  
+  Upgrade SC4SNMP
 
     
   </span>
@@ -1107,8 +1068,7 @@
   <span class="md-ellipsis">
     
   
-    Scaling with Microk8s
-  
+  Scaling with Microk8s
 
     
   </span>
@@ -1135,8 +1095,7 @@
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1174,8 +1133,7 @@
   <span class="md-ellipsis">
     
   
-    Offline Installation
-  
+  Offline Installation
 
     
   </span>
@@ -1190,8 +1148,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Offline Installation
-  
+  Offline Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1210,8 +1167,7 @@
   <span class="md-ellipsis">
     
   
-    Install Microk8s
-  
+  Install Microk8s
 
     
   </span>
@@ -1238,8 +1194,7 @@
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -1266,8 +1221,7 @@
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -1329,8 +1283,7 @@
   <span class="md-ellipsis">
     
   
-    Docker Compose
-  
+  Docker Compose
 
     
   </span>
@@ -1345,8 +1298,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Docker Compose
-  
+  Docker Compose
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1365,8 +1317,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -1393,8 +1344,7 @@
   <span class="md-ellipsis">
     
   
-    Install Docker
-  
+  Install Docker
 
     
   </span>
@@ -1421,8 +1371,7 @@
   <span class="md-ellipsis">
     
   
-    Download package
-  
+  Download package
 
     
   </span>
@@ -1460,8 +1409,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration files
-  
+  Configuration files
 
     
   </span>
@@ -1476,8 +1424,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration files
-  
+  Configuration files
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1496,8 +1443,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory configuration
-  
+  Inventory configuration
 
     
   </span>
@@ -1524,8 +1470,7 @@
   <span class="md-ellipsis">
     
   
-    Scheduler configuration
-  
+  Scheduler configuration
 
     
   </span>
@@ -1552,8 +1497,7 @@
   <span class="md-ellipsis">
     
   
-    Traps configuration
-  
+  Traps configuration
 
     
   </span>
@@ -1580,8 +1524,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery configuration
 
     
   </span>
@@ -1608,8 +1551,7 @@
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3 secrets
 
     
   </span>
@@ -1636,8 +1578,7 @@
   <span class="md-ellipsis">
     
   
-    .env file
-  
+  .env file
 
     
   </span>
@@ -1683,8 +1624,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1699,8 +1639,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1719,8 +1658,7 @@
   <span class="md-ellipsis">
     
   
-    Docker logging
-  
+  Docker logging
 
     
   </span>
@@ -1747,8 +1685,7 @@
   <span class="md-ellipsis">
     
   
-    Offline installation
-  
+  Offline installation
 
     
   </span>
@@ -1775,8 +1712,7 @@
   <span class="md-ellipsis">
     
   
-    Sending logs to Splunk
-  
+  Sending logs to Splunk
 
     
   </span>
@@ -1803,8 +1739,7 @@
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1839,8 +1774,7 @@
   <span class="md-ellipsis">
     
   
-    Deploy the app
-  
+  Deploy the app
 
     
   </span>
@@ -1893,8 +1827,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
-  
+  Configuration
 
     
   </span>
@@ -1909,8 +1842,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration
-  
+  Configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1929,8 +1861,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk
-  
+  Splunk
 
     
   </span>
@@ -1957,8 +1888,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory
-  
+  Inventory
 
     
   </span>
@@ -1985,8 +1915,7 @@
   <span class="md-ellipsis">
     
   
-    Profiles
-  
+  Profiles
 
     
   </span>
@@ -2013,8 +1942,7 @@
   <span class="md-ellipsis">
     
   
-    Groups
-  
+  Groups
 
     
   </span>
@@ -2041,8 +1969,7 @@
   <span class="md-ellipsis">
     
   
-    Traps
-  
+  Traps
 
     
   </span>
@@ -2069,8 +1996,7 @@
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3
 
     
   </span>
@@ -2097,8 +2023,7 @@
   <span class="md-ellipsis">
     
   
-    Poller
-  
+  Poller
 
     
   </span>
@@ -2125,8 +2050,7 @@
   <span class="md-ellipsis">
     
   
-    Workers
-  
+  Workers
 
     
   </span>
@@ -2153,8 +2077,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2181,8 +2104,7 @@
   <span class="md-ellipsis">
     
   
-    Step by Step polling example
-  
+  Step by Step polling example
 
     
   </span>
@@ -2209,8 +2131,7 @@
   <span class="md-ellipsis">
     
   
-    SNMP data format
-  
+  SNMP data format
 
     
   </span>
@@ -2244,8 +2165,7 @@
   <span class="md-ellipsis">
     
   
-    High Availability
-  
+  High Availability
 
     
   </span>
@@ -2271,8 +2191,7 @@
   <span class="md-ellipsis">
     
   
-    Lightweight installation
-  
+  Lightweight installation
 
     
   </span>
@@ -2298,8 +2217,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk dashboards
-  
+  Splunk dashboards
 
     
   </span>
@@ -2325,8 +2243,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2352,8 +2269,7 @@
   <span class="md-ellipsis">
     
   
-    Releases
-  
+  Releases
 
     
   </span>
@@ -2379,8 +2295,7 @@
   <span class="md-ellipsis">
     
   
-    Request MIB
-  
+  Request MIB
 
     
   </span>
@@ -2406,8 +2321,7 @@
   <span class="md-ellipsis">
     
   
-    Security
-  
+  Security
 
     
   </span>
@@ -2433,8 +2347,7 @@
   <span class="md-ellipsis">
     
   
-    mTLS
-  
+  mTLS
 
     
   </span>
@@ -2473,8 +2386,7 @@
   <span class="md-ellipsis">
     
   
-    Troubleshooting
-  
+  Troubleshooting
 
     
   </span>
@@ -2489,8 +2401,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Troubleshooting
-  
+  Troubleshooting
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -2509,8 +2420,7 @@
   <span class="md-ellipsis">
     
   
-    Accessing and configuring logs
-  
+  Accessing and configuring logs
 
     
   </span>
@@ -2537,8 +2447,7 @@
   <span class="md-ellipsis">
     
   
-    Docker commands
-  
+  Docker commands
 
     
   </span>
@@ -2561,7 +2470,7 @@
   
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
       
       
       
@@ -2572,8 +2481,7 @@
   <span class="md-ellipsis">
     
   
-    Kubernetes commands
-  
+  Kubernetes commands
 
     
   </span>
@@ -2583,15 +2491,14 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="./" class="md-nav__link md-nav__link--active">
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    Kubernetes commands
-  
+  Kubernetes commands
 
     
   </span>
@@ -2602,23 +2509,24 @@
       
         
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#kubectl-commands" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Kubectl commands
-      
+      </span>
     </span>
   </a>
   
@@ -2628,9 +2536,9 @@
           <li class="md-nav__item">
   <a href="#common-flags" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Common flags
-      
+      </span>
     </span>
   </a>
   
@@ -2639,9 +2547,9 @@
           <li class="md-nav__item">
   <a href="#accessing-logs-in-kubernetes" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Accessing logs in kubernetes
-      
+      </span>
     </span>
   </a>
   
@@ -2650,9 +2558,9 @@
           <li class="md-nav__item">
   <a href="#the-get-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The get command
-      
+      </span>
     </span>
   </a>
   
@@ -2661,9 +2569,9 @@
           <li class="md-nav__item">
   <a href="#the-describe-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The describe command
-      
+      </span>
     </span>
   </a>
   
@@ -2672,9 +2580,9 @@
           <li class="md-nav__item">
   <a href="#the-exec-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The exec command
-      
+      </span>
     </span>
   </a>
   
@@ -2683,9 +2591,9 @@
           <li class="md-nav__item">
   <a href="#the-top-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The top command
-      
+      </span>
     </span>
   </a>
   
@@ -2699,9 +2607,9 @@
         <li class="md-nav__item">
   <a href="#examples-of-command-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Examples of command usage
-      
+      </span>
     </span>
   </a>
   
@@ -2711,9 +2619,9 @@
           <li class="md-nav__item">
   <a href="#check-secret-for-snmp-v3" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check secret for snmp v3
-      
+      </span>
     </span>
   </a>
   
@@ -2722,9 +2630,9 @@
           <li class="md-nav__item">
   <a href="#check-pods-health" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check pods health
-      
+      </span>
     </span>
   </a>
   
@@ -2733,9 +2641,9 @@
           <li class="md-nav__item">
   <a href="#check-resource-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check resource usage
-      
+      </span>
     </span>
   </a>
   
@@ -2744,9 +2652,9 @@
           <li class="md-nav__item">
   <a href="#check-network" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check network
-      
+      </span>
     </span>
   </a>
   
@@ -2755,9 +2663,9 @@
           <li class="md-nav__item">
   <a href="#check-service-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check service configuration
-      
+      </span>
     </span>
   </a>
   
@@ -2791,8 +2699,7 @@
   <span class="md-ellipsis">
     
   
-    General issues
-  
+  General issues
 
     
   </span>
@@ -2819,8 +2726,7 @@
   <span class="md-ellipsis">
     
   
-    Polling issues
-  
+  Polling issues
 
     
   </span>
@@ -2847,8 +2753,7 @@
   <span class="md-ellipsis">
     
   
-    Traps issues
-  
+  Traps issues
 
     
   </span>
@@ -2875,8 +2780,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery issues
-  
+  Discovery issues
 
     
   </span>
@@ -2906,26 +2810,38 @@
               
               <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
                 <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#kubectl-commands" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Kubectl commands
-      
+      </span>
     </span>
   </a>
   
@@ -2935,9 +2851,9 @@
           <li class="md-nav__item">
   <a href="#common-flags" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Common flags
-      
+      </span>
     </span>
   </a>
   
@@ -2946,9 +2862,9 @@
           <li class="md-nav__item">
   <a href="#accessing-logs-in-kubernetes" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Accessing logs in kubernetes
-      
+      </span>
     </span>
   </a>
   
@@ -2957,9 +2873,9 @@
           <li class="md-nav__item">
   <a href="#the-get-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The get command
-      
+      </span>
     </span>
   </a>
   
@@ -2968,9 +2884,9 @@
           <li class="md-nav__item">
   <a href="#the-describe-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The describe command
-      
+      </span>
     </span>
   </a>
   
@@ -2979,9 +2895,9 @@
           <li class="md-nav__item">
   <a href="#the-exec-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The exec command
-      
+      </span>
     </span>
   </a>
   
@@ -2990,9 +2906,9 @@
           <li class="md-nav__item">
   <a href="#the-top-command" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         The top command
-      
+      </span>
     </span>
   </a>
   
@@ -3006,9 +2922,9 @@
         <li class="md-nav__item">
   <a href="#examples-of-command-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Examples of command usage
-      
+      </span>
     </span>
   </a>
   
@@ -3018,9 +2934,9 @@
           <li class="md-nav__item">
   <a href="#check-secret-for-snmp-v3" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check secret for snmp v3
-      
+      </span>
     </span>
   </a>
   
@@ -3029,9 +2945,9 @@
           <li class="md-nav__item">
   <a href="#check-pods-health" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check pods health
-      
+      </span>
     </span>
   </a>
   
@@ -3040,9 +2956,9 @@
           <li class="md-nav__item">
   <a href="#check-resource-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check resource usage
-      
+      </span>
     </span>
   </a>
   
@@ -3051,9 +2967,9 @@
           <li class="md-nav__item">
   <a href="#check-network" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check network
-      
+      </span>
     </span>
   </a>
   
@@ -3062,9 +2978,9 @@
           <li class="md-nav__item">
   <a href="#check-service-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Check service configuration
-      
+      </span>
     </span>
   </a>
   
@@ -3090,14 +3006,12 @@
                 
                   
 
+  <h1 id="__skip">K8s commands</h1>
 
-
-  <h1>Kubernetes commands</h1>
-
-<div><h2 id="kubectl-commands">Kubectl commands<a class="headerlink" href="#kubectl-commands" title="Permanent link">¶</a></h2>
+<h2 id="kubectl-commands">Kubectl commands<a class="headerlink" href="#kubectl-commands" title="Permanent link">&para;</a></h2>
 <p>For full display of kubernetes commands and their usage can be found at <a href="https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands">kubectl documentation</a>. 
 Below are the most common commands used to troubleshoot issues with SC4SNMP. </p>
-<h3 id="common-flags">Common flags<a class="headerlink" href="#common-flags" title="Permanent link">¶</a></h3>
+<h3 id="common-flags">Common flags<a class="headerlink" href="#common-flags" title="Permanent link">&para;</a></h3>
 <p>The following are some common flags that can be used with the <code>kubectl</code> commands:</p>
 <ul>
 <li><code>-A</code> flag is used to list all resources in all namespaces</li>
@@ -3106,11 +3020,11 @@ Below are the most common commands used to troubleshoot issues with SC4SNMP. </p
 <li><code>-o</code> flag is used to specify the output format of the command</li>
 </ul>
 <p>For more flags and options, you can refer to the <a href="https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands">kubectl documentation</a>.</p>
-<h3 id="accessing-logs-in-kubernetes">Accessing logs in kubernetes<a class="headerlink" href="#accessing-logs-in-kubernetes" title="Permanent link">¶</a></h3>
+<h3 id="accessing-logs-in-kubernetes">Accessing logs in kubernetes<a class="headerlink" href="#accessing-logs-in-kubernetes" title="Permanent link">&para;</a></h3>
 <p>The instruction on how to set up and access the logs can be found in <a href="../configuring-logs/#accessing-logs-via-splunk">SC4SNMP logs</a> </p>
-<h3 id="the-get-command">The get command<a class="headerlink" href="#the-get-command" title="Permanent link">¶</a></h3>
+<h3 id="the-get-command">The get command<a class="headerlink" href="#the-get-command" title="Permanent link">&para;</a></h3>
 <p>The <code>get</code> command is used to list one or more resources of selected type. The following are some examples of how to use the <code>get</code> command:
-</p><div class="highlight"><pre><span></span><code>microk8s kubectl get all
+<div class="highlight"><pre><span></span><code>microk8s kubectl get all
 microk8s kubectl get pods 
 microk8s kubectl get svc
 microk8s kubectl get deployments
@@ -3119,9 +3033,9 @@ microk8s kubectl get nodes
 microk8s kubectl get configmaps
 microk8s kubectl get secrets
 microk8s kubectl get ippools
-</code></pre></div>
+</code></pre></div></p>
 <p>For example to list all pods running in sc4snmp namespace you can use command:
-</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl get pods -n sc4snmp
+<div class="highlight"><pre><span></span><code>~$ microk8s kubectl get pods -n sc4snmp
 NAME                                                          READY   STATUS    RESTARTS        AGE
 snmp-mibserver-95df967b9-cjhvz                                1/1     Running   1 (5h13m ago)   27h
 snmp-mongodb-6dc5c4f74d-pxpxb                                 2/2     Running   2 (5h13m ago)   27h
@@ -3134,10 +3048,10 @@ snmp-splunk-connect-for-snmp-worker-poller-5956f6dfb4-wjxb6   1/1     Running   
 snmp-splunk-connect-for-snmp-worker-sender-76f5d49478-spvp2   1/1     Running   1 (5h13m ago)   27h
 snmp-splunk-connect-for-snmp-worker-trap-5c4dbf8889-4njg2     1/1     Running   1 (5h13m ago)   27h
 snmp-splunk-connect-for-snmp-worker-trap-5c4dbf8889-5hc6j     1/1     Running   1 (5h13m ago)   27h
-</code></pre></div>
-<h3 id="the-describe-command">The describe command<a class="headerlink" href="#the-describe-command" title="Permanent link">¶</a></h3>
+</code></pre></div></p>
+<h3 id="the-describe-command">The describe command<a class="headerlink" href="#the-describe-command" title="Permanent link">&para;</a></h3>
 <p>The <code>describe</code> command is used to get detailed information about a resource. The following are some examples of how to use the <code>describe</code> command:
-</p><div class="highlight"><pre><span></span><code>microk8s kubectl describe all 
+<div class="highlight"><pre><span></span><code>microk8s kubectl describe all 
 microk8s kubectl describe pod &lt;pod-name&gt;
 microk8s kubectl describe svc &lt;service-name&gt;
 microk8s kubectl describe deployment &lt;deployment-name&gt;
@@ -3146,9 +3060,9 @@ microk8s kubectl describe node &lt;node-name&gt;
 microk8s kubectl describe configmap &lt;configmap-name&gt;
 microk8s kubectl describe secret &lt;secret&gt;
 microk8s kubectl describe ippool &lt;ippool-name&gt;
-</code></pre></div>
+</code></pre></div></p>
 <p>For example to get detailed information about a service you can use command:
-</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl describe svc/snmp-splunk-connect-for-snmp-trap -n sc4snmp
+<div class="highlight"><pre><span></span><code>~$ microk8s kubectl describe svc/snmp-splunk-connect-for-snmp-trap -n sc4snmp
 Name:                     snmp-splunk-connect-for-snmp-trap
 Namespace:                sc4snmp
 Labels:                   app.kubernetes.io/instance=snmp
@@ -3177,34 +3091,34 @@ HealthCheck NodePort:     31789
 Events:
   Type    Reason        Age                   From             Message
   ----    ------        ----                  ----             -------
-  Normal  nodeAssigned  95s (x45 over 3h30m)  metallb-speaker  announcing from node "ip-172-31-18-142" with protocol "layer2"
-</code></pre></div>
-<h3 id="the-exec-command">The exec command<a class="headerlink" href="#the-exec-command" title="Permanent link">¶</a></h3>
+  Normal  nodeAssigned  95s (x45 over 3h30m)  metallb-speaker  announcing from node &quot;ip-172-31-18-142&quot; with protocol &quot;layer2&quot;
+</code></pre></div></p>
+<h3 id="the-exec-command">The exec command<a class="headerlink" href="#the-exec-command" title="Permanent link">&para;</a></h3>
 <p>The <code>exec</code> command is used to execute a command in a container. The following are some examples of how to use the <code>exec</code> command:
-</p><div class="highlight"><pre><span></span><code>microk8s kubectl exec -it &lt;pod-name&gt; -- &lt;command&gt;
-</code></pre></div>
+<div class="highlight"><pre><span></span><code>microk8s kubectl exec -it &lt;pod-name&gt; -- &lt;command&gt;
+</code></pre></div></p>
 <p>For example to connect to the container you can use:
-</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl exec -it snmp-mibserver-95df967b9-cjhvz -n sc4snmp  -- /bin/bash 
+<div class="highlight"><pre><span></span><code>~$ microk8s kubectl exec -it snmp-mibserver-95df967b9-cjhvz -n sc4snmp  -- /bin/bash 
 I have no name!@snmp-mibserver-95df967b9-cjhvz:/app$ 
-</code></pre></div>
-<h3 id="the-top-command">The top command<a class="headerlink" href="#the-top-command" title="Permanent link">¶</a></h3>
+</code></pre></div></p>
+<h3 id="the-top-command">The top command<a class="headerlink" href="#the-top-command" title="Permanent link">&para;</a></h3>
 <p>The <code>top</code> command is used to display resource (CPU/memory) usage. The following are options of how to 
 use the <code>top</code> command:
-</p><div class="highlight"><pre><span></span><code>microk8s kubectl top nodes
+<div class="highlight"><pre><span></span><code>microk8s kubectl top nodes
 microk8s kubectl top pods
-</code></pre></div>
+</code></pre></div></p>
 <p>For example to display resource usage of nodes you can use:
-</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl top pods
+<div class="highlight"><pre><span></span><code>~$ microk8s kubectl top pods
 NAME                                                              CPU(cores)   MEMORY(bytes)   
 sck-splunk-otel-collector-agent-jrl62                             34m          209Mi           
 sck-splunk-otel-collector-k8s-cluster-receiver-5c56564cf5-ks2zb   3m           99Mi    
-</code></pre></div>
-<h2 id="examples-of-command-usage">Examples of command usage<a class="headerlink" href="#examples-of-command-usage" title="Permanent link">¶</a></h2>
-<h3 id="check-secret-for-snmp-v3">Check secret for snmp v3<a class="headerlink" href="#check-secret-for-snmp-v3" title="Permanent link">¶</a></h3>
+</code></pre></div></p>
+<h2 id="examples-of-command-usage">Examples of command usage<a class="headerlink" href="#examples-of-command-usage" title="Permanent link">&para;</a></h2>
+<h3 id="check-secret-for-snmp-v3">Check secret for snmp v3<a class="headerlink" href="#check-secret-for-snmp-v3" title="Permanent link">&para;</a></h3>
 <p>One of the issues related to snmp v3 can be incorrectly configured secrets in kubernetes. 
 Below you can find the instruction to check the existing secrets and decode their value.</p>
 <p>To check the existing secrets:
-</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl get secret -n sc4snmp
+<div class="highlight"><pre><span></span><code>~$ microk8s kubectl get secret -n sc4snmp
 NAME                             TYPE                 DATA   AGE
 sh.helm.release.v1.snmp.v1       helm.sh/release.v1   1      23h
 sh.helm.release.v1.snmp.v2       helm.sh/release.v1   1      21h
@@ -3230,54 +3144,54 @@ authProtocol:  3 bytes
 privKey:       10 bytes
 </code></pre></div>
 The secrets in kubernetes are not visible in describe command. To fully see them you have to decode them.
-Below are some methods to do that:
+Below are some methods to do that:</p>
 <ul>
 <li>
 <p>With json query:
-</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl get secrets/testing1 -n sc4snmp -o json | jq '.data | map_values(@base64d)'
+<div class="highlight"><pre><span></span><code>~$ microk8s kubectl get secrets/testing1 -n sc4snmp -o json | jq &#39;.data | map_values(@base64d)&#39;
 {
-  "authKey": "testing123",
-  "authProtocol": "MD5",
-  "privKey": "testing123",
-  "privProtocol": "AES",
-  "securityName": "testing",
-  "userName": "testing1"
+  &quot;authKey&quot;: &quot;testing123&quot;,
+  &quot;authProtocol&quot;: &quot;MD5&quot;,
+  &quot;privKey&quot;: &quot;testing123&quot;,
+  &quot;privProtocol&quot;: &quot;AES&quot;,
+  &quot;securityName&quot;: &quot;testing&quot;,
+  &quot;userName&quot;: &quot;testing1&quot;
 }
-</code></pre></div>
+</code></pre></div></p>
 </li>
 <li>
 <p>With template: 
-</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl get secrets/testing1 -n sc4snmp --template='{{ range $key, $value := .data }}{{ printf "%s: %s\n" $key ($value | base64decode) }}{{ end }}'
+<div class="highlight"><pre><span></span><code>~$ microk8s kubectl get secrets/testing1 -n sc4snmp --template=&#39;{{ range $key, $value := .data }}{{ printf &quot;%s: %s\n&quot; $key ($value | base64decode) }}{{ end }}&#39;
 authKey: testing123
 authProtocol: MD5
 privKey: testing123
 privProtocol: AES
 securityName: testing
 userName: testing1
-</code></pre></div>
+</code></pre></div></p>
 </li>
 </ul>
 <p>You can also check <a href="https://stackoverflow.com/questions/56909180/decoding-kubernetes-secret">this</a> thread for different decoding methods.</p>
-<h3 id="check-pods-health">Check pods health<a class="headerlink" href="#check-pods-health" title="Permanent link">¶</a></h3>
+<h3 id="check-pods-health">Check pods health<a class="headerlink" href="#check-pods-health" title="Permanent link">&para;</a></h3>
 <p>To check the health of the pods, you can use the <code>get</code> command to look at the <code>STATUS</code> and <code>RESTARTS</code> columns. 
 If the <code>STATUS</code> is not <code>Running</code> or the <code>RESTARTS</code> is not <code>0</code>, then there might be an issue with the pod. 
 You can also use the <code>describe</code> command to get more detailed information about the pod and see if there are any errors or warnings in the <code>Events</code>.</p>
-<h3 id="check-resource-usage">Check resource usage<a class="headerlink" href="#check-resource-usage" title="Permanent link">¶</a></h3>
+<h3 id="check-resource-usage">Check resource usage<a class="headerlink" href="#check-resource-usage" title="Permanent link">&para;</a></h3>
 <p>To check the resource usage of the nodes and pods, you can use the <code>top</code> command. 
 With this command, you can see the CPU and memory usage of the nodes and pods and compare it with the ones 
 assigned in <code>resources</code> section in the configuration yaml.
 If they are close to each other you might consider increasing the resources assigned.</p>
-<h3 id="check-network">Check network<a class="headerlink" href="#check-network" title="Permanent link">¶</a></h3>
+<h3 id="check-network">Check network<a class="headerlink" href="#check-network" title="Permanent link">&para;</a></h3>
 <p>Checking the network configuration can be useful when enabling the dual-stack for SC4SNMP.
 The default network controller used by the microk8s is <code>calico</code>. </p>
 <p>One of useful commands to check the network configuration is:
-</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl describe daemonset/calico-node -n kube-system
+<div class="highlight"><pre><span></span><code>~$ microk8s kubectl describe daemonset/calico-node -n kube-system
 (...)
     Environment:
       DATASTORE_TYPE:                     kubernetes
       WAIT_FOR_DATASTORE:                 true
       NODENAME:                            (v1:spec.nodeName)
-      CALICO_NETWORKING_BACKEND:          &lt;set to the key 'calico_backend' of config map 'calico-config'&gt;  Optional: false
+      CALICO_NETWORKING_BACKEND:          &lt;set to the key &#39;calico_backend&#39; of config map &#39;calico-config&#39;&gt;  Optional: false
       CLUSTER_TYPE:                       k8s,bgp
       IP:                                 autodetect
       IP_AUTODETECTION_METHOD:            first-found
@@ -3286,9 +3200,9 @@ The default network controller used by the microk8s is <code>calico</code>. </p>
       CALICO_IPV6POOL_CIDR:               fd02::/64
       IP6:                                autodetect
       CALICO_IPV6POOL_VXLAN:              Always
-      FELIX_IPINIPMTU:                    &lt;set to the key 'veth_mtu' of config map 'calico-config'&gt;  Optional: false
-      FELIX_VXLANMTU:                     &lt;set to the key 'veth_mtu' of config map 'calico-config'&gt;  Optional: false
-      FELIX_WIREGUARDMTU:                 &lt;set to the key 'veth_mtu' of config map 'calico-config'&gt;  Optional: false
+      FELIX_IPINIPMTU:                    &lt;set to the key &#39;veth_mtu&#39; of config map &#39;calico-config&#39;&gt;  Optional: false
+      FELIX_VXLANMTU:                     &lt;set to the key &#39;veth_mtu&#39; of config map &#39;calico-config&#39;&gt;  Optional: false
+      FELIX_WIREGUARDMTU:                 &lt;set to the key &#39;veth_mtu&#39; of config map &#39;calico-config&#39;&gt;  Optional: false
       CALICO_IPV4POOL_CIDR:               10.3.0.0/16
       CALICO_DISABLE_FILE_LOGGING:        true
       FELIX_DEFAULTENDPOINTTOHOSTACTION:  ACCEPT
@@ -3299,9 +3213,9 @@ The default network controller used by the microk8s is <code>calico</code>. </p>
 </code></pre></div>
 One section of the command is showing the <code>environment</code> variables used by the <code>calico</code> network controller. 
 With seeing them we can check if the different versions of IP are enabled and if the pools for them are 
-configured with subnet.
+configured with subnet.</p>
 <p>Next useful command to check when having issues with connectivity is:
-</p><div class="highlight"><pre><span></span><code>~$ microk8s kubectl describe service/webhook-service -n metallb-system
+<div class="highlight"><pre><span></span><code>~$ microk8s kubectl describe service/webhook-service -n metallb-system
 Name:              webhook-service
 Namespace:         metallb-system
 Labels:            &lt;none&gt;
@@ -3319,10 +3233,12 @@ Session Affinity:  None
 </code></pre></div>
 <code>Metallb</code> is the network load-balancer used by the SC4SNMP. 
 With checking the service configuration we can see the IP assigned to the service and the port it is listening on.
-When having the issues with dual-stack configuration the <code>IP Family Policy</code> and the <code>IP Families</code> fields should be checked.
-<h3 id="check-service-configuration">Check service configuration<a class="headerlink" href="#check-service-configuration" title="Permanent link">¶</a></h3>
+When having the issues with dual-stack configuration the <code>IP Family Policy</code> and the <code>IP Families</code> fields should be checked.</p>
+<h3 id="check-service-configuration">Check service configuration<a class="headerlink" href="#check-service-configuration" title="Permanent link">&para;</a></h3>
 <p>Checking the service configuration can be useful when having issues with the traps connectivity. 
-For better explanation refer to: <a href="../traps-issues/#wrong-ip-or-port">Wrong IP or port</a>.</p></div>
+For better explanation refer to: <a href="../traps-issues/#wrong-ip-or-port">Wrong IP or port</a>.</p>
+
+
 
 
 
@@ -3357,8 +3273,8 @@ For better explanation refer to: <a href="../traps-issues/#wrong-ip-or-port">Wro
   
   
     Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
     </a>
   
 </div>
@@ -3376,10 +3292,10 @@ For better explanation refer to: <a href="../traps-issues/#wrong-ip-or-port">Wro
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

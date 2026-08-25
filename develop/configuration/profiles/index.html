@@ -19,18 +19,23 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="zensical-0.0.57">
     
     
       
-        <title>Profiles - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Configuring profiles - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.812a03bb.min.css">
       
       
 
@@ -44,12 +49,12 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -60,6 +65,8 @@
   
     
     
+      
+    
     
     
     
@@ -68,7 +75,7 @@
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
     <div data-md-component="skip">
       
         
@@ -95,12 +102,12 @@
     <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -112,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Profiles
+              Configuring profiles
             
           </span>
         </div>
@@ -120,51 +127,38 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="orange"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
       
       
-        <label class="md-header__button md-icon" for="__search">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
         </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
-          </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
-        </div>
-      </div>
-    </div>
-  </div>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
 </div>
       
     
-    
+    <div class="md-header__source">
+      
+    </div>
   </nav>
   
 </header>
@@ -193,7 +187,7 @@
     <a href="../.." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
     Splunk Connect for SNMP (SC4SNMP)
@@ -215,8 +209,7 @@
   <span class="md-ellipsis">
     
   
-    Home
-  
+  Home
 
     
   </span>
@@ -253,8 +246,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
-  
+  Architecture
 
     
   </span>
@@ -269,8 +261,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Architecture
-  
+  Architecture
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -289,8 +280,7 @@
   <span class="md-ellipsis">
     
   
-    High-level design
-  
+  High-level design
 
     
   </span>
@@ -317,8 +307,7 @@
   <span class="md-ellipsis">
     
   
-    Infrastructure Planning
-  
+  Infrastructure Planning
 
     
   </span>
@@ -363,8 +352,7 @@
   <span class="md-ellipsis">
     
   
-    Installation
-  
+  Installation
 
     
   </span>
@@ -379,8 +367,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Installation
-  
+  Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -410,8 +397,7 @@
   <span class="md-ellipsis">
     
   
-    Microk8s
-  
+  Microk8s
 
     
   </span>
@@ -426,8 +412,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Microk8s
-  
+  Microk8s
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -446,8 +431,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -474,8 +458,7 @@
   <span class="md-ellipsis">
     
   
-    Platform Microk8s
-  
+  Platform Microk8s
 
     
   </span>
@@ -502,8 +485,7 @@
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -530,8 +512,7 @@
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -558,8 +539,7 @@
   <span class="md-ellipsis">
     
   
-    Configurable values
-  
+  Configurable values
 
     
   </span>
@@ -597,8 +577,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration reference
-  
+  Configuration reference
 
     
   </span>
@@ -613,8 +592,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration reference
-  
+  Configuration reference
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -633,8 +611,7 @@
   <span class="md-ellipsis">
     
   
-    Deployment
-  
+  Deployment
 
     
   </span>
@@ -661,8 +638,7 @@
   <span class="md-ellipsis">
     
   
-    Scheduler
-  
+  Scheduler
 
     
   </span>
@@ -689,8 +665,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -717,8 +692,7 @@
   <span class="md-ellipsis">
     
   
-    MongoDB
-  
+  MongoDB
 
     
   </span>
@@ -745,8 +719,7 @@
   <span class="md-ellipsis">
     
   
-    Redis
-  
+  Redis
 
     
   </span>
@@ -773,8 +746,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Infrastructure Monitoring
-  
+  Splunk Infrastructure Monitoring
 
     
   </span>
@@ -801,8 +773,7 @@
   <span class="md-ellipsis">
     
   
-    CoreDNS
-  
+  CoreDNS
 
     
   </span>
@@ -848,8 +819,7 @@
   <span class="md-ellipsis">
     
   
-    GUI
-  
+  GUI
 
     
   </span>
@@ -864,8 +834,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    GUI
-  
+  GUI
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -884,8 +853,7 @@
   <span class="md-ellipsis">
     
   
-    Enable GUI
-  
+  Enable GUI
 
     
   </span>
@@ -912,8 +880,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Profiles
-  
+  Configuring Profiles
 
     
   </span>
@@ -940,8 +907,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Groups
-  
+  Configuring Groups
 
     
   </span>
@@ -968,8 +934,7 @@
   <span class="md-ellipsis">
     
   
-    Configuring Inventory
-  
+  Configuring Inventory
 
     
   </span>
@@ -996,8 +961,7 @@
   <span class="md-ellipsis">
     
   
-    Apply changes
-  
+  Apply changes
 
     
   </span>
@@ -1043,8 +1007,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1059,8 +1022,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1079,8 +1041,7 @@
   <span class="md-ellipsis">
     
   
-    Upgrade SC4SNMP
-  
+  Upgrade SC4SNMP
 
     
   </span>
@@ -1107,8 +1068,7 @@
   <span class="md-ellipsis">
     
   
-    Scaling with Microk8s
-  
+  Scaling with Microk8s
 
     
   </span>
@@ -1135,8 +1095,7 @@
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1174,8 +1133,7 @@
   <span class="md-ellipsis">
     
   
-    Offline Installation
-  
+  Offline Installation
 
     
   </span>
@@ -1190,8 +1148,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Offline Installation
-  
+  Offline Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1210,8 +1167,7 @@
   <span class="md-ellipsis">
     
   
-    Install Microk8s
-  
+  Install Microk8s
 
     
   </span>
@@ -1238,8 +1194,7 @@
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -1266,8 +1221,7 @@
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -1329,8 +1283,7 @@
   <span class="md-ellipsis">
     
   
-    Docker Compose
-  
+  Docker Compose
 
     
   </span>
@@ -1345,8 +1298,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Docker Compose
-  
+  Docker Compose
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1365,8 +1317,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -1393,8 +1344,7 @@
   <span class="md-ellipsis">
     
   
-    Install Docker
-  
+  Install Docker
 
     
   </span>
@@ -1421,8 +1371,7 @@
   <span class="md-ellipsis">
     
   
-    Download package
-  
+  Download package
 
     
   </span>
@@ -1460,8 +1409,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration files
-  
+  Configuration files
 
     
   </span>
@@ -1476,8 +1424,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration files
-  
+  Configuration files
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1496,8 +1443,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory configuration
-  
+  Inventory configuration
 
     
   </span>
@@ -1524,8 +1470,7 @@
   <span class="md-ellipsis">
     
   
-    Scheduler configuration
-  
+  Scheduler configuration
 
     
   </span>
@@ -1552,8 +1497,7 @@
   <span class="md-ellipsis">
     
   
-    Traps configuration
-  
+  Traps configuration
 
     
   </span>
@@ -1580,8 +1524,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery configuration
 
     
   </span>
@@ -1608,8 +1551,7 @@
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3 secrets
 
     
   </span>
@@ -1636,8 +1578,7 @@
   <span class="md-ellipsis">
     
   
-    .env file
-  
+  .env file
 
     
   </span>
@@ -1683,8 +1624,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1699,8 +1639,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1719,8 +1658,7 @@
   <span class="md-ellipsis">
     
   
-    Docker logging
-  
+  Docker logging
 
     
   </span>
@@ -1747,8 +1685,7 @@
   <span class="md-ellipsis">
     
   
-    Offline installation
-  
+  Offline installation
 
     
   </span>
@@ -1775,8 +1712,7 @@
   <span class="md-ellipsis">
     
   
-    Sending logs to Splunk
-  
+  Sending logs to Splunk
 
     
   </span>
@@ -1803,8 +1739,7 @@
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1839,8 +1774,7 @@
   <span class="md-ellipsis">
     
   
-    Deploy the app
-  
+  Deploy the app
 
     
   </span>
@@ -1895,8 +1829,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
-  
+  Configuration
 
     
   </span>
@@ -1911,8 +1844,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration
-  
+  Configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1931,8 +1863,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk
-  
+  Splunk
 
     
   </span>
@@ -1959,8 +1890,7 @@
   <span class="md-ellipsis">
     
   
-    Inventory
-  
+  Inventory
 
     
   </span>
@@ -1983,7 +1913,7 @@
   
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
       
       
         
@@ -1996,8 +1926,7 @@
   <span class="md-ellipsis">
     
   
-    Profiles
-  
+  Profiles
 
     
   </span>
@@ -2007,15 +1936,14 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="./" class="md-nav__link md-nav__link--active">
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    Profiles
-  
+  Profiles
 
     
   </span>
@@ -2026,7 +1954,8 @@
       
         
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
@@ -2035,16 +1964,16 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#varbinds-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         varBinds configuration
-      
+      </span>
     </span>
   </a>
   
@@ -2053,9 +1982,9 @@
         <li class="md-nav__item">
   <a href="#static-profile-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Static Profile configuration
-      
+      </span>
     </span>
   </a>
   
@@ -2065,9 +1994,9 @@
           <li class="md-nav__item">
   <a href="#particular-kinds-of-static-profiles" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Particular kinds of static profiles
-      
+      </span>
     </span>
   </a>
   
@@ -2077,9 +2006,9 @@
           <li class="md-nav__item">
   <a href="#walk-profile" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         WALK profile
-      
+      </span>
     </span>
   </a>
   
@@ -2098,9 +2027,9 @@
         <li class="md-nav__item">
   <a href="#smartprofile-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         SmartProfile configuration
-      
+      </span>
     </span>
   </a>
   
@@ -2110,9 +2039,9 @@
           <li class="md-nav__item">
   <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Overview
-      
+      </span>
     </span>
   </a>
   
@@ -2121,9 +2050,9 @@
           <li class="md-nav__item">
   <a href="#details" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Details
-      
+      </span>
     </span>
   </a>
   
@@ -2137,9 +2066,9 @@
         <li class="md-nav__item">
   <a href="#conditional-profiles" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Conditional profiles
-      
+      </span>
     </span>
   </a>
   
@@ -2148,9 +2077,9 @@
         <li class="md-nav__item">
   <a href="#custom-translations" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Custom translations
-      
+      </span>
     </span>
   </a>
   
@@ -2159,9 +2088,9 @@
         <li class="md-nav__item">
   <a href="#configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Configuration
-      
+      </span>
     </span>
   </a>
   
@@ -2190,8 +2119,7 @@
   <span class="md-ellipsis">
     
   
-    Groups
-  
+  Groups
 
     
   </span>
@@ -2218,8 +2146,7 @@
   <span class="md-ellipsis">
     
   
-    Traps
-  
+  Traps
 
     
   </span>
@@ -2246,8 +2173,7 @@
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3
 
     
   </span>
@@ -2274,8 +2200,7 @@
   <span class="md-ellipsis">
     
   
-    Poller
-  
+  Poller
 
     
   </span>
@@ -2302,8 +2227,7 @@
   <span class="md-ellipsis">
     
   
-    Workers
-  
+  Workers
 
     
   </span>
@@ -2330,8 +2254,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2358,8 +2281,7 @@
   <span class="md-ellipsis">
     
   
-    Step by Step polling example
-  
+  Step by Step polling example
 
     
   </span>
@@ -2386,8 +2308,7 @@
   <span class="md-ellipsis">
     
   
-    SNMP data format
-  
+  SNMP data format
 
     
   </span>
@@ -2421,8 +2342,7 @@
   <span class="md-ellipsis">
     
   
-    High Availability
-  
+  High Availability
 
     
   </span>
@@ -2448,8 +2368,7 @@
   <span class="md-ellipsis">
     
   
-    Lightweight installation
-  
+  Lightweight installation
 
     
   </span>
@@ -2475,8 +2394,7 @@
   <span class="md-ellipsis">
     
   
-    Splunk dashboards
-  
+  Splunk dashboards
 
     
   </span>
@@ -2502,8 +2420,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2529,8 +2446,7 @@
   <span class="md-ellipsis">
     
   
-    Releases
-  
+  Releases
 
     
   </span>
@@ -2556,8 +2472,7 @@
   <span class="md-ellipsis">
     
   
-    Request MIB
-  
+  Request MIB
 
     
   </span>
@@ -2583,8 +2498,7 @@
   <span class="md-ellipsis">
     
   
-    Security
-  
+  Security
 
     
   </span>
@@ -2610,8 +2524,7 @@
   <span class="md-ellipsis">
     
   
-    mTLS
-  
+  mTLS
 
     
   </span>
@@ -2648,8 +2561,7 @@
   <span class="md-ellipsis">
     
   
-    Troubleshooting
-  
+  Troubleshooting
 
     
   </span>
@@ -2664,8 +2576,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Troubleshooting
-  
+  Troubleshooting
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -2684,8 +2595,7 @@
   <span class="md-ellipsis">
     
   
-    Accessing and configuring logs
-  
+  Accessing and configuring logs
 
     
   </span>
@@ -2712,8 +2622,7 @@
   <span class="md-ellipsis">
     
   
-    Docker commands
-  
+  Docker commands
 
     
   </span>
@@ -2740,8 +2649,7 @@
   <span class="md-ellipsis">
     
   
-    Kubernetes commands
-  
+  Kubernetes commands
 
     
   </span>
@@ -2768,8 +2676,7 @@
   <span class="md-ellipsis">
     
   
-    General issues
-  
+  General issues
 
     
   </span>
@@ -2796,8 +2703,7 @@
   <span class="md-ellipsis">
     
   
-    Polling issues
-  
+  Polling issues
 
     
   </span>
@@ -2824,8 +2730,7 @@
   <span class="md-ellipsis">
     
   
-    Traps issues
-  
+  Traps issues
 
     
   </span>
@@ -2852,8 +2757,7 @@
   <span class="md-ellipsis">
     
   
-    Discovery issues
-  
+  Discovery issues
 
     
   </span>
@@ -2883,10 +2787,24 @@
               
               <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
                 <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
@@ -2895,16 +2813,16 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      On this page
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
   <a href="#varbinds-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         varBinds configuration
-      
+      </span>
     </span>
   </a>
   
@@ -2913,9 +2831,9 @@
         <li class="md-nav__item">
   <a href="#static-profile-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Static Profile configuration
-      
+      </span>
     </span>
   </a>
   
@@ -2925,9 +2843,9 @@
           <li class="md-nav__item">
   <a href="#particular-kinds-of-static-profiles" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Particular kinds of static profiles
-      
+      </span>
     </span>
   </a>
   
@@ -2937,9 +2855,9 @@
           <li class="md-nav__item">
   <a href="#walk-profile" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         WALK profile
-      
+      </span>
     </span>
   </a>
   
@@ -2958,9 +2876,9 @@
         <li class="md-nav__item">
   <a href="#smartprofile-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         SmartProfile configuration
-      
+      </span>
     </span>
   </a>
   
@@ -2970,9 +2888,9 @@
           <li class="md-nav__item">
   <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Overview
-      
+      </span>
     </span>
   </a>
   
@@ -2981,9 +2899,9 @@
           <li class="md-nav__item">
   <a href="#details" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Details
-      
+      </span>
     </span>
   </a>
   
@@ -2997,9 +2915,9 @@
         <li class="md-nav__item">
   <a href="#conditional-profiles" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Conditional profiles
-      
+      </span>
     </span>
   </a>
   
@@ -3008,9 +2926,9 @@
         <li class="md-nav__item">
   <a href="#custom-translations" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Custom translations
-      
+      </span>
     </span>
   </a>
   
@@ -3019,9 +2937,9 @@
         <li class="md-nav__item">
   <a href="#configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      
+      <span class="md-typeset">
         Configuration
-      
+      </span>
     </span>
   </a>
   
@@ -3042,16 +2960,14 @@
                 
                   
 
-
-
-<div><h1 id="configuring-profiles">Configuring profiles<a class="headerlink" href="#configuring-profiles" title="Permanent link">¶</a></h1>
+<h1 id="configuring-profiles">Configuring profiles<a class="headerlink" href="#configuring-profiles" title="Permanent link">&para;</a></h1>
 <p>Profiles are the part of configuration where you can specify what you want to poll, and then assign them to the device.</p>
 <p>There are two types of profiles in general:</p>
 <ol>
 <li><strong>Static profile</strong>: Polling starts when the profile is added to the <code>profiles</code> field in the inventory of the device.</li>
 <li><strong>Smart profile</strong>: Polling starts when configured conditions are fulfilled, and the device to poll from has <code>smart_profiles</code> enabled in inventory.</li>
 </ol>
-<h2 id="varbinds-configuration">varBinds configuration<a class="headerlink" href="#varbinds-configuration" title="Permanent link">¶</a></h2>
+<h2 id="varbinds-configuration">varBinds configuration<a class="headerlink" href="#varbinds-configuration" title="Permanent link">&para;</a></h2>
 <p><code>VarBinds</code> is short name for <strong>variable binding</strong> in the SNMP. It is the combination of an Object Identifier (OID) and a value.
 <code>varBinds</code> are used for defining what OIDs should be requested from SNMP Agents. <code>varBinds</code> is a required
 subsection of each profile. The syntax configuration of <code>varBinds</code> looks like the following:</p>
@@ -3066,13 +2982,13 @@ collection of management information that is part of the overall SNMP MIB, for e
 <li><code>MIB index number</code>: Define the index number for a given MIB Object, for example,<code>0</code>.</li>
 </ul>
 <p>See the following example:
-</p><div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">    </span><span class="c1"># Syntax: [ "MIB-Component", "MIB object name"[Optional], "MIB index number"[Optional]]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'SNMPv2-MIB'</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'SNMPv2-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'sysName'</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'SNMPv2-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'sysUpTime'</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]</span>
-</code></pre></div>
-<h2 id="static-profile-configuration">Static Profile configuration<a class="headerlink" href="#static-profile-configuration" title="Permanent link">¶</a></h2>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysName&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysUpTime&#39;</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]</span>
+</code></pre></div></p>
+<h2 id="static-profile-configuration">Static Profile configuration<a class="headerlink" href="#static-profile-configuration" title="Permanent link">&para;</a></h2>
 <p>Static Profile is used when a list of profiles is defined in the inventory. Static Profiles are executed
 even if the SmartProfile flag in inventory is set to false.
 To configure Static Profile, the following value needs to be set in the <code>profiles</code> section:</p>
@@ -3085,14 +3001,14 @@ To configure Static Profile, the following value needs to be set in the <code>pr
 <div class="highlight"><pre><span></span><code><span class="nt">generic_switch</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'SNMPv2-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'sysDescr'</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'SNMPv2-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'sysName'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'TCP-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'tcpActiveOpens'</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'TCP-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'tcpAttemptFails'</span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'IF-MIB'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysDescr&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysName&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;TCP-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;tcpActiveOpens&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;TCP-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;tcpAttemptFails&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<h3 id="particular-kinds-of-static-profiles">Particular kinds of static profiles<a class="headerlink" href="#particular-kinds-of-static-profiles" title="Permanent link">¶</a></h3>
-<h4 id="walk-profile">WALK profile<a class="headerlink" href="#walk-profile" title="Permanent link">¶</a></h4>
+<h3 id="particular-kinds-of-static-profiles">Particular kinds of static profiles<a class="headerlink" href="#particular-kinds-of-static-profiles" title="Permanent link">&para;</a></h3>
+<h4 id="walk-profile">WALK profile<a class="headerlink" href="#walk-profile" title="Permanent link">&para;</a></h4>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>By default the walk without any profile set is polling only <code>SNMPv2-MIB</code>. For changing the scope of the walk you can configure new walk profile or use <code>enableFullWalk</code> flag. More about it in <a href="../poller-configuration/">poller configuration</a>.</p>
@@ -3101,9 +3017,9 @@ To configure Static Profile, the following value needs to be set in the <code>pr
 definition of the <code>walk</code> type:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">small_walk</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">condition</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">"walk"</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;walk&quot;</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'UDP-MIB'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;UDP-MIB&#39;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <p>This profile should be placed in the profiles section of the inventory definition. It will be executed with the frequency
 defined in <code>walk_interval</code> field from inventory. If multiple profiles of type <code>walk</code> were placed in profiles, the last one will be used.</p>
@@ -3111,8 +3027,8 @@ defined in <code>walk_interval</code> field from inventory. If multiple profiles
 <p class="admonition-title">Info</p>
 <p>When small walk is configured, <code>SNMPv2-MIB</code> is polled by default (it is needed to create the state of the device in the database).</p>
 </div>
-<h2 id="smartprofile-configuration">SmartProfile configuration<a class="headerlink" href="#smartprofile-configuration" title="Permanent link">¶</a></h2>
-<h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">¶</a></h3>
+<h2 id="smartprofile-configuration">SmartProfile configuration<a class="headerlink" href="#smartprofile-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
 <p>Smart profiles are useful when you have many devices of the same kind, and you do not want to configure each of them individually with static profiles.</p>
 <p>In order to configure smart profile, do the following:</p>
 <ol>
@@ -3120,7 +3036,7 @@ defined in <code>walk_interval</code> field from inventory. If multiple profiles
 <li>Set the filter to match all the devices of this kind.</li>
 <li>Set up polling of the profile by enabling the smart profiles for the devices that you want to be polled.</li>
 </ol>
-<h3 id="details">Details<a class="headerlink" href="#details" title="Permanent link">¶</a></h3>
+<h3 id="details">Details<a class="headerlink" href="#details" title="Permanent link">&para;</a></h3>
 <p>SmartProfile is executed when the SmartProfile flag in the inventory is set to true and the conditions defined in profile match.
 See <a href="../inventory/">Inventory configuration</a> for more information.</p>
 <p>To configure SmartProfile, the following values needs to be set in the <code>profiles</code> section:</p>
@@ -3149,14 +3065,14 @@ values are <code>base</code> or <code>field</code>.</li>
 <div class="highlight"><pre><span></span><code><span class="nt">smart_profile</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span><span class="w"> </span>
 <span class="w">  </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span>
-<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">"field"</span><span class="w"> </span>
-<span class="w">    </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="s">"SNMPv2-MIB.sysDescr"</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;field&quot;</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;SNMPv2-MIB.sysDescr&quot;</span><span class="w"> </span>
 <span class="w">    </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"^.*linux.*"</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;^.*linux.*&quot;</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"IF-MIB"</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;IF-MIB&quot;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<h2 id="conditional-profiles">Conditional profiles<a class="headerlink" href="#conditional-profiles" title="Permanent link">¶</a></h2>
+<h2 id="conditional-profiles">Conditional profiles<a class="headerlink" href="#conditional-profiles" title="Permanent link">&para;</a></h2>
 <p>There is a way to not explicitly list what SNMP objects you want to poll, but, instead, only give the conditions that must
 be fulfilled to qualify an object for polling.</p>
 <p>See the following example of a conditional profile:</p>
@@ -3164,16 +3080,16 @@ be fulfilled to qualify an object for polling.</p>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <span class="w">  </span><span class="nt">conditions</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
-<span class="w">      </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">"equals"</span>
-<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">"up"</span>
+<span class="w">      </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;equals&quot;</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;up&quot;</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifOperStatus</span>
-<span class="w">      </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">"equals"</span>
-<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">"up"</span>
+<span class="w">      </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;equals&quot;</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;up&quot;</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifDescr'</span><span class="w"> </span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifAlias'</span><span class="w"> </span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifInErrors'</span><span class="w"> </span><span class="p p-Indicator">]</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOutDiscards'</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifDescr&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifAlias&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifInErrors&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOutDiscards&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <p>When such profile is defined and added to a device in an inventory, it will poll all interfaces where <code>ifAdminStatus</code>
 and <code>ifOperStatus</code> is up. Conditional profiles are being evaluated during the walk process (on every <code>walk_interval</code>),
@@ -3188,9 +3104,9 @@ changes are only implemented when <code>walk_interval</code> is executed.</p>
 </ol>
 <div class="highlight"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
-<span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">"in"</span>
+<span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;in&quot;</span>
 <span class="w">    </span><span class="nt">value</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"down"</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;down&quot;</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </code></pre></div>
 <ol start="5">
@@ -3199,17 +3115,17 @@ You can add options for regular expression after <code>/</code>. Possible option
 </ol>
 <div class="highlight"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
-<span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">"regex"</span>
-<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">".own/i"</span>
+<span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;regex&quot;</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;.own/i&quot;</span>
 </code></pre></div>
 <p>To negate an operation you can add the flag <code>negate_operation: "true"</code> to the specified <code>field</code>, for example:
-</p><div class="highlight"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
-<span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">"equals"</span>
-<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">"up"</span>
-<span class="w">    </span><span class="nt">negate_operation</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
+<span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;equals&quot;</span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;up&quot;</span>
+<span class="w">    </span><span class="nt">negate_operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
 </code></pre></div>
-This will negate the operator specified in <code>operation</code>. See the following:
+This will negate the operator specified in <code>operation</code>. See the following:</p>
 <ol>
 <li><code>negate_operation + equals</code>: value gathered from <code>field</code> is NOT equal to <code>value</code>.</li>
 <li><code>negate_operation + gt</code>: value gathered from <code>field</code> is SMALLER or EQUAL to <code>value</code> (works only for numeric values).</li>
@@ -3221,12 +3137,12 @@ This will negate the operator specified in <code>operation</code>. See the follo
 See <a href="../snmp-data-format/">snmp data format</a> for more information.</p>
 <p>You have to explicitly define <code>varBinds</code> (not only the MIB family but also the field to poll). See the following <strong>incorrect</strong> example:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">varBinds</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<h2 id="custom-translations">Custom translations<a class="headerlink" href="#custom-translations" title="Permanent link">¶</a></h2>
+<h2 id="custom-translations">Custom translations<a class="headerlink" href="#custom-translations" title="Permanent link">&para;</a></h2>
 <p>If the user wants to use custom names/translations of MIB names, it can be configured under the <code>customTranslations</code> section under scheduler config.
 Translations are grouped by the MIB family. In the following example, <code>IF-MIB.ifInDiscards</code> will be translated to <code>IF-MIB.myCustomName1</code>:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
@@ -3249,12 +3165,12 @@ Translations are grouped by the MIB family. In the following example, <code>IF-M
 </div>
 </div>
 </div>
-<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">¶</a></h2>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The profile definition syntax (varBinds, conditions, frequency) is identical between both deployment models. The only difference is where the profiles are defined.</p>
 </div>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked id="__tabbed_2_1" name="__tabbed_2" type="radio"><input id="__tabbed_2_2" name="__tabbed_2" type="radio"><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Profiles are defined in the <code>scheduler.profiles</code> section of <code>values.yaml</code>:</p>
@@ -3262,40 +3178,40 @@ Translations are grouped by the MIB family. In the following example, <code>IF-M
 <span class="w">  </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
 <span class="w">    </span><span class="no">small_walk_profile:</span>
 <span class="w">      </span><span class="no">condition:</span>
-<span class="w">        </span><span class="no">type: "walk"</span>
+<span class="w">        </span><span class="no">type: &quot;walk&quot;</span>
 <span class="w">      </span><span class="no">varBinds:</span>
-<span class="w">        </span><span class="no">- ['UDP-MIB']</span>
+<span class="w">        </span><span class="no">- [&#39;UDP-MIB&#39;]</span>
 <span class="w">    </span><span class="no">static_profile_example:</span>
 <span class="w">      </span><span class="no">frequency: 20</span>
 <span class="w">      </span><span class="no">varBinds:</span>
-<span class="w">        </span><span class="no">- ['UCD-SNMP-MIB']</span>
-<span class="w">        </span><span class="no">- [ 'IF-MIB', 'ifDescr' ]</span>
-<span class="w">        </span><span class="no">- [ 'IF-MIB', 'ifAlias' ]</span>
+<span class="w">        </span><span class="no">- [&#39;UCD-SNMP-MIB&#39;]</span>
+<span class="w">        </span><span class="no">- [ &#39;IF-MIB&#39;, &#39;ifDescr&#39; ]</span>
+<span class="w">        </span><span class="no">- [ &#39;IF-MIB&#39;, &#39;ifAlias&#39; ]</span>
 <span class="w">    </span><span class="no">smart_profile:</span>
 <span class="w">      </span><span class="no">frequency: 100</span>
 <span class="w">      </span><span class="no">condition:</span>
 <span class="w">        </span><span class="no">type: field</span>
-<span class="w">        </span><span class="no">field: "SNMPv2-MIB.sysDescr"</span>
+<span class="w">        </span><span class="no">field: &quot;SNMPv2-MIB.sysDescr&quot;</span>
 <span class="w">        </span><span class="no">patterns:</span>
-<span class="w">          </span><span class="no">- '.*linux.*'</span>
+<span class="w">          </span><span class="no">- &#39;.*linux.*&#39;</span>
 <span class="w">      </span><span class="no">varBinds:</span>
-<span class="w">        </span><span class="no">- ["IP-MIB", "icmp"]</span>
-<span class="w">        </span><span class="no">- ['SNMPv2-MIB', 'sysName']</span>
-<span class="w">        </span><span class="no">- ['SNMPv2-MIB', 'sysUpTime', 0]</span>
+<span class="w">        </span><span class="no">- [&quot;IP-MIB&quot;, &quot;icmp&quot;]</span>
+<span class="w">        </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysName&#39;]</span>
+<span class="w">        </span><span class="no">- [&#39;SNMPv2-MIB&#39;, &#39;sysUpTime&#39;, 0]</span>
 <span class="w">    </span><span class="no">IF_conditional_profile:</span>
 <span class="w">      </span><span class="no">frequency: 30</span>
 <span class="w">      </span><span class="no">conditions:</span>
 <span class="w">        </span><span class="no">- field: IF-MIB.ifAdminStatus</span>
-<span class="w">          </span><span class="no">operation: "equals"</span>
-<span class="w">          </span><span class="no">value: "up"</span>
+<span class="w">          </span><span class="no">operation: &quot;equals&quot;</span>
+<span class="w">          </span><span class="no">value: &quot;up&quot;</span>
 <span class="w">        </span><span class="no">- field: IF-MIB.ifOperStatus</span>
-<span class="w">          </span><span class="no">operation: "equals"</span>
-<span class="w">          </span><span class="no">value: "up"</span>
+<span class="w">          </span><span class="no">operation: &quot;equals&quot;</span>
+<span class="w">          </span><span class="no">value: &quot;up&quot;</span>
 <span class="w">      </span><span class="no">varBinds:</span>
-<span class="w">        </span><span class="no">- [ 'IF-MIB', 'ifDescr' ]</span>
-<span class="w">        </span><span class="no">- [ 'IF-MIB', 'ifAlias' ]</span>
-<span class="w">        </span><span class="no">- [ 'IF-MIB', 'ifInErrors' ]</span>
-<span class="w">        </span><span class="no">- [ 'IF-MIB', 'ifOutDiscards' ]</span>
+<span class="w">        </span><span class="no">- [ &#39;IF-MIB&#39;, &#39;ifDescr&#39; ]</span>
+<span class="w">        </span><span class="no">- [ &#39;IF-MIB&#39;, &#39;ifAlias&#39; ]</span>
+<span class="w">        </span><span class="no">- [ &#39;IF-MIB&#39;, &#39;ifInErrors&#39; ]</span>
+<span class="w">        </span><span class="no">- [ &#39;IF-MIB&#39;, &#39;ifOutDiscards&#39; ]</span>
 </code></pre></div>
 <p>To apply changes, run the upgrade command:</p>
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
@@ -3313,47 +3229,49 @@ blocks updates for the next 5 minutes.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">profiles</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">small_walk_profile</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">condition</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">"walk"</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;walk&quot;</span>
 <span class="w">    </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'UDP-MIB'</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;UDP-MIB&#39;</span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="nt">static_profile_example</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
 <span class="w">    </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'UCD-SNMP-MIB'</span><span class="p p-Indicator">]</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifDescr'</span><span class="w"> </span><span class="p p-Indicator">]</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifAlias'</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;UCD-SNMP-MIB&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifDescr&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifAlias&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="nt">smart_profile</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 <span class="w">    </span><span class="nt">condition</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">field</span>
-<span class="w">      </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="s">"SNMPv2-MIB.sysDescr"</span>
+<span class="w">      </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;SNMPv2-MIB.sysDescr&quot;</span>
 <span class="w">      </span><span class="nt">patterns</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">'.*linux.*'</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;.*linux.*&#39;</span>
 <span class="w">    </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"IP-MIB"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"icmp"</span><span class="p p-Indicator">]</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'SNMPv2-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'sysName'</span><span class="p p-Indicator">]</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'SNMPv2-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'sysUpTime'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;IP-MIB&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;icmp&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysName&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysUpTime&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span>
 <span class="w">  </span><span class="nt">IF_conditional_profile</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <span class="w">    </span><span class="nt">conditions</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
-<span class="w">        </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">"equals"</span>
-<span class="w">        </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">"up"</span>
+<span class="w">        </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;equals&quot;</span>
+<span class="w">        </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;up&quot;</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifOperStatus</span>
-<span class="w">        </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">"equals"</span>
-<span class="w">        </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">"up"</span>
+<span class="w">        </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;equals&quot;</span>
+<span class="w">        </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;up&quot;</span>
 <span class="w">    </span><span class="nt">varBinds</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifDescr'</span><span class="w"> </span><span class="p p-Indicator">]</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifAlias'</span><span class="w"> </span><span class="p p-Indicator">]</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifInErrors'</span><span class="w"> </span><span class="p p-Indicator">]</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">'IF-MIB'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'ifOutDiscards'</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifDescr&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifAlias&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifInErrors&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOutDiscards&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <p>To apply changes, run the following command inside the <code>docker_compose</code> directory:</p>
 <div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
 </div>
 </div>
-</div></div>
+</div>
+
+
 
 
 
@@ -3388,8 +3306,8 @@ blocks updates for the next 5 minutes.</p>
   
   
     Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
     </a>
   
 </div>
@@ -3407,10 +3325,10 @@ blocks updates for the next 5 minutes.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

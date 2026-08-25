@@ -10,25 +10,30 @@
       
       
       
-        <link rel="next" href="architecture/design/">
+        <link rel="next" href="./architecture/design/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <link rel="icon" href="./assets/images/favicon.png">
+      <meta name="generator" content="zensical-0.0.57">
     
     
       
-        <title>Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Splunk Connect for SNMP - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      <link rel="stylesheet" href="./assets/stylesheets/modern/main.5da3a30f.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="./assets/stylesheets/modern/palette.812a03bb.min.css">
       
       
 
@@ -42,12 +47,12 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
       
     
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL(".",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -58,6 +63,8 @@
   
     
     
+      
+    
     
     
     
@@ -66,7 +73,7 @@
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
     <div data-md-component="skip">
       
         
@@ -90,15 +97,15 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+    <a href="" title="Splunk Connect for SNMP (SC4SNMP)" class="md-header__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -110,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Splunk Connect for SNMP
             
           </span>
         </div>
@@ -118,51 +125,38 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="orange"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
       
       
-        <label class="md-header__button md-icon" for="__search">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
         </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
-          </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
-        </div>
-      </div>
-    </div>
-  </div>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
 </div>
       
     
-    
+    <div class="md-header__source">
+      
+    </div>
   </nav>
   
 </header>
@@ -188,10 +182,10 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
+    <a href="" title="Splunk Connect for SNMP (SC4SNMP)" class="md-nav__button md-logo" aria-label="Splunk Connect for SNMP (SC4SNMP)" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 5v16M20.001 19A2 2 0 0 0 22 17V5a2 2 0 0 0-1.999-2L16 3.002A5 5 0 0 0 12 5a5 5 0 0 0-4-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.999 2H8a5 5 0 0 1 4 2 5 5 0 0 1 4-2z"/></svg>
 
     </a>
     Splunk Connect for SNMP (SC4SNMP)
@@ -209,21 +203,20 @@
   
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
       
       
         
       
       
-      <a href="." class="md-nav__link md-nav__link--active">
+      <a href="" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    Home
-  
+  Home
 
     
   </span>
@@ -261,8 +254,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
-  
+  Architecture
 
     
   </span>
@@ -277,8 +269,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Architecture
-  
+  Architecture
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -290,15 +281,14 @@
   
   
     <li class="md-nav__item">
-      <a href="architecture/design/" class="md-nav__link">
+      <a href="./architecture/design/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    High-level design
-  
+  High-level design
 
     
   </span>
@@ -318,15 +308,14 @@
   
   
     <li class="md-nav__item">
-      <a href="architecture/planning/" class="md-nav__link">
+      <a href="./architecture/planning/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Infrastructure Planning
-  
+  Infrastructure Planning
 
     
   </span>
@@ -371,8 +360,7 @@
   <span class="md-ellipsis">
     
   
-    Installation
-  
+  Installation
 
     
   </span>
@@ -387,8 +375,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Installation
-  
+  Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -418,8 +405,7 @@
   <span class="md-ellipsis">
     
   
-    Microk8s
-  
+  Microk8s
 
     
   </span>
@@ -434,8 +420,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Microk8s
-  
+  Microk8s
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -447,15 +432,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/splunk-requirements/" class="md-nav__link">
+      <a href="./microk8s/splunk-requirements/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -475,15 +459,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/mk8s/k8s-microk8s/" class="md-nav__link">
+      <a href="./microk8s/mk8s/k8s-microk8s/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Platform Microk8s
-  
+  Platform Microk8s
 
     
   </span>
@@ -503,15 +486,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/sck-installation/" class="md-nav__link">
+      <a href="./microk8s/sck-installation/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -531,15 +513,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/sc4snmp-installation/" class="md-nav__link">
+      <a href="./microk8s/sc4snmp-installation/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -559,15 +540,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/configuration/values-params-description/" class="md-nav__link">
+      <a href="./microk8s/configuration/values-params-description/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Configurable values
-  
+  Configurable values
 
     
   </span>
@@ -605,8 +585,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration reference
-  
+  Configuration reference
 
     
   </span>
@@ -621,8 +600,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration reference
-  
+  Configuration reference
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -634,15 +612,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/configuration/deployment-configuration/" class="md-nav__link">
+      <a href="./microk8s/configuration/deployment-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Deployment
-  
+  Deployment
 
     
   </span>
@@ -662,15 +639,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/configuration/scheduler-configuration/" class="md-nav__link">
+      <a href="./microk8s/configuration/scheduler-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Scheduler
-  
+  Scheduler
 
     
   </span>
@@ -690,15 +666,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/discovery-configuration/" class="md-nav__link">
+      <a href="./configuration/discovery-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -718,15 +693,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/configuration/mongo-configuration/" class="md-nav__link">
+      <a href="./microk8s/configuration/mongo-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MongoDB
-  
+  MongoDB
 
     
   </span>
@@ -746,15 +720,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/configuration/redis-configuration/" class="md-nav__link">
+      <a href="./microk8s/configuration/redis-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Redis
-  
+  Redis
 
     
   </span>
@@ -774,15 +747,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/configuration/sim-configuration/" class="md-nav__link">
+      <a href="./microk8s/configuration/sim-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Splunk Infrastructure Monitoring
-  
+  Splunk Infrastructure Monitoring
 
     
   </span>
@@ -802,15 +774,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/configuration/coredns-configuration/" class="md-nav__link">
+      <a href="./microk8s/configuration/coredns-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    CoreDNS
-  
+  CoreDNS
 
     
   </span>
@@ -856,8 +827,7 @@
   <span class="md-ellipsis">
     
   
-    GUI
-  
+  GUI
 
     
   </span>
@@ -872,8 +842,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    GUI
-  
+  GUI
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -885,15 +854,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/gui/enable-gui/" class="md-nav__link">
+      <a href="./microk8s/gui/enable-gui/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Enable GUI
-  
+  Enable GUI
 
     
   </span>
@@ -913,15 +881,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/gui/profiles-gui/" class="md-nav__link">
+      <a href="./microk8s/gui/profiles-gui/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Configuring Profiles
-  
+  Configuring Profiles
 
     
   </span>
@@ -941,15 +908,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/gui/groups-gui/" class="md-nav__link">
+      <a href="./microk8s/gui/groups-gui/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Configuring Groups
-  
+  Configuring Groups
 
     
   </span>
@@ -969,15 +935,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/gui/inventory-gui/" class="md-nav__link">
+      <a href="./microk8s/gui/inventory-gui/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Configuring Inventory
-  
+  Configuring Inventory
 
     
   </span>
@@ -997,15 +962,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/gui/apply-changes/" class="md-nav__link">
+      <a href="./microk8s/gui/apply-changes/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Apply changes
-  
+  Apply changes
 
     
   </span>
@@ -1051,8 +1015,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1067,8 +1030,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1080,15 +1042,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/upgrade/" class="md-nav__link">
+      <a href="./microk8s/upgrade/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Upgrade SC4SNMP
-  
+  Upgrade SC4SNMP
 
     
   </span>
@@ -1108,15 +1069,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/mk8s/k8s-microk8s-scaling/" class="md-nav__link">
+      <a href="./microk8s/mk8s/k8s-microk8s-scaling/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Scaling with Microk8s
-  
+  Scaling with Microk8s
 
     
   </span>
@@ -1136,15 +1096,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/enable-ipv6/" class="md-nav__link">
+      <a href="./microk8s/enable-ipv6/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1182,8 +1141,7 @@
   <span class="md-ellipsis">
     
   
-    Offline Installation
-  
+  Offline Installation
 
     
   </span>
@@ -1198,8 +1156,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Offline Installation
-  
+  Offline Installation
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1211,15 +1168,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/offlineinstallation/offline-microk8s/" class="md-nav__link">
+      <a href="./microk8s/offlineinstallation/offline-microk8s/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Install Microk8s
-  
+  Install Microk8s
 
     
   </span>
@@ -1239,15 +1195,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/offlineinstallation/offline-sck/" class="md-nav__link">
+      <a href="./microk8s/offlineinstallation/offline-sck/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Install Splunk OpenTelemetry Collector for Kubernetes
-  
+  Install Splunk OpenTelemetry Collector for Kubernetes
 
     
   </span>
@@ -1267,15 +1222,14 @@
   
   
     <li class="md-nav__item">
-      <a href="microk8s/offlineinstallation/offline-sc4snmp/" class="md-nav__link">
+      <a href="./microk8s/offlineinstallation/offline-sc4snmp/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Install SC4SNMP
-  
+  Install SC4SNMP
 
     
   </span>
@@ -1337,8 +1291,7 @@
   <span class="md-ellipsis">
     
   
-    Docker Compose
-  
+  Docker Compose
 
     
   </span>
@@ -1353,8 +1306,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Docker Compose
-  
+  Docker Compose
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1366,15 +1318,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dockercompose/0-splunk-requirements/" class="md-nav__link">
+      <a href="./dockercompose/0-splunk-requirements/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Splunk Requirements
-  
+  Splunk Requirements
 
     
   </span>
@@ -1394,15 +1345,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dockercompose/1-install-docker/" class="md-nav__link">
+      <a href="./dockercompose/1-install-docker/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Install Docker
-  
+  Install Docker
 
     
   </span>
@@ -1422,15 +1372,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dockercompose/2-download-package/" class="md-nav__link">
+      <a href="./dockercompose/2-download-package/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Download package
-  
+  Download package
 
     
   </span>
@@ -1468,8 +1417,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration files
-  
+  Configuration files
 
     
   </span>
@@ -1484,8 +1432,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration files
-  
+  Configuration files
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1497,15 +1444,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dockercompose/3-inventory-configuration/" class="md-nav__link">
+      <a href="./dockercompose/3-inventory-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Inventory configuration
-  
+  Inventory configuration
 
     
   </span>
@@ -1525,15 +1471,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dockercompose/4-scheduler-configuration/" class="md-nav__link">
+      <a href="./dockercompose/4-scheduler-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Scheduler configuration
-  
+  Scheduler configuration
 
     
   </span>
@@ -1553,15 +1498,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dockercompose/5-traps-configuration/" class="md-nav__link">
+      <a href="./dockercompose/5-traps-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Traps configuration
-  
+  Traps configuration
 
     
   </span>
@@ -1581,15 +1525,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/discovery-configuration/" class="md-nav__link">
+      <a href="./configuration/discovery-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery configuration
 
     
   </span>
@@ -1609,15 +1552,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/snmpv3/" class="md-nav__link">
+      <a href="./configuration/snmpv3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3 secrets
 
     
   </span>
@@ -1637,15 +1579,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dockercompose/6-env-file-configuration/" class="md-nav__link">
+      <a href="./dockercompose/6-env-file-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    .env file
-  
+  .env file
 
     
   </span>
@@ -1691,8 +1632,7 @@
   <span class="md-ellipsis">
     
   
-    Additional configuration
-  
+  Additional configuration
 
     
   </span>
@@ -1707,8 +1647,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Additional configuration
-  
+  Additional configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1720,15 +1659,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dockercompose/7-docker-logging/" class="md-nav__link">
+      <a href="./dockercompose/7-docker-logging/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Docker logging
-  
+  Docker logging
 
     
   </span>
@@ -1748,15 +1686,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dockercompose/8-offline-installation/" class="md-nav__link">
+      <a href="./dockercompose/8-offline-installation/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Offline installation
-  
+  Offline installation
 
     
   </span>
@@ -1776,15 +1713,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dockercompose/9-splunk-logging/" class="md-nav__link">
+      <a href="./dockercompose/9-splunk-logging/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Sending logs to Splunk
-  
+  Sending logs to Splunk
 
     
   </span>
@@ -1804,15 +1740,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dockercompose/10-enable-ipv6/" class="md-nav__link">
+      <a href="./dockercompose/10-enable-ipv6/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Enable IPv6
-  
+  Enable IPv6
 
     
   </span>
@@ -1840,15 +1775,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dockercompose/11-deploy-and-run/" class="md-nav__link">
+      <a href="./dockercompose/11-deploy-and-run/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Deploy the app
-  
+  Deploy the app
 
     
   </span>
@@ -1901,8 +1835,7 @@
   <span class="md-ellipsis">
     
   
-    Configuration
-  
+  Configuration
 
     
   </span>
@@ -1917,8 +1850,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Configuration
-  
+  Configuration
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -1930,15 +1862,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/splunk-configuration/" class="md-nav__link">
+      <a href="./configuration/splunk-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Splunk
-  
+  Splunk
 
     
   </span>
@@ -1958,15 +1889,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/inventory/" class="md-nav__link">
+      <a href="./configuration/inventory/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Inventory
-  
+  Inventory
 
     
   </span>
@@ -1986,15 +1916,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/profiles/" class="md-nav__link">
+      <a href="./configuration/profiles/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Profiles
-  
+  Profiles
 
     
   </span>
@@ -2014,15 +1943,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/groups/" class="md-nav__link">
+      <a href="./configuration/groups/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Groups
-  
+  Groups
 
     
   </span>
@@ -2042,15 +1970,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/traps/" class="md-nav__link">
+      <a href="./configuration/traps/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Traps
-  
+  Traps
 
     
   </span>
@@ -2070,15 +1997,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/snmpv3/" class="md-nav__link">
+      <a href="./configuration/snmpv3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    SNMPv3 secrets
-  
+  SNMPv3
 
     
   </span>
@@ -2098,15 +2024,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/poller-configuration/" class="md-nav__link">
+      <a href="./configuration/poller-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Poller
-  
+  Poller
 
     
   </span>
@@ -2126,15 +2051,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/workers/" class="md-nav__link">
+      <a href="./configuration/workers/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Workers
-  
+  Workers
 
     
   </span>
@@ -2154,15 +2078,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/discovery-configuration/" class="md-nav__link">
+      <a href="./configuration/discovery-configuration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2182,15 +2105,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/step-by-step-poll/" class="md-nav__link">
+      <a href="./configuration/step-by-step-poll/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Step by Step polling example
-  
+  Step by Step polling example
 
     
   </span>
@@ -2210,15 +2132,14 @@
   
   
     <li class="md-nav__item">
-      <a href="configuration/snmp-data-format/" class="md-nav__link">
+      <a href="./configuration/snmp-data-format/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    SNMP data format
-  
+  SNMP data format
 
     
   </span>
@@ -2245,15 +2166,14 @@
   
   
     <li class="md-nav__item">
-      <a href="ha/" class="md-nav__link">
+      <a href="./ha/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    High Availability
-  
+  High Availability
 
     
   </span>
@@ -2272,15 +2192,14 @@
   
   
     <li class="md-nav__item">
-      <a href="small-environment/" class="md-nav__link">
+      <a href="./small-environment/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Lightweight installation
-  
+  Lightweight installation
 
     
   </span>
@@ -2299,15 +2218,14 @@
   
   
     <li class="md-nav__item">
-      <a href="dashboard/" class="md-nav__link">
+      <a href="./dashboard/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Splunk dashboards
-  
+  Splunk dashboards
 
     
   </span>
@@ -2326,15 +2244,14 @@
   
   
     <li class="md-nav__item">
-      <a href="discovery/" class="md-nav__link">
+      <a href="./discovery/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Discovery
-  
+  Discovery
 
     
   </span>
@@ -2353,15 +2270,14 @@
   
   
     <li class="md-nav__item">
-      <a href="releases/" class="md-nav__link">
+      <a href="./releases/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Releases
-  
+  Releases
 
     
   </span>
@@ -2380,15 +2296,14 @@
   
   
     <li class="md-nav__item">
-      <a href="mib-request/" class="md-nav__link">
+      <a href="./mib-request/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Request MIB
-  
+  Request MIB
 
     
   </span>
@@ -2407,15 +2322,14 @@
   
   
     <li class="md-nav__item">
-      <a href="security/" class="md-nav__link">
+      <a href="./security/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Security
-  
+  Security
 
     
   </span>
@@ -2434,15 +2348,14 @@
   
   
     <li class="md-nav__item">
-      <a href="mtls/" class="md-nav__link">
+      <a href="./mtls/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    mTLS
-  
+  mTLS
 
     
   </span>
@@ -2479,8 +2392,7 @@
   <span class="md-ellipsis">
     
   
-    Troubleshooting
-  
+  Troubleshooting
 
     
   </span>
@@ -2495,8 +2407,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Troubleshooting
-  
+  Troubleshooting
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
@@ -2508,15 +2419,14 @@
   
   
     <li class="md-nav__item">
-      <a href="troubleshooting/configuring-logs/" class="md-nav__link">
+      <a href="./troubleshooting/configuring-logs/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Accessing and configuring logs
-  
+  Accessing and configuring logs
 
     
   </span>
@@ -2536,15 +2446,14 @@
   
   
     <li class="md-nav__item">
-      <a href="troubleshooting/docker-commands/" class="md-nav__link">
+      <a href="./troubleshooting/docker-commands/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Docker commands
-  
+  Docker commands
 
     
   </span>
@@ -2564,15 +2473,14 @@
   
   
     <li class="md-nav__item">
-      <a href="troubleshooting/k8s-commands/" class="md-nav__link">
+      <a href="./troubleshooting/k8s-commands/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Kubernetes commands
-  
+  Kubernetes commands
 
     
   </span>
@@ -2592,15 +2500,14 @@
   
   
     <li class="md-nav__item">
-      <a href="troubleshooting/general-issues/" class="md-nav__link">
+      <a href="./troubleshooting/general-issues/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    General issues
-  
+  General issues
 
     
   </span>
@@ -2620,15 +2527,14 @@
   
   
     <li class="md-nav__item">
-      <a href="troubleshooting/polling-issues/" class="md-nav__link">
+      <a href="./troubleshooting/polling-issues/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Polling issues
-  
+  Polling issues
 
     
   </span>
@@ -2648,15 +2554,14 @@
   
   
     <li class="md-nav__item">
-      <a href="troubleshooting/traps-issues/" class="md-nav__link">
+      <a href="./troubleshooting/traps-issues/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Traps issues
-  
+  Traps issues
 
     
   </span>
@@ -2676,15 +2581,14 @@
   
   
     <li class="md-nav__item">
-      <a href="troubleshooting/discovery-issues/" class="md-nav__link">
+      <a href="./troubleshooting/discovery-issues/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Discovery issues
-  
+  Discovery issues
 
     
   </span>
@@ -2714,10 +2618,19 @@
               
               <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
                 <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                  
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
   
   
   
@@ -2737,9 +2650,7 @@
                 
                   
 
-
-
-<div><h1 id="splunk-connect-for-snmp">Splunk Connect for SNMP<a class="headerlink" href="#splunk-connect-for-snmp" title="Permanent link">¶</a></h1>
+<h1 id="splunk-connect-for-snmp">Splunk Connect for SNMP<a class="headerlink" href="#splunk-connect-for-snmp" title="Permanent link">&para;</a></h1>
 <p>Splunk welcomes your experimentation and feedback. Let your
 account team know that you are testing Splunk Connect for SNMP.</p>
 <p>Splunk Connect for SNMP is an edge-deployed, containerized, and highly
@@ -2748,13 +2659,19 @@ Splunk Enterprise Cloud, and Splunk Infrastructure Monitoring.</p>
 <p>SC4SNMP provides context-full information. It not only forwards SNMP data to Splunk, but also integrates the data into 
 meaningful objects. For example, you do not need to write queries in order to gather information about
 interfaces of the device, because SC4SNMP does that automatically:</p>
-<p><a href="images/interface_metrics.png"><img alt="Interface metrics" src="images/interface_metrics.png"></a></p>
+<p><a href="images/interface_metrics.png"><img alt="Interface metrics" src="images/interface_metrics.png" /></a></p>
 <p>This makes it easy to visualize the data in Splunk Analytics:</p>
-<p><a href="images/interface_analytics.png"><img alt="Interface analytics" src="images/interface_analytics.png"></a></p>
+<p><a href="images/interface_analytics.png"><img alt="Interface analytics" src="images/interface_analytics.png" /></a></p>
 <p>Here is a short presentation of how to browse SNMP data in Splunk:</p>
-<p><div class="video-container"><video style="position:relative;width:100%;height:22.172vw" controls alt="type:video"><source src="videos/setting_analytics.mov" type="video/mp4"></source></video></div></p>
+<video controls width="100%">
+  <source src="videos/setting_analytics.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 <p>SC4SNMP can also easily monitor trap events sent by different SNMP devices. Trap events are JSON formatted, and are stored under the <code>netops</code> index.</p>
-<p><a href="images/trap.png"><img alt="Trap example" src="images/trap.png"></a></p></div>
+<p><a href="images/trap.png"><img alt="Trap example" src="images/trap.png" /></a></p>
+
+
 
 
 
@@ -2789,8 +2706,8 @@ interfaces of the device, because SC4SNMP does that automatically:</p>
   
   
     Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
     </a>
   
 </div>
@@ -2808,12 +2725,12 @@ interfaces of the device, because SC4SNMP does that automatically:</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": [], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":".","features":[],"search":"./assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="./assets/javascripts/bundle.49251538.min.js"></script>
       
-        <script src="javascripts/footer.js"></script>
+        <script src="./javascripts/footer.js"></script>
       
     
   </body>
