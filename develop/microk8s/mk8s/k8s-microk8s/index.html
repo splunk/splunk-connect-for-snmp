@@ -2678,63 +2678,53 @@ in the MicroK8s <a href="https://microk8s.io/docs">documentation</a>, including 
 <p>If you plan to poll or receive trap notifications from IPv6 addresses, firstly check the instruction for <a href="../../enable-ipv6/">enabling 
 IPv6</a>.</p>
 <h2 id="install-microk8s-using-snap">Install MicroK8s using Snap<a class="headerlink" href="#install-microk8s-using-snap" title="Permanent link">&para;</a></h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>microk8s<span class="w"> </span>--classic<span class="w"> </span>--channel<span class="o">=</span><span class="m">1</span>.33/stable
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>microk8s<span class="w"> </span>--classic<span class="w"> </span>--channel<span class="o">=</span><span class="m">1</span>.33/stable
 </code></pre></div>
-
-<p>Add a user to the microk8s group so the <code>sudo</code> command is no longer necessary:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>microk8s<span class="w"> </span><span class="nv">$USER</span>
+<p>Add a user to the microk8s group so the <code>sudo</code> command is no longer necessary:
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>microk8s<span class="w"> </span><span class="nv">$USER</span>
 sudo<span class="w"> </span>chown<span class="w"> </span>-f<span class="w"> </span>-R<span class="w"> </span><span class="nv">$USER</span><span class="w"> </span>~/.kube
 su<span class="w"> </span>-<span class="w"> </span><span class="nv">$USER</span>
-</code></pre></div>
-
-<p>Wait for Installation of microk8s to complete:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
-</code></pre></div>
-
+</code></pre></div></p>
+<p>Wait for Installation of microk8s to complete:
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
+</code></pre></div></p>
 <h2 id="install-required-services-for-sc4snmp">Install required services for SC4SNMP<a class="headerlink" href="#install-required-services-for-sc4snmp" title="Permanent link">&para;</a></h2>
 <p>The following commands can be issued from any node in a cluster:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>iscsid
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>iscsid
 microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>helm3
 microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>hostpath-storage
 microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>rbac
 microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>metrics-server
 microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
-
 <p><strong><em>NOTE:</em></strong>
 PersistentVolumeClaims created by the <code>hostpath storage provisioner</code> are bound to the local node, 
 so it is impossible to move them to a different node. A hostpath volume can grow beyond the capacity set in 
 the volume claim manifest. For production environment it is recommended to use different storage for mongo and redis pvc,
 for example openebs.</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>openebs
+<p><div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>openebs
 </code></pre></div>
-
-<p>Configuration file:</p>
-<div class="codehilite"><pre><span></span><code>mongodb:<span class="w">  </span>
+Configuration file:
+<div class="highlight"><pre><span></span><code>mongodb:<span class="w">  </span>
 <span class="w">  </span>persistence:<span class="w"> </span>
 <span class="w">    </span>storageClass:<span class="w"> </span><span class="s2">&quot;openebs-hostpath&quot;</span>
 redis:
 <span class="w">  </span>global:
 <span class="w">    </span>storageClass:<span class="w"> </span><span class="s2">&quot;openebs-hostpath&quot;</span>
+</code></pre></div></p>
+<p>MicroK8s comes with a preinstalled CoreDNS addon. You can check if it is installed and running with:
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>kube-system
 </code></pre></div>
-
-<p>MicroK8s comes with a preinstalled CoreDNS addon. You can check if it is installed and running with:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-n<span class="w"> </span>kube-system
-</code></pre></div>
-
-<p>If the CoreDNS pod is not listed, enable it by running the following command (replace the IP addresses with those allowed on your network):</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>dns:208.67.222.222,208.67.220.220
+If the CoreDNS pod is not listed, enable it by running the following command (replace the IP addresses with those allowed on your network):
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>dns:208.67.222.222,208.67.220.220
 microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
-
-<p>If the CoreDNS addon is already enabled and you want to change its settings, you can either disable and re-enable it:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>disable<span class="w"> </span>dns
+If the CoreDNS addon is already enabled and you want to change its settings, you can either disable and re-enable it:
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>disable<span class="w"> </span>dns
 </code></pre></div>
-
-<p>Or edit the CoreDNS configuration directly:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>kube-system<span class="w"> </span>edit<span class="w"> </span>configmap/coredns
-</code></pre></div>
-
+Or edit the CoreDNS configuration directly:
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>kube-system<span class="w"> </span>edit<span class="w"> </span>configmap/coredns
+</code></pre></div></p>
 <h2 id="install-metallb">Install Metallb<a class="headerlink" href="#install-metallb" title="Permanent link">&para;</a></h2>
 <p>When installing Metallb, you will be prompted for one or more IPs to use as entry points
 into the cluster. If you plan to enable clustering, this IP should not be assigned to the host (floats).
@@ -2743,10 +2733,9 @@ If you do not plan to cluster, then this IP should be the IP of your host.</p>
 <p class="admonition-title">Info</p>
 <p>Single IP in cidr format is <code>x.x.x.x/32</code>. Use CIDR or range syntax for single server installations. This can be the same as the primary IP.</p>
 </div>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>metallb
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>metallb
 microk8s<span class="w"> </span>status<span class="w"> </span>--wait-ready
 </code></pre></div>
-
 <h2 id="add-nodes-optional">Add nodes (optional)<a class="headerlink" href="#add-nodes-optional" title="Permanent link">&para;</a></h2>
 <p>If you need cluster mode use following <a href="../k8s-microk8s-scaling/#make-microk8s-cluster">guide</a>.</p>
 

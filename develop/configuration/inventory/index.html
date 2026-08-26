@@ -2860,13 +2860,12 @@
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Inventory is configured in the <code>poller.inventory</code> section of <code>values.yaml</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
 <span class="w">      </span><span class="no">address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete</span>
 <span class="w">      </span><span class="no">10.202.4.202,,2c,public,,,2000,my_profile1,,,</span>
 <span class="w">      </span><span class="no">example_group_1,,2c,public,,,2000,my_profile2;my_profile3,,,</span>
 </code></pre></div>
-
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>The header line (<code>address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete</code>) is necessary for the correct execution of SC4SNMP. Do not remove it.</p>
@@ -2876,20 +2875,17 @@
 <p>Starting with version 1.15.0, the max_oid_to_process field has been introduced as an optional addition to the inventory header. This update is backward compatible, and existing inventory headers remain fully supported.</p>
 </div>
 <p>You can also keep inventory in a separate CSV file and pass it at upgrade time:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>--set-file<span class="w"> </span>poller.inventory<span class="o">=</span>inventory.csv<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>--set-file<span class="w"> </span>poller.inventory<span class="o">=</span>inventory.csv<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
 </code></pre></div>
-
 </div>
 <div class="tabbed-block">
 <p>Inventory is configured in the <code>inventory.csv</code> file. The path to this file must be set in <code>.env</code>:</p>
-<div class="codehilite"><pre><span></span><code>INVENTORY_FILE_ABSOLUTE_PATH=/absolute/path/to/inventory.csv
+<div class="highlight"><pre><span></span><code>INVENTORY_FILE_ABSOLUTE_PATH=/absolute/path/to/inventory.csv
 </code></pre></div>
-
-<div class="codehilite"><pre><span></span><code><span class="nx">address</span><span class="p">,</span><span class="nx">port</span><span class="p">,</span><span class="nx">version</span><span class="p">,</span><span class="nx">community</span><span class="p">,</span><span class="nx">secret</span><span class="p">,</span><span class="nx">security_engine</span><span class="p">,</span><span class="nx">walk_interval</span><span class="p">,</span><span class="nx">profiles</span><span class="p">,</span><span class="nx">smart_profiles</span><span class="p">,</span><span class="nx">max_oid_to_process</span><span class="p">,</span><span class="nx">delete</span>
-<span class="m m-Double">10.202.4.202</span><span class="p">,,</span><span class="mi">2</span><span class="nx">c</span><span class="p">,</span><span class="nx">public</span><span class="p">,,,</span><span class="mi">2000</span><span class="p">,</span><span class="nx">my_profile1</span><span class="p">,,,</span>
-<span class="nx">example_group_1</span><span class="p">,,</span><span class="mi">2</span><span class="nx">c</span><span class="p">,</span><span class="nx">public</span><span class="p">,,,</span><span class="mi">2000</span><span class="p">,</span><span class="nx">my_profile2</span><span class="p">;</span><span class="nx">my_profile3</span><span class="p">,,,</span>
+<div class="highlight"><pre><span></span><code>address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+10.202.4.202,,2c,public,,,2000,my_profile1,,,
+example_group_1,,2c,public,,,2000,my_profile2;my_profile3,,,
 </code></pre></div>
-
 </div>
 </div>
 </div>
@@ -2902,20 +2898,17 @@
 <li>Edit <code>values.yaml</code></li>
 <li>Check if the inventory pod is still running:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>sc4snmp<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>inventory
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>-n<span class="w"> </span>sc4snmp<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>inventory
 </code></pre></div>
-
 <p>If pods are returned, wait until the inventory job finishes before continuing.</p>
 <p>If you need to apply changes immediately, delete the inventory job:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>delete<span class="w"> </span>job/snmp-splunk-connect-for-snmp-inventory<span class="w"> </span>-n<span class="w"> </span>sc4snmp
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>delete<span class="w"> </span>job/snmp-splunk-connect-for-snmp-inventory<span class="w"> </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
-
 <ol start="3">
 <li>Run the upgrade command:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
 </code></pre></div>
-
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>If you change the frequency of a profile without changing the inventory data, the change will be reflected after the next walk process for the host. The walk happens every <code>walk_interval</code>, or during any change in inventory.</p>
@@ -2923,9 +2916,8 @@
 </div>
 <div class="tabbed-block">
 <p>To apply inventory changes, run the following command inside the <code>docker_compose</code> directory:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
-
 </div>
 </div>
 </div>
