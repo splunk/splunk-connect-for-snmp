@@ -3,7 +3,7 @@ FROM python:3.10-alpine AS base
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
     PYTHONUNBUFFERED=1
-RUN apk add -U git sqlite-dev && apk upgrade xz-libs
+RUN apk add --no-cache --upgrade git sqlite-dev xz-libs libcrypto3 libssl3
 RUN pip install --upgrade setuptools pip wheel
 RUN mkdir /app
 WORKDIR /app

@@ -16,6 +16,9 @@ mongodb:
   # Mode selector: "standalone", "replication"
   mode: replication
 
+  # Enable IPv6 support
+  ipv6Enabled: false
+
   # Replica set configuration (used only when mode = "replication")
   replicaCount: 3
   replicaSetName: rs0
@@ -74,6 +77,7 @@ mongodb:
 | Key                                        | Type   | Default                                                   | Description                                                      |
 |--------------------------------------------|--------|-----------------------------------------------------------|------------------------------------------------------------------|
 | mongodb.mode                               | string | standalone                                                | Deployment mode (standalone or replication).                     |
+| mongodb.ipv6Enabled                        | bool   | false                                                     | Enable IPv6 support for MongoDB. See [Enable IPv6](../enable-ipv6.md). |
 | mongodb.replicaCount                       | int    | 3                                                         | Number of MongoDB pods (used only in replication mode).          |
 | mongodb.replicaSetName                     | string | rs0                                                       | Internal replica set identifier (used only in replication mode). |
 | mongodb.auth.enabled                       | bool   | true                                                      | Enable MongoDB authentication.                                   |

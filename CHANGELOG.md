@@ -3,6 +3,8 @@
 ## Unreleased
 
 ### Changed
+- Add configurable IPv6 listener support for Redis, MongoDB, and the MIB server with `redis.ipv6Enabled`, `mongodb.ipv6Enabled`, and `mibserver.ipv6Enabled`.
+- Extend the existing Docker Compose `IPv6_ENABLED` option to configure MongoDB and MIB server listeners.
 - Provided `MAX_MEMORY_PER_CHILD` / `maxMemoryPerChild` setting to celery workers.
 - Provided configurable options to control the docker logging: `DOCKER_LOG_DRIVER`, `DOCKER_LOG_MAX_SIZE`, `DOCKER_LOG_MAX_FILE`, `DOCKER_LOG_COMPRESS` to prevent the disk usage growth
 

@@ -615,12 +615,19 @@ useDeprecatedAPI: false
 #############################################################################
 ### Please do not modify below values, unless you know what you're doing! ###
 #############################################################################
+# Default values for mibserver
+mibserver:
+  # Enable MIB server listeners on both IPv4 and IPv6 addresses.
+  ipv6Enabled: false
+
 # Default values for mongodb-ha
 
 ## MongoDB image configuration
 # MongoDB image
 mongodb:
   mode: standalone     # options: standalone | replication
+  # Enable MongoDB listeners on both IPv4 and IPv6 addresses.
+  ipv6Enabled: false
 
   replicaCount: 3      # used only when mode = "replication"
   replicaSetName: rs0
@@ -684,6 +691,8 @@ mongodb:
 redis:
   # Mode selector: "standalone", "replication"
   architecture: standalone
+  # Enable Redis listeners on both IPv4 and IPv6 addresses.
+  ipv6Enabled: false
 
   # Options for Redis replication
   replicaCount: 3

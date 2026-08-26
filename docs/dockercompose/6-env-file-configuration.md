@@ -51,7 +51,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 |------------------------|--------------------------------------------------------------------------| 
 | `COREDNS_ADDRESS`      | IP address of the coredns inside docker network. Should not be changed   |
 | `COREDNS_ADDRESS_IPv6` | IPv6 address of the coredns container. Default empty (IPv6 disabled). When [enabling IPv6](10-enable-ipv6.md), set to an address within `IPAM_SUBNET_IPv6` (e.g. `fd02::1`). |
-| `IPv6_ENABLED`         | Enable receiving traps and polling from IPv6 devices                     |
+| `IPv6_ENABLED`         | Enable the Docker IPv6 network, polling and traps over IPv6, and IPv6 listeners for the required dependencies. See [Enable IPv6](10-enable-ipv6.md). |
 | `IPAM_SUBNET`          | Subnet in CIDR format that represents a network segment                  |
 | `IPAM_GATEWAY`         | IPv4 gateway for the master subnet                                       |
 | `IPAM_SUBNET_IPv6`     | Subnet in CIDR format that represents a network segment for IPv6         |
