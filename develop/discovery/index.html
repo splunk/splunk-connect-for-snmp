@@ -2932,9 +2932,10 @@
 <p>After each discovery run, a file named <code>discovery_devices.csv</code> is generated in the path defined by <code>discoveryPath</code>. This file includes all successfully discovered SNMP devices and can be used in poller configuration. The CSV file contains fields like key (discovery name), subnet, ip address, port, snmp version, group, secret, and community.</p>
 <p>To use this feature, the user must provide a valid path where the CSV file will be created. Note that this is a single shared file, and all discovery jobs for different subnets will update the same file.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code>key,subnet,ip,port,version,group,secret,community
+<div class="codehilite"><pre><span></span><code>key,subnet,ip,port,version,group,secret,community
 discovery_version2c,10.202.4.200/30,10.202.4.202,161,2c,linux-group,,public
 </code></pre></div>
+
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>This file serves as a reference and does not automatically update any active polling configuration. Users are expected to manually review and incorporate this list into their SNMP polling setup as needed.</p>

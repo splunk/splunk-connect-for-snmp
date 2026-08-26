@@ -3029,9 +3029,12 @@ This change ensures we maintain full control over configuration, compatibility, 
 </div>
 <h3 id="redis-configuration-file">Redis configuration file<a class="headerlink" href="#redis-configuration-file" title="Permanent link">&para;</a></h3>
 <p>Redis configuration is maintained in the <code>redis</code> section of <code>values.yaml</code>, which is used during installation to configure Kubernetes resources.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># Mode selector: &quot;standalone&quot;, &quot;replication&quot;</span>
 <span class="w">  </span><span class="nt">architecture</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standalone</span>
+
+<span class="w">  </span><span class="c1"># Enable IPv6 support</span>
+<span class="w">  </span><span class="nt">ipv6Enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 
 <span class="w">  </span><span class="c1"># Authentication</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
@@ -3076,6 +3079,7 @@ This change ensures we maintain full control over configuration, compatibility, 
 <span class="w">    </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span>
 <span class="w">    </span><span class="nt">fsGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span>
 </code></pre></div>
+
 <table>
 <thead>
 <tr>
@@ -3091,6 +3095,12 @@ This change ensures we maintain full control over configuration, compatibility, 
 <td>string</td>
 <td><code>standalone</code></td>
 <td>Deployment mode (standalone or replication).</td>
+</tr>
+<tr>
+<td>redis.ipv6Enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td>Enable IPv6 support for Redis. See <a href="../../enable-ipv6/">Enable IPv6</a>.</td>
 </tr>
 <tr>
 <td>redis.replicas</td>
@@ -3270,9 +3280,10 @@ This change ensures we maintain full control over configuration, compatibility, 
 <li>Recovery time: ~30-60 seconds (Kubernetes reschedules pod on node failure)</li>
 </ul>
 <h5 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">architecture</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standalone</span>
 </code></pre></div>
+
 <h4 id="replication-mode">Replication mode<a class="headerlink" href="#replication-mode" title="Permanent link">&para;</a></h4>
 <p>Architecture:</p>
 <ul>
@@ -3292,17 +3303,18 @@ This change ensures we maintain full control over configuration, compatibility, 
 <li>Resources: 6 pods total (3 Redis + 3 Sentinel)</li>
 </ul>
 <h5 id="configuration_1">Configuration<a class="headerlink" href="#configuration_1" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">architecture</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">replication</span>
 <span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 <span class="w">  </span><span class="nt">sentinel</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 <span class="w">    </span><span class="nt">quorum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </code></pre></div>
+
 <h5 id="storage-considerations">Storage considerations<a class="headerlink" href="#storage-considerations" title="Permanent link">&para;</a></h5>
 <p>For true high availability with pod rescheduling across nodes, you must use network-attached storage. Node-local storage (like <code>microk8s-hostpath</code>) prevents failed pods from rejoining the cluster on different nodes.
 This is the example of using redis in replication mode with NFS storage:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">architecture</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">replication</span>
 <span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 <span class="w">  </span><span class="nt">storage</span><span class="p">:</span>
@@ -3312,6 +3324,7 @@ This is the example of using redis in replication mode with NFS storage:</p>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteMany</span>
 <span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3Gi</span>
 </code></pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <code>storageClassName</code> must point to a <code>StorageClass</code> that supports network-attached volumes with <code>ReadWriteMany</code> (or <code>ReadWriteOnce</code> with cross-node support). Examples: NFS, Ceph, EBS, GCP Persistent Disk, Azure Disk.</p>
@@ -3320,14 +3333,14 @@ This is the example of using redis in replication mode with NFS storage:</p>
 <ol>
 <li>
 <p>Enable NFS client on ALL nodes:
-    <div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>nfs-common
-</code></pre></div></p>
+    <code>bash
+    sudo apt update
+    sudo apt install -y nfs-common</code></p>
 </li>
 <li>
 <p>Enable NFS StorageClass:
-    <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>nfs
-</code></pre></div></p>
+    <code>bash
+    microk8s enable nfs</code></p>
 </li>
 <li>Verify StorageClass exists
     <code>bash
@@ -3341,29 +3354,32 @@ sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> <
 <li>Cache only: Set <code>redis.resources.limits.memory</code> to 1.5x expected data size</li>
 <li>With persistence: Set to 2.5-3x expected data size</li>
 </ul>
-<p><strong>Examples:</strong>
-<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<p><strong>Examples:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">limits</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;4Gi&quot;</span>
 <span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1000m&quot;</span>
 <span class="w">  </span><span class="nt">requests</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1Gi&quot;</span>
 <span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span>
-</code></pre></div></p>
+</code></pre></div>
+
 <p>By default no resource limits our set. You can define them in the <code>values.yaml</code> file as shown above.</p>
 <h3 id="use-authentication-for-redis">Use authentication for Redis<a class="headerlink" href="#use-authentication-for-redis" title="Permanent link">&para;</a></h3>
 <p>By default, Redis authentication is disabled. To enable it, choose one of the following methods:</p>
 <h4 id="plain-text-password">Plain text password<a class="headerlink" href="#plain-text-password" title="Permanent link">&para;</a></h4>
 <p>Set the password directly in <code>values.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your_password_here&quot;</span>
 </code></pre></div>
+
 <h4 id="kubernetes-secret-password">Kubernetes Secret password<a class="headerlink" href="#kubernetes-secret-password" title="Permanent link">&para;</a></h4>
 <p>To use a Kubernetes Secret for the Redis password, first create a secret with the desired password:</p>
-<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>prod-redis-secret<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>--from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="s2">&quot;your_password_here&quot;</span>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>prod-redis-secret<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>--from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="s2">&quot;your_password_here&quot;</span>
 </code></pre></div>
+
 <p>It is advised to use strong randomized passwords (min. 32 characters).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3372,11 +3388,12 @@ sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> <
 If you want to use a different key, you can specify it in the <code>values.yaml</code> file by modifying the <code>existingSecretPasswordKey</code> field.</p>
 </div>
 <p>Then, modify the <code>values.yaml</code> file to reference this secret:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;prod-redis-secret&quot;</span>
 </code></pre></div>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>For smoother migration, it&rsquo;s better to create a new secret with the updated values and then update your configuration to reference this new secret, rather than modifying an existing secret in place.</p>

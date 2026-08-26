@@ -2677,10 +2677,11 @@
 <p>Main component of SC4SNMP architecture is Celery framework that can run background and periodic tasks (like polling and walk). It can be helpful to administrate Celery cluster using admin panel with <a href="https://github.com/mher/flower">Flower</a>.</p>
 <h2 id="k8s">k8s<a class="headerlink" href="#k8s" title="Permanent link">&para;</a></h2>
 <p>Just add <code>flower</code> section on <code>values.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code>flower:
-    enabled: true
-    loadBalancerIP: x.x.x.x
+<div class="codehilite"><pre><span></span><code><span class="n">flower</span><span class="p">:</span>
+<span class="w">    </span><span class="n">enabled</span><span class="p">:</span><span class="w"> </span><span class="bp">true</span>
+<span class="w">    </span><span class="n">loadBalancerIP</span><span class="p">:</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">x</span>
 </code></pre></div>
+
 <h2 id="docker-compose">docker compose<a class="headerlink" href="#docker-compose" title="Permanent link">&para;</a></h2>
 <p>Just use <code>--profile debug</code> flag to run optional <code>flower</code> service together with SC4SNMP: <code>docker compose --profile debug up</code></p>
 

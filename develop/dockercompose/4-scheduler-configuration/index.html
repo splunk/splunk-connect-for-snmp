@@ -2818,13 +2818,14 @@
 For log level, see <a href="#define-log-level">Define log level</a> below.</p>
 </div>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">2c</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
 <span class="nt">customTranslations</span><span class="p">:</span>
 <span class="nt">profiles</span><span class="p">:</span>
 <span class="nt">groups</span><span class="p">:</span>
 </code></pre></div>
+
 <ul>
 <li><code>communities</code>: communities used for version <code>1</code> and <code>2c</code> of the <code>snmp</code>. The default one is <code>public</code>.</li>
 <li><code>customTranslations</code>: custom name mappings for MIB fields. See <a href="../../configuration/profiles/#custom-translations">Profiles configuration - Custom translations</a>.</li>
@@ -2833,11 +2834,12 @@ For log level, see <a href="#define-log-level">Define log level</a> below.</p>
 </ul>
 <h2 id="define-log-level">Define log level<a class="headerlink" href="#define-log-level" title="Permanent link">&para;</a></h2>
 <p>Set the log level for the scheduler container in <code>.env</code>:</p>
-<div class="highlight"><pre><span></span><code>SCHEDULER_LOG_LEVEL=INFO
+<div class="codehilite"><pre><span></span><code>SCHEDULER_LOG_LEVEL=INFO
 </code></pre></div>
+
 <p>The allowed values are <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>, <code>CRITICAL</code>, or <code>FATAL</code>.</p>
 <h2 id="example-of-the-configuration">Example of the configuration<a class="headerlink" href="#example-of-the-configuration" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">2c</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
 <span class="nt">customTranslations</span><span class="p">:</span>

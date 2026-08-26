@@ -2851,10 +2851,14 @@
                   
 
 <h1 id="deploy-the-app">Deploy the app<a class="headerlink" href="#deploy-the-app" title="Permanent link">&para;</a></h1>
-<p>After completing all configuration steps, the application can be deployed by running the
-following command inside the <code>docker_compose</code> directory:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For an IPv6-enabled deployment, configure <code>IPv6_ENABLED</code> and the IPv6 network values before deployment. See <a href=".././10-enable-ipv6/">Enabling IPv6 for SC4SNMP</a>.</p>
+</div>
+<p>After completing all configuration steps, run the following command inside the <code>docker_compose</code> directory:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
+
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>The installation process changed from version <strong>1.12.1</strong>. For lower version refer to the corresponding
@@ -2863,16 +2867,18 @@ documentation.</p>
 <p>The same command can be run to apply any updated configuration changes.</p>
 <h2 id="verify-the-deployment">Verify the deployment<a class="headerlink" href="#verify-the-deployment" title="Permanent link">&para;</a></h2>
 <p>After the containers start, check that all services are running:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>ps
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>ps
 </code></pre></div>
+
 <p>All containers should show a <code>running</code> state.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>On first startup, some containers may take a moment to become healthy while MongoDB and Redis initialize. If a container shows <code>restarting</code>, wait 30 seconds and run <code>docker compose ps</code> again before investigating.</p>
 </div>
 <p>If any container is not running, check its logs for errors:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>logs<span class="w"> </span>&lt;container_name&gt;
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>logs<span class="w"> </span>&lt;container_name&gt;
 </code></pre></div>
+
 <p>For common problems and solutions, refer to the <a href="../../troubleshooting/general-issues/">Troubleshooting</a> section.</p>
 <h2 id="verify-data-in-splunk">Verify data in Splunk<a class="headerlink" href="#verify-data-in-splunk" title="Permanent link">&para;</a></h2>
 <p>Once all containers are running, confirm that data is reaching Splunk.</p>
@@ -2882,11 +2888,13 @@ documentation.</p>
 </div>
 <h3 id="verify-traps">Verify traps<a class="headerlink" href="#verify-traps" title="Permanent link">&para;</a></h3>
 <p>To verify that trap events are being received, send a test trap from any Linux machine that has the <code>snmp</code> package installed (replace <code>&lt;SC4SNMP_HOST_IP&gt;</code> with the IP address of the host running SC4SNMP):</p>
-<div class="highlight"><pre><span></span><code>snmptrap<span class="w"> </span>-v2c<span class="w"> </span>-c<span class="w"> </span>public<span class="w"> </span>&lt;SC4SNMP_HOST_IP&gt;<span class="w"> </span><span class="m">123</span><span class="w"> </span><span class="m">1</span>.3.6.1.2.1.1.4<span class="w"> </span><span class="m">1</span>.3.6.1.2.1.1.4<span class="w"> </span>s<span class="w"> </span><span class="nb">test</span>
+<div class="codehilite"><pre><span></span><code>snmptrap<span class="w"> </span>-v2c<span class="w"> </span>-c<span class="w"> </span>public<span class="w"> </span>&lt;SC4SNMP_HOST_IP&gt;<span class="w"> </span><span class="m">123</span><span class="w"> </span><span class="m">1</span>.3.6.1.2.1.1.4<span class="w"> </span><span class="m">1</span>.3.6.1.2.1.1.4<span class="w"> </span>s<span class="w"> </span><span class="nb">test</span>
 </code></pre></div>
+
 <p>Then search in Splunk:</p>
-<div class="highlight"><pre><span></span><code>index=&quot;netops&quot; sourcetype=&quot;sc4snmp:traps&quot;
+<div class="codehilite"><pre><span></span><code><span class="nx">index</span><span class="p">=</span><span class="s">&quot;netops&quot;</span><span class="w"> </span><span class="nx">sourcetype</span><span class="p">=</span><span class="s">&quot;sc4snmp:traps&quot;</span>
 </code></pre></div>
+
 <p>You should see one event per trap command sent.</p>
 <h3 id="verify-polling">Verify polling<a class="headerlink" href="#verify-polling" title="Permanent link">&para;</a></h3>
 <p>SC4SNMP must complete an SNMP walk on each device before polling data appears in Splunk. The walk runs automatically on first startup and then repeats every <code>walk_interval</code>. Depending on the size of the device, this may take a few minutes.</p>
@@ -2895,22 +2903,26 @@ documentation.</p>
 <p>By default, SC4SNMP only walks <code>SNMPv2-MIB</code>. If you expect interface or other MIB data and see only limited results, define a walk profile in your scheduler config file (see <a href="../../configuration/profiles/#walk-profile">Profiles configuration</a>) or set <code>ENABLE_FULL_WALK=true</code> in <code>.env</code>.</p>
 </div>
 <p>Once the walk completes, search in Splunk for polling events:</p>
-<div class="highlight"><pre><span></span><code>index=&quot;netops&quot; sourcetype=&quot;sc4snmp:event&quot;
+<div class="codehilite"><pre><span></span><code><span class="nx">index</span><span class="p">=</span><span class="s">&quot;netops&quot;</span><span class="w"> </span><span class="nx">sourcetype</span><span class="p">=</span><span class="s">&quot;sc4snmp:event&quot;</span>
 </code></pre></div>
+
 <p>And for metrics:</p>
-<div class="highlight"><pre><span></span><code>| mpreview index=&quot;netmetrics&quot; | search sourcetype=&quot;sc4snmp:metric&quot;
+<div class="codehilite"><pre><span></span><code><span class="o">|</span><span class="w"> </span><span class="nx">mpreview</span><span class="w"> </span><span class="nx">index</span><span class="p">=</span><span class="s">&quot;netmetrics&quot;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">search</span><span class="w"> </span><span class="nx">sourcetype</span><span class="p">=</span><span class="s">&quot;sc4snmp:metric&quot;</span>
 </code></pre></div>
+
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>If no data appears after one full <code>walk_interval</code>, check the <code>worker-poller</code> logs for errors: <code>sudo docker logs &lt;worker-poller-container-name&gt;</code>. For common polling problems see the <a href="../../troubleshooting/polling-issues/">Troubleshooting</a> section.</p>
 </div>
 <h2 id="applying-configuration-changes">Applying configuration changes<a class="headerlink" href="#applying-configuration-changes" title="Permanent link">&para;</a></h2>
 <p>To apply any change to <code>.env</code>, <code>inventory.csv</code>, <code>scheduler-config.yaml</code>, or <code>traps-config.yaml</code>, run the same command from inside the <code>docker_compose</code> directory:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
+
 <p>Docker Compose will recreate only the containers affected by the change. Existing data in MongoDB is preserved. After running the command, verify the containers are still running:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>ps
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>ps
 </code></pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>After an inventory change, SC4SNMP schedules a new walk for any added or modified device. Data for that device will not appear in Splunk until the walk completes. Walk duration depends on the device size and the configured <code>walk_interval</code>.</p>
@@ -2918,7 +2930,7 @@ documentation.</p>
 <p>If changes are not picked up the docker compose up can be run with flag <code>--force-recreate</code>.</p>
 <h2 id="uninstall-the-app">Uninstall the app<a class="headerlink" href="#uninstall-the-app" title="Permanent link">&para;</a></h2>
 <p>To uninstall the app, run the following command inside the <code>docker_compose</code> directory:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>down<span class="w"> </span>--volumes
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>down<span class="w"> </span>--volumes
 </code></pre></div>
 
 
