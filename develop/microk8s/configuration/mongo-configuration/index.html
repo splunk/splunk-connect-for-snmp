@@ -3108,7 +3108,7 @@ This change ensures we maintain full control over configuration, compatibility, 
 <h3 id="mongodb-configuration-file">MongoDB configuration file<a class="headerlink" href="#mongodb-configuration-file" title="Permanent link">&para;</a></h3>
 <p>MongoDB configuration is maintained in the <code>mongodb</code> section of <code>values.yaml</code>, which is used during installation to configure Kubernetes resources.
 This is the snippet of MongoDB&rsquo;s configuration with all available options, filled with example values:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># Mode selector: &quot;standalone&quot;, &quot;replication&quot;</span>
 <span class="w">  </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">replication</span>
 
@@ -3169,7 +3169,6 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GLIBC_TUNABLES</span>
 <span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;glibc.pthread.rseq=1&quot;</span>
 </code></pre></div>
-
 <table>
 <thead>
 <tr>
@@ -3370,10 +3369,9 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <li>No automatic failover</li>
 </ul>
 <h5 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h5>
-<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">architecture</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standalone</span>
 </code></pre></div>
-
 <h4 id="replication-mode">Replication Mode<a class="headerlink" href="#replication-mode" title="Permanent link">&para;</a></h4>
 <p><strong>Architecture</strong>:</p>
 <ul>
@@ -3395,12 +3393,11 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <li>Read scaling via SECONDARY members</li>
 </ul>
 <h5 id="configuration_1">Configuration<a class="headerlink" href="#configuration_1" title="Permanent link">&para;</a></h5>
-<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">replication</span>
 <span class="w">  </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 <span class="w">  </span><span class="nt">replicaSetName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rs0</span>
 </code></pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The replica set is automatically initialized by a Kubernetes Job after all pods are ready. No manual intervention is required.</p>
@@ -3408,14 +3405,13 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <h5 id="storage-considerations">Storage Considerations<a class="headerlink" href="#storage-considerations" title="Permanent link">&para;</a></h5>
 <p>For true high availability with pod rescheduling across nodes, you must use network-attached storage that supports dynamic provisioning. Node-local storage (like microk8s-hostpath) prevents failed pods from attaching their volumes on different nodes.</p>
 <p>Example using block storage in replication mode:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">persistence</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openebs-jiva-csi-default</span>
 <span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5Gi</span>
 <span class="w">    </span><span class="nt">accessMode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
 </code></pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The storageClassName must point to a StorageClass that supports block storage with ReadWriteOnce access mode. Examples: AWS EBS (gp3), GCP Persistent Disk (pd-ssd), Azure Disk, Ceph RBD, Longhorn.</p>
@@ -3427,7 +3423,7 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 Medium datasets (5-50GB): 2-4GB memory
 Large datasets (&gt;50GB): 4GB+ memory</p>
 <p>Example configuration:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">requests</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500m</span>
@@ -3436,42 +3432,37 @@ Large datasets (&gt;50GB): 4GB+ memory</p>
 <span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2000m</span>
 <span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4Gi</span>
 </code></pre></div>
-
 <p>By default, resource limits are set as shown in the configuration table above. Adjust based on your workload.</p>
 <h3 id="use-authentication-for-mongodb">Use authentication for MongoDB<a class="headerlink" href="#use-authentication-for-mongodb" title="Permanent link">&para;</a></h3>
 <p>MongoDB authentication is enabled by default and strongly recommended for production deployments.</p>
 <h4 id="using-direct-password">Using Direct Password<a class="headerlink" href="#using-direct-password" title="Permanent link">&para;</a></h4>
 <p>Set the password directly in <code>values.yaml</code>:</p>
-<div class="codehilite"><pre><span></span><code>mongodb:
+<div class="highlight"><pre><span></span><code>mongodb:
   auth:
     enabled: true
     rootUser: &quot;admin&quot;
     rootPassword: &quot;your_secure_password_here&quot;
 </code></pre></div>
-
 <h4 id="using-existing-kubernetes-secret">Using Existing Kubernetes Secret<a class="headerlink" href="#using-existing-kubernetes-secret" title="Permanent link">&para;</a></h4>
 <p>To use an existing Kubernetes Secret, first create it:</p>
-<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">kubectl create secret generic prod-mongodb-secret -n &lt;namespace&gt; \</span>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">kubectl create secret generic prod-mongodb-secret -n &lt;namespace&gt; \</span>
 <span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">--from-literal=root-user=&#39;admin&#39; \</span>
 <span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">--from-literal=root-password=&#39;your_secure_password_here&#39;</span>
 </code></pre></div>
-
 <p>Then reference it in <code>values.yaml</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">existingUserSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;prod-mongodb-secret&quot;</span>
 </code></pre></div>
-
 <p>The secret keys (<code>root-user</code> and <code>root-password</code>) are configurable via <code>rootUserKey</code> and <code>rootPasswordKey</code> if your secret uses different key names:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">existingUserSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;prod-mongodb-secret-with-different-keys&quot;</span>
 <span class="w">    </span><span class="nt">rootUserKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;my-username-key&quot;</span>
 <span class="w">    </span><span class="nt">rootPasswordKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;my-password-key&quot;</span>
 </code></pre></div>
-
 <h3 id="migration-from-bitnami-mongodb">Migration from Bitnami MongoDB<a class="headerlink" href="#migration-from-bitnami-mongodb" title="Permanent link">&para;</a></h3>
 <p>The chart automatically detects and migrates data from existing Bitnami MongoDB deployments only in standalone mode:</p>
 <ol>
@@ -3501,25 +3492,22 @@ Large datasets (&gt;50GB): 4GB+ memory</p>
 <li>Is idempotent (safe to re-run)</li>
 </ol>
 <p>You can monitor initialization progress:</p>
-<div class="codehilite"><pre><span></span><code>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>job/&lt;release-name&gt;-mongodb-init-rs<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>job/&lt;release-name&gt;-mongodb-init-rs<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;
 </code></pre></div>
-
 <h4 id="adjusting-the-timeout">Adjusting the timeout:<a class="headerlink" href="#adjusting-the-timeout" title="Permanent link">&para;</a></h4>
 <p>For clusters with slow storage provisioning or network latency, you may need to increase the timeout:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">replicaInitJob</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">600</span><span class="w"> </span>
 </code></pre></div>
-
 <h4 id="using-a-different-kubectl-image">Using a different kubectl image<a class="headerlink" href="#using-a-different-kubectl-image" title="Permanent link">&para;</a></h4>
 <p>If your environment requires a specific kubectl version or image source:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">replicaInitJob</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alpine/kubectl&quot;</span>
 <span class="w">      </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.36.3&quot;</span>
 </code></pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The kubectl image must include a POSIX shell (/bin/sh) and kubectl binary. Distroless images are not supported.</p>
