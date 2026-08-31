@@ -2805,8 +2805,8 @@ to install microk8s.</p>
 <h2 id="calico">Calico<a class="headerlink" href="#calico" title="Permanent link">&para;</a></h2>
 <p>The default CNI used for microk8s is Calico. For pods to be able to reach internet over IPv6, you need to enable 
 the <code>natOutgoing</code> parameter in ipv6 ip pool configuration from calico.
-To set it create the yaml file with the following content:
-<div class="highlight"><pre><span></span><code># calico-ippool.yaml
+To set it create the yaml file with the following content:</p>
+<div class="codehilite"><pre><span></span><code># calico-ippool.yaml
 ---
 apiVersion: crd.projectcalico.org/v1
 kind: IPPool
@@ -2815,37 +2815,42 @@ metadata:
 spec:
   natOutgoing: true
 </code></pre></div>
-You can check with command <code>microk8s kubectl get ippools -n kube-system</code> the default name of the ip pool for IPv6. 
+
+<p>You can check with command <code>microk8s kubectl get ippools -n kube-system</code> the default name of the ip pool for IPv6. 
 If it differs from <code>default-ipv6-ippool</code> you need to change the name in the yaml file.
-Then apply the configuration with the following command:
-<div class="highlight"><pre><span></span><code>microk8s kubectl apply -f calico-ippool.yaml
-</code></pre></div></p>
-<p>After those changes you can restart the microk8s for the changes to be applied with the following commands:
-<div class="highlight"><pre><span></span><code>microk8s stop
+Then apply the configuration with the following command:</p>
+<div class="codehilite"><pre><span></span><code>microk8s kubectl apply -f calico-ippool.yaml
+</code></pre></div>
+
+<p>After those changes you can restart the microk8s for the changes to be applied with the following commands:</p>
+<div class="codehilite"><pre><span></span><code>microk8s stop
 microk8s start
-</code></pre></div></p>
+</code></pre></div>
+
 <h2 id="metallb">Metallb<a class="headerlink" href="#metallb" title="Permanent link">&para;</a></h2>
 <p>As of version <code>1.33</code> of microk8s, Metallb add-on does not support passing the IPv6 addresses in enable command. To 
-add the IPv6 addresses to your Metallb configuration, you can prepare the yaml file with configuration like below:
-<div class="highlight"><pre><span></span><code># addresspool.yaml
----
-apiVersion: metallb.io/v1beta1
-kind: IPAddressPool
-metadata:
-  name: default-addresspool
-  namespace: metallb-system
-spec: 
-  addresses:
-  - 1.1.1.1/32
-  - 2001:0db8:ac10:fe01:0000:0000:0000:0001/128
+add the IPv6 addresses to your Metallb configuration, you can prepare the yaml file with configuration like below:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="nx">addresspool</span><span class="p">.</span><span class="nx">yaml</span>
+<span class="o">---</span>
+<span class="nx">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="nx">metallb</span><span class="p">.</span><span class="nx">io</span><span class="o">/</span><span class="nx">v1beta1</span>
+<span class="nx">kind</span><span class="p">:</span><span class="w"> </span><span class="nx">IPAddressPool</span>
+<span class="nx">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nx">name</span><span class="p">:</span><span class="w"> </span><span class="k">default</span><span class="o">-</span><span class="nx">addresspool</span>
+<span class="w">  </span><span class="kn">namespace</span><span class="p">:</span><span class="w"> </span><span class="nx">metallb</span><span class="o">-</span><span class="nx">system</span>
+<span class="nx">spec</span><span class="p">:</span><span class="w"> </span>
+<span class="w">  </span><span class="nx">addresses</span><span class="p">:</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="m m-Double">1.1.1.1</span><span class="o">/</span><span class="mi">32</span>
+<span class="w">  </span><span class="o">-</span><span class="w"> </span><span class="mi">2001</span><span class="p">:</span><span class="mi">0</span><span class="nx">db8</span><span class="p">:</span><span class="nx">ac10</span><span class="p">:</span><span class="nx">fe01</span><span class="p">:</span><span class="mi">0000</span><span class="p">:</span><span class="mi">0000</span><span class="p">:</span><span class="mi">0000</span><span class="p">:</span><span class="mi">0001</span><span class="o">/</span><span class="mi">128</span>
 </code></pre></div>
-You can check with command <code>microk8s kubectl get ipaddresspool -n metallb-system</code> the default name of the ip address pool created in metallb. If it differs from <code>default-addresspool</code> you need to change the name in the yaml file.
-You can add the single ip or subnets for both IPv4 and IPv6 under <code>spec.addresses</code> section. After preparing the yaml file, apply the configuration with the following command:
-<div class="highlight"><pre><span></span><code>microk8s kubectl apply -f addresspool.yaml
-</code></pre></div></p>
+
+<p>You can check with command <code>microk8s kubectl get ipaddresspool -n metallb-system</code> the default name of the ip address pool created in metallb. If it differs from <code>default-addresspool</code> you need to change the name in the yaml file.
+You can add the single ip or subnets for both IPv4 and IPv6 under <code>spec.addresses</code> section. After preparing the yaml file, apply the configuration with the following command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">microk8s</span><span class="w"> </span><span class="nx">kubectl</span><span class="w"> </span><span class="nx">apply</span><span class="w"> </span><span class="o">-</span><span class="nx">f</span><span class="w"> </span><span class="nx">addresspool</span><span class="p">.</span><span class="nx">yaml</span>
+</code></pre></div>
+
 <h2 id="sc4snmp">SC4SNMP<a class="headerlink" href="#sc4snmp" title="Permanent link">&para;</a></h2>
 <p>The MIB server, Redis, and MongoDB IPv6 settings default to <code>false</code>. Set them to <code>true</code> when communication between SC4SNMP pods and these services must use IPv6, such as when pods communicate over an IPv6-only pod network:</p>
-<div class="highlight"><pre><span></span><code>mibserver:
+<div class="codehilite"><pre><span></span><code>mibserver:
   ipv6Enabled: true
 
 redis:
@@ -2854,18 +2859,21 @@ redis:
 mongodb:
   ipv6Enabled: true
 </code></pre></div>
+
 <p>When enabled, the MIB server adds IPv6 listeners for its MIB and status endpoints, Redis binds to IPv4 and IPv6, and MongoDB enables IPv6 while retaining its IPv4 listener. These settings configure only the service listeners. They do not assign IPv6 addresses or configure network connectivity.</p>
-<p>To configure traps to receive notification from IPv4 and IPv6 addresses, you need to add the following configuration to the <code>values.yaml</code> file:
-<div class="highlight"><pre><span></span><code>traps:
+<p>To configure traps to receive notification from IPv4 and IPv6 addresses, you need to add the following configuration to the <code>values.yaml</code> file:</p>
+<div class="codehilite"><pre><span></span><code>traps:
   ipFamilyPolicy: RequireDualStack
   ipFamilies: [&quot;IPv4&quot;, &quot;IPv6&quot;]
-</code></pre></div></p>
-<p>To configure poller to poll IPv4 and IPv6 addresses, you need to add the following configuration to the <code>values.yaml</code> file:
-<div class="highlight"><pre><span></span><code>poller:
+</code></pre></div>
+
+<p>To configure poller to poll IPv4 and IPv6 addresses, you need to add the following configuration to the <code>values.yaml</code> file:</p>
+<div class="codehilite"><pre><span></span><code>poller:
   ipv6Enabled: true
-</code></pre></div></p>
+</code></pre></div>
+
 <p>To enable SNMP device detection for IPv4 and IPv6 subnet, you need to add the following configuration to <code>values.yaml</code> file:</p>
-<div class="highlight"><pre><span></span><code>discovery:
+<div class="codehilite"><pre><span></span><code>discovery:
   ipv6Enabled: true
 </code></pre></div>
 
