@@ -211,11 +211,15 @@ class InventoryPage:
         time.sleep(1)
 
     def set_max_oid_to_process(self, max_oid_to_process):
-        logger.info(f"set/edit inventory device max OID to process: {max_oid_to_process}")
+        logger.info(
+            f"set/edit inventory device max OID to process: {max_oid_to_process}"
+        )
         max_oid_to_process_field_xpath = (
             "//div[@data-test='sc4snmp:form:max-oid-to-process-input']//span//input"
         )
-        max_oid_to_process_field = driver.find_element(By.XPATH, max_oid_to_process_field_xpath)
+        max_oid_to_process_field = driver.find_element(
+            By.XPATH, max_oid_to_process_field_xpath
+        )
         helper.clear_input(max_oid_to_process_field)
         max_oid_to_process_field.send_keys(max_oid_to_process)
         time.sleep(1)
