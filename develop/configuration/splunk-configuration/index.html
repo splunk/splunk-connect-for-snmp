@@ -2908,15 +2908,14 @@
 <ol>
 <li><strong>Create the Secret</strong> in the same namespace as the release, with the token under the key <code>hec_token</code> (or another key you specify):</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>my-splunk-hec-secret<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>my-splunk-hec-secret<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">hec_token</span><span class="o">=</span><span class="s1">&#39;YOUR_HEC_TOKEN&#39;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
-
 <ol start="2">
 <li><strong>Configure the chart</strong> - leave <code>splunk.token</code> empty and set <code>splunk.tokenSecretRef</code>:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code><span class="nt">splunk</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">splunk</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;splunk.example.com&quot;</span>
 <span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https&quot;</span>
@@ -2925,7 +2924,6 @@
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-splunk-hec-secret</span><span class="w">   </span><span class="c1"># name of your Secret</span>
 <span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hec_token</span><span class="w">               </span><span class="c1"># optional; default is hec_token</span>
 </code></pre></div>
-
 <p>If both <code>token</code> and <code>tokenSecretRef.name</code> are set, <code>tokenSecretRef</code> takes precedence and the chart does not create a Secret from <code>token</code>.</p>
 <p><strong>Startup:</strong> Pods will stay in <code>CreateContainerConfigError</code> until the referenced Secret exists. With External Secrets or similar, ensure the Secret is synced before or with the Helm release.</p>
 <p><strong>Rotation:</strong> The token is read at pod start. After rotating the token in the vault and updating the Secret, restart the relevant deployments (e.g. worker, traps) to pick up the new value.</p>
@@ -2933,7 +2931,7 @@
 <p>You can provide the HEC token via a <strong>file</strong> (e.g. injected by Vault Agent Injector or another provider). Set <code>splunk.tokenFilePath</code> to the path where the token file is mounted. The chart sets <code>SPLUNK_HEC_TOKEN_FILE</code> only on the <strong>sender</strong> deployment (the only component that sends data to Splunk HEC). Add injector annotations only on the sender: <code>worker.sender.podAnnotations</code>. Do not use <code>worker.podAnnotations</code> for the token so other worker types and traps are not injected unnecessarily.</p>
 <p><strong>Important:</strong> The file must contain only the token value. Use an inject template so the mounted file has just the token.</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">splunk</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">splunk</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;splunk.example.com&quot;</span>
 <span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https&quot;</span>
@@ -2951,7 +2949,6 @@
 <span class="w">        </span><span class="no">{{ .Data.data.token }}</span>
 <span class="w">        </span><span class="no">{{- end }}</span>
 </code></pre></div>
-
 <p><code>tokenFilePath</code> must match where the injector writes the file: the annotation <code>agent-inject-secret-&lt;name&gt;</code> uses <code>&lt;name&gt;</code> as the filename under <code>/vault/secrets/</code>, so the path is <code>/vault/secrets/&lt;name&gt;</code> (e.g. <code>/vault/secrets/splunk-hec-token</code>). Adjust the template key (e.g. <code>{{ .Data.data.token }}</code>) if your Vault secret uses a different field name.</p>
 </div>
 <div class="tabbed-block">
@@ -3037,7 +3034,8 @@
 <p>In <code>.env</code>, set the path to that file and leave <code>SPLUNK_HEC_TOKEN</code> unset or empty:</p>
 </li>
 </ol>
-<p><code>SPLUNK_HEC_TOKEN_SECRET_FILE=./secrets/splunk_hec_token</code></p>
+<div class="highlight"><pre><span></span><code>SPLUNK_HEC_TOKEN_SECRET_FILE=./secrets/splunk_hec_token
+</code></pre></div>
 <ol start="3">
 <li>Recreate the worker-sender service. The compose file mounts the secret at <code>/run/secrets/splunk_hec_token</code> and sets <code>SPLUNK_HEC_TOKEN_FILE</code> to that path. The app reads the token from the file; the token itself never appears in <code>docker inspect</code> or <code>docker compose config</code>.</li>
 </ol>
