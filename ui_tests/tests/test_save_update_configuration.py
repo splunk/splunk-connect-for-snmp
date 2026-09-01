@@ -194,7 +194,7 @@ def test_check_that_inventory_config_is_stored_upon_applying_configuration():
     click apply changes once again
     changes stored even when the timer has not yet expired
     """
-    inventory_first_row = "address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete"
+    inventory_first_row = "address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete"
     host = "88.77.66.55"
     port = "612"
     snmp_version = "2c"
@@ -230,7 +230,7 @@ def test_check_that_inventory_config_is_stored_upon_applying_configuration():
     p_header.close_configuration_applied_notification_popup()
 
     # check that configuration is stored
-    expected_inventory_output = f"{inventory_first_row}\n{host},{port},{snmp_version},{community},,,{walk_interval},{profile},f,f"
+    expected_inventory_output = f"{inventory_first_row}\n{host},{port},{snmp_version},{community},,,{walk_interval},{profile},f,,f"
     inventory = values_reader.get_inventory_entries()
     assert expected_inventory_output == inventory
 
@@ -246,7 +246,7 @@ def test_check_that_inventory_config_is_stored_upon_applying_configuration():
     p_header.close_configuration_applied_notification_popup()
 
     # check that configuration is stored
-    expected_inventory_output_2 = f"{inventory_first_row}\n{host},{port},{snmp_version},{community},,,{walk_interval},{profile},f,t"
+    expected_inventory_output_2 = f"{inventory_first_row}\n{host},{port},{snmp_version},{community},,,{walk_interval},{profile},f,,t"
     inventory = values_reader.get_inventory_entries()
     assert expected_inventory_output_2 == inventory
 
