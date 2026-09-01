@@ -2908,7 +2908,7 @@ for authentication and data privacy. We recommend using SNMPv3 whenever possible
 <div class="tabbed-block">
 <p>Each set of credentials is stored as a Kubernetes Secret object and referenced by name in <code>values.yaml</code>.
 This allows the secret to be created once - including automation by third-party password managers - then consumed without storing sensitive data in plain text.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with &quot;sc4snmp-&quot;</span>
+<div class="codehilite"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with &quot;sc4snmp-&quot;</span>
 <span class="c1"># &lt;namespace&gt;=Namespace used to install sc4snmp</span>
 <span class="c1"># &lt;username&gt;=the SNMPv3 Username</span>
 <span class="c1"># &lt;key&gt;=key note must be at least 8 char long subject to target limitations</span>
@@ -2922,23 +2922,26 @@ microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class
 <span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">authProtocol</span><span class="o">=</span>&lt;authProtocol&gt;<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">privProtocol</span><span class="o">=</span>&lt;privProtocol&gt;
 </code></pre></div>
+
 <p>Configured credentials can be used in poller and trap services. In service configuration, <code>secretname</code> needs to be provided.</p>
-<p>For poller:
-<div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+<p>For poller:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secret_name</span>
-</code></pre></div></p>
-<p>For traps:
-<div class="highlight"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
+</code></pre></div>
+
+<p>For traps:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">traps</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secret_name</span>
-</code></pre></div></p>
+</code></pre></div>
+
 </div>
 <div class="tabbed-block">
 <p>All SNMPv3 secrets are managed through a single <code>secrets.json</code> file stored in a folder on the host.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <p>Create a folder to store the secrets file. Inside this folder, create a <code>secrets.json</code> file that contains all SNMPv3 secrets.</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;secret_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user1&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;privprotocol&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AES&quot;</span><span class="p">,</span>
@@ -2949,30 +2952,36 @@ microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The name of json file should be secrets.json. Username, authprotocol and authkey are mandatory parameters.</p>
 </div>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <p>In the <code>.env</code> file, set the path to the local folder containing the <code>secrets.json</code>:</p>
-<div class="highlight"><pre><span></span><code>SECRET_FOLDER_PATH=/absolute/path/to/secrets/folder
+<div class="codehilite"><pre><span></span><code>SECRET_FOLDER_PATH=/absolute/path/to/secrets/folder
 </code></pre></div>
+
 <p>Secrets usage for <code>worker-poller</code> and <code>worker-trap</code> can be controlled by flags in <code>.env</code>:</p>
-<div class="highlight"><pre><span></span><code>ENABLE_TRAPS_SECRETS=true
+<div class="codehilite"><pre><span></span><code>ENABLE_TRAPS_SECRETS=true
 ENABLE_WORKER_POLLER_SECRETS=true
 </code></pre></div>
+
 <h2 id="creating-a-new-secret">Creating a new secret<a class="headerlink" href="#creating-a-new-secret" title="Permanent link">&para;</a></h2>
 <p>Add an entry to <code>secrets.json</code>, then inside the <code>docker_compose</code> directory run:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
+
 <h2 id="updating-existing-secret">Updating existing secret<a class="headerlink" href="#updating-existing-secret" title="Permanent link">&para;</a></h2>
 <p>Update the required fields (e.g., keys, protocols, username) for any existing secret inside <code>secrets.json</code>, then run:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>&lt;service_name&gt;
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>&lt;service_name&gt;
 </code></pre></div>
+
 <h2 id="deleting-a-secret">Deleting a secret<a class="headerlink" href="#deleting-a-secret" title="Permanent link">&para;</a></h2>
 <p>Delete its entry from <code>secrets.json</code>, then run:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>&lt;service_name&gt;
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>&lt;service_name&gt;
 </code></pre></div>
+
 <h2 id="migration-steps">Migration steps<a class="headerlink" href="#migration-steps" title="Permanent link">&para;</a></h2>
 <p>Managing SNMPv3 secrets previously required updating docker compose files using the manage_secrets.py script.
 From SC4SNMP 1.15.0, this process has been simplified and can manage all SNMPv3 secrets using a single secrets.json file.</p>

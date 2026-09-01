@@ -3022,7 +3022,7 @@ Below are the most common commands used to troubleshoot issues with SC4SNMP. </p
 <h3 id="the-ls-and-ps-commands">The ls and ps commands<a class="headerlink" href="#the-ls-and-ps-commands" title="Permanent link">&para;</a></h3>
 <p>The <code>ls</code> or <code>ps</code> command are used to list the resources in docker. The following are the example of resources that 
 can be listed using the commands:</p>
-<div class="highlight"><pre><span></span><code>docker compose ls
+<div class="codehilite"><pre><span></span><code>docker compose ls
 docker network ls
 docker image ls
 docker container ls
@@ -3030,45 +3030,52 @@ docker ps
 docker ps -a
 docker compose ps &lt;service_name/id&gt;
 </code></pre></div>
+
 <h3 id="the-inspect-command">The inspect command<a class="headerlink" href="#the-inspect-command" title="Permanent link">&para;</a></h3>
 <p>The <code>inspect</code> command is used to get detailed information about the resources in docker. The following are the 
 example of resources that can be inspected:</p>
-<div class="highlight"><pre><span></span><code>docker inspect --type &lt;resource_type&gt; &lt;resource_name/id&gt;
-docker network inspect &lt;resource_name/id&gt;
-docker image inspect &lt;resource_name/id&gt;
+<div class="codehilite"><pre><span></span><code><span class="nx">docker</span><span class="w"> </span><span class="nx">inspect</span><span class="w"> </span><span class="o">--</span><span class="k">type</span><span class="w"> </span><span class="p">&lt;</span><span class="nx">resource_type</span><span class="p">&gt;</span><span class="w"> </span><span class="p">&lt;</span><span class="nx">resource_name</span><span class="o">/</span><span class="nx">id</span><span class="p">&gt;</span>
+<span class="nx">docker</span><span class="w"> </span><span class="nx">network</span><span class="w"> </span><span class="nx">inspect</span><span class="w"> </span><span class="p">&lt;</span><span class="nx">resource_name</span><span class="o">/</span><span class="nx">id</span><span class="p">&gt;</span>
+<span class="nx">docker</span><span class="w"> </span><span class="nx">image</span><span class="w"> </span><span class="nx">inspect</span><span class="w"> </span><span class="p">&lt;</span><span class="nx">resource_name</span><span class="o">/</span><span class="nx">id</span><span class="p">&gt;</span>
 </code></pre></div>
+
 <h3 id="the-logs-command">The logs command<a class="headerlink" href="#the-logs-command" title="Permanent link">&para;</a></h3>
 <p>The <code>logs</code> command is used to get the logs of the resources in docker. 
 The following are some examples of how to use the <code>logs</code> command:</p>
-<div class="highlight"><pre><span></span><code>docker logs &lt;container_name/id&gt;
+<div class="codehilite"><pre><span></span><code>docker logs &lt;container_name/id&gt;
 docker compose logs &lt;service_name/id&gt;
 </code></pre></div>
+
 <h3 id="the-exec-command">The exec command<a class="headerlink" href="#the-exec-command" title="Permanent link">&para;</a></h3>
 <p>The <code>exec</code> command is used to execute a command in a running container. The following is an example of how to 
 use the <code>exec</code> command:</p>
-<div class="highlight"><pre><span></span><code>docker exec -it &lt;container_name/id&gt; sh -c &lt;command&gt;
+<div class="codehilite"><pre><span></span><code>docker exec -it &lt;container_name/id&gt; sh -c &lt;command&gt;
 </code></pre></div>
+
 <h3 id="the-stats-command">The stats command<a class="headerlink" href="#the-stats-command" title="Permanent link">&para;</a></h3>
 <p>The <code>stats</code> command is used to display the live resource usage statistics of a container. The following are some
 examples of how to use the <code>stats</code> command:</p>
-<div class="highlight"><pre><span></span><code>docker stats
+<div class="codehilite"><pre><span></span><code>docker stats
 docker stats &lt;container_name/id&gt;
 </code></pre></div>
+
 <h2 id="examples-of-command-usage">Examples of command usage<a class="headerlink" href="#examples-of-command-usage" title="Permanent link">&para;</a></h2>
 <h3 id="check-secret-for-snmp-v3">Check secret for snmp v3<a class="headerlink" href="#check-secret-for-snmp-v3" title="Permanent link">&para;</a></h3>
 <p>One of the issues related to snmp v3 can be incorrectly configured secrets in docker. 
 Below you can find the instruction to check the existing secrets.</p>
-<p>To check the existing secrets:
-<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c &quot;ls secrets/snmpv3&quot;
+<p>To check the existing secrets:</p>
+<div class="codehilite"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c &quot;ls secrets/snmpv3&quot;
 my_secret
 </code></pre></div>
-To get more details about one secret you can use command:
-<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c &quot;ls secrets/snmpv3/my_secret&quot;
+
+<p>To get more details about one secret you can use command:</p>
+<div class="codehilite"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c &quot;ls secrets/snmpv3/my_secret&quot;
 authKey  authProtocol  contextEngineId  privKey  privProtocol  userName
 </code></pre></div>
-Replace <strong>my_secret</strong> with the name of the secret you want to check and <strong>docker_compose-worker-poller-1</strong> with the name of the container.</p>
-<p>To see the configured details of the secret: 
-<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c &#39;cd secrets/snmpv3/my_secret &amp;&amp; for file in *; do echo &quot;$file= $(cat $file)&quot;; done&#39;
+
+<p>Replace <strong>my_secret</strong> with the name of the secret you want to check and <strong>docker_compose-worker-poller-1</strong> with the name of the container.</p>
+<p>To see the configured details of the secret: </p>
+<div class="codehilite"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c &#39;cd secrets/snmpv3/my_secret &amp;&amp; for file in *; do echo &quot;$file= $(cat $file)&quot;; done&#39;
 authKey= admin1234
 authProtocol= SHA
 contextEngineId= 80003a8c04
@@ -3076,7 +3083,8 @@ privKey= admin1234
 privProtocol= AES
 userName= r-wuser
 </code></pre></div>
-Replace <strong>my_secret</strong> with the name of the secret you want to check and <strong>docker_compose-worker-poller-1</strong> with the name of the container.</p>
+
+<p>Replace <strong>my_secret</strong> with the name of the secret you want to check and <strong>docker_compose-worker-poller-1</strong> with the name of the container.</p>
 <h3 id="check-containers-health">Check containers health<a class="headerlink" href="#check-containers-health" title="Permanent link">&para;</a></h3>
 <p>To check the health of the containers, you can use the <code>ps</code> command to look at the <code>STATUS</code>. 
 If the <code>STATUS</code> is not <code>Up</code> or the containers restarts continuously, then there might be an issue with it. 
@@ -3089,8 +3097,8 @@ assigned in <code>resources</code> section in the configuration yaml.
 If they are close to each other you might consider increasing the resources assigned.</p>
 <h3 id="check-network">Check network<a class="headerlink" href="#check-network" title="Permanent link">&para;</a></h3>
 <p>Checking the network configuration can be useful when enabling the dual-stack for SC4SNMP.</p>
-<p>One of useful commands to check the network configuration is:
-<div class="highlight"><pre><span></span><code>~$ docker network ls
+<p>One of useful commands to check the network configuration is:</p>
+<div class="codehilite"><pre><span></span><code>~$ docker network ls
 NETWORK ID     NAME              DRIVER    SCOPE
 7e46b3818089   bridge            bridge    local
 1401c370b8f4   docker_gwbridge   bridge    local
@@ -3099,9 +3107,10 @@ rssypcqbwarx   ingress           overlay   swarm
 b6c176852f41   none              null      local
 978e06ffcd4a   sc4snmp_network   bridge    local
 </code></pre></div>
-This command is showing all the network configured in the docker. The network created for sc4snmp by default is named <code>sc4snmp_network</code>.</p>
-<p>To see details of configured network use:
-<div class="highlight"><pre><span></span><code>~$ docker network inspect sc4snmp_network
+
+<p>This command is showing all the network configured in the docker. The network created for sc4snmp by default is named <code>sc4snmp_network</code>.</p>
+<p>To see details of configured network use:</p>
+<div class="codehilite"><pre><span></span><code>~$ docker network inspect sc4snmp_network
 [
     {
         &quot;Name&quot;: &quot;sc4snmp_network&quot;,
@@ -3218,7 +3227,8 @@ This command is showing all the network configured in the docker. The network cr
         }
     }
 ]
-</code></pre></div></p>
+</code></pre></div>
+
 <p>One section of the command is showing the <code>containers</code> assigned to that network with their ipv4 and ipv6 addresses.
 The commands also shows if the ipv6 is enabled and what subnets are assigned to the network.</p>
 

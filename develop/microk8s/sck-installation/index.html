@@ -2871,11 +2871,12 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
 <h3 id="offline-installation">Offline installation<a class="headerlink" href="#offline-installation" title="Permanent link">&para;</a></h3>
 <p>For offline installation instructions see <a href="../offlineinstallation/offline-sck/">Splunk OpenTelemetry Collector for Kubernetes offline installation</a>.</p>
 <h3 id="add-splunk-opentelemetry-collector-repository-to-helm">Add Splunk OpenTelemetry Collector repository to HELM<a class="headerlink" href="#add-splunk-opentelemetry-collector-repository-to-helm" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>splunk-otel-collector-chart<span class="w"> </span>https://signalfx.github.io/splunk-otel-collector-chart
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>splunk-otel-collector-chart<span class="w"> </span>https://signalfx.github.io/splunk-otel-collector-chart
 </code></pre></div>
+
 <h2 id="install-splunk-opentelemetry-collector-with-helm-for-a-splunk-platform">Install Splunk OpenTelemetry Collector with HELM for a Splunk Platform<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-a-splunk-platform" title="Permanent link">&para;</a></h2>
-<p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables based on the following description: 
-<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
+<p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables based on the following description: </p>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;clusterName=&lt;cluster_name&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.endpoint=&lt;splunk_endpoint&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.insecureSkipVerify=&lt;insecure_skip_verify&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
@@ -2885,7 +2886,8 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsIndex=em_metrics&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.index=em_logs&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>splunk-otel-collector-chart/splunk-otel-collector
-</code></pre></div></p>
+</code></pre></div>
+
 <h3 id="variables-description">Variables description<a class="headerlink" href="#variables-description" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -2918,8 +2920,8 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
 </tr>
 </tbody>
 </table>
-<p>See the following example of a correctly filled up command: 
-<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
+<p>See the following example of a correctly filled up command: </p>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;clusterName=my-cluster&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.endpoint=https://endpoint.example.com/services/collector&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.insecureSkipVerify=false&quot;</span><span class="w"> </span><span class="se">\</span>
@@ -2928,10 +2930,11 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsIndex=em_metrics&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.index=em_logs&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>splunk-otel-collector-chart/splunk-otel-collector
-</code></pre></div></p>
+</code></pre></div>
+
 <h2 id="install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes">Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" title="Permanent link">&para;</a></h2>
 <p>To run Splunk OpenTelemetry Collector on your environment, replace the <code>&lt;&gt;</code> variables based on the following description: </p>
-<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;clusterName=&lt;cluster_name&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.realm=&lt;realm&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.accessToken=&lt;token&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
@@ -2942,6 +2945,7 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.logsEnabled=false&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>splunk-otel-collector-chart/splunk-otel-collector
 </code></pre></div>
+
 <h3 id="variables-description_1">Variables description<a class="headerlink" href="#variables-description_1" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -2979,8 +2983,8 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
 </tr>
 </tbody>
 </table>
-<p>See the following example of a correctly filled up command: 
-<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
+<p>See the following example of a correctly filled up command: </p>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;clusterName=my_cluster&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.realm=us0&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.accessToken=BCwaJ_Ands4Xh7Nrg&quot;</span><span class="w"> </span><span class="se">\</span>
@@ -2990,7 +2994,7 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.tracesEnabled=false&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.logsEnabled=false&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>splunk-otel-collector-chart/splunk-otel-collector
-</code></pre></div></p>
+</code></pre></div>
 
 
 
