@@ -133,11 +133,18 @@ class InventoryPage:
             "walk_invalid_value"
         )
 
+    def get_max_oid_to_process_invalid_value_error(self):
+        logger.info("Get max OID to process invalid value error")
+        return self._get_error_for_missing_or_invalid_inventory_field(
+            "max_oid_to_process_invalid_value"
+        )
+
     def _get_error_for_missing_or_invalid_inventory_field(self, field):
         xpath = {
             "host_missing": "//p[@data-test='sc4snmp:ip-group-error']",
             "community_string_missing": "//p[@data-test='sc4snmp:community-error']",
             "walk_invalid_value": "//p[@data-test='sc4snmp:walk-interval-error']",
+            "max_oid_to_process_invalid_value": "//p[@data-test='sc4snmp:max-oid-to-process-error']",
         }
         try:
             error_msg = driver.find_element(By.XPATH, xpath[field])
@@ -203,6 +210,20 @@ class InventoryPage:
         sec_engine.send_keys(walk_interval)
         time.sleep(1)
 
+    def set_max_oid_to_process(self, max_oid_to_process):
+        logger.info(
+            f"set/edit inventory device max OID to process: {max_oid_to_process}"
+        )
+        max_oid_to_process_field_xpath = (
+            "//div[@data-test='sc4snmp:form:max-oid-to-process-input']//span//input"
+        )
+        max_oid_to_process_field = driver.find_element(
+            By.XPATH, max_oid_to_process_field_xpath
+        )
+        helper.clear_input(max_oid_to_process_field)
+        max_oid_to_process_field.send_keys(max_oid_to_process)
+        time.sleep(1)
+
     def set_smart_profiles(self, param):
         logger.info(f"set inventory device smart profiles enabled to: {param}")
         if param == "true" or param == "false":
@@ -244,6 +265,7 @@ class InventoryPage:
             "secret": f"//td[@data-test='sc4snmp:inventory-secret' and ancestor::tr//td[text()='{host}']]",
             "security_engine": f"//td[@data-test='sc4snmp:inventory-security-engine' and ancestor::tr//td[text()='{host}']]",
             "walk_interval": f"//td[@data-test='sc4snmp:inventory-walk-interval' and ancestor::tr//td[text()='{host}']]",
+            "max_oid_to_process": f"//td[@data-test='sc4snmp:inventory-max-oid-to-process' and ancestor::tr//td[text()='{host}']]",
             "profiles": f"//td[@data-test='sc4snmp:inventory-profiles' and ancestor::tr//td[text()='{host}']]",
             "smart_profiles": f"//td[@data-test='sc4snmp:inventory-smart-profiles' and ancestor::tr//td[text()='{host}']]",
         }
@@ -273,6 +295,10 @@ class InventoryPage:
     def get_walk_interval_for_entry(self, host):
         logger.info(f"get {host} inventory -> walk_interval")
         return self._get_inventory_data(host, "walk_interval")
+
+    def get_max_oid_to_process_for_entry(self, host):
+        logger.info(f"get {host} inventory -> max_oid_to_process")
+        return self._get_inventory_data(host, "max_oid_to_process")
 
     def get_profiles_for_entry(self, host):
         logger.info(f"get {host} inventory -> profiles")
