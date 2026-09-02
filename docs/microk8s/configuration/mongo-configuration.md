@@ -234,7 +234,7 @@ mongodb:
 To use an existing Kubernetes Secret, first create it:
 
 ```yaml
-kubectl create secret generic prod-mongodb-secret -n <namespace> \
+microk8s kubectl create secret generic prod-mongodb-secret -n <namespace> \
   --from-literal=root-user='admin' \
   --from-literal=root-password='your_secure_password_here'
 ```
@@ -275,7 +275,7 @@ To rotate the password without losing data, perform the steps **in this order**:
 1. **Re-key the running database**, authenticating with the *current* (old) password:
 
     ```bash
-    kubectl exec -it <release>-mongodb-0 -n <namespace> -- mongosh \
+    micrk8s kubectl exec -it <release>-mongodb-0 -n <namespace> -- mongosh \
       -u admin -p '<OLD_PASSWORD>' --authenticationDatabase admin \
       --eval 'db.getSiblingDB("admin").changeUserPassword("admin","<NEW_PASSWORD>")'
     ```
@@ -289,15 +289,15 @@ To rotate the password without losing data, perform the steps **in this order**:
 2. **Update the credential source Helm/pods will use next**, then apply it:
     - Direct password: set the new value in `mongodb.auth.rootPassword` in `values.yaml`.
     - Existing Secret: update the `root-password` key of that Secret (e.g. via
-      `kubectl create secret generic ... --dry-run=client -o yaml | kubectl apply -f -`
-      or `kubectl patch secret`).
+      `microk8s kubectl create secret generic ... --dry-run=client -o yaml | kubectl apply -f -`
+      or `microk8s kubectl patch secret`).
 
     Then run `helm upgrade` so the chart picks up the change.
 
 3. **Restart the application pods** so they re-read the updated credentials:
 
     ```bash
-    kubectl rollout restart statefulset,deployment -n <namespace>
+    microk8s kubectl rollout restart statefulset,deployment -n <namespace>
     ```
 
 !!!danger
