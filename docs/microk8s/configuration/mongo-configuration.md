@@ -28,7 +28,7 @@ mongodb:
     enabled: false
     rootUser: "admin"
     rootPassword: ""                  # Set if auth.enabled: true
-    existingUserSecret: ""            # Or reference existing secret
+    existingSecret: ""                # Or reference existing secret
     rootUserKey: "root-user"
     rootPasswordKey: "root-password"
 
@@ -83,7 +83,7 @@ mongodb:
 | mongodb.auth.enabled                       | bool   | true                                                      | Enable MongoDB authentication.                                   |
 | mongodb.auth.rootUser                      | string | admin                                                     | Root username for MongoDB.                                       |
 | mongodb.auth.rootPassword                  | string | ""                                                        | Root password (avoid committing; prefer secret).                 |
-| mongodb.auth.existingUserSecret            | string | ""                                                        | Name of existing Kubernetes Secret providing credentials.        |
+| mongodb.auth.existingSecret                | string | ""                                                        | Name of existing Kubernetes Secret providing credentials.        |
 | mongodb.auth.rootUserKey                   | string | root-user                                                 | Key inside existing secret containing the username.              |
 | mongodb.auth.rootPasswordKey               | string | root-password                                             | Key inside existing secret containing the password.              |
 | mongodb.image.repository                   | string | mongo                                                     | Container image repository.                                      |
@@ -234,7 +234,7 @@ mongodb:
 To use an existing Kubernetes Secret, first create it:
 
 ```yaml
-kubectl create secret generic prod-mongodb-secret -n <namespace> \
+microk8s kubectl create secret generic prod-mongodb-secret -n <namespace> \
   --from-literal=root-user='admin' \
   --from-literal=root-password='your_secure_password_here'
 ```
@@ -245,7 +245,7 @@ Then reference it in `values.yaml`:
 mongodb:
   auth:
     enabled: true
-    existingUserSecret: "prod-mongodb-secret"
+    existingSecret: "prod-mongodb-secret"
 ```
 
 The secret keys (`root-user` and `root-password`) are configurable via `rootUserKey` and `rootPasswordKey` if your secret uses different key names:
@@ -254,11 +254,59 @@ The secret keys (`root-user` and `root-password`) are configurable via `rootUser
 mongodb:
   auth:
     enabled: true
-    existingUserSecret: "prod-mongodb-secret-with-different-keys"
+    existingSecret: "prod-mongodb-secret-with-different-keys"
     rootUserKey: "my-username-key"
     rootPasswordKey: "my-password-key"
 ```
 
+### Rotating the MongoDB password
+
+!!!warning
+    The `mongo` container image only applies `MONGO_INITDB_ROOT_USERNAME` / `MONGO_INITDB_ROOT_PASSWORD`
+    the **first time** it starts against an empty data directory. On an already-initialized
+    deployment (an existing PVC), simply changing `mongodb.auth.rootPassword` or the root-password
+    Secret and running `helm upgrade` does **not** change the password stored inside MongoDB. The
+    database keeps the old password while application pods pick up the new one from the Secret,
+    which breaks authentication for every SC4SNMP component (worker, scheduler, traps, inventory,
+    discovery, UI).
+
+To rotate the password without losing data, perform the steps **in this order**:
+
+1. **Re-key the running database**, authenticating with the *current* (old) password:
+
+    ```bash
+    micrk8s kubectl exec -it <release>-mongodb-0 -n <namespace> -- mongosh \
+      -u admin -p '<OLD_PASSWORD>' --authenticationDatabase admin \
+      --eval 'db.getSiblingDB("admin").changeUserPassword("admin","<NEW_PASSWORD>")'
+    ```
+
+    !!!note
+        In **replication mode**, the password change must be run against the current PRIMARY.
+        Right after initialization this is `<release>-mongodb-0`; if unsure, connect to any pod
+        and run `db.hello().primary` (or `rs.status()`) to find it. The change then replicates
+        to the other members automatically.
+
+2. **Update the credential source Helm/pods will use next**, then apply it:
+    - Direct password: set the new value in `mongodb.auth.rootPassword` in `values.yaml`.
+    - Existing Secret: update the `root-password` key of that Secret (e.g. via
+      `microk8s kubectl create secret generic ... --dry-run=client -o yaml | kubectl apply -f -`
+      or `microk8s kubectl patch secret`).
+
+    Then run `helm upgrade` so the chart picks up the change.
+
+3. **Restart the application pods** so they re-read the updated credentials:
+
+    ```bash
+    microk8s kubectl rollout restart statefulset,deployment -n <namespace>
+    ```
+
+!!!danger
+    Do not update the Secret or `values.yaml` before completing step 1. If the Secret is changed
+    first, MongoDB and the application pods will disagree on the password and every component
+    will fail to authenticate until the database is re-keyed with the old password (see
+    [Troubleshooting: MongoDB authentication fails after changing the root password](../../troubleshooting/general-issues.md#mongodb-authentication-fails-after-changing-the-root-password)).
+
+This procedure applies to kubernetes deployments only.
 
 ### Migration from Bitnami MongoDB
 
