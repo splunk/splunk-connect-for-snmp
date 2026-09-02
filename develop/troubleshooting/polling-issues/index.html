@@ -2989,43 +2989,49 @@ and replace <IP_ADDRESS> with the pertinent IP Address. </li>
 </ol>
 <h2 id="empty-snmp-response-message">Empty SNMP response message<a class="headerlink" href="#empty-snmp-response-message" title="Permanent link">&para;</a></h2>
 <p>If you see the following line in the worker&rsquo;s logs:</p>
-<p><div class="highlight"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError(&#39;An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message&#39;)
+<div class="codehilite"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError(&#39;An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message&#39;)
 </code></pre></div>
-that causes an infinite retry of the walk operation, configure the following depending on your deployment:</p>
+
+<p>that causes an infinite retry of the walk operation, configure the following depending on your deployment:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Add <code>worker.ignoreEmptyVarbinds</code> parameter to <code>values.yaml</code> and set it to true:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">ignoreEmptyVarbinds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
+
 </div>
 <div class="tabbed-block">
 <p>Set <code>IGNORE_EMPTY_VARBINDS=true</code> in <code>.env</code>:</p>
-<div class="highlight"><pre><span></span><code>IGNORE_EMPTY_VARBINDS=true
+<div class="codehilite"><pre><span></span><code>IGNORE_EMPTY_VARBINDS=true
 </code></pre></div>
+
 </div>
 </div>
 </div>
 <h2 id="oid-not-increasing">OID not increasing<a class="headerlink" href="#oid-not-increasing" title="Permanent link">&para;</a></h2>
 <p>In case you see the following line in worker&rsquo;s logs:</p>
-<p><div class="highlight"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError(&#39;An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing&#39;)
+<div class="codehilite"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError(&#39;An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing&#39;)
 </code></pre></div>
-that causes infinite retry of walk operation, fill in the addresses of hosts where the problem appears depending on your deployment:</p>
+
+<p>that causes infinite retry of walk operation, fill in the addresses of hosts where the problem appears depending on your deployment:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Add <code>worker.ignoreNotIncreasingOid</code> array to <code>values.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">ignoreNotIncreasingOid</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;127.0.0.1:164&quot;</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;127.0.0.6&quot;</span>
 </code></pre></div>
+
 </div>
 <div class="tabbed-block">
 <p>Set <code>IGNORE_NOT_INCREASING_OIDS</code> in <code>.env</code> as a comma-separated list:</p>
-<div class="highlight"><pre><span></span><code>IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6
+<div class="codehilite"><pre><span></span><code>IGNORE_NOT_INCREASING_OIDS=127.0.0.1:164,127.0.0.6
 </code></pre></div>
+
 </div>
 </div>
 </div>
@@ -3042,14 +3048,16 @@ the maximum retry time depending on your deployment:</p>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Set <code>worker.walkRetryMaxInterval</code> in <code>values.yaml</code>, for example:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">walkRetryMaxInterval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
 </code></pre></div>
+
 </div>
 <div class="tabbed-block">
 <p>Set <code>WALK_RETRY_MAX_INTERVAL</code> in <code>.env</code>, for example:</p>
-<div class="highlight"><pre><span></span><code>WALK_RETRY_MAX_INTERVAL=60
+<div class="codehilite"><pre><span></span><code>WALK_RETRY_MAX_INTERVAL=60
 </code></pre></div>
+
 </div>
 </div>
 </div>
@@ -3063,13 +3071,14 @@ For example, use <code>ifHCInOctets</code> instead of <code>ifInOctets</code>.</
 <p>If 64-bit counter is not supported on your device, you can write your own Splunk queries that calculate the shift based on
 the maximum integer value and the current state. The same works for values large enough that they don&rsquo;t fit into a 64-bit value.
 An example for an appropriate Splunk query would be the following:</p>
-<div class="highlight"><pre><span></span><code>| streamstats current=f last(ifInOctets) as p_ifInOctets last(ifOutOctets) as p_ifOutOctets by ifAlias             
+<div class="codehilite"><pre><span></span><code>| streamstats current=f last(ifInOctets) as p_ifInOctets last(ifOutOctets) as p_ifOutOctets by ifAlias             
 | eval in_delta=(ifInOctets - p_ifInOctets)
 | eval out_delta=(ifOutOctets - p_ifOutOctets)
 | eval max=pow(2,64)
 | eval out = if(out_delta&lt;0,((max+out_delta)*8/(5*60*1000*1000*1000)),(out_delta)*8/(5*60*1000*1000*1000))
 | timechart span=5m avg(in) AS in, avg(out) AS out by ifAlias
 </code></pre></div>
+
 <h2 id="polling-authentication-errors">Polling authentication errors<a class="headerlink" href="#polling-authentication-errors" title="Permanent link">&para;</a></h2>
 <h3 id="unknown-usm-user">Unknown USM user<a class="headerlink" href="#unknown-usm-user" title="Permanent link">&para;</a></h3>
 <p>In case of polling SNMPv3 devices, <code>Unknown USM user</code> error suggests wrong username. Verify that the secret with the correct username has been created. See <a href="../../configuration/snmpv3/">SNMPv3 configuration</a>.</p>
@@ -3086,25 +3095,30 @@ An example for an appropriate Splunk query would be the following:</p>
 <div class="admonition warning">
 <p class="admonition-title">Microk8s only</p>
 </div>
-<div class="highlight"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/charts/splunk-connect-for-snmp/ --namespace=sc4snmp --create-namespace
-Error: UPGRADE FAILED: cannot patch &quot;snmp-splunk-connect-for-snmp-inventory&quot; with kind Job: Job.batch &quot;snmp-splunk-connect-for-snmp-inventory&quot; is invalid: (...) : field is immutable
+<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">helm3</span><span class="w"> </span><span class="nv">upgrade</span><span class="w"> </span><span class="o">--</span><span class="nv">install</span><span class="w"> </span><span class="nv">snmp</span><span class="w"> </span><span class="o">-</span><span class="nv">f</span><span class="w"> </span><span class="nv">values</span>.<span class="nv">yaml</span><span class="w"> </span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">charts</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="w"> </span><span class="o">--</span><span class="nv">namespace</span><span class="o">=</span><span class="nv">sc4snmp</span><span class="w"> </span><span class="o">--</span><span class="nv">create</span><span class="o">-</span><span class="nv">namespace</span>
+<span class="nv">Error</span>:<span class="w"> </span><span class="nv">UPGRADE</span><span class="w"> </span><span class="nv">FAILED</span>:<span class="w"> </span><span class="nv">cannot</span><span class="w"> </span><span class="nv">patch</span><span class="w"> </span><span class="s2">&quot;snmp-splunk-connect-for-snmp-inventory&quot;</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">kind</span><span class="w"> </span><span class="nv">Job</span>:<span class="w"> </span><span class="nv">Job</span>.<span class="nv">batch</span><span class="w"> </span><span class="s2">&quot;snmp-splunk-connect-for-snmp-inventory&quot;</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">invalid</span>:<span class="w"> </span><span class="ss">(</span>...<span class="ss">)</span><span class="w"> </span>:<span class="w"> </span><span class="nv">field</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">immutable</span>
 </code></pre></div>
+
 <p>The immutable error is due to the limitation placed on an inventory job. As the SC4SNMP requires several checks before applying updates, it is designed to allow changes in the inventory task after 5 minutes. </p>
-<p>The status of the inventory can be checked with the following command:
-<div class="highlight"><pre><span></span><code>microk8s kubectl -n sc4snmp get pods | grep inventory
+<p>The status of the inventory can be checked with the following command:</p>
+<div class="codehilite"><pre><span></span><code>microk8s kubectl -n sc4snmp get pods | grep inventory
 </code></pre></div>
-If the command is not empty, wait and execute it again after the inventory job finishes. This is when it is no longer visible in the output.</p>
-<p>If the changes are required to be applied immediately, the previous inventory job can be deleted with the following command:
-<div class="highlight"><pre><span></span><code>microk8s kubectl delete job/snmp-splunk-connect-for-snmp-inventory -n sc4snmp
+
+<p>If the command is not empty, wait and execute it again after the inventory job finishes. This is when it is no longer visible in the output.</p>
+<p>If the changes are required to be applied immediately, the previous inventory job can be deleted with the following command:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">delete</span><span class="w"> </span><span class="nv">job</span><span class="o">/</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">inventory</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
 </code></pre></div>
-The upgrade command can be executed again. </p>
+
+<p>The upgrade command can be executed again. </p>
 <h2 id="the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors">&ldquo;The following profiles have invalid configuration&rdquo; or &ldquo;The following groups have invalid configuration&rdquo; errors<a class="headerlink" href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" title="Permanent link">&para;</a></h2>
-<p>Following errors are examples of wrong configuration:
-<div class="highlight"><pre><span></span><code>The following groups have invalid configuration and won&#39;t be used: [&#39;group1&#39;]. Please check indentation and keywords spelling inside mentioned groups configuration.
+<p>Following errors are examples of wrong configuration:</p>
+<div class="codehilite"><pre><span></span><code>The following groups have invalid configuration and won&#39;t be used: [&#39;group1&#39;]. Please check indentation and keywords spelling inside mentioned groups configuration.
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>The following profiles have invalid configuration and won&#39;t be used: [&#39;standard_profile&#39;, &#39;walk_profile&#39;]. Please check indentation and keywords spelling inside mentioned profiles configuration.
+
+<div class="codehilite"><pre><span></span><code>The following profiles have invalid configuration and won&#39;t be used: [&#39;standard_profile&#39;, &#39;walk_profile&#39;]. Please check indentation and keywords spelling inside mentioned profiles configuration.
 </code></pre></div>
-Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to:</p>
+
+<p>Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to:</p>
 <ul>
 <li><a href="../../configuration/profiles/">Configuring profiles</a> 
 or</li>

@@ -2639,6 +2639,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mongodb-authentication-fails-after-changing-the-root-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        MongoDB authentication fails after changing the root password
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#addressing-metric-naming-conflicts-for-splunk-integration" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2878,6 +2889,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mongodb-authentication-fails-after-changing-the-root-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        MongoDB authentication fails after changing the root password
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#addressing-metric-naming-conflicts-for-splunk-integration" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -2918,18 +2940,21 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">docker compose</label><label for="__tabbed_1_2">microk8s</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>uname<span class="w"> </span>-r
+<div class="codehilite"><pre><span></span><code>uname<span class="w"> </span>-r
 </code></pre></div>
+
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>nodes<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{range .items[*]}{.metadata.name}{&quot;\t&quot;}{.status.nodeInfo.kernelVersion}{&quot;\n&quot;}{end}&#39;</span>
+<div class="codehilite"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>nodes<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{range .items[*]}{.metadata.name}{&quot;\t&quot;}{.status.nodeInfo.kernelVersion}{&quot;\n&quot;}{end}&#39;</span>
 </code></pre></div>
+
 </div>
 </div>
 </div>
 <p>Anything <code>&gt;= 6.19</code> is at risk. Also check container exit state:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>inspect<span class="w"> </span>mongo<span class="w"> </span>--format<span class="w"> </span><span class="s1">&#39;status={{.State.Status}} exit={{.State.ExitCode}} oom={{.State.OOMKilled}}&#39;</span>
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>inspect<span class="w"> </span>mongo<span class="w"> </span>--format<span class="w"> </span><span class="s1">&#39;status={{.State.Status}} exit={{.State.ExitCode}} oom={{.State.OOMKilled}}&#39;</span>
 </code></pre></div>
+
 <p>The combination <code>exit=139 oom=false</code> together with <code>mongod startup complete</code> in the container logs ~30s before the exit is the diagnostic signature.</p>
 <h4 id="fix">Fix<a class="headerlink" href="#fix" title="Permanent link">&para;</a></h4>
 <p>SC4SNMP from version <strong>1.17.0</strong> ships a default <code>GLIBC_TUNABLES=glibc.pthread.rseq=1</code> on the mongo container, which restores the upstream glibc default and prevents the crash. The setting is a safe no-op on kernels &lt; 6.19, so it is enabled unconditionally. You normally do not need to do anything.</p>
@@ -2938,17 +2963,19 @@
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>In <code>docker_compose/.env</code>, ensure:</p>
-<div class="highlight"><pre><span></span><code>MONGO_GLIBC_TUNABLES=glibc.pthread.rseq=1
+<div class="codehilite"><pre><span></span><code>MONGO_GLIBC_TUNABLES=glibc.pthread.rseq=1
 </code></pre></div>
+
 <p>The <code>mongo</code> service in <code>docker-compose.yaml</code> already references this variable.</p>
 </div>
 <div class="tabbed-block">
 <p>In <code>values.yaml</code>, ensure the entry is present (it is the default):</p>
-<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">extraEnv</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GLIBC_TUNABLES</span>
 <span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;glibc.pthread.rseq=1&quot;</span>
 </code></pre></div>
+
 </div>
 </div>
 </div>
@@ -2972,12 +2999,30 @@
 <li>
 <p><strong>Manually Update MongoDB</strong>:</p>
 <p><a href="https://www.mongodb.com/docs/manual/release-notes/6.0-upgrade-standalone/#upgrade-procedure">Update MongoDB&rsquo;s Feature Compatibility Version</a> manually by executing the following command:
- <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pod/&lt;mongodb-pod-id&gt;<span class="w"> </span>-n<span class="w"> </span>sc4snmp<span class="w"> </span>--<span class="w"> </span>mongosh
-db.adminCommand<span class="o">(</span><span class="w"> </span><span class="o">{</span><span class="w"> </span>setFeatureCompatibilityVersion:<span class="w"> </span><span class="s2">&quot;6.0&quot;</span><span class="w"> </span><span class="o">})</span>
-</code></pre></div></p>
+ <code>bash
+ microk8s kubectl exec -it pod/&lt;mongodb-pod-id&gt; -n sc4snmp -- mongosh
+ db.adminCommand( { setFeatureCompatibilityVersion: "6.0" })</code></p>
 <p>Replace <code>&lt;mongodb-pod-id&gt;</code> with the actual Pod ID of your MongoDB instance.</p>
 </li>
 </ol>
+<h3 id="mongodb-authentication-fails-after-changing-the-root-password">MongoDB authentication fails after changing the root password<a class="headerlink" href="#mongodb-authentication-fails-after-changing-the-root-password" title="Permanent link">&para;</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Microk8s only</p>
+</div>
+<p>After changing <code>mongodb.auth.rootPassword</code> (or the value of an existing root-password
+Secret) and running <code>helm upgrade</code>, application pods (worker, scheduler, traps, inventory,
+discovery, UI) start logging MongoDB authentication failures (e.g. <code>Authentication failed</code>)
+while the <code>mongo</code> pod itself stays healthy.</p>
+<p>The <code>mongo</code> container only applies <code>MONGO_INITDB_ROOT_USERNAME</code> / <code>MONGO_INITDB_ROOT_PASSWORD</code>
+the first time it starts against an empty data directory. On an existing PVC, changing the
+Secret updates what the application pods send, but MongoDB itself keeps the old password -
+creating a mismatch.</p>
+<p>Follow <a href="../../microk8s/configuration/mongo-configuration/#rotating-the-mongodb-password">Rotating the MongoDB password</a>
+to re-key the database with the <em>old</em> password before/while updating the Secret and rolling
+application pods. This does not require any data loss.</p>
+<p>If the old password has been lost and cannot be recovered, the only remaining option is to
+<a href="../../microk8s/sc4snmp-installation/#reinstall-splunk-connect-for-snmp">reinstall SC4SNMP with PVC deletion</a>,
+which wipes all MongoDB data (inventory, profiles, walk state, etc.).</p>
 <h3 id="addressing-metric-naming-conflicts-for-splunk-integration">Addressing Metric Naming Conflicts for Splunk Integration<a class="headerlink" href="#addressing-metric-naming-conflicts-for-splunk-integration" title="Permanent link">&para;</a></h3>
 <p>When collecting SNMP metrics using SC4SNMP, metric names often contain hyphens (e.g., IF-MIB) because the default MIB format includes hyphens in Object Identifiers (OIDs) as specified by standard MIB naming conventions. 
 While this naming convention is standard for SNMP MIBs, it can lead to compatibility issues when forwarding these metrics, particularly when integrating with Splunk via the OpenTelemetry (OTel) Collector&rsquo;s Splunk HEC metric endpoint.</p>
@@ -2992,20 +3037,22 @@ hyphens in metric names to underscores.</p>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Set <code>splunkMetricNameHyphenToUnderscore</code> to <code>true</code> within the <code>poller</code> section of <code>values.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">poller</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">splunkMetricNameHyphenToUnderscore</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
+
 </div>
 <div class="tabbed-block">
 <p>Set <code>SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE=true</code> in <code>.env</code>:</p>
-<div class="highlight"><pre><span></span><code>SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE=true
+<div class="codehilite"><pre><span></span><code>SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE=true
 </code></pre></div>
+
 </div>
 </div>
 </div>
 <p>Enabling this option transforms metric names from their hyphenated format to an underscore-separated format, aligning them with common Splunk metric naming conventions.</p>
 <p>Before conversion (hyphens):</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;frequency&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;60&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;ifAdminStatus&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;up&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;ifAlias&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
@@ -3024,8 +3071,9 @@ hyphens in metric names to underscores.</p>
 <span class="w">  </span><span class="nt">&quot;profiles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;TEST&quot;</span>
 <span class="p">}</span>
 </code></pre></div>
+
 <p>After conversion (underscores):</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;frequency&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;60&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;ifAdminStatus&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;up&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;ifAlias&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
