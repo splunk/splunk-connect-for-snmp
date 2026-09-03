@@ -11,6 +11,12 @@ See the following to update SC4SNMP.
     [Rotating the MongoDB password](configuration/mongo-configuration.md#rotating-the-mongodb-password)
     for the correct procedure before upgrading with a changed password.
 
+!!! note
+    If the upgrade changes `mongodb.auth.enabled` from `false` to `true` in replication mode, follow [Enable authentication on an existing replica set](configuration/mongo-configuration.md#enable-authentication-on-an-existing-replica-set) before running the upgrade.
+
+!!! warning
+    Changing `mongodb.auth.enabled` from `true` to `false` in replication mode can leave the MongoDB members without a valid replica-set configuration. If MongoDB cannot elect a PRIMARY after the rollout, follow [Recover the replica set after disabling authentication](configuration/mongo-configuration.md#recover-the-replica-set-after-disabling-authentication).
+
 ## Upgrade to the latest version
 To upgrade SC4SNMP to the latest version, simply run the following command:
 

@@ -1,0 +1,367 @@
+{{- $replicationAuthTransitionPhase := include "splunk-connect-for-snmp.mongodb.replicationAuthTransitionPhase" . -}}
+{{- $replicaCount := int (.Values.mongodb.replicaCount | default 3) -}}
+{{- $replicaSetName := .Values.mongodb.replicaSetName | default "rs0" -}}
+{{- $mongoTimeout := int (.Values.mongodb.replicaInitJob.timeout | default 600) -}}
+{{- $statefulSetName := printf "%s-mongodb" .Release.Name -}}
+{{- if ne $replicationAuthTransitionPhase "none" }}
+{{- if lt $replicaCount 3 -}}
+{{- fail "completing MongoDB authentication migration requires mongodb.replicaCount >= 3 so a voting majority remains available during the rolling migration" -}}
+{{- end }}
+{{- $baseArgs := list "--replSet" $replicaSetName "--keyFile" "/etc/keyfile/replica-key" -}}
+{{- $ipv6Args := ternary (list "--ipv6" "--bind_ip_all") (list) .Values.mongodb.ipv6Enabled -}}
+{{- $strictArgs := concat $baseArgs $ipv6Args -}}
+{{- $transitionArgs := concat $baseArgs (list "--transitionToAuth") $ipv6Args -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ printf "%s-mongodb-auth-rollout" (.Release.Name | trunc 40 | trimSuffix "-") }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-mongodb-auth-migration
+  annotations:
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-failed
+spec:
+  # The script retries expected Pod and election waits. Do not retry the whole Job after an unexpected failure. The next Helm upgrade reads the StatefulSet
+  # phase marker and resumes from the correct phase.
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 600
+  # A positive transitionTimeout overrides the Job deadline. Zero uses replicaCount multiplied by replicaInitJob.timeout.
+  activeDeadlineSeconds: {{ .Values.mongodb.replicationAuthTransition.transitionTimeout | default (mul $replicaCount $mongoTimeout) }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-mongodb-auth-migration
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ .Release.Name }}-mongodb-init-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: migrate-replica-set
+        image: {{ .Values.mongodb.replicaInitJob.image.repository | default "alpine/kubectl" }}:{{ .Values.mongodb.replicaInitJob.image.tag | default "1.36.3" }}
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        command:
+        - sh
+        - -ec
+        - |
+          readonly STATEFULSET_NAME={{ $statefulSetName | quote }}
+          readonly PROBE_POD="${STATEFULSET_NAME}-0"
+          readonly REPLICA_COUNT={{ $replicaCount | quote }}
+          readonly OPERATION_TIMEOUT_SECONDS={{ $mongoTimeout | quote }}
+          readonly STARTING_PHASE={{ $replicationAuthTransitionPhase | quote }}
+          readonly STRICT_ARGS_JSON={{ $strictArgs | toJson | quote }}
+          readonly TRANSITION_ARGS_JSON={{ $transitionArgs | toJson | quote }}
+          readonly CLIENT_SELECTOR={{ printf "app.kubernetes.io/instance=%s" .Release.Name | quote }}
+          {{- if .Values.UI.enable }}
+          readonly UI_MONGODB_CLIENT_DEPLOYMENTS='deployment/ui-backend-deployment deployment/ui-backend-worker-deployment'
+          {{- else }}
+          readonly UI_MONGODB_CLIENT_DEPLOYMENTS=''
+          {{- end }}
+
+          set -u
+          {{- include "splunk-connect-for-snmp.mongodb.replicationAuthTransitionShellHelpers" . | nindent 10 }}
+
+          verify_migration_phase() {
+            expected_phase=$1
+            live_phase=$(kubectl get "statefulset/${STATEFULSET_NAME}" \
+              -o jsonpath='{.metadata.annotations.sc4snmp\.splunk\.com/mongodb-auth-migration-phase}')
+            if [ "${live_phase}" != "${expected_phase}" ]; then
+              echo "[ERROR] Expected MongoDB authentication migration phase ${expected_phase}, found ${live_phase:-none}" >&2
+              return 1
+            fi
+          }
+
+          run_authenticated_mongosh() {
+            target_pod=$1
+            mongosh_script=$2
+            kubectl exec "${target_pod}" -c mongodb -- mongosh --quiet \
+              --username "${MONGODB_USERNAME}" \
+              --password "${MONGODB_PASSWORD}" \
+              --authenticationDatabase admin \
+              --eval "${mongosh_script}"
+          }
+
+          collect_mongodb_client_deployments() {
+            if ! release_deployments=$(kubectl get deployments -l "${CLIENT_SELECTOR}" -o name); then
+              echo "[ERROR] Unable to list MongoDB client Deployments for this release" >&2
+              return 1
+            fi
+
+            MONGODB_CLIENT_DEPLOYMENTS=''
+            for client_deployment in ${release_deployments} ${UI_MONGODB_CLIENT_DEPLOYMENTS}; do
+              if ! client_env_names=$(kubectl get "${client_deployment}" -o jsonpath='{.spec.template.spec.containers[*].env[*].name}'); then
+                echo "[ERROR] Unable to inspect ${client_deployment}" >&2
+                return 1
+              fi
+              if ! echo "${client_env_names}" | grep -qw MONGODB_MODE; then
+                continue
+              fi
+              if ! echo "${client_env_names}" | grep -qw MONGODB_USERNAME ||
+                 ! echo "${client_env_names}" | grep -qw MONGODB_PASSWORD; then
+                echo "[ERROR] ${client_deployment} does not have MongoDB credentials" >&2
+                return 1
+              fi
+              MONGODB_CLIENT_DEPLOYMENTS="${MONGODB_CLIENT_DEPLOYMENTS} ${client_deployment}"
+            done
+
+            if [ -z "${MONGODB_CLIENT_DEPLOYMENTS}" ]; then
+              echo "[ERROR] No MongoDB client Deployments were found for this release" >&2
+              return 1
+            fi
+          }
+
+          run_mongosh() {
+            connection_mode=$1
+            shift
+            case "${connection_mode}" in
+              auth) run_authenticated_mongosh "$@" ;;
+              noauth) run_unauthenticated_mongosh "$@" ;;
+              *) echo "[ERROR] Unexpected MongoDB connection mode: ${connection_mode}" >&2; return 1 ;;
+            esac
+          }
+
+          get_member_role() {
+            member_pod=$1
+            connection_mode=$2
+            role_query='const hello = db.hello(); print(hello.isWritablePrimary ? "PRIMARY" : (hello.secondary ? "SECONDARY" : "OTHER"))'
+            run_mongosh "${connection_mode}" "${member_pod}" "${role_query}" 2>/dev/null | tail -n 1
+          }
+
+          discover_primary_pod() {
+            connection_mode=$1
+            primary_script='const primary = db.hello().primary; if (primary) print(primary.split(".")[0])'
+            run_mongosh "${connection_mode}" "${PROBE_POD}" "${primary_script}" 2>/dev/null | tail -n 1
+          }
+
+          wait_for_member() {
+            wait_pod=$1
+            wait_mode=$2
+            wait_expected=$3
+
+            kubectl wait --for=condition=ready "pod/${wait_pod}" --timeout="${OPERATION_TIMEOUT_SECONDS}s"
+            wait_attempts=$((OPERATION_TIMEOUT_SECONDS / 5))
+            if [ "${wait_attempts}" -lt 1 ]; then
+              wait_attempts=1
+            fi
+            for attempt in $(seq 1 "${wait_attempts}"); do
+              wait_role=$(get_member_role "${wait_pod}" "${wait_mode}" || true)
+              case "${wait_expected}:${wait_role}" in
+                SECONDARY:SECONDARY|HEALTHY:PRIMARY|HEALTHY:SECONDARY)
+                  echo "[INFO] ${wait_pod} is ${wait_role}"
+                  return 0
+                  ;;
+              esac
+              sleep 5
+            done
+
+            echo "[ERROR] Timed out waiting for ${wait_pod} to become ${wait_expected}" >&2
+            return 1
+          }
+
+          member_matches_auth_phase() {
+            phase_pod=$1
+            phase=$2
+            pod_args=$(kubectl get "pod/${phase_pod}" -o jsonpath='{.spec.containers[?(@.name=="mongodb")].args}') || return 1
+            echo "${pod_args}" | grep -q -- '--keyFile' || return 1
+            if [ "${phase}" = "transition" ]; then
+              echo "${pod_args}" | grep -q -- '--transitionToAuth' || return 1
+            elif echo "${pod_args}" | grep -q -- '--transitionToAuth'; then
+              echo "[ERROR] ${phase_pod} still has --transitionToAuth" >&2
+              return 1
+            fi
+          }
+
+          replace_member_for_auth_phase() {
+            member_pod=$1
+            connection_mode=$2
+            auth_phase=$3
+            expected_role=$4
+
+            verify_migration_phase "${auth_phase}"
+            echo "[INFO] Replacing ${member_pod} for the ${auth_phase} phase"
+            kubectl delete "pod/${member_pod}" --wait=true --timeout="${OPERATION_TIMEOUT_SECONDS}s"
+            kubectl wait --for=create "pod/${member_pod}" --timeout="${OPERATION_TIMEOUT_SECONDS}s"
+            wait_for_member "${member_pod}" "${connection_mode}" "${expected_role}"
+            member_matches_auth_phase "${member_pod}" "${auth_phase}"
+          }
+
+          wait_for_new_primary() {
+            old_primary=$1
+            connection_mode=$2
+            primary_attempts=$((OPERATION_TIMEOUT_SECONDS / 2))
+            if [ "${primary_attempts}" -lt 1 ]; then
+              primary_attempts=1
+            fi
+            for attempt in $(seq 1 "${primary_attempts}"); do
+              new_primary=$(discover_primary_pod "${connection_mode}" || true)
+              if [ -n "${new_primary}" ] && [ "${new_primary}" != "${old_primary}" ]; then
+                echo "[INFO] ${new_primary} is the new PRIMARY"
+                return 0
+              fi
+              sleep 2
+            done
+            echo "[ERROR] Timed out waiting for a new PRIMARY after stepping down ${old_primary}" >&2
+            return 1
+          }
+
+          step_down_primary() {
+            stepdown_pod=$1
+            stepdown_mode=$2
+            stepdown_phase=$3
+            stepdown_script='db.getSiblingDB("admin").runCommand({replSetStepDown: 300, secondaryCatchUpPeriodSecs: 30})'
+            verify_migration_phase "${stepdown_phase}"
+            echo "[INFO] Stepping down ${stepdown_pod}"
+            if ! run_mongosh "${stepdown_mode}" "${stepdown_pod}" "${stepdown_script}" >/dev/null 2>&1; then
+              echo "[WARNING] The step-down command returned a non-zero status. Waiting for PRIMARY election to confirm the result" >&2
+            fi
+            wait_for_new_primary "${stepdown_pod}" "${stepdown_mode}"
+          }
+
+          roll_phase() {
+            phase_mode=$1
+            phase_name=$2
+
+            # Inspect each Pod's arguments so a resumed transition skips members
+            # that already completed this phase. Rediscover the PRIMARY before
+            # each replacement instead of assuming Pod 0 is PRIMARY.
+            phase_pass=0
+            while [ "${phase_pass}" -lt $((REPLICA_COUNT * 2 + 1)) ]; do
+              phase_pass=$((phase_pass + 1))
+              current_primary=$(discover_primary_pod "${phase_mode}")
+              if [ -z "${current_primary}" ]; then
+                echo "[ERROR] Unable to discover the PRIMARY during ${phase_name}" >&2
+                return 1
+              fi
+
+              candidate=''
+              for ordinal in $(seq 0 $((REPLICA_COUNT - 1))); do
+                target="${STATEFULSET_NAME}-${ordinal}"
+                if member_matches_auth_phase "${target}" "${phase_name}" >/dev/null 2>&1; then
+                  continue
+                fi
+                if [ "${target}" = "${current_primary}" ]; then
+                  continue
+                fi
+                candidate=${target}
+                break
+              done
+
+              if [ -n "${candidate}" ]; then
+                if [ "$(get_member_role "${candidate}" "${phase_mode}")" != "SECONDARY" ]; then
+                  echo "[ERROR] ${candidate} is not a healthy SECONDARY" >&2
+                  return 1
+                fi
+
+                replace_member_for_auth_phase "${candidate}" "${phase_mode}" "${phase_name}" SECONDARY
+                continue
+              fi
+
+              if ! member_matches_auth_phase "${current_primary}" "${phase_name}" >/dev/null 2>&1; then
+                step_down_primary "${current_primary}" "${phase_mode}" "${phase_name}"
+                replace_member_for_auth_phase "${current_primary}" "${phase_mode}" "${phase_name}" HEALTHY
+                continue
+              fi
+
+              echo "[INFO] All members completed the ${phase_name} phase"
+              return 0
+            done
+
+            echo "[ERROR] Replica-set membership kept changing during ${phase_name}. Refusing to continue" >&2
+            return 1
+          }
+
+          main() {
+            # Validate credentials before changing the StatefulSet or deleting Pods.
+            require_mongodb_credentials || exit 1
+
+            if [ "${STARTING_PHASE}" = "transition" ]; then
+              echo "[INFO] ================================================================"
+              echo "[INFO] Starting MongoDB authentication transition"
+              echo "[INFO] Phase 1 of 2: rolling members into transitionToAuth compatibility mode"
+              echo "[INFO] ================================================================"
+              echo "[INFO] Compatibility mode keeps migrated and unmigrated members connected during the rolling restart"
+              echo "[WARNING] MongoDB client access control is not enforced until Phase 2 completes"
+
+              verify_migration_phase transition
+              echo "[INFO] Confirming the StatefulSet template uses transitionToAuth compatibility mode"
+              kubectl patch "statefulset/${STATEFULSET_NAME}" --type=strategic \
+                --patch "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"mongodb\",\"args\":${TRANSITION_ARGS_JSON}}]}}}}"
+
+              echo "[INFO] Confirming every existing member is healthy before restarting Pods"
+              for ordinal in $(seq 0 $((REPLICA_COUNT - 1))); do
+                wait_for_member "${STATEFULSET_NAME}-${ordinal}" noauth HEALTHY
+              done
+
+              echo "[INFO] Restarting SECONDARY members first, then stepping down and restarting the PRIMARY"
+              roll_phase noauth transition
+
+              echo "[INFO] Verifying administrator credentials before switching SC4SNMP clients to authenticated connections"
+              run_authenticated_mongosh "${PROBE_POD}" 'db.getSiblingDB("admin").runCommand({connectionStatus: 1, showPrivileges: false})' >/dev/null
+
+              echo "[INFO] Setting the StatefulSet template to strict authentication while existing Pods remain in compatibility mode"
+              verify_migration_phase transition
+              kubectl patch "statefulset/${STATEFULSET_NAME}" --type=strategic \
+                --patch "{\"metadata\":{\"annotations\":{\"sc4snmp.splunk.com/mongodb-auth-migration-phase\":\"strict\"}},\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"mongodb\",\"args\":${STRICT_ARGS_JSON}}]}}}}"
+            else
+              echo "[INFO] Resuming MongoDB strict-authentication rollout"
+            fi
+
+            collect_mongodb_client_deployments
+            echo "[INFO] Waiting for SC4SNMP services that use MongoDB to roll out with credentials"
+            {{- if .Values.UI.enable }}
+            echo "[INFO] UI is enabled, including the UI backend and UI backend worker Deployments"
+            {{- end }}
+            for deployment in ${MONGODB_CLIENT_DEPLOYMENTS}; do
+              echo "[INFO] Waiting for ${deployment}"
+              kubectl rollout status "${deployment}" --timeout="${OPERATION_TIMEOUT_SECONDS}s"
+            done
+
+            echo "[INFO] Confirming authenticated access to every replica-set member"
+            for ordinal in $(seq 0 $((REPLICA_COUNT - 1))); do
+              wait_for_member "${STATEFULSET_NAME}-${ordinal}" auth HEALTHY
+            done
+
+            echo "[INFO] ================================================================"
+            echo "[INFO] Phase 2 of 2: rolling members into strict authentication mode"
+            echo "[INFO] Strict mode enforces authentication after all members and SC4SNMP clients can authenticate"
+            echo "[INFO] ================================================================"
+            echo "[INFO] Restarting SECONDARY members first, then stepping down and restarting the PRIMARY"
+            roll_phase auth strict
+
+            echo "[INFO] Restoring normal StatefulSet rolling updates and clearing the migration marker"
+            verify_migration_phase strict
+            kubectl patch "statefulset/${STATEFULSET_NAME}" --type=merge \
+              --patch '{"metadata":{"annotations":{"sc4snmp.splunk.com/mongodb-auth-migration-phase":null}},"spec":{"updateStrategy":{"type":"RollingUpdate"}}}'
+
+            echo "[INFO] MongoDB authentication transition completed successfully. All replica-set members now enforce authentication"
+          }
+
+          main
+        env:
+        {{- include "splunk-connect-for-snmp.mongodb-auth" . | nindent 8 }}
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "25m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
+{{- end }}

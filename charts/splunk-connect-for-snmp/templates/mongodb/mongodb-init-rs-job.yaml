@@ -5,6 +5,13 @@ metadata:
   name: {{ .Release.Name }}-mongodb-init-rs
   labels:
     app: {{ .Release.Name }}-mongodb-init
+  annotations:
+    # This post-install hook initializes a new MongoDB replica set. Upgrades
+    # that enable authentication on an existing replica set are handled by
+    # the dedicated authentication-transition Jobs.
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   backoffLimit: 10
   ttlSecondsAfterFinished: 600
@@ -66,7 +73,7 @@ spec:
             {{- if .Values.mongodb.auth.enabled }}
             -u "$MONGODB_USERNAME" -p "$MONGODB_PASSWORD" --authenticationDatabase admin \
             {{- end }}
-            --eval "rs.initiate({_id:'{{ .Values.mongodb.replicaSetName }}',members:[{{- range $i := until (int .Values.mongodb.replicaCount) }}{_id:{{ $i }},host:'{{ $.Release.Name }}-mongodb-{{ $i }}.{{ $.Release.Name }}-mongodb-headless:27017'}{{ if ne $i (sub (int $.Values.mongodb.replicaCount) 1) }},{{- end }}{{- end }}]})" || echo "Init completed"
+            --eval "rs.initiate({_id:'{{ .Values.mongodb.replicaSetName }}',members:[{{- range $i := until (int .Values.mongodb.replicaCount) }}{_id:{{ $i }},host:'{{ $.Release.Name }}-mongodb-{{ $i }}.{{ $.Release.Name }}-mongodb-headless:27017'}{{ if ne $i (sub (int $.Values.mongodb.replicaCount) 1) }},{{- end }}{{- end }}]})"
 
           echo ""
           echo "Waiting 15s for PRIMARY election..."
