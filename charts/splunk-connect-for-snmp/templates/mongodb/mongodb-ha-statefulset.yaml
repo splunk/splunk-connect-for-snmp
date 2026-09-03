@@ -1,4 +1,6 @@
 {{- if eq .Values.mongodb.mode "replication" }}
+{{- $replicationAuthTransitionPhase := include "splunk-connect-for-snmp.mongodb.replicationAuthTransitionPhase" . }}
+{{- $replicationAuthTransitionRequired := ne $replicationAuthTransitionPhase "none" }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -6,9 +8,16 @@ metadata:
   labels:
     app: {{ .Release.Name }}-mongodb
     mode: replication
+  {{- if $replicationAuthTransitionRequired }}
+  annotations:
+    sc4snmp.splunk.com/mongodb-auth-migration-phase: {{ $replicationAuthTransitionPhase | quote }}
+  {{- end }}
 spec:
   serviceName: {{ .Release.Name }}-mongodb-headless
   replicas: {{ .Values.mongodb.replicaCount | default 3 }}
+  updateStrategy:
+    # During an authentication transition, the rollout Job restarts SECONDARY members before the PRIMARY.
+    type: {{ ternary "OnDelete" "RollingUpdate" $replicationAuthTransitionRequired }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}-mongodb
@@ -80,6 +89,13 @@ spec:
         {{- if .Values.mongodb.auth.enabled }}
         - --keyFile
         - /etc/keyfile/replica-key
+        {{- /*
+        During the compatibility phase, recreated Pods use --keyFile with --transitionToAuth so they can communicate with migrated and unmigrated
+        members. OnDelete keeps Pod replacement under the rollout Job, which restarts SECONDARY members before the PRIMARY. The Job removes --transitionToAuth after all members and clients can authenticate.
+        */}}
+        {{- if eq $replicationAuthTransitionPhase "transition" }}
+        - --transitionToAuth
+        {{- end }}
         {{- end }}
         {{- if .Values.mongodb.ipv6Enabled }}
         - --ipv6

@@ -650,13 +650,16 @@ mongodb:
     allowPrivilegeEscalation: false
 
   auth:
+    # In replication mode, changing authentication from disabled to enabled during an upgrade starts a coordinated two-phase migration.
     enabled: true
     rootUser: admin
     rootPassword: "ChangeMe123"
     rootUserKey: "root-user"
     rootPasswordKey: "root-password"
     existingSecret: ""
-    existingReplicaKeySecret: ""
+
+  replicationAuthTransition:
+    transitionTimeout: 0
 
   persistence:
     enabled: true

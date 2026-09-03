@@ -19,6 +19,20 @@ rules:
 - apiGroups: [""]
   resources: ["pods"]
   verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods"]
+  resourceNames:
+  {{- range $i := until (int (.Values.mongodb.replicaCount | default 3)) }}
+  - {{ $.Release.Name }}-mongodb-{{ $i }}
+  {{- end }}
+  verbs: ["delete"]
+- apiGroups: ["apps"]
+  resources: ["statefulsets"]
+  resourceNames: [{{ printf "%s-mongodb" .Release.Name | quote }}]
+  verbs: ["get", "patch"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

@@ -1,0 +1,187 @@
+{{- $replicationAuthTransitionPhase := include "splunk-connect-for-snmp.mongodb.replicationAuthTransitionPhase" . -}}
+{{- $replicaCount := int (.Values.mongodb.replicaCount | default 3) -}}
+{{- $replicaSetName := .Values.mongodb.replicaSetName | default "rs0" -}}
+{{- $mongoTimeout := int (.Values.mongodb.replicaInitJob.timeout | default 600) -}}
+{{- $statefulSetName := printf "%s-mongodb" .Release.Name -}}
+{{- if eq $replicationAuthTransitionPhase "transition" }}
+{{- if lt $replicaCount 3 -}}
+{{- fail "enabling authentication on an existing MongoDB replica set requires mongodb.replicaCount >= 3 so a voting majority remains available during the rolling migration" -}}
+{{- end }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ printf "%s-mongodb-auth-user" (.Release.Name | trunc 43 | trimSuffix "-") }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-mongodb-auth-migration
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-failed
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 600
+  activeDeadlineSeconds: {{ add $mongoTimeout 120 }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-mongodb-auth-migration
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ .Release.Name }}-mongodb-init-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: create-root-user
+        image: {{ .Values.mongodb.replicaInitJob.image.repository | default "alpine/kubectl" }}:{{ .Values.mongodb.replicaInitJob.image.tag | default "1.36.3" }}
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        command:
+        - sh
+        - -ec
+        - |
+          readonly STATEFULSET_NAME={{ $statefulSetName | quote }}
+          readonly REPLICA_COUNT={{ $replicaCount | quote }}
+          readonly OPERATION_TIMEOUT_SECONDS={{ $mongoTimeout | quote }}
+          readonly PROBE_POD="${STATEFULSET_NAME}-0"
+          readonly PRIMARY_DISCOVERY_ATTEMPTS=60
+          readonly PRIMARY_DISCOVERY_INTERVAL_SECONDS=2
+
+          set -u
+          {{- include "splunk-connect-for-snmp.mongodb.replicationAuthTransitionShellHelpers" . | nindent 10 }}
+
+          wait_for_probe_pod_ready() {
+            if ! kubectl wait --for=condition=ready "pod/${PROBE_POD}" \
+              --timeout="${OPERATION_TIMEOUT_SECONDS}s"; then
+              echo "[ERROR] MongoDB probe Pod ${PROBE_POD} did not become Ready" >&2
+              exit 1
+            fi
+          }
+
+          discover_primary_host() {
+            discovered_primary_host=''
+            discovery_attempt=1
+            while [ "${discovery_attempt}" -le "${PRIMARY_DISCOVERY_ATTEMPTS}" ]; do
+              discovered_primary_host=$(run_unauthenticated_mongosh "${PROBE_POD}" \
+                'const primary = db.hello().primary; if (primary) print(primary)' \
+                2>/dev/null | tail -n 1 || true)
+              if [ -n "${discovered_primary_host}" ]; then
+                echo "${discovered_primary_host}"
+                return 0
+              fi
+              sleep "${PRIMARY_DISCOVERY_INTERVAL_SECONDS}"
+              discovery_attempt=$((discovery_attempt + 1))
+            done
+            return 1
+          }
+
+          resolve_primary_pod_name() {
+            reported_primary_host=$1
+            resolved_primary_pod="${reported_primary_host%%.*}"
+            resolved_primary_pod="${resolved_primary_pod%%:*}"
+            case "${resolved_primary_pod}" in
+              "${STATEFULSET_NAME}"-*) resolved_primary_ordinal=${resolved_primary_pod#"${STATEFULSET_NAME}"-} ;;
+              *) echo "[ERROR] Replica set returned an unexpected PRIMARY host: ${reported_primary_host}" >&2; return 1 ;;
+            esac
+            case "${resolved_primary_ordinal}" in
+              ''|*[!0-9]*) echo "[ERROR] Replica set returned an invalid PRIMARY ordinal: ${reported_primary_host}" >&2; return 1 ;;
+            esac
+            if [ "${resolved_primary_ordinal}" -ge "${REPLICA_COUNT}" ]; then
+              echo "[ERROR] Replica set returned a PRIMARY outside mongodb.replicaCount: ${reported_primary_host}" >&2
+              return 1
+            fi
+            echo "${resolved_primary_pod}"
+          }
+
+          validate_replica_set_topology() {
+            validation_pod=$1
+            run_unauthenticated_mongosh "${validation_pod}" '
+              const cfg = rs.conf();
+              if (cfg._id !== {{ $replicaSetName | toJson }}) {
+                throw new Error("MongoDB replica-set name differs from mongodb.replicaSetName. Refusing to migrate");
+              }
+              if (cfg.members.length !== {{ $replicaCount }}) {
+                throw new Error("MongoDB replica-set member count differs from mongodb.replicaCount. Do not scale the replica set in the same upgrade");
+              }
+            '
+          }
+
+          ensure_admin_user() {
+            admin_pod=$1
+            require_mongodb_credentials || exit 1
+
+            echo "[INFO] Creating or verifying the configured MongoDB administrator on ${admin_pod}"
+            kubectl exec "${admin_pod}" -c mongodb -- env \
+              SC4SNMP_MONGODB_USERNAME="${MONGODB_USERNAME}" \
+              SC4SNMP_MONGODB_PASSWORD="${MONGODB_PASSWORD}" \
+              mongosh --quiet --eval '
+                const admin = db.getSiblingDB("admin");
+                const username = process.env.SC4SNMP_MONGODB_USERNAME;
+                const password = process.env.SC4SNMP_MONGODB_PASSWORD;
+                const existing = admin.getUser(username);
+
+                if (existing === null) {
+                  admin.createUser(
+                    {
+                      user: username,
+                      pwd: password,
+                      roles: [{ role: "root", db: "admin" }]
+                    },
+                    { w: "majority", wtimeout: 60000 }
+                  );
+                  print("[INFO] MongoDB administrator created with username = " + username);
+                } else {
+                  if (!admin.auth(username, password)) {
+                    throw new Error("the configured MongoDB administrator exists but its password does not match");
+                  }
+                  if (!existing.roles.some(role => role.role === "root" && role.db === "admin")) {
+                    throw new Error("the configured MongoDB administrator exists but does not have the root role on admin");
+                  }
+                  print("[INFO] MongoDB administrator already exists with username = " + username + " and its credentials are valid");
+                }
+              '
+          }
+
+          main() {
+            echo "[INFO] ================================================================"
+            echo "[INFO] Preparing MongoDB for the authentication transition"
+            echo "[INFO] ================================================================"
+            echo "[INFO] Waiting for a Ready replica-set member and discovering the current PRIMARY"
+            wait_for_probe_pod_ready
+
+            primary_host=$(discover_primary_host) || { echo "[ERROR] Unable to discover the MongoDB PRIMARY" >&2; exit 1; }
+            primary_pod=$(resolve_primary_pod_name "${primary_host}") || exit 1
+
+            echo "[INFO] Validating the replica-set name and member count before modifying Pods"
+            validate_replica_set_topology "${primary_pod}"
+            echo "[INFO] Ensuring the configured administrator exists on the current PRIMARY with valid credentials and the root role"
+            ensure_admin_user "${primary_pod}"
+            echo "[INFO] MongoDB authentication prerequisites are ready"
+          }
+
+          main
+        env:
+        {{- include "splunk-connect-for-snmp.mongodb.replicationAuthTransitionCredentialsEnv" . | nindent 8 }}
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "25m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
+{{- end }}
