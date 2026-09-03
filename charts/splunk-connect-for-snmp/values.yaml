@@ -639,7 +639,7 @@ mongodb:
     timeout: 600
   image:
     repository: mongo
-    tag: "8.3.4"
+    tag: "8.3.8"
     pullPolicy: IfNotPresent
 
   # Container-level security context for the mongod container. runAsNonRoot/
