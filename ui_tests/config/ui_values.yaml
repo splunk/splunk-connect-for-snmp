@@ -2,14 +2,14 @@ UI:
   enable: true
   frontEnd:
     NodePort: 30001
-    repository: ghcr.io/splunk/sc4snmp-ui/frontend/container
-    tag: "1.3.0"
     pullPolicy: "Always"
+    repository: ajasnosz558/ui-frontend
+    tag: "new3"
   backEnd:
     NodePort: 30002
-    repository: ghcr.io/splunk/sc4snmp-ui/backend/container
-    tag: "1.3.0"
     pullPolicy: "Always"
+    repository: ajasnosz558/ui-backend
+    tag: "new3"
   init:
     image: registry.access.redhat.com/ubi9/ubi
     pullPolicy: IfNotPresent
@@ -100,8 +100,8 @@ poller:
  #   - sc4snmp-hlab-sha-aes
  #   - sc4snmp-hlab-sha-des
   inventory: |
-    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,delete
-    ###LOAD_BALANCER_ID###,,2c,public,,,600,,,
+    address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+    ###LOAD_BALANCER_ID###,,2c,public,,,600,,,,
 sim:
   # sim must be enabled if you want to use signalFx
   enabled: false
