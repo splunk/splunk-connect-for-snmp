@@ -52,6 +52,7 @@ urllib3 = "^2.0.0"
 jsonschema = "4.26.0"
 flower = "^2.0.1"
 filelock = "^3.18.0"
+python-dotenv = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.0"
@@ -61,7 +62,6 @@ zensical = ">=0.0.57"
 # Versioning uses the Material team's mike fork, which retargets mike's build step at `zensical build`.
 # This is a bridge until Zensical ships native versioning; installed from git (not on PyPI), so pin a commit.
 mike = {git = "https://github.com/squidfunk/mike.git", rev = "2d4ad799442f4592db8ad53b179bfb33db8c69ac"}
-python-dotenv = "^1.0.0"
 splunk-sdk = "^2.1.1"
 
 [build-system]
