@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "splunk-connect-for-snmp"
-version = "1.17.0"
+version = "1.17.1-beta.14"
 description = ""
 authors = ["omrozowicz-splunk <omrozowicz@splunk.com>"]
 license = "Apache-2.0"
@@ -44,20 +44,24 @@ mongolock = "^1.3.4"
 pika = "^1.2.0"
 JSON-log-formatter ="^1.0.0"
 "ruamel.yaml" = "^0.19.0"
-pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", branch = "main"}
+pysnmplib = {git = "https://github.com/pysnmp/pysnmp.git", tag = "v5.0.24"}
+pysnmp-pyasn1 = "1.1.3"
+pysnmp-pysmi = "1.1.12"
+pycryptodomex = "3.23.0"
 urllib3 = "^2.0.0"
 jsonschema = "4.26.0"
 flower = "^2.0.1"
 filelock = "^3.18.0"
+python-dotenv = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.0"
 pytest-cov = "^7.0.0"
-mike = "^2.0.0"
-mkdocs = "^1.2.2"
-mkdocs-material = "^9.0.0"
-python-dotenv = "^1.0.0"
-mkdocs-video = "^1.5.0"
+# Zensical (successor to Material for MkDocs) is the docs generator; it reads the existing mkdocs.yml.
+zensical = ">=0.0.57"
+# Versioning uses the Material team's mike fork, which retargets mike's build step at `zensical build`.
+# This is a bridge until Zensical ships native versioning; installed from git (not on PyPI), so pin a commit.
+mike = {git = "https://github.com/squidfunk/mike.git", rev = "2d4ad799442f4592db8ad53b179bfb33db8c69ac"}
 splunk-sdk = "^2.1.1"
 
 [build-system]

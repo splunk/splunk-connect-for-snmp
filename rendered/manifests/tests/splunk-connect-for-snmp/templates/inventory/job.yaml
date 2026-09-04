@@ -22,8 +22,19 @@ spec:
         app.kubernetes.io/component: inventory
         app.kubernetes.io/instance: release-name
     spec:
+      securityContext:
+        fsGroup: 10001
       containers:
         - name: splunk-connect-for-snmp-inventory
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
           image: "ghcr.io/splunk/splunk-connect-for-snmp/container:CURRENT-VERSION"
           imagePullPolicy: Always
           args:

@@ -73,7 +73,7 @@ If the `mongo-fcv-upgrade-to-6` job fails for any reason, there are two recovery
 
 1. **Reinstall SC4SNMP**:
 
-    [Reinstall SC4SNMP](../microk8s/sc4snmp-installation.md#restart-splunk-connect-for-snmp) with **Persistent Volume Claim (PVC) deletion**.
+    [Reinstall SC4SNMP](../microk8s/sc4snmp-installation.md#reinstall-splunk-connect-for-snmp) with **Persistent Volume Claim (PVC) deletion**.
 
 2. **Manually Update MongoDB**:
 
@@ -84,6 +84,30 @@ If the `mongo-fcv-upgrade-to-6` job fails for any reason, there are two recovery
      ```
 
     Replace `<mongodb-pod-id>` with the actual Pod ID of your MongoDB instance.
+
+### MongoDB authentication fails after changing the root password
+
+!!! warning "Microk8s only"
+
+After changing `mongodb.auth.rootPassword` (or the value of an existing root-password
+Secret) and running `helm upgrade`, application pods (worker, scheduler, traps, inventory,
+discovery, UI) start logging MongoDB authentication failures (e.g. `Authentication failed`)
+while the `mongo` pod itself stays healthy.
+
+
+The `mongo` container only applies `MONGO_INITDB_ROOT_USERNAME` / `MONGO_INITDB_ROOT_PASSWORD`
+the first time it starts against an empty data directory. On an existing PVC, changing the
+Secret updates what the application pods send, but MongoDB itself keeps the old password -
+creating a mismatch.
+
+
+Follow [Rotating the MongoDB password](../microk8s/configuration/mongo-configuration.md#rotating-the-mongodb-password)
+to re-key the database with the *old* password before/while updating the Secret and rolling
+application pods. This does not require any data loss.
+
+If the old password has been lost and cannot be recovered, the only remaining option is to
+[reinstall SC4SNMP with PVC deletion](../microk8s/sc4snmp-installation.md#reinstall-splunk-connect-for-snmp),
+which wipes all MongoDB data (inventory, profiles, walk state, etc.).
 
 ### Addressing Metric Naming Conflicts for Splunk Integration
 

@@ -20,8 +20,19 @@ spec:
       annotations:
         {{- include "splunk-connect-for-snmp.redis-annotations" . | nindent 8 }}
     spec:
+      securityContext:
+        runAsUser: {{ .Values.redis.podSecurityContext.runAsUser }}
+        runAsNonRoot: true
+        fsGroup: {{ .Values.redis.podSecurityContext.fsGroup }}
       containers:
       - name: sentinel
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
         image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
         imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
         ports:

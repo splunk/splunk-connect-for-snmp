@@ -84,6 +84,7 @@ Detailed documentation about configuring worker can be found in [Worker](../../c
 | `x.concurrency`                                | Minimum number of threads in a pod                                                                                              | `4`                                         |
 | `x.prefetch`                                   | Number of tasks consumed from the queue at once                                                                                 | poller - `1`, traps/sender - `30`           |
 | `x.maxTasksPerChild`                           | Max number of tasks a worker child process can execute before being recycled. `0` disables recycling                            | `0`                                         |
+| `x.maxMemoryPerChild`                          | Maximum resident memory per Celery prefork child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling      | `0`                                         |
 | `x.autoscaling.enabled`                        | Enables autoscaling for pod                                                                                                     | poller - `false`                            |
 | `x.autoscaling.minReplicas`                    | Minimum number of running pods when autoscaling is enabled                                                                      | poller - `2`                                |
 | `x.autoscaling.maxReplicas`                    | Maximum number of running pods when autoscaling is enabled                                                                      | poller - `10`                               |
@@ -188,6 +189,12 @@ Detailed documentation about configuring discovery can be found in [Discovery](.
 | `create`      | Specifies whether a service account should be created | `true`  |
 | `annotations` | Annotations to add to the service account             |         |
 | `name`        | The name of the service account to use.               |         |
+
+## Mibserver
+
+| Variable      | Description                                                        | Default |
+|---------------|--------------------------------------------------------------------|---------|
+| `ipv6Enabled` | Enables MIB server listeners on both IPv4 and IPv6 addresses. See [Enable IPv6](../enable-ipv6.md). | `false` |
 
 ## MongoDb
 

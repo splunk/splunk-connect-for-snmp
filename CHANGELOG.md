@@ -3,9 +3,17 @@
 ## Unreleased
 
 ### Changed
+- Add configurable IPv6 listener support for Redis, MongoDB, and the MIB server with `redis.ipv6Enabled`, `mongodb.ipv6Enabled`, and `mibserver.ipv6Enabled`.
+- Extend the existing Docker Compose `IPv6_ENABLED` option to configure MongoDB and MIB server listeners.
+- Provided `MAX_MEMORY_PER_CHILD` / `maxMemoryPerChild` setting to celery workers.
+- Provided configurable options to control the docker logging: `DOCKER_LOG_DRIVER`, `DOCKER_LOG_MAX_SIZE`, `DOCKER_LOG_MAX_FILE`, `DOCKER_LOG_COMPRESS` to prevent the disk usage growth
 
 ### Fixed
-
+- Revalidates the Mongo-backed MIB index cache whenever a trap or poller worker starts/restart.
+- Preserve unresolved trap varbind fields during custom translation processing, preventing processing failures and errors
+- Harden the security context for kubernetes templates
+- Fix schedules not resuming for unchanged inventory records after Redis/RedBeat is reset while MongoDB data is preserved
+- Prevent duplicate profiles when merging varbind mappings to avoid mappings growing unnecessarily large
 
 ## [1.17.0]
 

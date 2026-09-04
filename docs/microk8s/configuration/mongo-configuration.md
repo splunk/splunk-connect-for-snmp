@@ -16,6 +16,9 @@ mongodb:
   # Mode selector: "standalone", "replication"
   mode: replication
 
+  # Enable IPv6 support
+  ipv6Enabled: false
+
   # Replica set configuration (used only when mode = "replication")
   replicaCount: 3
   replicaSetName: rs0
@@ -25,7 +28,7 @@ mongodb:
     enabled: false
     rootUser: "admin"
     rootPassword: ""                  # Set if auth.enabled: true
-    existingUserSecret: ""            # Or reference existing secret
+    existingSecret: ""                # Or reference existing secret
     rootUserKey: "root-user"
     rootPasswordKey: "root-password"
 
@@ -71,34 +74,35 @@ mongodb:
       value: "glibc.pthread.rseq=1"
 ```
 
-| Key                                        | Type   | Default        | Description                                                      |
-|--------------------------------------------|--------|----------------|------------------------------------------------------------------|
-| mongodb.mode                               | string | standalone     | Deployment mode (standalone or replication).                     |
-| mongodb.replicaCount                       | int    | 3              | Number of MongoDB pods (used only in replication mode).          |
-| mongodb.replicaSetName                     | string | rs0            | Internal replica set identifier (used only in replication mode). |
-| mongodb.auth.enabled                       | bool   | true           | Enable MongoDB authentication.                                   |
-| mongodb.auth.rootUser                      | string | admin          | Root username for MongoDB.                                       |
-| mongodb.auth.rootPassword                  | string | ""             | Root password (avoid committing; prefer secret).                 |
-| mongodb.auth.existingUserSecret            | string | ""             | Name of existing Kubernetes Secret providing credentials.        |
-| mongodb.auth.rootUserKey                   | string | root-user      | Key inside existing secret containing the username.              |
-| mongodb.auth.rootPasswordKey               | string | root-password  | Key inside existing secret containing the password.              |
-| mongodb.image.repository                   | string | mongo          | Container image repository.                                      |
-| mongodb.image.tag                          | string | 8.2.2          | Image tag / MongoDB version.                                     |
-| mongodb.image.pullPolicy                   | string | IfNotPresent   | Image pull policy.                                               |
-| mongodb.resources.requests.cpu             | string | ""             | Guaranteed minimum CPU.                                          |
-| mongodb.resources.requests.memory          | string | ""             | Guaranteed minimum memory.                                       |
-| mongodb.resources.limits.cpu               | string | ""             | CPU limit.                                                       |
-| mongodb.resources.limits.memory            | string | ""             | Memory limit.                                                    |
-| mongodb.persistence.enabled                | bool   | true           | Create PersistentVolumeClaim.                                    |
-| mongodb.persistence.storageClassName       | string | ""             | StorageClass for the PVC (empty = default).                      |
-| mongodb.persistence.accessMode             | string | ReadWriteOnce  | PVC access mode.                                                 |
-| mongodb.persistence.size                   | string | 10Gi           | Requested persistent volume size.                                |
-| mongodb.podSecurityContext.fsGroup         | int    | 999            | FS group owning mounted volumes.                                 |
-| mongodb.containerSecurityContext.runAsUser | int    | 999            | UID for the container (non-root hardening).                      |
-| mongodb.replicaInitJob.image.repository    | string | alpine/kubectl | Container image for the initialization job.                      |
-| mongodb.replicaInitJob.image.tag           | string | 1.34.2         | Image tag / kubectl version.                                     |
-| mongodb.replicaInitJob.timeout             | int    | 600            | Maximum time (in seconds) to wait for each pod to become ready.  |
-| mongodb.extraEnv                           | list   | `[{name: GLIBC_TUNABLES, value: "glibc.pthread.rseq=1"}]` | Extra environment variables injected into the mongod container. The default `GLIBC_TUNABLES` entry mitigates a MongoDB 8.x SIGSEGV observed on host kernels >= 6.19 (e.g. Ubuntu 26.04 / kernel 6.19+ HWE backports). See [MongoDB 8.x crash on Linux kernel 6.19+](../../troubleshooting/general-issues.md#mongodb-8x-crash-on-linux-kernel-619-exit-139--sigsegv). |
+| Key                                        | Type   | Default                                                   | Description                                                      |
+|--------------------------------------------|--------|-----------------------------------------------------------|------------------------------------------------------------------|
+| mongodb.mode                               | string | standalone                                                | Deployment mode (standalone or replication).                     |
+| mongodb.ipv6Enabled                        | bool   | false                                                     | Enable IPv6 support for MongoDB. See [Enable IPv6](../enable-ipv6.md). |
+| mongodb.replicaCount                       | int    | 3                                                         | Number of MongoDB pods (used only in replication mode).          |
+| mongodb.replicaSetName                     | string | rs0                                                       | Internal replica set identifier (used only in replication mode). |
+| mongodb.auth.enabled                       | bool   | true                                                      | Enable MongoDB authentication.                                   |
+| mongodb.auth.rootUser                      | string | admin                                                     | Root username for MongoDB.                                       |
+| mongodb.auth.rootPassword                  | string | ""                                                        | Root password (avoid committing; prefer secret).                 |
+| mongodb.auth.existingSecret                | string | ""                                                        | Name of existing Kubernetes Secret providing credentials.        |
+| mongodb.auth.rootUserKey                   | string | root-user                                                 | Key inside existing secret containing the username.              |
+| mongodb.auth.rootPasswordKey               | string | root-password                                             | Key inside existing secret containing the password.              |
+| mongodb.image.repository                   | string | mongo                                                     | Container image repository.                                      |
+| mongodb.image.tag                          | string | 8.2.2                                                     | Image tag / MongoDB version.                                     |
+| mongodb.image.pullPolicy                   | string | IfNotPresent                                              | Image pull policy.                                               |
+| mongodb.resources.requests.cpu             | string | ""                                                        | Guaranteed minimum CPU.                                          |
+| mongodb.resources.requests.memory          | string | ""                                                        | Guaranteed minimum memory.                                       |
+| mongodb.resources.limits.cpu               | string | ""                                                        | CPU limit.                                                       |
+| mongodb.resources.limits.memory            | string | ""                                                        | Memory limit.                                                    |
+| mongodb.persistence.enabled                | bool   | true                                                      | Create PersistentVolumeClaim.                                    |
+| mongodb.persistence.storageClassName       | string | ""                                                        | StorageClass for the PVC (empty = default).                      |
+| mongodb.persistence.accessMode             | string | ReadWriteOnce                                             | PVC access mode.                                                 |
+| mongodb.persistence.size                   | string | 10Gi                                                      | Requested persistent volume size.                                |
+| mongodb.podSecurityContext.fsGroup         | int    | 999                                                       | FS group owning mounted volumes.                                 |
+| mongodb.containerSecurityContext.runAsUser | int    | 999                                                       | UID for the container (non-root hardening).                      |
+| mongodb.replicaInitJob.image.repository    | string | alpine/kubectl                                            | Container image for the initialization job.                      |
+| mongodb.replicaInitJob.image.tag           | string | 1.36.3                                                    | Image tag / kubectl version.                                     |
+| mongodb.replicaInitJob.timeout             | int    | 600                                                       | Maximum time (in seconds) to wait for each pod to become ready.  |
+| mongodb.extraEnv                           | list   | `[{name: GLIBC_TUNABLES, value: "glibc.pthread.rseq=1"}]` | Extra environment variables injected into the mongod container. The default `GLIBC_TUNABLES` entry mitigates a MongoDB 8.x SIGSEGV observed on host kernels >= 6.19 (e.g. Ubuntu 26.04 / kernel 6.19+ HWE backports). See [MongoDB 8.x crash on Linux kernel 6.19+](../../troubleshooting/general-issues.md#mongodb-8x-crash-on-linux-kernel-619-exit-139-sigsegv). |
 
 !!!note "Extra environment variables (`mongodb.extraEnv`)"
     `mongodb.extraEnv` is a list of standard Kubernetes env entries appended to the mongod container. It ships with a single default entry that sets `GLIBC_TUNABLES=glibc.pthread.rseq=1`, which restores the upstream glibc default and prevents a tcmalloc SIGSEGV (`exit 139`) that occurs ~30s after `startup complete` on host nodes running Linux kernel 6.19 or later. The setting is a no-op on kernels < 6.19. To override or extend the list, redefine `mongodb.extraEnv` in your `values.yaml`.
@@ -230,7 +234,7 @@ mongodb:
 To use an existing Kubernetes Secret, first create it:
 
 ```yaml
-kubectl create secret generic prod-mongodb-secret -n <namespace> \
+microk8s kubectl create secret generic prod-mongodb-secret -n <namespace> \
   --from-literal=root-user='admin' \
   --from-literal=root-password='your_secure_password_here'
 ```
@@ -241,7 +245,7 @@ Then reference it in `values.yaml`:
 mongodb:
   auth:
     enabled: true
-    existingUserSecret: "prod-mongodb-secret"
+    existingSecret: "prod-mongodb-secret"
 ```
 
 The secret keys (`root-user` and `root-password`) are configurable via `rootUserKey` and `rootPasswordKey` if your secret uses different key names:
@@ -250,11 +254,59 @@ The secret keys (`root-user` and `root-password`) are configurable via `rootUser
 mongodb:
   auth:
     enabled: true
-    existingUserSecret: "prod-mongodb-secret-with-different-keys"
+    existingSecret: "prod-mongodb-secret-with-different-keys"
     rootUserKey: "my-username-key"
     rootPasswordKey: "my-password-key"
 ```
 
+### Rotating the MongoDB password
+
+!!!warning
+    The `mongo` container image only applies `MONGO_INITDB_ROOT_USERNAME` / `MONGO_INITDB_ROOT_PASSWORD`
+    the **first time** it starts against an empty data directory. On an already-initialized
+    deployment (an existing PVC), simply changing `mongodb.auth.rootPassword` or the root-password
+    Secret and running `helm upgrade` does **not** change the password stored inside MongoDB. The
+    database keeps the old password while application pods pick up the new one from the Secret,
+    which breaks authentication for every SC4SNMP component (worker, scheduler, traps, inventory,
+    discovery, UI).
+
+To rotate the password without losing data, perform the steps **in this order**:
+
+1. **Re-key the running database**, authenticating with the *current* (old) password:
+
+    ```bash
+    micrk8s kubectl exec -it <release>-mongodb-0 -n <namespace> -- mongosh \
+      -u admin -p '<OLD_PASSWORD>' --authenticationDatabase admin \
+      --eval 'db.getSiblingDB("admin").changeUserPassword("admin","<NEW_PASSWORD>")'
+    ```
+
+    !!!note
+        In **replication mode**, the password change must be run against the current PRIMARY.
+        Right after initialization this is `<release>-mongodb-0`; if unsure, connect to any pod
+        and run `db.hello().primary` (or `rs.status()`) to find it. The change then replicates
+        to the other members automatically.
+
+2. **Update the credential source Helm/pods will use next**, then apply it:
+    - Direct password: set the new value in `mongodb.auth.rootPassword` in `values.yaml`.
+    - Existing Secret: update the `root-password` key of that Secret (e.g. via
+      `microk8s kubectl create secret generic ... --dry-run=client -o yaml | kubectl apply -f -`
+      or `microk8s kubectl patch secret`).
+
+    Then run `helm upgrade` so the chart picks up the change.
+
+3. **Restart the application pods** so they re-read the updated credentials:
+
+    ```bash
+    microk8s kubectl rollout restart statefulset,deployment -n <namespace>
+    ```
+
+!!!danger
+    Do not update the Secret or `values.yaml` before completing step 1. If the Secret is changed
+    first, MongoDB and the application pods will disagree on the password and every component
+    will fail to authenticate until the database is re-keyed with the old password (see
+    [Troubleshooting: MongoDB authentication fails after changing the root password](../../troubleshooting/general-issues.md#mongodb-authentication-fails-after-changing-the-root-password)).
+
+This procedure applies to kubernetes deployments only.
 
 ### Migration from Bitnami MongoDB
 
@@ -311,7 +363,7 @@ mongodb:
   replicaInitJob:
     image:
       repository: "alpine/kubectl"
-      tag: "1.34.2"
+      tag: "1.36.3"
 ```
 
 !!!note

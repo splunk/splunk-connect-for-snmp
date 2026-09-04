@@ -26,6 +26,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-flower
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL

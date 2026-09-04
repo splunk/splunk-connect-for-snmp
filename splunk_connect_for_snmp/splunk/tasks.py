@@ -326,7 +326,14 @@ def apply_custom_translations(work, custom_translations):
 def apply_custom_translation_to_collection(custom_translations, data, key):
     new_data = {}
     for field, values in data[key].items():
-        mib, name = field.split(".")
+        # Resolved fields use the ``MIB.symbol`` format, while unresolved trap
+        # varbinds use the ``unresolved::<numeric OID>`` format. Preserve unresolved
+        # fields and split only at the first separator when applying custom translations.
+        mib, separator, name = field.partition(".")
+        if not separator:
+            new_data[field] = values
+            continue
+
         ct = custom_translations.get(mib, {}).get(name, None)
         if ct:
             if key == "fields":

@@ -15,6 +15,9 @@ redis:
   # Mode selector: "standalone", "replication"
   architecture: standalone
 
+  # Enable IPv6 support
+  ipv6Enabled: false
+
   # Authentication
   auth:
     enabled: false
@@ -62,6 +65,7 @@ redis:
 | Key                                      | Type   | Default           | Description                                                                             |
 |------------------------------------------|--------|-------------------|-----------------------------------------------------------------------------------------|
 | redis.architecture                       | string | `standalone`      | Deployment mode (standalone or replication).                                            |
+| redis.ipv6Enabled                        | bool   | `false`           | Enable IPv6 support for Redis. See [Enable IPv6](../enable-ipv6.md).                     |
 | redis.replicas                           | int    | `3`               | Data pod count (used only in replication mode).                                         |
 | redis.sentinel.replicas                  | int    | `3`               | Sentinel pod count (odd recommended).                                                   |
 | redis.sentinel.quorum                    | int    | `2`               | Required Sentinel votes for failover.                                                   |
@@ -88,7 +92,6 @@ redis:
 | redis.persistence.aof.fsync              | string | `everysec`        | AOF fsync policy (`always`, `everysec`, `no`). Necessary to migrate from bitnami Redis. |
 | redis.podSecurityContext.runAsUser       | int    | `999`             | UID for the container (non-root hardening).                                             |
 | redis.podSecurityContext.fsGroup         | int    | `999`             | FS group owning mounted volumes.                                                        |
-
 
 ### Architecture modes
 

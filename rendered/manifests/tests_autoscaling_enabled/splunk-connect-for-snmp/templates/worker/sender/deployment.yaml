@@ -32,6 +32,7 @@ spec:
       containers:
         - name: splunk-connect-for-snmp-worker-sender
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
@@ -145,6 +146,8 @@ spec:
             - name: PREFETCH_COUNT
               value: "30"
             - name: MAX_TASKS_PER_CHILD
+              value: "0"
+            - name: MAX_MEMORY_PER_CHILD
               value: "0"
           volumeMounts:
             - name: config

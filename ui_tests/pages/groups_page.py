@@ -19,8 +19,7 @@ class GroupsPage:
     def click_add_new_group_button(self):
         logger.info("Click add new group button")
         add_group_button_xpath = "//button[@data-test='sc4snmp:new-item-button']//span"
-        add_grp_btn = driver.find_element(By.XPATH, add_group_button_xpath)
-        add_grp_btn.click()
+        helper.safe_click(driver, add_group_button_xpath)
         time.sleep(1)
 
     def set_group_name(self, group_name):
@@ -40,8 +39,7 @@ class GroupsPage:
         add_group_button_xpath = (
             "//button[@data-test='sc4snmp:form:submit-form-button']"
         )
-        add_grp_btn = driver.find_element(By.XPATH, add_group_button_xpath)
-        add_grp_btn.click()
+        helper.safe_click(driver, add_group_button_xpath)
         # wait for group to be shown on the list
         time.sleep(5)
 
@@ -51,8 +49,8 @@ class GroupsPage:
     def click_cancel_button_for_add_device(self):
         logger.info("Click cancel button")
         cancel_button_xpath = "//button[@data-test='sc4snmp:form:cancel-button']"
-        cancel_btn = driver.find_element(By.XPATH, cancel_button_xpath)
-        cancel_btn.click()
+        helper.safe_click(driver, cancel_button_xpath)
+        helper.wait_for_modal_overlay_to_close(driver)
 
     def check_if_groups_is_on_list(self, group_name):
         logger.info("Checking if group is configured (is on list)")
@@ -74,8 +72,7 @@ class GroupsPage:
     def click_delete_group_button(self, group_name):
         logger.info(f"Clicking delete group button for: {group_name}")
         delete_btn_for_group_with_name_xpath = f"//div[@data-test='sc4snmp:group' and child::*[text()='{group_name}']]//button[@data-test='sc4snmp:group:delete-group-button']"
-        delete_btn = driver.find_element(By.XPATH, delete_btn_for_group_with_name_xpath)
-        delete_btn.click()
+        helper.safe_click(driver, delete_btn_for_group_with_name_xpath)
         time.sleep(1)
 
     def close_delete_popup(self):
@@ -83,17 +80,13 @@ class GroupsPage:
         close_profile_delete_popup_btn_xpath = (
             "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
-        close_btn = driver.find_element(By.XPATH, close_profile_delete_popup_btn_xpath)
-        close_btn.click()
-        time.sleep(1)
+        helper.safe_click(driver, close_profile_delete_popup_btn_xpath)
+        helper.wait_for_modal_overlay_to_close(driver)
 
     def click_add_device_to_group(self, group_name):
         logger.info(f"Click add device to group: {group_name}")
         add_device_for_group_with_name_xpath = f"//div[@data-test='sc4snmp:group' and child::*[text()='{group_name}']]//button[@data-test='sc4snmp:group:new-device-button']"
-        add_device_btn = driver.find_element(
-            By.XPATH, add_device_for_group_with_name_xpath
-        )
-        add_device_btn.click()
+        helper.safe_click(driver, add_device_for_group_with_name_xpath)
         time.sleep(1)
 
     def get_error_message_while_adding_device_with_no_data(self):
@@ -130,8 +123,7 @@ class GroupsPage:
     def edit_group_name(self, group_name, new_group_name):
         logger.info(f"change group name: {group_name} -> {new_group_name}")
         edit_group_button_xpath = f"//div[@data-test='sc4snmp:group' and child::*[text()='{group_name}']]//button[@data-test='sc4snmp:group:edit-group-button']"
-        edit_group_btn = driver.find_element(By.XPATH, edit_group_button_xpath)
-        edit_group_btn.click()
+        helper.safe_click(driver, edit_group_button_xpath)
         add_grp_input = self._get_group_name_input()
         helper.clear_input(add_grp_input)
         add_grp_input.send_keys(new_group_name)
@@ -150,15 +142,13 @@ class GroupsPage:
         close_popup_btn_xpath = (
             "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
-        close_popup_btn = driver.find_element(By.XPATH, close_popup_btn_xpath)
-        close_popup_btn.click()
-        time.sleep(2)
+        helper.safe_click(driver, close_popup_btn_xpath)
+        helper.wait_for_modal_overlay_to_close(driver)
 
     def delete_device_from_group(self, device_ip):
         logger.info("Delete device from group popup")
         delete_device_btn_xpath = f"//button[@data-test='sc4snmp:group-row-delete' and ancestor::tr//td[text()='{device_ip}']]"
-        delete_device_btn = driver.find_element(By.XPATH, delete_device_btn_xpath)
-        delete_device_btn.click()
+        helper.safe_click(driver, delete_device_btn_xpath)
         time.sleep(2)
         self.confirm_delete()
         self.close_delete_popup()
@@ -166,8 +156,7 @@ class GroupsPage:
     def click_edit_device(self, device_ip):
         logger.info("Click edit device button")
         edit_device_btn_xpath = f"//button[@data-test='sc4snmp:group-row-edit' and ancestor::tr//td[text()='{device_ip}']]"
-        edit_device_btn = driver.find_element(By.XPATH, edit_device_btn_xpath)
-        edit_device_btn.click()
+        helper.safe_click(driver, edit_device_btn_xpath)
         time.sleep(2)
 
     def confirm_delete(self):
@@ -175,9 +164,7 @@ class GroupsPage:
         confirm_delete_xpath = (
             "//button[@data-test='sc4snmp:delete-modal:delete-button']"
         )
-        confirm_btn = driver.find_element(By.XPATH, confirm_delete_xpath)
-        confirm_btn.click()
-        time.sleep(1)
+        helper.safe_click(driver, confirm_delete_xpath)
 
     def set_device_port(self, port, edit=False):
         logger.info(f"set device port: {port}")
@@ -277,6 +264,137 @@ class GroupsPage:
             time.sleep(1)
             self.confirm_delete()
             self.close_delete_popup()
-            time.sleep(1)
             delete_btns = driver.find_elements(By.XPATH, group_delete_btn_xpath)
             logger.info(f" {len(delete_btns)} more items for removal")
+
+    def click_bulk_add_to_group(self, group_name):
+        logger.info(f"Click bulk-add devices to group: {group_name}")
+        bulk_add_btn_xpath = f"//div[@data-test='sc4snmp:group' and child::*[text()='{group_name}']]//button[@data-test='sc4snmp:group:bulk-add-button']"
+        bulk_add_btn = driver.find_element(By.XPATH, bulk_add_btn_xpath)
+        bulk_add_btn.click()
+        time.sleep(1)
+
+    def switch_bulk_mode(self, mode):
+        logger.info(f"Switch bulk-add mode: {mode}")
+        mode_button_xpath = {
+            "manual": "//button[@data-test='sc4snmp:bulk:mode-manual']",
+            "paste": "//button[@data-test='sc4snmp:bulk:mode-paste']",
+        }
+        mode_btn = driver.find_element(By.XPATH, mode_button_xpath[mode])
+        mode_btn.click()
+        time.sleep(1)
+
+    def click_bulk_add_row(self):
+        logger.info("Click add row button in bulk-add grid")
+        add_row_btn_xpath = (
+            "//*[@data-test='sc4snmp:bulk:add-row']//button[@data-test='add-row']"
+        )
+        add_row_btn = driver.find_element(By.XPATH, add_row_btn_xpath)
+        add_row_btn.click()
+        time.sleep(1)
+
+    def set_bulk_row_field(self, field_name, index, value):
+        logger.info(f"set bulk row {index} field {field_name}: {value}")
+        field_input_xpath = (
+            f"//div[@data-test='sc4snmp:bulk:{field_name}-input']//span//input"
+        )
+        field_inputs = driver.find_elements(By.XPATH, field_input_xpath)
+        field_inputs[index].send_keys(value)
+
+    def set_bulk_row_address(self, index, address):
+        self.set_bulk_row_field("address", index, address)
+
+    def set_bulk_row_port(self, index, port):
+        self.set_bulk_row_field("port", index, port)
+
+    def set_bulk_row_community(self, index, community_string):
+        self.set_bulk_row_field("community", index, community_string)
+
+    def set_bulk_row_secret(self, index, secret):
+        self.set_bulk_row_field("secret", index, secret)
+
+    def set_bulk_row_security_engine(self, index, security_engine):
+        self.set_bulk_row_field("security-engine", index, security_engine)
+
+    def set_bulk_paste_text(self, text):
+        logger.info(f"set bulk paste text: {text}")
+        paste_input_xpath = "//div[@data-test='sc4snmp:bulk:paste-input']//textarea[@data-test='textbox']"
+        paste_input = driver.find_element(By.XPATH, paste_input_xpath)
+        paste_input.send_keys(text)
+
+    def set_bulk_shared_field(self, field_name, value):
+        logger.info(f"set bulk shared field {field_name}: {value}")
+        field_input_xpath = (
+            f"//div[@data-test='sc4snmp:bulk:shared-{field_name}-input']//span//input"
+        )
+        field_input = driver.find_element(By.XPATH, field_input_xpath)
+        field_input.send_keys(value)
+
+    def set_bulk_shared_port(self, port):
+        self.set_bulk_shared_field("port", port)
+
+    def set_bulk_shared_community(self, community_string):
+        self.set_bulk_shared_field("community", community_string)
+
+    def set_bulk_shared_secret(self, secret):
+        self.set_bulk_shared_field("secret", secret)
+
+    def set_bulk_shared_security_engine(self, security_engine):
+        self.set_bulk_shared_field("security-engine", security_engine)
+
+    def set_bulk_shared_version(self, snmp_version):
+        logger.info(f"set bulk shared snmp version: {snmp_version}")
+        options = {
+            "From inventory": "//button[@data-test='sc4snmp:bulk:shared-version-from-inventory']",
+            "1": "//button[@data-test='sc4snmp:bulk:shared-version-1']",
+            "2c": "//button[@data-test='sc4snmp:bulk:shared-version-2c']",
+            "3": "//button[@data-test='sc4snmp:bulk:shared-version-3']",
+        }
+        expander_xpath = "//button[@data-test='sc4snmp:bulk:shared-select-version']"
+        expander = driver.find_element(By.XPATH, expander_xpath)
+        expander.click()
+        time.sleep(1)
+        option = driver.find_element(By.XPATH, options[snmp_version])
+        option.click()
+
+    def click_bulk_expand_addresses(self):
+        logger.info("Click expand addresses button in bulk-add")
+        expand_btn_xpath = "//button[@data-test='sc4snmp:bulk:expand-button']"
+        expand_btn = driver.find_element(By.XPATH, expand_btn_xpath)
+        expand_btn.click()
+        time.sleep(1)
+
+    def click_bulk_submit(self):
+        logger.info("Click submit button in bulk-add modal")
+        submit_btn_xpath = "//button[@data-test='sc4snmp:bulk:submit-button']"
+        helper.safe_click(driver, submit_btn_xpath)
+        time.sleep(5)
+
+    def click_bulk_cancel(self):
+        logger.info("Click cancel button in bulk-add modal")
+        cancel_btn_xpath = "//button[@data-test='sc4snmp:bulk:cancel-button']"
+        helper.safe_click(driver, cancel_btn_xpath)
+        helper.wait_for_modal_overlay_to_close(driver)
+
+    def get_number_of_bulk_rows(self):
+        logger.info("getting number of rows in bulk-add grid")
+        row_xpath = "//*[@data-test='sc4snmp:bulk:row']"
+        rows = driver.find_elements(By.XPATH, row_xpath)
+        return len(rows)
+
+    def get_bulk_row_error_messages(self):
+        logger.info("getting bulk-add row error messages")
+        error_xpath = "//p[@data-test='sc4snmp:bulk:row-error']"
+        errors = driver.find_elements(By.XPATH, error_xpath)
+        return [el.text for el in errors]
+
+    def is_bulk_empty_grid_hint_present(self):
+        logger.info("checking if bulk-add empty grid hint is present")
+        hint_xpath = "//*[@data-test='sc4snmp:bulk:empty-grid-hint']"
+        return len(driver.find_elements(By.XPATH, hint_xpath)) > 0
+
+    def is_bulk_submit_enabled(self):
+        logger.info("checking if bulk-add submit button is enabled")
+        submit_btn_xpath = "//button[@data-test='sc4snmp:bulk:submit-button']"
+        submit_btn = driver.find_element(By.XPATH, submit_btn_xpath)
+        return submit_btn.is_enabled()

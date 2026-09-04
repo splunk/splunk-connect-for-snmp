@@ -20,8 +20,12 @@ import pytest
 from pysnmp.hlapi import *
 
 from integration_tests.utils.splunk_test_utils import (
+    assert_splunk_search_absent,
     create_v3_secrets_compose,
     create_v3_secrets_microk8s,
+    install_mib_index_refresh_test_mib,
+    mib_index_refresh_test_environment,
+    restart_worker_for_mib_index_refresh,
     splunk_single_search,
     update_file_microk8s,
     update_traps_secrets_compose,
@@ -29,9 +33,36 @@ from integration_tests.utils.splunk_test_utils import (
     upgrade_helm_microk8s,
     wait_for_containers_initialization,
     wait_for_pod_initialization_microk8s,
+    wait_for_splunk_search,
 )
 
 logger = logging.getLogger(__name__)
+HVR_NOTIFICATION_OID = "1.3.6.1.4.1.42705.1.3.0.1"
+HVR_NUMERIC_NOTIFICATION = "SNMPv2-SMI::enterprises.42705.1.3.0.1"
+HVR_RESOLVED_NOTIFICATION = "HVR-MIB::hvrAlertNotifySummary"
+
+
+def _trap_value_search(marker, value):
+    return f"""search index="netops" sourcetype="sc4snmp:traps" earliest=-5m
+        "SNMPv2-MIB.sysDescr.value"="{marker}"
+        "SNMPv2-MIB.snmpTrapOID.value"="{value}" | head 1"""
+
+
+def _wait_for_trap_value(service, marker, expected_value, timeout=120):
+    wait_for_splunk_search(
+        service,
+        _trap_value_search(marker, expected_value),
+        f"trap {marker!r} to resolve as {expected_value!r}",
+        timeout,
+    )
+
+
+def _assert_trap_value_absent(service, marker, unexpected_value):
+    assert_splunk_search_absent(
+        service,
+        _trap_value_search(marker, unexpected_value),
+        f"trap {marker!r} indexed as {unexpected_value!r}",
+    )
 
 
 def send_trap(
@@ -52,6 +83,28 @@ def send_trap(
 
     if error_indication:
         logger.error(f"{error_indication}")
+
+
+def _send_hvr_trap(host, marker):
+    send_trap(
+        host,
+        162,
+        HVR_NOTIFICATION_OID,
+        "SNMPv2-MIB",
+        "public",
+        1,
+        ("1.3.6.1.2.1.1.1.0", OctetString(marker)),
+    )
+
+
+@pytest.fixture
+def hvr_trap_mib_environment(request):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    deployment = request.config.getoption("sc4snmp_deployment")
+
+    with mib_index_refresh_test_environment(deployment, "trap") as local_mibs_dir:
+        install_mib_index_refresh_test_mib(deployment, local_mibs_dir)
+        yield trap_external_ip, deployment
 
 
 def send_v3_trap(host, port, object_identity, *var_binds):
@@ -222,6 +275,58 @@ def test_more_than_one_varbind(request, setup_splunk):
 
 
 @pytest.mark.part6
+def test_unresolved_trap_with_custom_translations(request, setup_splunk):
+    trap_external_ip = request.config.getoption("trap_external_ip")
+    unresolved_oid = "1.3.6.1.4.1.9999.90.0"
+    marker = f"test_unresolved_custom_translation_{time.time_ns()}"
+
+    send_trap(
+        trap_external_ip,
+        162,
+        "1.3.6.1.6.3.1.1.5.1",
+        "SNMPv2-MIB",
+        "public",
+        1,
+        (unresolved_oid, OctetString(marker)),
+    )
+
+    time.sleep(5)
+
+    search_query = f"""search index="netops" sourcetype="sc4snmp:traps" earliest=-2m
+        "{marker}" "unresolved::{unresolved_oid}" | head 1"""
+    result_count, events_count = splunk_single_search(setup_splunk, search_query)
+
+    assert result_count == 1
+
+
+@pytest.mark.part6
+def test_trap_new_local_mib_is_unresolved_before_worker_restart(
+    hvr_trap_mib_environment, setup_splunk
+):
+    trap_external_ip, _ = hvr_trap_mib_environment
+    marker = f"mib_refresh_unresolved_{time.time_ns()}"
+
+    _send_hvr_trap(trap_external_ip, marker)
+
+    _wait_for_trap_value(setup_splunk, marker, HVR_NUMERIC_NOTIFICATION)
+    _assert_trap_value_absent(setup_splunk, marker, HVR_RESOLVED_NOTIFICATION)
+
+
+@pytest.mark.part6
+def test_trap_new_local_mib_is_resolved_after_worker_restart(
+    hvr_trap_mib_environment, setup_splunk
+):
+    trap_external_ip, deployment = hvr_trap_mib_environment
+    restart_worker_for_mib_index_refresh(deployment, "trap")
+    marker = f"mib_refresh_resolved_{time.time_ns()}"
+
+    _send_hvr_trap(trap_external_ip, marker)
+
+    _wait_for_trap_value(setup_splunk, marker, HVR_RESOLVED_NOTIFICATION)
+    _assert_trap_value_absent(setup_splunk, marker, HVR_NUMERIC_NOTIFICATION)
+
+
+@pytest.mark.part6
 def test_loading_mibs(request, setup_splunk):
     trap_external_ip = request.config.getoption("trap_external_ip")
     logger.info(f"I have: {trap_external_ip}")
@@ -271,13 +376,12 @@ def test_trap_v3(request, setup_splunk):
     varbind1 = ("1.3.6.1.2.1.1.4.0", OctetString("test_trap_v3"))
     send_v3_trap(trap_external_ip, 162, "1.3.6.1.2.1.1.0", varbind1)
 
-    # wait for the message to be processed
-    time.sleep(2)
-
     search_query = (
         """search index=netops "SNMPv2-MIB.sysContact.value"="test_trap_v3"  """
     )
 
-    result_count, events_count = splunk_single_search(setup_splunk, search_query)
+    result_count, events_count = wait_for_splunk_search(
+        setup_splunk, search_query, "test_trap_v3 trap to be indexed"
+    )
 
     assert result_count == 1
