@@ -1412,7 +1412,7 @@ pysnmp-pysmi = "^1.0.4"
 [package.source]
 type = "git"
 url = "https://github.com/pysnmp/pysnmp.git"
-reference = "main"
+reference = "v5.0.24"
 resolved_reference = "4891556e7db831a5a9b27d4bad8ff102609b2a2c"
 
 [[package]]
@@ -2303,4 +2303,4 @@ tomli = ">=2.4.0"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "ecdd59116d0f2b751c815eb19e8307a3c06bf577c92e6c1c4732e6e9006a01ca"
+content-hash = "d5bb6273fcfd373cd2667623df7c4de0b9b6e97068c748ce8300ebd4c8919b44"
