@@ -2747,7 +2747,7 @@ These images can be found in <code>.env</code> file:</p>
 <p>Following images must be downloaded in the online environment, saved to <code>.tar</code> archive and moved to the offline environment.</p>
 <h2 id="steps-required-to-install-necessary-images">Steps required to install necessary images<a class="headerlink" href="#steps-required-to-install-necessary-images" title="Permanent link">&para;</a></h2>
 <p>Suppose that <code>.env</code> contains the following images:</p>
-<div class="codehilite"><pre><span></span><code>SC4SNMP_IMAGE=ghcr.io/splunk/splunk-connect-for-snmp/container
+<div class="highlight"><pre><span></span><code>SC4SNMP_IMAGE=ghcr.io/splunk/splunk-connect-for-snmp/container
 SC4SNMP_TAG=latest
 
 COREDNS_IMAGE=coredns/coredns
@@ -2762,26 +2762,23 @@ REDIS_TAG=latest
 MONGO_IMAGE=docker.io/mongodb
 MONGO_TAG=latest
 </code></pre></div>
-
 <p>They must be downloaded in the online environment by following commands:</p>
-<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/splunk/splunk-connect-for-snmp/container:latest
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/splunk/splunk-connect-for-snmp/container:latest
 docker<span class="w"> </span>pull<span class="w"> </span>coredns/coredns:1.11.1
 docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/pysnmp/mibs/container:latest
 docker<span class="w"> </span>pull<span class="w"> </span>docker.io/redis:latest
 docker<span class="w"> </span>pull<span class="w"> </span>docker.io/mongodb:latest
 </code></pre></div>
-
-<p>Next step is to save them to <code>sc4snmp_offline_images.tar</code> archive:</p>
-<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>save<span class="w"> </span>ghcr.io/splunk/splunk-connect-for-snmp/container:latest<span class="w"> </span><span class="se">\</span>
+<p>Next step is to save them to <code>sc4snmp_offline_images.tar</code> archive:
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>save<span class="w"> </span>ghcr.io/splunk/splunk-connect-for-snmp/container:latest<span class="w"> </span><span class="se">\</span>
 coredns/coredns:1.11.1<span class="w"> </span><span class="se">\</span>
 ghcr.io/pysnmp/mibs/container:latest<span class="w"> </span><span class="se">\</span>
 docker.io/redis:latest<span class="w"> </span><span class="se">\</span>
 docker.io/mongodb:latest<span class="w"> </span>&gt;<span class="w"> </span>sc4snmp_offline_images.tar
-</code></pre></div>
-
-<p>After moving <code>sc4snmp_offline_images.tar</code> archive to the offline environment, images can be loaded to docker:</p>
-<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>load<span class="w"> </span>--input<span class="w"> </span>sc4snmp_offline_images.tar
-</code></pre></div>
+</code></pre></div></p>
+<p>After moving <code>sc4snmp_offline_images.tar</code> archive to the offline environment, images can be loaded to docker:
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>load<span class="w"> </span>--input<span class="w"> </span>sc4snmp_offline_images.tar
+</code></pre></div></p>
 
 
 

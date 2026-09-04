@@ -2865,18 +2865,16 @@
 <h1 id="docker-logging">Docker logging<a class="headerlink" href="#docker-logging" title="Permanent link">&para;</a></h1>
 <p>SC4SNMP applications write logs to container standard output and standard error. Docker controls how those container logs are stored and retained. These settings do not change SC4SNMP log levels, messages, formats, or destinations.</p>
 <p>The default Compose configuration uses the <code>json-file</code> driver with bounded rotation for every service:</p>
-<div class="codehilite"><pre><span></span><code>DOCKER_LOG_DRIVER=json-file
+<div class="highlight"><pre><span></span><code>DOCKER_LOG_DRIVER=json-file
 DOCKER_LOG_MAX_SIZE=10m
 DOCKER_LOG_MAX_FILE=5
 DOCKER_LOG_COMPRESS=true
 </code></pre></div>
-
 <p>Docker applies logging-driver changes when containers are created. Run <code>docker compose up -d</code> after changing the logging configuration so Compose can recreate the affected containers.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <p>Running <code>manage_logs.py</code> requires the <code>ruamel.yaml</code> Python package. Install it with:</p>
-<div class="codehilite"><pre><span></span><code>pip3<span class="w"> </span>install<span class="w"> </span>ruamel.yaml
+<div class="highlight"><pre><span></span><code>pip3<span class="w"> </span>install<span class="w"> </span>ruamel.yaml
 </code></pre></div>
-
 <h2 id="manage_logspy-flags"><code>manage_logs.py</code> flags<a class="headerlink" href="#manage_logspy-flags" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2902,9 +2900,8 @@ DOCKER_LOG_COMPRESS=true
 </table>
 <h2 id="choose-the-logging-behavior">Choose the logging behavior<a class="headerlink" href="#choose-the-logging-behavior" title="Permanent link">&para;</a></h2>
 <p>Check the Docker daemon&rsquo;s current logging driver before a new installation or upgrade:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>info<span class="w"> </span>--format<span class="w"> </span><span class="s1">&#39;{{.LoggingDriver}}&#39;</span>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>info<span class="w"> </span>--format<span class="w"> </span><span class="s1">&#39;{{.LoggingDriver}}&#39;</span>
 </code></pre></div>
-
 <table>
 <thead>
 <tr>
@@ -2939,56 +2936,50 @@ DOCKER_LOG_COMPRESS=true
 <p><code>DOCKER_LOG_DRIVER</code> is a selector used by <code>manage_logs.py</code>. It does not directly set a non-JSON driver on each service. For example, <code>DOCKER_LOG_DRIVER=local</code> makes containers use <code>local</code> only when <code>local</code> is the Docker daemon default.</p>
 <h2 id="keep-the-current-driver-during-an-upgrade">Keep the current driver during an upgrade<a class="headerlink" href="#keep-the-current-driver-during-an-upgrade" title="Permanent link">&para;</a></h2>
 <p>If <code>docker info</code> reports <code>local</code>, add or update this line in <code>.env</code> file:</p>
-<div class="codehilite"><pre><span></span><code>DOCKER_LOG_DRIVER=local
+<div class="highlight"><pre><span></span><code>DOCKER_LOG_DRIVER=local
 </code></pre></div>
-
 <p>Use the exact value reported by <code>docker info</code> when preserving another driver. Before starting the upgraded deployment, run:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/home/ubuntu/docker_compose
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/home/ubuntu/docker_compose
 python3<span class="w"> </span>manage_logs.py<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--path_to_compose<span class="w"> </span>/home/ubuntu/docker_compose<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--configure_default_logging
 sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>config<span class="w"> </span>--quiet
 sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
-
 <p>The helper removes service-level logging for non-JSON values, allowing the upgraded containers to continue using the Docker daemon driver. If this step is skipped, new or recreated SC4SNMP containers use bounded <code>json-file</code> logging.</p>
 <h2 id="switch-to-bounded-json-file">Switch to bounded <code>json-file</code><a class="headerlink" href="#switch-to-bounded-json-file" title="Permanent link">&para;</a></h2>
 <p>To switch from any current logging driver to bounded <code>json-file</code>, set these values in <code>.env</code>:</p>
-<div class="codehilite"><pre><span></span><code>DOCKER_LOG_DRIVER=json-file
+<div class="highlight"><pre><span></span><code>DOCKER_LOG_DRIVER=json-file
 DOCKER_LOG_MAX_SIZE=10m
 DOCKER_LOG_MAX_FILE=5
 DOCKER_LOG_COMPRESS=true
 </code></pre></div>
-
 <p>Apply the configuration:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/home/ubuntu/docker_compose
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/home/ubuntu/docker_compose
 python3<span class="w"> </span>manage_logs.py<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--path_to_compose<span class="w"> </span>/home/ubuntu/docker_compose<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--configure_default_logging
 sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>config<span class="w"> </span>--quiet
 sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
-
 <p>This changes logging only for the SC4SNMP Compose services. It does not change the Docker daemon or unrelated containers. Named MongoDB and Redis volumes are preserved by <code>docker compose up -d</code>. Do not use <code>docker compose down -v</code> for this change.</p>
 <h2 id="verify-the-effective-configuration">Verify the effective configuration<a class="headerlink" href="#verify-the-effective-configuration" title="Permanent link">&para;</a></h2>
 <p>After the containers are recreated, check their logging drivers and options:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">for</span><span class="w"> </span>id<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">$(</span>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>ps<span class="w"> </span>-q<span class="k">)</span>
+<div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span>id<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">$(</span>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>ps<span class="w"> </span>-q<span class="k">)</span>
 <span class="k">do</span>
 <span class="w">  </span>sudo<span class="w"> </span>docker<span class="w"> </span>inspect<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--format<span class="w"> </span><span class="s1">&#39;{{.Name}} driver={{.HostConfig.LogConfig.Type}} options={{json .HostConfig.LogConfig.Config}}&#39;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span><span class="s2">&quot;</span><span class="nv">$id</span><span class="s2">&quot;</span>
 <span class="k">done</span>
 </code></pre></div>
-
 <p>Bounded logging reports <code>driver=json-file</code> with <code>max-size</code>, <code>max-file</code>, and <code>compress</code>. When daemon inheritance is selected, each container reports the daemon driver.</p>
 <h2 id="restore-docker-daemon-inheritance-directly">Restore Docker daemon inheritance directly<a class="headerlink" href="#restore-docker-daemon-inheritance-directly" title="Permanent link">&para;</a></h2>
 <p>The following command removes service-level logging without reading <code>DOCKER_LOG_DRIVER</code>:</p>
-<div class="codehilite"><pre><span></span><code>python3<span class="w"> </span>manage_logs.py<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>manage_logs.py<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--path_to_compose<span class="w"> </span>/home/ubuntu/docker_compose<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--use_docker_default_logging
 sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
-
 <p>This also removes the SC4SNMP service-level retention limits. If the daemon uses <code>json-file</code> without daemon-level <code>max-size</code> and <code>max-file</code> options, its container logs do not have a configured size limit. Check <code>/etc/docker/daemon.json</code> before selecting daemon inheritance.</p>
 <p>To send Docker container logs to Splunk instead, see <a href=".././9-splunk-logging/">Sending logs to Splunk</a>.</p>
 

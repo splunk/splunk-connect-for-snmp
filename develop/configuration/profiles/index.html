@@ -2981,14 +2981,13 @@ collection of management information that is part of the overall SNMP MIB, for e
  INDEX are used to define the SNMP MIB managed objects. For example <code>sysDescr</code>.</li>
 <li><code>MIB index number</code>: Define the index number for a given MIB Object, for example,<code>0</code>.</li>
 </ul>
-<p>See the following example:</p>
-<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
+<p>See the following example:
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
 <span class="w">    </span><span class="c1"># Syntax: [ &quot;MIB-Component&quot;, &quot;MIB object name&quot;[Optional], &quot;MIB index number&quot;[Optional]]</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysName&#39;</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysUpTime&#39;</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]</span>
-</code></pre></div>
-
+</code></pre></div></p>
 <h2 id="static-profile-configuration">Static Profile configuration<a class="headerlink" href="#static-profile-configuration" title="Permanent link">&para;</a></h2>
 <p>Static Profile is used when a list of profiles is defined in the inventory. Static Profiles are executed
 even if the SmartProfile flag in inventory is set to false.
@@ -2999,7 +2998,7 @@ To configure Static Profile, the following value needs to be set in the <code>pr
 <li>Define <code>varBinds</code> as variable bindings to query.</li>
 </ul>
 <p>An example of such a profile is:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">generic_switch</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">generic_switch</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;sysDescr&#39;</span><span class="p p-Indicator">]</span>
@@ -3008,7 +3007,6 @@ To configure Static Profile, the following value needs to be set in the <code>pr
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;TCP-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;tcpAttemptFails&#39;</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-
 <h3 id="particular-kinds-of-static-profiles">Particular kinds of static profiles<a class="headerlink" href="#particular-kinds-of-static-profiles" title="Permanent link">&para;</a></h3>
 <h4 id="walk-profile">WALK profile<a class="headerlink" href="#walk-profile" title="Permanent link">&para;</a></h4>
 <div class="admonition info">
@@ -3017,13 +3015,12 @@ To configure Static Profile, the following value needs to be set in the <code>pr
 </div>
 <p>If you would like to change the scope of the walk, you should set one of the profiles in the inventory to point to the profile
 definition of the <code>walk</code> type:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">small_walk</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">small_walk</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">condition</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;walk&quot;</span>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;UDP-MIB&#39;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-
 <p>This profile should be placed in the profiles section of the inventory definition. It will be executed with the frequency
 defined in <code>walk_interval</code> field from inventory. If multiple profiles of type <code>walk</code> were placed in profiles, the last one will be used.</p>
 <div class="admonition info">
@@ -3065,7 +3062,7 @@ values are <code>base</code> or <code>field</code>.</li>
 <li>For <code>varBinds</code>, define variable bindings to query.</li>
 </ul>
 <p>An example of smart profile is:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">smart_profile</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">smart_profile</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span><span class="w"> </span>
 <span class="w">  </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;field&quot;</span><span class="w"> </span>
@@ -3075,12 +3072,11 @@ values are <code>base</code> or <code>field</code>.</li>
 <span class="w">  </span><span class="nt">varBinds</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;IF-MIB&quot;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-
 <h2 id="conditional-profiles">Conditional profiles<a class="headerlink" href="#conditional-profiles" title="Permanent link">&para;</a></h2>
 <p>There is a way to not explicitly list what SNMP objects you want to poll, but, instead, only give the conditions that must
 be fulfilled to qualify an object for polling.</p>
 <p>See the following example of a conditional profile:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">IF_conditional_profile</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">IF_conditional_profile</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <span class="w">  </span><span class="nt">conditions</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
@@ -3095,7 +3091,6 @@ be fulfilled to qualify an object for polling.</p>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifInErrors&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOutDiscards&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
 </code></pre></div>
-
 <p>When such profile is defined and added to a device in an inventory, it will poll all interfaces where <code>ifAdminStatus</code>
 and <code>ifOperStatus</code> is up. Conditional profiles are being evaluated during the walk process (on every <code>walk_interval</code>),
 and, if the status changes in between, the scope of the conditional profile will not be modified. Therefore, status
@@ -3107,33 +3102,30 @@ changes are only implemented when <code>walk_interval</code> is executed.</p>
 <li><code>lt</code>: the value gathered from <code>field</code> is smaller than <code>value</code> (works only for numeric values).</li>
 <li><code>in</code>: the value gathered from <code>field</code> is equal to one of the elements provided in <code>value</code>, for example:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
 <span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;in&quot;</span>
 <span class="w">    </span><span class="nt">value</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;down&quot;</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </code></pre></div>
-
 <ol start="5">
 <li><code>regex</code>: value gathered from <code>field</code> match the pattern provided in <code>value</code>.
 You can add options for regular expression after <code>/</code>. Possible options match ones used in <a href="https://www.mongodb.com/docs/manual/reference/operator/query/regex/">mongodb regex operator</a>, for example:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
 <span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;regex&quot;</span>
 <span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;.own/i&quot;</span>
 </code></pre></div>
-
-<p>To negate an operation you can add the flag <code>negate_operation: "true"</code> to the specified <code>field</code>, for example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
+<p>To negate an operation you can add the flag <code>negate_operation: "true"</code> to the specified <code>field</code>, for example:
+<div class="highlight"><pre><span></span><code><span class="nt">conditions</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IF-MIB.ifAdminStatus</span>
 <span class="w">    </span><span class="nt">operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;equals&quot;</span>
 <span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;up&quot;</span>
 <span class="w">    </span><span class="nt">negate_operation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
 </code></pre></div>
-
-<p>This will negate the operator specified in <code>operation</code>. See the following:</p>
+This will negate the operator specified in <code>operation</code>. See the following:</p>
 <ol>
 <li><code>negate_operation + equals</code>: value gathered from <code>field</code> is NOT equal to <code>value</code>.</li>
 <li><code>negate_operation + gt</code>: value gathered from <code>field</code> is SMALLER or EQUAL to <code>value</code> (works only for numeric values).</li>
@@ -3144,17 +3136,16 @@ You can add options for regular expression after <code>/</code>. Possible option
 <p>The <code>field</code> parameter in <code>conditions</code> must fulfill the pattern <code>MIB-family.field</code>. The field must represent a textual value (rather than a metric one).
 See <a href="../snmp-data-format/">snmp data format</a> for more information.</p>
 <p>You have to explicitly define <code>varBinds</code> (not only the MIB family but also the field to poll). See the following <strong>incorrect</strong> example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">varBinds</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">varBinds</span><span class="p">:</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
 </code></pre></div>
-
 <h2 id="custom-translations">Custom translations<a class="headerlink" href="#custom-translations" title="Permanent link">&para;</a></h2>
 <p>If the user wants to use custom names/translations of MIB names, it can be configured under the <code>customTranslations</code> section under scheduler config.
 Translations are grouped by the MIB family. In the following example, <code>IF-MIB.ifInDiscards</code> will be translated to <code>IF-MIB.myCustomName1</code>:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">customTranslations</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">IF-MIB</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">ifInDiscards</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName1</span>
@@ -3162,17 +3153,15 @@ Translations are grouped by the MIB family. In the following example, <code>IF-M
 <span class="w">    </span><span class="nt">SNMPv2-MIB</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">sysDescr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName3</span>
 </code></pre></div>
-
 </div>
 <div class="tabbed-block">
-<div class="codehilite"><pre><span></span><code><span class="nt">customTranslations</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">customTranslations</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">IF-MIB</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">ifInDiscards</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName1</span>
 <span class="w">    </span><span class="nt">ifOutErrors</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName2</span>
 <span class="w">  </span><span class="nt">SNMPv2-MIB</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">sysDescr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myCustomName3</span>
 </code></pre></div>
-
 </div>
 </div>
 </div>
@@ -3185,7 +3174,7 @@ Translations are grouped by the MIB family. In the following example, <code>IF-M
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Profiles are defined in the <code>scheduler.profiles</code> section of <code>values.yaml</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">profiles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
 <span class="w">    </span><span class="no">small_walk_profile:</span>
 <span class="w">      </span><span class="no">condition:</span>
@@ -3224,11 +3213,9 @@ Translations are grouped by the MIB family. In the following example, <code>IF-M
 <span class="w">        </span><span class="no">- [ &#39;IF-MIB&#39;, &#39;ifInErrors&#39; ]</span>
 <span class="w">        </span><span class="no">- [ &#39;IF-MIB&#39;, &#39;ifOutDiscards&#39; ]</span>
 </code></pre></div>
-
 <p>To apply changes, run the upgrade command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
 </code></pre></div>
-
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>Be aware that profile changes may not be reflected immediately. It can take up to 1 minute for changes to propagate.
@@ -3239,7 +3226,7 @@ blocks updates for the next 5 minutes.</p>
 </div>
 <div class="tabbed-block">
 <p>Profiles are defined in the <code>profiles</code> section of <code>scheduler-config.yaml</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">profiles</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">profiles</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">small_walk_profile</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">condition</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;walk&quot;</span>
@@ -3277,11 +3264,9 @@ blocks updates for the next 5 minutes.</p>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifInErrors&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;ifOutDiscards&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
 </code></pre></div>
-
 <p>To apply changes, run the following command inside the <code>docker_compose</code> directory:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
-
 </div>
 </div>
 </div>
