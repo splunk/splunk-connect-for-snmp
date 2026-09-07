@@ -380,8 +380,8 @@ def test_trap_v3(request, setup_splunk):
         """search index=netops "SNMPv2-MIB.sysContact.value"="test_trap_v3"  """
     )
 
-    wait_for_splunk_search(
-        setup_splunk,
-        search_query,
-        "SNMPv3 trap to be indexed",
+    result_count, events_count = wait_for_splunk_search(
+        setup_splunk, search_query, "test_trap_v3 trap to be indexed"
     )
+
+    assert result_count == 1
