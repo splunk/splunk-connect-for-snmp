@@ -173,7 +173,7 @@ mongodb:
   replicaSetName: rs0
 ```
 
-!!!note "MongoDB replica key"
+!!!warning "MongoDB replica key"
     When replication and authentication are enabled, the chart manages the Secret named `<release-name>-mongodb-replicakey` for internal authentication between MongoDB members. It generates a key when the Secret does not exist and reuses the existing value on later upgrades. MongoDB Pods copy this key during startup, so the Secret name is not configurable and the Secret must not be modified or deleted while the authenticated replica set is running. If the Secret is accidentally deleted, existing members may continue working, but an upgrade or Pod restart can introduce a different key and prevent members from authenticating. Restore the exact original Secret before restarting a MongoDB Pod or performing a Helm upgrade.
 
 !!!note
@@ -328,13 +328,17 @@ MongoDB elects a PRIMARY through a majority of voting members, so use an odd `mo
 
     The inventory Job can be created during installation or configuration updates, including when **Apply changes** is selected in the UI. Before starting the authentication upgrade, wait for the Job to complete, then wait until `<release-name>-splunk-connect-for-snmp-inventory` is no longer listed by `microk8s kubectl get jobs --namespace sc4snmp`.
 
-The transition can take longer than Helm's default timeout. When changing authentication from disabled to enabled, use an additional timeout for the upgrade:
-
-```yaml
-microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --timeout 30m
-```
+The transition can take longer than Helm's default timeout. When changing authentication from disabled to enabled, set the Helm timeout to the pre-upgrade Job deadline plus the post-upgrade Job deadline and an additional buffer for Kubernetes processing.
 
 The transition timeout defaults to `mongodb.replicaCount * mongodb.replicaInitJob.timeout`, which is 30 minutes with the default values.
+
+With the default configuration, the pre-upgrade Job deadline is 12 minutes and the post-upgrade Job deadline is 30 minutes. Adding some buffer gives the recommended 50-minute Helm timeout for Pod scheduling, StatefulSet updates, and replica-set elections:
+
+```bash
+microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace --timeout 50m
+```
+
+If the MongoDB replica count or transition timeout is customized, increase the Helm timeout accordingly.
 
 ### Recover the replica set after disabling authentication
 

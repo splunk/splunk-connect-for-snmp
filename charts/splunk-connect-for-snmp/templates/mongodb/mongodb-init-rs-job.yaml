@@ -21,7 +21,7 @@ spec:
       serviceAccountName: {{ .Release.Name }}-mongodb-init-sa
       containers:
       - name: init-replicaset
-        image: {{ .Values.mongodb.replicaInitJob.image.repository | default "alpine/kubectl" }}:{{ .Values.mongodb.replicaInitJob.image.tag | default "1.36.3" }}
+        image: {{ .Values.mongodb.replicaInitJob.image.repository }}:{{ .Values.mongodb.replicaInitJob.image.tag }}
         command:
         - sh
         - -c

@@ -44,7 +44,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: migrate-replica-set
-        image: {{ .Values.mongodb.replicaInitJob.image.repository | default "alpine/kubectl" }}:{{ .Values.mongodb.replicaInitJob.image.tag | default "1.36.3" }}
+        image: {{ .Values.mongodb.replicaInitJob.image.repository }}:{{ .Values.mongodb.replicaInitJob.image.tag }}
         imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: false
@@ -259,11 +259,7 @@ spec:
               done
 
               if [ -n "${candidate}" ]; then
-                if [ "$(get_member_role "${candidate}" "${phase_mode}")" != "SECONDARY" ]; then
-                  echo "[ERROR] ${candidate} is not a healthy SECONDARY" >&2
-                  return 1
-                fi
-
+                wait_for_member "${candidate}" "${phase_mode}" SECONDARY
                 replace_member_for_auth_phase "${candidate}" "${phase_mode}" "${phase_name}" SECONDARY
                 continue
               fi

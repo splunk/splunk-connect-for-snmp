@@ -37,7 +37,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: create-root-user
-        image: {{ .Values.mongodb.replicaInitJob.image.repository | default "alpine/kubectl" }}:{{ .Values.mongodb.replicaInitJob.image.tag | default "1.36.3" }}
+        image: {{ .Values.mongodb.replicaInitJob.image.repository }}:{{ .Values.mongodb.replicaInitJob.image.tag }}
         imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: false

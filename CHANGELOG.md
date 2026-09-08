@@ -10,8 +10,9 @@
 - Provided configurable options to control the docker logging: `DOCKER_LOG_DRIVER`, `DOCKER_LOG_MAX_SIZE`, `DOCKER_LOG_MAX_FILE`, `DOCKER_LOG_COMPRESS` to prevent the disk usage growth
 
 ### Fixed
-- Preserve the chart-managed MongoDB replica key across Helm upgrades and remove the unused option for an external replica-key Secret.
-- Support enabling authentication on an existing MongoDB replica set with MongoDB's `transitionToAuth` compatibility mode, ordered member replacement, resumable phases, and verification of MongoDB members and SC4SNMP clients.
+- **MongoDB Authentication Improvements**
+  - Preserve the chart-managed MongoDB replica key across Helm upgrades and remove the unused option for an external replica-key Secret.
+  - Support enabling authentication on an existing MongoDB replica set with MongoDB's `transitionToAuth` compatibility mode, ordered member replacement, resumable phases, and verification of MongoDB members and SC4SNMP clients.
 - Revalidates the Mongo-backed MIB index cache whenever a trap or poller worker starts/restart.
 - Preserve unresolved trap varbind fields during custom translation processing, preventing processing failures and errors
 - Harden the security context for kubernetes templates
