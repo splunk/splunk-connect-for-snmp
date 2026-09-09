@@ -147,7 +147,7 @@ class GroupsPage:
 
     def delete_device_from_group(self, device_ip):
         logger.info("Delete device from group popup")
-        delete_device_btn_xpath = f"//button[@data-test='sc4snmp:group-row-delete' and ancestor::tr//td[text()='{device_ip}']]"
+        delete_device_btn_xpath = f"//button[@data-test='sc4snmp:group-row-delete' and ancestor::tr//td[normalize-space(.)='{device_ip}']]"
         helper.safe_click(driver, delete_device_btn_xpath)
         time.sleep(2)
         self.confirm_delete()
@@ -155,7 +155,7 @@ class GroupsPage:
 
     def click_edit_device(self, device_ip):
         logger.info("Click edit device button")
-        edit_device_btn_xpath = f"//button[@data-test='sc4snmp:group-row-edit' and ancestor::tr//td[text()='{device_ip}']]"
+        edit_device_btn_xpath = f"//button[@data-test='sc4snmp:group-row-edit' and ancestor::tr//td[normalize-space(.)='{device_ip}']]"
         helper.safe_click(driver, edit_device_btn_xpath)
         time.sleep(2)
 
@@ -233,11 +233,11 @@ class GroupsPage:
 
     def _get_group_field_value(self, field, device_ip):
         xpath = {
-            "port": f"//td[@data-test='sc4snmp:host-port' and ancestor::tr//td[text()='{device_ip}']]",
-            "snmp_version": f"//td[@data-test='sc4snmp:host-version' and ancestor::tr//td[text()='{device_ip}']]",
-            "community_string": f"//td[@data-test='sc4snmp:host-community' and ancestor::tr//td[text()='{device_ip}']]",
-            "secret": f"//td[@data-test='sc4snmp:host-secret' and ancestor::tr//td[text()='{device_ip}']]",
-            "security_engine": f"//td[@data-test='sc4snmp:host-security-engine' and ancestor::tr//td[text()='{device_ip}']]",
+            "port": f"//td[@data-test='sc4snmp:host-port' and ancestor::tr//td[normalize-space(.)='{device_ip}']]",
+            "snmp_version": f"//td[@data-test='sc4snmp:host-version' and ancestor::tr//td[normalize-space(.)='{device_ip}']]",
+            "community_string": f"//td[@data-test='sc4snmp:host-community' and ancestor::tr//td[normalize-space(.)='{device_ip}']]",
+            "secret": f"//td[@data-test='sc4snmp:host-secret' and ancestor::tr//td[normalize-space(.)='{device_ip}']]",
+            "security_engine": f"//td[@data-test='sc4snmp:host-security-engine' and ancestor::tr//td[normalize-space(.)='{device_ip}']]",
         }
         community = driver.find_element(By.XPATH, xpath[field])
         return community.text

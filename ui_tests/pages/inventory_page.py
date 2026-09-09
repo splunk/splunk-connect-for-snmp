@@ -54,7 +54,7 @@ class InventoryPage:
 
     def delete_entry_from_list(self, host_ip):
         logger.info(f"Removing entry from inventory list: {host_ip}")
-        delete_btn_for_inventory_with_host_ip_xpath = f"//button[@data-test='sc4snmp:inventory-row-delete' and ancestor::tr//td[text()='{host_ip}']]"
+        delete_btn_for_inventory_with_host_ip_xpath = f"//button[@data-test='sc4snmp:inventory-row-delete' and ancestor::tr//td[normalize-space(.)='{host_ip}']]"
         helper.safe_click(driver, delete_btn_for_inventory_with_host_ip_xpath)
         time.sleep(1)
         self.confirm_delete()
@@ -96,7 +96,7 @@ class InventoryPage:
 
     def click_edit_inventory_entry(self, host_ip):
         logger.info(f"Edit entry from inventory list with: {host_ip}")
-        edit_inventory_entry_btn_xpath = f"//button[@data-test='sc4snmp:inventory-row-edit' and ancestor::tr//td[text()='{host_ip}']]"
+        edit_inventory_entry_btn_xpath = f"//button[@data-test='sc4snmp:inventory-row-edit' and ancestor::tr//td[normalize-space(.)='{host_ip}']]"
         helper.safe_click(driver, edit_inventory_entry_btn_xpath)
 
     def get_edit_inventory_notice(self):
@@ -257,15 +257,15 @@ class InventoryPage:
 
     def _get_inventory_data(self, host, field):
         field_xpath = {
-            "snmp_version": f"//td[@data-test='sc4snmp:inventory-version' and ancestor::tr//td[text()='{host}']]",
-            "port": f"//td[@data-test='sc4snmp:inventory-port' and ancestor::tr//td[text()='{host}']]",
-            "community_string": f"//td[@data-test='sc4snmp:inventory-community' and ancestor::tr//td[text()='{host}']]",
-            "secret": f"//td[@data-test='sc4snmp:inventory-secret' and ancestor::tr//td[text()='{host}']]",
-            "security_engine": f"//td[@data-test='sc4snmp:inventory-security-engine' and ancestor::tr//td[text()='{host}']]",
-            "walk_interval": f"//td[@data-test='sc4snmp:inventory-walk-interval' and ancestor::tr//td[text()='{host}']]",
-            "max_oid_to_process": f"//td[@data-test='sc4snmp:inventory-max-oid-to-process' and ancestor::tr//td[text()='{host}']]",
-            "profiles": f"//td[@data-test='sc4snmp:inventory-profiles' and ancestor::tr//td[text()='{host}']]",
-            "smart_profiles": f"//td[@data-test='sc4snmp:inventory-smart-profiles' and ancestor::tr//td[text()='{host}']]",
+            "snmp_version": f"//td[@data-test='sc4snmp:inventory-version' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "port": f"//td[@data-test='sc4snmp:inventory-port' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "community_string": f"//td[@data-test='sc4snmp:inventory-community' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "secret": f"//td[@data-test='sc4snmp:inventory-secret' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "security_engine": f"//td[@data-test='sc4snmp:inventory-security-engine' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "walk_interval": f"//td[@data-test='sc4snmp:inventory-walk-interval' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "max_oid_to_process": f"//td[@data-test='sc4snmp:inventory-max-oid-to-process' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "profiles": f"//td[@data-test='sc4snmp:inventory-profiles' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "smart_profiles": f"//td[@data-test='sc4snmp:inventory-smart-profiles' and ancestor::tr//td[normalize-space(.)='{host}']]",
         }
         field = driver.find_element(By.XPATH, field_xpath[field])
         return field.text

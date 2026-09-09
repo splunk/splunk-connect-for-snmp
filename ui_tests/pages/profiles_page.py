@@ -127,7 +127,7 @@ class ProfilesPage:
 
     def click_delete_profile_button(self, profile_name):
         logger.info(f"click delete profile button -> {profile_name}")
-        delete_btn_for_profile_with_name_xpath = f"//button[@data-test='sc4snmp:profile-row-delete' and ancestor::tr//td[text()='{profile_name}']]"
+        delete_btn_for_profile_with_name_xpath = f"//button[@data-test='sc4snmp:profile-row-delete' and ancestor::tr//td[normalize-space(.)='{profile_name}']]"
         helper.safe_click(driver, delete_btn_for_profile_with_name_xpath)
         time.sleep(1)
 
@@ -147,7 +147,7 @@ class ProfilesPage:
 
     def get_profile_type_for_profile_entry(self, profile_name):
         logger.info(f"getting profile type for profile {profile_name}")
-        profile_type_for_profile_with_name_xpath = f"//td[@data-test='sc4snmp:profile-type' and ancestor::tr//td[text()='{profile_name}']]"
+        profile_type_for_profile_with_name_xpath = f"//td[@data-test='sc4snmp:profile-type' and ancestor::tr//td[normalize-space(.)='{profile_name}']]"
         profile_type = driver.find_element(
             By.XPATH, profile_type_for_profile_with_name_xpath
         )
@@ -212,7 +212,7 @@ class ProfilesPage:
 
     def click_edit_profile(self, profile_name):
         logger.info(f"Edit profile: {profile_name}")
-        edit_btn_for_profile_with_name_xpath = f"//button[@data-test='sc4snmp:profile-row-edit' and ancestor::tr//td[text()='{profile_name}']]"
+        edit_btn_for_profile_with_name_xpath = f"//button[@data-test='sc4snmp:profile-row-edit' and ancestor::tr//td[normalize-space(.)='{profile_name}']]"
         helper.safe_click(driver, edit_btn_for_profile_with_name_xpath)
         time.sleep(1)
 
@@ -234,13 +234,13 @@ class ProfilesPage:
 
     def get_profile_freq(self, profile_name):
         logger.info(f"Get profile frequency {profile_name}")
-        profile_freq_xpath = f"//td[@data-test='sc4snmp:profile-frequency' and ancestor::tr//td[text()='{profile_name}']]"
+        profile_freq_xpath = f"//td[@data-test='sc4snmp:profile-frequency' and ancestor::tr//td[normalize-space(.)='{profile_name}']]"
         profile_freq = driver.find_element(By.XPATH, profile_freq_xpath)
         return profile_freq.text
 
     def expand_profile(self, profile_name):
         logger.info(f"Clik profile expand button: {profile_name}")
-        profile_expand_btn_xpath = f"//tr[@data-test='sc4snmp:profile-row' and child::td[text()='{profile_name}']]//td[@data-test='expand']"
+        profile_expand_btn_xpath = f"//tr[@data-test='sc4snmp:profile-row' and child::td[normalize-space(.)='{profile_name}']]//td[@data-test='expand']"
         profile_expand_btn = driver.find_element(By.XPATH, profile_expand_btn_xpath)
         profile_expand_btn.click()
         time.sleep(1)
