@@ -47,7 +47,7 @@ class ProfilesPage:
 
     def set_frequency(self, freq_value):
         logger.info(f"Setting profile frequency: {freq_value}")
-        xpath = "//div[@data-test='sc4snmp:form:frequency-input']//span//input"
+        xpath = "//div[@data-test='sc4snmp:form:frequency-input']//input"
         freq_field = driver.find_element(By.XPATH, xpath)
         helper.clear_input(freq_field)
         # freq_field.send_keys(Keys.BACKSPACE)  # clear() is not working here
@@ -55,7 +55,7 @@ class ProfilesPage:
 
     def set_profile_name(self, name):
         logger.info(f"Setting profile name: {name}")
-        xpath = "//div[@data-test='sc4snmp:form:profile-name-input']//span//input"
+        xpath = "//div[@data-test='sc4snmp:form:profile-name-input']//input"
         name_input = driver.find_element(By.XPATH, xpath)
         helper.clear_input(name_input)  # this is useful when editing profile name
         name_input.send_keys(name)
@@ -160,7 +160,7 @@ class ProfilesPage:
     def set_smart_profile_field(self, field_value):
         logger.info(f"Setting smart profile field {field_value}")
         smart_profile_field_xpath = (
-            "//div[@data-test='sc4snmp:form:condition-field-input']//span//input"
+            "//div[@data-test='sc4snmp:form:condition-field-input']//input"
         )
         field = driver.find_element(By.XPATH, smart_profile_field_xpath)
         field.send_keys(field_value)
@@ -172,14 +172,14 @@ class ProfilesPage:
         add_pattern_button.click()
         time.sleep(1)
         pattern_row_xpath = (
-            "//div[@data-test='sc4snmp:form:field-pattern']//span//input"
+            "//div[@data-test='sc4snmp:form:field-pattern']//input"
         )
         pattern_rows = driver.find_elements(By.XPATH, pattern_row_xpath)
         pattern_rows[-1].send_keys(pattern)
 
     def check_if_frequency_setting_field_is_visible(self):
         logger.info("Checking if frequency setting field is visible")
-        xpath = "//div[@data-test='sc4snmp:form:frequency-input']//span//input"
+        xpath = "//div[@data-test='sc4snmp:form:frequency-input']//input"
         try:
             freq_field = driver.find_element(By.XPATH, xpath)
             return freq_field.is_displayed()
@@ -196,7 +196,7 @@ class ProfilesPage:
         time.sleep(1)
         # set field
         set_field_xpath = (
-            "//div[@data-test='sc4snmp:form:conditional-field']//span//input"
+            "//div[@data-test='sc4snmp:form:conditional-field']//input"
         )
         field = driver.find_element(By.XPATH, set_field_xpath)
         field.send_keys(field_value)
@@ -213,7 +213,7 @@ class ProfilesPage:
         operation_option.click()
         # set value
         value_field_xpath = (
-            "//div[@data-test='sc4snmp:form:conditional-condition']//span//input"
+            "//div[@data-test='sc4snmp:form:conditional-condition']//input"
         )
         value_field = driver.find_element(By.XPATH, value_field_xpath)
         value_field.send_keys(value)

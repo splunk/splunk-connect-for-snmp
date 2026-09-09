@@ -29,7 +29,7 @@ class GroupsPage:
 
     def _get_group_name_input(self):
         add_group_input_xpath = (
-            "//div[@data-test='sc4snmp:form:group-name-input']//span//input"
+            "//div[@data-test='sc4snmp:form:group-name-input']//input"
         )
         add_grp_input = driver.find_element(By.XPATH, add_group_input_xpath)
         return add_grp_input
@@ -103,7 +103,7 @@ class GroupsPage:
 
     def set_device_ip(self, device_ip, edit=False):
         logger.info(f"set device ip: {device_ip}")
-        device_ip_field_xpath = "//div[@data-test='sc4snmp:form:ip-input']//span//input"
+        device_ip_field_xpath = "//div[@data-test='sc4snmp:form:ip-input']//input"
         ip_field = driver.find_element(By.XPATH, device_ip_field_xpath)
         if edit:
             helper.clear_input(ip_field)
@@ -184,10 +184,10 @@ class GroupsPage:
 
     def _set_group_field(self, field_name, value, edit=False):
         xpath = {
-            "port": "//div[@data-test='sc4snmp:form:port-input']//span//input",
-            "community_string": "//div[@data-test='sc4snmp:form:community-input']//span//input",
-            "secret": "//div[@data-test='sc4snmp:form:secret-input']//span//input",
-            "security_engine": "//div[@data-test='sc4snmp:form:security-engine-input']//span//input",
+            "port": "//div[@data-test='sc4snmp:form:port-input']//input",
+            "community_string": "//div[@data-test='sc4snmp:form:community-input']//input",
+            "secret": "//div[@data-test='sc4snmp:form:secret-input']//input",
+            "security_engine": "//div[@data-test='sc4snmp:form:security-engine-input']//input",
         }
         field_input = driver.find_element(By.XPATH, xpath[field_name])
         if edit:
@@ -296,7 +296,7 @@ class GroupsPage:
     def set_bulk_row_field(self, field_name, index, value):
         logger.info(f"set bulk row {index} field {field_name}: {value}")
         field_input_xpath = (
-            f"//div[@data-test='sc4snmp:bulk:{field_name}-input']//span//input"
+            f"//div[@data-test='sc4snmp:bulk:{field_name}-input']//input"
         )
         field_inputs = driver.find_elements(By.XPATH, field_input_xpath)
         field_inputs[index].send_keys(value)
@@ -325,7 +325,7 @@ class GroupsPage:
     def set_bulk_shared_field(self, field_name, value):
         logger.info(f"set bulk shared field {field_name}: {value}")
         field_input_xpath = (
-            f"//div[@data-test='sc4snmp:bulk:shared-{field_name}-input']//span//input"
+            f"//div[@data-test='sc4snmp:bulk:shared-{field_name}-input']//input"
         )
         field_input = driver.find_element(By.XPATH, field_input_xpath)
         field_input.send_keys(value)

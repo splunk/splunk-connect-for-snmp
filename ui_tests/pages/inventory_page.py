@@ -85,7 +85,7 @@ class InventoryPage:
     def set_community_string(self, community_string, edit=False):
         logger.info(f"Set community string: {community_string}")
         community_input_field_xpath = (
-            "//div[@data-test='sc4snmp:form:community-input']//span//input"
+            "//div[@data-test='sc4snmp:form:community-input']//input"
         )
         community_input_field = driver.find_element(
             By.XPATH, community_input_field_xpath
@@ -155,7 +155,7 @@ class InventoryPage:
     def edit_device_port(self, port):
         logger.info(f"set/edit inventory device port: {port}")
         device_port_field_xpath = (
-            "//div[@data-test='sc4snmp:form:port-input']//span//input"
+            "//div[@data-test='sc4snmp:form:port-input']//input"
         )
         port_field = driver.find_element(By.XPATH, device_port_field_xpath)
         helper.clear_input(port_field)
@@ -191,9 +191,9 @@ class InventoryPage:
 
     def _set_inventory_field(self, field, value, edit=False):
         xpath = {
-            "host_group_name": "//div[@data-test='sc4snmp:form:group-ip-input']//span//input",
-            "secret": "//div[@data-test='sc4snmp:form:secret-input']//span//input",
-            "security_engine": "//div[@data-test='sc4snmp:form:security-engine-input']//span//input",
+            "host_group_name": "//div[@data-test='sc4snmp:form:group-ip-input']//input",
+            "secret": "//div[@data-test='sc4snmp:form:secret-input']//input",
+            "security_engine": "//div[@data-test='sc4snmp:form:security-engine-input']//input",
         }
         field_input = driver.find_element(By.XPATH, xpath[field])
         if edit:
@@ -203,7 +203,7 @@ class InventoryPage:
     def set_walk_interval(self, walk_interval):
         logger.info(f"set/edit inventory device walk interval: {walk_interval}")
         sec_engine_field_xpath = (
-            "//div[@data-test='sc4snmp:form:walk-interval-input']//span//input"
+            "//div[@data-test='sc4snmp:form:walk-interval-input']//input"
         )
         sec_engine = driver.find_element(By.XPATH, sec_engine_field_xpath)
         helper.clear_input(sec_engine)
@@ -215,7 +215,7 @@ class InventoryPage:
             f"set/edit inventory device max OID to process: {max_oid_to_process}"
         )
         max_oid_to_process_field_xpath = (
-            "//div[@data-test='sc4snmp:form:max-oid-to-process-input']//span//input"
+            "//div[@data-test='sc4snmp:form:max-oid-to-process-input']//input"
         )
         max_oid_to_process_field = driver.find_element(
             By.XPATH, max_oid_to_process_field_xpath
