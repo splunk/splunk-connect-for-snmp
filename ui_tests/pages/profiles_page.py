@@ -68,19 +68,19 @@ class ProfilesPage:
         varbind_row_xpath = "//div[@data-test='sc4snmp:form:varbind-row']"
         varbinds_rows = driver.find_elements(By.XPATH, varbind_row_xpath)
         component_xpath = (
-            "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/span/input"
+            "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/input"
         )
         component_input = varbinds_rows[-1].find_element(By.XPATH, component_xpath)
         component_input.send_keys(mcomponent)
         if mobject is not None:
             object_xpath = (
-                "//div[@data-test='sc4snmp:form:varbind-mib-object-input']/span/input"
+                "//div[@data-test='sc4snmp:form:varbind-mib-object-input']/input"
             )
             object_input = varbinds_rows[-1].find_element(By.XPATH, object_xpath)
             object_input.send_keys(mobject)
         if mindex is not None:
             index_xpath = (
-                "//div[@data-test='sc4snmp:form:varbind-mib-index-input']/span/input"
+                "//div[@data-test='sc4snmp:form:varbind-mib-index-input']/input"
             )
             index_input = varbinds_rows[-1].find_element(By.XPATH, index_xpath)
             index_input.send_keys(mindex)
@@ -92,22 +92,18 @@ class ProfilesPage:
         varbind_row_xpath = "//div[@data-test='sc4snmp:form:varbind-row']"
         varbinds_row = driver.find_element(By.XPATH, varbind_row_xpath)
         component_xpath = (
-            "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/span/input"
+            "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/input"
         )
         component_input = varbinds_row.find_element(By.XPATH, component_xpath)
         helper.clear_input(component_input)
         component_input.send_keys(new_mcomponent)
 
-        object_xpath = (
-            "//div[@data-test='sc4snmp:form:varbind-mib-object-input']/span/input"
-        )
+        object_xpath = "//div[@data-test='sc4snmp:form:varbind-mib-object-input']/input"
         object_input = varbinds_row.find_element(By.XPATH, object_xpath)
         helper.clear_input(object_input)
         object_input.send_keys(new_mobject)
 
-        index_xpath = (
-            "//div[@data-test='sc4snmp:form:varbind-mib-index-input']/span/input"
-        )
+        index_xpath = "//div[@data-test='sc4snmp:form:varbind-mib-index-input']/input"
         index_input = varbinds_row.find_element(By.XPATH, index_xpath)
         helper.clear_input(index_input)
         index_input.send_keys(new_mindex)
@@ -171,9 +167,7 @@ class ProfilesPage:
         add_pattern_button = driver.find_element(By.XPATH, add_pattern_button_xpath)
         add_pattern_button.click()
         time.sleep(1)
-        pattern_row_xpath = (
-            "//div[@data-test='sc4snmp:form:field-pattern']//input"
-        )
+        pattern_row_xpath = "//div[@data-test='sc4snmp:form:field-pattern']//input"
         pattern_rows = driver.find_elements(By.XPATH, pattern_row_xpath)
         pattern_rows[-1].send_keys(pattern)
 
@@ -195,9 +189,7 @@ class ProfilesPage:
         add_condition_btn.click()
         time.sleep(1)
         # set field
-        set_field_xpath = (
-            "//div[@data-test='sc4snmp:form:conditional-field']//input"
-        )
+        set_field_xpath = "//div[@data-test='sc4snmp:form:conditional-field']//input"
         field = driver.find_element(By.XPATH, set_field_xpath)
         field.send_keys(field_value)
         # select operation

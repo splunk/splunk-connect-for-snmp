@@ -154,9 +154,7 @@ class InventoryPage:
 
     def edit_device_port(self, port):
         logger.info(f"set/edit inventory device port: {port}")
-        device_port_field_xpath = (
-            "//div[@data-test='sc4snmp:form:port-input']//input"
-        )
+        device_port_field_xpath = "//div[@data-test='sc4snmp:form:port-input']//input"
         port_field = driver.find_element(By.XPATH, device_port_field_xpath)
         helper.clear_input(port_field)
         port_field.send_keys(port)
