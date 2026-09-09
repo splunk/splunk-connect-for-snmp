@@ -397,4 +397,4 @@ class GroupsPage:
         logger.info("checking if bulk-add submit button is enabled")
         submit_btn_xpath = "//button[@data-test='sc4snmp:bulk:submit-button']"
         submit_btn = driver.find_element(By.XPATH, submit_btn_xpath)
-        return submit_btn.is_enabled()
+        return submit_btn.get_attribute("aria-disabled") != "true"
