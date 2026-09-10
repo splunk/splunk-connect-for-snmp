@@ -3076,7 +3076,7 @@
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Worker configuration is kept in the <code>worker</code> section of <code>values.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">poller</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="w">    </span><span class="nt">concurrency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
@@ -3177,9 +3177,11 @@
 <span class="w">  </span><span class="nt">udpConnectionRetries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 <span class="w">  </span><span class="nt">ignoreEmptyVarbinds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </code></pre></div>
+
 <p>To apply changes, run the upgrade command:</p>
-<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
 </code></pre></div>
+
 <h3 id="worker-parameters">Worker parameters<a class="headerlink" href="#worker-parameters" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3525,72 +3527,74 @@
 </div>
 <div class="tabbed-block">
 <p>Worker configuration is set via environment variables in <code>.env</code>. The key variables for each worker type are:</p>
-<div class="highlight"><pre><span></span><code># Workers configuration
-WALK_RETRY_MAX_INTERVAL=180
-WALK_MAX_RETRIES=5
-METRICS_INDEXING_ENABLED=false
-POLL_BASE_PROFILES=true
-IGNORE_NOT_INCREASING_OIDS=
-WORKER_LOG_LEVEL=INFO
-WORKER_DISABLE_MONGO_DEBUG_LOGGING=true
-UDP_CONNECTION_TIMEOUT=3
-MAX_OID_TO_PROCESS=70
-MAX_REPETITIONS=10
+<div class="codehilite"><pre><span></span><code><span class="o">#</span> <span class="n">Workers</span> <span class="n">configuration</span>
+<span class="n">WALK_RETRY_MAX_INTERVAL</span><span class="o">=</span><span class="mi">180</span>
+<span class="n">WALK_MAX_RETRIES</span><span class="o">=</span><span class="mi">5</span>
+<span class="n">METRICS_INDEXING_ENABLED</span><span class="o">=</span><span class="n">false</span>
+<span class="n">POLL_BASE_PROFILES</span><span class="o">=</span><span class="n">true</span>
+<span class="n">IGNORE_NOT_INCREASING_OIDS</span><span class="o">=</span>
+<span class="n">WORKER_LOG_LEVEL</span><span class="o">=</span><span class="n">INFO</span>
+<span class="n">WORKER_DISABLE_MONGO_DEBUG_LOGGING</span><span class="o">=</span><span class="n">true</span>
+<span class="n">UDP_CONNECTION_TIMEOUT</span><span class="o">=</span><span class="mi">3</span>
+<span class="n">MAX_OID_TO_PROCESS</span><span class="o">=</span><span class="mi">70</span>
+<span class="n">MAX_REPETITIONS</span><span class="o">=</span><span class="mi">10</span>
 
-# Worker Poller
-WORKER_POLLER_CONCURRENCY=4
-PREFETCH_POLLER_COUNT=1
-WORKER_POLLER_REPLICAS=2
-WORKER_POLLER_CPU_LIMIT=1
-WORKER_POLLER_MEMORY_LIMIT=500M
-WORKER_POLLER_CPU_RESERVATIONS=0.5
-WORKER_POLLER_MEMORY_RESERVATIONS=250M
-WORKER_POLLER_MAX_TASKS_PER_CHILD=0
-WORKER_POLLER_MAX_MEMORY_PER_CHILD=0
-ENABLE_WORKER_POLLER_SECRETS=false
+<span class="o">#</span> <span class="n">Worker</span> <span class="n">Poller</span>
+<span class="n">WORKER_POLLER_CONCURRENCY</span><span class="o">=</span><span class="mi">4</span>
+<span class="n">PREFETCH_POLLER_COUNT</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">WORKER_POLLER_REPLICAS</span><span class="o">=</span><span class="mi">2</span>
+<span class="n">WORKER_POLLER_CPU_LIMIT</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">WORKER_POLLER_MEMORY_LIMIT</span><span class="o">=</span><span class="mi">500</span><span class="n">M</span>
+<span class="n">WORKER_POLLER_CPU_RESERVATIONS</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="n">WORKER_POLLER_MEMORY_RESERVATIONS</span><span class="o">=</span><span class="mi">250</span><span class="n">M</span>
+<span class="n">WORKER_POLLER_MAX_TASKS_PER_CHILD</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">WORKER_POLLER_MAX_MEMORY_PER_CHILD</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">ENABLE_WORKER_POLLER_SECRETS</span><span class="o">=</span><span class="n">false</span>
 
-# Worker Sender
-WORKER_SENDER_CONCURRENCY=4
-PREFETCH_SENDER_COUNT=30
-WORKER_SENDER_REPLICAS=1
-WORKER_SENDER_CPU_LIMIT=1
-WORKER_SENDER_MEMORY_LIMIT=500M
-WORKER_SENDER_CPU_RESERVATIONS=0.5
-WORKER_SENDER_MEMORY_RESERVATIONS=250M
-WORKER_SENDER_MAX_TASKS_PER_CHILD=0
-WORKER_SENDER_MAX_MEMORY_PER_CHILD=0
+<span class="o">#</span> <span class="n">Worker</span> <span class="n">Sender</span>
+<span class="n">WORKER_SENDER_CONCURRENCY</span><span class="o">=</span><span class="mi">4</span>
+<span class="n">PREFETCH_SENDER_COUNT</span><span class="o">=</span><span class="mi">30</span>
+<span class="n">WORKER_SENDER_REPLICAS</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">WORKER_SENDER_CPU_LIMIT</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">WORKER_SENDER_MEMORY_LIMIT</span><span class="o">=</span><span class="mi">500</span><span class="n">M</span>
+<span class="n">WORKER_SENDER_CPU_RESERVATIONS</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="n">WORKER_SENDER_MEMORY_RESERVATIONS</span><span class="o">=</span><span class="mi">250</span><span class="n">M</span>
+<span class="n">WORKER_SENDER_MAX_TASKS_PER_CHILD</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">WORKER_SENDER_MAX_MEMORY_PER_CHILD</span><span class="o">=</span><span class="mi">0</span>
 
-# Worker Trap
-WORKER_TRAP_CONCURRENCY=4
-PREFETCH_TRAP_COUNT=30
-RESOLVE_TRAP_ADDRESS=false
-INCLUDE_UNRESOLVED_TRAP_VARBINDS=false
-MAX_TRAP_VARBINDS_TO_DECODE=0
-MAX_DNS_CACHE_SIZE_TRAPS=500
-TTL_DNS_CACHE_TRAPS=1800
-WORKER_TRAP_REPLICAS=2
-WORKER_TRAP_CPU_LIMIT=1
-WORKER_TRAP_MEMORY_LIMIT=500M
-WORKER_TRAP_CPU_RESERVATIONS=0.5
-WORKER_TRAP_MEMORY_RESERVATIONS=250M
-WORKER_TRAP_MAX_TASKS_PER_CHILD=0
-WORKER_TRAP_MAX_MEMORY_PER_CHILD=0
+<span class="o">#</span> <span class="n">Worker</span> <span class="n">Trap</span>
+<span class="n">WORKER_TRAP_CONCURRENCY</span><span class="o">=</span><span class="mi">4</span>
+<span class="n">PREFETCH_TRAP_COUNT</span><span class="o">=</span><span class="mi">30</span>
+<span class="n">RESOLVE_TRAP_ADDRESS</span><span class="o">=</span><span class="n">false</span>
+<span class="n">INCLUDE_UNRESOLVED_TRAP_VARBINDS</span><span class="o">=</span><span class="n">false</span>
+<span class="n">MAX_TRAP_VARBINDS_TO_DECODE</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">MAX_DNS_CACHE_SIZE_TRAPS</span><span class="o">=</span><span class="mi">500</span>
+<span class="n">TTL_DNS_CACHE_TRAPS</span><span class="o">=</span><span class="mi">1800</span>
+<span class="n">WORKER_TRAP_REPLICAS</span><span class="o">=</span><span class="mi">2</span>
+<span class="n">WORKER_TRAP_CPU_LIMIT</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">WORKER_TRAP_MEMORY_LIMIT</span><span class="o">=</span><span class="mi">500</span><span class="n">M</span>
+<span class="n">WORKER_TRAP_CPU_RESERVATIONS</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="n">WORKER_TRAP_MEMORY_RESERVATIONS</span><span class="o">=</span><span class="mi">250</span><span class="n">M</span>
+<span class="n">WORKER_TRAP_MAX_TASKS_PER_CHILD</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">WORKER_TRAP_MAX_MEMORY_PER_CHILD</span><span class="o">=</span><span class="mi">0</span>
 
-# Worker Discovery
-WORKER_DISCOVERY_CONCURRENCY=4
-PREFETCH_DISCOVERY_COUNT=30
-WORKER_DISCOVERY_REPLICAS=1
-WORKER_DISCOVERY_CPU_LIMIT=1
-WORKER_DISCOVERY_MEMORY_LIMIT=500M
-WORKER_DISCOVERY_CPU_RESERVATIONS=0.5
-WORKER_DISCOVERY_MEMORY_RESERVATIONS=250M
-WORKER_DISCOVERY_MAX_TASKS_PER_CHILD=0
-WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD=0
-ENABLE_WORKER_DISCOVERY_SECRETS=false
+<span class="o">#</span> <span class="n">Worker</span> <span class="n">Discovery</span>
+<span class="n">WORKER_DISCOVERY_CONCURRENCY</span><span class="o">=</span><span class="mi">4</span>
+<span class="n">PREFETCH_DISCOVERY_COUNT</span><span class="o">=</span><span class="mi">30</span>
+<span class="n">WORKER_DISCOVERY_REPLICAS</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">WORKER_DISCOVERY_CPU_LIMIT</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">WORKER_DISCOVERY_MEMORY_LIMIT</span><span class="o">=</span><span class="mi">500</span><span class="n">M</span>
+<span class="n">WORKER_DISCOVERY_CPU_RESERVATIONS</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="n">WORKER_DISCOVERY_MEMORY_RESERVATIONS</span><span class="o">=</span><span class="mi">250</span><span class="n">M</span>
+<span class="n">WORKER_DISCOVERY_MAX_TASKS_PER_CHILD</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">ENABLE_WORKER_DISCOVERY_SECRETS</span><span class="o">=</span><span class="n">false</span>
 </code></pre></div>
+
 <p>To apply changes, recreate the worker containers:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
+
 <h3 id="worker-parameters_1">Worker parameters<a class="headerlink" href="#worker-parameters_1" title="Permanent link">&para;</a></h3>
 <h3 id="general">General<a class="headerlink" href="#general" title="Permanent link">&para;</a></h3>
 <table>
@@ -3870,7 +3874,7 @@ ENABLE_WORKER_DISCOVERY_SECRETS=false
 <h3 id="real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring">Real life scenario: I use SC4SNMP for only trap monitoring<a class="headerlink" href="#real-life-scenario-i-use-sc4snmp-for-only-trap-monitoring" title="Permanent link">&para;</a></h3>
 <p>If you do not use polling at all, set <code>worker.poller.replicaCount</code> to <code>0</code>.
 To monitor traps, adjust <code>worker.trap.replicaCount</code> depending on your needs and <code>worker.sender.replicaCount</code> to send traps to Splunk. Usually, you need significantly fewer sender pods than trap pods.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
 <span class="w">  </span><span class="nt">sender</span><span class="p">:</span>
@@ -3880,8 +3884,9 @@ To monitor traps, adjust <code>worker.trap.replicaCount</code> depending on your
 <span class="w">  </span><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </code></pre></div>
+
 <p>With autoscaling:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -3899,19 +3904,21 @@ To monitor traps, adjust <code>worker.trap.replicaCount</code> depending on your
 <span class="w">  </span><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </code></pre></div>
+
 <p>In the above example, both trap and sender pods are autoscaled. During an upgrade process, the number of pods is created through <code>minReplicas</code>, and then new ones are created only if the CPU threshold exceeds the <code>targetCPUUtilizationPercentage</code>, which by default is 80%. This solution helps you to keep resources usage adjusted to what you actually need.</p>
 <p>After the helm upgrade process, you will see <code>horizontalpodautoscaler</code> in <code>microk8s kubectl get all -n sc4snmp</code>:</p>
-<div class="highlight"><pre><span></span><code>NAME<span class="w">                                                                             </span>REFERENCE<span class="w">                                               </span>TARGETS<span class="w">   </span>MINPODS<span class="w">   </span>MAXPODS<span class="w">   </span>REPLICAS<span class="w">   </span>AGE
+<div class="codehilite"><pre><span></span><code>NAME<span class="w">                                                                             </span>REFERENCE<span class="w">                                               </span>TARGETS<span class="w">   </span>MINPODS<span class="w">   </span>MAXPODS<span class="w">   </span>REPLICAS<span class="w">   </span>AGE
 horizontalpodautoscaler.autoscaling/snmp-mibserver<span class="w">                               </span>Deployment/snmp-mibserver<span class="w">                               </span><span class="m">1</span>%/80%<span class="w">    </span><span class="m">1</span><span class="w">         </span><span class="m">3</span><span class="w">         </span><span class="m">1</span><span class="w">          </span>97m
 horizontalpodautoscaler.autoscaling/snmp-splunk-connect-for-snmp-worker-sender<span class="w">   </span>Deployment/snmp-splunk-connect-for-snmp-worker-sender<span class="w">   </span><span class="m">1</span>%/80%<span class="w">    </span><span class="m">2</span><span class="w">         </span><span class="m">5</span><span class="w">         </span><span class="m">2</span><span class="w">          </span>28m
 horizontalpodautoscaler.autoscaling/snmp-splunk-connect-for-snmp-worker-trap<span class="w">     </span>Deployment/snmp-splunk-connect-for-snmp-worker-trap<span class="w">     </span><span class="m">1</span>%/80%<span class="w">    </span><span class="m">4</span><span class="w">         </span><span class="m">10</span><span class="w">        </span><span class="m">4</span><span class="w">          </span>28m
 </code></pre></div>
+
 <p>If you see <code>&lt;unknown&gt;/80%</code> in the <code>TARGETS</code> section instead of the CPU percentage, you probably do not have the <code>metrics-server</code> add-on enabled.
 Enable it using <code>microk8s enable metrics-server</code>.</p>
 <h3 id="real-life-scenario-i-have-a-significant-delay-in-polling">Real life scenario: I have a significant delay in polling<a class="headerlink" href="#real-life-scenario-i-have-a-significant-delay-in-polling" title="Permanent link">&para;</a></h3>
 <p>Sometimes when polling is configured to be run frequently and on many devices, workers get overloaded and there is a delay in delivering data to Splunk. To avoid these situations, scale poller and sender pods. Because of the walk cycles, (walk is a costly operation that is only run once in a while), poller workers require more resources for a short time. For this reason, enabling autoscaling is recommended.</p>
 <p>See the following example of values.yaml with autoscaling:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">autoscaling</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -3933,23 +3940,26 @@ Enable it using <code>microk8s enable metrics-server</code>.</p>
 <span class="w">  </span><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </code></pre></div>
+
 <p>Remember that the system will not scale itself infinitely. There is a finite amount of resources that you can allocate. 
 By default, every worker has configured the following resources:</p>
-<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">limits</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500m</span>
 <span class="w">      </span><span class="nt">requests</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250m</span>
 </code></pre></div>
+
 <h3 id="i-have-autoscaling-enabled-and-experience-problems-with-mongo-and-redis-pod">I have autoscaling enabled and experience problems with Mongo and Redis pod<a class="headerlink" href="#i-have-autoscaling-enabled-and-experience-problems-with-mongo-and-redis-pod" title="Permanent link">&para;</a></h3>
 <p>If MongoDB and Redis pods are crushing, and some of the pods are in an infinite <code>Pending</code> state, that means 
 you have exhausted your resources and SC4SNMP cannot scale more. You should decrease the number of <code>maxReplicas</code> in 
 workers, so that it is not going beyond the available CPU.</p>
 <h3 id="i-do-not-know-how-to-set-autoscaling-parameters-and-how-many-replicas-i-need">I do not know how to set autoscaling parameters and how many replicas I need<a class="headerlink" href="#i-do-not-know-how-to-set-autoscaling-parameters-and-how-many-replicas-i-need" title="Permanent link">&para;</a></h3>
 <p>The best way to see if pods are overloaded is to run the following command:</p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s kubectl top pods -n sc4snmp</span>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s kubectl top pods -n sc4snmp</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">NAME                                                          CPU(cores)   MEMORY(bytes)</span><span class="w">   </span>
+
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">NAME                                                          CPU(cores)   MEMORY(bytes)</span><span class="w">   </span>
 <span class="l l-Scalar l-Scalar-Plain">snmp-mibserver-7f879c5b7c-nnlfj                               1m           3Mi</span><span class="w">             </span>
 <span class="l l-Scalar l-Scalar-Plain">snmp-mongodb-869cc8586f-q8lkm                                 18m          225Mi</span><span class="w">           </span>
 <span class="l l-Scalar l-Scalar-Plain">snmp-redis-master-0                                           10m          2Mi</span><span class="w">             </span>
@@ -3962,16 +3972,18 @@ workers, so that it is not going beyond the available CPU.</p>
 <span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-trap-5474db6fc6-46zhf     3m           259Mi</span><span class="w">           </span>
 <span class="l l-Scalar l-Scalar-Plain">snmp-splunk-connect-for-snmp-worker-trap-5474db6fc6-mjtpv     4m           259Mi</span><span class="w">   </span>
 </code></pre></div>
+
 <p>Here you can see how much CPU and Memory is being used by the pods. If the CPU is close to 500m, which is the limit for one pod by default,
 enable autoscaling/increase maxReplicas or increase replicaCount with autoscaling off.</p>
 <p>See <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/">Horizontal Autoscaling</a> and <a href="../../microk8s/mk8s/k8s-microk8s-scaling/">Scaling with Microk8s</a> for more information.</p>
 </div>
 <div class="tabbed-block">
 <p>Worker scaling is controlled via replica and resource variables in <code>.env</code>. To disable a worker type, set its replica count to <code>0</code>:</p>
-<div class="highlight"><pre><span></span><code>WORKER_POLLER_REPLICAS=0
-WORKER_TRAP_REPLICAS=4
-WORKER_SENDER_REPLICAS=1
+<div class="codehilite"><pre><span></span><code><span class="n">WORKER_POLLER_REPLICAS</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">WORKER_TRAP_REPLICAS</span><span class="o">=</span><span class="mi">4</span>
+<span class="n">WORKER_SENDER_REPLICAS</span><span class="o">=</span><span class="mi">1</span>
 </code></pre></div>
+
 <p>Docker Compose does not support autoscaling. To handle higher load, increase the replica counts and concurrency values manually.</p>
 </div>
 </div>
@@ -3981,20 +3993,22 @@ WORKER_SENDER_REPLICAS=1
 <div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">microk8s</label><label for="__tabbed_3_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">trap</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">resolveAddress</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">      </span><span class="nt">cacheSize</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500</span>
 <span class="w">      </span><span class="nt">cacheTTL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1800</span>
 </code></pre></div>
+
 </div>
 <div class="tabbed-block">
 <p>Set in <code>.env</code>:</p>
-<div class="highlight"><pre><span></span><code>RESOLVE_TRAP_ADDRESS=true
+<div class="codehilite"><pre><span></span><code>RESOLVE_TRAP_ADDRESS=true
 MAX_DNS_CACHE_SIZE_TRAPS=500
 TTL_DNS_CACHE_TRAPS=1800
 </code></pre></div>
+
 </div>
 </div>
 </div>

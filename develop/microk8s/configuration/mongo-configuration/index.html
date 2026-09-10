@@ -906,6 +906,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#enable-authentication-on-an-existing-replica-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Enable authentication on an existing replica set
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recover-the-replica-set-after-disabling-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Recover the replica set after disabling authentication
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#migration-from-bitnami-mongodb" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3056,6 +3078,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#enable-authentication-on-an-existing-replica-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Enable authentication on an existing replica set
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recover-the-replica-set-after-disabling-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Recover the replica set after disabling authentication
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#migration-from-bitnami-mongodb" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -3130,7 +3174,7 @@ This change ensures we maintain full control over configuration, compatibility, 
 <h3 id="mongodb-configuration-file">MongoDB configuration file<a class="headerlink" href="#mongodb-configuration-file" title="Permanent link">&para;</a></h3>
 <p>MongoDB configuration is maintained in the <code>mongodb</code> section of <code>values.yaml</code>, which is used during installation to configure Kubernetes resources.
 This is the snippet of MongoDB&rsquo;s configuration with all available options, filled with example values:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="c1"># Mode selector: &quot;standalone&quot;, &quot;replication&quot;</span>
 <span class="w">  </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">replication</span>
 
@@ -3149,6 +3193,11 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w">                </span><span class="c1"># Or reference existing secret</span>
 <span class="w">    </span><span class="nt">rootUserKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;root-user&quot;</span>
 <span class="w">    </span><span class="nt">rootPasswordKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;root-password&quot;</span>
+
+<span class="w">  </span><span class="c1"># Settings used when enabling authentication on an existing replica set.</span>
+<span class="w">  </span><span class="nt">replicationAuthTransition</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># Maximum duration in seconds. Zero calculates it from replicaCount and replicaInitJob.timeout.</span>
+<span class="w">    </span><span class="nt">transitionTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 
 <span class="w">  </span><span class="c1"># Image</span>
 <span class="w">  </span><span class="nt">image</span><span class="p">:</span>
@@ -3191,6 +3240,7 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GLIBC_TUNABLES</span>
 <span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;glibc.pthread.rseq=1&quot;</span>
 </code></pre></div>
+
 <table>
 <thead>
 <tr>
@@ -3217,7 +3267,7 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <td>mongodb.replicaCount</td>
 <td>int</td>
 <td>3</td>
-<td>Number of MongoDB pods (used only in replication mode).</td>
+<td>Number of MongoDB pods used in replication mode. Use an odd number to support majority-based PRIMARY elections.</td>
 </tr>
 <tr>
 <td>mongodb.replicaSetName</td>
@@ -3260,6 +3310,12 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <td>string</td>
 <td>root-password</td>
 <td>Key inside existing secret containing the password.</td>
+</tr>
+<tr>
+<td>mongodb.replicationAuthTransition.transitionTimeout</td>
+<td>int</td>
+<td>0</td>
+<td>Timeout in seconds for changing authentication from disabled to enabled in replication mode. A value of 0 uses an automatically calculated timeout.</td>
 </tr>
 <tr>
 <td>mongodb.image.repository</td>
@@ -3391,9 +3447,10 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <li>No automatic failover</li>
 </ul>
 <h5 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">architecture</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standalone</span>
 </code></pre></div>
+
 <h4 id="replication-mode">Replication Mode<a class="headerlink" href="#replication-mode" title="Permanent link">&para;</a></h4>
 <p><strong>Architecture</strong>:</p>
 <ul>
@@ -3415,11 +3472,16 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <li>Read scaling via SECONDARY members</li>
 </ul>
 <h5 id="configuration_1">Configuration<a class="headerlink" href="#configuration_1" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">replication</span>
 <span class="w">  </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 <span class="w">  </span><span class="nt">replicaSetName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rs0</span>
 </code></pre></div>
+
+<div class="admonition warning">
+<p class="admonition-title">MongoDB replica key</p>
+<p>When replication and authentication are enabled, the chart manages the Secret named <code>&lt;release-name&gt;-mongodb-replicakey</code> for internal authentication between MongoDB members. It generates a key when the Secret does not exist and reuses the existing value on later upgrades. MongoDB Pods copy this key during startup, so the Secret name is not configurable and the Secret must not be modified or deleted while the authenticated replica set is running. If the Secret is accidentally deleted, existing members may continue working, but an upgrade or Pod restart can introduce a different key and prevent members from authenticating. Restore the exact original Secret before restarting a MongoDB Pod or performing a Helm upgrade.</p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The replica set is automatically initialized by a Kubernetes Job after all pods are ready. No manual intervention is required.</p>
@@ -3427,13 +3489,14 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <h5 id="storage-considerations">Storage Considerations<a class="headerlink" href="#storage-considerations" title="Permanent link">&para;</a></h5>
 <p>For true high availability with pod rescheduling across nodes, you must use network-attached storage that supports dynamic provisioning. Node-local storage (like microk8s-hostpath) prevents failed pods from attaching their volumes on different nodes.</p>
 <p>Example using block storage in replication mode:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">persistence</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openebs-jiva-csi-default</span>
 <span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5Gi</span>
 <span class="w">    </span><span class="nt">accessMode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
 </code></pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The storageClassName must point to a StorageClass that supports block storage with ReadWriteOnce access mode. Examples: AWS EBS (gp3), GCP Persistent Disk (pd-ssd), Azure Disk, Ceph RBD, Longhorn.</p>
@@ -3445,7 +3508,7 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 Medium datasets (5-50GB): 2-4GB memory
 Large datasets (&gt;50GB): 4GB+ memory</p>
 <p>Example configuration:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">requests</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500m</span>
@@ -3454,37 +3517,42 @@ Large datasets (&gt;50GB): 4GB+ memory</p>
 <span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2000m</span>
 <span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4Gi</span>
 </code></pre></div>
+
 <p>By default, resource limits are set as shown in the configuration table above. Adjust based on your workload.</p>
 <h3 id="use-authentication-for-mongodb">Use authentication for MongoDB<a class="headerlink" href="#use-authentication-for-mongodb" title="Permanent link">&para;</a></h3>
 <p>MongoDB authentication is enabled by default and strongly recommended for production deployments.</p>
 <h4 id="using-direct-password">Using Direct Password<a class="headerlink" href="#using-direct-password" title="Permanent link">&para;</a></h4>
 <p>Set the password directly in <code>values.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code>mongodb:
+<div class="codehilite"><pre><span></span><code>mongodb:
   auth:
     enabled: true
     rootUser: &quot;admin&quot;
     rootPassword: &quot;your_secure_password_here&quot;
 </code></pre></div>
+
 <h4 id="using-existing-kubernetes-secret">Using Existing Kubernetes Secret<a class="headerlink" href="#using-existing-kubernetes-secret" title="Permanent link">&para;</a></h4>
 <p>To use an existing Kubernetes Secret, first create it:</p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s kubectl create secret generic prod-mongodb-secret -n &lt;namespace&gt; \</span>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s kubectl create secret generic prod-mongodb-secret -n &lt;namespace&gt; \</span>
 <span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">--from-literal=root-user=&#39;admin&#39; \</span>
 <span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">--from-literal=root-password=&#39;your_secure_password_here&#39;</span>
 </code></pre></div>
+
 <p>Then reference it in <code>values.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;prod-mongodb-secret&quot;</span>
 </code></pre></div>
+
 <p>The secret keys (<code>root-user</code> and <code>root-password</code>) are configurable via <code>rootUserKey</code> and <code>rootPasswordKey</code> if your secret uses different key names:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;prod-mongodb-secret-with-different-keys&quot;</span>
 <span class="w">    </span><span class="nt">rootUserKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;my-username-key&quot;</span>
 <span class="w">    </span><span class="nt">rootPasswordKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;my-password-key&quot;</span>
 </code></pre></div>
+
 <h3 id="rotating-the-mongodb-password">Rotating the MongoDB password<a class="headerlink" href="#rotating-the-mongodb-password" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -3500,14 +3568,14 @@ discovery, UI).</p>
 <ol>
 <li>
 <p><strong>Re-key the running database</strong>, authenticating with the <em>current</em> (old) password:</p>
-<div class="highlight"><pre><span></span><code>micrk8s<span class="w"> </span>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;release&gt;-mongodb-0<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>--<span class="w"> </span>mongosh<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-u<span class="w"> </span>admin<span class="w"> </span>-p<span class="w"> </span><span class="s1">&#39;&lt;OLD_PASSWORD&gt;&#39;</span><span class="w"> </span>--authenticationDatabase<span class="w"> </span>admin<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--eval<span class="w"> </span><span class="s1">&#39;db.getSiblingDB(&quot;admin&quot;).changeUserPassword(&quot;admin&quot;,&quot;&lt;NEW_PASSWORD&gt;&quot;)&#39;</span>
-</code></pre></div>
+<p><code>bash
+micrk8s kubectl exec -it &lt;release&gt;-mongodb-0 -n &lt;namespace&gt; -- mongosh \
+  -u admin -p '&lt;OLD_PASSWORD&gt;' --authenticationDatabase admin \
+  --eval 'db.getSiblingDB("admin").changeUserPassword("admin","&lt;NEW_PASSWORD&gt;")'</code></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In <strong>replication mode</strong>, the password change must be run against the current PRIMARY.
-Right after initialization this is <code>&lt;release&gt;-mongodb-0</code>; if unsure, connect to any pod
+Right after initialization this is <code>&lt;release&gt;-mongodb-0</code>. If unsure, connect to any pod
 and run <code>db.hello().primary</code> (or <code>rs.status()</code>) to find it. The change then replicates
 to the other members automatically.</p>
 </div>
@@ -3524,8 +3592,8 @@ to the other members automatically.</p>
 </li>
 <li>
 <p><strong>Restart the application pods</strong> so they re-read the updated credentials:</p>
-<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>statefulset,deployment<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;
-</code></pre></div>
+<p><code>bash
+microk8s kubectl rollout restart statefulset,deployment -n &lt;namespace&gt;</code></p>
 </li>
 </ol>
 <div class="admonition danger">
@@ -3536,6 +3604,53 @@ will fail to authenticate until the database is re-keyed with the old password (
 <a href="../../../troubleshooting/general-issues/#mongodb-authentication-fails-after-changing-the-root-password">Troubleshooting: MongoDB authentication fails after changing the root password</a>).</p>
 </div>
 <p>This procedure applies to kubernetes deployments only.</p>
+<h3 id="enable-authentication-on-an-existing-replica-set">Enable authentication on an existing replica set<a class="headerlink" href="#enable-authentication-on-an-existing-replica-set" title="Permanent link">&para;</a></h3>
+<p>Changing <code>mongodb.auth.enabled</code> from <code>false</code> to <code>true</code> during a Helm upgrade starts an automatic two-phase migration based on MongoDB&rsquo;s <a href="https://www.mongodb.com/docs/manual/tutorial/enforce-keyfile-access-control-in-existing-replica-set-without-downtime/"><code>transitionToAuth</code> procedure</a>. The chart creates or verifies the configured administrator and rolls the replica-set members into authenticated operation.</p>
+<p>MongoDB elects a PRIMARY through a majority of voting members, so use an odd <code>mongodb.replicaCount</code>. The transition requires at least three healthy members and a healthy SECONDARY that can become PRIMARY while members are replaced. Keep <code>mongodb.replicaCount</code>, <code>mongodb.replicaSetName</code>, and <code>mongodb.mode</code> unchanged during the upgrade.</p>
+<div class="admonition warning">
+<p class="admonition-title">Wait for the inventory Job to be removed</p>
+<p>The inventory Job has an immutable Pod template. Enabling MongoDB authentication changes that template to include the MongoDB credentials. If the previous inventory Job still exists, the upgrade fails with <code>spec.template: field is immutable</code>.</p>
+<p>The inventory Job can be created during installation or configuration updates, including when <strong>Apply changes</strong> is selected in the UI. Before starting the authentication upgrade, wait for the Job to complete, then wait until <code>&lt;release-name&gt;-splunk-connect-for-snmp-inventory</code> is no longer listed by <code>microk8s kubectl get jobs --namespace sc4snmp</code>.</p>
+</div>
+<p>The transition can take longer than Helm&rsquo;s default timeout. When changing authentication from disabled to enabled, set the Helm timeout to the pre-upgrade Job deadline plus the post-upgrade Job deadline and an additional buffer for Kubernetes processing.</p>
+<p>The transition timeout defaults to <code>mongodb.replicaCount * mongodb.replicaInitJob.timeout</code>, which is 30 minutes with the default values.</p>
+<p>With the default configuration, the pre-upgrade Job deadline is 12 minutes and the post-upgrade Job deadline is 30 minutes. Adding some buffer gives the recommended 50-minute Helm timeout for Pod scheduling, StatefulSet updates, and replica-set elections:</p>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace<span class="w"> </span>--timeout<span class="w"> </span>50m
+</code></pre></div>
+
+<p>If the MongoDB replica count or transition timeout is customized, increase the Helm timeout accordingly.</p>
+<h3 id="recover-the-replica-set-after-disabling-authentication">Recover the replica set after disabling authentication<a class="headerlink" href="#recover-the-replica-set-after-disabling-authentication" title="Permanent link">&para;</a></h3>
+<p>If every MongoDB member reports <code>Does not have a valid replica set config</code> after changing <code>mongodb.auth.enabled</code> from <code>true</code> to <code>false</code>, wait for the MongoDB rollout to finish:</p>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>rollout<span class="w"> </span>status<span class="w"> </span>statefulset/&lt;release-name&gt;-mongodb<span class="w"> </span>--namespace<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>--timeout<span class="o">=</span>10m
+</code></pre></div>
+
+<p>Confirm that every MongoDB Pod runs without <code>--keyFile</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">for</span><span class="w"> </span>POD<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">$(</span>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>--namespace<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>-l<span class="w"> </span><span class="nv">app</span><span class="o">=</span>&lt;release-name&gt;-mongodb<span class="w"> </span>-o<span class="w"> </span>name<span class="k">)</span>
+<span class="k">do</span>
+<span class="w">  </span>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$POD</span><span class="s2">&quot;</span><span class="w"> </span>--namespace<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.spec.containers[?(@.name==&quot;mongodb&quot;)].args}{&quot;\n&quot;}&#39;</span>
+<span class="k">done</span>
+</code></pre></div>
+
+<p>Get the MongoDB DNS domain and force the existing configuration to use the Pod FQDNs. Run the reconfiguration from Pod 0 only:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">MONGODB_FQDN</span><span class="o">=</span><span class="k">$(</span>microk8s<span class="w"> </span>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--namespace<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>&lt;release-name&gt;-mongodb-0<span class="w"> </span>-c<span class="w"> </span>mongodb<span class="w"> </span>--<span class="w"> </span>hostname<span class="w"> </span>-f<span class="k">)</span>
+<span class="nv">MONGODB_DOMAIN</span><span class="o">=</span><span class="si">${</span><span class="nv">MONGODB_FQDN</span><span class="p">#*.</span><span class="si">}</span>
+
+microk8s<span class="w"> </span>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--namespace<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>&lt;release-name&gt;-mongodb-0<span class="w"> </span>-c<span class="w"> </span>mongodb<span class="w"> </span>--<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>mongosh<span class="w"> </span>--quiet<span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">    const config = db.getSiblingDB(&#39;local&#39;).system.replset.findOne()</span>
+<span class="s2">    config.members.forEach(member =&gt; {</span>
+<span class="s2">      member.host = &#39;&lt;release-name&gt;-mongodb-&#39; + member._id + &#39;.</span><span class="si">${</span><span class="nv">MONGODB_DOMAIN</span><span class="si">}</span><span class="s2">:27017&#39;</span>
+<span class="s2">    })</span>
+<span class="s2">    printjson(rs.reconfig(config, { force: true }))</span>
+<span class="s2">  &quot;</span>
+</code></pre></div>
+
+<p>After the command returns <code>ok: 1</code>, verify that MongoDB elects one PRIMARY and the remaining members become SECONDARY:</p>
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--namespace<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>&lt;release-name&gt;-mongodb-0<span class="w"> </span>-c<span class="w"> </span>mongodb<span class="w"> </span>--<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>mongosh<span class="w"> </span>--quiet<span class="w"> </span>--eval<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s1">&#39;rs.status().members.forEach(member =&gt; print(member.name + &quot; &quot; + member.stateStr + &quot; health=&quot; + member.health))&#39;</span>
+</code></pre></div>
+
 <h3 id="migration-from-bitnami-mongodb">Migration from Bitnami MongoDB<a class="headerlink" href="#migration-from-bitnami-mongodb" title="Permanent link">&para;</a></h3>
 <p>The chart automatically detects and migrates data from existing Bitnami MongoDB deployments only in standalone mode:</p>
 <ol>
@@ -3565,22 +3680,25 @@ will fail to authenticate until the database is re-keyed with the old password (
 <li>Is idempotent (safe to re-run)</li>
 </ol>
 <p>You can monitor initialization progress:</p>
-<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>job/&lt;release-name&gt;-mongodb-init-rs<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;
+<div class="codehilite"><pre><span></span><code>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>job/&lt;release-name&gt;-mongodb-init-rs<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;
 </code></pre></div>
+
 <h4 id="adjusting-the-timeout">Adjusting the timeout:<a class="headerlink" href="#adjusting-the-timeout" title="Permanent link">&para;</a></h4>
 <p>For clusters with slow storage provisioning or network latency, you may need to increase the timeout:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">replicaInitJob</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">600</span><span class="w"> </span>
 </code></pre></div>
+
 <h4 id="using-a-different-kubectl-image">Using a different kubectl image<a class="headerlink" href="#using-a-different-kubectl-image" title="Permanent link">&para;</a></h4>
 <p>If your environment requires a specific kubectl version or image source:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">replicaInitJob</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alpine/kubectl&quot;</span>
 <span class="w">      </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.36.3&quot;</span>
 </code></pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The kubectl image must include a POSIX shell (/bin/sh) and kubectl binary. Distroless images are not supported.</p>

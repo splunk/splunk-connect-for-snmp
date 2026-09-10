@@ -2810,24 +2810,27 @@
 <p>Update <code>$SPLUNK_HOME/etc/system/local/server.conf</code>:</p>
 </li>
 </ol>
-<div class="highlight"><pre><span></span><code>[sslConfig]
-requireClientCert = true
-[kvstore]
-hostnameOption = fullyqualifiedname
+<div class="codehilite"><pre><span></span><code><span class="k">[sslConfig]</span>
+<span class="na">requireClientCert</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+<span class="k">[kvstore]</span>
+<span class="na">hostnameOption</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">fullyqualifiedname</span>
 </code></pre></div>
+
 <ol start="3">
 <li>Update <code>$SPLUNK_HOME/etc/system/local/web.conf</code>:</li>
 </ol>
-<div class="highlight"><pre><span></span><code>[settings]
-sslPassword = password
-sslRootCAPath = cacert.pem
-enableSplunkWebSSL = true
+<div class="codehilite"><pre><span></span><code><span class="k">[settings]</span>
+<span class="na">sslPassword</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">password</span>
+<span class="na">sslRootCAPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cacert.pem</span>
+<span class="na">enableSplunkWebSSL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
 </code></pre></div>
+
 <ol start="4">
 <li>Restart Splunk:</li>
 </ol>
-<div class="highlight"><pre><span></span><code>$SPLUNK_HOME/bin/splunk restart
+<div class="codehilite"><pre><span></span><code>$SPLUNK_HOME/bin/splunk restart
 </code></pre></div>
+
 <h2 id="how-to-setup-sc4snmp">How to setup SC4SNMP<a class="headerlink" href="#how-to-setup-sc4snmp" title="Permanent link">&para;</a></h2>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
 <div class="tabbed-content">
@@ -2835,25 +2838,28 @@ enableSplunkWebSSL = true
 <ol>
 <li>Add your <strong>client</strong> mTLS certificates to secrets:</li>
 </ol>
-<div class="highlight"><pre><span></span><code>microk8s kubectl create secret generic mtls -n sc4snmp \
+<div class="codehilite"><pre><span></span><code>microk8s kubectl create secret generic mtls -n sc4snmp \
   --from-file=client.crt=./client.crt \
   --from-file=client.key=./client.key \
   --from-file=cacert.pem=./cacert.pem
 </code></pre></div>
+
 <ol start="2">
 <li>Use https protocol to communicate with Splunk. To enforce this, set the <code>splunk.protocol</code> variable in the configuration file values.yaml:</li>
 </ol>
-<div class="highlight"><pre><span></span><code>splunk:
+<div class="codehilite"><pre><span></span><code>splunk:
     protocol: &quot;https&quot;
 </code></pre></div>
+
 <ol start="3">
 <li>Add <code>mtls</code> section and provide your secret with certificates inside. To do this, update the <code>values.yaml</code> file under the splunk section as shown below:</li>
 </ol>
-<div class="highlight"><pre><span></span><code>splunk:
+<div class="codehilite"><pre><span></span><code>splunk:
     mtls:
         enabled: true
         secretRef: &quot;mtls&quot;
 </code></pre></div>
+
 <ol start="4">
 <li>Redeploy SC4SNMP</li>
 </ol>
@@ -2862,7 +2868,7 @@ enableSplunkWebSSL = true
 <ol>
 <li>Add your <strong>client</strong> mTLS certificates to secrets. To do this, update the docker-compose.yaml file by adding the following section at the end:</li>
 </ol>
-<div class="highlight"><pre><span></span><code>secrets:
+<div class="codehilite"><pre><span></span><code>secrets:
   cert:
     file: client.crt
   key:
@@ -2870,22 +2876,27 @@ enableSplunkWebSSL = true
   ca:
     file: cacert.pem
 </code></pre></div>
+
 <ol start="2">
 <li>To provide the certificates to the <code>worker-sender</code> service, update its definition in the <code>docker-compose.yaml</code> file as shown below:</li>
 </ol>
-<p><div class="highlight"><pre><span></span><code>worker-sender:
+<div class="codehilite"><pre><span></span><code>worker-sender:
     environment:
         SPLUNK_HEC_MTLS_CLIENT_CERT: /run/secrets/cert
         SPLUNK_HEC_MTLS_CLIENT_KEY: /run/secrets/key
         SPLUNK_HEC_MTLS_CA_CERT: /run/secrets/ca
     secrets:
-        - cert
-        - key
-        - ca
+        <span class="k">-</span> cert
+        <span class="k">-</span> key
+        <span class="k">-</span> ca
 </code></pre></div>
-3. Use https protocol to communicate with Splunk. To enforce this, set the <code>SPLUNK_HEC_PROTOCOL</code> variable in the configuration file <code>.env</code>:</p>
-<div class="highlight"><pre><span></span><code>SPLUNK_HEC_PROTOCOL=https
+
+<ol start="3">
+<li>Use https protocol to communicate with Splunk. To enforce this, set the <code>SPLUNK_HEC_PROTOCOL</code> variable in the configuration file <code>.env</code>:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>SPLUNK_HEC_PROTOCOL=https
 </code></pre></div>
+
 <ol start="4">
 <li>Redeploy SC4SNMP</li>
 </ol>
@@ -2896,15 +2907,16 @@ enableSplunkWebSSL = true
 <ol>
 <li>Double-check that the mTLS certificates you are using are valid. To do this, send a test log message using <code>curl</code> in verbose mode, which can help identify any issues with the certificates:</li>
 </ol>
-<div class="highlight"><pre><span></span><code>curl -k https://${HEC_URL} \
-  -H &quot;Authorization: Splunk ${HEC_TOKEN}&quot; \
-  -H &quot;Content-Type: application/json&quot; \
-  -d &#39;{&quot;event&quot;: &quot;Hello&quot;, &quot;sourcetype&quot;: &quot;manual&quot;, &quot;host&quot;: &quot;myhost&quot;, &quot;source&quot;: &quot;myapp&quot;}&#39; \
-  --cert client.crt \
-  --key client.key \
-  --cacert cacert.pem \
-  -vvv
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-k<span class="w"> </span>https://<span class="cp">${</span><span class="n">HEC_URL</span><span class="cp">}</span><span class="w"> </span>\
+<span class="w">  </span>-H<span class="w"> </span>&quot;Authorization:<span class="w"> </span>Splunk<span class="w"> </span><span class="cp">${</span><span class="n">HEC_TOKEN</span><span class="cp">}</span>&quot;<span class="w"> </span>\
+<span class="w">  </span>-H<span class="w"> </span>&quot;Content-Type:<span class="w"> </span>application/json&quot;<span class="w"> </span>\
+<span class="w">  </span>-d<span class="w"> </span>&#39;{&quot;event&quot;:<span class="w"> </span>&quot;Hello&quot;,<span class="w"> </span>&quot;sourcetype&quot;:<span class="w"> </span>&quot;manual&quot;,<span class="w"> </span>&quot;host&quot;:<span class="w"> </span>&quot;myhost&quot;,<span class="w"> </span>&quot;source&quot;:<span class="w"> </span>&quot;myapp&quot;}&#39;<span class="w"> </span>\
+<span class="w">  </span>--cert<span class="w"> </span>client.crt<span class="w"> </span>\
+<span class="w">  </span>--key<span class="w"> </span>client.key<span class="w"> </span>\
+<span class="w">  </span>--cacert<span class="w"> </span>cacert.pem<span class="w"> </span>\
+<span class="w">  </span>-vvv
 </code></pre></div>
+
 <ol start="2">
 <li>Check logs of <code>worker-sender</code>. Refer to the instructions on how to configure logs for <code>kubernetes</code> or <code>docker</code> deployment.</li>
 </ol>

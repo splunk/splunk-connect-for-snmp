@@ -2909,14 +2909,15 @@ But, if you want to use the newest MIB server right after it is released, you ca
 <div class="tabbed-content">
 <div class="tabbed-block">
 <ol>
-<li>
-<p>Append <code>mibserver</code> configuration to the <code>values.yaml</code>, with the <code>mibserver.image.tag</code> of a value of the newest <code>mibserver</code>, for example:
-<div class="highlight"><pre><span></span><code>mibserver:
+<li>Append <code>mibserver</code> configuration to the <code>values.yaml</code>, with the <code>mibserver.image.tag</code> of a value of the newest <code>mibserver</code>, for example:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>mibserver:
   image:
     tag: &quot;1.15.13&quot;
 </code></pre></div>
-Check all the <a href="https://github.com/pysnmp/mibs/releases">MIB server releases</a>. </p>
-</li>
+
+<p>Check all the <a href="https://github.com/pysnmp/mibs/releases">MIB server releases</a>. </p>
+<ol start="2">
 <li>
 <p>Run <code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/splunk-connect-for-snmp --namespace=sc4snmp --create-namespace</code>.</p>
 </li>
@@ -2924,23 +2925,25 @@ Check all the <a href="https://github.com/pysnmp/mibs/releases">MIB server relea
 <p>Restart the following worker-trap and worker-poller deployments:</p>
 </li>
 </ol>
-<div class="highlight"><pre><span></span><code>microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-trap -n sc4snmp
-microk8s kubectl rollout restart deployment snmp-splunk-connect-for-snmp-worker-poller -n sc4snmp
+<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">rollout</span><span class="w"> </span><span class="nv">restart</span><span class="w"> </span><span class="nv">deployment</span><span class="w"> </span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">trap</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
+<span class="nv">microk8s</span><span class="w"> </span><span class="nv">kubectl</span><span class="w"> </span><span class="nv">rollout</span><span class="w"> </span><span class="nv">restart</span><span class="w"> </span><span class="nv">deployment</span><span class="w"> </span><span class="nv">snmp</span><span class="o">-</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">-</span><span class="nv">worker</span><span class="o">-</span><span class="nv">poller</span><span class="w"> </span><span class="o">-</span><span class="nv">n</span><span class="w"> </span><span class="nv">sc4snmp</span>
 </code></pre></div>
+
 </div>
 <div class="tabbed-block">
 <ol>
-<li>
-<p>Append <code>mibserver</code> configuration to the <code>.env</code>, with the <code>MIBSERVER_TAG</code> of a value of the newest <code>mibserver</code>, for example:
-<div class="highlight"><pre><span></span><code>MIBSERVER_TAG=1.15.29
+<li>Append <code>mibserver</code> configuration to the <code>.env</code>, with the <code>MIBSERVER_TAG</code> of a value of the newest <code>mibserver</code>, for example:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>MIBSERVER_TAG=1.15.29
 </code></pre></div>
-Check all the <a href="https://github.com/pysnmp/mibs/releases">MIB server releases</a>. </p>
-</li>
+
+<p>Check all the <a href="https://github.com/pysnmp/mibs/releases">MIB server releases</a>. </p>
+<ol start="2">
 <li>
 <p>Remove the container with old mibserver version and start the new one with commands:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>down<span class="w"> </span>snmp-mibserver
-docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>snmp-mibserver
-</code></pre></div>
+<p><code>bash
+docker compose down snmp-mibserver
+docker compose up -d snmp-mibserver</code></p>
 </li>
 </ol>
 </div>
@@ -2965,19 +2968,22 @@ the MIB file before <code>::= BEGIN</code> keyword.</li>
 <div class="tabbed-block">
 <h3 id="configuring-path-to-local-mibs-for-k8s-installation">Configuring path to local MIBs for k8s installation<a class="headerlink" href="#configuring-path-to-local-mibs-for-k8s-installation" title="Permanent link">&para;</a></h3>
 <p>Add the following to the <code>values.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">mibserver</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">mibserver</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">localMibs</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">pathToMibs</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/home/user/local_mibs&quot;</span>
 </code></pre></div>
+
 <p>To verify that the process of compilation was completed successfully, check the mibserver logs using the following command:</p>
-<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>deployments/snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>deployments/snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
+
 <p>This creates a Kubernetes pvc with MIB files inside and maps it to the MIB server pod.
 Also, you can change the storageClass and size of persistence according to the <code>mibserver</code> schema, see <a href="https://github.com/pysnmp/mibs/blob/main/charts/mibserver/values.yaml">values.yaml of the mibserver</a>.
 The default persistence size is 1 Gibibyte, so consider reducing or expanding it to the amount you actually need.</p>
 <p>Whenever you add new MIB files, rollout restart MIB server pods to compile them again, using the following command:</p>
-<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
+<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>rollout<span class="w"> </span>restart<span class="w"> </span>deployment<span class="w"> </span>snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
+
 <p>For a multi-node Kubernetes installation, create pvc beforehand, copy files onto it, and add it to the MIB server
 using <code>persistence.existingClaim</code>. If you go with the <code>localMibs.pathToMibs</code> solution for a multi-node installation
 (with <code>nodeSelector</code> set up to schedule MIB server pods on the same node where the MIB files are),
@@ -2986,8 +2992,9 @@ when the Node with the mapped hostPath fails, you will have to access the MIB fi
 <div class="tabbed-block">
 <h3 id="configuring-path-to-local-mibs-for-docker-compose-installation">Configuring path to local mibs for docker compose installation<a class="headerlink" href="#configuring-path-to-local-mibs-for-docker-compose-installation" title="Permanent link">&para;</a></h3>
 <p>To point to the directory with your local MIBs, set the <code>LOCAL_MIBS_PATH</code> variable in the <code>.env</code> file located in the <code>docker_compose</code> directory:</p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">LOCAL_MIBS_PATH=&quot;./local_mibs&quot;</span>
+<div class="codehilite"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">LOCAL_MIBS_PATH=&quot;./local_mibs&quot;</span>
 </code></pre></div>
+
 <p>By default, it is set to be <code>./local_mibs</code>, which means such directory will be created anyway in the <code>docker_compose</code> directory if the variable remains unchanged.
 You can put your MIB files there, following the same structure as described above.</p>
 <div class="admonition warning">
@@ -2995,11 +3002,13 @@ You can put your MIB files there, following the same structure as described abov
 <p>Make sure that the user running docker has read and write permissions to the <code>LOCAL_MIBS_PATH</code> directory. Assign the user with permissions if necessary.</p>
 </div>
 <p>Whenever you add new MIB files, restart MIB service to compile them again, using the following command:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>restart<span class="w"> </span>snmp-mibserver
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>restart<span class="w"> </span>snmp-mibserver
 </code></pre></div>
+
 <p>To verify that the process of compilation was completed successfully, check the mibserver logs using the following command:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>logs<span class="w"> </span>snmp-mibserver
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>logs<span class="w"> </span>snmp-mibserver
 </code></pre></div>
+
 <p>If you want to use a different directory, you can change the mapping in the <code>docker-compose.yaml</code> file and set an absolute path to your directory.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

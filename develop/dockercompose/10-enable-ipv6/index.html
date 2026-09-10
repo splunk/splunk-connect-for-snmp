@@ -2739,21 +2739,21 @@ Docker Compose 2.23.1 or later required for SC4SNMP.</p>
 <ol>
 <li>
 <p>Set <code>IPv6_ENABLED=true</code> in the <code>.env</code> file:</p>
-<div class="highlight"><pre><span></span><code>IPv6_ENABLED=true
-</code></pre></div>
+<p><code>text
+IPv6_ENABLED=true</code></p>
 </li>
 <li>
 <p><code>COREDNS_ADDRESS_IPv6</code> must be a unique address inside <code>IPAM_SUBNET_IPv6</code> and must not match the gateway.</p>
 <p>If the value is empty or outside the configured subnet, Docker can fail with an error such as <code>no configured subnet contains IP address fd02::...</code>.</p>
 <p>With the default subnet <code>fd02::/64</code> and gateway <code>fd02::1</code>, use an available address from that subnet, for example:</p>
-<div class="highlight"><pre><span></span><code>COREDNS_ADDRESS_IPv6=fd02::53
-</code></pre></div>
+<p><code>text
+COREDNS_ADDRESS_IPv6=fd02::53</code></p>
 </li>
 <li>
 <p>The default IPv6 subnet and gateway are configured in the <strong>Network configuration</strong> section of <code>docker_compose/.env</code>:</p>
-<div class="highlight"><pre><span></span><code>IPAM_SUBNET_IPv6=fd02::/64
-IPAM_GATEWAY_IPv6=fd02::1
-</code></pre></div>
+<p><code>text
+IPAM_SUBNET_IPv6=fd02::/64
+IPAM_GATEWAY_IPv6=fd02::1</code></p>
 <p>You can change these values for your environment. If you use a different subnet or gateway, select a unique <code>COREDNS_ADDRESS_IPv6</code> from that subnet that is not the gateway.</p>
 </li>
 <li>
