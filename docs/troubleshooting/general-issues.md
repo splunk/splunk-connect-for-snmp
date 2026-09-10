@@ -109,6 +109,16 @@ If the old password has been lost and cannot be recovered, the only remaining op
 [reinstall SC4SNMP with PVC deletion](../microk8s/sc4snmp-installation.md#reinstall-splunk-connect-for-snmp),
 which wipes all MongoDB data (inventory, profiles, walk state, etc.).
 
+### MongoDB cannot elect a PRIMARY after disabling authentication
+
+!!! warning "Microk8s only"
+
+After changing `mongodb.auth.enabled` from `true` to `false` in replication mode, the MongoDB Pods may be running while every member reports `Does not have a valid replica set config`. The scheduler, poller, sender, traps, and inventory then remain waiting for MongoDB to elect a PRIMARY.
+
+The normal rolling update temporarily mixes members that use keyfile authentication with members that do not. A restarted member can fail to identify itself in the stored replica-set configuration, leaving the replica set without a PRIMARY after the rollout finishes.
+
+Follow [Recover the replica set after disabling authentication](../microk8s/configuration/mongo-configuration.md#recover-the-replica-set-after-disabling-authentication) to restore the member configuration and elect a PRIMARY without deleting the MongoDB data.
+
 ### Addressing Metric Naming Conflicts for Splunk Integration
 
 When collecting SNMP metrics using SC4SNMP, metric names often contain hyphens (e.g., IF-MIB) because the default MIB format includes hyphens in Object Identifiers (OIDs) as specified by standard MIB naming conventions. 

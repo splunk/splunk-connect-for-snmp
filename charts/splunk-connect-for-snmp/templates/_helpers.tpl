@@ -274,3 +274,75 @@ MongoDB replica set hosts (comma-separated)
 {{- end -}}
 {{- join "," $hosts -}}
 {{- end -}}
+
+{{/*
+Determine whether an existing replica set needs to start or resume an authentication transition. The MongoDB arguments identify a new transition,
+while the StatefulSet annotation records an interrupted transition so the next Helm upgrade can resume from the correct phase.
+*/}}
+{{- define "splunk-connect-for-snmp.mongodb.replicationAuthTransitionPhase" -}}
+{{- $phase := "none" -}}
+{{- if and .Release.IsUpgrade .Values.mongodb.auth.enabled (eq .Values.mongodb.mode "replication") -}}
+  {{- $statefulSetName := printf "%s-mongodb" .Release.Name -}}
+  {{- $statefulSet := lookup "apps/v1" "StatefulSet" .Release.Namespace $statefulSetName -}}
+  {{- if $statefulSet -}}
+    {{- $marker := dig "metadata" "annotations" "sc4snmp.splunk.com/mongodb-auth-migration-phase" "" $statefulSet -}}
+    {{- if has $marker (list "transition" "strict") -}}
+      {{- $phase = $marker -}}
+    {{- else -}}
+      {{- $containers := dig "spec" "template" "spec" "containers" (list) $statefulSet -}}
+      {{- range $container := $containers -}}
+        {{- if eq (get $container "name") "mongodb" -}}
+          {{- $args := get $container "args" | default (list) -}}
+          {{- if and (has "--replSet" $args) (or (not (has "--keyFile" $args)) (has "--transitionToAuth" $args)) -}}
+            {{- $phase = "transition" -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $phase -}}
+{{- end -}}
+
+{{/*
+Shell helpers shared by the MongoDB authentication-transition Jobs.
+*/}}
+{{- define "splunk-connect-for-snmp.mongodb.replicationAuthTransitionShellHelpers" -}}
+run_unauthenticated_mongosh() {
+  target_pod=$1
+  mongosh_script=$2
+  kubectl exec "${target_pod}" -c mongodb -- \
+    mongosh --quiet --eval "${mongosh_script}"
+}
+
+require_mongodb_credentials() {
+  [ -n "${MONGODB_USERNAME}" ] || { echo "[ERROR] MongoDB administrator username is empty" >&2; return 1; }
+  [ -n "${MONGODB_PASSWORD}" ] || { echo "[ERROR] MongoDB administrator password is empty" >&2; return 1; }
+}
+{{- end -}}
+
+{{/*
+Provide credentials to the pre-upgrade authentication-transition Job. Use an
+existing Secret when configured. Otherwise, use the target Helm values because
+the chart-managed credentials Secret is not applied until pre-upgrade hooks
+finish.
+*/}}
+{{- define "splunk-connect-for-snmp.mongodb.replicationAuthTransitionCredentialsEnv" -}}
+{{- if .Values.mongodb.auth.existingSecret }}
+- name: MONGODB_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.mongodb.auth.existingSecret }}
+      key: {{ .Values.mongodb.auth.rootUserKey | default "root-user" | quote }}
+- name: MONGODB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.mongodb.auth.existingSecret }}
+      key: {{ .Values.mongodb.auth.rootPasswordKey | default "root-password" | quote }}
+{{- else }}
+- name: MONGODB_USERNAME
+  value: {{ .Values.mongodb.auth.rootUser | default "root" | quote }}
+- name: MONGODB_PASSWORD
+  value: {{ required "mongodb.auth.rootPassword must be non-empty when enabling MongoDB authentication" .Values.mongodb.auth.rootPassword | quote }}
+{{- end }}
+{{- end -}}

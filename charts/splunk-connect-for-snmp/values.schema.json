@@ -1047,6 +1047,17 @@
       "properties": {
         "ipv6Enabled": {
           "type": "boolean"
+        },
+        "replicationAuthTransition": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "transitionTimeout": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Maximum runtime in seconds for enabling authentication on an existing MongoDB replica set. A value of 0 calculates a replica-aware default."
+            }
+          }
         }
       }
     },
