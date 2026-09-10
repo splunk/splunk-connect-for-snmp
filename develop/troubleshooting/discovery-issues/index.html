@@ -2827,30 +2827,35 @@
 <h1 id="troubleshooting-discovery-issues">Troubleshooting Discovery Issues<a class="headerlink" href="#troubleshooting-discovery-issues" title="Permanent link">&para;</a></h1>
 <h2 id="permission-denied-while-writing-discovery-file">Permission denied while writing discovery file<a class="headerlink" href="#permission-denied-while-writing-discovery-file" title="Permanent link">&para;</a></h2>
 <p>Discovery fails with a <code>PermissionError</code> related to <code>discovery_devices.csv</code>. In such cases, you may see the following error:</p>
-<div class="highlight"><pre><span></span><code>PermissionError: [Errno 13] Permission denied: &#39;/app/discovery/discovery_devices.csv&#39;
+<div class="codehilite"><pre><span></span><code>PermissionError: [Errno 13] Permission denied: &#39;/app/discovery/discovery_devices.csv&#39;
 </code></pre></div>
+
 <p>The folder specified in the <code>discoveryPath</code> value (microk8s) or <code>DISCOVERY_PATH</code> value (docker compose), which is mounted to <code>/app/discovery</code> inside the container, does not have the correct permissions for the application user (UID <code>10001</code>) to write files.</p>
 <p>Ensure that the folder has write permissions for UID <code>10001</code>. You can fix this by updating the folder ownership or permissions before starting the containers.</p>
-<p><strong>Example (on the host system):</strong>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span><span class="m">10001</span>:10001<span class="w"> </span>/your/local/folder/path
+<p><strong>Example (on the host system):</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span><span class="m">10001</span>:10001<span class="w"> </span>/your/local/folder/path
 sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>/your/local/folder/path
-</code></pre></div></p>
+</code></pre></div>
+
 <h2 id="discovery-not-completed-within-the-time-limit">Discovery not completed within the time limit<a class="headerlink" href="#discovery-not-completed-within-the-time-limit" title="Permanent link">&para;</a></h2>
 <p>If the subnet being scanned has a large IP range (e.g., <code>/22</code>, <code>/21</code>, or bigger), the task may not be completed within the default time limit of <strong>2400 seconds</strong>. In such cases, you may see the following error:</p>
-<div class="highlight"><pre><span></span><code>[2025-08-07 06:03:29,415: ERROR/MainProcess] Hard time limit (2400s) exceeded for splunk_connect_for_snmp.discovery.tasks.discovery
+<div class="codehilite"><pre><span></span><code>[2025-08-07 06:03:29,415: ERROR/MainProcess] Hard time limit (2400s) exceeded for splunk_connect_for_snmp.discovery.tasks.discovery
 </code></pre></div>
+
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Increase the task timeout value using the <code>taskTimeout</code> field under the <code>worker</code> section in your <code>values.yaml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">taskTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3600</span><span class="w">  </span><span class="c1"># Increase based on expected duration</span>
 </code></pre></div>
+
 </div>
 <div class="tabbed-block">
 <p>Increase the task timeout value by setting <code>CELERY_TASK_TIMEOUT</code> in your <code>.env</code> file:</p>
-<div class="highlight"><pre><span></span><code>CELERY_TASK_TIMEOUT=3600
+<div class="codehilite"><pre><span></span><code>CELERY_TASK_TIMEOUT=3600
 </code></pre></div>
+
 </div>
 </div>
 </div>
@@ -2863,15 +2868,17 @@ Consider lowering the retry parameters to speed up execution:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">udpConnectionTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 <span class="w">  </span><span class="nt">udpConnectionRetries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </code></pre></div>
+
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>UDP_CONNECTION_TIMEOUT=3
+<div class="codehilite"><pre><span></span><code>UDP_CONNECTION_TIMEOUT=3
 UDP_CONNECTION_RETRIES=2
 </code></pre></div>
+
 </div>
 </div>
 </div>
