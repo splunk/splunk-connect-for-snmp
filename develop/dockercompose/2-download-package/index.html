@@ -2826,12 +2826,11 @@
 <h2 id="quick-start-example">Quick start example<a class="headerlink" href="#quick-start-example" title="Permanent link">&para;</a></h2>
 <p>The following is a minimal, working configuration for polling a single SNMPv2c device. Use it as a starting point and adapt it to your environment.</p>
 <p><strong>Inventory file</strong> - one device at <code>192.168.1.1</code>, with a minimal SNMPv2-MIB walk every 1800 seconds and profile-based polling every 300 seconds (as defined by <code>simple_profile</code> below), using SNMPv2c community <code>public</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nx">address</span><span class="p">,</span><span class="nx">port</span><span class="p">,</span><span class="nx">version</span><span class="p">,</span><span class="nx">community</span><span class="p">,</span><span class="nx">secret</span><span class="p">,</span><span class="nx">securityEngine</span><span class="p">,</span><span class="nx">walk_interval</span><span class="p">,</span><span class="nx">profiles</span><span class="p">,</span><span class="nx">smart_profiles</span><span class="p">,</span><span class="nx">max_oid_to_process</span><span class="p">,</span><span class="nx">delete</span>
-<span class="m m-Double">192.168.1.1</span><span class="p">,</span><span class="mi">161</span><span class="p">,</span><span class="mi">2</span><span class="nx">c</span><span class="p">,</span><span class="nx">public</span><span class="p">,,,</span><span class="mi">1800</span><span class="p">,</span><span class="nx">simple_profile</span><span class="p">,</span><span class="nx">t</span><span class="p">,,</span>
+<div class="highlight"><pre><span></span><code>address,port,version,community,secret,securityEngine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+192.168.1.1,161,2c,public,,,1800,simple_profile,t,,
 </code></pre></div>
-
 <p><strong>Scheduler config file</strong> - define the <code>public</code> community and the <code>simple_profile</code> profile referenced above:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">2c</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
 <span class="nt">profiles</span><span class="p">:</span>
@@ -2841,16 +2840,14 @@
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;IF-MIB&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&#39;SNMPv2-MIB&#39;</span><span class="w"> </span><span class="p p-Indicator">]</span>
 </code></pre></div>
-
 <p><strong>Traps config file</strong> - accept traps from SNMPv2c devices using the <code>public</code> community:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">communities</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">2c</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
 <span class="nt">usernameSecrets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
 </code></pre></div>
-
 <p><strong><code>.env</code></strong> - set the required variables (adjust paths and Splunk details to your environment):</p>
-<div class="codehilite"><pre><span></span><code>SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=/home/ubuntu/docker_compose/scheduler-config.yaml
+<div class="highlight"><pre><span></span><code>SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH=/home/ubuntu/docker_compose/scheduler-config.yaml
 TRAPS_CONFIG_FILE_ABSOLUTE_PATH=/home/ubuntu/docker_compose/traps-config.yaml
 INVENTORY_FILE_ABSOLUTE_PATH=/home/ubuntu/docker_compose/inventory.csv
 COREFILE_ABS_PATH=/home/ubuntu/docker_compose/Corefile
@@ -2864,7 +2861,6 @@ SPLUNK_HEC_INSECURESSL=false
 SPLUNK_HEC_INDEX_EVENTS=netops
 SPLUNK_HEC_INDEX_METRICS=netmetrics
 </code></pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The profile name used in the inventory file (<code>simple_profile</code>) must match a profile defined in the scheduler config file. If the name does not match, SC4SNMP will not poll the device.</p>

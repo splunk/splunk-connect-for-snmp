@@ -2732,9 +2732,8 @@
 
 <h1 id="deployment-configuration">Deployment Configuration<a class="headerlink" href="#deployment-configuration" title="Permanent link">&para;</a></h1>
 <p>The <code>values.yaml</code> is the main point of SC4SNMP management. You can check all the default values of Helm dependencies using the following command:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">microk8s</span><span class="w"> </span><span class="nv">helm3</span><span class="w"> </span><span class="nv">inspect</span><span class="w"> </span><span class="nv">values</span><span class="w"> </span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="o">/</span><span class="nv">splunk</span><span class="o">-</span><span class="k">connect</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="nv">snmp</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">values</span>.<span class="nv">yaml</span>
+<div class="highlight"><pre><span></span><code>microk8s helm3 inspect values splunk-connect-for-snmp/splunk-connect-for-snmp &gt; values.yaml
 </code></pre></div>
-
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>If you intend to configure values.yaml, it is recommended to use the <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/basic_template.yaml">basic template</a> as the foundation for your configuration.</p>
@@ -2769,7 +2768,7 @@
 </ul>
 <h3 id="shared-values">Shared values<a class="headerlink" href="#shared-values" title="Permanent link">&para;</a></h3>
 <p>All the components have the following <code>resources</code> field for adjusting memory resources:</p>
-<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
+<p><div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">limits</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000m</span>
 <span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2Gi</span>
@@ -2777,11 +2776,10 @@
 <span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000m</span>
 <span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2Gi</span>
 </code></pre></div>
-
-<p>For more information about the concept of <code>resources</code>, see the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">kuberentes documentation</a>.
+For more information about the concept of <code>resources</code>, see the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">kuberentes documentation</a>.
 For more information about scaling resources see the <a href="../../../microk8s/mk8s/k8s-microk8s-scaling/">scaling with microk8s</a>.</p>
 <p>There is an option to create common annotations across all services. It can be set by:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">commonAnnotations</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">commonAnnotations</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">annotation_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">annotation_value</span>
 </code></pre></div>
 

@@ -3026,24 +3026,20 @@
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Set <code>discovery.enabled</code> to <code>true</code> in <code>values.yaml</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
-
 <p>To apply changes, run the upgrade command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
 </code></pre></div>
-
 </div>
 <div class="tabbed-block">
 <p>Set <code>COMPOSE_PROFILES=discovery</code> in your <code>.env</code> file. This starts the <code>discovery</code> and <code>worker-discovery</code> containers:</p>
-<div class="codehilite"><pre><span></span><code>COMPOSE_PROFILES=discovery
+<div class="highlight"><pre><span></span><code>COMPOSE_PROFILES=discovery
 </code></pre></div>
-
 <p>To apply changes, recreate the containers:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
-
 </div>
 </div>
 </div>
@@ -3052,7 +3048,7 @@
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>All discovery settings are configured in the <code>discovery</code> section of <code>values.yaml</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">ipv6Enabled</span><span class="p">:</span>
@@ -3071,9 +3067,8 @@
 <span class="w">          </span><span class="nt">patterns</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">group</span><span class="p">:</span>
 </code></pre></div>
-
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INFO&quot;</span>
 <span class="w">  </span><span class="nt">ipv6Enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -3107,7 +3102,6 @@
 <span class="w">          </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*Windows*&quot;</span>
 <span class="w">          </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;windows-group&quot;</span>
 </code></pre></div>
-
 </div>
 <div class="tabbed-block">
 <p>Discovery settings are split across two files:</p>
@@ -3115,7 +3109,7 @@
 <li><strong><code>.env</code></strong> — general settings: log level, output path, SNMPv3 secrets toggle.</li>
 <li><strong><code>discovery-config.yaml</code></strong> — autodiscovery tasks. Set <code>DISCOVERY_CONFIG_FILE_ABSOLUTE_PATH</code> in <code>.env</code> to the absolute path of this file.</li>
 </ul>
-<div class="codehilite"><pre><span></span><code><span class="nt">ipv6Enabled</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">ipv6Enabled</span><span class="p">:</span>
 <span class="nt">autodiscovery</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">discovery_key</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">frequency</span><span class="p">:</span>
@@ -3129,9 +3123,8 @@
 <span class="w">        </span><span class="nt">patterns</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">group</span><span class="p">:</span>
 </code></pre></div>
-
 <h3 id="example-discovery-configyaml">Example <code>discovery-config.yaml</code>:<a class="headerlink" href="#example-discovery-configyaml" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><code><span class="nt">ipv6Enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="highlight"><pre><span></span><code><span class="nt">ipv6Enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="nt">autodiscovery</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">discovery_version2c</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">86400</span>
@@ -3158,7 +3151,6 @@
 <span class="w">        </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*Windows*&quot;</span>
 <span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;windows-group&quot;</span>
 </code></pre></div>
-
 </div>
 </div>
 </div>
@@ -3167,15 +3159,13 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">microk8s</label><label for="__tabbed_3_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="codehilite"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INFO&quot;</span>
 </code></pre></div>
-
 </div>
 <div class="tabbed-block">
-<div class="codehilite"><pre><span></span><code>DISCOVERY_LOG_LEVEL=INFO
+<div class="highlight"><pre><span></span><code>DISCOVERY_LOG_LEVEL=INFO
 </code></pre></div>
-
 </div>
 </div>
 </div>
@@ -3184,16 +3174,14 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">microk8s</label><label for="__tabbed_4_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="codehilite"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">ipv6Enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
-
 </div>
 <div class="tabbed-block">
 <p>In <code>discovery-config.yaml</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">ipv6Enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="highlight"><pre><span></span><code><span class="nt">ipv6Enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
-
 </div>
 </div>
 </div>
@@ -3206,15 +3194,13 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">microk8s</label><label for="__tabbed_5_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="codehilite"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">discoveryPath</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/home/user/sc4snmp&quot;</span>
 </code></pre></div>
-
 </div>
 <div class="tabbed-block">
-<div class="codehilite"><pre><span></span><code>DISCOVERY_PATH=/your/local/folder/path
+<div class="highlight"><pre><span></span><code>DISCOVERY_PATH=/your/local/folder/path
 </code></pre></div>
-
 </div>
 </div>
 </div>
@@ -3227,18 +3213,16 @@
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>The <code>usernameSecrets</code> key defines which Kubernetes Secret objects are used for SNMPv3 discovery. The value must be the name of a Secret object.</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-aes</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-homesecure-sha-des</span>
 </code></pre></div>
-
 </div>
 <div class="tabbed-block">
 <p>Set <code>ENABLE_WORKER_DISCOVERY_SECRETS=true</code> in <code>.env</code> to enable SNMPv3 secrets for the discovery worker, and ensure your secrets are configured in <code>secrets.json</code>.</p>
-<div class="codehilite"><pre><span></span><code>ENABLE_WORKER_DISCOVERY_SECRETS=true
+<div class="highlight"><pre><span></span><code>ENABLE_WORKER_DISCOVERY_SECRETS=true
 </code></pre></div>
-
 </div>
 </div>
 </div>
@@ -3320,29 +3304,26 @@
 <li><code>patterns</code>: A wildcard pattern (supports <code>*</code>) matched against the <code>sysDescr</code> returned from SNMP.</li>
 <li><code>group</code>: The name of the group to assign matched devices to.</li>
 </ul>
-<div class="codehilite"><pre><span></span><code><span class="nt">device_rules</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">device_rules</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Linux</span><span class="nv"> </span><span class="s">Devices&quot;</span>
 <span class="w">    </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*Linux*&quot;</span>
 <span class="w">    </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;linux-group&quot;</span>
 </code></pre></div>
-
 <h2 id="configure-timeouts-and-retries">Configure timeouts and retries<a class="headerlink" href="#configure-timeouts-and-retries" title="Permanent link">&para;</a></h2>
 <div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">microk8s</label><label for="__tabbed_7_2">docker compose</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="codehilite"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">taskTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2400</span>
 <span class="w">  </span><span class="nt">udpConnectionTimeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 <span class="w">  </span><span class="nt">udpConnectionRetries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 </code></pre></div>
-
 </div>
 <div class="tabbed-block">
-<div class="codehilite"><pre><span></span><code>CELERY_TASK_TIMEOUT=2400
+<div class="highlight"><pre><span></span><code>CELERY_TASK_TIMEOUT=2400
 UDP_CONNECTION_TIMEOUT=3
 UDP_CONNECTION_RETRIES=5
 </code></pre></div>
-
 </div>
 </div>
 </div>
