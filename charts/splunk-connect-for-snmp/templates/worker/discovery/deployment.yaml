@@ -30,6 +30,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-discovery
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL

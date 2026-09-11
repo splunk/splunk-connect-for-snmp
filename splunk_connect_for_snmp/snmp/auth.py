@@ -163,7 +163,12 @@ def get_auth_v3(logger, rt: RecordType, snmp_engine: SnmpEngine) -> UsmUserData:
 
         security_name = None
         logger.debug(
-            f"{username},authKey={auth_key},privKey={priv_key},authProtocol={auth_protocol},privProtocol={priv_protocol},securityEngineId={security_engine_id},securityName={security_name},authKeyType={auth_key_type},privKeyType={priv_key_type}"
+            f"{username},"
+            f"authKey={'*' * len(auth_key) if auth_key is not None else None},"
+            f"privKey={'*' * len(priv_key) if priv_key is not None else None},"
+            f"authProtocol={auth_protocol},privProtocol={priv_protocol},"
+            f"securityEngineId={security_engine_id},securityName={security_name},"
+            f"authKeyType={auth_key_type},privKeyType={priv_key_type}"
         )
         return UsmUserData(
             username,

@@ -132,3 +132,11 @@ class CustomPeriodicTaskManager:
             return periodic_tasks[0].options.get("expires", None)
         else:
             return None
+
+    def walk_task_exists(self, target: str) -> bool:
+        walk_task_name = f"sc4snmp;{target};walk"
+        try:
+            RedBeatSchedulerEntry.from_key(f"redbeat:{walk_task_name}", app=app)
+            return True
+        except KeyError:
+            return False

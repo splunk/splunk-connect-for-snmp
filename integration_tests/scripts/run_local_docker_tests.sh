@@ -84,6 +84,7 @@ update_env() {
   set_env_var "$ENV_FILE" "SECRET_FOLDER_PATH"            "$(realpath "$SECRET_FOLDER")"
   set_env_var "$ENV_FILE" "ENABLE_TRAPS_SECRETS"          "true"
   set_env_var "$ENV_FILE" "ENABLE_WORKER_POLLER_SECRETS"  "true"
+  set_env_var "$ENV_FILE" "INCLUDE_UNRESOLVED_TRAP_VARBINDS" "true"
 
   set_env_var "$ENV_FILE" "COREFILE_ABS_PATH" \
     "$(realpath "${DOCKER_COMPOSE_LOCAL}/Corefile")"

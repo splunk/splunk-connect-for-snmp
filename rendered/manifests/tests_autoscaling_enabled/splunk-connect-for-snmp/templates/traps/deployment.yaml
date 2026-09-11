@@ -32,6 +32,7 @@ spec:
       containers:
         - name: splunk-connect-for-snmp-traps
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL

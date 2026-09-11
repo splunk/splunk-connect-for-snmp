@@ -1,0 +1,39 @@
+HVR-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, NOTIFICATION-TYPE, OBJECT-TYPE, enterprises
+        FROM SNMPv2-SMI;
+
+hvr MODULE-IDENTITY
+    LAST-UPDATED "202608030000Z"
+    ORGANIZATION "SC4SNMP integration tests"
+    CONTACT-INFO
+        "Splunk Connect for SNMP"
+    DESCRIPTION
+        "A minimal MIB used to verify startup MIB-index refresh behavior."
+    REVISION "202608030000Z"
+    DESCRIPTION
+        "Initial test revision."
+    ::= { enterprises 42705 }
+
+hvrAlert OBJECT IDENTIFIER ::= { hvr 1 }
+hvrAlertNotify OBJECT IDENTIFIER ::= { hvrAlert 3 }
+hvrAlertNotifications OBJECT IDENTIFIER ::= { hvrAlertNotify 0 }
+
+hvrAlertNotifySummary NOTIFICATION-TYPE
+    STATUS current
+    DESCRIPTION
+        "A notification used by the MIB-index refresh integration test."
+    ::= { hvrAlertNotifications 1 }
+
+hvrPollerObjects OBJECT IDENTIFIER ::= { hvr 2 }
+
+hvrPollerStatus OBJECT-TYPE
+    SYNTAX OCTET STRING
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "A scalar used by the MIB-index refresh poller integration test."
+    ::= { hvrPollerObjects 1 }
+
+END

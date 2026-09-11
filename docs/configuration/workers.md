@@ -26,6 +26,7 @@ worker:
     concurrency: 4
     prefetch: 1
     maxTasksPerChild: 0
+    maxMemoryPerChild: 0
     autoscaling:
       enabled: false
       minReplicas: 2
@@ -48,6 +49,7 @@ worker:
     concurrency: 4
     prefetch: 30
     maxTasksPerChild: 0
+    maxMemoryPerChild: 0
     autoscaling:
       enabled: false
       minReplicas: 2
@@ -63,6 +65,7 @@ worker:
     concurrency: 4
     prefetch: 30
     maxTasksPerChild: 0
+    maxMemoryPerChild: 0
     autoscaling:
       enabled: false
       minReplicas: 2
@@ -78,6 +81,7 @@ worker:
     concurrency: 4
     prefetch: 30
     maxTasksPerChild: 0
+    maxMemoryPerChild: 0
     autoscaling:
       enabled: false
       minReplicas: 2
@@ -132,6 +136,7 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 | worker.poller.concurrency                                | Minimum number of threads in a poller worker pod                                                                                | 4                 |
 | worker.poller.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 1                 |
 | worker.poller.maxTasksPerChild                           | Max number of tasks a poller worker child process can execute before being recycled. `0` disables recycling                     | 0                 |
+| worker.poller.maxMemoryPerChild                          | Maximum resident memory per poller child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling              | 0                 |
 | worker.poller.autoscaling.enabled                        | Enabling autoscaling for poller worker pods                                                                                     | false             |
 | worker.poller.autoscaling.minReplicas                    | Minimum number of running poller worker pods when autoscaling is enabled                                                        | 2                 |
 | worker.poller.autoscaling.maxReplicas                    | Maximum number of running poller worker pods when autoscaling is enabled                                                        | 10                |
@@ -142,6 +147,7 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 | worker.trap.concurrency                                  | Minimum number of threads in a trap worker pod                                                                                  | 4                 |
 | worker.trap.prefetch                                     | Number of tasks consumed from the queue at once                                                                                 | 30                |
 | worker.trap.maxTasksPerChild                             | Max number of tasks a trap worker child process can execute before being recycled. `0` disables recycling                       | 0                 |
+| worker.trap.maxMemoryPerChild                            | Maximum resident memory per trap child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling                | 0                 |
 | worker.trap.resolveAddress.enabled                       | Enable reverse dns lookup of the IP address of the processed trap                                                               | false             |
 | worker.trap.resolveAddress.cacheSize                     | Maximum number of reverse dns lookup result records stored in cache                                                             | 500               |
 | worker.trap.resolveAddress.cacheTTL                      | Time to live of the cached reverse dns lookup record in seconds                                                                 | 1800              |
@@ -156,6 +162,7 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 | worker.sender.concurrency                                | Minimum number of threads in a sender worker pod                                                                                | 4                 |
 | worker.sender.prefetch                                   | Number of tasks consumed from the queue at once                                                                                 | 30                |
 | worker.sender.maxTasksPerChild                           | Max number of tasks a sender worker child process can execute before being recycled. `0` disables recycling                     | 0                 |
+| worker.sender.maxMemoryPerChild                          | Maximum resident memory per sender child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling              | 0                 |
 | worker.sender.autoscaling.enabled                        | Enabling autoscaling for sender worker pods                                                                                     | false             |
 | worker.sender.autoscaling.minReplicas                    | Minimum number of running sender worker pods when autoscaling is enabled                                                        | 2                 |
 | worker.sender.autoscaling.maxReplicas                    | Maximum number of running sender worker pods when autoscaling is enabled                                                        | 10                |
@@ -166,6 +173,7 @@ microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/spl
 | worker.discovery.concurrency                             | Minimum number of threads in a discovery worker pod                                                                             | 4                 |
 | worker.discovery.prefetch                                | Number of tasks consumed from the queue at once                                                                                 | 30                |
 | worker.discovery.maxTasksPerChild                        | Max number of tasks a discovery worker child process can execute before being recycled. `0` disables recycling                  | 0                 |
+| worker.discovery.maxMemoryPerChild                       | Maximum resident memory per discovery child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling           | 0                 |
 | worker.discovery.autoscaling.enabled                     | Enabling autoscaling for discovery worker pods                                                                                  | false             |
 | worker.discovery.autoscaling.minReplicas                 | Minimum number of running discovery worker pods when autoscaling is enabled                                                     | 2                 |
 | worker.discovery.autoscaling.maxReplicas                 | Maximum number of running discovery worker pods when autoscaling is enabled                                                     | 10                |
@@ -218,6 +226,7 @@ WORKER_POLLER_MEMORY_LIMIT=500M
 WORKER_POLLER_CPU_RESERVATIONS=0.5
 WORKER_POLLER_MEMORY_RESERVATIONS=250M
 WORKER_POLLER_MAX_TASKS_PER_CHILD=0
+WORKER_POLLER_MAX_MEMORY_PER_CHILD=0
 ENABLE_WORKER_POLLER_SECRETS=false
 
 # Worker Sender
@@ -229,6 +238,7 @@ WORKER_SENDER_MEMORY_LIMIT=500M
 WORKER_SENDER_CPU_RESERVATIONS=0.5
 WORKER_SENDER_MEMORY_RESERVATIONS=250M
 WORKER_SENDER_MAX_TASKS_PER_CHILD=0
+WORKER_SENDER_MAX_MEMORY_PER_CHILD=0
 
 # Worker Trap
 WORKER_TRAP_CONCURRENCY=4
@@ -244,6 +254,7 @@ WORKER_TRAP_MEMORY_LIMIT=500M
 WORKER_TRAP_CPU_RESERVATIONS=0.5
 WORKER_TRAP_MEMORY_RESERVATIONS=250M
 WORKER_TRAP_MAX_TASKS_PER_CHILD=0
+WORKER_TRAP_MAX_MEMORY_PER_CHILD=0
 
 # Worker Discovery
 WORKER_DISCOVERY_CONCURRENCY=4
@@ -254,6 +265,7 @@ WORKER_DISCOVERY_MEMORY_LIMIT=500M
 WORKER_DISCOVERY_CPU_RESERVATIONS=0.5
 WORKER_DISCOVERY_MEMORY_RESERVATIONS=250M
 WORKER_DISCOVERY_MAX_TASKS_PER_CHILD=0
+WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD=0
 ENABLE_WORKER_DISCOVERY_SECRETS=false
 ```
 
@@ -292,6 +304,7 @@ sudo docker compose up -d
 | `WORKER_POLLER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker poller container                        |
 | `WORKER_POLLER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker poller container                     |
 | `WORKER_POLLER_MAX_TASKS_PER_CHILD` | Max number of tasks a poller worker child process can execute before being recycled. `0` disables recycling |
+| `WORKER_POLLER_MAX_MEMORY_PER_CHILD` | Maximum resident memory per poller child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
 | `ENABLE_WORKER_POLLER_SECRETS`      | Enable usage of secrets for poller                                         |
 
 ### Worker Sender
@@ -306,6 +319,7 @@ sudo docker compose up -d
 | `WORKER_SENDER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker sender container                        |
 | `WORKER_SENDER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker sender container                     |
 | `WORKER_SENDER_MAX_TASKS_PER_CHILD` | Max number of tasks a sender worker child process can execute before being recycled. `0` disables recycling |
+| `WORKER_SENDER_MAX_MEMORY_PER_CHILD` | Maximum resident memory per sender child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
 
 ### Worker Trap
 
@@ -324,6 +338,7 @@ sudo docker compose up -d
 | `WORKER_TRAP_CPU_RESERVATIONS`    | Dedicated cpu resources for worker trap container                                                |
 | `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
 | `WORKER_TRAP_MAX_TASKS_PER_CHILD` | Max number of tasks a trap worker child process can execute before being recycled. `0` disables recycling |
+| `WORKER_TRAP_MAX_MEMORY_PER_CHILD` | Maximum resident memory per trap child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
 
 ### Worker Discovery
 
@@ -337,6 +352,7 @@ sudo docker compose up -d
 | `WORKER_DISCOVERY_CPU_RESERVATIONS`    | Dedicated cpu resources for worker discovery container                                 |
 | `WORKER_DISCOVERY_MEMORY_RESERVATIONS` | Dedicated memory resources for worker discovery container                              |
 | `WORKER_DISCOVERY_MAX_TASKS_PER_CHILD` | Max number of tasks a discovery worker child process can execute before being recycled. `0` disables recycling |
+| `WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD` | Maximum resident memory per discovery child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
 | `ENABLE_WORKER_DISCOVERY_SECRETS`      | Enable usage of SNMPv3 secrets for the discovery worker                                |
 ///
 
@@ -514,4 +530,3 @@ TTL_DNS_CACHE_TRAPS=1800
 ///
 
 Trap worker uses in memory cache to store the results of the reverse dns lookup. If you restart the worker, the cache will be cleared.
-

@@ -34,6 +34,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-worker-sender
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL

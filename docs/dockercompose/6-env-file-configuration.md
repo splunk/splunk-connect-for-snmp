@@ -51,7 +51,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 |------------------------|--------------------------------------------------------------------------| 
 | `COREDNS_ADDRESS`      | IP address of the coredns inside docker network. Should not be changed   |
 | `COREDNS_ADDRESS_IPv6` | IPv6 address of the coredns container. Default empty (IPv6 disabled). When [enabling IPv6](10-enable-ipv6.md), set to an address within `IPAM_SUBNET_IPv6` (e.g. `fd02::1`). |
-| `IPv6_ENABLED`         | Enable receiving traps and polling from IPv6 devices                     |
+| `IPv6_ENABLED`         | Enable the Docker IPv6 network, polling and traps over IPv6, and IPv6 listeners for the required dependencies. See [Enable IPv6](10-enable-ipv6.md). |
 | `IPAM_SUBNET`          | Subnet in CIDR format that represents a network segment                  |
 | `IPAM_GATEWAY`         | IPv4 gateway for the master subnet                                       |
 | `IPAM_SUBNET_IPv6`     | Subnet in CIDR format that represents a network segment for IPv6         |
@@ -72,7 +72,22 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `REDIS_TAG`       | Redis image tag to pull              |
 | `MONGO_IMAGE`     | Registry and name of MongoDB image   |
 | `MONGO_TAG`       | MongoDB image tag to pull            |
-| `MONGO_GLIBC_TUNABLES` | Value passed as `GLIBC_TUNABLES` to the `mongo` container. Defaults to `glibc.pthread.rseq=1` to mitigate a MongoDB 8.x SIGSEGV observed on host kernels >= 6.19 (e.g. Ubuntu 26.04). Safe no-op on older kernels. See [MongoDB 8.x crash on Linux kernel 6.19+](../troubleshooting/general-issues.md#mongodb-8x-crash-on-linux-kernel-619-exit-139--sigsegv). |
+| `MONGO_GLIBC_TUNABLES` | Value passed as `GLIBC_TUNABLES` to the `mongo` container. Defaults to `glibc.pthread.rseq=1` to mitigate a MongoDB 8.x SIGSEGV observed on host kernels >= 6.19 (e.g. Ubuntu 26.04). Safe no-op on older kernels. See [MongoDB 8.x crash on Linux kernel 6.19+](../troubleshooting/general-issues.md#mongodb-8x-crash-on-linux-kernel-619-exit-139-sigsegv). |
+
+### Docker logging
+
+Docker Compose applies bounded `json-file` logging by default. Existing `json-file` deployments receive rotation when their containers are recreated. To preserve `local`, `journald`, or another Docker daemon driver during an upgrade, set `DOCKER_LOG_DRIVER` before starting the upgraded deployment. See [Docker logging](./7-docker-logging.md) for upgrade, switching, and verification procedures.
+
+The default limits retain up to approximately 50 MB of uncompressed logs per container. Compression normally reduces the disk used by rotated files.
+
+| Variable              | Description                                                     |
+|-----------------------|-----------------------------------------------------------------|
+| `DOCKER_LOG_DRIVER`   | Docker daemon logging driver reported by `docker info --format '{{.LoggingDriver}}'`. `json-file`, an empty value, or a missing value uses bounded `json-file` logging. Another driver name, or `inherit`, preserves daemon inheritance after running `--configure_default_logging`. Default: `json-file` |
+| `DOCKER_LOG_MAX_SIZE` | Maximum size of each container log file. Use a positive size such as `100k`, `10m`, or `1g`. Default: `10m` |
+| `DOCKER_LOG_MAX_FILE` | Maximum number of log files retained per container. Use a positive integer. Default: `5` |
+| `DOCKER_LOG_COMPRESS` | Compress rotated log files. Supported values: `true` or `false`. Default: `true` |
+
+These settings control Docker's local retention when bounded `json-file` logging is selected and the local cache used by Docker-to-Splunk logging. They do not change SC4SNMP log levels, messages, or forwarding.
 
 ### Splunk instance
 
@@ -81,8 +96,8 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `SPLUNK_HEC_HOST`                         | IP address or a domain name of a Splunk instance to send data to                                                                      |
 | `SPLUNK_HEC_PROTOCOL`                     | The protocol of the HEC endpoint: `https` or `http`                                                                                   |
 | `SPLUNK_HEC_PORT`                         | The port of the HEC endpoint                                                                                                          |
-| `SPLUNK_HEC_TOKEN`                        | Splunk HTTP Event Collector token. To keep it out of `.env` and `docker inspect`, use a [Docker secret](../configuration/snmpv3.md#splunk-hec-token-secret); the app then reads the token from the file path in `SPLUNK_HEC_TOKEN_FILE`. |
-| `SPLUNK_HEC_TOKEN_SECRET_FILE`            | Path on the host to the file used as the Docker secret for the HEC token (worker-sender only). The app reads the token from the mounted file; only the path is in the container env. |
+| `SPLUNK_HEC_TOKEN`                        | Splunk HTTP Event Collector token. To keep it out of `.env` and `docker inspect`, use a [Docker secret](../configuration/snmpv3.md#snmpv3-configuration). The app then reads the token from the file path in `SPLUNK_HEC_TOKEN_FILE`. |
+| `SPLUNK_HEC_TOKEN_SECRET_FILE`            | Path on the host to the file used as the Docker secret for the HEC token (worker-sender only). The app reads the token from the mounted file. Only the path is in the container env. |
 | `SPLUNK_HEC_INSECURESSL`                  | Whether to skip checking the certificate of the HEC endpoint when sending data over HTTPS                                             |
 | `SPLUNK_SOURCETYPE_TRAPS`                 | Splunk sourcetype for trap events                                                                                                     |
 | `SPLUNK_SOURCETYPE_POLLING_EVENTS`        | Splunk sourcetype for non-metric polling events                                                                                       |
@@ -92,7 +107,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `SPLUNK_HEC_PATH`                         | Path for the HEC endpoint                                                                                                             |
 | `SPLUNK_AGGREGATE_TRAPS_EVENTS`           | When set to true makes traps events collected as one event inside splunk                                                              |
 | `SPLUNK_METRIC_NAME_HYPHEN_TO_UNDERSCORE` | Replaces hyphens with underscores in generated metric names to ensure compatibility with Splunk's metric schema                       |
-| `IGNORE_EMPTY_VARBINDS`                   | Details can be found in [empty snmp response message issue](../troubleshooting/polling-issues.md#empty-snmp-response-message-problem) |
+| `IGNORE_EMPTY_VARBINDS`                   | Details can be found in [empty snmp response message issue](../troubleshooting/polling-issues.md#empty-snmp-response-message) |
 | `SPLUNK_LOG_INDEX`                        | Event index in Splunk where logs from docker containers would be sent                                                                 |
 
 ## Advanced configuration
@@ -126,6 +141,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_POLLER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker poller container                        |
 | `WORKER_POLLER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker poller container                     |
 | `WORKER_POLLER_MAX_TASKS_PER_CHILD` | Max number of tasks a poller worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
+| `WORKER_POLLER_MAX_MEMORY_PER_CHILD` | Maximum resident memory per poller child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
 | `ENABLE_WORKER_POLLER_SECRETS`      | Enable usage of secrets for poller                                         |
 
 #### Worker Sender
@@ -139,6 +155,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_SENDER_CPU_RESERVATIONS`    | Dedicated cpu resources for worker sender container                        |
 | `WORKER_SENDER_MEMORY_RESERVATIONS` | Dedicated memory resources for worker sender container                     |
 | `WORKER_SENDER_MAX_TASKS_PER_CHILD` | Max number of tasks a sender worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
+| `WORKER_SENDER_MAX_MEMORY_PER_CHILD` | Maximum resident memory per sender child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
 
 #### Worker Trap
 | Variable                          | Description                                                                                      |
@@ -155,6 +172,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_TRAP_CPU_RESERVATIONS`    | Dedicated cpu resources for worker trap container                                                |
 | `WORKER_TRAP_MEMORY_RESERVATIONS` | Dedicated memory resources for worker trap container                                             |
 | `WORKER_TRAP_MAX_TASKS_PER_CHILD` | Max number of tasks a trap worker child process can execute before being recycled. `0` (default) disables recycling. Useful to mitigate memory growth in long-running workers |
+| `WORKER_TRAP_MAX_MEMORY_PER_CHILD` | Maximum resident memory per trap child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
 
 #### Worker Discovery
 | Variable                                  | Description                                                                         |
@@ -167,6 +185,7 @@ Once the required variables above are set, you can [Deploy the app](./11-deploy-
 | `WORKER_DISCOVERY_CPU_RESERVATIONS`       | Dedicated cpu resources for worker discovery container                              |
 | `WORKER_DISCOVERY_MEMORY_RESERVATIONS`    | Dedicated memory resources for worker discovery container                           |
 | `WORKER_DISCOVERY_MAX_TASKS_PER_CHILD`    | Max number of tasks a discovery worker child process can execute before being recycled. `0` (default) disables recycling |
+| `WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD`   | Maximum resident memory per discovery child in Celery kilobytes (1 unit = 1,024 bytes). `0` disables memory recycling |
 | `ENABLE_WORKER_DISCOVERY_SECRETS`         | Enable usage of SNMPv3 secrets for the discovery worker                             |
 
 ### Inventory

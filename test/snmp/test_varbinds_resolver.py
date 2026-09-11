@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import MagicMock
 
 from pysnmp.smi.rfc1902 import ObjectType
 
@@ -219,4 +218,131 @@ class TestProfile(unittest.TestCase):
         self.assertEqual(
             profile3.varbinds_bulk_mapping,
             {"TCP-MIB": "test,test2", "UDP-MIB": "test,test2", "IF-MIB": "test"},
+        )
+
+    def test_add_mappings_does_not_mutate_inputs(self):
+        profile = Profile("test", self.profile_dict)
+        base_mapping = {
+            "SNMPv2-MIB::sysName.0": "profile_a",
+            "SNMPv2-MIB::sysContact.0": "profile_a",
+        }
+        incoming_mapping = {
+            "SNMPv2-MIB::sysName.0": "profile_b",
+            "SNMPv2-MIB::sysLocation.0": "profile_b",
+        }
+        original_base_mapping = base_mapping.copy()
+        original_incoming_mapping = incoming_mapping.copy()
+
+        result = profile.add_mappings(
+            base_mapping=base_mapping,
+            incoming_mapping=incoming_mapping,
+        )
+
+        self.assertEqual(base_mapping, original_base_mapping)
+        self.assertEqual(incoming_mapping, original_incoming_mapping)
+        self.assertIsNot(result, base_mapping)
+        self.assertIsNot(result, incoming_mapping)
+        self.assertEqual(
+            result,
+            {
+                "SNMPv2-MIB::sysName.0": "profile_a,profile_b",
+                "SNMPv2-MIB::sysContact.0": "profile_a",
+                "SNMPv2-MIB::sysLocation.0": "profile_b",
+            },
+        )
+
+    def test_add_mappings_compares_complete_profile_names(self):
+        profile = Profile("test", self.profile_dict)
+
+        result = profile.add_mappings(
+            base_mapping={"SNMPv2-MIB::sysName.0": "profile_10"},
+            incoming_mapping={"SNMPv2-MIB::sysName.0": "profile_1"},
+        )
+
+        self.assertEqual(result["SNMPv2-MIB::sysName.0"], "profile_10,profile_1")
+
+    def test_add_mappings_deduplicates_profiles_in_both_mappings(self):
+        profile = Profile("test", self.profile_dict)
+        mapping_key = "SNMPv2-MIB::sysName.0"
+        cases = [
+            (
+                "profile_a,profile_b,profile_a",
+                "profile_b,profile_a,profile_b",
+                "profile_a,profile_b",
+            ),
+            (
+                "profile_a,profile_b,profile_a",
+                "profile_b,profile_c,profile_a,profile_c",
+                "profile_a,profile_b,profile_c",
+            ),
+        ]
+
+        for base_profiles, incoming_profiles, expected_profiles in cases:
+            with self.subTest(
+                base_profiles=base_profiles,
+                incoming_profiles=incoming_profiles,
+            ):
+                result = profile.add_mappings(
+                    base_mapping={mapping_key: base_profiles},
+                    incoming_mapping={mapping_key: incoming_profiles},
+                )
+
+                self.assertEqual(result[mapping_key], expected_profiles)
+
+    def test_repeated_profile_combinations_do_not_grow_cached_mappings(self):
+        profile_body = {
+            "frequency": 10,
+            "varBinds": [
+                ["SNMPv2-MIB", "sysName", 0],
+                ["SNMPv2-MIB", "sysDescr"],
+                ["IF-MIB", "ifDescr"],
+            ],
+        }
+        profile_a = Profile("profile_a", profile_body)
+        profile_b = Profile("profile_b", profile_body)
+        profile_a.process()
+        profile_b.process()
+
+        for _ in range(10):
+            combined_ab = profile_a + profile_b
+            combined_ba = profile_b + profile_a
+
+            self.assertEqual(
+                combined_ab.varbinds_get_mapping["SNMPv2-MIB::sysName.0"],
+                "profile_a,profile_b",
+            )
+            self.assertEqual(
+                combined_ba.varbinds_get_mapping["SNMPv2-MIB::sysName.0"],
+                "profile_b,profile_a",
+            )
+            self.assertEqual(
+                combined_ab.varbinds_bulk_mapping["IF-MIB::ifDescr"],
+                "profile_a,profile_b",
+            )
+            self.assertEqual(
+                combined_ba.varbinds_bulk_mapping["IF-MIB::ifDescr"],
+                "profile_b,profile_a",
+            )
+
+        self.assertEqual(
+            profile_a.varbinds_get_mapping,
+            {"SNMPv2-MIB::sysName.0": "profile_a"},
+        )
+        self.assertEqual(
+            profile_b.varbinds_get_mapping,
+            {"SNMPv2-MIB::sysName.0": "profile_b"},
+        )
+        self.assertEqual(
+            profile_a.varbinds_bulk_mapping,
+            {
+                "SNMPv2-MIB::sysDescr": "profile_a",
+                "IF-MIB::ifDescr": "profile_a",
+            },
+        )
+        self.assertEqual(
+            profile_b.varbinds_bulk_mapping,
+            {
+                "SNMPv2-MIB::sysDescr": "profile_b",
+                "IF-MIB::ifDescr": "profile_b",
+            },
         )

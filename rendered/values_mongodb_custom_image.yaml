@@ -40,6 +40,5 @@ poller:
 
 mongodb:
   image:
-    registry: docker.io
-    repository: bitnamilegacy/mongodb
-    tag: 8.0.13-debian-10-r0
+    repository: mongo
+    tag: 8.3.4

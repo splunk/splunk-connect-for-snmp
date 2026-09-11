@@ -20,14 +20,12 @@ class ProfilesPage:
     def click_add_profile_button(self):
         logger.info("Click Add New Profile button")
         xpath = "//button[@data-test='sc4snmp:new-item-button']"
-        btn = driver.find_element(By.XPATH, xpath)
-        btn.click()
+        helper.safe_click(driver, xpath)
 
     def click_submit_button(self):
         logger.info("Click Submit button")
         xpath = "//button[@data-test='sc4snmp:form:submit-form-button']"
-        btn = driver.find_element(By.XPATH, xpath)
-        btn.click()
+        helper.safe_click(driver, xpath)
         time.sleep(5)  # wait for profile to be shown on the list
 
     def select_profile_type(self, profile_type):
@@ -49,7 +47,7 @@ class ProfilesPage:
 
     def set_frequency(self, freq_value):
         logger.info(f"Setting profile frequency: {freq_value}")
-        xpath = "//div[@data-test='sc4snmp:form:frequency-input']//span//input"
+        xpath = "//div[@data-test='sc4snmp:form:frequency-input']//input"
         freq_field = driver.find_element(By.XPATH, xpath)
         helper.clear_input(freq_field)
         # freq_field.send_keys(Keys.BACKSPACE)  # clear() is not working here
@@ -57,7 +55,7 @@ class ProfilesPage:
 
     def set_profile_name(self, name):
         logger.info(f"Setting profile name: {name}")
-        xpath = "//div[@data-test='sc4snmp:form:profile-name-input']//span//input"
+        xpath = "//div[@data-test='sc4snmp:form:profile-name-input']//input"
         name_input = driver.find_element(By.XPATH, xpath)
         helper.clear_input(name_input)  # this is useful when editing profile name
         name_input.send_keys(name)
@@ -70,19 +68,19 @@ class ProfilesPage:
         varbind_row_xpath = "//div[@data-test='sc4snmp:form:varbind-row']"
         varbinds_rows = driver.find_elements(By.XPATH, varbind_row_xpath)
         component_xpath = (
-            "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/span/input"
+            "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/input"
         )
         component_input = varbinds_rows[-1].find_element(By.XPATH, component_xpath)
         component_input.send_keys(mcomponent)
         if mobject is not None:
             object_xpath = (
-                "//div[@data-test='sc4snmp:form:varbind-mib-object-input']/span/input"
+                "//div[@data-test='sc4snmp:form:varbind-mib-object-input']/input"
             )
             object_input = varbinds_rows[-1].find_element(By.XPATH, object_xpath)
             object_input.send_keys(mobject)
         if mindex is not None:
             index_xpath = (
-                "//div[@data-test='sc4snmp:form:varbind-mib-index-input']/span/input"
+                "//div[@data-test='sc4snmp:form:varbind-mib-index-input']/input"
             )
             index_input = varbinds_rows[-1].find_element(By.XPATH, index_xpath)
             index_input.send_keys(mindex)
@@ -94,22 +92,18 @@ class ProfilesPage:
         varbind_row_xpath = "//div[@data-test='sc4snmp:form:varbind-row']"
         varbinds_row = driver.find_element(By.XPATH, varbind_row_xpath)
         component_xpath = (
-            "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/span/input"
+            "//div[@data-test='sc4snmp:form:varbind-mib-component-input']/input"
         )
         component_input = varbinds_row.find_element(By.XPATH, component_xpath)
         helper.clear_input(component_input)
         component_input.send_keys(new_mcomponent)
 
-        object_xpath = (
-            "//div[@data-test='sc4snmp:form:varbind-mib-object-input']/span/input"
-        )
+        object_xpath = "//div[@data-test='sc4snmp:form:varbind-mib-object-input']/input"
         object_input = varbinds_row.find_element(By.XPATH, object_xpath)
         helper.clear_input(object_input)
         object_input.send_keys(new_mobject)
 
-        index_xpath = (
-            "//div[@data-test='sc4snmp:form:varbind-mib-index-input']/span/input"
-        )
+        index_xpath = "//div[@data-test='sc4snmp:form:varbind-mib-index-input']/input"
         index_input = varbinds_row.find_element(By.XPATH, index_xpath)
         helper.clear_input(index_input)
         index_input.send_keys(new_mindex)
@@ -133,33 +127,27 @@ class ProfilesPage:
 
     def click_delete_profile_button(self, profile_name):
         logger.info(f"click delete profile button -> {profile_name}")
-        delete_btn_for_profile_with_name_xpath = f"//button[@data-test='sc4snmp:profile-row-delete' and ancestor::tr//td[text()='{profile_name}']]"
-        delete_btn = driver.find_element(
-            By.XPATH, delete_btn_for_profile_with_name_xpath
-        )
-        delete_btn.click()
+        delete_btn_for_profile_with_name_xpath = f"//button[@data-test='sc4snmp:profile-row-delete' and ancestor::tr//td[normalize-space(.)='{profile_name}']]"
+        helper.safe_click(driver, delete_btn_for_profile_with_name_xpath)
         time.sleep(1)
 
     def _confirm_delete_profile(self):
         confirm_delete_xpath = (
             "//button[@data-test='sc4snmp:delete-modal:delete-button']"
         )
-        confirm_btn = driver.find_element(By.XPATH, confirm_delete_xpath)
-        confirm_btn.click()
-        time.sleep(1)
+        helper.safe_click(driver, confirm_delete_xpath)
 
     def close_profile_delete_popup(self):
         logger.info("Closing profile delete popup")
         close_profile_delete_popup_btn_xpath = (
             "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
-        close_btn = driver.find_element(By.XPATH, close_profile_delete_popup_btn_xpath)
-        close_btn.click()
-        time.sleep(1)
+        helper.safe_click(driver, close_profile_delete_popup_btn_xpath)
+        helper.wait_for_modal_overlay_to_close(driver)
 
     def get_profile_type_for_profile_entry(self, profile_name):
         logger.info(f"getting profile type for profile {profile_name}")
-        profile_type_for_profile_with_name_xpath = f"//td[@data-test='sc4snmp:profile-type' and ancestor::tr//td[text()='{profile_name}']]"
+        profile_type_for_profile_with_name_xpath = f"//td[@data-test='sc4snmp:profile-type' and ancestor::tr//td[normalize-space(.)='{profile_name}']]"
         profile_type = driver.find_element(
             By.XPATH, profile_type_for_profile_with_name_xpath
         )
@@ -168,7 +156,7 @@ class ProfilesPage:
     def set_smart_profile_field(self, field_value):
         logger.info(f"Setting smart profile field {field_value}")
         smart_profile_field_xpath = (
-            "//div[@data-test='sc4snmp:form:condition-field-input']//span//input"
+            "//div[@data-test='sc4snmp:form:condition-field-input']//input"
         )
         field = driver.find_element(By.XPATH, smart_profile_field_xpath)
         field.send_keys(field_value)
@@ -179,15 +167,13 @@ class ProfilesPage:
         add_pattern_button = driver.find_element(By.XPATH, add_pattern_button_xpath)
         add_pattern_button.click()
         time.sleep(1)
-        pattern_row_xpath = (
-            "//div[@data-test='sc4snmp:form:field-pattern']//span//input"
-        )
+        pattern_row_xpath = "//div[@data-test='sc4snmp:form:field-pattern']//input"
         pattern_rows = driver.find_elements(By.XPATH, pattern_row_xpath)
         pattern_rows[-1].send_keys(pattern)
 
     def check_if_frequency_setting_field_is_visible(self):
         logger.info("Checking if frequency setting field is visible")
-        xpath = "//div[@data-test='sc4snmp:form:frequency-input']//span//input"
+        xpath = "//div[@data-test='sc4snmp:form:frequency-input']//input"
         try:
             freq_field = driver.find_element(By.XPATH, xpath)
             return freq_field.is_displayed()
@@ -203,9 +189,7 @@ class ProfilesPage:
         add_condition_btn.click()
         time.sleep(1)
         # set field
-        set_field_xpath = (
-            "//div[@data-test='sc4snmp:form:conditional-field']//span//input"
-        )
+        set_field_xpath = "//div[@data-test='sc4snmp:form:conditional-field']//input"
         field = driver.find_element(By.XPATH, set_field_xpath)
         field.send_keys(field_value)
         # select operation
@@ -221,16 +205,15 @@ class ProfilesPage:
         operation_option.click()
         # set value
         value_field_xpath = (
-            "//div[@data-test='sc4snmp:form:conditional-condition']//span//input"
+            "//div[@data-test='sc4snmp:form:conditional-condition']//input"
         )
         value_field = driver.find_element(By.XPATH, value_field_xpath)
         value_field.send_keys(value)
 
     def click_edit_profile(self, profile_name):
         logger.info(f"Edit profile: {profile_name}")
-        edit_btn_for_profile_with_name_xpath = f"//button[@data-test='sc4snmp:profile-row-edit' and ancestor::tr//td[text()='{profile_name}']]"
-        edit_btn = driver.find_element(By.XPATH, edit_btn_for_profile_with_name_xpath)
-        edit_btn.click()
+        edit_btn_for_profile_with_name_xpath = f"//button[@data-test='sc4snmp:profile-row-edit' and ancestor::tr//td[normalize-space(.)='{profile_name}']]"
+        helper.safe_click(driver, edit_btn_for_profile_with_name_xpath)
         time.sleep(1)
 
     def close_edited_profile_popup(self):
@@ -238,9 +221,8 @@ class ProfilesPage:
         close_popup_btn_xpath = (
             "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
-        close_popup_btn = driver.find_element(By.XPATH, close_popup_btn_xpath)
-        close_popup_btn.click()
-        time.sleep(2)
+        helper.safe_click(driver, close_popup_btn_xpath)
+        helper.wait_for_modal_overlay_to_close(driver)
 
     def get_submit_edited_profile_text(self):
         logger.info("Get submit edited profile popup text")
@@ -252,13 +234,13 @@ class ProfilesPage:
 
     def get_profile_freq(self, profile_name):
         logger.info(f"Get profile frequency {profile_name}")
-        profile_freq_xpath = f"//td[@data-test='sc4snmp:profile-frequency' and ancestor::tr//td[text()='{profile_name}']]"
+        profile_freq_xpath = f"//td[@data-test='sc4snmp:profile-frequency' and ancestor::tr//td[normalize-space(.)='{profile_name}']]"
         profile_freq = driver.find_element(By.XPATH, profile_freq_xpath)
         return profile_freq.text
 
     def expand_profile(self, profile_name):
         logger.info(f"Clik profile expand button: {profile_name}")
-        profile_expand_btn_xpath = f"//tr[@data-test='sc4snmp:profile-row' and child::td[text()='{profile_name}']]//td[@data-test='expand']"
+        profile_expand_btn_xpath = f"//tr[@data-test='sc4snmp:profile-row' and child::td[normalize-space(.)='{profile_name}']]//td[@data-test='expand']"
         profile_expand_btn = driver.find_element(By.XPATH, profile_expand_btn_xpath)
         profile_expand_btn.click()
         time.sleep(1)
@@ -294,6 +276,5 @@ class ProfilesPage:
             time.sleep(1)
             self._confirm_delete_profile()
             self.close_profile_delete_popup()
-            time.sleep(1)
             delete_btns = driver.find_elements(By.XPATH, profile_delete_btn_xpath)
             logger.info(f" {len(delete_btns)} more items for removal")

@@ -15,8 +15,17 @@ spec:
       labels:
         app: ui-frontend
     spec:
+      # nosemgrep: splunk.run-as-non-root-security-context-pod-level
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        runAsNonRoot: true
+        fsGroup: 10000
       containers:
       - name: ui-frontend
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         image: {{ include "splunk-connect-for-snmp.uiFrontImage" . | quote }}
         imagePullPolicy: {{ .Values.UI.frontEnd.pullPolicy }}
         env:
@@ -26,4 +35,10 @@ spec:
             value: {{ quote .Values.UI.frontEnd.NodePort }}
         ports:
         - containerPort: {{ .Values.UI.frontEnd.NodePort }}
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
 {{- end }}

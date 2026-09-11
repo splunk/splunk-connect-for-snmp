@@ -18,6 +18,7 @@ DOCKER_SCRIPT   = integration_tests/scripts/run_local_docker_tests.sh
 
 .PHONY: render
 render:
+	helm dependency build charts/splunk-connect-for-snmp --skip-refresh
 	rm -rf rendered/manifests
 	helm template -n default --values rendered/values.yaml --output-dir rendered/manifests/tests charts/splunk-connect-for-snmp
 	rm -rf rendered/manifests/tests/splunk-connect-for-snmp/charts

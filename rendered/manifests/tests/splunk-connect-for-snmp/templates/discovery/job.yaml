@@ -4,6 +4,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: release-name-splunk-connect-for-snmp-discovery
+  namespace: default
   labels:
     app.kubernetes.io/name: splunk-connect-for-snmp
     app.kubernetes.io/component: discovery
@@ -22,8 +23,19 @@ spec:
         app.kubernetes.io/component: discovery
         app.kubernetes.io/instance: release-name
     spec:
+      securityContext:
+        fsGroup: 10001
       containers:
         - name: splunk-connect-for-snmp-discovery
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
           image: "ghcr.io/splunk/splunk-connect-for-snmp/container:CURRENT-VERSION"
           imagePullPolicy: Always
           args:

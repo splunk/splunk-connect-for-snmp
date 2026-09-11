@@ -1,0 +1,28 @@
+---
+# Source: splunk-connect-for-snmp/templates/common/discovery-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: splunk-connect-for-snmp-discovery-config
+data:
+  discovery-config.yaml: |
+    autodiscovery:
+      discovery_version2c:
+        community: public
+        delete_already_discovered: false
+        device_rules:
+        - group: linux_group
+          name: Linux servers
+          patterns: '*linux*'
+        - group: centos_group
+          name: Centos servers
+          patterns: '*centos*'
+        frequency: 21600
+        network_address: 54.82.41.24/28
+        port: 161
+        version: 2c
+    discoveryPath: /home/devuser/discovery
+    enabled: true
+    ipv6Enabled: true
+    logLevel: INFO
+    usernameSecrets: []

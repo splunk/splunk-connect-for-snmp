@@ -1,3 +1,10 @@
+x-default-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "${DOCKER_LOG_MAX_SIZE:-10m}"
+    max-file: "${DOCKER_LOG_MAX_FILE:-5}"
+    compress: "${DOCKER_LOG_COMPRESS:-true}"
+
 x-general_sc4snmp_data: &general_sc4snmp_data
   CONFIG_PATH: /app/config/config.yaml
   REDIS_URL: redis://redis:6379/1
@@ -68,6 +75,12 @@ secrets:
   splunk_hec_token:
     file: ${SPLUNK_HEC_TOKEN_SECRET_FILE:-/dev/null}
 
+configs:
+  mongodb-network-config:
+    content: |
+      net:
+        bindIpAll: true
+        ipv6: ${IPv6_ENABLED:-false}
 networks:
   sc4snmp_network:
     name: sc4snmp_network
@@ -82,6 +95,7 @@ networks:
 services:
   coredns:
     image: ${COREDNS_IMAGE}:${COREDNS_TAG:-latest}
+    logging: *default-logging
     command: [-conf, /Corefile]
     container_name: coredns
     restart: on-failure
@@ -97,27 +111,38 @@ services:
   snmp-mibserver:
     <<: [*dns_and_networks, *dependend_on_core_dns]
     image: ${MIBSERVER_IMAGE}:${MIBSERVER_TAG:-latest}
+    logging: *default-logging
     container_name: snmp-mibserver
     environment:
       NGINX_ENTRYPOINT_QUIET_LOGS: ${NGINX_ENTRYPOINT_QUIET_LOGS:-1}
+      MIBSERVER_IPV6_ENABLED: ${IPv6_ENABLED:-false}
     volumes:
     - snmp-mibserver-tmp:/tmp/
     - ${LOCAL_MIBS_PATH:-./local_mibs}:/app/new_mibs/src/vendor
   redis:
     <<: [*dns_and_networks, *dependend_on_core_dns]
     image: ${REDIS_IMAGE}:${REDIS_TAG:-latest}
+    logging: *default-logging
     container_name: redis
     environment:
       ALLOW_EMPTY_PASSWORD: yes
   mongo:
     <<: [*dns_and_networks, *dependend_on_core_dns]
     image: ${MONGO_IMAGE}:${MONGO_TAG:-latest}
+    logging: *default-logging
     container_name: mongo
     environment:
       GLIBC_TUNABLES: ${MONGO_GLIBC_TUNABLES:-glibc.pthread.rseq=1}
+    configs:
+    - source: mongodb-network-config
+      target: /etc/mongod-sc4snmp.yaml
+    command:
+    - --config
+    - /etc/mongod-sc4snmp.yaml
   inventory:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     container_name: sc4snmp-inventory
     command: [inventory]
     environment:
@@ -134,6 +159,7 @@ services:
   scheduler:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     container_name: sc4snmp-scheduler
     command: [celery, beat]
     environment:
@@ -158,6 +184,7 @@ services:
       INCLUDE_SECURITY_CONTEXT_ID: ${INCLUDE_SECURITY_CONTEXT_ID:-false}
       MAX_TRAP_VARBINDS_TO_DECODE: ${MAX_TRAP_VARBINDS_TO_DECODE:-0}
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     ports:
     - mode: host
       protocol: udp
@@ -171,6 +198,7 @@ services:
   discovery:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     container_name: sc4snmp-discovery
     profiles: [discovery]
     command: [discovery]
@@ -188,6 +216,7 @@ services:
   worker-discovery:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     profiles: [discovery]
     command:
     - celery
@@ -211,6 +240,7 @@ services:
       WORKER_CONCURRENCY: ${WORKER_DISCOVERY_CONCURRENCY:-4}
       PREFETCH_COUNT: ${PREFETCH_DISCOVERY_COUNT:-30}
       MAX_TASKS_PER_CHILD: ${WORKER_DISCOVERY_MAX_TASKS_PER_CHILD:-0}
+      MAX_MEMORY_PER_CHILD: ${WORKER_DISCOVERY_MAX_MEMORY_PER_CHILD:-0}
       CELERY_TASK_TIMEOUT: ${CELERY_TASK_TIMEOUT:-2400}
       DISCOVERY_FOLDER_PATH: /app/discovery
       ENABLE_WORKER_DISCOVERY_SECRETS: ${ENABLE_WORKER_DISCOVERY_SECRETS:-false}
@@ -223,6 +253,7 @@ services:
   worker-poller:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     command:
     - celery
     - worker-poller
@@ -242,6 +273,7 @@ services:
       WORKER_CONCURRENCY: ${WORKER_POLLER_CONCURRENCY:-2}
       PREFETCH_COUNT: ${PREFETCH_POLLER_COUNT:-1}
       MAX_TASKS_PER_CHILD: ${WORKER_POLLER_MAX_TASKS_PER_CHILD:-0}
+      MAX_MEMORY_PER_CHILD: ${WORKER_POLLER_MAX_MEMORY_PER_CHILD:-0}
       ENABLE_WORKER_POLLER_SECRETS: ${ENABLE_WORKER_POLLER_SECRETS:-false}
     volumes:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
@@ -251,6 +283,7 @@ services:
   worker-sender:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     command: [celery, worker-sender]
     secrets:
     - splunk_hec_token
@@ -264,6 +297,7 @@ services:
       WORKER_CONCURRENCY: ${WORKER_SENDER_CONCURRENCY:-2}
       PREFETCH_COUNT: ${PREFETCH_SENDER_COUNT:-1}
       MAX_TASKS_PER_CHILD: ${WORKER_SENDER_MAX_TASKS_PER_CHILD:-0}
+      MAX_MEMORY_PER_CHILD: ${WORKER_SENDER_MAX_MEMORY_PER_CHILD:-0}
     volumes:
     - ${SCHEDULER_CONFIG_FILE_ABSOLUTE_PATH}:/app/config/config.yaml:ro
     - worker-sender-pysnmp-cache-volume:/.pysnmp/:rw
@@ -281,6 +315,7 @@ services:
   worker-trap:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     command: [celery, worker-trap]
     environment:
       <<: [*general_sc4snmp_data, *splunk_general_setup, *splunk_extended_setup, *workers_general_setup,
@@ -290,6 +325,7 @@ services:
       WORKER_CONCURRENCY: ${WORKER_TRAP_CONCURRENCY:-2}
       PREFETCH_COUNT: ${PREFETCH_TRAP_COUNT:-1}
       MAX_TASKS_PER_CHILD: ${WORKER_TRAP_MAX_TASKS_PER_CHILD:-0}
+      MAX_MEMORY_PER_CHILD: ${WORKER_TRAP_MAX_MEMORY_PER_CHILD:-0}
       RESOLVE_TRAP_ADDRESS: ${RESOLVE_TRAP_ADDRESS:-false}
       INCLUDE_UNRESOLVED_TRAP_VARBINDS: ${INCLUDE_UNRESOLVED_TRAP_VARBINDS:-false}
       MAX_TRAP_VARBINDS_TO_DECODE: ${MAX_TRAP_VARBINDS_TO_DECODE:-0}
@@ -312,6 +348,7 @@ services:
   flower:
     <<: [*dns_and_networks, *dependency_and_restart_policy]
     image: ${SC4SNMP_IMAGE}:${SC4SNMP_TAG:-latest}
+    logging: *default-logging
     command: [celery, flower]
     environment:
       <<: [

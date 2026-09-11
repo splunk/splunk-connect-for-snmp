@@ -30,6 +30,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-scheduler
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL

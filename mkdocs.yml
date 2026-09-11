@@ -21,10 +21,7 @@ markdown_extensions:
       alternate_style: true
 
 plugins:
-  - search:
-      lang: en
-  - mkdocs-video:
-      is_video: true
+  - search
 
 extra_javascript:
   - javascripts/footer.js
@@ -36,8 +33,6 @@ theme:
   palette:
     primary: "black"
     accent: "orange"
-#  favicon: "logo.png"
-#  logo: "logo.png"
 
 nav:
   - Home: "index.md"
@@ -85,6 +80,7 @@ nav:
               - SNMPv3 secrets: "configuration/snmpv3.md"
               - .env file: "dockercompose/6-env-file-configuration.md"
           - Additional configuration:
+              - Docker logging: "dockercompose/7-docker-logging.md"
               - Offline installation: "dockercompose/8-offline-installation.md"
               - Sending logs to Splunk: "dockercompose/9-splunk-logging.md"
               - Enable IPv6: "dockercompose/10-enable-ipv6.md"
@@ -117,8 +113,3 @@ nav:
       - Polling issues: "troubleshooting/polling-issues.md"
       - Traps issues: "troubleshooting/traps-issues.md"
       - Discovery issues: "troubleshooting/discovery-issues.md"
-
-
-
-
-

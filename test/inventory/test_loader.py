@@ -403,11 +403,68 @@ class TestLoader(TestCase):
         periodic_obj_mock = Mock()
         m_taskManager.return_value = periodic_obj_mock
         periodic_obj_mock.did_expiry_time_change.return_value = False
+        periodic_obj_mock.walk_task_exists.return_value = True
         m_migrate.return_value = False
         m_load_profiles.return_value = default_profiles
         self.assertFalse(load())
 
         periodic_obj_mock.manage_task.assert_not_called()
+
+    @mock.patch(
+        "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", False
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.CONFIG_FROM_MONGO", False
+    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.CONFIG_FROM_MONGO", False)
+    @mock.patch(
+        "splunk_connect_for_snmp.inventory.loader.CHAIN_OF_TASKS_EXPIRY_TIME", 180
+    )
+    @patch("splunk_connect_for_snmp.common.inventory_processor.gen_walk_task")
+    @patch("builtins.open", new_callable=mock_open, read_data=mock_inventory)
+    @patch("splunk_connect_for_snmp.customtaskmanager.CustomPeriodicTaskManager")
+    @mock.patch("pymongo.collection.Collection.update_one")
+    @patch("splunk_connect_for_snmp.inventory.loader.migrate_database")
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.update_all"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.ProfilesManager.return_collection"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.update_all"
+    )
+    @mock.patch(
+        "splunk_connect_for_snmp.common.collection_manager.GroupsManager.return_collection"
+    )
+    @mock.patch("splunk_connect_for_snmp.inventory.loader.configure_ui_database")
+    def test_load_unchanged_record_missing_walk_task(
+        self,
+        m_configure_ui_database,
+        m_load_groups,
+        m_update_groups,
+        m_load_profiles,
+        m_update_profiles,
+        m_migrate,
+        m_mongo_collection,
+        m_taskManager,
+        m_open,
+        m_gen_walk_task,
+    ):
+        # Reproduces the rebuild-without-config-change scenario: MongoDB survives so the
+        # record is "Unchanged", but RedBeat/Redis was wiped so the walk task is missing.
+        m_mongo_collection.return_value = UpdateResult(
+            {"n": 1, "nModified": 0, "upserted": None}, True
+        )
+        m_gen_walk_task.return_value = expected_managed_task
+        periodic_obj_mock = Mock()
+        m_taskManager.return_value = periodic_obj_mock
+        periodic_obj_mock.did_expiry_time_change.return_value = False
+        periodic_obj_mock.walk_task_exists.return_value = False
+        m_load_profiles.return_value = default_profiles
+        self.assertFalse(load())
+
+        periodic_obj_mock.manage_task.assert_called_with(**expected_managed_task)
 
     @mock.patch(
         "splunk_connect_for_snmp.common.inventory_processor.CONFIG_FROM_MONGO", False

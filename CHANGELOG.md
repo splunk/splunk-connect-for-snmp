@@ -6,6 +6,24 @@
 
 ### Fixed
 
+## [1.17.1]
+
+### Changed
+- Add `mongodb.replicationAuthTransition.transitionTimeout` to configure the authentication-transition deadline, which defaults to one replica initialization timeout per MongoDB member.
+- Add configurable IPv6 listener support for Redis, MongoDB, and the MIB server with `redis.ipv6Enabled`, `mongodb.ipv6Enabled`, and `mibserver.ipv6Enabled`.
+- Extend the existing Docker Compose `IPv6_ENABLED` option to configure MongoDB and MIB server listeners.
+- Provided `MAX_MEMORY_PER_CHILD` / `maxMemoryPerChild` setting to celery workers.
+- Provided configurable options to control the docker logging: `DOCKER_LOG_DRIVER`, `DOCKER_LOG_MAX_SIZE`, `DOCKER_LOG_MAX_FILE`, `DOCKER_LOG_COMPRESS` to prevent the disk usage growth
+
+### Fixed
+- **MongoDB Authentication Improvements**
+  - Preserve the chart-managed MongoDB replica key across Helm upgrades and remove the unused option for an external replica-key Secret.
+  - Support enabling authentication on an existing MongoDB replica set with MongoDB's `transitionToAuth` compatibility mode, ordered member replacement, resumable phases, and verification of MongoDB members and SC4SNMP clients.
+- Revalidates the Mongo-backed MIB index cache whenever a trap or poller worker starts/restart.
+- Preserve unresolved trap varbind fields during custom translation processing, preventing processing failures and errors
+- Harden the security context for kubernetes templates
+- Fix schedules not resuming for unchanged inventory records after Redis/RedBeat is reset while MongoDB data is preserved
+- Prevent duplicate profiles when merging varbind mappings to avoid mappings growing unnecessarily large
 
 ## [1.17.0]
 
