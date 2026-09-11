@@ -3,6 +3,12 @@
 ## Unreleased
 
 ### Changed
+
+### Fixed
+
+## [1.17.1]
+
+### Changed
 - Add `mongodb.replicationAuthTransition.transitionTimeout` to configure the authentication-transition deadline, which defaults to one replica initialization timeout per MongoDB member.
 - Add configurable IPv6 listener support for Redis, MongoDB, and the MIB server with `redis.ipv6Enabled`, `mongodb.ipv6Enabled`, and `mibserver.ipv6Enabled`.
 - Extend the existing Docker Compose `IPv6_ENABLED` option to configure MongoDB and MIB server listeners.
