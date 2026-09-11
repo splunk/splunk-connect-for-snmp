@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
@@ -30,7 +30,7 @@
       
         
       
-      <link rel="stylesheet" href="../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -2844,7 +2844,7 @@ enableSplunkWebSSL = true
 <li>Use https protocol to communicate with Splunk. To enforce this, set the <code>splunk.protocol</code> variable in the configuration file values.yaml:</li>
 </ol>
 <div class="highlight"><pre><span></span><code>splunk:
-    protocol: &quot;https&quot;
+    protocol: "https"
 </code></pre></div>
 <ol start="3">
 <li>Add <code>mtls</code> section and provide your secret with certificates inside. To do this, update the <code>values.yaml</code> file under the splunk section as shown below:</li>
@@ -2852,7 +2852,7 @@ enableSplunkWebSSL = true
 <div class="highlight"><pre><span></span><code>splunk:
     mtls:
         enabled: true
-        secretRef: &quot;mtls&quot;
+        secretRef: "mtls"
 </code></pre></div>
 <ol start="4">
 <li>Redeploy SC4SNMP</li>
@@ -2897,9 +2897,9 @@ enableSplunkWebSSL = true
 <li>Double-check that the mTLS certificates you are using are valid. To do this, send a test log message using <code>curl</code> in verbose mode, which can help identify any issues with the certificates:</li>
 </ol>
 <div class="highlight"><pre><span></span><code>curl -k https://${HEC_URL} \
-  -H &quot;Authorization: Splunk ${HEC_TOKEN}&quot; \
-  -H &quot;Content-Type: application/json&quot; \
-  -d &#39;{&quot;event&quot;: &quot;Hello&quot;, &quot;sourcetype&quot;: &quot;manual&quot;, &quot;host&quot;: &quot;myhost&quot;, &quot;source&quot;: &quot;myapp&quot;}&#39; \
+  -H "Authorization: Splunk ${HEC_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{"event": "Hello", "sourcetype": "manual", "host": "myhost", "source": "myapp"}' \
   --cert client.crt \
   --key client.key \
   --cacert cacert.pem \
@@ -2966,7 +2966,7 @@ enableSplunkWebSSL = true
       <script id="__config" type="application/json">{"annotate":null,"base":"..","features":[],"search":"../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../javascripts/footer.js"></script>
       

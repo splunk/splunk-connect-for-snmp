@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
@@ -30,7 +30,7 @@
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -2900,7 +2900,7 @@ DOCKER_LOG_COMPRESS=true
 </table>
 <h2 id="choose-the-logging-behavior">Choose the logging behavior<a class="headerlink" href="#choose-the-logging-behavior" title="Permanent link">&para;</a></h2>
 <p>Check the Docker daemon&rsquo;s current logging driver before a new installation or upgrade:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>info<span class="w"> </span>--format<span class="w"> </span><span class="s1">&#39;{{.LoggingDriver}}&#39;</span>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>info<span class="w"> </span>--format<span class="w"> </span><span class="s1">'{{.LoggingDriver}}'</span>
 </code></pre></div>
 <table>
 <thead>
@@ -2968,8 +2968,8 @@ sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"
 <div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span>id<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">$(</span>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>ps<span class="w"> </span>-q<span class="k">)</span>
 <span class="k">do</span>
 <span class="w">  </span>sudo<span class="w"> </span>docker<span class="w"> </span>inspect<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--format<span class="w"> </span><span class="s1">&#39;{{.Name}} driver={{.HostConfig.LogConfig.Type}} options={{json .HostConfig.LogConfig.Config}}&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span><span class="s2">&quot;</span><span class="nv">$id</span><span class="s2">&quot;</span>
+<span class="w">    </span>--format<span class="w"> </span><span class="s1">'{{.Name}} driver={{.HostConfig.LogConfig.Type}} options={{json .HostConfig.LogConfig.Config}}'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">"</span><span class="nv">$id</span><span class="s2">"</span>
 <span class="k">done</span>
 </code></pre></div>
 <p>Bounded logging reports <code>driver=json-file</code> with <code>max-size</code>, <code>max-file</code>, and <code>compress</code>. When daemon inheritance is selected, each container reports the daemon driver.</p>
@@ -3040,7 +3040,7 @@ sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

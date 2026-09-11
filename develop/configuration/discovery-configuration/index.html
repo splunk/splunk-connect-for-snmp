@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>Discovery Configuration - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Discovery - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Discovery Configuration
+              Discovery
             
           </span>
         </div>
@@ -3070,9 +3070,9 @@
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INFO&quot;</span>
+<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"INFO"</span>
 <span class="w">  </span><span class="nt">ipv6Enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">  </span><span class="nt">discoveryPath</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/home/user/sc4snmp&quot;</span>
+<span class="w">  </span><span class="nt">discoveryPath</span><span class="p">:</span><span class="w"> </span><span class="s">"/home/user/sc4snmp"</span>
 <span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-hlab-sha-aes</span>
 
@@ -3081,26 +3081,26 @@
 <span class="w">      </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">86400</span>
 <span class="w">      </span><span class="nt">delete_already_discovered</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">      </span><span class="nt">network_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.200/30</span>
-<span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2c&quot;</span>
-<span class="w">      </span><span class="nt">community</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;public&quot;</span>
+<span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"2c"</span>
+<span class="w">      </span><span class="nt">community</span><span class="p">:</span><span class="w"> </span><span class="s">"public"</span>
 <span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">161</span>
 <span class="w">      </span><span class="nt">device_rules</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Linux</span><span class="nv"> </span><span class="s">servers&quot;</span>
-<span class="w">          </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*linux*&quot;</span>
-<span class="w">          </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;linux-group&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"Linux</span><span class="nv"> </span><span class="s">servers"</span>
+<span class="w">          </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">"*linux*"</span>
+<span class="w">          </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">"linux-group"</span>
 
 <span class="w">    </span><span class="nt">discovery_version3</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">43200</span>
 <span class="w">      </span><span class="nt">delete_already_discovered</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">      </span><span class="nt">network_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.200/30</span>
-<span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3&quot;</span>
+<span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"3"</span>
 <span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">161</span>
 <span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-hlab-sha-aes</span>
-<span class="w">      </span><span class="nt">security_engine</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;80001f8880e761866965756b6800000000&quot;</span>
+<span class="w">      </span><span class="nt">security_engine</span><span class="p">:</span><span class="w"> </span><span class="s">"80001f8880e761866965756b6800000000"</span>
 <span class="w">      </span><span class="nt">device_rules</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Windows</span><span class="nv"> </span><span class="s">servers&quot;</span>
-<span class="w">          </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*Windows*&quot;</span>
-<span class="w">          </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;windows-group&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"Windows</span><span class="nv"> </span><span class="s">servers"</span>
+<span class="w">          </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">"*Windows*"</span>
+<span class="w">          </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">"windows-group"</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -3130,26 +3130,26 @@
 <span class="w">    </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">86400</span>
 <span class="w">    </span><span class="nt">delete_already_discovered</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">network_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.200/30</span>
-<span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2c&quot;</span>
-<span class="w">    </span><span class="nt">community</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;public&quot;</span>
+<span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"2c"</span>
+<span class="w">    </span><span class="nt">community</span><span class="p">:</span><span class="w"> </span><span class="s">"public"</span>
 <span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">161</span>
 <span class="w">    </span><span class="nt">device_rules</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Linux</span><span class="nv"> </span><span class="s">servers&quot;</span>
-<span class="w">        </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*linux*&quot;</span>
-<span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;linux-group&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"Linux</span><span class="nv"> </span><span class="s">servers"</span>
+<span class="w">        </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">"*linux*"</span>
+<span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">"linux-group"</span>
 
 <span class="w">  </span><span class="nt">discovery_version3</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">43200</span>
 <span class="w">    </span><span class="nt">delete_already_discovered</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">    </span><span class="nt">network_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.200/30</span>
-<span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3&quot;</span>
+<span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"3"</span>
 <span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">161</span>
 <span class="w">    </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sc4snmp-hlab-sha-aes</span>
-<span class="w">    </span><span class="nt">security_engine</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;80001f8880e761866965756b6800000000&quot;</span>
+<span class="w">    </span><span class="nt">security_engine</span><span class="p">:</span><span class="w"> </span><span class="s">"80001f8880e761866965756b6800000000"</span>
 <span class="w">    </span><span class="nt">device_rules</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Windows</span><span class="nv"> </span><span class="s">servers&quot;</span>
-<span class="w">        </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*Windows*&quot;</span>
-<span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;windows-group&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"Windows</span><span class="nv"> </span><span class="s">servers"</span>
+<span class="w">        </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">"*Windows*"</span>
+<span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">"windows-group"</span>
 </code></pre></div>
 </div>
 </div>
@@ -3160,7 +3160,7 @@
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INFO&quot;</span>
+<span class="w">  </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"INFO"</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -3195,7 +3195,7 @@
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="nt">discovery</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">discoveryPath</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/home/user/sc4snmp&quot;</span>
+<span class="w">  </span><span class="nt">discoveryPath</span><span class="p">:</span><span class="w"> </span><span class="s">"/home/user/sc4snmp"</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -3305,9 +3305,9 @@
 <li><code>group</code>: The name of the group to assign matched devices to.</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="nt">device_rules</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Linux</span><span class="nv"> </span><span class="s">Devices&quot;</span>
-<span class="w">    </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*Linux*&quot;</span>
-<span class="w">    </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;linux-group&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"Linux</span><span class="nv"> </span><span class="s">Devices"</span>
+<span class="w">    </span><span class="nt">patterns</span><span class="p">:</span><span class="w"> </span><span class="s">"*Linux*"</span>
+<span class="w">    </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s">"linux-group"</span>
 </code></pre></div>
 <h2 id="configure-timeouts-and-retries">Configure timeouts and retries<a class="headerlink" href="#configure-timeouts-and-retries" title="Permanent link">&para;</a></h2>
 <div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">microk8s</label><label for="__tabbed_7_2">docker compose</label></div>
@@ -3421,7 +3421,7 @@ UDP_CONNECTION_RETRIES=5
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

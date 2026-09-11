@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>MongoDB Configuration - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>MongoDB - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              MongoDB Configuration
+              MongoDB
             
           </span>
         </div>
@@ -3175,24 +3175,24 @@ This change ensures we maintain full control over configuration, compatibility, 
 <p>MongoDB configuration is maintained in the <code>mongodb</code> section of <code>values.yaml</code>, which is used during installation to configure Kubernetes resources.
 This is the snippet of MongoDB&rsquo;s configuration with all available options, filled with example values:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
-<span class="w">  </span><span class="c1"># Mode selector: &quot;standalone&quot;, &quot;replication&quot;</span>
+<span class="w">  </span><span class="c1"># Mode selector: "standalone", "replication"</span>
 <span class="w">  </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">replication</span>
 
 <span class="w">  </span><span class="c1"># Enable IPv6 support</span>
 <span class="w">  </span><span class="nt">ipv6Enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 
-<span class="w">  </span><span class="c1"># Replica set configuration (used only when mode = &quot;replication&quot;)</span>
+<span class="w">  </span><span class="c1"># Replica set configuration (used only when mode = "replication")</span>
 <span class="w">  </span><span class="nt">replicaCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
 <span class="w">  </span><span class="nt">replicaSetName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rs0</span>
 
 <span class="w">  </span><span class="c1"># Authentication</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="w">    </span><span class="nt">rootUser</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;admin&quot;</span>
-<span class="w">    </span><span class="nt">rootPassword</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w">                  </span><span class="c1"># Set if auth.enabled: true</span>
-<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w">                </span><span class="c1"># Or reference existing secret</span>
-<span class="w">    </span><span class="nt">rootUserKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;root-user&quot;</span>
-<span class="w">    </span><span class="nt">rootPasswordKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;root-password&quot;</span>
+<span class="w">    </span><span class="nt">rootUser</span><span class="p">:</span><span class="w"> </span><span class="s">"admin"</span>
+<span class="w">    </span><span class="nt">rootPassword</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w">                  </span><span class="c1"># Set if auth.enabled: true</span>
+<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w">                </span><span class="c1"># Or reference existing secret</span>
+<span class="w">    </span><span class="nt">rootUserKey</span><span class="p">:</span><span class="w"> </span><span class="s">"root-user"</span>
+<span class="w">    </span><span class="nt">rootPasswordKey</span><span class="p">:</span><span class="w"> </span><span class="s">"root-password"</span>
 
 <span class="w">  </span><span class="c1"># Settings used when enabling authentication on an existing replica set.</span>
 <span class="w">  </span><span class="nt">replicationAuthTransition</span><span class="p">:</span>
@@ -3202,29 +3202,29 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <span class="w">  </span><span class="c1"># Image</span>
 <span class="w">  </span><span class="nt">image</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mongo</span>
-<span class="w">    </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;8.2.2&quot;</span>
+<span class="w">    </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="s">"8.2.2"</span>
 <span class="w">    </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
 
 <span class="w">  </span><span class="c1"># Resources</span>
 <span class="w">  </span><span class="nt">resources</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">requests</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;512Mi&quot;</span>
-<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;250m&quot;</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">"512Mi"</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">"250m"</span>
 <span class="w">    </span><span class="nt">limits</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1Gi&quot;</span>
-<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span>
+<span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">"1Gi"</span>
+<span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">"500m"</span>
 
 <span class="w">  </span><span class="c1"># Storage</span>
 <span class="w">  </span><span class="nt">persistence</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10Gi</span>
-<span class="w">    </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">    </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="s">""</span>
 <span class="w">    </span><span class="nt">accessMode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
 
 <span class="w">  </span><span class="c1"># Security</span>
 <span class="w">  </span><span class="nt">podSecurityContext</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">fsGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span>
-<span class="w">    </span><span class="nt">fsGroupChangePolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;OnRootMismatch&quot;</span>
+<span class="w">    </span><span class="nt">fsGroupChangePolicy</span><span class="p">:</span><span class="w"> </span><span class="s">"OnRootMismatch"</span>
 
 <span class="w">  </span><span class="nt">containerSecurityContext</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span>
@@ -3238,7 +3238,7 @@ This is the snippet of MongoDB&rsquo;s configuration with all available options,
 <span class="w">  </span><span class="c1"># Extra environment variables injected into the mongod container.</span>
 <span class="w">  </span><span class="nt">extraEnv</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GLIBC_TUNABLES</span>
-<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;glibc.pthread.rseq=1&quot;</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">"glibc.pthread.rseq=1"</span>
 </code></pre></div>
 <table>
 <thead>
@@ -3521,28 +3521,28 @@ Large datasets (&gt;50GB): 4GB+ memory</p>
 <div class="highlight"><pre><span></span><code>mongodb:
   auth:
     enabled: true
-    rootUser: &quot;admin&quot;
-    rootPassword: &quot;your_secure_password_here&quot;
+    rootUser: "admin"
+    rootPassword: "your_secure_password_here"
 </code></pre></div>
 <h4 id="using-existing-kubernetes-secret">Using Existing Kubernetes Secret<a class="headerlink" href="#using-existing-kubernetes-secret" title="Permanent link">&para;</a></h4>
 <p>To use an existing Kubernetes Secret, first create it:</p>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">microk8s kubectl create secret generic prod-mongodb-secret -n &lt;namespace&gt; \</span>
-<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">--from-literal=root-user=&#39;admin&#39; \</span>
-<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">--from-literal=root-password=&#39;your_secure_password_here&#39;</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">--from-literal=root-user='admin' \</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">--from-literal=root-password='your_secure_password_here'</span>
 </code></pre></div>
 <p>Then reference it in <code>values.yaml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;prod-mongodb-secret&quot;</span>
+<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">"prod-mongodb-secret"</span>
 </code></pre></div>
 <p>The secret keys (<code>root-user</code> and <code>root-password</code>) are configurable via <code>rootUserKey</code> and <code>rootPasswordKey</code> if your secret uses different key names:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;prod-mongodb-secret-with-different-keys&quot;</span>
-<span class="w">    </span><span class="nt">rootUserKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;my-username-key&quot;</span>
-<span class="w">    </span><span class="nt">rootPasswordKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;my-password-key&quot;</span>
+<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">"prod-mongodb-secret-with-different-keys"</span>
+<span class="w">    </span><span class="nt">rootUserKey</span><span class="p">:</span><span class="w"> </span><span class="s">"my-username-key"</span>
+<span class="w">    </span><span class="nt">rootPasswordKey</span><span class="p">:</span><span class="w"> </span><span class="s">"my-password-key"</span>
 </code></pre></div>
 <h3 id="rotating-the-mongodb-password">Rotating the MongoDB password<a class="headerlink" href="#rotating-the-mongodb-password" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
@@ -3560,8 +3560,8 @@ discovery, UI).</p>
 <li>
 <p><strong>Re-key the running database</strong>, authenticating with the <em>current</em> (old) password:</p>
 <div class="highlight"><pre><span></span><code>micrk8s<span class="w"> </span>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;release&gt;-mongodb-0<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>--<span class="w"> </span>mongosh<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-u<span class="w"> </span>admin<span class="w"> </span>-p<span class="w"> </span><span class="s1">&#39;&lt;OLD_PASSWORD&gt;&#39;</span><span class="w"> </span>--authenticationDatabase<span class="w"> </span>admin<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--eval<span class="w"> </span><span class="s1">&#39;db.getSiblingDB(&quot;admin&quot;).changeUserPassword(&quot;admin&quot;,&quot;&lt;NEW_PASSWORD&gt;&quot;)&#39;</span>
+<span class="w">  </span>-u<span class="w"> </span>admin<span class="w"> </span>-p<span class="w"> </span><span class="s1">'&lt;OLD_PASSWORD&gt;'</span><span class="w"> </span>--authenticationDatabase<span class="w"> </span>admin<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--eval<span class="w"> </span><span class="s1">'db.getSiblingDB("admin").changeUserPassword("admin","&lt;NEW_PASSWORD&gt;")'</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3616,7 +3616,7 @@ will fail to authenticate until the database is re-keyed with the old password (
 <p>Confirm that every MongoDB Pod runs without <code>--keyFile</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span>POD<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">$(</span>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>--namespace<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>-l<span class="w"> </span><span class="nv">app</span><span class="o">=</span>&lt;release-name&gt;-mongodb<span class="w"> </span>-o<span class="w"> </span>name<span class="k">)</span>
 <span class="k">do</span>
-<span class="w">  </span>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$POD</span><span class="s2">&quot;</span><span class="w"> </span>--namespace<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.spec.containers[?(@.name==&quot;mongodb&quot;)].args}{&quot;\n&quot;}&#39;</span>
+<span class="w">  </span>microk8s<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span><span class="s2">"</span><span class="nv">$POD</span><span class="s2">"</span><span class="w"> </span>--namespace<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">'{.spec.containers[?(@.name=="mongodb")].args}{"\n"}'</span>
 <span class="k">done</span>
 </code></pre></div>
 <p>Get the MongoDB DNS domain and force the existing configuration to use the Pod FQDNs. Run the reconfiguration from Pod 0 only:</p>
@@ -3624,18 +3624,18 @@ will fail to authenticate until the database is re-keyed with the old password (
 <span class="nv">MONGODB_DOMAIN</span><span class="o">=</span><span class="si">${</span><span class="nv">MONGODB_FQDN</span><span class="p">#*.</span><span class="si">}</span>
 
 microk8s<span class="w"> </span>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--namespace<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>&lt;release-name&gt;-mongodb-0<span class="w"> </span>-c<span class="w"> </span>mongodb<span class="w"> </span>--<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>mongosh<span class="w"> </span>--quiet<span class="w"> </span>--eval<span class="w"> </span><span class="s2">&quot;</span>
-<span class="s2">    const config = db.getSiblingDB(&#39;local&#39;).system.replset.findOne()</span>
+<span class="w">  </span>mongosh<span class="w"> </span>--quiet<span class="w"> </span>--eval<span class="w"> </span><span class="s2">"</span>
+<span class="s2">    const config = db.getSiblingDB('local').system.replset.findOne()</span>
 <span class="s2">    config.members.forEach(member =&gt; {</span>
-<span class="s2">      member.host = &#39;&lt;release-name&gt;-mongodb-&#39; + member._id + &#39;.</span><span class="si">${</span><span class="nv">MONGODB_DOMAIN</span><span class="si">}</span><span class="s2">:27017&#39;</span>
+<span class="s2">      member.host = '&lt;release-name&gt;-mongodb-' + member._id + '.</span><span class="si">${</span><span class="nv">MONGODB_DOMAIN</span><span class="si">}</span><span class="s2">:27017'</span>
 <span class="s2">    })</span>
 <span class="s2">    printjson(rs.reconfig(config, { force: true }))</span>
-<span class="s2">  &quot;</span>
+<span class="s2">  "</span>
 </code></pre></div>
 <p>After the command returns <code>ok: 1</code>, verify that MongoDB elects one PRIMARY and the remaining members become SECONDARY:</p>
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--namespace<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>&lt;release-name&gt;-mongodb-0<span class="w"> </span>-c<span class="w"> </span>mongodb<span class="w"> </span>--<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>mongosh<span class="w"> </span>--quiet<span class="w"> </span>--eval<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span><span class="s1">&#39;rs.status().members.forEach(member =&gt; print(member.name + &quot; &quot; + member.stateStr + &quot; health=&quot; + member.health))&#39;</span>
+<span class="w">  </span><span class="s1">'rs.status().members.forEach(member =&gt; print(member.name + " " + member.stateStr + " health=" + member.health))'</span>
 </code></pre></div>
 <h3 id="migration-from-bitnami-mongodb">Migration from Bitnami MongoDB<a class="headerlink" href="#migration-from-bitnami-mongodb" title="Permanent link">&para;</a></h3>
 <p>The chart automatically detects and migrates data from existing Bitnami MongoDB deployments only in standalone mode:</p>
@@ -3679,8 +3679,8 @@ microk8s<span class="w"> </span>kubectl<span class="w"> </span><span class="nb">
 <div class="highlight"><pre><span></span><code><span class="nt">mongodb</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">replicaInitJob</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alpine/kubectl&quot;</span>
-<span class="w">      </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.36.3&quot;</span>
+<span class="w">      </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">"alpine/kubectl"</span>
+<span class="w">      </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="s">"1.36.3"</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3744,7 +3744,7 @@ microk8s<span class="w"> </span>kubectl<span class="w"> </span><span class="nb">
       <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":[],"search":"../../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../../javascripts/footer.js"></script>
       

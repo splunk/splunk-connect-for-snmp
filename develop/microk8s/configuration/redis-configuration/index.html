@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>Redis configuration - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Redis - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Redis configuration
+              Redis
             
           </span>
         </div>
@@ -3030,7 +3030,7 @@ This change ensures we maintain full control over configuration, compatibility, 
 <h3 id="redis-configuration-file">Redis configuration file<a class="headerlink" href="#redis-configuration-file" title="Permanent link">&para;</a></h3>
 <p>Redis configuration is maintained in the <code>redis</code> section of <code>values.yaml</code>, which is used during installation to configure Kubernetes resources.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
-<span class="w">  </span><span class="c1"># Mode selector: &quot;standalone&quot;, &quot;replication&quot;</span>
+<span class="w">  </span><span class="c1"># Mode selector: "standalone", "replication"</span>
 <span class="w">  </span><span class="nt">architecture</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standalone</span>
 
 <span class="w">  </span><span class="c1"># Enable IPv6 support</span>
@@ -3039,14 +3039,14 @@ This change ensures we maintain full control over configuration, compatibility, 
 <span class="w">  </span><span class="c1"># Authentication</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w">                      </span><span class="c1"># Set if auth.enabled: true</span>
-<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w">                </span><span class="c1"># Or reference existing secret</span>
-<span class="w">    </span><span class="nt">existingSecretPasswordKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;password&quot;</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w">                      </span><span class="c1"># Set if auth.enabled: true</span>
+<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">""</span><span class="w">                </span><span class="c1"># Or reference existing secret</span>
+<span class="w">    </span><span class="nt">existingSecretPasswordKey</span><span class="p">:</span><span class="w"> </span><span class="s">"password"</span>
 
 <span class="w">  </span><span class="c1"># Image</span>
 <span class="w">  </span><span class="nt">image</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">redis</span>
-<span class="w">    </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;8.2.2&quot;</span>
+<span class="w">    </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="s">"8.2.2"</span>
 <span class="w">    </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
 
 <span class="w">  </span><span class="c1"># Resources</span>
@@ -3065,7 +3065,7 @@ This change ensures we maintain full control over configuration, compatibility, 
 <span class="w">  </span><span class="c1"># Storage</span>
 <span class="w">  </span><span class="nt">storage</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">    </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="s">""</span>
 <span class="w">    </span><span class="nt">accessModes</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
 <span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5Gi</span>
@@ -3353,11 +3353,11 @@ sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> <
 <p><strong>Examples:</strong>
 <div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">limits</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;4Gi&quot;</span>
-<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1000m&quot;</span>
+<span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">"4Gi"</span>
+<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">"1000m"</span>
 <span class="w">  </span><span class="nt">requests</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1Gi&quot;</span>
-<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span>
+<span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">"1Gi"</span>
+<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">"500m"</span>
 </code></pre></div></p>
 <p>By default no resource limits our set. You can define them in the <code>values.yaml</code> file as shown above.</p>
 <h3 id="use-authentication-for-redis">Use authentication for Redis<a class="headerlink" href="#use-authentication-for-redis" title="Permanent link">&para;</a></h3>
@@ -3367,11 +3367,11 @@ sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> <
 <div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your_password_here&quot;</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">"your_password_here"</span>
 </code></pre></div>
 <h4 id="kubernetes-secret-password">Kubernetes Secret password<a class="headerlink" href="#kubernetes-secret-password" title="Permanent link">&para;</a></h4>
 <p>To use a Kubernetes Secret for the Redis password, first create a secret with the desired password:</p>
-<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>prod-redis-secret<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>--from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="s2">&quot;your_password_here&quot;</span>
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>prod-redis-secret<span class="w"> </span>-n<span class="w"> </span>&lt;namespace&gt;<span class="w"> </span>--from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="s2">"your_password_here"</span>
 </code></pre></div>
 <p>It is advised to use strong randomized passwords (min. 32 characters).</p>
 <div class="admonition note">
@@ -3384,7 +3384,7 @@ If you want to use a different key, you can specify it in the <code>values.yaml<
 <div class="highlight"><pre><span></span><code><span class="nt">redis</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;prod-redis-secret&quot;</span>
+<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">"prod-redis-secret"</span>
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -3462,7 +3462,7 @@ If you want to use a different key, you can specify it in the <code>values.yaml<
       <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":[],"search":"../../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../../javascripts/footer.js"></script>
       

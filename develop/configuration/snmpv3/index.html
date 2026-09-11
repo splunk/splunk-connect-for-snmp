@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>SNMPv3 configuration - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>SNMPv3 secrets - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SNMPv3 configuration
+              SNMPv3 secrets
             
           </span>
         </div>
@@ -2908,7 +2908,7 @@ for authentication and data privacy. We recommend using SNMPv3 whenever possible
 <div class="tabbed-block">
 <p>Each set of credentials is stored as a Kubernetes Secret object and referenced by name in <code>values.yaml</code>.
 This allows the secret to be created once - including automation by third-party password managers - then consumed without storing sensitive data in plain text.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with &quot;sc4snmp-&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># &lt;secretname&gt;=Arbitrary name of the secret often the same as the username or prefixed with "sc4snmp-"</span>
 <span class="c1"># &lt;namespace&gt;=Namespace used to install sc4snmp</span>
 <span class="c1"># &lt;username&gt;=the SNMPv3 Username</span>
 <span class="c1"># &lt;key&gt;=key note must be at least 8 char long subject to target limitations</span>
@@ -2939,13 +2939,13 @@ microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <p>Create a folder to store the secrets file. Inside this folder, create a <code>secrets.json</code> file that contains all SNMPv3 secrets.</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;secret_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;username&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user1&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;privprotocol&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AES&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;privkey&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;privkey1&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;authprotocol&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;authkey&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;authkey1&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;contextengineid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;engineid1&quot;</span>
+<span class="w">  </span><span class="nt">"secret_name"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user1"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"privprotocol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AES"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"privkey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"privkey1"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"authprotocol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SHA"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"authkey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"authkey1"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"contextengineid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"engineid1"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -3067,7 +3067,7 @@ Remove the corresponding entries from the .env file.</p>
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

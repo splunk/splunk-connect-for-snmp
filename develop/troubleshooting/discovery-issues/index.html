@@ -17,18 +17,18 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>Troubleshooting Discovery Issues - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Discovery issues - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Troubleshooting Discovery Issues
+              Discovery issues
             
           </span>
         </div>
@@ -2827,7 +2827,7 @@
 <h1 id="troubleshooting-discovery-issues">Troubleshooting Discovery Issues<a class="headerlink" href="#troubleshooting-discovery-issues" title="Permanent link">&para;</a></h1>
 <h2 id="permission-denied-while-writing-discovery-file">Permission denied while writing discovery file<a class="headerlink" href="#permission-denied-while-writing-discovery-file" title="Permanent link">&para;</a></h2>
 <p>Discovery fails with a <code>PermissionError</code> related to <code>discovery_devices.csv</code>. In such cases, you may see the following error:</p>
-<div class="highlight"><pre><span></span><code>PermissionError: [Errno 13] Permission denied: &#39;/app/discovery/discovery_devices.csv&#39;
+<div class="highlight"><pre><span></span><code>PermissionError: [Errno 13] Permission denied: '/app/discovery/discovery_devices.csv'
 </code></pre></div>
 <p>The folder specified in the <code>discoveryPath</code> value (microk8s) or <code>DISCOVERY_PATH</code> value (docker compose), which is mounted to <code>/app/discovery</code> inside the container, does not have the correct permissions for the application user (UID <code>10001</code>) to write files.</p>
 <p>Ensure that the folder has write permissions for UID <code>10001</code>. You can fix this by updating the folder ownership or permissions before starting the containers.</p>
@@ -2951,7 +2951,7 @@ UDP_CONNECTION_RETRIES=2
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

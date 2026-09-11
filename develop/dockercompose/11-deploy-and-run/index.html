@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
@@ -30,7 +30,7 @@
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -2888,7 +2888,7 @@ documentation.</p>
 <div class="highlight"><pre><span></span><code>snmptrap<span class="w"> </span>-v2c<span class="w"> </span>-c<span class="w"> </span>public<span class="w"> </span>&lt;SC4SNMP_HOST_IP&gt;<span class="w"> </span><span class="m">123</span><span class="w"> </span><span class="m">1</span>.3.6.1.2.1.1.4<span class="w"> </span><span class="m">1</span>.3.6.1.2.1.1.4<span class="w"> </span>s<span class="w"> </span><span class="nb">test</span>
 </code></pre></div>
 <p>Then search in Splunk:</p>
-<div class="highlight"><pre><span></span><code>index=&quot;netops&quot; sourcetype=&quot;sc4snmp:traps&quot;
+<div class="highlight"><pre><span></span><code>index="netops" sourcetype="sc4snmp:traps"
 </code></pre></div>
 <p>You should see one event per trap command sent.</p>
 <h3 id="verify-polling">Verify polling<a class="headerlink" href="#verify-polling" title="Permanent link">&para;</a></h3>
@@ -2898,10 +2898,10 @@ documentation.</p>
 <p>By default, SC4SNMP only walks <code>SNMPv2-MIB</code>. If you expect interface or other MIB data and see only limited results, define a walk profile in your scheduler config file (see <a href="../../configuration/profiles/#walk-profile">Profiles configuration</a>) or set <code>ENABLE_FULL_WALK=true</code> in <code>.env</code>.</p>
 </div>
 <p>Once the walk completes, search in Splunk for polling events:</p>
-<div class="highlight"><pre><span></span><code>index=&quot;netops&quot; sourcetype=&quot;sc4snmp:event&quot;
+<div class="highlight"><pre><span></span><code>index="netops" sourcetype="sc4snmp:event"
 </code></pre></div>
 <p>And for metrics:</p>
-<div class="highlight"><pre><span></span><code>| mpreview index=&quot;netmetrics&quot; | search sourcetype=&quot;sc4snmp:metric&quot;
+<div class="highlight"><pre><span></span><code>| mpreview index="netmetrics" | search sourcetype="sc4snmp:metric"
 </code></pre></div>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
@@ -2981,7 +2981,7 @@ documentation.</p>
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

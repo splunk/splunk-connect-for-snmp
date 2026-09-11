@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>Identifying Traps issues - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Traps issues - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Identifying Traps issues
+              Traps issues
             
           </span>
         </div>
@@ -2851,7 +2851,7 @@ issues with credentials. These errors can be seen in logs of the <code>sc4snmp-t
 <h2 id="unknown-snmp-community-name-encountered">Unknown SNMP community name encountered<a class="headerlink" href="#unknown-snmp-community-name-encountered" title="Permanent link">&para;</a></h2>
 <p>In case of using community string for authentication purposes, the following error should be expected if the arriving trap
 has a community string not configured in SC4SNMP:
-<div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,885 ERROR Security Model failure for device (&#39;18.226.181.199&#39;, 42514): Unknown SNMP community name encountered
+<div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,885 ERROR Security Model failure for device ('18.226.181.199', 42514): Unknown SNMP community name encountered
 </code></pre></div></p>
 <p>If this error occurs, check if the appropriate community is defined. See the
 following example of a <code>public</code> community configuration:</p>
@@ -2876,7 +2876,7 @@ following example of a <code>public</code> community configuration:</p>
 </div>
 <h2 id="unknown-snmp-security-name-encountered">Unknown SNMP security name encountered<a class="headerlink" href="#unknown-snmp-security-name-encountered" title="Permanent link">&para;</a></h2>
 <p>While sending SNMP v3 traps in case of wrong username or engine id configuration, the following error should be expected:
-<div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,091 ERROR Security Model failure for device (&#39;18.226.181.199&#39;, 46066): Unknown SNMP security name encountered
+<div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,091 ERROR Security Model failure for device ('18.226.181.199', 46066): Unknown SNMP security name encountered
 </code></pre></div></p>
 <p>If this error occurs, verify that the correct username has been created (<a href="../../configuration/snmpv3/">SNMPv3 configuration</a>).
 After creating the secret, add it to <code>usernameSecrets</code> and check that the correct SNMP engine id is configured. See the following example with configured secret and engine id:</p>
@@ -2887,7 +2887,7 @@ After creating the secret, add it to <code>usernameSecrets</code> and check that
 <span class="w">  </span><span class="nt">usernameSecrets</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-secret-name</span>
 <span class="w">  </span><span class="nt">securityEngineId</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;090807060504030201&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"090807060504030201"</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -2903,7 +2903,7 @@ After creating the secret, add it to <code>usernameSecrets</code> and check that
 </div>
 <h2 id="authenticator-mismatched">Authenticator mismatched<a class="headerlink" href="#authenticator-mismatched" title="Permanent link">&para;</a></h2>
 <p>While sending SNMP v3 traps in case of wrong authentication protocol or password configuration, the following error should be expected:
-<div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,642 ERROR Security Model failure for device (&#39;18.226.181.199&#39;, 54806): Authenticator mismatched
+<div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,642 ERROR Security Model failure for device ('18.226.181.199', 54806): Authenticator mismatched
 </code></pre></div>
 If this error occurs, verify that the correct authentication protocol and password has been created (<a href="../../configuration/snmpv3/">SNMPv3 configuration</a>).
 After creating the secret, add it to <code>usernameSecrets</code>. See the following example with configured secret:</p>
@@ -2925,7 +2925,7 @@ After creating the secret, add it to <code>usernameSecrets</code>. See the follo
 </div>
 <h2 id="ciphering-services-not-available-or-ciphertext-is-broken">Ciphering services not available or ciphertext is broken<a class="headerlink" href="#ciphering-services-not-available-or-ciphertext-is-broken" title="Permanent link">&para;</a></h2>
 <p>While sending SNMP v3 traps in case of wrong privacy protocol or password configuration, the following error should be expected:
-<div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,780 ERROR Security Model failure for device (&#39;18.226.181.199&#39;, 48249): Ciphering services not available or ciphertext is broken
+<div class="highlight"><pre><span></span><code>2024-02-06 15:42:14,780 ERROR Security Model failure for device ('18.226.181.199', 48249): Ciphering services not available or ciphertext is broken
 </code></pre></div>
 If this error occurs, verify that the correct privacy protocol and password has been created (<a href="../../configuration/snmpv3/">SNMPv3 configuration</a>).
 After creating the secret, add it to <code>usernameSecrets</code>. See the following example with configured secret:</p>
@@ -3003,7 +3003,7 @@ After creating the secret, add it to <code>usernameSecrets</code>. See the follo
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

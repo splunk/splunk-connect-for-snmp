@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>SC4SNMP GUI - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Enable GUI - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SC4SNMP GUI
+              Enable GUI
             
           </span>
         </div>
@@ -2886,12 +2886,12 @@
 <span class="w">  </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="nt">frontEnd</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">NodePort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30001</span>
-<span class="w">    </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Always&quot;</span>
+<span class="w">    </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">"Always"</span>
 <span class="w">  </span><span class="nt">backEnd</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">NodePort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30002</span>
-<span class="w">    </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Always&quot;</span>
-<span class="w">  </span><span class="nt">valuesFileDirectory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
-<span class="w">  </span><span class="nt">valuesFileName</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">    </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">"Always"</span>
+<span class="w">  </span><span class="nt">valuesFileDirectory</span><span class="p">:</span><span class="w"> </span><span class="s">""</span>
+<span class="w">  </span><span class="nt">valuesFileName</span><span class="p">:</span><span class="w"> </span><span class="s">""</span>
 <span class="w">  </span><span class="nt">keepSectionFiles</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
 <ul>
@@ -2938,15 +2938,15 @@ any configuration is viewed or changed. </p>
 is the only value that will be stored.</p>
 <p>Install the library and run the snippet below on any machine with Python 3.8+:</p>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>argon2-cffi
-python3<span class="w"> </span>-<span class="w"> </span><span class="s">&lt;&lt;&#39;PY&#39;</span>
+python3<span class="w"> </span>-<span class="w"> </span><span class="s">&lt;&lt;'PY'</span>
 <span class="s">import getpass, sys</span>
 <span class="s">from argon2 import PasswordHasher</span>
 
-<span class="s">pw = getpass.getpass(&quot;Password: &quot;)</span>
-<span class="s">if pw != getpass.getpass(&quot;Confirm password: &quot;):</span>
-<span class="s">    sys.exit(&quot;Error: passwords do not match.&quot;)</span>
+<span class="s">pw = getpass.getpass("Password: ")</span>
+<span class="s">if pw != getpass.getpass("Confirm password: "):</span>
+<span class="s">    sys.exit("Error: passwords do not match.")</span>
 <span class="s">if len(pw) &lt; 8:</span>
-<span class="s">    sys.exit(&quot;Error: password must be at least 8 characters.&quot;)</span>
+<span class="s">    sys.exit("Error: password must be at least 8 characters.")</span>
 <span class="s">print(PasswordHasher().hash(pw))</span>
 <span class="s">PY</span>
 </code></pre></div>
@@ -2981,8 +2981,8 @@ SC4SNMP release (typically <code>sc4snmp</code>). The Secret must expose exactly
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>sc4snmp-ui-auth<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--namespace<span class="w"> </span>sc4snmp<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">username</span><span class="o">=</span>admin<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">password_hash</span><span class="o">=</span><span class="s1">&#39;&lt;paste Argon2id hash here&gt;&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">jwt_secret</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;import secrets; print(secrets.token_hex(32))&#39;</span><span class="k">)</span><span class="s2">&quot;</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">password_hash</span><span class="o">=</span><span class="s1">'&lt;paste Argon2id hash here&gt;'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">jwt_secret</span><span class="o">=</span><span class="s2">"</span><span class="k">$(</span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s1">'import secrets; print(secrets.token_hex(32))'</span><span class="k">)</span><span class="s2">"</span>
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2999,11 +2999,11 @@ SC4SNMP release (typically <code>sc4snmp</code>). The Secret must expose exactly
 <span class="w">  </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="c1"># CORS allow-list for the backend (comma-separated scheme+host[+port]).</span>
 <span class="w">  </span><span class="c1"># REQUIRED in production when authentication is enabled.</span>
-<span class="w">  </span><span class="nt">allowedOrigins</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https://snmp-ui.example.com&quot;</span>
+<span class="w">  </span><span class="nt">allowedOrigins</span><span class="p">:</span><span class="w"> </span><span class="s">"https://snmp-ui.example.com"</span>
 
 <span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sc4snmp-ui-auth&quot;</span>
+<span class="w">    </span><span class="nt">existingSecret</span><span class="p">:</span><span class="w"> </span><span class="s">"sc4snmp-ui-auth"</span>
 <span class="w">    </span><span class="nt">jwtExpiryHours</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="w">    </span><span class="nt">idleTimeoutMinutes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <span class="w">    </span><span class="nt">secureCookies</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
@@ -3136,7 +3136,7 @@ than <code>jwtExpiryHours</code> will require a fresh login.</p>
       <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":[],"search":"../../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../../javascripts/footer.js"></script>
       

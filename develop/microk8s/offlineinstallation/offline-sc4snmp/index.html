@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>Offline SC4SNMP installation - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Install SC4SNMP - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Offline SC4SNMP installation
+              Install SC4SNMP
             
           </span>
         </div>
@@ -2781,7 +2781,7 @@ The latest tag can be found in <a href="https://github.com/splunk/splunk-connect
 </code></pre></div>
 <p>Other packages you have to pull are mibserver and GUI images. Do this by executing <code>pull_mibserver.sh</code> and 
 <code>pull_gui_images.sh</code> scripts from the Release section, or copy-pasting its content. See the following:</p>
-<div class="highlight"><pre><span></span><code>chmod<span class="w"> </span>a+x<span class="w"> </span>pull_mibserver.sh<span class="w"> </span><span class="c1"># you&#39;ll probably need to make file executable</span>
+<div class="highlight"><pre><span></span><code>chmod<span class="w"> </span>a+x<span class="w"> </span>pull_mibserver.sh<span class="w"> </span><span class="c1"># you'll probably need to make file executable</span>
 ./pull_mibserver.sh
 chmod<span class="w"> </span>a+x<span class="w"> </span>pull_gui_images.sh
 ./pull_gui_images.sh
@@ -2800,11 +2800,11 @@ microk8s<span class="w"> </span>ctr<span class="w"> </span>image<span class="w">
 <p>Afterwards, create <code>values.yaml</code>. It is a little different from <code>values.yaml</code> used in an online installation. 
 The difference between the two files is the following, which is used for automatic image pulling:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">image</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Never&quot;</span>
+<span class="w">  </span><span class="nt">pullPolicy</span><span class="p">:</span><span class="w"> </span><span class="s">"Never"</span>
 </code></pre></div>
 <p>An example <code>values.yaml</code> file can be found in the <a href="https://github.com/splunk/splunk-connect-for-snmp/blob/main/examples/offline_installation_values.md">Offline SC4SNMP values.yaml template</a>.</p>
 <p>Next, unpack the chart package <code>splunk-connect-for-snmp-chart.tar</code>. It will result in creating the following <code>splunk-connect-for-snmp</code> directory:</p>
-<div class="highlight"><pre><span></span><code>tar<span class="w"> </span>-xvf<span class="w"> </span>splunk-connect-for-snmp-chart.tar<span class="w"> </span>--exclude<span class="o">=</span><span class="s1">&#39;._*&#39;</span>
+<div class="highlight"><pre><span></span><code>tar<span class="w"> </span>-xvf<span class="w"> </span>splunk-connect-for-snmp-chart.tar<span class="w"> </span>--exclude<span class="o">=</span><span class="s1">'._*'</span>
 </code></pre></div>
 <p>Finally, run the helm install command in the directory where both the <code>values.yaml</code> and <code>splunk-connect-for-snmp</code> directories are located:</p>
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
@@ -2867,7 +2867,7 @@ The difference between the two files is the following, which is used for automat
       <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":[],"search":"../../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../../javascripts/footer.js"></script>
       

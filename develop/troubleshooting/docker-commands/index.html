@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
@@ -30,7 +30,7 @@
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -3059,16 +3059,16 @@ docker stats &lt;container_name/id&gt;
 <p>One of the issues related to snmp v3 can be incorrectly configured secrets in docker. 
 Below you can find the instruction to check the existing secrets.</p>
 <p>To check the existing secrets:
-<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c &quot;ls secrets/snmpv3&quot;
+<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c "ls secrets/snmpv3"
 my_secret
 </code></pre></div>
 To get more details about one secret you can use command:
-<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c &quot;ls secrets/snmpv3/my_secret&quot;
+<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c "ls secrets/snmpv3/my_secret"
 authKey  authProtocol  contextEngineId  privKey  privProtocol  userName
 </code></pre></div>
 Replace <strong>my_secret</strong> with the name of the secret you want to check and <strong>docker_compose-worker-poller-1</strong> with the name of the container.</p>
 <p>To see the configured details of the secret: 
-<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c &#39;cd secrets/snmpv3/my_secret &amp;&amp; for file in *; do echo &quot;$file= $(cat $file)&quot;; done&#39;
+<div class="highlight"><pre><span></span><code>~$ docker exec -it docker_compose-worker-poller-1 sh -c 'cd secrets/snmpv3/my_secret &amp;&amp; for file in *; do echo "$file= $(cat $file)"; done'
 authKey= admin1234
 authProtocol= SHA
 contextEngineId= 80003a8c04
@@ -3104,117 +3104,117 @@ This command is showing all the network configured in the docker. The network cr
 <div class="highlight"><pre><span></span><code>~$ docker network inspect sc4snmp_network
 [
     {
-        &quot;Name&quot;: &quot;sc4snmp_network&quot;,
-        &quot;Id&quot;: &quot;978e06ffcd4a49de5cd78a038050530342a029b1b1a1f1967254f701ae5ff1a0&quot;,
-        &quot;Created&quot;: &quot;2024-10-10T11:38:01.627727666Z&quot;,
-        &quot;Scope&quot;: &quot;local&quot;,
-        &quot;Driver&quot;: &quot;bridge&quot;,
-        &quot;EnableIPv6&quot;: false,
-        &quot;IPAM&quot;: {
-            &quot;Driver&quot;: &quot;default&quot;,
-            &quot;Options&quot;: null,
-            &quot;Config&quot;: [
+        "Name": "sc4snmp_network",
+        "Id": "978e06ffcd4a49de5cd78a038050530342a029b1b1a1f1967254f701ae5ff1a0",
+        "Created": "2024-10-10T11:38:01.627727666Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
                 {
-                    &quot;Subnet&quot;: &quot;172.28.0.0/16&quot;,
-                    &quot;Gateway&quot;: &quot;172.28.0.1&quot;
+                    "Subnet": "172.28.0.0/16",
+                    "Gateway": "172.28.0.1"
                 },
                 {
-                    &quot;Subnet&quot;: &quot;fd02::/64&quot;,
-                    &quot;Gateway&quot;: &quot;fd02::1&quot;
+                    "Subnet": "fd02::/64",
+                    "Gateway": "fd02::1"
                 }
             ]
         },
-        &quot;Internal&quot;: false,
-        &quot;Attachable&quot;: false,
-        &quot;Ingress&quot;: false,
-        &quot;ConfigFrom&quot;: {
-            &quot;Network&quot;: &quot;&quot;
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
         },
-        &quot;ConfigOnly&quot;: false,
-        &quot;Containers&quot;: {
-            &quot;231b21c24bd722d684349174cc5aebf40cf294617aa98741a4af1269ed930fcc&quot;: {
-                &quot;Name&quot;: &quot;docker_compose-worker-poller-1&quot;,
-                &quot;EndpointID&quot;: &quot;0195750f0539535615ebdb24d8ee7eb967d31ca3c86a0d5d4b5c21f907cb61a0&quot;,
-                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:0b&quot;,
-                &quot;IPv4Address&quot;: &quot;172.28.0.11/16&quot;,
-                &quot;IPv6Address&quot;: &quot;&quot;
+        "ConfigOnly": false,
+        "Containers": {
+            "231b21c24bd722d684349174cc5aebf40cf294617aa98741a4af1269ed930fcc": {
+                "Name": "docker_compose-worker-poller-1",
+                "EndpointID": "0195750f0539535615ebdb24d8ee7eb967d31ca3c86a0d5d4b5c21f907cb61a0",
+                "MacAddress": "02:42:ac:1c:00:0b",
+                "IPv4Address": "172.28.0.11/16",
+                "IPv6Address": ""
             },
-            &quot;25479e15afee663a7d0ad7b97f734f65d35672c49e9610f9e0406975d616e584&quot;: {
-                &quot;Name&quot;: &quot;snmp-mibserver&quot;,
-                &quot;EndpointID&quot;: &quot;68a27a27fc5acc7b1350cb5f073abf9218f1c0fa4ede5f037a67fdcce46ec91b&quot;,
-                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:03&quot;,
-                &quot;IPv4Address&quot;: &quot;172.28.0.3/16&quot;,
-                &quot;IPv6Address&quot;: &quot;&quot;
+            "25479e15afee663a7d0ad7b97f734f65d35672c49e9610f9e0406975d616e584": {
+                "Name": "snmp-mibserver",
+                "EndpointID": "68a27a27fc5acc7b1350cb5f073abf9218f1c0fa4ede5f037a67fdcce46ec91b",
+                "MacAddress": "02:42:ac:1c:00:03",
+                "IPv4Address": "172.28.0.3/16",
+                "IPv6Address": ""
             },
-            &quot;35f2bdd191898f7186a0c00dbffa5cc700e9d72e07efb6f3b341c6b8ce14d5f5&quot;: {
-                &quot;Name&quot;: &quot;coredns&quot;,
-                &quot;EndpointID&quot;: &quot;0c76c32e9b9b1dd033141332dee9a8f954c4a83ea5344ee4c93af057d2523d9a&quot;,
-                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:ff&quot;,
-                &quot;IPv4Address&quot;: &quot;172.28.0.255/16&quot;,
-                &quot;IPv6Address&quot;: &quot;&quot;
+            "35f2bdd191898f7186a0c00dbffa5cc700e9d72e07efb6f3b341c6b8ce14d5f5": {
+                "Name": "coredns",
+                "EndpointID": "0c76c32e9b9b1dd033141332dee9a8f954c4a83ea5344ee4c93af057d2523d9a",
+                "MacAddress": "02:42:ac:1c:00:ff",
+                "IPv4Address": "172.28.0.255/16",
+                "IPv6Address": ""
             },
-            &quot;3dc9f0d293578a7aca1b6b33cc3557f82262849e2be488a9cda729152854b9a9&quot;: {
-                &quot;Name&quot;: &quot;docker_compose-worker-trap-2&quot;,
-                &quot;EndpointID&quot;: &quot;88fc3701b04803d6317ad5d23031f880ec96c2206185c1994184580932ed5865&quot;,
-                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:0c&quot;,
-                &quot;IPv4Address&quot;: &quot;172.28.0.12/16&quot;,
-                &quot;IPv6Address&quot;: &quot;&quot;
+            "3dc9f0d293578a7aca1b6b33cc3557f82262849e2be488a9cda729152854b9a9": {
+                "Name": "docker_compose-worker-trap-2",
+                "EndpointID": "88fc3701b04803d6317ad5d23031f880ec96c2206185c1994184580932ed5865",
+                "MacAddress": "02:42:ac:1c:00:0c",
+                "IPv4Address": "172.28.0.12/16",
+                "IPv6Address": ""
             },
-            &quot;43c5893f2688da599dd0331a328937b19a62496f4eb06eaa40a9cad8e879c567&quot;: {
-                &quot;Name&quot;: &quot;redis&quot;,
-                &quot;EndpointID&quot;: &quot;c1c91866f67ed76d83e78a6b11e5001b0cf65107df3b7d4733373653be7f5e6a&quot;,
-                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:04&quot;,
-                &quot;IPv4Address&quot;: &quot;172.28.0.4/16&quot;,
-                &quot;IPv6Address&quot;: &quot;&quot;
+            "43c5893f2688da599dd0331a328937b19a62496f4eb06eaa40a9cad8e879c567": {
+                "Name": "redis",
+                "EndpointID": "c1c91866f67ed76d83e78a6b11e5001b0cf65107df3b7d4733373653be7f5e6a",
+                "MacAddress": "02:42:ac:1c:00:04",
+                "IPv4Address": "172.28.0.4/16",
+                "IPv6Address": ""
             },
-            &quot;52fa13245149422e559d4ff7a2f6c929b46ebfffdbafb52efcaade26e861128e&quot;: {
-                &quot;Name&quot;: &quot;sc4snmp-traps&quot;,
-                &quot;EndpointID&quot;: &quot;926187b2e4c3e9753dd260e8fa9db2745c20ed6c87f73f2df4870f0cb3be1511&quot;,
-                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:05&quot;,
-                &quot;IPv4Address&quot;: &quot;172.28.0.5/16&quot;,
-                &quot;IPv6Address&quot;: &quot;&quot;
+            "52fa13245149422e559d4ff7a2f6c929b46ebfffdbafb52efcaade26e861128e": {
+                "Name": "sc4snmp-traps",
+                "EndpointID": "926187b2e4c3e9753dd260e8fa9db2745c20ed6c87f73f2df4870f0cb3be1511",
+                "MacAddress": "02:42:ac:1c:00:05",
+                "IPv4Address": "172.28.0.5/16",
+                "IPv6Address": ""
             },
-            &quot;68813263e9d6a74e70061f85f9044ec334cce9aee364804566b4823e6960ae04&quot;: {
-                &quot;Name&quot;: &quot;docker_compose-worker-poller-2&quot;,
-                &quot;EndpointID&quot;: &quot;06d883d0ee21926be450b8c0adf4c31da7f13ceaa70dba3d0830608d5c192b2d&quot;,
-                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:08&quot;,
-                &quot;IPv4Address&quot;: &quot;172.28.0.8/16&quot;,
-                &quot;IPv6Address&quot;: &quot;&quot;
+            "68813263e9d6a74e70061f85f9044ec334cce9aee364804566b4823e6960ae04": {
+                "Name": "docker_compose-worker-poller-2",
+                "EndpointID": "06d883d0ee21926be450b8c0adf4c31da7f13ceaa70dba3d0830608d5c192b2d",
+                "MacAddress": "02:42:ac:1c:00:08",
+                "IPv4Address": "172.28.0.8/16",
+                "IPv6Address": ""
             },
-            &quot;78b04a7cd5c9ec1d3aaf014fd10c0ad89d401ad63093052a26111066198639af&quot;: {
-                &quot;Name&quot;: &quot;docker_compose-worker-sender-1&quot;,
-                &quot;EndpointID&quot;: &quot;0e9c84d4e7d1ce6362bba33c41161086a2de4623161a0ef34ce746d9983a4be7&quot;,
-                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:09&quot;,
-                &quot;IPv4Address&quot;: &quot;172.28.0.9/16&quot;,
-                &quot;IPv6Address&quot;: &quot;&quot;
+            "78b04a7cd5c9ec1d3aaf014fd10c0ad89d401ad63093052a26111066198639af": {
+                "Name": "docker_compose-worker-sender-1",
+                "EndpointID": "0e9c84d4e7d1ce6362bba33c41161086a2de4623161a0ef34ce746d9983a4be7",
+                "MacAddress": "02:42:ac:1c:00:09",
+                "IPv4Address": "172.28.0.9/16",
+                "IPv6Address": ""
             },
-            &quot;a34c808997eb56ab5c4043be3d9cd5ceb86f5b0f481b7bd51009eace9ff12965&quot;: {
-                &quot;Name&quot;: &quot;mongo&quot;,
-                &quot;EndpointID&quot;: &quot;992f5fd3eed5e646c250d61cc1d3c94bf43dc2ad0621f0044dbfd718d24325d5&quot;,
-                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:02&quot;,
-                &quot;IPv4Address&quot;: &quot;172.28.0.2/16&quot;,
-                &quot;IPv6Address&quot;: &quot;&quot;
+            "a34c808997eb56ab5c4043be3d9cd5ceb86f5b0f481b7bd51009eace9ff12965": {
+                "Name": "mongo",
+                "EndpointID": "992f5fd3eed5e646c250d61cc1d3c94bf43dc2ad0621f0044dbfd718d24325d5",
+                "MacAddress": "02:42:ac:1c:00:02",
+                "IPv4Address": "172.28.0.2/16",
+                "IPv6Address": ""
             },
-            &quot;b197d6b5ac9a0a69d8afb9a613006e916eacffd4c3a2c71e3ee8db927c307457&quot;: {
-                &quot;Name&quot;: &quot;sc4snmp-scheduler&quot;,
-                &quot;EndpointID&quot;: &quot;3753aec5d05a24683fb04f29284297444957e466fd5d5ffc6f40f8b58d04c443&quot;,
-                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:07&quot;,
-                &quot;IPv4Address&quot;: &quot;172.28.0.7/16&quot;,
-                &quot;IPv6Address&quot;: &quot;&quot;
+            "b197d6b5ac9a0a69d8afb9a613006e916eacffd4c3a2c71e3ee8db927c307457": {
+                "Name": "sc4snmp-scheduler",
+                "EndpointID": "3753aec5d05a24683fb04f29284297444957e466fd5d5ffc6f40f8b58d04c443",
+                "MacAddress": "02:42:ac:1c:00:07",
+                "IPv4Address": "172.28.0.7/16",
+                "IPv6Address": ""
             },
-            &quot;b52716b229679ec14fcc3236eee4e64f6f2b2c257889979ebb7d4b091c8cd0db&quot;: {
-                &quot;Name&quot;: &quot;docker_compose-worker-trap-1&quot;,
-                &quot;EndpointID&quot;: &quot;f1066da76315c595b6bd606e2f0437b16ec33b2c16e3f659682910e6a79ecb24&quot;,
-                &quot;MacAddress&quot;: &quot;02:42:ac:1c:00:0a&quot;,
-                &quot;IPv4Address&quot;: &quot;172.28.0.10/16&quot;,
-                &quot;IPv6Address&quot;: &quot;&quot;
+            "b52716b229679ec14fcc3236eee4e64f6f2b2c257889979ebb7d4b091c8cd0db": {
+                "Name": "docker_compose-worker-trap-1",
+                "EndpointID": "f1066da76315c595b6bd606e2f0437b16ec33b2c16e3f659682910e6a79ecb24",
+                "MacAddress": "02:42:ac:1c:00:0a",
+                "IPv4Address": "172.28.0.10/16",
+                "IPv6Address": ""
             }
         },
-        &quot;Options&quot;: {},
-        &quot;Labels&quot;: {
-            &quot;com.docker.compose.network&quot;: &quot;sc4snmp_network&quot;,
-            &quot;com.docker.compose.project&quot;: &quot;docker_compose&quot;,
-            &quot;com.docker.compose.version&quot;: &quot;2.29.7&quot;
+        "Options": {},
+        "Labels": {
+            "com.docker.compose.network": "sc4snmp_network",
+            "com.docker.compose.project": "docker_compose",
+            "com.docker.compose.version": "2.29.7"
         }
     }
 ]
@@ -3279,7 +3279,7 @@ The commands also shows if the ipv6 is enabled and what subnets are assigned to 
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

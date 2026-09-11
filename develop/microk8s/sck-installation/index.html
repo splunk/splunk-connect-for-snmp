@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>Splunk OpenTelemetry Collector for Kubernetes installation - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Install Splunk OpenTelemetry Collector for Kubernetes - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Splunk OpenTelemetry Collector for Kubernetes installation
+              Install Splunk OpenTelemetry Collector for Kubernetes
             
           </span>
         </div>
@@ -2876,14 +2876,14 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
 <h2 id="install-splunk-opentelemetry-collector-with-helm-for-a-splunk-platform">Install Splunk OpenTelemetry Collector with HELM for a Splunk Platform<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-a-splunk-platform" title="Permanent link">&para;</a></h2>
 <p>In order to run Splunk OpenTelemetry Collector on your environment, replace <code>&lt;&gt;</code> variables based on the following description: 
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;clusterName=&lt;cluster_name&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.endpoint=&lt;splunk_endpoint&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.insecureSkipVerify=&lt;insecure_skip_verify&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.token=&lt;splunk_token&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;logsEngine=otel&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsEnabled=true&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsIndex=em_metrics&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.index=em_logs&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"clusterName=&lt;cluster_name&gt;"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.endpoint=&lt;splunk_endpoint&gt;"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.insecureSkipVerify=&lt;insecure_skip_verify&gt;"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.token=&lt;splunk_token&gt;"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"logsEngine=otel"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.metricsEnabled=true"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.metricsIndex=em_metrics"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.index=em_logs"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>splunk-otel-collector-chart/splunk-otel-collector
 </code></pre></div></p>
 <h3 id="variables-description">Variables description<a class="headerlink" href="#variables-description" title="Permanent link">&para;</a></h3>
@@ -2920,26 +2920,26 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
 </table>
 <p>See the following example of a correctly filled up command: 
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;clusterName=my-cluster&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.endpoint=https://endpoint.example.com/services/collector&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.insecureSkipVerify=false&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.token=4d22911c-18d9-4706-ae7b-dd1b976ca6f7&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsEnabled=true&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.metricsIndex=em_metrics&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkPlatform.index=em_logs&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"clusterName=my-cluster"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.endpoint=https://endpoint.example.com/services/collector"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.insecureSkipVerify=false"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.token=4d22911c-18d9-4706-ae7b-dd1b976ca6f7"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.metricsEnabled=true"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.metricsIndex=em_metrics"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkPlatform.index=em_logs"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>splunk-otel-collector-chart/splunk-otel-collector
 </code></pre></div></p>
 <h2 id="install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes">Install Splunk OpenTelemetry Collector with HELM for Splunk Observability for Kubernetes<a class="headerlink" href="#install-splunk-opentelemetry-collector-with-helm-for-splunk-observability-for-kubernetes" title="Permanent link">&para;</a></h2>
 <p>To run Splunk OpenTelemetry Collector on your environment, replace the <code>&lt;&gt;</code> variables based on the following description: </p>
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;clusterName=&lt;cluster_name&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.realm=&lt;realm&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.accessToken=&lt;token&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.ingestUrl=&lt;ingest_url&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.apiUrl=&lt;api_url&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.metricsEnabled=true&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.tracesEnabled=false&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.logsEnabled=false&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"clusterName=&lt;cluster_name&gt;"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.realm=&lt;realm&gt;"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.accessToken=&lt;token&gt;"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.ingestUrl=&lt;ingest_url&gt;"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.apiUrl=&lt;api_url&gt;"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.metricsEnabled=true"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.tracesEnabled=false"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.logsEnabled=false"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>splunk-otel-collector-chart/splunk-otel-collector
 </code></pre></div>
 <h3 id="variables-description_1">Variables description<a class="headerlink" href="#variables-description_1" title="Permanent link">&para;</a></h3>
@@ -2981,14 +2981,14 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
 </table>
 <p>See the following example of a correctly filled up command: 
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>sck<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;clusterName=my_cluster&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.realm=us0&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.accessToken=BCwaJ_Ands4Xh7Nrg&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.ingestUrl=https://ingest.signalfx.com&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.apiUrl=https://api.signalfx.com&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.metricsEnabled=true&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.tracesEnabled=false&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--set<span class="o">=</span><span class="s2">&quot;splunkObservability.logsEnabled=false&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"clusterName=my_cluster"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.realm=us0"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.accessToken=BCwaJ_Ands4Xh7Nrg"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.ingestUrl=https://ingest.signalfx.com"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.apiUrl=https://api.signalfx.com"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.metricsEnabled=true"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.tracesEnabled=false"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="o">=</span><span class="s2">"splunkObservability.logsEnabled=false"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>splunk-otel-collector-chart/splunk-otel-collector
 </code></pre></div></p>
 
@@ -3049,7 +3049,7 @@ In order to learn more about Splunk OpenTelemetry Collector, visit <a href="http
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

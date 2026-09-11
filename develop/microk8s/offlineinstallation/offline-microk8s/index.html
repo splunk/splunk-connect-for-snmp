@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>Offline Microk8s installation issues - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Install Microk8s - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Offline Microk8s installation issues
+              Install Microk8s
             
           </span>
         </div>
@@ -2878,7 +2878,7 @@ pack it up, and import it to a microk8s image registry on your offline server.</
 <div class="highlight"><pre><span></span><code>microk8s kubectl get events -A
 </code></pre></div>
 <p>to see if <code>microk8s</code> fails to pull images, and then import anything it needs. An example of such information is:</p>
-<div class="highlight"><pre><span></span><code>kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Failed to pull image &quot;docker.io/calico/cni:v3.21.4&quot;: rpc error: code = Unknown desc = failed to pull and unpack image &quot;docker.io/calico/cni:v3.21.4&quot;: failed to resolve reference &quot;docker.io/calico/cni:v3.21.4&quot;: failed to do request: Head &quot;https://registry-1.docker.io/v2/calico/cni/manifests/v3.21.4&quot;: dial tcp 54.83.42.45:443: i/o timeout
+<div class="highlight"><pre><span></span><code>kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Failed to pull image "docker.io/calico/cni:v3.21.4": rpc error: code = Unknown desc = failed to pull and unpack image "docker.io/calico/cni:v3.21.4": failed to resolve reference "docker.io/calico/cni:v3.21.4": failed to do request: Head "https://registry-1.docker.io/v2/calico/cni/manifests/v3.21.4": dial tcp 54.83.42.45:443: i/o timeout
 kube-system    0s          Warning   Failed              pod/calico-node-sc784                           Error: ErrImagePull
 </code></pre></div>
 <p>The previous information shows that you lack a <code>docker.io/calico/cni:v3.21.4</code> image, and need to import it in order to fix the issue.</p>
@@ -2966,7 +2966,7 @@ sudo cp helm.tar.gz /var/snap/microk8s/current/tmp/helm3
 <div class="highlight"><pre><span></span><code>cd /var/snap/microk8s/common/addons/core/addons/helm3
 </code></pre></div>
 <p>Open <code>enable</code> file with vi, nano, or some other editor. Comment this line:</p>
-<div class="highlight"><pre><span></span><code>#fetch_as $SOURCE_URI/helm-$HELM_VERSION-linux-${SNAP_ARCH}.tar.gz &quot;$SNAP_DATA/tmp/helm3/helm.tar.gz&quot;
+<div class="highlight"><pre><span></span><code>#fetch_as $SOURCE_URI/helm-$HELM_VERSION-linux-${SNAP_ARCH}.tar.gz "$SNAP_DATA/tmp/helm3/helm.tar.gz"
 </code></pre></div>
 <p>Save file.</p>
 <ol start="6">
@@ -3058,7 +3058,7 @@ addons:
       <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":[],"search":"../../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../../javascripts/footer.js"></script>
       

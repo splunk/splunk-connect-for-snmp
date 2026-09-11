@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>MIB submission process - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Request MIB - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              MIB submission process
+              Request MIB
             
           </span>
         </div>
@@ -2913,7 +2913,7 @@ But, if you want to use the newest MIB server right after it is released, you ca
 <p>Append <code>mibserver</code> configuration to the <code>values.yaml</code>, with the <code>mibserver.image.tag</code> of a value of the newest <code>mibserver</code>, for example:
 <div class="highlight"><pre><span></span><code>mibserver:
   image:
-    tag: &quot;1.15.13&quot;
+    tag: "1.15.13"
 </code></pre></div>
 Check all the <a href="https://github.com/pysnmp/mibs/releases">MIB server releases</a>. </p>
 </li>
@@ -2967,7 +2967,7 @@ the MIB file before <code>::= BEGIN</code> keyword.</li>
 <p>Add the following to the <code>values.yaml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">mibserver</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">localMibs</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">pathToMibs</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/home/user/local_mibs&quot;</span>
+<span class="w">    </span><span class="nt">pathToMibs</span><span class="p">:</span><span class="w"> </span><span class="s">"/home/user/local_mibs"</span>
 </code></pre></div>
 <p>To verify that the process of compilation was completed successfully, check the mibserver logs using the following command:</p>
 <div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>kubectl<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>deployments/snmp-mibserver<span class="w"> </span>-n<span class="w"> </span>sc4snmp
@@ -2986,7 +2986,7 @@ when the Node with the mapped hostPath fails, you will have to access the MIB fi
 <div class="tabbed-block">
 <h3 id="configuring-path-to-local-mibs-for-docker-compose-installation">Configuring path to local mibs for docker compose installation<a class="headerlink" href="#configuring-path-to-local-mibs-for-docker-compose-installation" title="Permanent link">&para;</a></h3>
 <p>To point to the directory with your local MIBs, set the <code>LOCAL_MIBS_PATH</code> variable in the <code>.env</code> file located in the <code>docker_compose</code> directory:</p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">LOCAL_MIBS_PATH=&quot;./local_mibs&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">LOCAL_MIBS_PATH="./local_mibs"</span>
 </code></pre></div>
 <p>By default, it is set to be <code>./local_mibs</code>, which means such directory will be created anyway in the <code>docker_compose</code> directory if the variable remains unchanged.
 You can put your MIB files there, following the same structure as described above.</p>
@@ -3066,7 +3066,7 @@ You can put your MIB files there, following the same structure as described abov
       <script id="__config" type="application/json">{"annotate":null,"base":"..","features":[],"search":"../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../javascripts/footer.js"></script>
       

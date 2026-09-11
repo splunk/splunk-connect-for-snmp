@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>SC4SNMP Helm installation - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Install SC4SNMP - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SC4SNMP Helm installation
+              Install SC4SNMP
             
           </span>
         </div>
@@ -3140,7 +3140,7 @@ snmptrap<span class="w"> </span>-v2c<span class="w"> </span>-c<span class="w"> <
 <ol start="2">
 <li>After using the following command in the Splunk search box, you should see one event per trap command, with the host value of the test machine <code>EXTERNAL-IP</code> IP address: </li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">&quot;netops&quot;</span><span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:traps&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">"netops"</span><span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">"sc4snmp:traps"</span>
 </code></pre></div>
 <h4 id="test-snmp-poller">Test SNMP Poller<a class="headerlink" href="#test-snmp-poller" title="Permanent link">&para;</a></h4>
 <ol>
@@ -3170,9 +3170,9 @@ replacing the IP address <code>10.0.101.22</code> with the server IP address whe
 <ol start="4">
 <li>Verify if the records appeared in Splunk using the following command: </li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">&quot;netops&quot;</span><span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:event&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nv">index</span><span class="o">=</span><span class="s2">"netops"</span><span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">"sc4snmp:event"</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="p">|</span><span class="w"> </span>mpreview<span class="w"> </span><span class="nv">index</span><span class="o">=</span><span class="s2">&quot;netmetrics&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>search<span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">&quot;sc4snmp:metric&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="p">|</span><span class="w"> </span>mpreview<span class="w"> </span><span class="nv">index</span><span class="o">=</span><span class="s2">"netmetrics"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>search<span class="w"> </span><span class="nv">sourcetype</span><span class="o">=</span><span class="s2">"sc4snmp:metric"</span>
 </code></pre></div>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
@@ -3268,7 +3268,7 @@ snmp-splunk-connect-for-snmp-trap-684d57dc8d-z68lb               1/1     Termina
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

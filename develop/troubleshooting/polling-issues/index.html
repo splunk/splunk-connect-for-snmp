@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>Identifying Polling and Walk Issues - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Polling issues - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Identifying Polling and Walk Issues
+              Polling issues
             
           </span>
         </div>
@@ -2989,7 +2989,7 @@ and replace <IP_ADDRESS> with the pertinent IP Address. </li>
 </ol>
 <h2 id="empty-snmp-response-message">Empty SNMP response message<a class="headerlink" href="#empty-snmp-response-message" title="Permanent link">&para;</a></h2>
 <p>If you see the following line in the worker&rsquo;s logs:</p>
-<p><div class="highlight"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError(&#39;An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message&#39;)
+<p><div class="highlight"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: Empty SNMP response message')
 </code></pre></div>
 that causes an infinite retry of the walk operation, configure the following depending on your deployment:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">microk8s</label><label for="__tabbed_1_2">docker compose</label></div>
@@ -3009,7 +3009,7 @@ that causes an infinite retry of the walk operation, configure the following dep
 </div>
 <h2 id="oid-not-increasing">OID not increasing<a class="headerlink" href="#oid-not-increasing" title="Permanent link">&para;</a></h2>
 <p>In case you see the following line in worker&rsquo;s logs:</p>
-<p><div class="highlight"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError(&#39;An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing&#39;)
+<p><div class="highlight"><pre><span></span><code>[2022-01-04 11:44:22,553: INFO/ForkPoolWorker-1] Task splunk_connect_for_snmp.snmp.tasks.walk[8e62fc62-569c-473f-a765-ff92577774e5] retry: Retry in 3489s: SnmpActionError('An error of SNMP isWalk=True for a host 192.168.10.20 occurred: OID not increasing')
 </code></pre></div>
 that causes infinite retry of walk operation, fill in the addresses of hosts where the problem appears depending on your deployment:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">microk8s</label><label for="__tabbed_2_2">docker compose</label></div>
@@ -3018,8 +3018,8 @@ that causes infinite retry of walk operation, fill in the addresses of hosts whe
 <p>Add <code>worker.ignoreNotIncreasingOid</code> array to <code>values.yaml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">ignoreNotIncreasingOid</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;127.0.0.1:164&quot;</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;127.0.0.6&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.1:164"</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"127.0.0.6"</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -3087,7 +3087,7 @@ An example for an appropriate Splunk query would be the following:</p>
 <p class="admonition-title">Microk8s only</p>
 </div>
 <div class="highlight"><pre><span></span><code>microk8s helm3 upgrade --install snmp -f values.yaml splunk-connect-for-snmp/charts/splunk-connect-for-snmp/ --namespace=sc4snmp --create-namespace
-Error: UPGRADE FAILED: cannot patch &quot;snmp-splunk-connect-for-snmp-inventory&quot; with kind Job: Job.batch &quot;snmp-splunk-connect-for-snmp-inventory&quot; is invalid: (...) : field is immutable
+Error: UPGRADE FAILED: cannot patch "snmp-splunk-connect-for-snmp-inventory" with kind Job: Job.batch "snmp-splunk-connect-for-snmp-inventory" is invalid: (...) : field is immutable
 </code></pre></div>
 <p>The immutable error is due to the limitation placed on an inventory job. As the SC4SNMP requires several checks before applying updates, it is designed to allow changes in the inventory task after 5 minutes. </p>
 <p>The status of the inventory can be checked with the following command:
@@ -3100,9 +3100,9 @@ If the command is not empty, wait and execute it again after the inventory job f
 The upgrade command can be executed again. </p>
 <h2 id="the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors">&ldquo;The following profiles have invalid configuration&rdquo; or &ldquo;The following groups have invalid configuration&rdquo; errors<a class="headerlink" href="#the-following-profiles-have-invalid-configuration-or-the-following-groups-have-invalid-configuration-errors" title="Permanent link">&para;</a></h2>
 <p>Following errors are examples of wrong configuration:
-<div class="highlight"><pre><span></span><code>The following groups have invalid configuration and won&#39;t be used: [&#39;group1&#39;]. Please check indentation and keywords spelling inside mentioned groups configuration.
+<div class="highlight"><pre><span></span><code>The following groups have invalid configuration and won't be used: ['group1']. Please check indentation and keywords spelling inside mentioned groups configuration.
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>The following profiles have invalid configuration and won&#39;t be used: [&#39;standard_profile&#39;, &#39;walk_profile&#39;]. Please check indentation and keywords spelling inside mentioned profiles configuration.
+<div class="highlight"><pre><span></span><code>The following profiles have invalid configuration and won't be used: ['standard_profile', 'walk_profile']. Please check indentation and keywords spelling inside mentioned profiles configuration.
 </code></pre></div>
 Errors above indicate, that the mentioned groups or profiles might have wrong indentation or some keywords were omitted or misspelled. Refer to:</p>
 <ul>
@@ -3169,7 +3169,7 @@ or</li>
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

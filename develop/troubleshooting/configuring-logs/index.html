@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>Configuring logs - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Accessing and configuring logs - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Configuring logs
+              Accessing and configuring logs
             
           </span>
         </div>
@@ -2940,14 +2940,14 @@
                 
                   
 
-  <h1 id="__skip">Configuring logs</h1>
+  <h1 id="__skip">Accessing and configuring logs</h1>
 
 <h2 id="configuring-sc4snmp-loglevel">Configuring SC4SNMP loglevel<a class="headerlink" href="#configuring-sc4snmp-loglevel" title="Permanent link">&para;</a></h2>
 <p>SC4SNMP log level can be configured in <code>values.yaml</code> file. The default value for it is <code>INFO</code>, other 
 possible levels to set are <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>, <code>CRITICAL</code> or <code>FATAL</code>. To change 
 the log level for a specific component, add the following configuration to <code>values.yaml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">worker</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;DEBUG&quot;</span>
+<span class="w">    </span><span class="nt">logLevel</span><span class="p">:</span><span class="w"> </span><span class="s">"DEBUG"</span>
 </code></pre></div>
 <p>And redeploy SC4SNMP. </p>
 <p>Log level configuration can be set for <code>worker</code>, <code>poller</code>, <code>scheduler</code> and <code>traps</code>.</p>
@@ -2957,7 +2957,7 @@ is installed. Logs can be also accessed directly in kubernetes using terminal.</
 <h3 id="accessing-logs-via-splunk">Accessing logs via Splunk<a class="headerlink" href="#accessing-logs-via-splunk" title="Permanent link">&para;</a></h3>
 <p>If <a href="../../microk8s/sck-installation/">sck-otel</a> is installed, browse <code>em_logs</code> index. Logs can be further filtered 
 for example by the sourcetype field. Example search command to get logs from poller:
-<div class="highlight"><pre><span></span><code>index=em_logs sourcetype=&quot;kube:container:splunk-connect-for-snmp-worker-poller&quot;
+<div class="highlight"><pre><span></span><code>index=em_logs sourcetype="kube:container:splunk-connect-for-snmp-worker-poller"
 </code></pre></div></p>
 <h3 id="accessing-logs-in-kubernetes">Accessing logs in kubernetes<a class="headerlink" href="#accessing-logs-in-kubernetes" title="Permanent link">&para;</a></h3>
 <p>To access logs directly in kubernetes, first run <code>microk8s kubectl -n sc4snmp get pods</code>. This will output all pods:
@@ -2980,17 +2980,17 @@ logs from <code>splunk-connect-for-snmp-worker-poller</code>:
 send them to Splunk.</p>
 <p>To access logs directly in docker, first run <code>docker ps</code>. This will output all containers:</p>
 <div class="highlight"><pre><span></span><code>CONTAINER ID   IMAGE                                                            COMMAND                  CREATED          STATUS          PORTS                                                                                  NAMES
-afcd8f4850cd   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   &quot;./entrypoint.sh cel...&quot;   19 seconds ago   Up 17 seconds                                                                                          docker_compose-worker-poller-1
-5cea46cee0cb   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   &quot;./entrypoint.sh cel...&quot;   19 seconds ago   Up 17 seconds                                                                                          docker_compose-worker-sender-1
-1c5154c91191   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   &quot;./entrypoint.sh cel...&quot;   19 seconds ago   Up 17 seconds                                                                                          sc4snmp-scheduler
-8f6e60903780   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   &quot;./entrypoint.sh trap&quot;   19 seconds ago   Up 17 seconds   0.0.0.0:2163-&gt;2163/udp, :::2163-&gt;2163/udp, 0.0.0.0:162-&gt;2162/udp, [::]:162-&gt;2162/udp   sc4snmp-traps
-f146802a0a8d   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   &quot;./entrypoint.sh cel...&quot;   19 seconds ago   Up 16 seconds                                                                                          docker_compose-worker-poller-2
-70e0fe076cdf   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   &quot;./entrypoint.sh cel...&quot;   19 seconds ago   Up 17 seconds                                                                                          docker_compose-worker-trap-2
-090cc957b600   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   &quot;./entrypoint.sh cel...&quot;   19 seconds ago   Up 16 seconds                                                                                          docker_compose-worker-trap-1
-24aac5c89d80   ghcr.io/pysnmp/mibs/container:latest                             &quot;/bin/sh -c &#39;/app/lo...&quot;   19 seconds ago   Up 18 seconds   8080/tcp                                                                               snmp-mibserver
-a5bef5a5a02c   bitnami/mongodb:6.0.9-debian-11-r5                               &quot;/opt/bitnami/script...&quot;   19 seconds ago   Up 18 seconds   27017/tcp                                                                              mongo
-76f966236c1b   redis:8.2.2                                                      &quot;/opt/bitnami/script...&quot;   19 seconds ago   Up 18 seconds   6379/tcp                                                                               redis
-163d880eaf8c   coredns/coredns:1.11.1                                           &quot;/coredns -conf /Cor...&quot;   19 seconds ago   Up 18 seconds   53/tcp, 53/udp                                                                         coredns
+afcd8f4850cd   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel..."   19 seconds ago   Up 17 seconds                                                                                          docker_compose-worker-poller-1
+5cea46cee0cb   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel..."   19 seconds ago   Up 17 seconds                                                                                          docker_compose-worker-sender-1
+1c5154c91191   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel..."   19 seconds ago   Up 17 seconds                                                                                          sc4snmp-scheduler
+8f6e60903780   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh trap"   19 seconds ago   Up 17 seconds   0.0.0.0:2163-&gt;2163/udp, :::2163-&gt;2163/udp, 0.0.0.0:162-&gt;2162/udp, [::]:162-&gt;2162/udp   sc4snmp-traps
+f146802a0a8d   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel..."   19 seconds ago   Up 16 seconds                                                                                          docker_compose-worker-poller-2
+70e0fe076cdf   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel..."   19 seconds ago   Up 17 seconds                                                                                          docker_compose-worker-trap-2
+090cc957b600   ghcr.io/splunk/splunk-connect-for-snmp/container:1.12.0-beta.1   "./entrypoint.sh cel..."   19 seconds ago   Up 16 seconds                                                                                          docker_compose-worker-trap-1
+24aac5c89d80   ghcr.io/pysnmp/mibs/container:latest                             "/bin/sh -c '/app/lo..."   19 seconds ago   Up 18 seconds   8080/tcp                                                                               snmp-mibserver
+a5bef5a5a02c   bitnami/mongodb:6.0.9-debian-11-r5                               "/opt/bitnami/script..."   19 seconds ago   Up 18 seconds   27017/tcp                                                                              mongo
+76f966236c1b   redis:8.2.2                                                      "/opt/bitnami/script..."   19 seconds ago   Up 18 seconds   6379/tcp                                                                               redis
+163d880eaf8c   coredns/coredns:1.11.1                                           "/coredns -conf /Cor..."   19 seconds ago   Up 18 seconds   53/tcp, 53/udp                                                                         coredns
 </code></pre></div>
 <p>Now select the desired container and run <code>docker logs &lt;container_name/id&gt;</code> command. 
 Example command to retrieve logs from <code>splunk-connect-for-snmp-worker-poller</code>:</p>
@@ -3007,36 +3007,36 @@ statuses of specific tasks.</p>
 <h3 id="walk-status">Walk status<a class="headerlink" href="#walk-status" title="Permanent link">&para;</a></h3>
 <p>To check the status of a walk task, you can use the following queries:</p>
 <p>If the task was initialized by the scheduler after setting the <code>walk_interval</code>, use this query:
-<div class="highlight"><pre><span></span><code>index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; &quot;Scheduler: Sending due task sc4snmp;*;walk&quot;
+<div class="highlight"><pre><span></span><code>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "Scheduler: Sending due task sc4snmp;*;walk"
 </code></pre></div></p>
 <p>The status of a completed task can be <code>retry</code>, <code>succeeded</code>, or, in the case of an error, a message may include 
 <code>raised unexpected</code>.
 If you encounter <code>retry</code> or <code>raised unexpected</code>, refer to the <a href="../polling-issues/">troubleshooting polling section</a> of the documentation. 
 The following queries can help filter logs to observe the walk task status:
-<div class="highlight"><pre><span></span><code>index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; splunk_connect_for_snmp.snmp.tasks.walk NOT received
+<div class="highlight"><pre><span></span><code>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.snmp.tasks.walk NOT received
 
-index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; &quot;splunk_connect_for_snmp.snmp.tasks.walk[*] retry&quot;
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.walk[*] retry"
 
-index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; &quot;splunk_connect_for_snmp.snmp.tasks.walk[*] succeeded&quot;
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.walk[*] succeeded"
 
-index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; &quot;splunk_connect_for_snmp.snmp.tasks.walk[*] raised unexpected&quot;
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.walk[*] raised unexpected"
 </code></pre></div>
 You can also add the <code>IP address</code> to any of the above queries to filter results for a specific device.
 Example response for the <code>retry</code> query:
-<div class="highlight"><pre><span></span><code>Task splunk_connect_for_snmp.snmp.tasks.walk[f77c6734-ed37-4759-9938-9345799dea57] retry: Retry in 28s: SnmpActionError(&#39;An error of SNMP isWalk=True for a host 127.0.0.1 occurred: No SNMP response received before timeout&#39;)
+<div class="highlight"><pre><span></span><code>Task splunk_connect_for_snmp.snmp.tasks.walk[f77c6734-ed37-4759-9938-9345799dea57] retry: Retry in 28s: SnmpActionError('An error of SNMP isWalk=True for a host 127.0.0.1 occurred: No SNMP response received before timeout')
 </code></pre></div>
 To check the status and progress of a specific task, filter by the task ID within the <code>[]</code>.</p>
 <h3 id="polling-status">Polling status<a class="headerlink" href="#polling-status" title="Permanent link">&para;</a></h3>
 <p>To check the status of a polling task, use the following queries:</p>
 <p>If the task was initialized by the scheduler after setting the <code>frequency</code>, use this query:
-<div class="highlight"><pre><span></span><code>index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-scheduler*&quot; &quot;Scheduler: Sending due task sc4snmp;*;*;poll&quot;
+<div class="highlight"><pre><span></span><code>index=* sourcetype="*:container:splunk-connect-for-snmp-scheduler*" "Scheduler: Sending due task sc4snmp;*;*;poll"
 </code></pre></div></p>
 <p>The status of a completed task can be either <code>failed</code>, <code>succeeded</code>. 
 If the task shows <code>failed</code> refer to the <a href="../polling-issues/">troubleshooting polling section</a> of the documentation. 
 The following queries can help filter logs to observe the poll task status:
-<div class="highlight"><pre><span></span><code>index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; &quot;splunk_connect_for_snmp.snmp.tasks.poll[*] failed&quot; &quot;&#39;address&#39;: &#39;*&#39;&quot;
+<div class="highlight"><pre><span></span><code>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.poll[*] failed" "'address': '*'"
 
-index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; &quot;splunk_connect_for_snmp.snmp.tasks.poll[*] succeeded&quot; &quot;&#39;address&#39;: &#39;*&#39;&quot;
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.poll[*] succeeded" "'address': '*'"
 </code></pre></div></p>
 <p>You can replace <code>'address': '*'</code> with the <code>IP address</code> of the specific device.
 To check the status and progress of a specific task, filter by the <code>task ID</code>, which replaces <code>[*]</code>.</p>
@@ -3045,17 +3045,17 @@ To check the status and progress of a specific task, filter by the <code>task ID
 <p>The status of a completed task can be either <code>failed</code> or <code>succeeded</code>.
 If the task shows <code>failed</code>, refer to the <a href="../traps-issues/">troubleshooting traps section</a> of the documentation. 
 The following queries can help filter logs to observe the trap task status:
-<div class="highlight"><pre><span></span><code>index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; &quot;splunk_connect_for_snmp.snmp.tasks.trap[*] succeeded&quot;
+<div class="highlight"><pre><span></span><code>index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.trap[*] succeeded"
 
-index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; &quot;splunk_connect_for_snmp.snmp.tasks.trap[*] failed&quot;
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" "splunk_connect_for_snmp.snmp.tasks.trap[*] failed"
 </code></pre></div></p>
 <h3 id="splunk-task-status">Splunk task status<a class="headerlink" href="#splunk-task-status" title="Permanent link">&para;</a></h3>
 <p>To check if data is being sent properly to Splunk, use the following queries to observe whether they <code>succeeded</code> or <code>failed</code>:
-<div class="highlight"><pre><span></span><code>index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; splunk_connect_for_snmp.splunk.tasks.send 
+<div class="highlight"><pre><span></span><code>index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.splunk.tasks.send 
 
-index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; splunk_connect_for_snmp.enrich.tasks.enrich
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.enrich.tasks.enrich
 
-index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; splunk_connect_for_snmp.splunk.tasks.prepare
+index=* sourcetype="*:container:splunk-connect-for-snmp-*" splunk_connect_for_snmp.splunk.tasks.prepare
 </code></pre></div></p>
 
 
@@ -3115,7 +3115,7 @@ index=* sourcetype=&quot;*:container:splunk-connect-for-snmp-*&quot; splunk_conn
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       

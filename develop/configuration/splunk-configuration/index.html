@@ -19,18 +19,18 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.57">
+      <meta name="generator" content="zensical-0.0.60">
     
     
       
-        <title>Splunk configuration - Splunk Connect for SNMP (SC4SNMP)</title>
+        <title>Splunk - Splunk Connect for SNMP (SC4SNMP)</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ce62732f.min.css">
       
         
           
@@ -119,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Splunk configuration
+              Splunk
             
           </span>
         </div>
@@ -2909,7 +2909,7 @@
 <li><strong>Create the Secret</strong> in the same namespace as the release, with the token under the key <code>hec_token</code> (or another key you specify):</li>
 </ol>
 <div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>my-splunk-hec-secret<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">hec_token</span><span class="o">=</span><span class="s1">&#39;YOUR_HEC_TOKEN&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">hec_token</span><span class="o">=</span><span class="s1">'YOUR_HEC_TOKEN'</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-n<span class="w"> </span>sc4snmp
 </code></pre></div>
 <ol start="2">
@@ -2917,9 +2917,9 @@
 </ol>
 <div class="highlight"><pre><span></span><code><span class="nt">splunk</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;splunk.example.com&quot;</span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https&quot;</span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;8088&quot;</span>
+<span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">"splunk.example.com"</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">"https"</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="s">"8088"</span>
 <span class="w">  </span><span class="nt">tokenSecretRef</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-splunk-hec-secret</span><span class="w">   </span><span class="c1"># name of your Secret</span>
 <span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hec_token</span><span class="w">               </span><span class="c1"># optional; default is hec_token</span>
@@ -2933,19 +2933,19 @@
 <p><strong>Example:</strong></p>
 <div class="highlight"><pre><span></span><code><span class="nt">splunk</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;splunk.example.com&quot;</span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https&quot;</span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;8088&quot;</span>
+<span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">"splunk.example.com"</span>
+<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">"https"</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="s">"8088"</span>
 <span class="w">  </span><span class="nt">tokenFilePath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/vault/secrets/splunk-hec-token</span>
 
 <span class="nt">worker</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">sender</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">podAnnotations</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">vault.hashicorp.com/agent-inject</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
-<span class="w">      </span><span class="nt">vault.hashicorp.com/role</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sc4snmp&quot;</span>
-<span class="w">      </span><span class="nt">vault.hashicorp.com/agent-inject-secret-splunk-hec-token</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secret/data/splunk&quot;</span>
+<span class="w">      </span><span class="nt">vault.hashicorp.com/agent-inject</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
+<span class="w">      </span><span class="nt">vault.hashicorp.com/role</span><span class="p">:</span><span class="w"> </span><span class="s">"sc4snmp"</span>
+<span class="w">      </span><span class="nt">vault.hashicorp.com/agent-inject-secret-splunk-hec-token</span><span class="p">:</span><span class="w"> </span><span class="s">"secret/data/splunk"</span>
 <span class="w">      </span><span class="nt">vault.hashicorp.com/agent-inject-template-splunk-hec-token</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-<span class="w">        </span><span class="no">{{- with secret &quot;secret/data/splunk&quot; -}}</span>
+<span class="w">        </span><span class="no">{{- with secret "secret/data/splunk" -}}</span>
 <span class="w">        </span><span class="no">{{ .Data.data.token }}</span>
 <span class="w">        </span><span class="no">{{- end }}</span>
 </code></pre></div>
@@ -3100,7 +3100,7 @@
       <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":[],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":{"provider":"mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88ee1349.min.js"></script>
       
         <script src="../../javascripts/footer.js"></script>
       
