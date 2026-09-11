@@ -2775,17 +2775,15 @@
                   
 
 <h1 id="sending-logs-to-splunk">Sending logs to Splunk<a class="headerlink" href="#sending-logs-to-splunk" title="Permanent link">&para;</a></h1>
-<p>The default Docker Compose configuration does not forward container logs to Splunk. SC4SNMP application logging remains enabled, and container logs can be accessed with:</p>
-<div class="codehilite"><pre><span></span><code>docker logs &lt;container_name/id&gt;
-</code></pre></div>
-
+<p>The default Docker Compose configuration does not forward container logs to Splunk. SC4SNMP application logging remains enabled, and container logs can be accessed with:
+<div class="highlight"><pre><span></span><code>docker logs &lt;container_name/id&gt;
+</code></pre></div></p>
 <p>Enabling Docker-to-Splunk forwarding requires updating the logging configuration of every service. To simplify this process, the <code>docker_compose</code> package includes <code>manage_logs.py</code>.</p>
 <p>Docker applies logging-driver changes only when containers are created. Recreate the affected containers after enabling or disabling forwarding. For Docker log retention and daemon-driver inheritance, see <a href=".././7-docker-logging/">Docker logging</a>.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
-<p>Running script requires installation of <code>ruamel.yaml</code> package for python. It can be done with command:</p>
-<div class="codehilite"><pre><span></span><code>pip3 install ruamel.yaml
-</code></pre></div>
-
+<p>Running script requires installation of <code>ruamel.yaml</code> package for python. It can be done with command:
+<div class="highlight"><pre><span></span><code>pip3 install ruamel.yaml
+</code></pre></div></p>
 <p>To enable Docker-to-Splunk forwarding, the following parameters have to be configured in <code>.env</code> file:
 <code>SPLUNK_HEC_TOKEN</code>, <code>SPLUNK_HEC_PROTOCOL</code>, <code>SPLUNK_HEC_HOST</code>, <code>SPLUNK_HEC_PORT</code>, <code>SPLUNK_LOG_INDEX</code>, <code>SPLUNK_HEC_INSECURESSL</code>.</p>
 <p>More about <code>.env</code> configuration can be found in <a href=".././6-env-file-configuration/">.env file configuration</a>.</p>
@@ -2809,18 +2807,16 @@
 </tr>
 </tbody>
 </table>
-<p>Example of enabling logs:</p>
-<div class="codehilite"><pre><span></span><code>python3 manage_logs.py \
+<p>Example of enabling logs:
+<div class="highlight"><pre><span></span><code>python3 manage_logs.py \
   --path_to_compose /home/ubuntu/docker_compose \
   --enable_logs
-</code></pre></div>
-
+</code></pre></div></p>
 <p>The script sets the Splunk logging driver on every service and keeps <code>docker logs</code> available through Docker&rsquo;s bounded local dual-logging cache.
-To apply the changes run the: </p>
-<div class="codehilite"><pre><span></span><code>sudo docker compose up -d
+To apply the changes run the: 
+<div class="highlight"><pre><span></span><code>sudo docker compose up -d
 </code></pre></div>
-
-<p>command inside the <code>docker_compose</code> directory.</p>
+command inside the <code>docker_compose</code> directory.</p>
 <h2 id="disabling-docker-to-splunk-logs-forwarding">Disabling Docker to Splunk logs forwarding<a class="headerlink" href="#disabling-docker-to-splunk-logs-forwarding" title="Permanent link">&para;</a></h2>
 <p>To disable Docker-to-Splunk forwarding, run <code>manage_logs.py</code> with:</p>
 <table>
@@ -2842,17 +2838,15 @@ To apply the changes run the: </p>
 </tbody>
 </table>
 <p>The script restores the bounded <code>json-file</code> driver. It does not disable SC4SNMP application logging or change log levels, messages, formats, or stdout/stderr behavior. To inherit the Docker daemon driver instead, follow the <a href=".././7-docker-logging/#choose-the-logging-behavior">Docker logging</a> instructions after disabling forwarding.</p>
-<p>Example of disabling logs:</p>
-<div class="codehilite"><pre><span></span><code>python3 manage_logs.py \
+<p>Example of disabling logs:
+<div class="highlight"><pre><span></span><code>python3 manage_logs.py \
   --path_to_compose /home/ubuntu/docker_compose \
   --disable_logs
+</code></pre></div></p>
+<p>To apply the changes run the:
+<div class="highlight"><pre><span></span><code>sudo docker compose up -d
 </code></pre></div>
-
-<p>To apply the changes run the:</p>
-<div class="codehilite"><pre><span></span><code>sudo docker compose up -d
-</code></pre></div>
-
-<p>command inside the <code>docker_compose</code> directory.</p>
+command inside the <code>docker_compose</code> directory.</p>
 <p>After that the logs can be reached with <code>docker logs</code> command.</p>
 
 

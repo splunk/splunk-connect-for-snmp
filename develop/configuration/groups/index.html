@@ -2756,19 +2756,17 @@ unless specific host configuration overrides it.</p>
 <h2 id="group-vs-host">Group vs host<a class="headerlink" href="#group-vs-host" title="Permanent link">&para;</a></h2>
 <p>If the host is configured in the group and both the group and the single host are included in the inventory, the
 configuration for the single host will be ignored in favor of the group configuration. See the following example:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">groups</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">groups</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">example_group_1</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.202.4.202</span>
 <span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">161</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">63.2.40.0</span>
 <span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">161</span>
 </code></pre></div>
-
-<div class="codehilite"><pre><span></span><code><span class="nx">address</span><span class="p">,</span><span class="nx">port</span><span class="p">,</span><span class="nx">version</span><span class="p">,</span><span class="nx">community</span><span class="p">,</span><span class="nx">secret</span><span class="p">,</span><span class="nx">security_engine</span><span class="p">,</span><span class="nx">walk_interval</span><span class="p">,</span><span class="nx">profiles</span><span class="p">,</span><span class="nx">smart_profiles</span><span class="p">,</span><span class="nx">max_oid_to_process</span><span class="p">,</span><span class="nx">delete</span>
-<span class="nx">example_group_1</span><span class="p">,,</span><span class="mi">2</span><span class="nx">c</span><span class="p">,</span><span class="nx">public</span><span class="p">,,,</span><span class="mi">2000</span><span class="p">,</span><span class="nx">my_profile2</span><span class="p">,,,</span>
-<span class="m m-Double">10.202.4.202</span><span class="p">,,</span><span class="mi">2</span><span class="nx">c</span><span class="p">,</span><span class="nx">public</span><span class="p">,,,</span><span class="mi">2000</span><span class="p">,</span><span class="nx">my_profile1</span><span class="p">,,,</span>
+<div class="highlight"><pre><span></span><code>address,port,version,community,secret,security_engine,walk_interval,profiles,smart_profiles,max_oid_to_process,delete
+example_group_1,,2c,public,,,2000,my_profile2,,,
+10.202.4.202,,2c,public,,,2000,my_profile1,,,
 </code></pre></div>
-
 <p>If the specific host from the group has to be configured separately, first it must be deleted from the group configuration,
 and then it can be inserted as a new record in the inventory.</p>
 <p>The one obligatory field for the host configuration is <code>address</code>. If <code>port</code> is not configured its default value is <code>161</code>.
@@ -2779,7 +2777,7 @@ However, if they remain unspecified in the host configuration, they will be deri
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Groups are defined in the <code>scheduler.groups</code> section of <code>values.yaml</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">scheduler</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">groups</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
 <span class="w">    </span><span class="no">example_group_1:</span>
 <span class="w">      </span><span class="no">- address: 123.0.0.1</span>
@@ -2797,15 +2795,13 @@ However, if they remain unspecified in the host configuration, they will be deri
 <span class="w">      </span><span class="no">- address: 178.80.8.1</span>
 <span class="w">        </span><span class="no">port: 999</span>
 </code></pre></div>
-
 <p>To apply changes, run the upgrade command:</p>
-<div class="codehilite"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
+<div class="highlight"><pre><span></span><code>microk8s<span class="w"> </span>helm3<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>snmp<span class="w"> </span>-f<span class="w"> </span>values.yaml<span class="w"> </span>splunk-connect-for-snmp/splunk-connect-for-snmp<span class="w"> </span>--namespace<span class="o">=</span>sc4snmp<span class="w"> </span>--create-namespace
 </code></pre></div>
-
 </div>
 <div class="tabbed-block">
 <p>Groups are defined in the <code>groups</code> section of <code>scheduler-config.yaml</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">groups</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">groups</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">example_group_1</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">123.0.0.1</span>
 <span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">161</span>
@@ -2822,11 +2818,9 @@ However, if they remain unspecified in the host configuration, they will be deri
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">178.80.8.1</span>
 <span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span>
 </code></pre></div>
-
 <p>To apply changes, run the following command inside the <code>docker_compose</code> directory:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
-
 </div>
 </div>
 </div>
