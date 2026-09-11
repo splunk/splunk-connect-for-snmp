@@ -21,8 +21,7 @@ markdown_extensions:
       alternate_style: true
 
 plugins:
-  - search:
-      lang: en
+  - search
 
 extra_javascript:
   - javascripts/footer.js
