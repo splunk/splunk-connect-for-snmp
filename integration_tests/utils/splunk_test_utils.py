@@ -662,15 +662,13 @@ def create_v3_secrets_microk8s(
     auth_protocol="SHA",
     priv_protocol="AES",
 ):
-    os.system(
-        f"sudo microk8s kubectl create -n sc4snmp secret generic {secret_name} \
+    os.system(f"sudo microk8s kubectl create -n sc4snmp secret generic {secret_name} \
       --from-literal=userName={user_name} \
       --from-literal=authKey={auth_key} \
       --from-literal=privKey={priv_key} \
       --from-literal=authProtocol={auth_protocol} \
       --from-literal=privProtocol={priv_protocol} \
-      --from-literal=securityEngineId=8000000903000A397056B8AC"
-    )
+      --from-literal=securityEngineId=8000000903000A397056B8AC")
 
 
 def wait_for_pod_initialization_microk8s():
