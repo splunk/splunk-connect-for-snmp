@@ -258,6 +258,7 @@ def test_try_to_add_device_with_all_available_fields_into_inventory():
     secret = "test_secret"
     security_engine = "8000000903000AAAEF536715"
     walk_interval = "3600"
+    max_oid_to_process = "50"
     profile_1 = "profile_1"
     profile_2 = "profile_2"
     profiles = [profile_1, profile_2]
@@ -284,6 +285,7 @@ def test_try_to_add_device_with_all_available_fields_into_inventory():
     p_inventory.set_secret(secret)
     p_inventory.set_security_engine(security_engine)
     p_inventory.set_walk_interval(walk_interval)
+    p_inventory.set_max_oid_to_process(max_oid_to_process)
     p_inventory.select_profiles(profiles)
     p_inventory.set_smart_profiles("true")
     p_inventory.click_submit_button_for_add_entry()
@@ -316,6 +318,7 @@ def test_edit_inventory_entry_with_all_available_fields():
     secret = "test_secret"
     security_engine = "8000000903000AAAEF536715"
     walk_interval = "3600"
+    max_oid_to_process = "50"
     smart_profiles = "false"
     profile_1 = "profile_1_edit"
     profile_2 = "profile_2_edit"
@@ -342,6 +345,7 @@ def test_edit_inventory_entry_with_all_available_fields():
     p_inventory.set_secret(secret)
     p_inventory.set_security_engine(security_engine)
     p_inventory.set_walk_interval(walk_interval)
+    p_inventory.set_max_oid_to_process(max_oid_to_process)
     p_inventory.select_profiles([profile_1])
     p_inventory.set_smart_profiles(smart_profiles)
     p_inventory.click_submit_button_for_add_entry()
@@ -356,6 +360,7 @@ def test_edit_inventory_entry_with_all_available_fields():
     new_secret = "changed_secret"
     new_security_engine = "800000090BC0DD111101"
     new_walk_interval = "10000"
+    new_max_oid_to_process = "75"
     new_smart_profiles = "true"
 
     p_inventory.click_edit_inventory_entry(host)
@@ -366,6 +371,7 @@ def test_edit_inventory_entry_with_all_available_fields():
     p_inventory.set_secret(new_secret, True)
     p_inventory.set_security_engine(new_security_engine, True)
     p_inventory.set_walk_interval(new_walk_interval)
+    p_inventory.set_max_oid_to_process(new_max_oid_to_process)
     p_inventory.select_profiles([profile_2], True)
     p_inventory.set_smart_profiles(new_smart_profiles)
     p_inventory.click_submit_button_for_add_entry()
@@ -392,6 +398,8 @@ def test_edit_inventory_entry_with_all_available_fields():
     assert new_security_engine == received_sec_engine
     received_walk_interval = p_inventory.get_walk_interval_for_entry(new_host)
     assert new_walk_interval == received_walk_interval
+    received_max_oid_to_process = p_inventory.get_max_oid_to_process_for_entry(new_host)
+    assert new_max_oid_to_process == received_max_oid_to_process
     received_profiles = p_inventory.get_profiles_for_entry(new_host)
     assert profile_2 == received_profiles
     received_smart_profiles = p_inventory.get_smart_profiles_for_entry(new_host)

@@ -19,7 +19,7 @@ from contextlib import suppress
 from pyasn1.codec.ber import decoder
 from pyasn1.error import PyAsn1Error
 from pyasn1.type import univ
-from pysnmp.proto.api import v2c
+from pysnmp.proto.rfc1902 import OctetString
 
 from splunk_connect_for_snmp.common.common import (
     disable_mongo_logging,
@@ -222,7 +222,7 @@ def _add_v3_user_for_new_engine_id(engine_id: str) -> bool:
             authKey=uc["authKey"],
             privProtocol=uc["privProtocol"],
             privKey=uc["privKey"],
-            securityEngineId=v2c.OctetString(hexValue=engine_id),
+            securityEngineId=OctetString(hexValue=engine_id),
         )
     _added_engine_ids.add(engine_id)
     logger.info(
@@ -440,7 +440,7 @@ def main():
                     authKey=auth_key if auth_key else None,
                     privProtocol=priv_protocol,
                     privKey=priv_key if priv_key else None,
-                    securityEngineId=v2c.OctetString(hexValue=security_engine_id),
+                    securityEngineId=OctetString(hexValue=security_engine_id),
                 )
                 logger.debug(
                     f"V3 users: {username} auth {auth_protocol} authkey {len(str(auth_key))*'*'} privprotocol {priv_protocol} "

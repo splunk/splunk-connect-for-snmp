@@ -39,7 +39,7 @@ from typing import Any, Dict, List, Set, Tuple, Union
 import pymongo
 from celery import Task
 from celery.utils.log import get_task_logger
-from pysnmp.hlapi.asyncio import SnmpEngine, get_cmd
+from pysnmp.hlapi.v3arch.asyncio import SnmpEngine, get_cmd
 from pysnmp.smi import builder, compiler, view
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 from requests_cache import MongoCache
@@ -336,7 +336,6 @@ class Poller(Task):
         else:
             self.session = CachedLimiterSession(
                 per_second=120,
-                cache_name="cache_http",
                 backend=MongoCache(connection=self.mongo_client, db_name=MONGO_DB),
                 expire_after=1800,
                 match_headers=False,
@@ -577,7 +576,7 @@ class Poller(Task):
         # some devices cannot process more OID than X, so it is necessary to divide it on chunks
         for varbind_chunk in self.get_varbind_chunk(varbinds_get, max_oid_to_process):
             try:
-                (error_indication, error_status, error_index, varbind_table) = (
+                error_indication, error_status, error_index, varbind_table = (
                     await get_cmd(
                         snmp_engine,
                         auth_data,

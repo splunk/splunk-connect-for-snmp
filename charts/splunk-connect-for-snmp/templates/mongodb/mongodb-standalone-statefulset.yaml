@@ -56,6 +56,12 @@ spec:
           {{- toYaml . | nindent 10 }}
         {{- end }}
 
+        {{- if .Values.mongodb.ipv6Enabled }}
+        args:
+        - --ipv6
+        - --bind_ip_all
+        {{- end }}
+
         ports:
         - containerPort: 27017
           name: mongodb

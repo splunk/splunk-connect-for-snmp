@@ -1,30 +1,38 @@
 # Enabling IPv6 for SC4SNMP
 
-Default installation of SC4SNMP does not support polling or receiving trap notifications from IPv6 addresses. 
-To enable IPv6, follow instruction below.
+Older versions of Docker do not support IPv6 or have known issues with IPv6
+configuration, so use the latest versions of Docker and Docker Compose, with
+Docker Compose 2.23.1 or later required for SC4SNMP.
 
-## Docker
+Docker Compose uses `IPv6_ENABLED` to enable IPv6 for the SC4SNMP network, polling, traps, MongoDB, and the MIB server. The default value is `false`.
 
-Older versions of Docker do not support IPv6 or have known issues with IPv6 configuration. 
-To avoid problems with the network, use the latest version of Docker. 
+## Configure IPv6
 
-To enable IPv6 for SC4SNMP:
+1. Set `IPv6_ENABLED=true` in the `.env` file:
 
-1. Set `IPv6_ENABLED=true` in your `.env` file.
-2. Set **`COREDNS_ADDRESS_IPv6`** to an IPv6 address that lies **inside** your `IPAM_SUBNET_IPv6`.  
-   If this is unset or points outside the configured subnet, Docker can fail with errors like  
-   `no configured subnet contains IP address fd02::...`.
+    ```text
+    IPv6_ENABLED=true
+    ```
 
-   With the default subnet `fd02::/64` and gateway `fd02::1`, use an address from that range, for example:
+2. `COREDNS_ADDRESS_IPv6` must be a unique address inside `IPAM_SUBNET_IPv6` and must not match the gateway.
 
-   ```bash
-   COREDNS_ADDRESS_IPv6=fd02::1
-   ```
+    If the value is empty or outside the configured subnet, Docker can fail with an error such as `no configured subnet contains IP address fd02::...`.
 
-   If you use a different `IPAM_SUBNET_IPv6` / `IPAM_GATEWAY_IPv6`, pick an address from that subnet (e.g. the gateway or another host address).
+    With the default subnet `fd02::/64` and gateway `fd02::1`, use an available address from that subnet, for example:
 
-3. The default IPv6 subnet is `fd02::/64`; you can change it in `.env` under the **Network configuration** section (`IPAM_SUBNET_IPv6`, `IPAM_GATEWAY_IPv6`).
+    ```text
+    COREDNS_ADDRESS_IPv6=fd02::53
+    ```
 
-If you configure more than one IPv4 and IPv6 subnet in IPAM, edit the `networks` section of `docker-compose.yaml` accordingly.
+3. The default IPv6 subnet and gateway are configured in the **Network configuration** section of `docker_compose/.env`:
 
-For more information about IPv6 networking in Docker, see the [official Docker documentation](https://docs.docker.com/engine/daemon/ipv6/).
+    ```text
+    IPAM_SUBNET_IPv6=fd02::/64
+    IPAM_GATEWAY_IPv6=fd02::1
+    ```
+
+    You can change these values for your environment. If you use a different subnet or gateway, select a unique `COREDNS_ADDRESS_IPv6` from that subnet that is not the gateway.
+
+4. If you configure more than one IPv4 or IPv6 subnet in IPAM, update the `networks` section of `docker-compose.yaml` accordingly.
+
+For more information about IPv6 networking in Docker, see the [Docker documentation](https://docs.docker.com/engine/daemon/ipv6/).

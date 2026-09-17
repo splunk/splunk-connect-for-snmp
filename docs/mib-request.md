@@ -29,7 +29,7 @@ If official updates are available from the vendor, you may open an [issue on Git
 We will review and, if appropriate, replace the files in our repository.
 
 If vendor fixes are unavailable, you may attempt to resolve the issues using AI-assisted tools 
-and [import the corrected MIB as a local file](#Use-MIB-server-with-local-MIBs).
+and [import the corrected MIB as a local file](#use-mib-server-with-local-mibs).
 
 
 ## Update your instance of SC4SNMP with the newest MIB server

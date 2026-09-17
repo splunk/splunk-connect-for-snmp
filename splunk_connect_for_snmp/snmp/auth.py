@@ -18,7 +18,7 @@ import socket
 from ipaddress import ip_address
 from typing import Any, Dict, Union
 
-from pysnmp.hlapi.asyncio import (
+from pysnmp.hlapi.v3arch.asyncio import (
     USM_KEY_TYPE_LOCALIZED,
     CommunityData,
     ContextData,
@@ -28,7 +28,7 @@ from pysnmp.hlapi.asyncio import (
     UsmUserData,
     get_cmd,
 )
-from pysnmp.proto.api.v2c import OctetString
+from pysnmp.proto.rfc1902 import OctetString
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
 from splunk_connect_for_snmp.common.common import human_bool
@@ -105,6 +105,8 @@ async def get_security_engine_id(logger, rt: RecordType, snmp_engine: SnmpEngine
 
 async def setup_transport_target(rt: RecordType):
     ip = get_ip_from_socket(rt) if IPv6_ENABLED else rt.address
+    if not isinstance(ip, str):
+        raise SnmpActionError("Cannot set up an SNMP transport without an address")
     if IPv6_ENABLED and ip_address(ip).version == 6:
         return await Udp6TransportTarget.create(
             (rt.address, rt.port),

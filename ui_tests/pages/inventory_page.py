@@ -35,10 +35,7 @@ class InventoryPage:
         add_group_device_button_xpath = (
             "//button[@data-test='sc4snmp:new-item-button']//span//span"
         )
-        add_grp_device_btn = driver.find_element(
-            By.XPATH, add_group_device_button_xpath
-        )
-        add_grp_device_btn.click()
+        helper.safe_click(driver, add_group_device_button_xpath)
         time.sleep(3)
 
     def click_submit_button_for_add_entry(self):
@@ -49,10 +46,7 @@ class InventoryPage:
         add_group_device_item_button_xpath = (
             "//button[@data-test='sc4snmp:form:submit-form-button']"
         )
-        add_grp_device_btn = driver.find_element(
-            By.XPATH, add_group_device_item_button_xpath
-        )
-        add_grp_device_btn.click()
+        helper.safe_click(driver, add_group_device_item_button_xpath)
         time.sleep(5)  # wait for group to be shown on the list
 
     def click_submit_button_for_edit_entry(self):
@@ -60,11 +54,8 @@ class InventoryPage:
 
     def delete_entry_from_list(self, host_ip):
         logger.info(f"Removing entry from inventory list: {host_ip}")
-        delete_btn_for_inventory_with_host_ip_xpath = f"//button[@data-test='sc4snmp:inventory-row-delete' and ancestor::tr//td[text()='{host_ip}']]"
-        delete_btn = driver.find_element(
-            By.XPATH, delete_btn_for_inventory_with_host_ip_xpath
-        )
-        delete_btn.click()
+        delete_btn_for_inventory_with_host_ip_xpath = f"//button[@data-test='sc4snmp:inventory-row-delete' and ancestor::tr//td[normalize-space(.)='{host_ip}']]"
+        helper.safe_click(driver, delete_btn_for_inventory_with_host_ip_xpath)
         time.sleep(1)
         self.confirm_delete()
         self.close_delete_popup()
@@ -77,11 +68,8 @@ class InventoryPage:
         close_inventory_delete_popup_btn_xpath = (
             "//button[@data-test='sc4snmp:errors-modal:cancel-button']"
         )
-        close_btn = driver.find_element(
-            By.XPATH, close_inventory_delete_popup_btn_xpath
-        )
-        close_btn.click()
-        time.sleep(1)
+        helper.safe_click(driver, close_inventory_delete_popup_btn_xpath)
+        helper.wait_for_modal_overlay_to_close(driver)
 
     def close_edit_inventory_entry(self):
         logger.info("Closing inventory edit popup")
@@ -92,14 +80,12 @@ class InventoryPage:
         confirm_delete_xpath = (
             "//button[@data-test='sc4snmp:delete-modal:delete-button']"
         )
-        confirm_btn = driver.find_element(By.XPATH, confirm_delete_xpath)
-        confirm_btn.click()
-        time.sleep(1)
+        helper.safe_click(driver, confirm_delete_xpath)
 
     def set_community_string(self, community_string, edit=False):
         logger.info(f"Set community string: {community_string}")
         community_input_field_xpath = (
-            "//div[@data-test='sc4snmp:form:community-input']//span//input"
+            "//div[@data-test='sc4snmp:form:community-input']//input"
         )
         community_input_field = driver.find_element(
             By.XPATH, community_input_field_xpath
@@ -110,11 +96,8 @@ class InventoryPage:
 
     def click_edit_inventory_entry(self, host_ip):
         logger.info(f"Edit entry from inventory list with: {host_ip}")
-        edit_inventory_entry_btn_xpath = f"//button[@data-test='sc4snmp:inventory-row-edit' and ancestor::tr//td[text()='{host_ip}']]"
-        edit_inventory_entry_btn = driver.find_element(
-            By.XPATH, edit_inventory_entry_btn_xpath
-        )
-        edit_inventory_entry_btn.click()
+        edit_inventory_entry_btn_xpath = f"//button[@data-test='sc4snmp:inventory-row-edit' and ancestor::tr//td[normalize-space(.)='{host_ip}']]"
+        helper.safe_click(driver, edit_inventory_entry_btn_xpath)
 
     def get_edit_inventory_notice(self):
         logger.info("Get edited inventory popup text")
@@ -150,11 +133,18 @@ class InventoryPage:
             "walk_invalid_value"
         )
 
+    def get_max_oid_to_process_invalid_value_error(self):
+        logger.info("Get max OID to process invalid value error")
+        return self._get_error_for_missing_or_invalid_inventory_field(
+            "max_oid_to_process_invalid_value"
+        )
+
     def _get_error_for_missing_or_invalid_inventory_field(self, field):
         xpath = {
             "host_missing": "//p[@data-test='sc4snmp:ip-group-error']",
             "community_string_missing": "//p[@data-test='sc4snmp:community-error']",
             "walk_invalid_value": "//p[@data-test='sc4snmp:walk-interval-error']",
+            "max_oid_to_process_invalid_value": "//p[@data-test='sc4snmp:max-oid-to-process-error']",
         }
         try:
             error_msg = driver.find_element(By.XPATH, xpath[field])
@@ -164,9 +154,7 @@ class InventoryPage:
 
     def edit_device_port(self, port):
         logger.info(f"set/edit inventory device port: {port}")
-        device_port_field_xpath = (
-            "//div[@data-test='sc4snmp:form:port-input']//span//input"
-        )
+        device_port_field_xpath = "//div[@data-test='sc4snmp:form:port-input']//input"
         port_field = driver.find_element(By.XPATH, device_port_field_xpath)
         helper.clear_input(port_field)
         port_field.send_keys(port)
@@ -201,9 +189,9 @@ class InventoryPage:
 
     def _set_inventory_field(self, field, value, edit=False):
         xpath = {
-            "host_group_name": "//div[@data-test='sc4snmp:form:group-ip-input']//span//input",
-            "secret": "//div[@data-test='sc4snmp:form:secret-input']//span//input",
-            "security_engine": "//div[@data-test='sc4snmp:form:security-engine-input']//span//input",
+            "host_group_name": "//div[@data-test='sc4snmp:form:group-ip-input']//input",
+            "secret": "//div[@data-test='sc4snmp:form:secret-input']//input",
+            "security_engine": "//div[@data-test='sc4snmp:form:security-engine-input']//input",
         }
         field_input = driver.find_element(By.XPATH, xpath[field])
         if edit:
@@ -213,11 +201,25 @@ class InventoryPage:
     def set_walk_interval(self, walk_interval):
         logger.info(f"set/edit inventory device walk interval: {walk_interval}")
         sec_engine_field_xpath = (
-            "//div[@data-test='sc4snmp:form:walk-interval-input']//span//input"
+            "//div[@data-test='sc4snmp:form:walk-interval-input']//input"
         )
         sec_engine = driver.find_element(By.XPATH, sec_engine_field_xpath)
         helper.clear_input(sec_engine)
         sec_engine.send_keys(walk_interval)
+        time.sleep(1)
+
+    def set_max_oid_to_process(self, max_oid_to_process):
+        logger.info(
+            f"set/edit inventory device max OID to process: {max_oid_to_process}"
+        )
+        max_oid_to_process_field_xpath = (
+            "//div[@data-test='sc4snmp:form:max-oid-to-process-input']//input"
+        )
+        max_oid_to_process_field = driver.find_element(
+            By.XPATH, max_oid_to_process_field_xpath
+        )
+        helper.clear_input(max_oid_to_process_field)
+        max_oid_to_process_field.send_keys(max_oid_to_process)
         time.sleep(1)
 
     def set_smart_profiles(self, param):
@@ -236,7 +238,8 @@ class InventoryPage:
     def select_profiles(self, profiles, edit=False):
         logger.info(f"select profiles: {profiles}")
         profiles_input_xpath = (
-            "//div[@data-test='sc4snmp:form:profiles-multiselect']//div//input"
+            "//div[@data-test='sc4snmp:form:profiles-multiselect']"
+            "//input[@data-test='textbox']"
         )
         profile_input = driver.find_element(By.XPATH, profiles_input_xpath)
         if edit:
@@ -250,20 +253,19 @@ class InventoryPage:
             profile_input.send_keys(profile)
             profile_input.send_keys(Keys.ENTER)
             time.sleep(2)
-            # we need to hide profile list,
-            # otherwise it can break test execution and popup can intercept clicking on smart profiles
             profile_input.send_keys(Keys.ESCAPE)
 
     def _get_inventory_data(self, host, field):
         field_xpath = {
-            "snmp_version": f"//td[@data-test='sc4snmp:inventory-version' and ancestor::tr//td[text()='{host}']]",
-            "port": f"//td[@data-test='sc4snmp:inventory-port' and ancestor::tr//td[text()='{host}']]",
-            "community_string": f"//td[@data-test='sc4snmp:inventory-community' and ancestor::tr//td[text()='{host}']]",
-            "secret": f"//td[@data-test='sc4snmp:inventory-secret' and ancestor::tr//td[text()='{host}']]",
-            "security_engine": f"//td[@data-test='sc4snmp:inventory-security-engine' and ancestor::tr//td[text()='{host}']]",
-            "walk_interval": f"//td[@data-test='sc4snmp:inventory-walk-interval' and ancestor::tr//td[text()='{host}']]",
-            "profiles": f"//td[@data-test='sc4snmp:inventory-profiles' and ancestor::tr//td[text()='{host}']]",
-            "smart_profiles": f"//td[@data-test='sc4snmp:inventory-smart-profiles' and ancestor::tr//td[text()='{host}']]",
+            "snmp_version": f"//td[@data-test='sc4snmp:inventory-version' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "port": f"//td[@data-test='sc4snmp:inventory-port' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "community_string": f"//td[@data-test='sc4snmp:inventory-community' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "secret": f"//td[@data-test='sc4snmp:inventory-secret' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "security_engine": f"//td[@data-test='sc4snmp:inventory-security-engine' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "walk_interval": f"//td[@data-test='sc4snmp:inventory-walk-interval' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "max_oid_to_process": f"//td[@data-test='sc4snmp:inventory-max-oid-to-process' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "profiles": f"//td[@data-test='sc4snmp:inventory-profiles' and ancestor::tr//td[normalize-space(.)='{host}']]",
+            "smart_profiles": f"//td[@data-test='sc4snmp:inventory-smart-profiles' and ancestor::tr//td[normalize-space(.)='{host}']]",
         }
         field = driver.find_element(By.XPATH, field_xpath[field])
         return field.text
@@ -291,6 +293,10 @@ class InventoryPage:
     def get_walk_interval_for_entry(self, host):
         logger.info(f"get {host} inventory -> walk_interval")
         return self._get_inventory_data(host, "walk_interval")
+
+    def get_max_oid_to_process_for_entry(self, host):
+        logger.info(f"get {host} inventory -> max_oid_to_process")
+        return self._get_inventory_data(host, "max_oid_to_process")
 
     def get_profiles_for_entry(self, host):
         logger.info(f"get {host} inventory -> profiles")

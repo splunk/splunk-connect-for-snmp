@@ -401,3 +401,11 @@ class TestAuth(IsolatedAsyncioTestCase):
         m_udp6_create.return_value = "UDP6"
         transport = await setup_transport_target(ir)
         self.assertEqual("UDP6", transport)
+
+    async def test_setup_transport_target_without_address(self):
+        invalid_record = ir.copy(update={"address": None})
+
+        with self.assertRaisesRegex(
+            SnmpActionError, "Cannot set up an SNMP transport without an address"
+        ):
+            await setup_transport_target(invalid_record)

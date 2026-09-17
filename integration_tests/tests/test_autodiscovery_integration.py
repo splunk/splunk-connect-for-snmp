@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pytest
 from pysnmp.hlapi.v3arch.asyncio import (
+    USM_AUTH_HMAC96_SHA,
+    USM_PRIV_CFB128_AES,
     CommunityData,
     ContextData,
     ObjectIdentity,
@@ -16,8 +18,6 @@ from pysnmp.hlapi.v3arch.asyncio import (
     UdpTransportTarget,
     UsmUserData,
     get_cmd,
-    usmAesCfb128Protocol,
-    usmHMACSHAAuthProtocol,
 )
 
 DISCOVERY_OUTPUT_DIR = Path(
@@ -389,7 +389,7 @@ async def fetch_base_oids(address, auth_data):
         snmp_engine.close_dispatcher()
 
 
-@pytest.mark.part7
+@pytest.mark.part8
 def test_autodiscovery_csv_matches_all_deployed_agents(
     discovered_rows, deployed_agents, expected_by_key
 ):
@@ -403,7 +403,7 @@ def test_autodiscovery_csv_matches_all_deployed_agents(
         assert {row["subnet"] for row in rows} == {expected["subnet"]}
 
 
-@pytest.mark.part7
+@pytest.mark.part8
 def test_autodiscovery_records_v2c_and_v3_credentials(discovered_rows, expected_by_key):
     for discovery_key, expected in expected_by_key.items():
         rows = rows_for_key(discovered_rows, discovery_key)
@@ -413,14 +413,14 @@ def test_autodiscovery_records_v2c_and_v3_credentials(discovered_rows, expected_
         assert {row["port"] for row in rows} == {str(AUTODISCOVERY_PORT)}
 
 
-@pytest.mark.part7
+@pytest.mark.part8
 def test_autodiscovery_applies_sysdescr_device_rules(discovered_rows, expected_by_key):
     for discovery_key, expected in expected_by_key.items():
         groups = {row["group"] for row in rows_for_key(discovered_rows, discovery_key)}
         assert groups == {expected["group"]}
 
 
-@pytest.mark.part7
+@pytest.mark.part8
 @pytest.mark.usefixtures("discovered_rows")
 def test_delete_already_discovered_removes_offline_device(
     deployment, simulator_profile, expected_by_key
@@ -447,7 +447,7 @@ def test_delete_already_discovered_removes_offline_device(
         )
 
 
-@pytest.mark.part7
+@pytest.mark.part8
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("discovered_rows")
 async def test_get_cmd_resolves_base_mib_oids_from_simulator_ips(
@@ -465,8 +465,8 @@ async def test_get_cmd_resolves_base_mib_oids_from_simulator_ips(
                 "autodiscovery-sha",
                 authKey="AuthPass1",
                 privKey="PrivPass1",
-                authProtocol=usmHMACSHAAuthProtocol,
-                privProtocol=usmAesCfb128Protocol,
+                authProtocol=USM_AUTH_HMAC96_SHA,
+                privProtocol=USM_PRIV_CFB128_AES,
             ),
             "autodiscovery integration v3 SHA",
         ),

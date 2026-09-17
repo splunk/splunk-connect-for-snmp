@@ -16,3 +16,13 @@ will be displayed:
 
 
 ![Retries](../../images/ui_docs/apply_changes/retries.png){ style="border:2px solid; width:500px; height:auto" }
+
+## Restore configuration
+
+![Restore configuration](../../images/ui_docs/apply_changes/restore_configuration.png){ style="border:2px solid" }
+
+Pressing `Restore configuration`, next to `Apply changes`, reloads Profiles, Groups, and Inventory from the configuration files provided at deployment time, replacing whatever has since been configured through the GUI. Hosts no longer present in those files are removed from the inventory. 
+
+![Restore configuration window](../../images/ui_docs/apply_changes/restore_configuration_window.png){ style="border:2px solid; width:500px; height:auto" }
+
+This action cannot be undone, so it must be confirmed in a warning dialog before it runs. Once confirmed, the restore triggers the same update job described above, so the same 5-minute cooldown and retry behavior applies.

@@ -9,5 +9,7 @@ SNMP is a protocol widely considered to be risky and requires threat mitigation 
 * When possible use SNMPv3 with the most secure mutually supported protocol options. 
 * The default IP of each node should be considered a management interface and should be protected from network
 access by an untrusted device by a hardware or software firewall. When possible the IP allocated for SNMP communication should not be shared by the management interface.
-* Use strong passwords to secure connectivity to both Redis and MongoDB
+* Use strong passwords to secure connectivity to both Redis and MongoDB. When rotating the MongoDB
+  root password on an existing deployment, follow [Rotating the MongoDB password](microk8s/configuration/mongo-configuration.md#rotating-the-mongodb-password) -
+  simply changing the Secret does not re-key an already-initialized database.
 * For better security it is possible to store secrets in external vaults like HashiCorp Vault, AWS Secret Manager, Azure Key Vault etc.

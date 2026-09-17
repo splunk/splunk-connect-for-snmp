@@ -3,7 +3,7 @@ FROM python:3.13-alpine AS base
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
     PYTHONUNBUFFERED=1
-RUN apk add -U git sqlite-dev && apk upgrade xz-libs
+RUN apk upgrade --no-cache && apk add --no-cache git sqlite-dev xz-libs libcrypto3 libssl3
 RUN pip install --upgrade setuptools pip wheel
 RUN mkdir /app
 WORKDIR /app
@@ -16,9 +16,10 @@ COPY poetry.lock pyproject.toml /app/
 COPY splunk_connect_for_snmp /app/splunk_connect_for_snmp
 WORKDIR /app
 RUN poetry config virtualenvs.in-project true ;\
+    poetry sync --no-root --without dev ;\
     poetry build ;\
     . /app/.venv/bin/activate ;\
-    pip install dist/*.whl
+    pip install --no-deps dist/*.whl
 
 FROM base AS final
 

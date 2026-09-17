@@ -8,7 +8,7 @@ import re
 from celery import Task
 from celery.utils.log import get_task_logger
 from filelock import FileLock
-from pysnmp.hlapi.asyncio import (
+from pysnmp.hlapi.v3arch.asyncio import (
     ContextData,
     ObjectIdentity,
     ObjectType,

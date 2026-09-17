@@ -14,5 +14,44 @@
   "labels": ["dependencies"],
   "vulnerabilityAlerts": {
     "labels": ["dependencies", "security"]
-  }
+  },
+  "pre-commit": { "enabled": true },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Keep docker-compose MONGO_TAG in sync with the mongo docker image",
+      "fileMatch": ["^docker_compose/\\.env$"],
+      "matchStrings": [
+        "MONGO_IMAGE=(?<depName>.*?)\\nMONGO_TAG=(?<currentValue>.*)\\n"
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Keep docker-compose REDIS_TAG in sync with the redis docker image",
+      "fileMatch": ["^docker_compose/\\.env$"],
+      "matchStrings": [
+        "REDIS_IMAGE=(?<depName>.*?)\\nREDIS_TAG=(?<currentValue>.*)\\n"
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Keep docker-compose COREDNS_TAG in sync with the coredns docker image",
+      "fileMatch": ["^docker_compose/\\.env$"],
+      "matchStrings": [
+        "COREDNS_IMAGE=(?<depName>.*?)\\nCOREDNS_TAG=(?<currentValue>.*)\\n"
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Keep docker-compose MIBSERVER_TAG in sync with the mibserver docker image",
+      "fileMatch": ["^docker_compose/\\.env$"],
+      "matchStrings": [
+        "MIBSERVER_IMAGE=(?<depName>.*?)\\nMIBSERVER_TAG=(?<currentValue>.*)\\n"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ]
 }

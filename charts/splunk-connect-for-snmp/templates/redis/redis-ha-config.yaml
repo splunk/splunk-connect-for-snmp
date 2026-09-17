@@ -26,7 +26,7 @@ data:
 
     loglevel notice
     maxmemory-policy noeviction
-    bind 0.0.0.0
+    bind 0.0.0.0{{ if .Values.redis.ipv6Enabled }} ::{{ end }}
     protected-mode no
     port 6379
 {{- end }}

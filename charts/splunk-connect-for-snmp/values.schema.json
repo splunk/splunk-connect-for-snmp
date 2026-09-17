@@ -1046,14 +1046,38 @@
       "type": "object"
     },
     "mongodb": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "ipv6Enabled": {
+          "type": "boolean"
+        },
+        "replicationAuthTransition": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "transitionTimeout": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Maximum runtime in seconds for enabling authentication on an existing MongoDB replica set. A value of 0 calculates a replica-aware default."
+            }
+          }
+        }
+      }
     },
     "redis": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "ipv6Enabled": {
+          "type": "boolean"
+        }
+      }
     },
     "mibserver": {
       "type": "object",
       "properties": {
+        "ipv6Enabled": {
+          "type": "boolean"
+        },
         "image": {
           "type": "object",
           "additionalProperties": false,
