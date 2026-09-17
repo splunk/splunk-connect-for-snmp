@@ -14,8 +14,8 @@
 #
 from typing import AsyncGenerator
 
-from pysnmp.entity.engine import SnmpEngine
 import pysnmp.hlapi.varbinds as varbinds
+from pysnmp.entity.engine import SnmpEngine
 from pysnmp.hlapi.v3arch.asyncio.auth import CommunityData, UsmUserData
 from pysnmp.hlapi.v3arch.asyncio.cmdgen import bulk_cmd
 from pysnmp.hlapi.v3arch.asyncio.context import ContextData

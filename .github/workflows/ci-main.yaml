@@ -180,7 +180,7 @@ jobs:
           sudo apt-get install python3-dev -y
       - name: run automatic_setup_microk8s.sh
         env:
-          AUTODISCOVERY_ENABLED: ${{ matrix.index == 7 }}
+          AUTODISCOVERY_ENABLED: ${{ matrix.index == 8 }}
         run: integration_tests/scripts/automatic_setup_microk8s.sh integration
       - name: run tests
         working-directory: integration_tests
@@ -241,7 +241,7 @@ jobs:
           docker --version
       - name: run automatic_setup_compose.sh
         env:
-          AUTODISCOVERY_ENABLED: ${{ matrix.index == 7 }}
+          AUTODISCOVERY_ENABLED: ${{ matrix.index == 8 }}
         run: integration_tests/scripts/automatic_setup_compose.sh integration
       - name: run tests
         working-directory: integration_tests

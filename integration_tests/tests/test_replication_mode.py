@@ -169,6 +169,8 @@ def _mongodb_eval(namespace, release, script, *, authenticated=True, check=True)
 
 def _write_override_file(poll_target):
     override = f"""\
+discovery:
+  enabled: false
 scheduler:
   groups: |
     {{}}

@@ -213,7 +213,7 @@ def pytest_runtest_makereport(item, call):
         try:
             deployment = item.config.getoption("sc4snmp_deployment")
 
-            is_autodiscovery_test = item.get_closest_marker("part7") is not None
+            is_autodiscovery_test = item.get_closest_marker("part8") is not None
             if str(deployment) == "microk8s":
                 namespaces = ["sc4snmp"]
                 if is_autodiscovery_test:

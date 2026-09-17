@@ -3,6 +3,12 @@
 ## Unreleased
 
 ### Changed
+- **Python and PySNMP modernization**
+  - Require Python 3.13 across the application, containers, CI, and development tooling, and replace the legacy `pysnmplib` stack with Lextudio `pysnmp` 7.1.29, `pyasn1` 0.6, `pysmi` 2.0, and `pysnmpcrypto`.
+  - Migrate polling, walking, discovery, authentication, MIB resolution, and trap reception to the asyncio with SNMP engines scoped and cleaned up per event loop.
+  - Add `multi_bulk_walk_cmd` to walk multiple OID subtrees concurrently while tracking each subtree independently.
+  - Add configurable concurrent subnet scanning through `discovery.subnetDiscoveryConcurrency` and `SUBNET_DISCOVERY_CONCURRENCY`.
+  - Add configurable container user naming through `deploymentUser` and `DEPLOYMENT_USER`.
 
 ### Fixed
 
