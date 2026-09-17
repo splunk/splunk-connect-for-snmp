@@ -138,6 +138,8 @@ spec:
               value: "false"
             - name: USER
               value: "sc4snmp"
+            - name: CELERY_TASK_TIMEOUT
+              value: "2400"
           volumeMounts:
             - name: config
               mountPath: "/app/config"

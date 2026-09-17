@@ -31,6 +31,7 @@ worker:
     #changed replicaCount from 4 to 1
     concurrency: 4
     prefetch: 1
+    taskTimeout: 2400
   trap:
     autoscaling:
       enabled: false

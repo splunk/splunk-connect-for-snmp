@@ -211,6 +211,8 @@ Common labels
   value: {{ .Values.worker.poller.maxMemoryPerChild | default "0" | quote }}
 - name: IPv6_ENABLED
   value: {{ .Values.poller.ipv6Enabled | default "false" | quote }}
+- name: CELERY_TASK_TIMEOUT
+  value: {{ .Values.worker.poller.taskTimeout | quote}}
 {{- end }}
 
 {{- define "environmental-variables-sender" -}}
@@ -260,6 +262,14 @@ Common labels
   value: {{ .Values.worker.discovery.maxTasksPerChild | default "0" | quote }}
 - name: MAX_MEMORY_PER_CHILD
   value: {{ .Values.worker.discovery.maxMemoryPerChild | default "0" | quote }}
+- name: CELERY_TASK_TIMEOUT
+  value: {{ .Values.worker.discovery.taskTimeout | quote}}
+- name: IPv6_ENABLED
+  {{- if .Values.discovery.ipv6Enabled}}
+  value: "true"
+  {{ else }}
+  value: "false"
+  {{- end }}
 - name: SUBNET_DISCOVERY_CONCURRENCY
   value: {{ .Values.discovery.subnetDiscoveryConcurrency | default "10" | quote }}
 {{- end }}

@@ -323,6 +323,8 @@ worker:
     # maximum resident memory used by one Celery prefork child before it is
     # recycled, in Celery kilobytes (1 unit = 1024 bytes). 0 disables memory recycling.
     maxMemoryPerChild: 0
+    # task timeout in seconds (usually necessary when walk process takes a long time)
+    taskTimeout: 2400
     autoscaling:
       # enabling autoscaling for poller worker pods
       enabled: false
@@ -428,6 +430,9 @@ worker:
     # maximum resident memory used by one Celery prefork child before it is
     # recycled, in Celery kilobytes (1 unit = 1024 bytes). 0 disables memory recycling.
     maxMemoryPerChild: 0
+    # task timeout in seconds for a single discovery task; increase for large subnets to
+    # accommodate the nmap scan and SNMP checks across all IPs
+    taskTimeout: 2400
     autoscaling:
       # enabling autoscaling for discovery worker pods
       enabled: false
@@ -478,8 +483,6 @@ worker:
     periodSeconds: 5
 
 
-  # task timeout in seconds (usually necessary when walk process takes a long time)
-  taskTimeout: 2400
   # maximum time interval between walk attempts
   walkRetryMaxInterval: 180
   # maximum number of walk retries
