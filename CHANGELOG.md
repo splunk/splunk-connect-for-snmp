@@ -9,6 +9,7 @@
   - Add `multi_bulk_walk_cmd` to walk multiple OID subtrees concurrently while tracking each subtree independently.
   - Add configurable concurrent subnet scanning through `discovery.subnetDiscoveryConcurrency` and `SUBNET_DISCOVERY_CONCURRENCY`.
   - Add configurable container user naming through `deploymentUser` and `DEPLOYMENT_USER`.
+-Add WORKER_POLLER_TASK_TIMEOUT for poller worker and move CELERY_TASK_TIMEOUT for discovery to it worker section with rename to WORKER_DISCOVERY_TASK_TIMEOUT.
 
 ### Fixed
 
